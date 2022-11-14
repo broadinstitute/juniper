@@ -1,4 +1,4 @@
-rootProject.name = 'terra-java-project-template'
-include('service', 'client', 'integration')
+rootProject.name = 'pearl'
+include('core', 'populate', 'api-participant', 'api-admin')
 
 gradle.ext.releaseVersion = '0.3.0'
