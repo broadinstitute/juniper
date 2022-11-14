@@ -1,0 +1,35 @@
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+bootrun.log
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+# Emacs backup files #
+*.*~
+
+### IntelliJ IDEA ###
+.idea
+*.iml
+
+### VS Code ###
+.vscode/
+
+# Mac directory metadata
+.DS_Store
+
+# PyEnv environment files
+.env/
