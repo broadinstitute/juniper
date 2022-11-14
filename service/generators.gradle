@@ -1,0 +1,44 @@
+dependencies {
+    implementation 'io.swagger.core.v3:swagger-annotations'
+    runtimeOnly 'org.webjars.npm:swagger-ui-dist:4.9.0'
+    swaggerCodegen 'io.swagger.codegen.v3:swagger-codegen-cli'
+
+    // Versioned by Spring:
+    implementation 'javax.validation:validation-api'
+    implementation 'org.webjars:webjars-locator-core'
+
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+}
+
+def artifactGroup = "${group}.javatemplate"
+
+generateSwaggerCode {
+    inputFile = file('src/main/resources/api/openapi.yml')
+    language = 'spring'
+    components = ['models', 'apis']
+    jvmArgs = ['--add-opens=java.base/java.util=ALL-UNNAMED']
+    additionalProperties = [
+        modelPackage     : "${artifactGroup}.model",
+        apiPackage       : "${artifactGroup}.api",
+        dateLibrary      : 'java11',
+        java8            : true,
+        interfaceOnly    : 'true',
+        useTags          : 'true',
+        springBootVersion: dependencyManagement.managedVersions['org.springframework.boot:spring-boot']
+    ]
+}
+
+String swaggerOutputSrc = "${generateSwaggerCode.outputDir}/src/main/java"
+
+idea.module.generatedSourceDirs = [file(swaggerOutputSrc)]
+sourceSets.main.java.srcDir swaggerOutputSrc
+compileJava.dependsOn generateSwaggerCode
+
+// see https://github.com/n0mer/gradle-git-properties
+gitProperties {
+    keys = []
+    customProperty('javatemplate.version.gitTag', { it.describe(tags: true) })
+    customProperty('javatemplate.version.gitHash', { it.head().abbreviatedId })
+    customProperty('javatemplate.version.github', { "https://github.com/DataBiosphere/terra-java-project-template/tree/${it.describe(tags: true)}" })
+    customProperty('javatemplate.version.build', version)
+}

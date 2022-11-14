@@ -1,0 +1,62 @@
+plugins {
+    id 'bio.terra.java-spring-conventions'
+    id 'de.undercouch.download'
+    id 'com.google.cloud.tools.jib'
+    id 'com.srcclr.gradle'
+    id 'org.sonarqube'
+
+    id 'com.gorylenko.gradle-git-properties' version '2.3.1'
+    id 'org.liquibase.gradle' version '2.1.0'
+}
+
+apply from: 'generators.gradle'
+apply from: 'publishing.gradle'
+
+dependencies {
+    implementation 'bio.terra:terra-common-lib'
+    implementation 'org.apache.commons:commons-dbcp2'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.retry:spring-retry'
+    implementation 'org.broadinstitute.dsde.workbench:sam-client_2.13:0.1-9867891-SNAP'
+    implementation 'javax.ws.rs:javax.ws.rs-api:2.1.1'
+    implementation 'org.postgresql:postgresql'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    liquibaseRuntime 'org.liquibase:liquibase-core'
+    liquibaseRuntime 'info.picocli:picocli:4.6.1'
+    liquibaseRuntime 'org.postgresql:postgresql'
+    liquibaseRuntime 'ch.qos.logback:logback-classic'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        // Fixes warning about multiple occurrences of JSONObject on the classpath
+        exclude group: 'com.vaadin.external.google', module: 'android-json'
+    }
+    testImplementation 'org.mockito:mockito-inline'
+}
+
+test {
+    useJUnitPlatform ()
+}
+
+sonarqube {
+    properties {
+        property 'sonar.projectName', 'terra-java-project-template'
+        property 'sonar.projectKey', 'terra-java-project-template'
+        property 'sonar.organization', 'broad-databiosphere'
+        property 'sonar.host.url', 'https://sonarcloud.io'
+    }
+}
+
+liquibase {
+    activities {
+        catalog {
+            changeLogFile 'src/main/resources/db/changelog.xml'
+            url 'jdbc:postgresql://localhost:5432/javatemplate_db'
+            username 'dbuser'
+            password 'dbpwd'
+            logLevel 'info'
+        }
+    }
+}

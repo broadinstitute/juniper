@@ -1,0 +1,4 @@
+rootProject.name = 'terra-java-project-template'
+include('service', 'client', 'integration')
+
+gradle.ext.releaseVersion = '0.3.0'

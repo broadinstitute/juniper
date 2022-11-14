@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: "not_so_interesting"
+      author: doge
+      changes:
+        - createTable:
+            tableName: example
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: text
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: message
+                  type: text
+                  constraints:
+                    nullable: false

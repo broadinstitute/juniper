@@ -1,0 +1,184 @@
+openapi: 3.0.3
+info:
+  title: Terra Java Project Template
+  description: Terra Java Project Template
+  version: 0.0.1
+paths:
+  /status:
+    get:
+      summary: Check status of the service
+      tags: [ public ]
+      operationId: getStatus
+      security: [ ]
+      responses:
+        '200':
+          $ref: '#/components/responses/SystemStatusResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '503':
+          $ref: '#/components/responses/SystemStatusResponse'
+
+  /version:
+    get:
+      summary: Get version info of the deployed service
+      tags: [ public ]
+      operationId: getVersion
+      security: [ ]
+      responses:
+        '200':
+          description: Version information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionProperties'
+        '404':
+          description: "Version not configured"
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # README /docs/api_versioning.md
+  /api/example/v1/message:
+    get:
+      summary: Gets your message
+      tags: [ example ]
+      operationId: getMessage
+      responses:
+        '200':
+          description: Your message
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: You don't have a message
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Stores your message
+      tags: [ example ]
+      operationId: setMessage
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: string
+        required: true
+      responses:
+        '204':
+          description: Message saved
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/example/v1/{resourceType}/{resourceId}/{action}:
+    get:
+      summary: Checks sam access
+      tags: [ example ]
+      operationId: getAction
+      parameters:
+        - name: resourceType
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: resourceId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: action
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: action access
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  responses:
+    SystemStatusResponse:
+      description: A JSON description of the subsystems and their statuses.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SystemStatus'
+
+    # Error Responses
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorReport'
+    PermissionDenied:
+      description: Permission denied
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorReport'
+    NotFound:
+      description: Not found (or unauthorized)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorReport'
+    ServerError:
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorReport'
+
+  schemas:
+    ErrorReport:
+      type: object
+      required: [ message, statusCode ]
+      properties:
+        message:
+          type: string
+        statusCode:
+          type: integer
+
+    SystemStatus:
+      required: [ ok, systems ]
+      type: object
+      properties:
+        ok:
+          type: boolean
+          description: whether any system(s) need attention
+        systems:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              ok:
+                type: boolean
+              messages:
+                type: array
+                items:
+                  type: string
+
+    VersionProperties:
+      type: object
+      properties:
+        gitTag:
+          type: string
+        gitHash:
+          type: string
+        github:
+          type: string
+        build:
+          type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+security:
+  - bearerAuth: [ ]

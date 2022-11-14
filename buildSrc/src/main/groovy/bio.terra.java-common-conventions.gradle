@@ -1,0 +1,99 @@
+plugins {
+    id 'idea'
+    id 'jacoco'
+    id 'java'
+
+    id 'com.diffplug.spotless'
+    id 'com.github.spotbugs'
+    id 'org.hidetake.swagger.generator'
+}
+
+boolean isCiServer = System.getenv().containsKey("CI")
+
+if (!isCiServer) {
+    tasks.withType(JavaExec).configureEach {
+        systemProperty 'spring.profiles.include', 'human-readable-logging'
+    }
+    tasks.withType(Test).configureEach {
+        systemProperty 'spring.profiles.include', 'human-readable-logging'
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    maven {
+        // Terra proxy for maven central
+        url 'https://broadinstitute.jfrog.io/broadinstitute/maven-central/'
+    }
+    mavenCentral()
+    maven {
+        url 'https://broadinstitute.jfrog.io/broadinstitute/libs-release/'
+    }
+    maven {
+        url 'https://broadinstitute.jfrog.io/broadinstitute/libs-snapshot-local/'
+    }
+}
+
+dependencies {
+    compileOnly 'com.github.spotbugs:spotbugs-annotations:4.7.2'
+    implementation 'io.swagger.core.v3:swagger-annotations:2.2.0'
+    swaggerCodegen 'io.swagger.codegen.v3:swagger-codegen-cli:3.0.31'
+
+    implementation 'org.slf4j:slf4j-api'
+
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+
+    implementation 'bio.terra:terra-common-lib:0.0.75-SNAPSHOT'
+    implementation 'bio.terra:datarepo-client:1.349.0-SNAPSHOT'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+version = gradle.releaseVersion
+group = 'bio.terra'
+
+spotless {
+    java {
+        targetExclude "${buildDir}/**"
+        targetExclude "**/swagger-code/**"
+        googleJavaFormat()
+    }
+}
+
+// Run spotless check when running in github actions, otherwise run spotless apply.
+compileJava {
+    if (isCiServer) {
+        dependsOn(spotlessCheck)
+    } else {
+        dependsOn(spotlessApply)
+    }
+}
+
+// Spotbugs configuration
+spotbugs {
+    reportLevel = 'high'
+    effort = 'max'
+}
+spotbugsMain {
+    reports {
+        if (isCiServer) {
+            sarif.enabled = true
+        } else {
+            html.enabled = true
+        }
+    }
+}
+
+jacocoTestReport {
+    reports {
+        // sonarqube requires XML coverage output to upload coverage data
+        xml.required = true
+    }
+}
