@@ -4,7 +4,7 @@ env:
   db:
     host: ${DATABASE_HOSTNAME:127.0.0.1}:5432
     init: ${INIT_DB:false}
-    name: ${DATABASE_NAME:javatemplate_db}
+    name: ${DATABASE_NAME:pearl}
     password: ${DATABASE_USER_PASSWORD:dbpwd}
     user: ${DATABASE_USER:dbuser}
   tracing:
