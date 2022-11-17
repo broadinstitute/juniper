@@ -1,7 +1,6 @@
 package bio.terra.javatemplate.dao;
 
 import bio.terra.javatemplate.model.Example;
-import bio.terra.pearl.core.model.TestModule;
 import io.opencensus.contrib.spring.aop.Traced;
 import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
@@ -40,8 +39,6 @@ public class ExampleDao {
 
   @Traced
   public Optional<Example> getExampleForUser(String userId) {
-    TestModule tm = new TestModule("yo");
-    System.out.println(tm);
     var namedParameters = new MapSqlParameterSource().addValue("userId", userId);
     var selectSql = "SELECT * FROM example WHERE user_id = :userId";
     return Optional.ofNullable(

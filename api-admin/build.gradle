@@ -17,11 +17,14 @@ dependencies {
     implementation project(':core')
     implementation 'org.apache.commons:commons-dbcp2'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.retry:spring-retry'
     implementation 'org.broadinstitute.dsde.workbench:sam-client_2.13:0.1-9867891-SNAP'
     implementation 'javax.ws.rs:javax.ws.rs-api:2.1.1'
     implementation 'org.postgresql:postgresql'
+    implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.6.10.Final'
+    implementation group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.6.10.Final'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     liquibaseRuntime 'org.liquibase:liquibase-core'

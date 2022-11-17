@@ -51,6 +51,22 @@ spring:
           mustRevalidate: true
         useLastModified: false
       staticLocations: classpath:/api/
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: false
+
+    # As of Aug. 2022, 9.4 was the latest documented dialect version.
+    # Keep this in mind when attempting to use postgresql 10+ features
+    database-platform: org.hibernate.dialect.PostgreSQL94Dialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    open-in-view: true
+
+hibernate:
+  packages-to-scan: bio.terra.pearl.core.model
 
 javatemplate:
   ingress:
@@ -73,3 +89,7 @@ terra.common:
   tracing:
     stackdriverExportEnabled: ${env.tracing.exportEnabled}
     samplingRate: ${env.tracing.samplingRate}
+  
+cors:
+  enabled-path: http://localhost:3000,http://localhost:3005,http://*.localhost:3005,http://*.*.localhost:3005
+
