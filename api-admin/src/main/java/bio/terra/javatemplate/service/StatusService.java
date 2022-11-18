@@ -1,7 +1,6 @@
 package bio.terra.javatemplate.service;
 
 import bio.terra.javatemplate.config.StatusCheckConfiguration;
-import bio.terra.javatemplate.iam.SamService;
 import bio.terra.javatemplate.model.SystemStatusSystems;
 import java.sql.Connection;
 import org.slf4j.Logger;
@@ -18,13 +17,10 @@ public class StatusService extends BaseStatusService {
 
   @Autowired
   public StatusService(
-      NamedParameterJdbcTemplate jdbcTemplate,
-      StatusCheckConfiguration configuration,
-      SamService samService) {
+      NamedParameterJdbcTemplate jdbcTemplate, StatusCheckConfiguration configuration) {
     super(configuration);
     this.jdbcTemplate = jdbcTemplate;
     registerStatusCheck("CloudSQL", this::databaseStatus);
-    registerStatusCheck("Sam", samService::status);
   }
 
   private SystemStatusSystems databaseStatus() {

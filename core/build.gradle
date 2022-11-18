@@ -1,6 +1,7 @@
 plugins {
     id "io.freefair.lombok" version "5.3.3.3"
     id 'java'
+    id 'org.liquibase.gradle' version '2.1.0'
 }
 
 group = 'bio.terra.pearl.core'
@@ -12,13 +13,25 @@ repositories {
 }
 
 dependencies {
-    implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+    implementation 'org.springframework.boot:spring-boot-starter:2.7.5'
 	implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.0'
-    implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.6.10.Final'
-	implementation group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.6.10.Final'
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+    implementation group: 'org.jdbi', name: 'jdbi3-spring5', version: '3.34.0'
+    implementation group: 'org.jdbi', name: 'jdbi3-sqlobject', version: '3.34.0'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:2.7.5'
+    implementation 'org.apache.commons:commons-text:1.10.0'
+    implementation 'org.liquibase:liquibase-core:4.17.2'
+    implementation 'org.yaml:snakeyaml:1.33'
+
+    liquibaseRuntime 'org.liquibase:liquibase-core'
+    liquibaseRuntime 'info.picocli:picocli:4.6.1'
+    liquibaseRuntime 'org.postgresql:postgresql'
+    liquibaseRuntime 'ch.qos.logback:logback-classic'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.7.5'
 }
 
 test {
     useJUnitPlatform ()
 }
+

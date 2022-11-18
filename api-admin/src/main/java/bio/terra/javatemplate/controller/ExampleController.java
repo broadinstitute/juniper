@@ -5,7 +5,6 @@ import bio.terra.common.iam.SamUser;
 import bio.terra.common.iam.SamUserFactory;
 import bio.terra.javatemplate.api.ExampleApi;
 import bio.terra.javatemplate.config.SamConfiguration;
-import bio.terra.javatemplate.iam.SamService;
 import bio.terra.javatemplate.model.Example;
 import bio.terra.javatemplate.service.ExampleService;
 import javax.servlet.http.HttpServletRequest;
@@ -20,21 +19,17 @@ public class ExampleController implements ExampleApi {
   private final SamConfiguration samConfiguration;
   private final HttpServletRequest request;
 
-  private final SamService samService;
-
   public ExampleController(
       ExampleService exampleService,
       BearerTokenFactory bearerTokenFactory,
       SamUserFactory samUserFactory,
       SamConfiguration samConfiguration,
-      HttpServletRequest request,
-      SamService samService) {
+      HttpServletRequest request) {
     this.exampleService = exampleService;
     this.bearerTokenFactory = bearerTokenFactory;
     this.samUserFactory = samUserFactory;
     this.samConfiguration = samConfiguration;
     this.request = request;
-    this.samService = samService;
   }
 
   private SamUser getUser() {
@@ -61,6 +56,6 @@ public class ExampleController implements ExampleApi {
   @Override
   public ResponseEntity<Boolean> getAction(String resourceType, String resourceId, String action) {
     var bearerToken = bearerTokenFactory.from(request);
-    return ResponseEntity.ok(samService.getAction(resourceType, resourceId, action, bearerToken));
+    return ResponseEntity.ok(true);
   }
 }

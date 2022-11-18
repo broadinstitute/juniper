@@ -12,7 +12,6 @@ import bio.terra.common.iam.SamUser;
 import bio.terra.common.iam.SamUserFactory;
 import bio.terra.javatemplate.config.SamConfiguration;
 import bio.terra.javatemplate.controller.ExampleController;
-import bio.terra.javatemplate.iam.SamService;
 import bio.terra.javatemplate.model.Example;
 import bio.terra.javatemplate.service.ExampleService;
 import java.util.Optional;
@@ -34,7 +33,6 @@ public class ExampleControllerTest {
   @MockBean SamUserFactory samUserFactoryMock;
   @MockBean BearerTokenFactory bearerTokenFactory;
   @MockBean SamConfiguration samConfiguration;
-  @MockBean SamService samService;
 
   @Autowired private MockMvc mockMvc;
 
