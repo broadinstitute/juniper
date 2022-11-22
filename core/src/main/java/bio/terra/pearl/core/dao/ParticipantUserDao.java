@@ -11,6 +11,10 @@ public class ParticipantUserDao extends BaseJdbiDao<ParticipantUser> {
       return ParticipantUser.class;
    }
 
+   protected String getNaturalKeyMatchQuery() {
+      return "select * from " + tableName + " where username = :username and environment_name = :environmentName";
+   }
+
    public ParticipantUserDao(Jdbi jdbi) {
       super(jdbi);
    }

@@ -1,5 +1,5 @@
 plugins {
-    id "io.freefair.lombok" version "5.3.3.3"
+    id "io.freefair.lombok" version "6.5.1"
     id 'java'
     id 'org.liquibase.gradle' version '2.1.0'
 }

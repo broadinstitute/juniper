@@ -7,7 +7,6 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Getter @Setter @SuperBuilder
-@AllArgsConstructor
 @NoArgsConstructor
 public abstract class BaseEntity {
     private UUID id;
