@@ -38,7 +38,8 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
 
     protected boolean isInsertableFieldType(Class fieldType) {
         return Enum.class.isAssignableFrom(fieldType) ||
-                Arrays.asList(String.class, Boolean.class, Instant.class, boolean.class, int.class).contains(fieldType);
+                Arrays.asList(String.class, Boolean.class, Instant.class, boolean.class, int.class, UUID.class)
+                        .contains(fieldType);
     }
 
     protected List<String> generateInsertFields() {
@@ -72,14 +73,18 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     };
 
     public BaseJdbiDao(Jdbi jdbi) {
+        this.jdbi = jdbi;
         clazz = getClazz();
         insertFields = generateInsertFields();
         insertFieldSymbols = insertFields.stream().map(field -> ":" + field).collect(Collectors.toList());
         insertColumns = generateInsertColumns(insertFields);
         updateFieldString = generateUpdateFieldString(insertFieldSymbols, insertColumns);
         tableName = getTableName();
+        initializeRowMapper(jdbi);
+    }
+
+    protected void initializeRowMapper(Jdbi jdbi) {
         jdbi.registerRowMapper(clazz, getRowMapper());
-        this.jdbi = jdbi;
     }
 
     public T create(T modelObj) {
