@@ -16,6 +16,9 @@ public class ParticipantUser extends BaseEntity {
 
     private Instant lastLogin;
 
+    @Builder.Default
+    private boolean withdrawn = false;
+
     private EnvironmentName environmentName;
 
     private Environment environment;

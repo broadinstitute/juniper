@@ -38,7 +38,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
 
     protected boolean isInsertableFieldType(Class fieldType) {
         return Enum.class.isAssignableFrom(fieldType) ||
-                Arrays.asList(String.class, Boolean.class, Instant.class).contains(fieldType);
+                Arrays.asList(String.class, Boolean.class, Instant.class, boolean.class, int.class).contains(fieldType);
     }
 
     protected List<String> generateInsertFields() {

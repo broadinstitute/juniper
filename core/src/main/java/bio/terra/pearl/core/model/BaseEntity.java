@@ -14,4 +14,12 @@ public abstract class BaseEntity {
     private Instant createdAt = Instant.now();
     @Builder.Default
     private Instant lastUpdatedAt = Instant.now();
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj != null &&
+                obj.getClass() == this.getClass() &&
+                getId() != null &&
+                getId().equals(((BaseEntity) obj).getId());
+    }
 }
