@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class StudyFactory {
-    private Study.StudyBuilder builder(String testName) {
+    public Study.StudyBuilder builder(String testName) {
         return Study.builder()
                 .name(testName + RandomStringUtils.randomAlphabetic(6))
                 .shortcode(RandomStringUtils.randomAlphabetic(7));

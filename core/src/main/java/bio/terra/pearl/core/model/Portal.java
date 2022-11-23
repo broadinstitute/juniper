@@ -2,6 +2,7 @@ package bio.terra.pearl.core.model;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
@@ -10,6 +11,7 @@ import java.util.Set;
 
 
 @Getter @Setter @SuperBuilder
+@NoArgsConstructor
 public class Portal extends BaseEntity {
     private String name;
 

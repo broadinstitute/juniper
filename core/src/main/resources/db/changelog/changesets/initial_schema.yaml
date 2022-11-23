@@ -66,6 +66,7 @@ databaseChangeLog:
               - column: *createdAt
               - column: *lastUpdatedAt
               - column: *shortcode
+              - column: { name: name, type: text}
         - createTable:
             tableName: study_environment
             columns:

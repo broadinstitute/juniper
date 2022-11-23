@@ -33,7 +33,9 @@ public class ParticipantUser extends BaseEntity {
 
     public static abstract class ParticipantUserBuilder<C extends ParticipantUser, B extends ParticipantUser.ParticipantUserBuilder<C, B>>
                 extends BaseEntity.BaseEntityBuilder<C, B> {
+        @Getter
         private Environment environment;
+        @Getter
         private EnvironmentName environmentName;
         public ParticipantUserBuilder environment(Environment environment) {
             this.environment = environment;
