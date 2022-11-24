@@ -77,12 +77,25 @@ databaseChangeLog:
                 nullable: false, foreignKeyName: fk_study_environment_environment, references: environment(name)
               } }
               - column: { name: study_id, type: uuid, constraints: {
-                nullable: false, foreignKeyName: fk_study_study_environment, references: study(id)
+                nullable: false, foreignKeyName: fk_study_environment_study, references: study(id)
               } }
         - addUniqueConstraint:
             tableName: study_environment
             constraintName: study_environment_study_env
             columnNames: study_id, environment_name
+        - createTable:
+            tableName: environment_config
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: password_protected, type: boolean, defaultValueBoolean: false }
+              - column: { name: password, type: text }
+              - column: { name: accepting_enrollment, type: boolean, defaultValueBoolean: true }
+              - column: { name: initialized, type: boolean, defaultValueBoolean: false }
+              - column: { name: study_environment_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_environment_config_study_environment, references: study_environment(id)
+              } }
         - createTable:
             tableName: portal_study
             columns:
@@ -117,3 +130,5 @@ databaseChangeLog:
             tableName: enrollee
             constraintName: enrollee_user_environment
             columnNames: participant_user_id, study_environment_id
+
+

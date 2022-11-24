@@ -13,4 +13,5 @@ import java.util.UUID;
 public class StudyEnvironment extends BaseEntity {
     private EnvironmentName environmentName;
     private UUID studyId;
+    private EnvironmentConfig environmentConfig;
 }

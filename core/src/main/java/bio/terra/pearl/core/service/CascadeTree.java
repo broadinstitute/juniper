@@ -19,4 +19,8 @@ public class CascadeTree {
     public CascadeTree(CascadeProperty property) {
         childMap.put(property, new CascadeTree());
     }
+
+    public CascadeTree(CascadeProperty property, CascadeTree subtree) {
+        childMap.put(property, subtree);
+    }
 }
