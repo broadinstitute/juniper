@@ -1,0 +1,7 @@
+{
+  "name": "OurHealth",
+  "shortcode": "ourhealth",
+  "populateStudyFiles": [
+    "study.json"
+  ]
+}

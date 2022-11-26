@@ -19,11 +19,10 @@ public class StudyEnvironmentDao extends BaseJdbiDao<StudyEnvironment> {
     }
 
     public List<StudyEnvironment> findByStudy(UUID studyId) {
-        return jdbi.withHandle(handle ->
-                handle.createQuery("select * from " + tableName + " where study_id = :studyId;")
-                        .bind("studyId", studyId)
-                        .mapTo(clazz)
-                        .list()
-        );
+        return findAllByProperty("study_id", studyId);
+    }
+
+    public void deleteByStudyId(UUID studyId) {
+        deleteByUuidProperty("study_id", studyId);
     }
 }

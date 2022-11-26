@@ -4,6 +4,8 @@ import bio.terra.pearl.core.model.Portal;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class PortalDao extends BaseJdbiDao<Portal> {
     @Override
@@ -14,4 +16,9 @@ public class PortalDao extends BaseJdbiDao<Portal> {
     public PortalDao(Jdbi jdbi) {
         super(jdbi);
     }
+
+    public Optional<Portal> findOneByShortcode(String shortcode) {
+        return findByProperty("shortcode", shortcode);
+    }
+
 }

@@ -23,6 +23,31 @@ databaseChangeLog:
               - column: &shortcode
                    { name: shortcode, type: text, constraints: { nullable: false, unique: true } }
         - createTable:
+            tableName: portal_environment
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: environment_name, type: text, constraints: {
+                nullable: false, foreignKeyName: fk_portal_environment_environment, references: environment(name)
+              } }
+              - column: { name: portal_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_portal_environment_portal, references: portal(id)
+              } }
+        - createTable:
+            tableName: portal_environment_config
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: password_protected, type: boolean, defaultValueBoolean: false }
+              - column: { name: password, type: text }
+              - column: { name: accepting_registration, type: boolean, defaultValueBoolean: true }
+              - column: { name: initialized, type: boolean, defaultValueBoolean: false }
+              - column: { name: portal_environment_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_portal_env_config_portal_env, references: portal_environment(id)
+              } }
+        - createTable:
             # base table for participant user login identities.
             # would be called 'user', but that's a reserved word in postgres
             tableName: participant_user
@@ -84,7 +109,7 @@ databaseChangeLog:
             constraintName: study_environment_study_env
             columnNames: study_id, environment_name
         - createTable:
-            tableName: environment_config
+            tableName: study_environment_config
             columns:
               - column: *idColumn
               - column: *createdAt
@@ -94,7 +119,7 @@ databaseChangeLog:
               - column: { name: accepting_enrollment, type: boolean, defaultValueBoolean: true }
               - column: { name: initialized, type: boolean, defaultValueBoolean: false }
               - column: { name: study_environment_id, type: uuid, constraints: {
-                nullable: false, foreignKeyName: fk_environment_config_study_environment, references: study_environment(id)
+                nullable: false, foreignKeyName: fk_study_env_config_study_environment, references: study_environment(id)
               } }
         - createTable:
             tableName: portal_study

@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.mapper.reflect.BeanMapper;
-import org.springframework.beans.BeanUtils;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -13,6 +12,7 @@ import java.beans.Introspector;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -88,6 +88,9 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     }
 
     public T create(T modelObj) {
+        if (modelObj.getId() != null) {
+            throw new IllegalArgumentException("object passed to create already has id - " + modelObj.getId());
+        }
         return jdbi.withHandle(handle ->
                 handle.createUpdate("insert into " + tableName + " (" + StringUtils.join(insertColumns, " ,") +") " +
                                 "values (" + StringUtils.join(insertFieldSymbols, ", ") + ");")
@@ -99,61 +102,55 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     }
 
     /** basic get-by-id */
-    public T findOne(UUID id) {
+    public Optional<T> find(UUID id) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select * from " + tableName + " where id = :id;")
                         .bind("id", id)
                         .mapTo(clazz)
-                        .one()
+                        .findOne()
         );
     }
 
-    /** defaults to matching on id if provided.  If the implementing DAO supplies a getNaturalKeyMatchQuery()
-     * then that will be used to find a match where no id is present */
-    public T findOneMatch(T matchObj) {
+    protected Optional<T> findByProperty(String columnName, Object columnValue) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from " + tableName + " where " + columnName + " = :columnValue;")
+                        .bind("columnValue", columnValue)
+                        .mapTo(clazz)
+                        .findOne()
+        );
+    }
+
+    protected List<T> findAllByProperty(String columnName, Object columnValue) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from " + tableName + " where " + columnName + " = :columnValue;")
+                        .bind("columnValue", columnValue)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
+    /** defaults to matching on id if provided. */
+    public Optional<T> findOneMatch(T matchObj) {
         if (matchObj.getId() != null) {
-            return findOne(matchObj.getId());
+            return find(matchObj.getId());
         }
-        if (getNaturalKeyMatchQuery() != null) {
-            return findByNaturalKey(matchObj);
-        }
-        return null;
+        return Optional.empty();
     }
 
-    public T createOrUpdate(T matchObj) {
-        T existingObj = findOneMatch(matchObj);
-        if (existingObj == null) {
-            return create(matchObj);
-        }
-        BeanUtils.copyProperties(matchObj, existingObj, new String[] {"id"});
-        return update(existingObj);
-    }
-
-    public T update(T matchObj) {
-        if (matchObj.getId() == null) {
-            throw new RuntimeException("attempted update on " + clazz + " with no id");
-        }
-        return jdbi.withHandle(handle ->
-                handle.createUpdate("update " + tableName + " set " + updateFieldString +
-                                " where id = :id;")
-                        .bindBean(matchObj)
-                        .executeAndReturnGeneratedKeys()
-                        .mapTo(clazz)
-                        .one()
+    public void delete(UUID id) {
+        jdbi.withHandle(handle ->
+                handle.createUpdate("delete from " + tableName + " where id = :id;")
+                        .bind("id", id)
+                        .execute()
         );
     }
 
-    public T findByNaturalKey(T matchObj) {
-        return jdbi.withHandle(handle ->
-                handle.createQuery(getNaturalKeyMatchQuery())
-                        .bindBean(matchObj)
-                        .mapTo(clazz)
-                        .one()
+    public void deleteByUuidProperty(String columnName, UUID columnValue) {
+        jdbi.withHandle(handle ->
+                handle.createUpdate("delete from " + tableName + " where " + columnName + " = :propertyValue;")
+                        .bind("propertyValue", columnValue)
+                        .execute()
         );
-    }
-
-    protected String getNaturalKeyMatchQuery() {
-        return null;
     }
 
     // from https://stackoverflow.com/questions/10310321/regex-for-converting-camelcase-to-camel-case-in-java

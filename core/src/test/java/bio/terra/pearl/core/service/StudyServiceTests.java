@@ -3,7 +3,7 @@ package bio.terra.pearl.core.service;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.StudyFactory;
-import bio.terra.pearl.core.model.EnvironmentConfig;
+import bio.terra.pearl.core.model.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.Study;
 import bio.terra.pearl.core.model.StudyEnvironment;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -43,7 +43,7 @@ public class StudyServiceTests extends BaseSpringBootTest {
         // see if we can save a study, environment, and config
         String randPassword = RandomStringUtils.randomAlphabetic(10);
         StudyEnvironment studyEnv = studyEnvFactory.builderWithDependencies("testCreateStudyCascade")
-                .environmentConfig(EnvironmentConfig.builder().password(randPassword).build())
+                .studyEnvironmentConfig(StudyEnvironmentConfig.builder().password(randPassword).build())
                 .build();
         Set<StudyEnvironment> studyEnvs = new HashSet<>(Arrays.asList(studyEnv));
         Study study = studyFactory.builder("testCreateStudy")

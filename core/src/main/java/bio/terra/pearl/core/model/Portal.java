@@ -18,4 +18,8 @@ public class Portal extends BaseEntity {
     private String shortcode;
     @Builder.Default
     private Set<PortalParticipantUser> portalParticipantUsers = new HashSet();
+    @Builder.Default
+    private Set<PortalStudy> portalStudies = new HashSet<>();
+    @Builder.Default
+    private Set<PortalEnvironment> portalEnvironments = new HashSet<>();
 }

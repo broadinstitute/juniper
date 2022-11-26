@@ -3,13 +3,18 @@ package bio.terra.pearl.core.service;
 import bio.terra.pearl.core.dao.StudyDao;
 import bio.terra.pearl.core.model.Study;
 import bio.terra.pearl.core.model.StudyEnvironment;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Service
 public class StudyService {
     private StudyDao studyDao;
     private StudyEnvironmentService studyEnvironmentService;
+    private PortalStudyService portalStudyService;
 
     public enum AllowedCascades implements CascadeProperty {
         STUDY_ENVIRONMENTS
@@ -20,23 +25,34 @@ public class StudyService {
         this.studyEnvironmentService = studyEnvironmentService;
     }
 
-    @Transactional
-    public Study create(Study study) {
-        return studyDao.create(study);
+    public Optional<Study> findByShortcode(String shortcode) {
+        return studyDao.findOneByShortcode(shortcode);
     }
 
     @Transactional
-    public Study create(Study study, CascadeTree cascade) {
-        Study newStudy = create(study);
-        if (cascade.hasProperty(AllowedCascades.STUDY_ENVIRONMENTS)) {
-            study.getStudyEnvironments().forEach(studyEnv -> {
-                studyEnv.setStudyId(newStudy.getId());
-                StudyEnvironment newEnv = studyEnvironmentService
-                        .create(studyEnv, cascade.getChild(AllowedCascades.STUDY_ENVIRONMENTS));
-                newStudy.getStudyEnvironments().add(newEnv);
-            });
-        }
+    public Study create(Study study) {
+        Study newStudy = studyDao.create(study);
+        study.getStudyEnvironments().forEach(studyEnv -> {
+            studyEnv.setStudyId(newStudy.getId());
+            StudyEnvironment newEnv = studyEnvironmentService.create(studyEnv);
+            newStudy.getStudyEnvironments().add(newEnv);
+        });
         return newStudy;
+    }
+
+    @Transactional
+    public void delete(UUID studyId, CascadeTree cascades) {
+        studyEnvironmentService.deleteByStudyId(studyId, cascades);
+        studyDao.delete(studyId);
+    }
+
+    @Transactional
+    public void deleteOrphans(List<UUID> studyIds, CascadeTree cascades) {
+        studyIds.stream().forEach(studyId -> {
+            if (portalStudyService.findByStudyId(studyId).size() == 0) {
+                delete(studyId, cascades);
+            }
+        });
     }
 
 

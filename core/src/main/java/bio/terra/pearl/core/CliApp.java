@@ -30,5 +30,7 @@ public class CliApp
         for (int i = 0; i < args.length; ++i) {
             LOG.info("args[{}]: {}", i, args[i]);
         }
+
+
     }
 }

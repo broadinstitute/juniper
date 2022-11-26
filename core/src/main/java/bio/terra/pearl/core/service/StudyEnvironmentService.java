@@ -1,21 +1,25 @@
 package bio.terra.pearl.core.service;
 
 import bio.terra.pearl.core.dao.StudyEnvironmentDao;
-import bio.terra.pearl.core.model.EnvironmentConfig;
 import bio.terra.pearl.core.model.StudyEnvironment;
-import org.springframework.stereotype.Component;
+import bio.terra.pearl.core.model.StudyEnvironmentConfig;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-@Component
+@Service
 public class StudyEnvironmentService {
     private StudyEnvironmentDao studyEnvironmentDao;
-    private EnvironmentConfigService environmentConfigService;
+    private StudyEnvironmentConfigService environmentConfigService;
+    private EnrolleeService enrolleeService;
 
-    public StudyEnvironmentService(StudyEnvironmentDao studyEnvironmentDao,  EnvironmentConfigService environmentConfigService) {
+    public StudyEnvironmentService(StudyEnvironmentDao studyEnvironmentDao,
+                                   StudyEnvironmentConfigService environmentConfigService,
+                                   EnrolleeService enrolleeService) {
         this.studyEnvironmentDao = studyEnvironmentDao;
         this.environmentConfigService =  environmentConfigService;
     }
@@ -24,23 +28,26 @@ public class StudyEnvironmentService {
         return new HashSet<>(studyEnvironmentDao.findByStudy(studyId));
     }
 
-    @Transactional
-    public StudyEnvironment create(StudyEnvironment studyEnv) {
-        return studyEnvironmentDao.create(studyEnv);
-    }
 
     @Transactional
-    public StudyEnvironment create(StudyEnvironment studyEnv, CascadeTree cascade) {
-        StudyEnvironment newEnv = create(studyEnv);
-        if (cascade.hasProperty(AllowedCascades.ENVIRONMENT_CONFIG) && studyEnv.getEnvironmentConfig() != null) {
-            EnvironmentConfig envConfig = studyEnv.getEnvironmentConfig();
+    public StudyEnvironment create(StudyEnvironment studyEnv) {
+        StudyEnvironment newEnv = studyEnvironmentDao.create(studyEnv);
+        if (studyEnv.getStudyEnvironmentConfig() != null) {
+            StudyEnvironmentConfig envConfig = studyEnv.getStudyEnvironmentConfig();
             envConfig.setStudyEnvironmentId(newEnv.getId());
-            newEnv.setEnvironmentConfig(environmentConfigService.create(envConfig));
+            newEnv.setStudyEnvironmentConfig(environmentConfigService.create(envConfig));
         }
         return newEnv;
     }
 
+    public void deleteByStudyId(UUID studyId, CascadeTree cascade) {
+        List<StudyEnvironment> studyEnvironments = studyEnvironmentDao.findByStudy(studyId);
+        studyEnvironments.forEach(studyEnv -> enrolleeService.deleteByStudyEnvironmentId(studyEnv.getId(), cascade));
+        studyEnvironmentDao.deleteByStudyId(studyId);
+    }
+
     public enum AllowedCascades implements CascadeProperty {
-        ENVIRONMENT_CONFIG;
+        ENVIRONMENT_CONFIG,
+        ENROLLEE;
     }
 }

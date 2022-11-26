@@ -7,11 +7,12 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
 
-@Getter @Setter @SuperBuilder
+@Getter
+@Setter
+@SuperBuilder
 @NoArgsConstructor
-public class PortalStudy extends BaseEntity {
+public class PortalEnvironment extends BaseEntity {
+    private EnvironmentName environmentName;
     private UUID portalId;
-    private Portal portal;
-    private UUID studyId;
-    private Study study;
+    private PortalEnvironmentConfig portalEnvironmentConfig;
 }

@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Getter @Setter @SuperBuilder
 @NoArgsConstructor
-public class EnvironmentConfig extends BaseEntity {
+public class StudyEnvironmentConfig extends BaseEntity {
     private boolean passwordProtected = true;
 
     // This is a very low-security password, intended as a soft barrier if a study needs to be live but not public (e.g.
