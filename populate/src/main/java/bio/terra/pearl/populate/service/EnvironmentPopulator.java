@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Service
-public class EnvironmentPopulator {
+public class EnvironmentPopulator implements Populator<Environment> {
     private ObjectMapper objectMapper;
     private EnvironmentService environmentService;
     private FilePopulateService filePopulateService;

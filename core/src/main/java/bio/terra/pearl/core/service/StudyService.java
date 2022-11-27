@@ -20,9 +20,11 @@ public class StudyService {
         STUDY_ENVIRONMENTS
     }
 
-    public StudyService(StudyDao studyDao, StudyEnvironmentService studyEnvironmentService) {
+    public StudyService(StudyDao studyDao, StudyEnvironmentService studyEnvironmentService,
+                        PortalStudyService portalStudyService) {
         this.studyDao = studyDao;
         this.studyEnvironmentService = studyEnvironmentService;
+        this.portalStudyService = portalStudyService;
     }
 
     public Optional<Study> findByShortcode(String shortcode) {

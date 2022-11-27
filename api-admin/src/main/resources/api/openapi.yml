@@ -109,9 +109,25 @@ paths:
         '200':
           description: portal object
           content: { application/json: { schema: {$ref: '#/components/schemas/PortalDto' }}}
-
-
-
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/internal/v1/populate/{populateType}:
+    post:
+      summary: Populates
+      tags: [ populate ]
+      operationId: populate
+      parameters:
+        - { name: populateType, in: path, required: true, schema: { type: string } }
+        - { name: filePathName, in: query, required: true, schema: { type: string } }
+      responses:
+        '201':
+          description: portal object
+          content:
+            application/json:
+              schema:
+                type: object,
+                properties:
+                  message: { type: string }
         '500':
           $ref: '#/components/responses/ServerError'
 

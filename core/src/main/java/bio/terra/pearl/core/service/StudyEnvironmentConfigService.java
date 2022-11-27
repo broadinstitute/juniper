@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 public class StudyEnvironmentConfigService {
     @Autowired
@@ -14,5 +16,15 @@ public class StudyEnvironmentConfigService {
     @Transactional
     public StudyEnvironmentConfig create(StudyEnvironmentConfig config) {
         return studyEnvironmentConfigDao.create(config);
+    }
+
+    @Transactional
+    public void deleteByStudyEnvironmentId(UUID studyEnvId) {
+        studyEnvironmentConfigDao.deleteByStudyEnvironmentId(studyEnvId);
+    }
+
+    @Transactional
+    public void delete(UUID configId) {
+        studyEnvironmentConfigDao.delete(configId);
     }
 }

@@ -22,6 +22,7 @@ public class StudyEnvironmentService {
                                    EnrolleeService enrolleeService) {
         this.studyEnvironmentDao = studyEnvironmentDao;
         this.environmentConfigService =  environmentConfigService;
+        this.enrolleeService = enrolleeService;
     }
 
     public Set<StudyEnvironment> findByStudy(UUID studyId) {
@@ -40,10 +41,18 @@ public class StudyEnvironmentService {
         return newEnv;
     }
 
+    @Transactional
+    public void delete(UUID studyEnvironmentId) {
+        environmentConfigService.deleteByStudyEnvironmentId(studyEnvironmentId);
+        studyEnvironmentDao.delete(studyEnvironmentId);
+    }
+
     public void deleteByStudyId(UUID studyId, CascadeTree cascade) {
         List<StudyEnvironment> studyEnvironments = studyEnvironmentDao.findByStudy(studyId);
-        studyEnvironments.forEach(studyEnv -> enrolleeService.deleteByStudyEnvironmentId(studyEnv.getId(), cascade));
-        studyEnvironmentDao.deleteByStudyId(studyId);
+        studyEnvironments.forEach(studyEnv -> {
+            enrolleeService.deleteByStudyEnvironmentId(studyEnv.getId(), cascade);
+            delete(studyEnv.getId());
+        });
     }
 
     public enum AllowedCascades implements CascadeProperty {

@@ -18,9 +18,11 @@ public class PortalService {
     private PortalEnvironmentService portalEnvironmentService;
     private StudyService studyService;
 
-    public PortalService(PortalDao portalDao, PortalStudyService portalStudyService, StudyService studyService) {
+    public PortalService(PortalDao portalDao, PortalStudyService portalStudyService, StudyService studyService,
+                         PortalEnvironmentService portalEnvironmentService) {
         this.portalDao = portalDao;
         this.portalStudyService = portalStudyService;
+        this.portalEnvironmentService = portalEnvironmentService;
         this.studyService = studyService;
     }
 

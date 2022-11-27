@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Service
-public class StudyPopulator {
+public class StudyPopulator implements Populator<Study> {
     private ObjectMapper objectMapper;
     private StudyService studyService;
     private FilePopulateService filePopulateService;
@@ -24,6 +24,12 @@ public class StudyPopulator {
     }
 
     @Transactional
+    @Override
+    public Study populate(String filePathName) throws IOException {
+        FilePopulateConfig config = new FilePopulateConfig(filePathName);
+        return populate(config.getRootFileName(), config);
+    }
+
     public Study populate(String studyFileName, FilePopulateConfig config) throws IOException {
         String portalFileString = filePopulateService.readFile(studyFileName, config);
         return populateFromString(portalFileString, config);

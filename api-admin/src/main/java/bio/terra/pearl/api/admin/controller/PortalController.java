@@ -4,11 +4,10 @@ import bio.terra.pearl.api.admin.api.PortalApi;
 import bio.terra.pearl.api.admin.model.PortalDto;
 import bio.terra.pearl.core.service.PortalService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-
-import java.util.Optional;
 
 @Controller
 public class PortalController implements PortalApi {

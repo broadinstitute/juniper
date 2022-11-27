@@ -36,6 +36,7 @@ public class PortalPopulator implements Populator<Portal> {
     }
 
     @Transactional
+    @Override
     public Portal populate(String filePathName) throws IOException {
         FilePopulateConfig config = new FilePopulateConfig(filePathName);
         String portalFileString = filePopulateService.readFile(config.getRootFileName(), config);

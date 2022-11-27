@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
       // Scan for tracing-related components & configs
       "bio.terra.common.tracing",
       "bio.terra.pearl.core",
+      "bio.terra.pearl.populate",
       // Scan all service-specific packages beneath the current package
       "bio.terra.pearl.api.admin",
     })

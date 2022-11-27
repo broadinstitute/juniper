@@ -6,8 +6,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class MappingConfig {
-    @Bean
-    public ObjectMapper objectMapper() {
+    @Bean("populateObjectMapper")
+    public ObjectMapper populateObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
         return mapper;
