@@ -1,4 +1,4 @@
-package bio.terra.javatemplate;
+package bio.terra.pearl.api.admin;
 
 import bio.terra.common.logging.LoggingInitializer;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -19,31 +19,33 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication(
     scanBasePackages = {
-      // Scan for iam components & configs
-      "bio.terra.common.iam",
       // Scan for logging-related components & configs
       "bio.terra.common.logging",
+      "bio.terra.common.iam",
       // Scan for Liquibase migration components & configs
       "bio.terra.common.migrate",
       // Transaction management and DB retry configuration
       "bio.terra.common.retry.transaction",
       // Scan for tracing-related components & configs
       "bio.terra.common.tracing",
+      "bio.terra.pearl.core",
       // Scan all service-specific packages beneath the current package
-      "bio.terra.javatemplate"
+      "bio.terra.pearl.api.admin",
     })
-@ConfigurationPropertiesScan("bio.terra.javatemplate")
+@ConfigurationPropertiesScan("bio.terra.pearl.api.admin")
 @EnableRetry
 @EnableTransactionManagement
 @EnableConfigurationProperties
-public class App {
+public class ApiAdminApp {
   public static void main(String[] args) {
-    new SpringApplicationBuilder(App.class).initializers(new LoggingInitializer()).run(args);
+    new SpringApplicationBuilder(ApiAdminApp.class)
+        .initializers(new LoggingInitializer())
+        .run(args);
   }
 
   private final DataSource dataSource;
 
-  public App(DataSource dataSource) {
+  public ApiAdminApp(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 

@@ -1,8 +1,10 @@
 package bio.terra.javatemplate.dao;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import bio.terra.javatemplate.model.Example;
+import bio.terra.pearl.api.admin.dao.ExampleDao;
+import bio.terra.pearl.api.admin.model.Example;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

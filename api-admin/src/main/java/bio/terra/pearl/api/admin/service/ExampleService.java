@@ -1,9 +1,9 @@
-package bio.terra.javatemplate.service;
+package bio.terra.pearl.api.admin.service;
 
 import bio.terra.common.db.ReadTransaction;
 import bio.terra.common.db.WriteTransaction;
-import bio.terra.javatemplate.dao.ExampleDao;
-import bio.terra.javatemplate.model.Example;
+import bio.terra.pearl.api.admin.dao.ExampleDao;
+import bio.terra.pearl.api.admin.model.Example;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 

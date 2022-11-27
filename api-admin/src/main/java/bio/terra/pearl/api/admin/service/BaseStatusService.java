@@ -1,8 +1,8 @@
-package bio.terra.javatemplate.service;
+package bio.terra.pearl.api.admin.service;
 
-import bio.terra.javatemplate.config.StatusCheckConfiguration;
-import bio.terra.javatemplate.model.SystemStatus;
-import bio.terra.javatemplate.model.SystemStatusSystems;
+import bio.terra.pearl.api.admin.config.StatusCheckConfiguration;
+import bio.terra.pearl.api.admin.model.SystemStatus;
+import bio.terra.pearl.api.admin.model.SystemStatusSystems;
 import com.google.common.annotations.VisibleForTesting;
 import java.time.Instant;
 import java.util.Map;

@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: Terra Java Project Template
-  description: Terra Java Project Template
+  title: Pearl Admin API
+  description: API for portal and study management
   version: 0.0.1
 paths:
   /status:
@@ -98,6 +98,23 @@ paths:
                 type: boolean
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portal/v1/{portalShortcode}:
+    get:
+      summary: Gets the portal object
+      tags: [ portal ]
+      operationId: get
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: {type: string} }
+      responses:
+        '200':
+          description: portal object
+          content: { application/json: { schema: {$ref: '#/components/schemas/PortalDto' }}}
+
+
+
+        '500':
+          $ref: '#/components/responses/ServerError'
+
 
 components:
   responses:
@@ -135,6 +152,13 @@ components:
             $ref: '#/components/schemas/ErrorReport'
 
   schemas:
+    PortalDto:
+      type: object
+      properties:
+        id: {type: string, format: uuid}
+        shortcode: {type: string}
+        name: {type: string}
+        portalStudies: {type: array}
     ErrorReport:
       type: object
       required: [ message, statusCode ]

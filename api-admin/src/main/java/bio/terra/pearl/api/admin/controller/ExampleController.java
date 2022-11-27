@@ -1,12 +1,12 @@
-package bio.terra.javatemplate.controller;
+package bio.terra.pearl.api.admin.controller;
 
 import bio.terra.common.iam.BearerTokenFactory;
 import bio.terra.common.iam.SamUser;
 import bio.terra.common.iam.SamUserFactory;
-import bio.terra.javatemplate.api.ExampleApi;
-import bio.terra.javatemplate.config.SamConfiguration;
-import bio.terra.javatemplate.model.Example;
-import bio.terra.javatemplate.service.ExampleService;
+import bio.terra.pearl.api.admin.api.ExampleApi;
+import bio.terra.pearl.api.admin.config.SamConfiguration;
+import bio.terra.pearl.api.admin.model.Example;
+import bio.terra.pearl.api.admin.service.ExampleService;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

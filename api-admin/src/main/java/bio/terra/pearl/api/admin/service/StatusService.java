@@ -1,7 +1,7 @@
-package bio.terra.javatemplate.service;
+package bio.terra.pearl.api.admin.service;
 
-import bio.terra.javatemplate.config.StatusCheckConfiguration;
-import bio.terra.javatemplate.model.SystemStatusSystems;
+import bio.terra.pearl.api.admin.config.StatusCheckConfiguration;
+import bio.terra.pearl.api.admin.model.SystemStatusSystems;
 import java.sql.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

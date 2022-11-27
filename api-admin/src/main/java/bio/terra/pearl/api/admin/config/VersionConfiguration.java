@@ -1,4 +1,4 @@
-package bio.terra.javatemplate.config;
+package bio.terra.pearl.api.admin.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

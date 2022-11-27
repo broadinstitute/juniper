@@ -1,6 +1,6 @@
-package bio.terra.javatemplate.dao;
+package bio.terra.pearl.api.admin.dao;
 
-import bio.terra.javatemplate.model.Example;
+import bio.terra.pearl.api.admin.model.Example;
 import io.opencensus.contrib.spring.aop.Traced;
 import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;

@@ -51,7 +51,7 @@ public class StudyServiceTests extends BaseSpringBootTest {
                 .build();
         CascadeTree cascades = new CascadeTree(StudyService.AllowedCascades.STUDY_ENVIRONMENTS,
                 new CascadeTree(StudyEnvironmentService.AllowedCascades.ENVIRONMENT_CONFIG));
-        Study savedStudy = studyService.create(study, cascades);
+        Study savedStudy = studyService.create(study);
         Assertions.assertNotNull(savedStudy.getId());
         Set<StudyEnvironment> savedEnvs = studyEnvironmentService.findByStudy(savedStudy.getId());
         Assertions.assertEquals(1, savedEnvs.size());
