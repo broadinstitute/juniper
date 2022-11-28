@@ -8,13 +8,22 @@ import java.util.Map;
 public class PopulateDispatcher {
     private Map<PopulateType, Populator> typeMap;
 
-    public PopulateDispatcher(PortalPopulator portalPopulator,
-                              StudyPopulator studyPopulator,
-                              EnvironmentPopulator environmentPopulator) {
+    public enum PopulateType {
+        ADMIN_USER,
+        ENVIRONMENT,
+        PORTAL,
+        STUDY
+    }
+
+    public PopulateDispatcher(AdminUserPopulator adminUserPopulator,
+                              EnvironmentPopulator environmentPopulator,
+                              PortalPopulator portalPopulator,
+                              StudyPopulator studyPopulator) {
         this.typeMap = Map.of(
+                PopulateType.ADMIN_USER, adminUserPopulator,
+                PopulateType.ENVIRONMENT, environmentPopulator,
                 PopulateType.PORTAL, portalPopulator,
-                PopulateType.STUDY, studyPopulator,
-                PopulateType.ENVIRONMENT, environmentPopulator
+                PopulateType.STUDY, studyPopulator
         );
     }
 
@@ -24,12 +33,6 @@ public class PopulateDispatcher {
             throw new IllegalArgumentException("'" + popType + "' does not match a known populator");
         }
         return typeMap.get(popType);
-    }
-
-    public enum PopulateType {
-        PORTAL,
-        STUDY,
-        ENVIRONMENT
     }
 
 }

@@ -155,5 +155,13 @@ databaseChangeLog:
             tableName: enrollee
             constraintName: enrollee_user_environment
             columnNames: participant_user_id, study_environment_id
-
-
+        - createTable:
+            tableName: admin_user
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: username, type: text, constraints: { nullable: false, unique: true } }
+              - column: { name: token, type: text}
+              - column: { name: last_login, type: datetime }
+              - column: { name: superuser, type: boolean }

@@ -111,6 +111,22 @@ paths:
           content: { application/json: { schema: {$ref: '#/components/schemas/PortalDto' }}}
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/adminUser/v1/{id}:
+    get:
+      summary: Gets an admin user
+      tags: [ admin_user ]
+      operationId: get
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: admin user object
+          content: { application/json: { schema: {$ref: '#/components/schemas/AdminUserDto' }}}
+        '404':
+          description: admin user not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+
   /api/internal/v1/populate/{populateType}:
     post:
       summary: Populates
@@ -168,6 +184,13 @@ components:
             $ref: '#/components/schemas/ErrorReport'
 
   schemas:
+    AdminUserDto:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        username: { type: string }
+        lastLogin: { type: integer }
+        superuser: { type: boolean }
     PortalDto:
       type: object
       properties:
