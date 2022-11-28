@@ -32,7 +32,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         return BeanMapper.of(getClazz());
     }
 
-    protected List<String> getExcludedFields() {
+    protected List<String> getInsertExcludedFields() {
         return Arrays.asList("id", "class");
     }
 
@@ -47,7 +47,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
             BeanInfo info = Introspector.getBeanInfo(getClazz());
             List<String> allSimpleProperties = Arrays.asList(info.getPropertyDescriptors()).stream()
                     .filter(descriptor -> isInsertableFieldType(descriptor.getPropertyType()))
-                    .filter(descriptor -> !getExcludedFields().contains(descriptor.getName()))
+                    .filter(descriptor -> !getInsertExcludedFields().contains(descriptor.getName()))
                     .map(descriptor -> descriptor.getName())
                     .collect(Collectors.toList());
             return allSimpleProperties;

@@ -3,9 +3,10 @@ package bio.terra.pearl.api.admin.controller.internal;
 import bio.terra.pearl.api.admin.api.PopulateApi;
 import bio.terra.pearl.populate.service.PopulateDispatcher;
 import bio.terra.pearl.populate.service.Populator;
-import java.io.IOException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+
+import java.io.IOException;
 
 @Controller
 public class PopulateController implements PopulateApi {
@@ -19,10 +20,9 @@ public class PopulateController implements PopulateApi {
   public ResponseEntity<Object> populate(String populateType, String filePathName) {
     Populator populator = populateDispatcher.getPopulator(populateType);
     try {
-      populator.populate(filePathName);
+      return ResponseEntity.ok(populator.populate(filePathName));
     } catch (IOException e) {
       throw new RuntimeException("populate failed", e);
     }
-    return ResponseEntity.ok("Populate of '" + filePathName + "' succeeded");
   }
 }
