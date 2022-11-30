@@ -6,6 +6,7 @@ import bio.terra.pearl.core.service.CascadeTree;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -17,6 +18,10 @@ public class EnrolleeDao extends BaseJdbiDao<Enrollee> {
     @Override
     protected Class<Enrollee> getClazz() {
         return Enrollee.class;
+    }
+
+    public Optional<Enrollee> findOneByShortcode(String shortcode) {
+        return findByProperty("shortcode", shortcode);
     }
 
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId, CascadeTree cascade) {

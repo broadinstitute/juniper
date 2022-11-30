@@ -2,7 +2,7 @@
   "name": "OurHealth",
   "shortcode": "ourhealth",
   "populateStudyFiles": [
-    "study.json"
+    "studies/main/study.json"
   ],
   "participantUserFiles": [
     "participants/jsalk.json"

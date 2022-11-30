@@ -12,11 +12,11 @@ public abstract class Populator<T extends BaseEntity> {
 
     public T populate(String filePathName) throws IOException {
         FilePopulateConfig config = new FilePopulateConfig(filePathName);
-        return populate(config.getRootFileName(), config);
+        return populate(config);
     }
 
-    public T populate(String fileName, FilePopulateConfig config) throws IOException {
-        String fileString = filePopulateService.readFile(fileName, config);
+    public T populate(FilePopulateConfig config) throws IOException {
+        String fileString = filePopulateService.readFile(config.getRootFileName(), config);
         return populateFromString(fileString, config);
     }
 

@@ -4,6 +4,7 @@ import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.CascadeTree;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.populate.dto.PopulateStudyDto;
+import bio.terra.pearl.populate.dto.PopulateStudyEnvironmentDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,9 +15,11 @@ import java.util.Optional;
 @Service
 public class StudyPopulator extends Populator<Study> {
     private StudyService studyService;
+    private EnrolleePopulator enrolleePopulator;
 
-    public StudyPopulator(ObjectMapper objectMapper, StudyService studyService, FilePopulateService filePopulateService) {
+    public StudyPopulator(ObjectMapper objectMapper, StudyService studyService, FilePopulateService filePopulateService, EnrolleePopulator enrolleePopulator) {
         this.studyService = studyService;
+        this.enrolleePopulator = enrolleePopulator;
         this.filePopulateService = filePopulateService;
         this.objectMapper = objectMapper;
     }
@@ -40,6 +43,13 @@ public class StudyPopulator extends Populator<Study> {
             studyService.delete(study.getId(), CascadeTree.NONE)
         );
         Study newStudy = studyService.create(studyDto);
+        for (PopulateStudyEnvironmentDto studyEnv : studyDto.getStudyEnvironmentDtos()) {
+            for (String enrolleeFile : studyEnv.getEnrolleeFiles()) {
+                enrolleePopulator.populate(
+                        config.newFrom(enrolleeFile, newStudy.getShortcode(), studyEnv.getEnvironmentName())
+                );
+            }
+        }
         return newStudy;
     }
 }

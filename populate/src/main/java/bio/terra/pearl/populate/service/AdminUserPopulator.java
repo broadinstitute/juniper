@@ -6,9 +6,6 @@ import bio.terra.pearl.populate.dto.AdminUserDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
 
 @Service
 public class AdminUserPopulator extends Populator<AdminUser> {
@@ -25,13 +22,7 @@ public class AdminUserPopulator extends Populator<AdminUser> {
         this.adminUserService = adminUserService;
     }
 
-    @Transactional
     @Override
-    public AdminUser populate(String fileName, FilePopulateConfig config) throws IOException {
-        String content = filePopulateService.readFile(fileName, config);
-        return populateFromString(content, config);
-    }
-
     public AdminUser populateFromString(String content, FilePopulateConfig config) throws JsonProcessingException {
         AdminUserDto adminUserDto = objectMapper.readValue(content, AdminUserDto.class);
         return adminUserService.createAdminUser(adminUserDto);

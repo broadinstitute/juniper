@@ -1,7 +1,7 @@
 {
   "name": "Longitudinal heart health study",
   "shortcode": "ourheart",
-  "studyEnvironments": [
+  "studyEnvironmentDtos": [
     {
       "environmentName": "sandbox",
       "studyEnvironmentConfig": {
@@ -9,7 +9,10 @@
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true
-      }
+      },
+      "enrolleeFiles": [
+        "enrollees/jsalk.json"
+      ]
     }
   ]
 }

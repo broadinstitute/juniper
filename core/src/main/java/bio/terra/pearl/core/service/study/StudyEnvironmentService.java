@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.study;
 
 import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.CascadeProperty;
@@ -9,10 +10,7 @@ import bio.terra.pearl.core.service.participant.EnrolleeService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class StudyEnvironmentService {
@@ -33,6 +31,9 @@ public class StudyEnvironmentService {
         return new HashSet<>(studyEnvironmentDao.findByStudy(studyId));
     }
 
+    public Optional<StudyEnvironment> findByStudy(String studyShortcode, EnvironmentName environmentName) {
+        return studyEnvironmentDao.findByStudy(studyShortcode, environmentName);
+    }
 
     @Transactional
     public StudyEnvironment create(StudyEnvironment studyEnv) {

@@ -1,10 +1,10 @@
 package bio.terra.pearl.populate.service;
 
+import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.service.CascadeTree;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalService;
@@ -59,24 +59,24 @@ public class PortalPopulator extends Populator<Portal> {
             portalService.delete(portal.getId(), new CascadeTree(PortalService.AllowedCascades.STUDY))
         );
         Portal portal = portalService.create(portalDto);
-        for (String studyFileName : portalDto.getPopulateStudyFiles()) {
-            populateStudy(studyFileName, config, portal);
-        }
         for (String userFileName : portalDto.getParticipantUserFiles()) {
             populateParticipantUser(userFileName, config, portal);
+        }
+        for (String studyFileName : portalDto.getPopulateStudyFiles()) {
+            populateStudy(studyFileName, config, portal);
         }
         return portal;
     }
 
     private void populateStudy(String studyFileName, FilePopulateConfig config, Portal portal) throws IOException {
-        Study newStudy = studyPopulator.populate(studyFileName, config);
+        Study newStudy = studyPopulator.populate(config.newFrom(studyFileName));
         PortalStudy portalStudy = portalStudyService.create(portal.getId(), newStudy.getId());
         portal.getPortalStudies().add(portalStudy);
         portalStudy.setStudy(newStudy);
     }
 
     private void populateParticipantUser(String userFileName, FilePopulateConfig config, Portal portal) throws IOException {
-        ParticipantUser newUser = participantUserPopulator.populate(userFileName, config);
+        ParticipantUser newUser = participantUserPopulator.populate(config.newFrom(userFileName));
         PortalParticipantUser ppUser = ppUserService.create(portal.getId(), newUser.getId());
         portal.getPortalParticipantUsers().add(ppUser);
         ppUser.setParticipantUser(newUser);

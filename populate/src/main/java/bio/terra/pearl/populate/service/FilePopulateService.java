@@ -1,6 +1,5 @@
 package bio.terra.pearl.populate.service;
 
-import bio.terra.pearl.populate.dto.FilePopulatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -49,20 +48,6 @@ public class FilePopulateService {
         String pathName = System.getProperty("user.dir") + "/" + ABSOLUTE_SEED_ROOT + popSpec.getBasePath() + "/" + relativePath;
         Path filePath = Path.of(pathName);
         return Files.newInputStream(filePath);
-    }
-
-    public String readPopulationFile(FilePopulatable thing, FilePopulateConfig popSpec) throws IOException {
-        if (thing.getPopulateFileName() != null) {
-            return readFile(thing.getPopulateFileName(), popSpec);
-        }
-        return null;
-    }
-
-    public byte[] readBinaryPopulationFile(FilePopulatable thing, FilePopulateConfig popSpec) throws IOException {
-        if (thing.getPopulateFileName() != null) {
-            return readBinaryFile(thing.getPopulateFileName(), popSpec);
-        }
-        return null;
     }
 
 }
