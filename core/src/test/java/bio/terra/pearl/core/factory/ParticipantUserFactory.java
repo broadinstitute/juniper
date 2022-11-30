@@ -1,6 +1,6 @@
 package bio.terra.pearl.core.factory;
 
-import bio.terra.pearl.core.model.ParticipantUser;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

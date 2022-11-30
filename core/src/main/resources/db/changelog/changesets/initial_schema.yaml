@@ -23,6 +23,16 @@ databaseChangeLog:
               - column: &shortcode
                    { name: shortcode, type: text, constraints: { nullable: false, unique: true } }
         - createTable:
+            tableName: portal_environment_config
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: password_protected, type: boolean, defaultValueBoolean: false }
+              - column: { name: password, type: text }
+              - column: { name: accepting_registration, type: boolean, defaultValueBoolean: true }
+              - column: { name: initialized, type: boolean, defaultValueBoolean: false }
+        - createTable:
             tableName: portal_environment
             columns:
               - column: *idColumn
@@ -34,18 +44,8 @@ databaseChangeLog:
               - column: { name: portal_id, type: uuid, constraints: {
                 nullable: false, foreignKeyName: fk_portal_environment_portal, references: portal(id)
               } }
-        - createTable:
-            tableName: portal_environment_config
-            columns:
-              - column: *idColumn
-              - column: *createdAt
-              - column: *lastUpdatedAt
-              - column: { name: password_protected, type: boolean, defaultValueBoolean: false }
-              - column: { name: password, type: text }
-              - column: { name: accepting_registration, type: boolean, defaultValueBoolean: true }
-              - column: { name: initialized, type: boolean, defaultValueBoolean: false }
-              - column: { name: portal_environment_id, type: uuid, constraints: {
-                nullable: false, foreignKeyName: fk_portal_env_config_portal_env, references: portal_environment(id)
+              - column: { name: portal_environment_config_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_portal_env_portal_env_config, references: portal_environment_config(id)
               } }
         - createTable:
             # base table for participant user login identities.
@@ -93,6 +93,16 @@ databaseChangeLog:
               - column: *shortcode
               - column: { name: name, type: text}
         - createTable:
+            tableName: study_environment_config
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: password_protected, type: boolean, defaultValueBoolean: false }
+              - column: { name: password, type: text }
+              - column: { name: accepting_enrollment, type: boolean, defaultValueBoolean: true }
+              - column: { name: initialized, type: boolean, defaultValueBoolean: false }
+        - createTable:
             tableName: study_environment
             columns:
               - column: *idColumn
@@ -104,23 +114,13 @@ databaseChangeLog:
               - column: { name: study_id, type: uuid, constraints: {
                 nullable: false, foreignKeyName: fk_study_environment_study, references: study(id)
               } }
+              - column: { name: study_environment_config_id, type: uuid, constraints: {
+                foreignKeyName: fk_study_env_study_environment_config, references: study_environment_config(id)
+              } }
         - addUniqueConstraint:
             tableName: study_environment
             constraintName: study_environment_study_env
             columnNames: study_id, environment_name
-        - createTable:
-            tableName: study_environment_config
-            columns:
-              - column: *idColumn
-              - column: *createdAt
-              - column: *lastUpdatedAt
-              - column: { name: password_protected, type: boolean, defaultValueBoolean: false }
-              - column: { name: password, type: text }
-              - column: { name: accepting_enrollment, type: boolean, defaultValueBoolean: true }
-              - column: { name: initialized, type: boolean, defaultValueBoolean: false }
-              - column: { name: study_environment_id, type: uuid, constraints: {
-                nullable: false, foreignKeyName: fk_study_env_config_study_environment, references: study_environment(id)
-              } }
         - createTable:
             tableName: portal_study
             columns:

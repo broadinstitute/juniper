@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.dao;
 
 import bio.terra.pearl.core.model.BaseEntity;
-import bio.terra.pearl.core.model.Study;
+import bio.terra.pearl.core.model.study.Study;
 import lombok.Getter;
 import lombok.Setter;
 import org.jdbi.v3.core.Jdbi;

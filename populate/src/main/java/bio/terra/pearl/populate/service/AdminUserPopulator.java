@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 
 @Service
-public class AdminUserPopulator implements Populator<AdminUser> {
+public class AdminUserPopulator extends Populator<AdminUser> {
 
     private ObjectMapper objectMapper;
 
@@ -32,7 +32,7 @@ public class AdminUserPopulator implements Populator<AdminUser> {
         return populateFromString(content, config);
     }
 
-    private AdminUser populateFromString(String content, FilePopulateConfig config) throws JsonProcessingException {
+    public AdminUser populateFromString(String content, FilePopulateConfig config) throws JsonProcessingException {
         AdminUserDto adminUserDto = objectMapper.readValue(content, AdminUserDto.class);
         return adminUserService.createAdminUser(adminUserDto);
     }

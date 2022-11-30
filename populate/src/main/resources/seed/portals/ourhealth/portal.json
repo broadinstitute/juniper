@@ -3,5 +3,8 @@
   "shortcode": "ourhealth",
   "populateStudyFiles": [
     "study.json"
+  ],
+  "participantUserFiles": [
+    "participants/jsalk.json"
   ]
 }

@@ -1,8 +1,8 @@
 package bio.terra.pearl.populate.service;
 
-import bio.terra.pearl.core.model.Study;
+import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.CascadeTree;
-import bio.terra.pearl.core.service.StudyService;
+import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.populate.dto.PopulateStudyDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
@@ -12,10 +12,8 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Service
-public class StudyPopulator implements Populator<Study> {
-    private ObjectMapper objectMapper;
+public class StudyPopulator extends Populator<Study> {
     private StudyService studyService;
-    private FilePopulateService filePopulateService;
 
     public StudyPopulator(ObjectMapper objectMapper, StudyService studyService, FilePopulateService filePopulateService) {
         this.studyService = studyService;
@@ -35,7 +33,7 @@ public class StudyPopulator implements Populator<Study> {
         return populateFromString(portalFileString, config);
     }
 
-    protected Study populateFromString(String studyContent, FilePopulateConfig config)  throws IOException {
+    public Study populateFromString(String studyContent, FilePopulateConfig config)  throws IOException {
         PopulateStudyDto studyDto = objectMapper.readValue(studyContent, PopulateStudyDto.class);
         Optional<Study> existingStudy = studyService.findByShortcode(studyDto.getShortcode());
         existingStudy.ifPresent(study ->

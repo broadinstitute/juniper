@@ -1,0 +1,16 @@
+{
+  "username": "jsalk@test.com",
+  "environmentName": "sandbox",
+  "profile": {
+    "givenName": "Jonas",
+    "familyName": "Salk",
+    "contactEmail": "jsalk@test.com",
+    "mailingAddress": {
+      "street1": "32 Elm Street",
+      "city": "New York",
+      "state": "NY",
+      "country": "US",
+      "zip": "10005"
+    }
+  }
+}

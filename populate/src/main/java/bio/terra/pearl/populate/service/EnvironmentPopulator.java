@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Service
-public class EnvironmentPopulator implements Populator<Environment> {
+public class EnvironmentPopulator extends Populator<Environment> {
     private ObjectMapper objectMapper;
     private EnvironmentService environmentService;
     private FilePopulateService filePopulateService;
@@ -28,7 +28,7 @@ public class EnvironmentPopulator implements Populator<Environment> {
         return populateFromString(portalFileString, config);
     }
 
-    protected Environment populateFromString(String envContent, FilePopulateConfig config)  throws IOException {
+    public Environment populateFromString(String envContent, FilePopulateConfig config)  throws IOException {
         Environment environment = objectMapper.readValue(envContent, Environment.class);
         Optional<Environment> existingEnvironment = environmentService.findOneByName(environment.getName());
         existingEnvironment.ifPresentOrElse(env -> {

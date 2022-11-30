@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.factory;
 
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.StudyEnvironment;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

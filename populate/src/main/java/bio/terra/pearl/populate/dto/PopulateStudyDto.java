@@ -1,6 +1,6 @@
 package bio.terra.pearl.populate.dto;
 
-import bio.terra.pearl.core.model.Study;
+import bio.terra.pearl.core.model.study.Study;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

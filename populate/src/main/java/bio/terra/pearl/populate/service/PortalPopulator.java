@@ -1,11 +1,14 @@
 package bio.terra.pearl.populate.service;
 
-import bio.terra.pearl.core.model.Portal;
-import bio.terra.pearl.core.model.PortalStudy;
-import bio.terra.pearl.core.model.Study;
+import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.study.PortalStudy;
+import bio.terra.pearl.core.model.study.Study;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.service.CascadeTree;
-import bio.terra.pearl.core.service.PortalService;
-import bio.terra.pearl.core.service.PortalStudyService;
+import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.service.portal.PortalService;
+import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.populate.dto.PopulatePortalDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
@@ -15,19 +18,25 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Service
-public class PortalPopulator implements Populator<Portal> {
-    private FilePopulateService filePopulateService;
+public class PortalPopulator extends Populator<Portal> {
+
     private PortalService portalService;
     private StudyPopulator studyPopulator;
 
     private PortalStudyService portalStudyService;
-    private ObjectMapper objectMapper;
+    private ParticipantUserPopulator participantUserPopulator;
+    private PortalParticipantUserService ppUserService;
+
 
     public PortalPopulator(FilePopulateService filePopulateService,
                            PortalService portalService,
                            StudyPopulator studyPopulator,
                            PortalStudyService portalStudyService,
-                           ObjectMapper objectMapper) {
+                           ObjectMapper objectMapper,
+                           ParticipantUserPopulator participantUserPopulator,
+                           PortalParticipantUserService ppUserService) {
+        this.participantUserPopulator = participantUserPopulator;
+        this.ppUserService = ppUserService;
         this.filePopulateService = filePopulateService;
         this.portalService = portalService;
         this.studyPopulator = studyPopulator;
@@ -43,7 +52,7 @@ public class PortalPopulator implements Populator<Portal> {
         return populateFromString(portalFileString, config);
     }
 
-    protected Portal populateFromString(String portalContent, FilePopulateConfig config)  throws IOException {
+    public Portal populateFromString(String portalContent, FilePopulateConfig config) throws IOException {
         PopulatePortalDto portalDto = objectMapper.readValue(portalContent, PopulatePortalDto.class);
         Optional<Portal> existingPortal = portalService.findOneByShortcode(portalDto.getShortcode());
         existingPortal.ifPresent(portal ->
@@ -51,12 +60,26 @@ public class PortalPopulator implements Populator<Portal> {
         );
         Portal portal = portalService.create(portalDto);
         for (String studyFileName : portalDto.getPopulateStudyFiles()) {
-            Study newStudy = studyPopulator.populate(studyFileName, config);
-            PortalStudy portalStudy = portalStudyService.create(portal.getId(), newStudy.getId());
-            portal.getPortalStudies().add(portalStudy);
-            portalStudy.setStudy(newStudy);
+            populateStudy(studyFileName, config, portal);
+        }
+        for (String userFileName : portalDto.getParticipantUserFiles()) {
+            populateParticipantUser(userFileName, config, portal);
         }
         return portal;
+    }
+
+    private void populateStudy(String studyFileName, FilePopulateConfig config, Portal portal) throws IOException {
+        Study newStudy = studyPopulator.populate(studyFileName, config);
+        PortalStudy portalStudy = portalStudyService.create(portal.getId(), newStudy.getId());
+        portal.getPortalStudies().add(portalStudy);
+        portalStudy.setStudy(newStudy);
+    }
+
+    private void populateParticipantUser(String userFileName, FilePopulateConfig config, Portal portal) throws IOException {
+        ParticipantUser newUser = participantUserPopulator.populate(userFileName, config);
+        PortalParticipantUser ppUser = ppUserService.create(portal.getId(), newUser.getId());
+        portal.getPortalParticipantUsers().add(ppUser);
+        ppUser.setParticipantUser(newUser);
     }
 
 }
