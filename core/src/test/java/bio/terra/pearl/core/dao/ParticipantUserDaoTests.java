@@ -7,9 +7,7 @@ import bio.terra.pearl.core.factory.ParticipantUserFactory;
 import bio.terra.pearl.core.factory.ProfileFactory;
 import bio.terra.pearl.core.model.Environment;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.participant.Profile;
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,24 +50,5 @@ public class ParticipantUserDaoTests extends BaseSpringBootTest {
         });
         assertTrue(e.getMessage().contains("duplicate key value"));
     }
-
-    @Test
-    @Transactional
-    public void testGetWithProfile() {
-        Profile profile =  profileFactory.builder("testGetWithProfile").build();
-        Profile savedProfile = profileDao.create(profile);
-        ParticipantUser user = participantUserFactory.builderWithDependencies("testGetWithProfile")
-                .profileId(savedProfile.getId())
-                .username(savedProfile.getContactEmail())
-                .build();
-        ParticipantUser createdUser = participantUserDao.create(user);
-        Assertions.assertNotNull(createdUser.getProfileId());
-
-        ParticipantUser fetchedUser = participantUserDao.getWithProfile(createdUser.getId()).get();
-        Assertions.assertNotNull(fetchedUser.getProfile());
-        Assertions.assertEquals(profile.getFamilyName(), fetchedUser.getProfile().getFamilyName());
-    }
-
-
 
 }
