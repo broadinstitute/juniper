@@ -75,15 +75,15 @@ databaseChangeLog:
               - column: { name: participant_user_id, type: uuid, constraints: {
                   nullable: false, foreignKeyName: fk_ppu_participant_user, references: participant_user(id)
               } }
-              - column: { name: portal_id, type: uuid, constraints: {
-                nullable: false, foreignKeyName: fk_ppu_portal, references: portal(id)
+              - column: { name: portal_environment_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_ppu_portal_environment, references: portal_environment(id)
               } }
               - column: { name: lastLogin, type: datetime }
               - column: { name: withdrawn, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
         - addUniqueConstraint:
             tableName: portal_participant_user
             constraintName: portal_participant_user_portal_user
-            columnNames: participant_user_id, portal_id
+            columnNames: participant_user_id, portal_environment_id
         - createTable:
             tableName: study
             columns:
@@ -115,7 +115,7 @@ databaseChangeLog:
                 nullable: false, foreignKeyName: fk_study_environment_study, references: study(id)
               } }
               - column: { name: study_environment_config_id, type: uuid, constraints: {
-                foreignKeyName: fk_study_env_study_environment_config, references: study_environment_config(id)
+                nullable: false, foreignKeyName: fk_study_env_study_environment_config, references: study_environment_config(id)
               } }
         - addUniqueConstraint:
             tableName: study_environment

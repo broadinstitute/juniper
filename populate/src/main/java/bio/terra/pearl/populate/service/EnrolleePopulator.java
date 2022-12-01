@@ -7,7 +7,7 @@ import bio.terra.pearl.core.service.CascadeTree;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
-import bio.terra.pearl.populate.dto.PopulateEnrolleeDto;
+import bio.terra.pearl.populate.dto.EnrolleePopDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class EnrolleePopulator extends Populator<Enrollee> {
 
     public EnrolleePopulator(FilePopulateService filePopulateService,
                             ObjectMapper objectMapper,
-                            EnrolleeService enrolleeService, 
+                            EnrolleeService enrolleeService,
                              StudyEnvironmentService studyEnvironmentService,
                              ParticipantUserService participantUserService) {
         this.objectMapper = objectMapper;
@@ -34,7 +34,7 @@ public class EnrolleePopulator extends Populator<Enrollee> {
 
     @Override
     public Enrollee populateFromString(String fileString, FilePopulateConfig config) throws IOException {
-        PopulateEnrolleeDto enrolleeDto = objectMapper.readValue(fileString, PopulateEnrolleeDto.class);
+        EnrolleePopDto enrolleeDto = objectMapper.readValue(fileString, EnrolleePopDto.class);
         Optional<Enrollee> existingEnrollee = enrolleeService.findOneByShortcode(enrolleeDto.getShortcode());
         existingEnrollee.ifPresent(exEnrollee ->
                 enrolleeService.delete(exEnrollee.getId(), CascadeTree.NONE)

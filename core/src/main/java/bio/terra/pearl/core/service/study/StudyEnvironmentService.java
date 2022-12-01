@@ -5,7 +5,6 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.CascadeTree;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,12 +36,13 @@ public class StudyEnvironmentService {
 
     @Transactional
     public StudyEnvironment create(StudyEnvironment studyEnv) {
-        StudyEnvironment newEnv = studyEnvironmentDao.create(studyEnv);
+        StudyEnvironmentConfig envConfig = studyEnv.getStudyEnvironmentConfig();
         if (studyEnv.getStudyEnvironmentConfig() != null) {
-            StudyEnvironmentConfig envConfig = studyEnv.getStudyEnvironmentConfig();
-            newEnv.setStudyEnvironmentConfig(studyEnvironmentConfigService.create(envConfig));
-            newEnv.setStudyEnvironmentConfigId(envConfig.getId());
+            envConfig = studyEnvironmentConfigService.create(envConfig);
+            studyEnv.setStudyEnvironmentConfigId(envConfig.getId());
         }
+        StudyEnvironment newEnv = studyEnvironmentDao.create(studyEnv);
+        newEnv.setStudyEnvironmentConfig(envConfig);
         return newEnv;
     }
 
@@ -55,7 +55,7 @@ public class StudyEnvironmentService {
         }
     }
 
-    public void deleteByStudyId(UUID studyId, CascadeTree cascade) {
+    public void deleteByStudyId(UUID studyId, Set<CascadeProperty> cascade) {
         List<StudyEnvironment> studyEnvironments = studyEnvironmentDao.findByStudy(studyId);
         studyEnvironments.forEach(studyEnv -> {
             enrolleeService.deleteByStudyEnvironmentId(studyEnv.getId(), cascade);

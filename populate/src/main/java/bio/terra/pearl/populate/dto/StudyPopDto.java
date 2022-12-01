@@ -12,9 +12,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter @Setter @NoArgsConstructor
-public class PopulateStudyDto extends Study {
-    private List<PopulateStudyEnvironmentDto> studyEnvironmentDtos = new ArrayList<>();
+public class StudyPopDto extends Study {
+    private List<StudyEnvironmentPopDto> studyEnvironmentDtos = new ArrayList<>();
+
+    /**
+     * this allows us to pass a PopulateStudyDto to StudyService.create and have the specified environments
+     * in studyEnvironmentDtos used for the creation.
+     */
     public Set<StudyEnvironment> getStudyEnvironments() {
         return studyEnvironmentDtos.stream().collect(Collectors.toSet());
     }
+
 }

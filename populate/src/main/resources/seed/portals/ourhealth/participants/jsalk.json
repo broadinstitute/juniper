@@ -1,6 +1,7 @@
 {
-  "username": "jsalk@test.com",
-  "environmentName": "sandbox",
+  "participantUser": {
+    "username": "jsalk@test.com"
+  },
   "profile": {
     "givenName": "Jonas",
     "familyName": "Salk",

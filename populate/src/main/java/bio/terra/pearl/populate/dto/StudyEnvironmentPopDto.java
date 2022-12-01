@@ -12,6 +12,6 @@ import java.util.List;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class PopulateStudyEnvironmentDto extends StudyEnvironment {
+public class StudyEnvironmentPopDto extends StudyEnvironment {
     private List<String> enrolleeFiles;
 }

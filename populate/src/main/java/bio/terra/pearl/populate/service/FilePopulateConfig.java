@@ -22,6 +22,8 @@ public class FilePopulateConfig {
 
     private EnvironmentName environmentName;
 
+    private String portalShortcode;
+
     public FilePopulateConfig(String filePathName) {
         Path filePath = Paths.get(filePathName);
         this.rootFileName = filePath.getFileName().toString();
@@ -29,13 +31,29 @@ public class FilePopulateConfig {
     }
 
     public FilePopulateConfig newFrom(String relativeFilePath) {
-        return newFrom(relativeFilePath, studyShortcode, environmentName);
+        return newFrom(relativeFilePath, portalShortcode, studyShortcode, environmentName);
     }
 
-    public FilePopulateConfig newFrom(String relativeFilePath, String studyShortcode, EnvironmentName environmentName) {
+    public FilePopulateConfig newFrom(String relativeFilePath,
+                                      String portalShortcode,
+                                      String studyShortcode,
+                                      EnvironmentName environmentName) {
         FilePopulateConfig newConfig = new FilePopulateConfig(getBasePath() + "/" + relativeFilePath);
         newConfig.studyShortcode = studyShortcode;
         newConfig.environmentName = environmentName;
+        newConfig.portalShortcode = portalShortcode;
         return newConfig;
+    }
+
+    public FilePopulateConfig newForStudy(String relativeFilePath,
+                                      String studyShortcode,
+                                      EnvironmentName environmentName) {
+        return newFrom(relativeFilePath, portalShortcode, studyShortcode, environmentName);
+    }
+
+    public FilePopulateConfig newForPortal(String relativeFilePath,
+                                          String portalShortcode,
+                                          EnvironmentName environmentName) {
+        return newFrom(relativeFilePath, portalShortcode, studyShortcode, environmentName);
     }
 }

@@ -4,9 +4,11 @@ import bio.terra.pearl.core.dao.participant.MailingAddressDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.model.participant.MailingAddress;
 import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.service.CascadeProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -32,7 +34,7 @@ public class ProfileService {
     }
 
     @Transactional
-    public void delete(UUID profileId) {
+    public void delete(UUID profileId, Set<CascadeProperty> cascade) {
         Profile profile = profileDao.find(profileId).get();
         profileDao.delete(profileId);
         if (profile.getMailingAddressId() != null) {

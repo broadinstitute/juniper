@@ -31,8 +31,8 @@ databaseChangeLog:
                 foreignKeyName: fk_profile_mailing_address, references: mailing_address(id)
               } }
         - addColumn:
-            tableName: participant_user
+            tableName: portal_participant_user
             columns:
               - column: { name: profile_id, type: uuid, constraints: {
-                foreignKeyName: fk_participant_user_profile, references: profile(id)
+                foreignKeyName: fk_portal_participant_user_profile, references: profile(id)
               } }

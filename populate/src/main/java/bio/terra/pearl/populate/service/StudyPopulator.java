@@ -1,15 +1,15 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.study.Study;
-import bio.terra.pearl.core.service.CascadeTree;
 import bio.terra.pearl.core.service.study.StudyService;
-import bio.terra.pearl.populate.dto.PopulateStudyDto;
-import bio.terra.pearl.populate.dto.PopulateStudyEnvironmentDto;
+import bio.terra.pearl.populate.dto.StudyEnvironmentPopDto;
+import bio.terra.pearl.populate.dto.StudyPopDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Optional;
 
 @Service
@@ -37,16 +37,16 @@ public class StudyPopulator extends Populator<Study> {
     }
 
     public Study populateFromString(String studyContent, FilePopulateConfig config)  throws IOException {
-        PopulateStudyDto studyDto = objectMapper.readValue(studyContent, PopulateStudyDto.class);
+        StudyPopDto studyDto = objectMapper.readValue(studyContent, StudyPopDto.class);
         Optional<Study> existingStudy = studyService.findByShortcode(studyDto.getShortcode());
         existingStudy.ifPresent(study ->
-            studyService.delete(study.getId(), CascadeTree.NONE)
+            studyService.delete(study.getId(), new HashSet<>())
         );
         Study newStudy = studyService.create(studyDto);
-        for (PopulateStudyEnvironmentDto studyEnv : studyDto.getStudyEnvironmentDtos()) {
+        for (StudyEnvironmentPopDto studyEnv : studyDto.getStudyEnvironmentDtos()) {
             for (String enrolleeFile : studyEnv.getEnrolleeFiles()) {
                 enrolleePopulator.populate(
-                        config.newFrom(enrolleeFile, newStudy.getShortcode(), studyEnv.getEnvironmentName())
+                        config.newForStudy(enrolleeFile, newStudy.getShortcode(), studyEnv.getEnvironmentName())
                 );
             }
         }

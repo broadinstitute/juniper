@@ -7,23 +7,15 @@ import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Component
 public class ParticipantUserDao extends BaseJdbiDao<ParticipantUser> {
-   private ProfileDao profileDao;
 
    @Override
    public Class<ParticipantUser> getClazz() {
       return ParticipantUser.class;
    }
 
-   /**
-    * loads the user along with their profile
-    * */
-   public Optional<ParticipantUser> getWithProfile(UUID participantUserId) {
-      return findWithChild(participantUserId, "profileId", "profile", profileDao);
-   }
 
    public Optional<ParticipantUser> findOne(String username, EnvironmentName environmentName) {
       return jdbi.withHandle(handle ->
@@ -36,10 +28,7 @@ public class ParticipantUserDao extends BaseJdbiDao<ParticipantUser> {
       );
    }
 
-
-
-   public ParticipantUserDao(Jdbi jdbi, ProfileDao profileDao) {
+   public ParticipantUserDao(Jdbi jdbi) {
       super(jdbi);
-      this.profileDao = profileDao;
    }
 }

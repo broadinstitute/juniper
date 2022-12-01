@@ -12,7 +12,6 @@ import lombok.experimental.SuperBuilder;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Getter @Setter @SuperBuilder
 @NoArgsConstructor
@@ -25,9 +24,6 @@ public class ParticipantUser extends BaseEntity {
 
     @Builder.Default
     private boolean withdrawn = false;
-
-    private Profile profile;
-    private UUID profileId;
 
     private EnvironmentName environmentName;
     private Environment environment;
@@ -46,19 +42,10 @@ public class ParticipantUser extends BaseEntity {
         private Environment environment;
         @Getter
         private EnvironmentName environmentName;
-        @Getter
-        private Profile profile;
-        @Getter
-        private UUID profileId;
+
         public ParticipantUserBuilder environment(Environment environment) {
             this.environment = environment;
             this.environmentName = environment.getName();
-            return this;
-        }
-
-        public ParticipantUserBuilder profile(Profile profile) {
-            this.profile = profile;
-            this.profileId = profile.getId();
             return this;
         }
     }

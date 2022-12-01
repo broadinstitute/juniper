@@ -4,7 +4,18 @@
   "populateStudyFiles": [
     "studies/main/study.json"
   ],
-  "participantUserFiles": [
-    "participants/jsalk.json"
+  "portalEnvironmentDtos": [
+    {
+      "environmentName": "sandbox",
+      "portalEnvironmentConfig": {
+        "acceptingRegistration": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": true
+      },
+      "participantUserFiles": [
+        "participants/jsalk.json"
+      ]
+    }
   ]
 }

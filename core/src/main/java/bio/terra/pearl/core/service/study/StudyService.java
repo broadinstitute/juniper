@@ -5,13 +5,12 @@ import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CascadeTree;
-import bio.terra.pearl.core.service.study.PortalStudyService;
-import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -47,13 +46,13 @@ public class StudyService {
     }
 
     @Transactional
-    public void delete(UUID studyId, CascadeTree cascades) {
+    public void delete(UUID studyId, Set<CascadeProperty> cascades) {
         studyEnvironmentService.deleteByStudyId(studyId, cascades);
         studyDao.delete(studyId);
     }
 
     @Transactional
-    public void deleteOrphans(List<UUID> studyIds, CascadeTree cascades) {
+    public void deleteOrphans(List<UUID> studyIds, Set<CascadeProperty> cascades) {
         studyIds.stream().forEach(studyId -> {
             if (portalStudyService.findByStudyId(studyId).size() == 0) {
                 delete(studyId, cascades);

@@ -6,6 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter @Setter @NoArgsConstructor
-public class PopulateEnrolleeDto extends Enrollee {
+public class EnrolleePopDto extends Enrollee {
     private String linkedUsername;
 }
