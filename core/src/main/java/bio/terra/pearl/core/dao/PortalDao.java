@@ -1,0 +1,17 @@
+package bio.terra.pearl.core.dao;
+
+import bio.terra.pearl.core.model.Portal;
+import org.jdbi.v3.core.Jdbi;
+import org.springframework.stereotype.Component;
+
+@Component
+public class PortalDao extends BaseJdbiDao<Portal> {
+    @Override
+    protected Class<Portal> getClazz() {
+        return Portal.class;
+    }
+
+    public PortalDao(Jdbi jdbi) {
+        super(jdbi);
+    }
+}

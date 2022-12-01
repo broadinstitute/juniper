@@ -9,13 +9,10 @@ import lombok.experimental.SuperBuilder;
 import java.util.HashSet;
 import java.util.Set;
 
-
 @Getter @Setter @SuperBuilder
 @NoArgsConstructor
-public class Portal extends BaseEntity {
-    private String name;
-
-    private String shortcode;
+public class Environment extends BaseEntity {
+    private EnvironmentName name;
     @Builder.Default
-    private Set<PortalParticipantUser> portalParticipantUsers = new HashSet();
+    private Set<ParticipantUser> participantUsers = new HashSet<>();
 }

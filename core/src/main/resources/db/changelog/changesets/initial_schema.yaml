@@ -4,7 +4,7 @@ databaseChangeLog:
       author: dbush
       changes:
         - createTable:
-            tableName: portal
+            tableName: environment
             columns:
               - column: &idColumn
                   { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
@@ -12,8 +12,16 @@ databaseChangeLog:
                   { name: created_at, type: datetime, constraints: { nullable: false } }
               - column: &lastUpdatedAt
                   { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: name, type: text, constraints: { nullable: false, unique: true } }
+        - createTable:
+            tableName: portal
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
               - column: { name: name, type: text, constraints: { nullable: false } }
-              - column: { name: shortcode, type: text, constraints: { nullable: false, unique: true } }
+              - column: &shortcode
+                   { name: shortcode, type: text, constraints: { nullable: false, unique: true } }
         - createTable:
             # base table for participant user login identities.
             # would be called 'user', but that's a reserved word in postgres
@@ -22,23 +30,90 @@ databaseChangeLog:
               - column: *idColumn
               - column: *createdAt
               - column: *lastUpdatedAt
+              - column: { name: withdrawn, type: boolean, defaultValueBoolean: false }
               - column: { name: username, type: text, constraints: { nullable: false }}
-              - column: { name: superuser, type: boolean, defaultValueBoolean: false, constraints: { nullable: false }}
               - column: { name: token, type: text}
               - column: { name: last_login, type: datetime }
+              - column: { name: environment_name, type: text, constraints: {
+                  nullable: false, foreignKeyName: fk_participant_user_environment, references: environment(name)
+                } }
+        - addUniqueConstraint:
+            tableName: participant_user
+            constraintName: participant_user_username_env_name
+            columnNames: username, environment_name
         - createTable:
             tableName: portal_participant_user
             columns:
               - column: *idColumn
               - column: *createdAt
               - column: *lastUpdatedAt
-              - column: { name: user_id, type: uuid, constraints: {
-                  nullable: false, foreignKeyName: fk_portal_user_participant_user, references: participant_user(id)
+              - column: { name: participant_user_id, type: uuid, constraints: {
+                  nullable: false, foreignKeyName: fk_ppu_participant_user, references: participant_user(id)
               } }
               - column: { name: portal_id, type: uuid, constraints: {
-                nullable: false, foreignKeyName: fk_portal_user_portal, references: portal(id)
+                nullable: false, foreignKeyName: fk_ppu_portal, references: portal(id)
               } }
               - column: { name: lastLogin, type: datetime }
               - column: { name: withdrawn, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
-
-
+        - addUniqueConstraint:
+            tableName: portal_participant_user
+            constraintName: portal_participant_user_portal_user
+            columnNames: participant_user_id, portal_id
+        - createTable:
+            tableName: study
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: *shortcode
+              - column: { name: name, type: text}
+        - createTable:
+            tableName: study_environment
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: environment_name, type: text, constraints: {
+                nullable: false, foreignKeyName: fk_study_environment_environment, references: environment(name)
+              } }
+              - column: { name: study_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_study_study_environment, references: study(id)
+              } }
+        - addUniqueConstraint:
+            tableName: study_environment
+            constraintName: study_environment_study_env
+            columnNames: study_id, environment_name
+        - createTable:
+            tableName: portal_study
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: study_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_portal_study_study, references: study(id)
+              } }
+              - column: { name: portal_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_portal_study_portal, references: portal(id)
+              } }
+        - addUniqueConstraint:
+            tableName: portal_study
+            constraintName: portal_study_study_portal
+            columnNames: study_id, portal_id
+        - createTable:
+            tableName: enrollee
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: *shortcode
+              - column: { name: withdrawn, type: boolean, defaultValueBoolean: false }
+              - column: { name: participant_user_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_enrollee_participant_user, references: participant_user(id)
+              } }
+              - column: { name: study_environment_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_enrollee_study_envrionment, references: study_environment(id)
+              } }
+        - addUniqueConstraint:
+            tableName: enrollee
+            constraintName: enrollee_user_environment
+            columnNames: participant_user_id, study_environment_id

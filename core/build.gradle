@@ -1,5 +1,5 @@
 plugins {
-    id "io.freefair.lombok" version "5.3.3.3"
+    id "io.freefair.lombok" version "6.5.1"
     id 'java'
     id 'org.liquibase.gradle' version '2.1.0'
 }
@@ -21,6 +21,7 @@ dependencies {
     implementation 'org.apache.commons:commons-text:1.10.0'
     implementation 'org.liquibase:liquibase-core:4.17.2'
     implementation 'org.yaml:snakeyaml:1.33'
+    implementation 'javax.validation:validation-api:2.0.1.Final'
 
     liquibaseRuntime 'org.liquibase:liquibase-core'
     liquibaseRuntime 'info.picocli:picocli:4.6.1'

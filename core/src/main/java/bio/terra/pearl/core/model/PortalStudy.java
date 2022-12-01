@@ -7,13 +7,9 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
 
-@Getter
-@Setter
-@SuperBuilder
+@Getter @Setter @SuperBuilder
 @NoArgsConstructor
-public class PortalParticipantUser extends BaseEntity {
-    private ParticipantUser participantUser;
-    private UUID participantUserId;
-    private Portal portal;
+public class PortalStudy extends BaseEntity {
     private UUID portalId;
+    private UUID studyId;
 }

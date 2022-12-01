@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.model;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,13 +8,12 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
 
-@Getter
-@Setter
-@SuperBuilder
+@Getter @Setter @SuperBuilder
 @NoArgsConstructor
-public class PortalParticipantUser extends BaseEntity {
-    private ParticipantUser participantUser;
+public class Enrollee extends BaseEntity {
     private UUID participantUserId;
-    private Portal portal;
-    private UUID portalId;
+    private UUID studyEnvironmentId;
+    private String shortcode;
+    @Builder.Default
+    private boolean withdrawn = false;
 }

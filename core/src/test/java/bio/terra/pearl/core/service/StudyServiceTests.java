@@ -1,0 +1,54 @@
+package bio.terra.pearl.core.service;
+
+import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.StudyFactory;
+import bio.terra.pearl.core.model.Study;
+import bio.terra.pearl.core.model.StudyEnvironment;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+public class StudyServiceTests extends BaseSpringBootTest {
+    @Autowired
+    private StudyService studyService;
+    @Autowired
+    private StudyFactory studyFactory;
+    @Autowired
+    private StudyEnvironmentFactory studyEnvFactory;
+
+    @Autowired
+    private StudyEnvironmentService studyEnvironmentService;
+
+    @Test
+    @Transactional
+    public void testCreateStudy() {
+        Study study = studyFactory.builder("testCreateStudy").build();
+        Study savedStudy = studyService.create(study);
+        Assertions.assertNotNull(savedStudy.getId());
+        Assertions.assertEquals(study.getName(), savedStudy.getName());
+        Assertions.assertEquals(study.getCreatedAt(), savedStudy.getCreatedAt());
+    }
+
+    @Test
+    @Transactional
+    public void testCreateStudyCascade() {
+        Set<StudyEnvironment> studyEnvs = new HashSet<>(
+                Arrays.asList(studyEnvFactory.builderWithDependencies("testCreateStudyCascade").build()));
+        Study study = studyFactory.builder("testCreateStudy")
+                .studyEnvironments(studyEnvs)
+                .build();
+        CascadeTree cascades = new CascadeTree(StudyService.AllowedCascades.STUDY_ENVIRONMENTS);
+        Study savedStudy = studyService.create(study, cascades);
+        Assertions.assertNotNull(savedStudy.getId());
+        Set<StudyEnvironment> savedEnvs = studyEnvironmentService.findByStudy(savedStudy.getId());
+        Assertions.assertEquals(1, savedEnvs.size());
+        Assertions.assertEquals(studyEnvs.stream().findFirst().get().getEnvironmentName(),
+                savedEnvs.stream().findFirst().get().getEnvironmentName());
+    }
+}
