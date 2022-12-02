@@ -3,10 +3,9 @@ package bio.terra.pearl.api.admin.controller.internal;
 import bio.terra.pearl.api.admin.api.PopulateApi;
 import bio.terra.pearl.populate.service.PopulateDispatcher;
 import bio.terra.pearl.populate.service.Populator;
+import java.io.IOException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-
-import java.io.IOException;
 
 @Controller
 public class PopulateController implements PopulateApi {

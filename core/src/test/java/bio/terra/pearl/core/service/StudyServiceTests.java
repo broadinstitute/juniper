@@ -36,7 +36,7 @@ public class StudyServiceTests extends BaseSpringBootTest {
         Study savedStudy = studyService.create(study);
         Assertions.assertNotNull(savedStudy.getId());
         Assertions.assertEquals(study.getName(), savedStudy.getName());
-        Assertions.assertEquals(study.getCreatedAt(), savedStudy.getCreatedAt());
+        Assertions.assertNotNull(savedStudy.getCreatedAt());
     }
 
     @Test
