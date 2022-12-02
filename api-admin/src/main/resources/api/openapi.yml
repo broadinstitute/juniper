@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: Terra Java Project Template
-  description: Terra Java Project Template
+  title: Pearl Admin API
+  description: API for portal and study management
   version: 0.0.1
 paths:
   /status:
@@ -98,6 +98,55 @@ paths:
                 type: boolean
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portal/v1/{portalShortcode}:
+    get:
+      summary: Gets the portal object
+      tags: [ portal ]
+      operationId: get
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: {type: string} }
+      responses:
+        '200':
+          description: portal object
+          content: { application/json: { schema: {$ref: '#/components/schemas/PortalDto' }}}
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/adminUser/v1/{id}:
+    get:
+      summary: Gets an admin user
+      tags: [ admin_user ]
+      operationId: get
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: admin user object
+          content: { application/json: { schema: {$ref: '#/components/schemas/AdminUserDto' }}}
+        '404':
+          description: admin user not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/internal/v1/populate/{populateType}:
+    post:
+      summary: Populates
+      tags: [ populate ]
+      operationId: populate
+      parameters:
+        - { name: populateType, in: path, required: true, schema: { type: string } }
+        - { name: filePathName, in: query, required: true, schema: { type: string } }
+      responses:
+        '201':
+          description: portal object
+          content:
+            application/json:
+              schema:
+                type: object,
+                properties:
+                  message: { type: string }
+        '500':
+          $ref: '#/components/responses/ServerError'
+
 
 components:
   responses:
@@ -135,6 +184,20 @@ components:
             $ref: '#/components/schemas/ErrorReport'
 
   schemas:
+    AdminUserDto:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        username: { type: string }
+        lastLogin: { type: integer }
+        superuser: { type: boolean }
+    PortalDto:
+      type: object
+      properties:
+        id: {type: string, format: uuid}
+        shortcode: {type: string}
+        name: {type: string}
+        portalStudies: {type: array}
     ErrorReport:
       type: object
       required: [ message, statusCode ]

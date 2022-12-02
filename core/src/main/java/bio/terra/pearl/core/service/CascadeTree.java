@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CascadeTree {
-
+    public static final CascadeTree NONE = new CascadeTree();
     private Map<CascadeProperty, CascadeTree> childMap = new HashMap<>();
     public CascadeTree getChild(CascadeProperty cascadeProp) {
         return childMap.get(cascadeProp);
@@ -18,5 +18,9 @@ public class CascadeTree {
 
     public CascadeTree(CascadeProperty property) {
         childMap.put(property, new CascadeTree());
+    }
+
+    public CascadeTree(CascadeProperty property, CascadeTree subtree) {
+        childMap.put(property, subtree);
     }
 }

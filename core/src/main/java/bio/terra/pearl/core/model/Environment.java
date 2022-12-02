@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.model;
 
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

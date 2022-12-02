@@ -1,6 +1,6 @@
 package bio.terra.pearl.core.factory;
 
-import bio.terra.pearl.core.model.Study;
+import bio.terra.pearl.core.model.study.Study;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
 

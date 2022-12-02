@@ -2,14 +2,12 @@ package bio.terra.javatemplate.api;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import bio.terra.javatemplate.config.VersionConfiguration;
-import bio.terra.javatemplate.controller.PublicApiController;
-import bio.terra.javatemplate.model.SystemStatus;
-import bio.terra.javatemplate.service.StatusService;
+import bio.terra.pearl.api.admin.config.VersionConfiguration;
+import bio.terra.pearl.api.admin.controller.PublicApiController;
+import bio.terra.pearl.api.admin.model.SystemStatus;
+import bio.terra.pearl.api.admin.service.StatusService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

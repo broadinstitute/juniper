@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: "participant_profile"
+      author: dbush
+      changes:
+        - createTable:
+            tableName: mailing_address
+            columns:
+              - column: &idColumn
+                  { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: &createdAt
+                  { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: &lastUpdatedAt
+                  { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: street1, type: text }
+              - column: { name: street2, type: text }
+              - column: { name: state, type: text }
+              - column: { name: city, type: text }
+              - column: { name: country, type: text }
+              - column: { name: zip, type: text }
+        - createTable:
+            tableName: profile
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: given_name, type: text}
+              - column: { name: family_name, type: text}
+              - column: { name: contact_email, type: text}
+              - column: { name: mailing_address_id, type: uuid, constraints: {
+                foreignKeyName: fk_profile_mailing_address, references: mailing_address(id)
+              } }
+        - addColumn:
+            tableName: portal_participant_user
+            columns:
+              - column: { name: profile_id, type: uuid, constraints: {
+                foreignKeyName: fk_portal_participant_user_profile, references: profile(id)
+              } }

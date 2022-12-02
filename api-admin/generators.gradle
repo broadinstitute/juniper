@@ -10,7 +10,7 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 }
 
-def artifactGroup = "${group}.javatemplate"
+def artifactGroup = "${group}.pearl.api.admin"
 
 generateSwaggerCode {
     inputFile = file('src/main/resources/api/openapi.yml')
