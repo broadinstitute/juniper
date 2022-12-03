@@ -4,14 +4,13 @@ env:
   db:
     host: ${DATABASE_HOSTNAME:127.0.0.1}:5432
     init: ${INIT_DB:false}
-    name: ${DATABASE_NAME:pearl}
+    name: ${DATABASE_NAME:pearl_test}
     password: ${DATABASE_USER_PASSWORD:dbpwd}
-    user: ${DATABASE_USER:dbuser}
+    user: ${DATABASE_USER:test_dbuser}
+
   tracing:
     exportEnabled: ${CLOUD_TRACE_ENABLED:false}
     samplingRate: ${SAMPLING_PROBABILITY:0}
-  sam:
-    basePath: ${SAM_ADDRESS:https://sam.dsde-dev.broadinstitute.org}
 
 # Below here is non-deployment-specific
 
@@ -23,17 +22,11 @@ spring.config.import: optional:file:../config/local-properties.yml;classpath:git
 
 logging.pattern.level: '%X{requestId} %5p'
 
-server:
-  compression:
-    enabled: true
-    mimeTypes: text/css,application/javascript
-  port: 8080
-
 spring:
   # application name and version are used to populate the logging serviceContext
   # https://github.com/DataBiosphere/terra-common-lib/blob/480ab3daae282ddff0fef8dc329494a4422e32f1/src/main/java/bio/terra/common/logging/GoogleJsonLayout.java#L118
-  application.name: javatemplate
-  application.version: ${javatemplate.version.gitHash:unknown}
+  application.name: pearlcore
+  application.version: ${pearlcore.version.gitHash:unknown}
 
   datasource:
     hikari:
@@ -43,44 +36,8 @@ spring:
     url: jdbc:postgresql://${env.db.host}/${env.db.name}
     username: ${env.db.user}
 
-  web:
-    resources:
-      cache:
-        cachecontrol:
-          maxAge: 0
-          mustRevalidate: true
-        useLastModified: false
-      staticLocations: classpath:/api/
-  jpa:
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: false
-
-    # As of Aug. 2022, 9.4 was the latest documented dialect version.
-    # Keep this in mind when attempting to use postgresql 10+ features
-    database-platform: org.hibernate.dialect.PostgreSQL94Dialect
-    generate-ddl: true
-    hibernate:
-      ddl-auto: update
-    open-in-view: true
-
-hibernate:
-  packages-to-scan: bio.terra.pearl.core.model
-
-javatemplate:
-  ingress:
-    # Default value that's overridden by Helm.
-    domainName: localhost:8080
-
-  status-check:
-    enabled: true
-    pollingIntervalSeconds: 60
-    startupWaitSeconds: 5
-    stalenessThresholdSeconds: 125
-
-  sam:
-    basePath: ${env.sam.basePath}
+liquibase:
+  change-log: db/changelog/db.changelog-master.xml
 
 terra.common:
   kubernetes:
@@ -89,9 +46,6 @@ terra.common:
   tracing:
     stackdriverExportEnabled: ${env.tracing.exportEnabled}
     samplingRate: ${env.tracing.samplingRate}
-  
-cors:
-  enabled-path: http://localhost:3000,http://localhost:3005,http://*.localhost:3005,http://*.*.localhost:3005
 
-populate.populate-from-classpath: false
 
+populate.populate-from-classpath: true

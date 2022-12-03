@@ -11,9 +11,7 @@ import java.util.Optional;
 
 @Service
 public class EnvironmentPopulator extends Populator<Environment> {
-    private ObjectMapper objectMapper;
     private EnvironmentService environmentService;
-    private FilePopulateService filePopulateService;
 
     public EnvironmentPopulator(ObjectMapper objectMapper, EnvironmentService environmentService, FilePopulateService filePopulateService) {
         this.objectMapper = objectMapper;

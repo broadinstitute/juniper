@@ -24,7 +24,6 @@ public class PortalPopulator extends Populator<Portal> {
 
     private PortalService portalService;
     private StudyPopulator studyPopulator;
-
     private PortalStudyService portalStudyService;
     private PortalParticipantUserPopulator portalParticipantUserPopulator;
     private PortalParticipantUserService ppUserService;
