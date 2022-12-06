@@ -1,4 +1,25 @@
 {
   "linkedUsername": "jsalk@test.com",
-  "shortcode": "JOSAL2"
+  "shortcode": "JOSALK",
+  "surveyResponseDtos": [{
+    "surveyStableId": "oh_medicalHistory",
+    "surveyVersion": 1,
+    "responseSnapshotDtos": [{
+      "fullDataJson": {
+        "items": [
+          {
+            "stableId": "oh_medHx_worriedHeartHealth",
+            "simpleValue": "yesSpecificallyAboutMyHeart",
+            "displayValue": "Yes, specifically about my heart"
+          }
+        ]
+      },
+      "resumeDataJson": {
+        "data": {
+          "oh_medHx_worriedHeartHealth": "yesSpecificallyAboutMyHeart"
+        },
+        "currentPageNo": 1
+      }
+    }]
+  }]
 }

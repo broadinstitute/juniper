@@ -72,6 +72,54 @@ databaseChangeLog:
               - column: { name: allow_participant_start, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
               - column: { name: allow_participant_reedit, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
               - column: { name: prepopulate, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+        - createTable:
+            tableName: survey_response
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: complete, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: survey_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_survey_response_survey, references: survey(id) }
+              }
+              - column: { name: enrollee_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_survey_response_enrollee, references: enrollee(id) }
+              }
+              - column: { name: participant_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_survey_response_participant_user, references: participant_user(id) }
+              }
+              - column: { name: admin_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_survey_response_admin_user, references: admin_user(id) }
+              }
+        - sql:  # addCheckConstraint is only available for LiquibasePro, so add this check via raw sql
+            sql: alter table survey_response add constraint chk_survey_response_has_user check (participant_user_id != null or admin_user_id != null);
+
+        - createTable:
+            tableName: response_snapshot
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: participant_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_survey_response_participant_user, references: participant_user(id) }
+              }
+              - column: { name: admin_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_survey_response_admin_user, references: admin_user(id) }
+              }
+              - column: { name: survey_response_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_response_snapshot_survey_response, references: survey_response(id) }
+              }
+              - column: { name: resume_data, type: text }
+              - column: { name: full_data, type: text }
+        - sql: # addCheckConstraint is only available for LiquibasePro, so add this check via raw sql
+            sql: alter table response_snapshot add constraint chk_response_snapshot_has_user check (participant_user_id != null or admin_user_id != null);
+
+        - addColumn:
+            tableName: survey_response
+            columns:
+              - column: { name: last_snapshot_id, type: uuid, constraints:
+                { foreignKeyName: fk_survey_response_last_snapshot, references: response_snapshot(id) }
+              }
 
 
 

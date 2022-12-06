@@ -1,6 +1,16 @@
 package bio.terra.pearl.populate;
 
+import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.study.Study;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import bio.terra.pearl.core.service.survey.ResponseSnapshotService;
+import bio.terra.pearl.core.service.survey.SurveyResponseService;
+import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.service.EnvironmentPopulator;
 import bio.terra.pearl.populate.service.PortalPopulator;
 import org.junit.jupiter.api.Assertions;
@@ -11,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Attempts to populate every portal in the seed path.
@@ -19,24 +31,69 @@ import java.util.List;
  * environment can be created with all functionality accessible.
  */
 public class PopulatePortalsTest extends BaseSpringBootTest {
-    private List<String> portalFolders = Arrays.asList("ourhealth");
+
     private List<String> environmentPrereqs = Arrays.asList("sandbox", "irb", "live");
     @Autowired
     private PortalPopulator portalPopulator;
     @Autowired
     private EnvironmentPopulator environmentPopulator;
+
+    @Autowired
+    private StudyEnvironmentService studyEnvironmentService;
+    @Autowired
+    private EnrolleeService enrolleeService;
+
+    @Autowired
+    private SurveyService surveyService;
+    @Autowired
+    private SurveyResponseService surveyResponseService;
+
+    @Autowired
+    private ResponseSnapshotService responseSnapshotService;
+
     @Test
     @Transactional
     public void testPopulateAll() throws IOException {
         for (String envName : environmentPrereqs) {
             environmentPopulator.populate("environments/" + envName + ".json");
         }
+        checkOurHealth();
+    }
 
-        for (String portalFolder : portalFolders) {
-            Portal portal = portalPopulator.populate("portals/" + portalFolder +"/portal.json");
-            // For now, just do a check on the shortcode to confirm we got the right one.
-            // We can add more detailed assertions as our populates get more sophisticated
-            Assertions.assertEquals(portalFolder, portal.getShortcode());
-        }
+    /**
+     * populate the ourhealth study and do cursory checks on it.
+     * This test will need to be updated as we change/update the prepopulated data.
+     * @throws IOException
+     */
+    private void checkOurHealth() throws IOException {
+        Portal portal = portalPopulator.populate("portals/ourhealth/portal.json");
+        // For now, just do a check on the shortcode to confirm we got the right one.
+        // We can add more detailed assertions as our populates get more sophisticated
+        Assertions.assertEquals("ourhealth", portal.getShortcode());
+
+        Study mainStudy = portal.getPortalStudies().stream().findFirst().get().getStudy();
+        Set<StudyEnvironment> studyEnvs = studyEnvironmentService.findByStudy(mainStudy.getId());
+        Assertions.assertEquals(1, studyEnvs.size());
+        UUID sandboxEnvironmentId = studyEnvs.stream().filter(
+                sEnv -> sEnv.getEnvironmentName().equals(EnvironmentName.sandbox))
+                .findFirst().get().getId();
+
+        List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
+        Assertions.assertEquals(1, enrollees.size());
+        Enrollee jonas = enrollees.stream().filter(enrollee -> "JOSALK".equals(enrollee.getShortcode()))
+                .findFirst().get();
+
+        Survey medHistorySurvey = surveyService.findByStableId("oh_medicalHistory", 1).get();
+
+        List<SurveyResponse> jonasResponses = surveyResponseService.findByEnrolleeId(jonas.getId());
+        Assertions.assertEquals(1, jonasResponses.size());
+        SurveyResponse medHistoryResp = jonasResponses.stream()
+                .filter(response -> medHistorySurvey.getId().equals(response.getSurveyId()))
+                .findFirst().get();
+        ResponseSnapshot medHistorySnapshot = surveyResponseService.findOneWithLastSnapshot(medHistoryResp.getId())
+                .get().getLastSnapshot();
+        ParsedSnapshot parsedSnap = responseSnapshotService.parse(medHistorySnapshot);
+        ResponseDataItem firstAnswer = parsedSnap.getData().getItems().get(0);
+        Assertions.assertEquals("yesSpecificallyAboutMyHeart", firstAnswer.getSimpleValue());
     }
 }

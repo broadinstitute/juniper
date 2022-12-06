@@ -68,6 +68,7 @@ public class StudyEnvironmentService {
         StudyEnvironment studyEnv = studyEnvironmentDao.find(studyEnvironmentId).get();
         enrolleeService.deleteByStudyEnvironmentId(studyEnv.getId(), cascade);
         studyEnvironmentSurveyDao.deleteByStudyEnvironmentId(studyEnvironmentId);
+        surveyBatchService.deleteByStudyEnvironmentId(studyEnvironmentId, cascade);
         studyEnvironmentDao.delete(studyEnvironmentId);
         if (studyEnv.getStudyEnvironmentConfigId() != null) {
             studyEnvironmentConfigService.delete(studyEnv.getStudyEnvironmentConfigId());
