@@ -22,6 +22,7 @@ public class FilePopulateService {
     public static final String ABSOLUTE_SEED_ROOT = "populate/src/main/resources/seed/";
 
     private Environment environment;
+    // Whether to read files from the classpath or from local directory structure
     private boolean isPopulateFromClasspath;
 
     public FilePopulateService(Environment environment) {

@@ -43,4 +43,7 @@ terra.common:
     stackdriverExportEnabled: ${env.tracing.exportEnabled}
     samplingRate: ${env.tracing.samplingRate}
 
+# when running the populator, determines whether files are pulled from the directory, or from the jar classpath.
+# Making this false allows developers to change population files and repopulate an entity without having to recompile
+# the jar.  It should be true in deployed instances.
 populate.populate-from-classpath: false

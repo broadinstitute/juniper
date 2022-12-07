@@ -11,6 +11,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Represents a batch of surveys that are all to be delivered at a specific time.
+ * For example, there might be a batch of surveys to be delivered to participants immediately after consenting.
+ */
 @Getter @Setter @NoArgsConstructor @SuperBuilder
 public class SurveyBatch extends BaseEntity {
     private UUID studyEnvironmentId;
