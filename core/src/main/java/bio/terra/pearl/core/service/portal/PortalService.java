@@ -7,6 +7,7 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyService;
+import bio.terra.pearl.core.service.survey.SurveyService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,14 +25,19 @@ public class PortalService {
     private ParticipantUserService participantUserService;
     private StudyService studyService;
 
+    private SurveyService surveyService;
+
     public PortalService(PortalDao portalDao, PortalStudyService portalStudyService,
                          StudyService studyService,
-                         PortalEnvironmentService portalEnvironmentService, ParticipantUserService participantUserService) {
+                         PortalEnvironmentService portalEnvironmentService,
+                         ParticipantUserService participantUserService,
+                         SurveyService surveyService) {
         this.portalDao = portalDao;
         this.portalStudyService = portalStudyService;
         this.portalEnvironmentService = portalEnvironmentService;
         this.studyService = studyService;
         this.participantUserService = participantUserService;
+        this.surveyService = surveyService;
     }
 
     @Transactional
@@ -60,6 +66,8 @@ public class PortalService {
         for (PortalEnvironment portalEnvironment : portalEnvironments) {
             portalEnvironmentService.delete(portalEnvironment.getId(), cascades);
         }
+        surveyService.deleteByPortalId(portalId);
+
         portalDao.delete(portalId);
     }
 

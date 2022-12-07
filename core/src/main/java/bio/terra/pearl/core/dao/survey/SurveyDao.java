@@ -5,7 +5,9 @@ import bio.terra.pearl.core.model.survey.Survey;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class SurveyDao extends BaseJdbiDao<Survey> {
@@ -22,6 +24,10 @@ public class SurveyDao extends BaseJdbiDao<Survey> {
                         .mapTo(clazz)
                         .findOne()
         );
+    }
+
+    public List<Survey> findByPortalId(UUID portalId) {
+        return findAllByProperty("portal_id", portalId);
     }
 
 

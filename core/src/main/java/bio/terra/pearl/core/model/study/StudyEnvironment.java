@@ -27,4 +27,5 @@ public class StudyEnvironment extends BaseEntity {
     private Set<SurveyBatch> surveyBatches = new HashSet<>();
     @Builder.Default
     private Set<StudyEnvironmentSurvey> studyEnvironmentSurveys = new HashSet<>();
+
 }

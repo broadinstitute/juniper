@@ -2,6 +2,7 @@ package bio.terra.pearl.core.model.portal;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.site.SiteContent;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,4 +19,6 @@ public class PortalEnvironment extends BaseEntity {
     private UUID portalId;
     private UUID portalEnvironmentConfigId;
     private PortalEnvironmentConfig portalEnvironmentConfig;
+    private UUID siteContentId;
+    private SiteContent siteContent;
 }

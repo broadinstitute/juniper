@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ResponseSnapshotService extends CrudService<ResponseSnapshot, ResponseSnapshotDao> {
@@ -27,5 +29,9 @@ public class ResponseSnapshotService extends CrudService<ResponseSnapshot, Respo
                 .data(data)
                 .build();
         return parsedSnap;
+    }
+
+    public List<ResponseSnapshot> findByResponseId(UUID responseId) {
+        return dao.findByResponseId(responseId);
     }
 }

@@ -46,7 +46,8 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
 
     protected boolean isSimpleFieldType(Class fieldType) {
         return Enum.class.isAssignableFrom(fieldType) ||
-                Arrays.asList(String.class, Boolean.class, Instant.class, boolean.class, int.class, UUID.class)
+                Arrays.asList(String.class, Instant.class, Boolean.class, boolean.class,
+                                Integer.class, int.class, UUID.class, byte[].class)
                         .contains(fieldType);
     }
 

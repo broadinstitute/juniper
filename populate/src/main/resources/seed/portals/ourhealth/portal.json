@@ -13,6 +13,25 @@
         "password": "broad_institute",
         "initialized": true
       },
+      "siteContent": {
+        "stableId": "oh_portalContent",
+        "version": 1,
+        "defaultLanguage": "en",
+        "localizedSiteContents": [{
+          "language": "en",
+          "landingPage": {
+            "title": "OurHealth portal home",
+            "sections": [{
+              "sectionType": "RAW_HTML",
+              "rawContent": "<div>Yo yo yo</div>"
+            }]
+          }
+        }],
+        "siteImageDtos": [{
+          "uploadFileName": "Banner-image.png",
+          "populateFileName": "images/Banner-image.png"
+        }]
+      },
       "participantUserFiles": [
         "participants/jsalk.json"
       ]

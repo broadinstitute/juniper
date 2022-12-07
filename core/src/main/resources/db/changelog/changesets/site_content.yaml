@@ -1,0 +1,101 @@
+databaseChangeLog:
+  - changeSet:
+      id: "site_content"
+      author: dbush
+      changes:
+        - createTable:
+            tableName: site_content
+            columns:
+              - column: &idColumn
+                  { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: &createdAt
+                  { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: &lastUpdatedAt
+                  { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: stable_id, type: text }
+              - column: { name: version, type: integer }
+              - column: { name: default_language, type: text }
+              - column: { name: portal_id, type: uuid, constraints: {
+                foreignKeyName: fk_site_content_portal_id, references: portal(id)
+              } }
+        - addColumn:
+            tableName: portal_environment
+            columns:
+              - column: { name: site_content_id, type: uuid, constraints: {
+                foreignKeyName: fk_portal_env_site_content_id, references: portal_environment(id)
+              } }
+        - createTable:
+            tableName: site_image
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: shortcode, type: text }
+              - column: { name: upload_file_name, type: text }
+              - column: { name: data, type: bytea }
+              - column: { name: site_content_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_site_image_site_id, references: site_content(id)
+              } }
+        - createTable:
+            tableName: html_page
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: title, type: text }
+              - column: { name: path, type: text }
+
+        - createTable:
+            tableName: localized_site_content
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: language, type: text }
+              - column: { name: site_content_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_localized_site_content_site_id, references: site_content(id)
+              } }
+              - column: { name: nav_logo_id, type: uuid, constraints: {
+                foreignKeyName: fk_localized_site_content_logo_id, references: site_image(id)
+              } }
+              - column: { name: landing_page_id, type: uuid, constraints: {
+                foreignKeyName: fk_localized_site_landing_page_id, references: html_page(id)
+              } }
+        - addColumn:
+            tableName: html_page
+            columns:
+              - column: { name: localized_site_content_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_html_page_localized_site_id, references: localized_site_content(id)
+              } }
+        - createTable:
+            tableName: html_section
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: section_type, type: text }
+              - column: { name: raw_content, type: text }
+              - column: { name: section_config, type: text }
+              - column: { name: section_order, type: integer }
+              - column: { name: html_page_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_html_section_html_page_id, references: html_page(id)
+              } }
+        - createTable:
+            tableName: navbar_item
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: item_type, type: text }
+              - column: { name: label, type: text }
+              - column: { name: item_order, type: integer }
+              - column: { name: external_link_url, type: text }
+              - column: { name: html_page_id, type: uuid, constraints: {
+                foreignKeyName: fk_html_section_html_page_id, references: html_page(id)
+              } }
+              - column: { name: localized_site_content_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_navbar_item_localized_site_id, references: localized_site_content(id)
+              } }
+
+
+
