@@ -17,7 +17,7 @@ databaseChangeLog:
               - column: { name: version, type: integer, constraints: { nullable: false } }
               - column: { name: content, type: text }
               - column: { name: portal_id, type: uuid, constraints:
-                { nullable: false, foreignKeyName: fk_survey_portal_id, references: portal(id) }
+                { foreignKeyName: fk_survey_portal_id, references: portal(id) }
               }
         - addUniqueConstraint:
             tableName: survey
