@@ -1,0 +1,44 @@
+plugins {
+    id 'bio.terra.java-spring-conventions'
+    id 'de.undercouch.download'
+    id 'com.google.cloud.tools.jib'
+    id 'com.srcclr.gradle'
+    id 'org.sonarqube'
+
+    id 'com.gorylenko.gradle-git-properties' version '2.3.1'
+}
+
+apply from: 'generators.gradle'
+apply from: 'publishing.gradle'
+
+dependencies {
+    implementation 'bio.terra:terra-common-lib'
+    implementation project(':core')
+    implementation 'org.apache.commons:commons-dbcp2'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.retry:spring-retry'
+    implementation 'javax.ws.rs:javax.ws.rs-api:2.1.1'
+    implementation 'org.postgresql:postgresql'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        // Fixes warning about multiple occurrences of JSONObject on the classpath
+        exclude group: 'com.vaadin.external.google', module: 'android-json'
+    }
+    testImplementation 'org.mockito:mockito-inline'
+}
+
+test {
+    useJUnitPlatform ()
+}
+
+sonarqube {
+    properties {
+        property 'sonar.projectName', 'terra-java-project-template'
+        property 'sonar.projectKey', 'terra-java-project-template'
+        property 'sonar.organization', 'broad-databiosphere'
+        property 'sonar.host.url', 'https://sonarcloud.io'
+    }
+}

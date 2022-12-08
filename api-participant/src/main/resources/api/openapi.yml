@@ -1,0 +1,142 @@
+openapi: 3.0.3
+info:
+  title: Pearl Admin API
+  description: API for portal and study management
+  version: 0.0.1
+paths:
+  /status:
+    get:
+      summary: Check status of the service
+      tags: [ public ]
+      operationId: getStatus
+      security: [ ]
+      responses:
+        '200':
+          $ref: '#/components/responses/SystemStatusResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '503':
+          $ref: '#/components/responses/SystemStatusResponse'
+
+  /version:
+    get:
+      summary: Get version info of the deployed service
+      tags: [ public ]
+      operationId: getVersion
+      security: [ ]
+      responses:
+        '200':
+          description: Version information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionProperties'
+        '404':
+          description: "Version not configured"
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/portal/v1/{portalShortcode}:
+    get:
+      summary: Gets the portal object
+      tags: [ portal ]
+      operationId: get
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: {type: string} }
+      responses:
+        '200':
+          description: portal object
+          content: { application/json: { schema: {$ref: '#/components/schemas/PortalDto' }}}
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  responses:
+    SystemStatusResponse:
+      description: A JSON description of the subsystems and their statuses.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SystemStatus'
+
+    # Error Responses
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorReport'
+    PermissionDenied:
+      description: Permission denied
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorReport'
+    NotFound:
+      description: Not found (or unauthorized)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorReport'
+    ServerError:
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorReport'
+
+  schemas:
+    PortalDto:
+      type: object
+      properties:
+        id: {type: string, format: uuid}
+        shortcode: {type: string}
+        name: {type: string}
+        portalStudies: {type: array}
+    ErrorReport:
+      type: object
+      required: [ message, statusCode ]
+      properties:
+        message:
+          type: string
+        statusCode:
+          type: integer
+
+    SystemStatus:
+      required: [ ok, systems ]
+      type: object
+      properties:
+        ok:
+          type: boolean
+          description: whether any system(s) need attention
+        systems:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              ok:
+                type: boolean
+              messages:
+                type: array
+                items:
+                  type: string
+
+    VersionProperties:
+      type: object
+      properties:
+        gitTag:
+          type: string
+        gitHash:
+          type: string
+        github:
+          type: string
+        build:
+          type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+security:
+  - bearerAuth: [ ]

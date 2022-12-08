@@ -1,0 +1,45 @@
+import java.time.ZonedDateTime
+
+// Download and extract the Cloud Profiler Java Agent
+ext {
+    // where to place the Cloud Profiler agent in the container
+    cloudProfilerLocation = "/opt/cprof"
+
+    // location for jib extras, including the Java agent
+    jibExtraDirectory = "${buildDir}/jib-agents"
+}
+task downloadProfilerAgent(type: Download) {
+    // where to download the Cloud Profiler agent https://cloud.google.com/profiler/docs/profiling-java
+    src "https://storage.googleapis.com/cloud-profiler/java/latest/profiler_java_agent.tar.gz"
+    dest "${buildDir}/cprof_java_agent_gce.tar.gz"
+}
+task extractProfilerAgent(dependsOn: downloadProfilerAgent, type: Copy) {
+    from tarTree(downloadProfilerAgent.dest)
+    into "${jibExtraDirectory}/${cloudProfilerLocation}"
+}
+
+jib {
+    from {
+        // see https://github.com/broadinstitute/dsp-appsec-blessed-images/tree/main/jre
+        image = "us.gcr.io/broad-dsp-gcr-public/base/jre:17-distroless"
+    }
+    extraDirectories {
+        paths = [file(jibExtraDirectory)]
+    }
+    container {
+        filesModificationTime = ZonedDateTime.now().toString() // to prevent ui caching
+        mainClass = 'bio.terra.javatemplate.App'
+        jvmFlags = [
+            "-agentpath:" + cloudProfilerLocation + "/profiler_java_agent.so=" +
+                "-cprof_service=bio.terra.javatemplate" +
+                ",-cprof_service_version=" + version +
+                ",-cprof_enable_heap_sampling=true" +
+                ",-logtostderr" +
+                ",-minloglevel=2"
+        ]
+    }
+}
+
+tasks.jib.dependsOn extractProfilerAgent
+tasks.jibDockerBuild.dependsOn extractProfilerAgent
+tasks.jibBuildTar.dependsOn extractProfilerAgent

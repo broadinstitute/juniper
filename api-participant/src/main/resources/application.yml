@@ -1,0 +1,97 @@
+# All env variables that are used in one place
+# This is for deployment-specific values, which may be managed by other teams
+env:
+  db:
+    host: ${DATABASE_HOSTNAME:127.0.0.1}:5432
+    init: ${INIT_DB:false}
+    name: ${DATABASE_NAME:pearl}
+    password: ${DATABASE_USER_PASSWORD:dbpwd}
+    user: ${DATABASE_USER:dbuser}
+  tracing:
+    exportEnabled: ${CLOUD_TRACE_ENABLED:false}
+    samplingRate: ${SAMPLING_PROBABILITY:0}
+  sam:
+    basePath: ${SAM_ADDRESS:https://sam.dsde-dev.broadinstitute.org}
+
+# Below here is non-deployment-specific
+
+# When the target is 'local' the write-config.sh script will generate this properties file. It
+# contains the configuration of the BPM test application. We can use that application in our
+# integration testing to make sure the application code paths are working. However, we do not
+# want it to appear in production environments.
+spring.config.import: optional:file:../config/local-properties.yml;classpath:git.properties
+
+logging.pattern.level: '%X{requestId} %5p'
+
+server:
+  compression:
+    enabled: true
+    mimeTypes: text/css,application/javascript
+  port: 8081
+
+spring:
+  # application name and version are used to populate the logging serviceContext
+  # https://github.com/DataBiosphere/terra-common-lib/blob/480ab3daae282ddff0fef8dc329494a4422e32f1/src/main/java/bio/terra/common/logging/GoogleJsonLayout.java#L118
+  application.name: javatemplate
+  application.version: ${javatemplate.version.gitHash:unknown}
+
+  datasource:
+    hikari:
+      connection-timeout: 5000
+      maximum-pool-size: 8 # cpu count * 2 https://kwahome.medium.com/database-connections-less-is-more-86c406b6fad
+    password: ${env.db.password}
+    url: jdbc:postgresql://${env.db.host}/${env.db.name}
+    username: ${env.db.user}
+
+  web:
+    resources:
+      cache:
+        cachecontrol:
+          maxAge: 0
+          mustRevalidate: true
+        useLastModified: false
+      staticLocations: classpath:/api/
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: false
+
+    # As of Aug. 2022, 9.4 was the latest documented dialect version.
+    # Keep this in mind when attempting to use postgresql 10+ features
+    database-platform: org.hibernate.dialect.PostgreSQL94Dialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    open-in-view: true
+
+hibernate:
+  packages-to-scan: bio.terra.pearl.core.model
+
+javatemplate:
+  ingress:
+    # Default value that's overridden by Helm.
+    domainName: localhost:8080
+
+  status-check:
+    enabled: true
+    pollingIntervalSeconds: 60
+    startupWaitSeconds: 5
+    stalenessThresholdSeconds: 125
+
+  sam:
+    basePath: ${env.sam.basePath}
+
+terra.common:
+  kubernetes:
+    inKubernetes: false
+
+  tracing:
+    stackdriverExportEnabled: ${env.tracing.exportEnabled}
+    samplingRate: ${env.tracing.samplingRate}
+  
+cors:
+  enabled-path: http://localhost:3001,http://*.localhost:3001,http://*.*.localhost:3001
+
+populate.populate-from-classpath: false
+
