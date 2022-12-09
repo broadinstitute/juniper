@@ -1,7 +1,7 @@
 package bio.terra.pearl.populate.service;
 
-import bio.terra.pearl.core.model.AdminUser;
-import bio.terra.pearl.core.service.AdminUserService;
+import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.populate.dto.AdminUserDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
