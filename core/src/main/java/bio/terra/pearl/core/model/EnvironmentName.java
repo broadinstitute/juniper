@@ -3,5 +3,8 @@ package bio.terra.pearl.core.model;
 public enum EnvironmentName {
     sandbox,
     irb,
-    production
+    production;
+    public static EnvironmentName valueOfCaseInsensitive(String value) {
+        return EnvironmentName.valueOf(value.toLowerCase());
+    }
 }

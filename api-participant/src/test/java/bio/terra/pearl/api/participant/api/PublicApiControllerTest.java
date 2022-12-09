@@ -1,12 +1,12 @@
-package bio.terra.javatemplate.api;
+package bio.terra.pearl.api.participant.api;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import bio.terra.pearl.api.admin.model.SystemStatus;
 import bio.terra.pearl.api.participant.config.VersionConfiguration;
 import bio.terra.pearl.api.participant.controller.PublicApiController;
+import bio.terra.pearl.api.participant.model.SystemStatus;
 import bio.terra.pearl.api.participant.service.StatusService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

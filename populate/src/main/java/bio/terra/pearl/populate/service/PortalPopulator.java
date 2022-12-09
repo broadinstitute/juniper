@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.site.SiteImage;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.site.SiteImageService;
@@ -30,10 +31,11 @@ import java.util.UUID;
 public class PortalPopulator extends Populator<Portal> {
 
     private PortalService portalService;
+
+    private PortalEnvironmentService portalEnvironmentService;
     private StudyPopulator studyPopulator;
     private PortalStudyService portalStudyService;
     private PortalParticipantUserPopulator portalParticipantUserPopulator;
-    private PortalParticipantUserService ppUserService;
     private SiteContentService siteContentService;
     private SiteImageService siteImageService;
 
@@ -45,10 +47,11 @@ public class PortalPopulator extends Populator<Portal> {
                            ObjectMapper objectMapper,
                            PortalParticipantUserPopulator portalParticipantUserPopulator,
                            PortalParticipantUserService ppUserService,
+                           PortalEnvironmentService portalEnvironmentService,
                            SiteContentService siteContentService,
                            SiteImageService siteImageService) {
         this.portalParticipantUserPopulator = portalParticipantUserPopulator;
-        this.ppUserService = ppUserService;
+        this.portalEnvironmentService = portalEnvironmentService;
         this.siteContentService = siteContentService;
         this.siteImageService = siteImageService;
         this.filePopulateService = filePopulateService;
@@ -78,6 +81,13 @@ public class PortalPopulator extends Populator<Portal> {
                 SiteContentPopDto siteContentDto = portalEnvironment.getSiteContent();
                 SiteContent savedContent = siteContentService.create(siteContentDto);
                 populateImages(siteContentDto, savedContent.getId(), config);
+                portal.getPortalEnvironments().stream()
+                        .filter(env -> env.getEnvironmentName().equals(portalEnvironment.getEnvironmentName()))
+                        .findFirst().ifPresent(savedEnv -> {
+                            savedEnv.setSiteContent(savedContent);
+                            savedEnv.setSiteContentId(savedContent.getId());
+                            portalEnvironmentService.update(savedEnv);
+                        });
             }
             for (String userFileName : portalEnvironment.getParticipantUserFiles()) {
                 populateParticipantUser(userFileName, config,

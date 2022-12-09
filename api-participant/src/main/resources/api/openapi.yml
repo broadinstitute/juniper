@@ -36,17 +36,18 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /api/portal/v1/{portalShortcode}:
+  /api/portals/v1/{portalShortcode}/env/{envName}:
     get:
       summary: Gets the portal object
       tags: [ portal ]
       operationId: get
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: {type: string} }
+        - { name: envName, in: path, required: true, schema: {type: string} }
       responses:
         '200':
           description: portal object
-          content: { application/json: { schema: {$ref: '#/components/schemas/PortalDto' }}}
+          content: { application/json: { schema: {$ref: '#/components/schemas/PortalEnvDto' }}}
         '500':
           $ref: '#/components/responses/ServerError'
 
@@ -86,13 +87,14 @@ components:
             $ref: '#/components/schemas/ErrorReport'
 
   schemas:
-    PortalDto:
+    PortalEnvDto:
       type: object
       properties:
         id: {type: string, format: uuid}
         shortcode: {type: string}
         name: {type: string}
-        portalStudies: {type: array}
+        portalEnvironmentConfig: {type: object}
+        siteContent: {type: object}
     ErrorReport:
       type: object
       required: [ message, statusCode ]

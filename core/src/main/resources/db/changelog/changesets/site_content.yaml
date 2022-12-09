@@ -22,7 +22,7 @@ databaseChangeLog:
             tableName: portal_environment
             columns:
               - column: { name: site_content_id, type: uuid, constraints: {
-                foreignKeyName: fk_portal_env_site_content_id, references: portal_environment(id)
+                foreignKeyName: fk_portal_env_site_content_id, references: site_content(id)
               } }
         - createTable:
             tableName: site_image

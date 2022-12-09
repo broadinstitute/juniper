@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import org.springframework.stereotype.Service;
@@ -17,8 +18,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class PortalEnvironmentService {
-    private PortalEnvironmentDao portalEnvironmentDao;
+public class PortalEnvironmentService extends CrudService<PortalEnvironment, PortalEnvironmentDao> {
     private PortalEnvironmentConfigService portalEnvironmentConfigService;
     private PortalParticipantUserService portalParticipantUserService;
     private ParticipantUserService participantUserService;
@@ -27,33 +27,44 @@ public class PortalEnvironmentService {
                                     PortalEnvironmentConfigService portalEnvironmentConfigService,
                                     PortalParticipantUserService portalParticipantUserService,
                                     ParticipantUserService participantUserService) {
-        this.portalEnvironmentDao = portalEnvironmentDao;
+        super(portalEnvironmentDao);
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.participantUserService = participantUserService;
     }
 
     public List<PortalEnvironment> findByPortal(UUID portalId) {
-        return portalEnvironmentDao.findByPortal(portalId);
+        return dao.findByPortal(portalId);
     }
 
     public Optional<PortalEnvironment> findOne(String portalShortcode, EnvironmentName environmentName) {
-        return portalEnvironmentDao.findOne(portalShortcode, environmentName);
+        return dao.findOne(portalShortcode, environmentName);
+    }
+
+    public PortalEnvironment update(PortalEnvironment portalEnvironment) {
+        return dao.update(portalEnvironment);
+    }
+
+    public Optional<PortalEnvironment> loadOneWithSiteContent(String portalShortcode, EnvironmentName environmentName,
+                                                              String language) {
+        return dao.loadOneWithSiteContent(portalShortcode, environmentName, language);
     }
 
     @Transactional
+    @Override
     public PortalEnvironment create(PortalEnvironment portalEnvironment) {
         PortalEnvironmentConfig envConfig = portalEnvironment.getPortalEnvironmentConfig();
         if (envConfig != null) {
             envConfig = portalEnvironmentConfigService.create(envConfig);
             portalEnvironment.setPortalEnvironmentConfigId(envConfig.getId());
         }
-        PortalEnvironment newEnv = portalEnvironmentDao.create(portalEnvironment);
+        PortalEnvironment newEnv = dao.create(portalEnvironment);
         newEnv.setPortalEnvironmentConfig(envConfig);
         return newEnv;
     }
 
     @Transactional
+    @Override
     public void delete(UUID id, Set<CascadeProperty> cascades) {
         List<UUID> participantUserIds = portalParticipantUserService
                 .findByPortalEnvironmentId(id).stream().map(pUser -> pUser.getParticipantUserId())
@@ -62,7 +73,7 @@ public class PortalEnvironmentService {
         if (cascades.contains(PortalService.AllowedCascades.PARTICIPANT_USER)) {
             participantUserService.deleteOrphans(participantUserIds, cascades);
         }
-        portalEnvironmentDao.delete(id);
+        dao.delete(id);
     }
 
     public enum AllowedCascades implements CascadeProperty {

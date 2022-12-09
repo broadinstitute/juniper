@@ -42,6 +42,7 @@ public class LocalizedSiteContentService extends CrudService<LocalizedSiteConten
             landingPage.setLocalizedSiteContentId(savedSite.getId());
             landingPage = htmlPageService.create(landingPage);
             savedSite.setLandingPageId(landingPage.getId());
+            dao.setLandingPageId(savedSite.getId(), landingPage.getId());
         }
         savedSite.setLandingPage(landingPage);
         return savedSite;
