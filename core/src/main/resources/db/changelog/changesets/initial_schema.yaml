@@ -119,7 +119,7 @@ databaseChangeLog:
               } }
         - addUniqueConstraint:
             tableName: study_environment
-            constraintName: study_environment_study_env
+            constraintName: uc_study_environment_study_env
             columnNames: study_id, environment_name
         - createTable:
             tableName: portal_study

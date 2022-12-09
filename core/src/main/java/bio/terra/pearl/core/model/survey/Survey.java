@@ -1,0 +1,18 @@
+package bio.terra.pearl.core.model.survey;
+
+import bio.terra.pearl.core.model.BaseEntity;
+import bio.terra.pearl.core.model.Versioned;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+
+@Getter @Setter @NoArgsConstructor @SuperBuilder
+public class Survey extends BaseEntity implements Versioned {
+    private String stableId;
+    @Builder.Default
+    private int version = 1;
+    private String content;
+    private String name;
+}

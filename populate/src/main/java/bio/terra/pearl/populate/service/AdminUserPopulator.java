@@ -9,11 +9,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AdminUserPopulator extends Populator<AdminUser> {
-
-    private ObjectMapper objectMapper;
-
-    private FilePopulateService filePopulateService;
-
     private AdminUserService adminUserService;
 
     public AdminUserPopulator(ObjectMapper objectMapper, FilePopulateService filePopulateService, AdminUserService adminUserService) {

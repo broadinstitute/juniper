@@ -40,7 +40,7 @@ public class PortalParticipantUserPopulator extends Populator<PortalParticipantU
         participantUserDto.setEnvironmentName(config.getEnvironmentName());
         Optional<ParticipantUser> existingUserOpt = participantUserService
                 .findOne(participantUserDto.getUsername(), config.getEnvironmentName());
-        ParticipantUser user = existingUserOpt.orElse(participantUserService.create(participantUserDto));
+        ParticipantUser user = existingUserOpt.orElseGet(() -> participantUserService.create(participantUserDto));
         ppUserDto.setParticipantUserId(user.getId());
 
         // now populate the PortalParticipantUser

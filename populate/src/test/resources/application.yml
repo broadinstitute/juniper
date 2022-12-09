@@ -4,9 +4,10 @@ env:
   db:
     host: ${DATABASE_HOSTNAME:127.0.0.1}:5432
     init: ${INIT_DB:false}
-    name: ${DATABASE_NAME:pearl}
+    name: ${DATABASE_NAME:pearl_test}
     password: ${DATABASE_USER_PASSWORD:dbpwd}
-    user: ${DATABASE_USER:dbuser}
+    user: ${DATABASE_USER:test_dbuser}
+
   tracing:
     exportEnabled: ${CLOUD_TRACE_ENABLED:false}
     samplingRate: ${SAMPLING_PROBABILITY:0}
@@ -24,8 +25,8 @@ logging.pattern.level: '%X{requestId} %5p'
 spring:
   # application name and version are used to populate the logging serviceContext
   # https://github.com/DataBiosphere/terra-common-lib/blob/480ab3daae282ddff0fef8dc329494a4422e32f1/src/main/java/bio/terra/common/logging/GoogleJsonLayout.java#L118
-  application.name: pearlpopulate
-  application.version: ${pearlpopulate.version.gitHash:unknown}
+  application.name: pearlcore
+  application.version: ${pearlcore.version.gitHash:unknown}
 
   datasource:
     hikari:
@@ -35,6 +36,9 @@ spring:
     url: jdbc:postgresql://${env.db.host}/${env.db.name}
     username: ${env.db.user}
 
+liquibase:
+  change-log: db/changelog/db.changelog-master.xml
+
 terra.common:
   kubernetes:
     inKubernetes: false
@@ -43,7 +47,5 @@ terra.common:
     stackdriverExportEnabled: ${env.tracing.exportEnabled}
     samplingRate: ${env.tracing.samplingRate}
 
-# when running the populator, determines whether files are pulled from the directory, or from the jar classpath.
-# Making this false allows developers to change population files and repopulate an entity without having to recompile
-# the jar.  It should be true in deployed instances.
-populate.populate-from-classpath: false
+
+populate.populate-from-classpath: true

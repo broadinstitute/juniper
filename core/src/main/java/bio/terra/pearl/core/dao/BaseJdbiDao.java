@@ -202,10 +202,20 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
-    public void deleteByUuidProperty(String columnName, UUID columnValue) {
+    protected void deleteByUuidProperty(String columnName, UUID columnValue) {
         jdbi.withHandle(handle ->
                 handle.createUpdate("delete from " + tableName + " where " + columnName + " = :propertyValue;")
                         .bind("propertyValue", columnValue)
+                        .execute()
+        );
+    }
+
+    protected void deleteByParentUuid(String parentColumnName, UUID parentUUID, BaseJdbiDao parentDao) {
+        jdbi.withHandle(handle ->
+                handle.createUpdate("delete from " + tableName + " join  " + parentDao.tableName + " on "
+                        + tableName + ".id = " + parentDao.tableName + "." + parentColumnName
+                        + " where " + parentColumnName + " = :parentUUID;")
+                        .bind("parentUUID", parentUUID)
                         .execute()
         );
     }
