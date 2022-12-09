@@ -23,7 +23,7 @@ public class SurveyResponseFactory {
         Enrollee enrollee = enrolleeFactory.buildPersisted(testName);
         return builder(testName)
                 .enrolleeId(enrollee.getId())
-                .participantUserId(enrollee.getParticipantUserId())
+                .creatingParticipantUserId(enrollee.getParticipantUserId())
                 .surveyId(survey.getId());
     }
 }

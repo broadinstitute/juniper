@@ -36,9 +36,9 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         for (ResponseSnapshot snapshot : response.getSnapshots()) {
             snapshot.setSurveyResponseId(savedResponse.getId());
             // if no explicit user is specified on the snapshot, it's the same as the user of the response
-            if (snapshot.getAdminUserId() == null && snapshot.getParticipantUserId() == null) {
-                snapshot.setParticipantUserId(response.getParticipantUserId());
-                snapshot.setAdminUserId(response.getAdminUserId());
+            if (snapshot.getCreatingAdminUserId() == null && snapshot.getCreatingParticipantUserId() == null) {
+                snapshot.setCreatingParticipantUserId(response.getCreatingParticipantUserId());
+                snapshot.setCreatingAdminUserId(response.getCreatingAdminUserId());
             }
             ResponseSnapshot savedSnap = responseSnapshotService.create(snapshot);
             savedResponse.getSnapshots().add(savedSnap);

@@ -71,14 +71,14 @@ public class EnrolleePopulator extends Populator<Enrollee> {
         SurveyResponse response = SurveyResponse.builder()
                 .surveyId(survey.getId())
                 .enrolleeId(enrollee.getId())
-                .participantUserId(enrollee.getParticipantUserId())
+                .creatingParticipantUserId(enrollee.getParticipantUserId())
                 .build();
         for (ResponseSnapshotPopDto snapDto : responsePopDto.getResponseSnapshotDtos()) {
             response.getSnapshots().add(
                     ResponseSnapshot.builder()
                             .fullData(snapDto.getFullDataJson().toString())
                             .resumeData(snapDto.getResumeDataJson().toString())
-                            .participantUserId(enrollee.getParticipantUserId())
+                            .creatingParticipantUserId(enrollee.getParticipantUserId())
                             .build()
             );
         }
