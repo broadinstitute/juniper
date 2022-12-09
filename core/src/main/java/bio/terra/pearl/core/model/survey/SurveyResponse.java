@@ -11,13 +11,16 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * container for response data from a given survey instance.
+ */
 @Getter
 @Setter
 @SuperBuilder @NoArgsConstructor
 public class SurveyResponse extends BaseEntity {
     private UUID enrolleeId;
-    private UUID participantUserId;
-    private UUID adminUserId;
+    private UUID creatingParticipantUserId;
+    private UUID creatingAdminUserId;
     private UUID surveyId;
     private UUID lastSnapshotId;
     @Builder.Default

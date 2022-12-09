@@ -21,9 +21,9 @@ public class ResponseSnapshotService extends CrudService<ResponseSnapshot, Respo
     public ParsedSnapshot parse(ResponseSnapshot snapshot) throws IOException {
         ParsedSnapshot.ResponseData data = objectMapper.readValue(snapshot.getFullData(), ParsedSnapshot.ResponseData.class);
         ParsedSnapshot parsedSnap = ParsedSnapshot.builder()
-                .adminUserId(snapshot.getAdminUserId())
+                .adminUserId(snapshot.getCreatingAdminUserId())
                 .surveyResponseId(snapshot.getSurveyResponseId())
-                .participantUserId(snapshot.getParticipantUserId())
+                .participantUserId(snapshot.getCreatingParticipantUserId())
                 .data(data)
                 .build();
         return parsedSnap;
