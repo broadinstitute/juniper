@@ -23,7 +23,10 @@
             "title": "OurHealth portal home",
             "sections": [{
               "sectionType": "RAW_HTML",
-              "rawContent": "<div>Yo yo yo</div>"
+              "rawContent": "<div>OurHealth landing page -- you made it!</div>"
+            },{
+              "sectionType": "RAW_HTML",
+              "rawContent": "<div>This is another section</div>"
             }]
           }
         }],

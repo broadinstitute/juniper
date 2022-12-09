@@ -10,7 +10,7 @@ function LandingPageView({ homePage, currentEnv }: {homePage: HtmlPage, currentE
       </div>
       <div className="flex-grow-1">
         { homePage.sections.map(section => <div>
-          Raw Section<br/>
+          <br/>
           <div dangerouslySetInnerHTML={{__html: section.rawContent}}>
 
           </div>

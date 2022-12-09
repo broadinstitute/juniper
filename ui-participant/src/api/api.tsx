@@ -1,5 +1,3 @@
-
-
 export type PortalEnvironmentParams = {
   studyShortname: string,
   environmentName: string
@@ -8,12 +6,6 @@ export type PortalEnvironmentParams = {
 export type PortalEnvironment = PortalEnvironmentParams & {
   siteContent: SiteContent
 }
-
-export type ParticipantUser = {
-  username: string,
-  token: string,
-  participantId: string
-};
 
 export type SiteContent = {
   defaultLanguage: string,

@@ -28,10 +28,10 @@ export default function PortalEnvrionmentProvider({ children }: { children: any}
   }, [])
 
   return <>
-    { isLoading && <div className="App-loading-background">
+    { isLoading && <div className="bg-white h-100 w-100">
       <div className="position-absolute top-50 start-50 translate-middle">Loading...</div>
     </div> }
-    { isError && <div className="App-loading-background">
+    { isError && <div className="bg-white h-100 w-100">
       <div className="position-absolute top-50 start-50 translate-middle">
         The page you are looking for does not exist
       </div>
