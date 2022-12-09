@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableRetry
 @EnableTransactionManagement
 @EnableConfigurationProperties
+@ActiveProfiles( "human-readable-logging")
 public class ApiParticipantApp {
   public static void main(String[] args) {
     new SpringApplicationBuilder(ApiParticipantApp.class)

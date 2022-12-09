@@ -20,19 +20,25 @@ export type LocalSiteContent = {
 
 export type HtmlPage = {
   title: string,
+  path: string,
   sections: HtmlSection[]
 }
 
 export type NavbarItem = {
-  title: string,
+  label: string,
   externalLink: string,
-  stableId: string,
   navbarItemType: string
+  htmlPage: HtmlPage
 }
 
 export type HtmlSection = {
-  rawContent: string
+  id: string,
+  sectionType: string,
+  rawContent: string,
+  sectionConfig: string
 }
+
+export type SectionConfig = { [index: string]: any }
 
 let bearerToken: string | null = null
 const API_ROOT = `${process.env.REACT_APP_API_SERVER}/${process.env.REACT_APP_API_ROOT}`

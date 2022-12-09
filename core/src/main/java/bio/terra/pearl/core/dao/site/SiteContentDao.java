@@ -34,6 +34,10 @@ public class SiteContentDao extends BaseJdbiDao<SiteContent> {
         return SiteContent.class;
     }
 
+    public Optional<SiteContent> findOne(String stableId, int version) {
+        return findByTwoProperties("stable_id", stableId, "version", version);
+    }
+
     /**
      * returns a fully hydrated SiteContent with all kids attached of the specified language
      * images are excluded
