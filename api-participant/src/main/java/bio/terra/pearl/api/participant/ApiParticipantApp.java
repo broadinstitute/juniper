@@ -18,7 +18,6 @@ import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-
 @SpringBootApplication(
     scanBasePackages = {
       // Scan for logging-related components & configs
