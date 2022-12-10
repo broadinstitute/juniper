@@ -6,6 +6,6 @@ import React from 'react'
  * @param content
  * @constructor
  */
-export default function RawHtmlTemplate({rawContent}: {rawContent: string}) {
-  return <div dangerouslySetInnerHTML={{__html: rawContent}}></div>
+export default function RawHtmlTemplate({rawContent}: {rawContent: string | null}) {
+  return <div dangerouslySetInnerHTML={{__html: rawContent ? rawContent : ''}}></div>
 }

@@ -34,8 +34,8 @@ export type NavbarItem = {
 export type HtmlSection = {
   id: string,
   sectionType: string,
-  rawContent: string,
-  sectionConfig: string
+  rawContent: string | null,
+  sectionConfig: string | null
 }
 
 export type SectionConfig = { [index: string]: any }

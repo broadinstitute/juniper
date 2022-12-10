@@ -52,5 +52,10 @@
     "@types/marked": "^4.0.7",
     "eslint": "^8.23.0"
   },
+  "jest": {
+    "moduleNameMapper": {
+      "react-markdown": "<rootDir>/node_modules/react-markdown/react-markdown.min.js"
+    }
+  },
   "proxy": "http://localhost:8080"
 }
