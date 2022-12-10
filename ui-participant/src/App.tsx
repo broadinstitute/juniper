@@ -2,16 +2,18 @@ import React, { useContext } from 'react'
 
 import LandingPage from 'landing/LandingPage'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { PortalEnvironmentContext } from 'providers/StudyEnvironmentProvider'
-import { NavbarItem, PortalEnvironment } from 'api/api'
+import { PortalEnvironmentContext } from 'providers/PortalEnvironmentProvider'
+import { LocalSiteContent, NavbarItem, PortalEnvironment } from 'api/api'
 import HtmlPageView from './landing/sections/HtmlPageView'
 
-
+/**
+ * root app -- handles dynamically creating all the routes based on the siteContent
+ */
 function App() {
   const currentEnv: PortalEnvironment = useContext(PortalEnvironmentContext) as PortalEnvironment
-  const localSiteContent = currentEnv.siteContent.localizedSiteContents[0]
+  const localSiteContent: LocalSiteContent = currentEnv.siteContent.localizedSiteContents[0]
 
-  let landingRoutes: any[] = []
+  let landingRoutes: JSX.Element[] = []
   if (localSiteContent?.navbarItems) {
     landingRoutes = localSiteContent.navbarItems
       .filter((navItem: NavbarItem) => navItem.navbarItemType === 'INTERNAL')
@@ -26,7 +28,7 @@ function App() {
     <div className="App d-flex flex-column min-vh-100 bg-white">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<LandingPage localSiteContent={localSiteContent} currentEnv={currentEnv}/>}>
+          <Route path="/" element={<LandingPage/>}>
             {landingRoutes}
           </Route>
           <Route path="*" element={<div>unmatched route</div>}/>

@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import React from 'react'
+import { ButtonConfig } from 'api/api'
 
 type Logo = {
   imageStableId: string,
@@ -10,7 +11,7 @@ type HeroLeftWithImageTemplateProps = {
   background?: string, // background CSS style (e.g. `linear-gradient(...)`)
   backgroundColor?: string, // background color for the block
   blurb?: string, //  text below the title
-  buttons?: any, // array of objects containing `text` and `href` attributes
+  buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   title?: string, // large heading text
   imageStableId?: string, // image
   logos?: Logo[]
@@ -21,14 +22,9 @@ type HeroLeftWithImageTemplateProps = {
  * TODO -- implement images
  */
 function HeroLeftWithImageTemplate({
-  config: {
-    background,
-    blurb,
-    buttons,
-    imageStableId,
-    logos,
-    title
-  }
+  config:
+  // eslint-disable-next-line  @typescript-eslint/no-unused-vars
+  { background, blurb, buttons, imageStableId, logos, title }
 }: {config: HeroLeftWithImageTemplateProps}) {
   return <div className="row flex-lg-row-reverse"
     style={{ background }}>

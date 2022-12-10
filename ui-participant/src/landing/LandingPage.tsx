@@ -1,11 +1,8 @@
 import React from 'react'
-import { HtmlPage, LocalSiteContent, PortalEnvironment } from 'api/api'
-
 import { Outlet } from 'react-router-dom'
-import HtmlPageView from './sections/HtmlPageView'
 
-function LandingPageView({ localSiteContent, currentEnv }:
-                           {localSiteContent: LocalSiteContent, currentEnv: PortalEnvironment}) {
+/** renders the landing page for a portal (e.g. hearthive.org) */
+function LandingPageView() {
   return <div className="LandingPage">
     <div className="container-fluid bg-white min-vh-100 d-flex flex-column p-0">
       <div>

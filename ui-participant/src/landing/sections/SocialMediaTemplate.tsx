@@ -1,9 +1,10 @@
 import _ from 'lodash'
 import React from 'react'
-
+import { ButtonConfig } from 'api/api'
+/* eslint-disable */
 type SocialMediaTemplateProps = {
   blurb?: string, //  text below the title
-  buttons?: any, // array of objects containing `text` and `href` attributes
+  buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   title?: string, // large heading text
   facebookHref?: string, // URL of Facebook page
   instagramHref?: string, // URL of Instagram page

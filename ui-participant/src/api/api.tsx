@@ -38,6 +38,9 @@ export type HtmlSection = {
   sectionConfig: string | null
 }
 
+export type ButtonConfig = { text: string, href: string }
+
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export type SectionConfig = { [index: string]: any }
 
 const bearerToken: string | null = null
@@ -62,7 +65,7 @@ export default {
     }
   },
 
-  async processJsonResponse(response: any) {
+  async processJsonResponse(response: Response) {
     const obj = await response.json()
     if (response.ok) {
       return obj
@@ -81,10 +84,12 @@ export type EnvSpec = {
   envName: string
 }
 
+/** gets the current environment params */
 export function getEnvSpec(): EnvSpec {
   return readEnvFromHostname(window.location.hostname)
 }
 
+/** parses shortcode and environment from hostname */
 function readEnvFromHostname(hostname: string): EnvSpec {
   let shortname; let envName = ''
   const splitHostname = hostname.split('.')

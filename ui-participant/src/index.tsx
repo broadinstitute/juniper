@@ -7,7 +7,7 @@ import './index.css'
 import './surveyJsStyle.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
-import PortalEnvrionmentProvider, { PortalEnvironmentContext } from './providers/StudyEnvironmentProvider'
+import PortalEnvrionmentProvider from './providers/PortalEnvironmentProvider'
 
 
 const root = ReactDOM.createRoot(

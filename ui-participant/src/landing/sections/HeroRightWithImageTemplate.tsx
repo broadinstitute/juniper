@@ -1,5 +1,5 @@
 import React from 'react'
-
+/* eslint-disable */
 type HeroRightWithImageTemplateProps = {
   blurb?: string, //  text below the title
   title?: string, // large heading text

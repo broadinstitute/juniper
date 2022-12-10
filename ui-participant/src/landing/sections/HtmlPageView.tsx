@@ -22,6 +22,7 @@ const templateComponents: { [index: string]: TemplateComponent } = {
   'RAW_HTML': RawHtmlTemplate
 }
 
+/** renders a configured HtmlPage */
 export default function HtmlPageView({ page }: { page: HtmlPage }) {
   return <>
     {
