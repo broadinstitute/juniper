@@ -14,15 +14,16 @@ type SocialMediaTemplateProps = {
  * Template for a hero with social media links.
  * TODO -- implement images
  */
-function SocialMediaTemplate({ config: {
-      blurb,
-      buttons,
-      facebookHref,
-      instagramHref,
-      title,
-      twitterHref
-    }}: {config: SocialMediaTemplateProps}) {
-
+function SocialMediaTemplate({
+  config: {
+    blurb,
+    buttons,
+    facebookHref,
+    instagramHref,
+    title,
+    twitterHref
+  }
+}: {config: SocialMediaTemplateProps}) {
   return <div className="container py-5">
     <div className="d-flex justify-content-center mt-5 mb-4">
       {/** twitterHref &&

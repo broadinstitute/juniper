@@ -13,10 +13,9 @@ type HeroCenteredTemplateProps = {
 /**
  * Template for rendering a hero with centered content.
  */
-function HeroCenteredTemplate({config: {background, backgroundColor, color, blurb, buttons, title}}:
+function HeroCenteredTemplate({ config: { background, backgroundColor, color, blurb, buttons, title } }:
                                 {config: HeroCenteredTemplateProps}) {
-
-  return <div className="py-5 text-center" style={{background, backgroundColor, color}}>
+  return <div className="py-5 text-center" style={{ background, backgroundColor, color }}>
     <div className="col-lg-6 mx-auto">
       <h1 className="fs-1 fw-normal lh-sm mb-4">
         {title}
@@ -34,7 +33,6 @@ function HeroCenteredTemplate({config: {background, backgroundColor, color, blur
       }
     </div>
   </div>
-
 }
 
 export default HeroCenteredTemplate

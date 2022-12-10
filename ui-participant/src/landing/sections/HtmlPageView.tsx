@@ -1,16 +1,16 @@
 import _ from 'lodash'
 import React from 'react'
 
-import FrequentlyAskedQuestionsTemplate from "./FrequentlyAskedQuestionsTemplate"
-import HeroCenteredTemplate from "./HeroCenteredTemplate"
-import HeroLeftWithImageTemplate from "./HeroLeftWithImageTemplate"
-import HeroRightWithImageTemplate from "./HeroRightWithImageTemplate"
-import StepOverviewTemplate from "./StepOverviewTemplate"
-import SocialMediaTemplate from "./SocialMediaTemplate"
-import {HtmlPage, HtmlSection, SectionConfig} from "api/api";
-import RawHtmlTemplate from "./RawHtmlTemplate";
+import FrequentlyAskedQuestionsTemplate from './FrequentlyAskedQuestionsTemplate'
+import HeroCenteredTemplate from './HeroCenteredTemplate'
+import HeroLeftWithImageTemplate from './HeroLeftWithImageTemplate'
+import HeroRightWithImageTemplate from './HeroRightWithImageTemplate'
+import StepOverviewTemplate from './StepOverviewTemplate'
+import SocialMediaTemplate from './SocialMediaTemplate'
+import { HtmlPage, HtmlSection, SectionConfig } from 'api/api'
+import RawHtmlTemplate from './RawHtmlTemplate'
 
-type TemplateComponent = ({config, rawContent}: {config: SectionConfig, rawContent: string | null}) => JSX.Element
+type TemplateComponent = ({ config, rawContent }: {config: SectionConfig, rawContent: string | null}) => JSX.Element
 
 const templateComponents: { [index: string]: TemplateComponent } = {
   'FAQ': FrequentlyAskedQuestionsTemplate,

@@ -1,7 +1,7 @@
-import React from "react";
-import {PortalEnvironment} from "api/api";
+import React from 'react'
+import { PortalEnvironment } from 'api/api'
 
-function Footer({currentEnv}: {currentEnv: PortalEnvironment}) {
+function Footer({ currentEnv }: {currentEnv: PortalEnvironment}) {
   return <footer className="mt-auto ">
     <div className="container bg-white">
       <div className="row">

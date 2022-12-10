@@ -40,7 +40,7 @@ export type HtmlSection = {
 
 export type SectionConfig = { [index: string]: any }
 
-let bearerToken: string | null = null
+const bearerToken: string | null = null
 const API_ROOT = `${process.env.REACT_APP_API_SERVER}/${process.env.REACT_APP_API_ROOT}`
 
 export default {
@@ -86,7 +86,7 @@ export function getEnvSpec(): EnvSpec {
 }
 
 function readEnvFromHostname(hostname: string): EnvSpec {
-  let shortname, envName = ''
+  let shortname; let envName = ''
   const splitHostname = hostname.split('.')
   if (Object.keys(ALLOWED_ENV_NAMES).includes(splitHostname[0])) {
     envName = ALLOWED_ENV_NAMES[splitHostname[0]]
@@ -95,7 +95,7 @@ function readEnvFromHostname(hostname: string): EnvSpec {
     envName = 'LIVE'
     shortname = splitHostname[0]
   }
-  return {envName, shortname}
+  return { envName, shortname }
 }
 
 const ALLOWED_ENV_NAMES: Record<string, string> = {

@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import Api, {getEnvSpec, EnvSpec, SiteContent, PortalEnvironment} from "api/api";
+import React, { useEffect, useState } from 'react'
+import Api, { getEnvSpec, EnvSpec, SiteContent, PortalEnvironment } from 'api/api'
 
 
 /** current user object context */
@@ -15,7 +15,7 @@ export default function PortalEnvrionmentProvider({ children }: { children: any}
   const [isError, setIsError] = useState(false)
   const envSpec: EnvSpec = getEnvSpec()
 
-  useEffect( () => {
+  useEffect(() => {
     Api.getPortalEnvironment(envSpec.shortname, envSpec.envName).then(result => {
       result.studyShortname = envSpec.shortname
       setEnvState(result)

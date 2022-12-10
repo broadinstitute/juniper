@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import HtmlPageView from './HtmlPageView'
-import {HtmlPage} from 'api/api';
+import { HtmlPage } from 'api/api'
 
 
 test('handles trivial landing page', () => {

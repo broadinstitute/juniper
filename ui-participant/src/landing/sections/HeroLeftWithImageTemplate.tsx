@@ -20,17 +20,18 @@ type HeroLeftWithImageTemplateProps = {
  * Template for a hero with text content on the left and an image on the right.
  * TODO -- implement images
  */
-function HeroLeftWithImageTemplate({ config: {
-      background,
-      blurb,
-      buttons,
-      imageStableId,
-      logos,
-      title
-    }}: {config: HeroLeftWithImageTemplateProps}) {
-
+function HeroLeftWithImageTemplate({
+  config: {
+    background,
+    blurb,
+    buttons,
+    imageStableId,
+    logos,
+    title
+  }
+}: {config: HeroLeftWithImageTemplateProps}) {
   return <div className="row flex-lg-row-reverse"
-              style={{ background: background }}>
+    style={{ background }}>
     <div className="col-10 col-sm-8 col-lg-6 p-0">
       {/** <ArborImage imageStableId={imageStableId} alt={''}
                   className={'d-block mx-lg-auto img-fluid p-0'}/> **/}

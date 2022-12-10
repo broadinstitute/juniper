@@ -17,15 +17,16 @@ type StepOverviewTemplateProps = {
 /**
  * Template for rendering a step overview
  */
-function StepOverviewTemplate({config: {
-      background,
-      buttons,
-      steps,
-      title
-  }}: {config: StepOverviewTemplateProps}) {
-
+function StepOverviewTemplate({
+  config: {
+    background,
+    buttons,
+    steps,
+    title
+  }
+}: {config: StepOverviewTemplateProps}) {
   // TODO: improve layout code for better flexing, especially with <> 4 steps
-  return <div className="p-5" style={{background}}>
+  return <div className="p-5" style={{ background }}>
     <h1 className="fs-1 fw-normal lh-sm mb-3 text-center">
       {title}
     </h1>

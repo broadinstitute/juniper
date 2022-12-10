@@ -1,10 +1,10 @@
-import React, {useContext} from 'react'
+import React, { useContext } from 'react'
 
-import LandingPage from "landing/LandingPage"
-import {BrowserRouter, Route, Routes} from "react-router-dom"
-import {PortalEnvironmentContext} from "providers/StudyEnvironmentProvider"
-import {NavbarItem, PortalEnvironment} from "api/api"
-import HtmlPageView from "./landing/sections/HtmlPageView";
+import LandingPage from 'landing/LandingPage'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { PortalEnvironmentContext } from 'providers/StudyEnvironmentProvider'
+import { NavbarItem, PortalEnvironment } from 'api/api'
+import HtmlPageView from './landing/sections/HtmlPageView'
 
 
 function App() {
@@ -16,7 +16,7 @@ function App() {
     landingRoutes = localSiteContent.navbarItems
       .filter((navItem: NavbarItem) => navItem.navbarItemType === 'INTERNAL')
       .map((navItem: NavbarItem, index: number) => <Route key={index} path={navItem.htmlPage.path}
-                                                   element={<HtmlPageView page={navItem.htmlPage}/>}/>)
+        element={<HtmlPageView page={navItem.htmlPage}/>}/>)
     landingRoutes.push(
       <Route index key="main" element={<HtmlPageView page={localSiteContent.landingPage}/>}/>
     )
@@ -37,4 +37,4 @@ function App() {
 }
 
 
-export default App;
+export default App

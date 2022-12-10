@@ -14,12 +14,13 @@ type HeroRightWithImageTemplateProps = {
  * @param {string?} props.content.blurb - text below the title
  * @param {string?} props.content.imageStableId - stable ID of the image
  */
-function HeroRightWithImageTemplate({config: {
-  blurb,
-  imageStableId,
-  title
-}}: {config: HeroRightWithImageTemplateProps}) {
-
+function HeroRightWithImageTemplate({
+  config: {
+    blurb,
+    imageStableId,
+    title
+  }
+}: {config: HeroRightWithImageTemplateProps}) {
   return <div className="row">
     <div className="col-lg-6">
       {/** <ArborImage imageStableId={imageStableId} alt={''} className="img-fluid"/> */}
