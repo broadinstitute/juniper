@@ -1,9 +1,10 @@
 import _ from 'lodash'
 import React from 'react'
 import { ButtonConfig } from 'api/api'
+import PearlImage from '../../util/PearlImage'
 
 type Logo = {
-  imageStableId: string,
+  imageShortcode: string,
   alt: string
 }
 
@@ -13,7 +14,7 @@ type HeroLeftWithImageTemplateProps = {
   blurb?: string, //  text below the title
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   title?: string, // large heading text
-  imageStableId?: string, // image
+  imageShortcode?: string, // image
   logos?: Logo[]
 }
 
@@ -22,15 +23,13 @@ type HeroLeftWithImageTemplateProps = {
  * TODO -- implement images
  */
 function HeroLeftWithImageTemplate({
-  config:
-  // eslint-disable-next-line  @typescript-eslint/no-unused-vars
-  { background, blurb, buttons, imageStableId, logos, title }
+  config: { background, blurb, buttons, imageShortcode, logos, title }
 }: {config: HeroLeftWithImageTemplateProps}) {
   return <div className="row flex-lg-row-reverse"
     style={{ background }}>
     <div className="col-10 col-sm-8 col-lg-6 p-0">
-      {/** <ArborImage imageStableId={imageStableId} alt={''}
-                  className={'d-block mx-lg-auto img-fluid p-0'}/> **/}
+      <PearlImage imageShortcode={imageShortcode} alt={''}
+        className={'d-block mx-lg-auto img-fluid p-0'}/>
     </div>
     <div className="col-lg-6 ps-5 py-5 d-flex flex-column justify-content-around">
       <h1 className="fs-1 fw-normal lh-sm">
@@ -47,11 +46,9 @@ function HeroLeftWithImageTemplate({
         }
       </div>
       <div className="d-flex flex-wrap align-items-center justify-content-between">
-        { /**
-          {_.map(logos, ({ imageStableId, alt }) => {
-            return <ArborImage imageStableId={imageStableId} alt={alt} className={'m-1'}/>
-          })
-        */ }
+        {_.map(logos, ({ imageShortcode, alt }) => {
+          return <PearlImage imageShortcode={imageShortcode} alt={alt} className={'m-1'}/>
+        }) }
       </div>
     </div>
   </div>
