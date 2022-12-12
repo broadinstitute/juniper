@@ -63,7 +63,7 @@ paths:
         '200':
           description: image data
           content:
-            image/jpeg:
+            image/*: # see https://superuser.com/questions/979135/is-there-a-generic-mime-type-for-all-image-files
               schema:
                 type: string
                 format: binary
