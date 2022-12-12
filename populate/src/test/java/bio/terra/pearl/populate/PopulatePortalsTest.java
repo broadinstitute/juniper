@@ -67,8 +67,6 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
      */
     private void checkOurHealth() throws IOException {
         Portal portal = portalPopulator.populate("portals/ourhealth/portal.json");
-        // For now, just do a check on the shortcode to confirm we got the right one.
-        // We can add more detailed assertions as our populates get more sophisticated
         Assertions.assertEquals("ourhealth", portal.getShortcode());
 
         Study mainStudy = portal.getPortalStudies().stream().findFirst().get().getStudy();
