@@ -30,14 +30,13 @@ public class SiteImageService extends CrudService<SiteImage, SiteImageDao> {
 
     @Override
     public SiteImage create(SiteImage image) {
-        if (image.getShortcode() == null) {
-            SiteContent content = siteContentService.find(image.getSiteContentId()).get();
-            image.setShortcode(generateShortcode(
-                    image.getUploadFileName(),
-                    content.getStableId(),
-                    content.getVersion()
-            ));
-        }
+        // we don't trust shortcodes that come from the UI -- always set it to be synced with the siteContent
+        SiteContent content = siteContentService.find(image.getSiteContentId()).get();
+        image.setShortcode(generateShortcode(
+                image.getUploadFileName(),
+                content.getStableId(),
+                content.getVersion()
+        ));
         return dao.create(image);
     }
 
@@ -47,11 +46,16 @@ public class SiteImageService extends CrudService<SiteImage, SiteImageDao> {
     }
 
     /**
-     * shortcode is the upload filename stripped of special characters and whitespace except ".", then lowercased
+     * A shortcode is a globally unique, URL-safe identifier.
+     * Shortcode is the upload filename with whitespace replaced with _,
+     * stripped of special characters and whitespace except ".", then lowercased.
+     * The siteContent shortcode and version are then prepended to ensure uniqueness
      */
     public static String generateShortcode(String uploadFileName,
                                            String siteContentStableId, int siteContentVersion) {
-        String cleanFileName = uploadFileName.toLowerCase().replaceAll("[^a-z\\d\\.]", "");
+        String cleanFileName = uploadFileName.toLowerCase()
+                .replaceAll("\\s", "_")
+                .replaceAll("[^a-z\\d\\._]", "");
         return  siteContentStableId + "_" + siteContentVersion + "_" + cleanFileName;
     }
 
