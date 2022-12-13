@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+}
+
+body, input, textarea, select, button {
+  font-family: "Montserrat", sans-serif;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}

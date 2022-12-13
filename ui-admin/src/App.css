@@ -1,0 +1,72 @@
+.btn-primary {
+  background-color: rgb(41, 86, 153);;
+  color: #fafafa;
+}
+
+.btn-primary:hover {
+  background-color: #4D72AA;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color:#4D72AA;
+  border: none;
+}
+
+.btn-secondary:focus, .btn-secondary:hover {
+  background-color: transparent;
+  color:#4D72AA;
+  font-weight: bold;
+  border: none;
+  box-shadow: none;
+}
+
+a {
+  color: #4D72AA;
+  text-decoration: none;
+}
+
+.gene-load-spinner {
+  animation-name: gene-load-spin;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-duration: 2s;
+}
+
+@keyframes gene-load-spin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(-360deg);
+  }
+}
+
+.detail {
+  font-size: 0.9em;
+  color: #777;
+  font-style: italic;
+}
+
+.App {
+  background-color: #f6f6f6;
+  height: 100vh;
+}
+
+.App-study-list {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 2em;
+  background: #fff;
+  min-width: 300px;
+}
+
+.App-splash-background {
+  background-image: url('./images/pipetteSplash.jpeg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: fixed;
+  height: 100%;
+  width: 100%;
+}
+
