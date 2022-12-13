@@ -1,14 +1,6 @@
 package bio.terra.pearl.core.dao;
 
 import bio.terra.pearl.core.model.BaseEntity;
-import org.apache.commons.lang3.StringUtils;
-import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.mapper.RowMapper;
-import org.jdbi.v3.core.mapper.reflect.BeanMapper;
-import org.jdbi.v3.core.result.RowView;
-import org.springframework.beans.PropertyAccessor;
-import org.springframework.beans.PropertyAccessorFactory;
-
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -16,6 +8,13 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.apache.commons.lang3.StringUtils;
+import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.mapper.RowMapper;
+import org.jdbi.v3.core.mapper.reflect.BeanMapper;
+import org.jdbi.v3.core.result.RowView;
+import org.springframework.beans.PropertyAccessor;
+import org.springframework.beans.PropertyAccessorFactory;
 
 public abstract class BaseJdbiDao<T extends BaseEntity> {
     protected Jdbi jdbi;
@@ -250,7 +249,11 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     }
 
     public int count() {
-        return jdbi.withHandle(handle -> handle.execute("select count(1) from " + tableName));
+        return jdbi.withHandle(handle -> handle
+                .createQuery("select count(1) from " + tableName)
+                .mapTo(int.class)
+                .one()
+        );
     }
 
     protected int countByProperty(String propertyName, Object value) {
