@@ -111,6 +111,19 @@ paths:
           content: { application/json: { schema: {$ref: '#/components/schemas/PortalDto' }}}
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/current-user/v1/unauthed-login:
+    post:
+      summary: Gets the portal object
+      tags: [ currentUser ]
+      operationId: unauthedLogin
+      parameters:
+        - { name: username, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: portal object
+          content: { application/json: { schema: {type: object} } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/adminUser/v1/{id}:
     get:
       summary: Gets an admin user

@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao;
 
 import bio.terra.pearl.core.model.AdminUser;
+import java.util.Optional;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
@@ -14,5 +15,9 @@ public class AdminUserDao extends BaseJdbiDao<AdminUser> {
     @Override
     protected Class<AdminUser> getClazz() {
         return AdminUser.class;
+    }
+
+    public Optional<AdminUser> findByUsername(String email) {
+        return findByProperty("username", email);
     }
 }

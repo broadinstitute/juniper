@@ -12,18 +12,21 @@ public class PopulateDispatcher {
         ADMIN_USER,
         ENVIRONMENT,
         PORTAL,
-        STUDY
+        STUDY,
+        SETUP
     }
 
     public PopulateDispatcher(AdminUserPopulator adminUserPopulator,
                               EnvironmentPopulator environmentPopulator,
                               PortalPopulator portalPopulator,
-                              StudyPopulator studyPopulator) {
+                              StudyPopulator studyPopulator,
+                              SetupPopulator setupPopulator) {
         this.typeMap = Map.of(
                 PopulateType.ADMIN_USER, adminUserPopulator,
                 PopulateType.ENVIRONMENT, environmentPopulator,
                 PopulateType.PORTAL, portalPopulator,
-                PopulateType.STUDY, studyPopulator
+                PopulateType.STUDY, studyPopulator,
+                PopulateType.SETUP, setupPopulator
         );
     }
 

@@ -45,11 +45,9 @@ public class PopulateCliApp
 
         String popType = args[0];
         String filePathName = args[1];
-        LOG.info("confirming default environments exist");
-        Populator envPopulator = populateDispatcher.getPopulator("environment");
-        envPopulator.populate("environments/sandbox.json");
-        envPopulator.populate("environments/irb.json");
-        envPopulator.populate("environments/live.json");
+        LOG.info("confirming default environments and users exist");
+        Populator setupPopulator = populateDispatcher.getPopulator("setup");
+        setupPopulator.populate("");
 
         LOG.info("beginning populate, type: " + popType + " from file: " + filePathName );
         Populator populator = populateDispatcher.getPopulator(popType);
