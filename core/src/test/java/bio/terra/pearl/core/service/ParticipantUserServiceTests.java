@@ -1,8 +1,8 @@
 package bio.terra.pearl.core.service;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.factory.MailingAddressFactory;
-import bio.terra.pearl.core.factory.ParticipantUserFactory;
+import bio.terra.pearl.core.factory.participant.MailingAddressFactory;
+import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.factory.ProfileFactory;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;

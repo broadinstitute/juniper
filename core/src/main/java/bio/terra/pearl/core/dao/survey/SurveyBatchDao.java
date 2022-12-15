@@ -20,6 +20,6 @@ public class SurveyBatchDao extends BaseJdbiDao<SurveyBatch> {
     }
 
     public List<SurveyBatch> findByStudyEnvironmentId(UUID studyEnvironmentId) {
-        return findAllByProperty("study_envrionment_id", studyEnvironmentId);
+        return findAllByProperty("study_environment_id", studyEnvironmentId);
     }
 }

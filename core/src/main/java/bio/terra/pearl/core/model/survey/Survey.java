@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.UUID;
+
 @Getter @Setter @NoArgsConstructor @SuperBuilder
 public class Survey extends BaseEntity implements Versioned {
     private String stableId;
@@ -15,4 +17,6 @@ public class Survey extends BaseEntity implements Versioned {
     private int version = 1;
     private String content;
     private String name;
+    // used to keep surveys attached to their portal even if they are not on an environment currently
+    private UUID portalId;
 }

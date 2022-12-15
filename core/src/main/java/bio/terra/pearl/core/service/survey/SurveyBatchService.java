@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.survey.Schedule;
 import bio.terra.pearl.core.model.survey.SurveyBatch;
 import bio.terra.pearl.core.model.survey.SurveyBatchSurvey;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.CrudService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,16 +15,14 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-public class SurveyBatchService {
+public class SurveyBatchService extends CrudService<SurveyBatch, SurveyBatchDao> {
     private ScheduleService scheduleService;
-    private SurveyBatchDao surveyBatchDao;
-
     private SurveyBatchSurveyDao surveyBatchSurveyDao;
 
     public SurveyBatchService(ScheduleService scheduleService, SurveyBatchDao surveyBatchDao,
                               SurveyBatchSurveyDao surveyBatchSurveyDao) {
+        super(surveyBatchDao);
         this.scheduleService = scheduleService;
-        this.surveyBatchDao = surveyBatchDao;
         this.surveyBatchSurveyDao = surveyBatchSurveyDao;
     }
 
@@ -35,7 +34,7 @@ public class SurveyBatchService {
             surveyBatch.setScheduleId(schedule.getId());
         }
 
-        SurveyBatch savedBatch = surveyBatchDao.create(surveyBatch);
+        SurveyBatch savedBatch = dao.create(surveyBatch);
 
         for (SurveyBatchSurvey sbSurvey : surveyBatch.getSurveyBatchSurveys()) {
             sbSurvey.setSurveyBatchId(savedBatch.getId());
@@ -49,12 +48,12 @@ public class SurveyBatchService {
     public void delete(UUID surveyBatchId) {
         scheduleService.deleteByBatchId(surveyBatchId);
         surveyBatchSurveyDao.deleteByBatchId(surveyBatchId);
-        surveyBatchDao.delete(surveyBatchId);
+        dao.delete(surveyBatchId);
     }
 
     @Transactional
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId, Set<CascadeProperty> cascade) {
-        List<SurveyBatch> surveyBatches = surveyBatchDao.findByStudyEnvironmentId(studyEnvironmentId);
+        List<SurveyBatch> surveyBatches = dao.findByStudyEnvironmentId(studyEnvironmentId);
         for (SurveyBatch surveyBatch : surveyBatches) {
             delete(surveyBatch.getId());
         }

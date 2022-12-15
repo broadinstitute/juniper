@@ -140,6 +140,11 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
+    /**
+     * Fetches an entity with a child attached.  For example, if the parent table has a column "mailing_address_id" and
+     * a field mailingAddress, this method could be used to fetch the parent with the mailing address already hydrated
+     * and do so in a single SQL query
+     */
     protected Optional<T> findWithChild(UUID id, String childIdPropertyName, String childPropertyName, BaseJdbiDao childDao) {
         List<String> parentCols = getQueryColumns.stream().map(col -> "a." + col + " a_" + col)
                 .collect(Collectors.toList());
@@ -212,11 +217,24 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
 
     protected void deleteByParentUuid(String parentColumnName, UUID parentUUID, BaseJdbiDao parentDao) {
         jdbi.withHandle(handle ->
-                handle.createUpdate("delete from " + tableName + " join  " + parentDao.tableName + " on "
-                        + tableName + ".id = " + parentDao.tableName + "." + parentColumnName
-                        + " where " + parentColumnName + " = :parentUUID;")
+                handle.createUpdate("delete from " + tableName + " using  " + parentDao.tableName
+                        + " where " + tableName + ".id = " + parentDao.tableName + "." + parentColumnName
+                        + " and " + parentColumnName + " = :parentUUID;")
                         .bind("parentUUID", parentUUID)
                         .execute()
+        );
+    }
+
+    public int count() {
+        return jdbi.withHandle(handle -> handle.execute("select count(1) from " + tableName));
+    }
+
+    protected int countByProperty(String propertyName, Object value) {
+        return jdbi.withHandle(handle -> handle.createQuery("select count(1) from " + tableName
+                + " where " + propertyName + " = :value")
+                .bind("value", value)
+                .mapTo(Integer.class)
+                .one()
         );
     }
 

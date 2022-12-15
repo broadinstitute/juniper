@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,6 +24,13 @@ public class EnrolleeDao extends BaseJdbiDao<Enrollee> {
         return findByProperty("shortcode", shortcode);
     }
 
+    public List<Enrollee> findByStudyEnvironment(UUID studyEnvironmentId) {
+        return findAllByProperty("study_environment_id", studyEnvironmentId);
+    }
+
+    public int countByStudyEnvironment(UUID studyEnvironmentId) {
+        return countByProperty("study_environment_id", studyEnvironmentId);
+    }
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
         deleteByUuidProperty("study_environment_id", studyEnvironmentId);
     }

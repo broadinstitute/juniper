@@ -73,7 +73,7 @@ public class PortalPopulator extends Populator<Portal> {
     }
 
     private void populateStudy(String studyFileName, FilePopulateConfig config, Portal portal) throws IOException {
-        Study newStudy = studyPopulator.populate(config.newFrom(studyFileName));
+        Study newStudy = studyPopulator.populate(config.newForPortal(studyFileName, portal.getShortcode(), null));
         PortalStudy portalStudy = portalStudyService.create(portal.getId(), newStudy.getId());
         portal.getPortalStudies().add(portalStudy);
         portalStudy.setStudy(newStudy);
