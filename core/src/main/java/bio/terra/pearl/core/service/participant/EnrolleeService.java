@@ -2,8 +2,10 @@ package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,11 +19,14 @@ import java.util.UUID;
 public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     public static final String PARTICIPANT_SHORTCODE_ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static final int PARTICIPANT_SHORTCODE_LENGTH = 6;
+    private SurveyResponseService surveyResponseService;
 
     private SecureRandom secureRandom;
 
-    public EnrolleeService(EnrolleeDao enrolleeDao, SecureRandom secureRandom) {
+    public EnrolleeService(EnrolleeDao enrolleeDao, SurveyResponseService surveyResponseService,
+                           SecureRandom secureRandom) {
         super(enrolleeDao);
+        this.surveyResponseService = surveyResponseService;
         this.secureRandom = secureRandom;
     }
 
@@ -29,9 +34,20 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.findOneByShortcode(shortcode);
     }
 
+    @Override
+    @Transactional
+    public void delete(UUID enrolleeId, Set<CascadeProperty> cascades) {
+        for (SurveyResponse surveyResponse : surveyResponseService.findByEnrolleeId(enrolleeId)) {
+            surveyResponseService.delete(surveyResponse.getId(), cascades);
+        }
+        dao.delete(enrolleeId);
+    }
+
     @Transactional
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId, Set<CascadeProperty> cascade) {
-        dao.deleteByStudyEnvironmentId(studyEnvironmentId);
+        for (Enrollee enrollee : dao.findByStudyEnvironment(studyEnvironmentId)) {
+            delete(enrollee.getId(), cascade);
+        }
     }
 
     public List<Enrollee> findByStudyEnvironment(UUID studyEnvironmentId) {

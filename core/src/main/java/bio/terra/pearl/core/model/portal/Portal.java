@@ -1,8 +1,8 @@
 package bio.terra.pearl.core.model.portal;
 
 import bio.terra.pearl.core.model.BaseEntity;
-import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.study.PortalStudy;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

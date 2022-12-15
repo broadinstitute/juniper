@@ -32,4 +32,17 @@ public class SurveyResponseDao extends BaseMutableJdbiDao<SurveyResponse> {
         return findWithChild(responseId, "lastSnapshotId",
                 "lastSnapshot", responseSnapshotDao);
     }
+
+    /**
+     * clears the lastSnapshotId.  this is necessary in some cases to enable
+     * deletion, since that snapshot is bidirectionally linked to the response
+     */
+    public void clearLastSnapshotId(UUID responseId) {
+        jdbi.withHandle(handle ->
+                handle.createUpdate("update " + tableName + " set last_snapshot_id = null "
+                                + " where id = :id;")
+                        .bind("id", responseId)
+                        .execute()
+        );
+    }
 }
