@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.portal;
 
-import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
+import bio.terra.pearl.core.dao.site.SiteContentDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import org.apache.commons.lang3.StringUtils;
@@ -13,9 +14,15 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
-public class PortalEnvironmentDao extends BaseJdbiDao<PortalEnvironment> {
-    public PortalEnvironmentDao(Jdbi jdbi) {
+public class PortalEnvironmentDao extends BaseMutableJdbiDao<PortalEnvironment> {
+    private PortalEnvironmentConfigDao portalEnvironmentConfigDao;
+    private SiteContentDao siteContentDao;
+    public PortalEnvironmentDao(Jdbi jdbi,
+                                PortalEnvironmentConfigDao portalEnvironmentConfigDao,
+                                SiteContentDao siteContentDao) {
         super(jdbi);
+        this.portalEnvironmentConfigDao = portalEnvironmentConfigDao;
+        this.siteContentDao = siteContentDao;
     }
 
     @Override
@@ -39,5 +46,17 @@ public class PortalEnvironmentDao extends BaseJdbiDao<PortalEnvironment> {
                         .mapTo(clazz)
                         .findOne()
         );
+    }
+
+    public Optional<PortalEnvironment> loadOneWithSiteContent(String shortcode, EnvironmentName environmentName,
+                                                              String language) {
+        Optional<PortalEnvironment> portalEnvOpt = findOne(shortcode, environmentName);
+        portalEnvOpt.ifPresent(portalEnv -> {
+            portalEnv.setPortalEnvironmentConfig(
+                    portalEnvironmentConfigDao.find(portalEnv.getPortalEnvironmentConfigId()).orElse(null)
+            );
+            portalEnv.setSiteContent(siteContentDao.findOneFull(portalEnv.getSiteContentId(), language).orElse(null));
+        });
+        return portalEnvOpt;
     }
 }

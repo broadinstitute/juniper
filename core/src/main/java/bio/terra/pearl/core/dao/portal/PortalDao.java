@@ -21,5 +21,4 @@ public class PortalDao extends BaseJdbiDao<Portal> {
     public Optional<Portal> findOneByShortcode(String shortcode) {
         return findByProperty("shortcode", shortcode);
     }
-
 }

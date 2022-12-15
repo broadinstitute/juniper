@@ -1,0 +1,57 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.btn-primary {
+  background-color: rgb(41, 86, 153);;
+  color: #fafafa;
+}
+
+.btn-primary:hover {
+  background-color: #4D72AA;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color:#4D72AA;
+  border: none;
+}
+
+a {
+  color: #4D72AA;
+  text-decoration: none;
+}
+
+.gene-load-spinner {
+  animation-name: gene-load-spin;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-duration: 2s;
+  max-height: 50px;
+  max-width: 30px;
+}
+
+@keyframes gene-load-spin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(-360deg);
+  }
+}
+
+.detail {
+  font-size: 0.9em;
+  color: #777;
+  font-style: italic;
+}
