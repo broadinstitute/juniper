@@ -7,7 +7,7 @@ import 'fonts/Montserrat.css'
 import App from './App'
 
 import reportWebVitals from './reportWebVitals'
-import UserProvider from './providers/UserProvider'
+import UserProvider from './user/UserProvider'
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

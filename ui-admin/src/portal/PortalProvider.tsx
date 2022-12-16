@@ -11,8 +11,13 @@ export type PortalContextT = {
   isError: boolean
 }
 
+export type LoadedPortalContextT = {
+  updatePortal: (portal: Portal) => void
+  portal: Portal
+}
+
 export type PortalParams = {
-  portalShortname: string,
+  portalShortcode: string,
   portalEnv: string,
 }
 
@@ -23,15 +28,16 @@ export const PortalContext = React.createContext<PortalContextT>({
   isError: false
 })
 
+
 /** routable component wrapper for PortalProvider */
 export default function RoutablePortalProvider() {
   const params = useParams<PortalParams>()
-  const portalShortname: string | undefined = params.portalShortname
+  const portalShortcode: string | undefined = params.portalShortcode
 
-  if (!portalShortname) {
-    return <span>No study selected</span>
+  if (!portalShortcode) {
+    return <span>No portal selected</span>
   }
-  return <PortalProvider shortname={portalShortname}>
+  return <PortalProvider shortname={portalShortcode}>
     <Outlet/>
   </PortalProvider>
 }
@@ -60,23 +66,23 @@ function PortalProvider({ shortname, children }:
     })
   }, [shortname])
 
-  if (isError) {
-    return <div>Portal &quot;{shortname}&quot; could not be loaded or found.</div>
-  }
-
-  if (isLoading) {
-    return <div>
-      <div className="text-center mt-5">
-        Loading portal...  <LoadingSpinner/>
-      </div>
-    </div>
-  }
-
   const portalContext: PortalContextT  = {
     portal: portalState,
     updatePortal,
     isLoading,
     isError
+  }
+
+  if (portalContext.isError) {
+    return <div>Portal could not be loaded or found.</div>
+  }
+
+  if (portalContext.isLoading) {
+    return <div>
+      <div className="text-center mt-5">
+        Loading portal...  <LoadingSpinner/>
+      </div>
+    </div>
   }
 
   return <PortalContext.Provider value={portalContext}>

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { UserContext, UserContextT } from 'providers/UserProvider'
+import { UserContext, UserContextT } from 'user/UserProvider'
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars'
 
 import { Link } from 'react-router-dom'

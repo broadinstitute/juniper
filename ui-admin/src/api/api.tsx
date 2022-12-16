@@ -3,9 +3,33 @@ export type AdminUser = {
   token: string
 };
 
+export type Study = {
+  name: string,
+  shortcode: string,
+  studyEnvironments: StudyEnvironment[]
+}
+
+export type StudyEnvironment = {
+  environmentName: string,
+  studyEnvironmentConfig: StudyEnvironmentConfig
+}
+
+export type StudyEnvironmentConfig = {
+  passwordProtected: boolean,
+  password: string,
+  acceptingEnrollment: boolean,
+  initialized: boolean
+}
+
+
+export type PortalStudy = {
+  study: Study
+}
+
 export type Portal = {
   name: string,
-  shortcode: string
+  shortcode: string,
+  portalStudies: PortalStudy[]
 }
 
 let bearerToken: string | null = null

@@ -26,7 +26,7 @@ function Login({ loginUser }: {loginUser: (user: AdminUser) => void}) {
       opacity: 0.4,
       backgroundColor: '#888'
     }}></div>
-    <div className="Login-dialog position-absolute top-50 start-50 translate-middle bg-white p-2" style={{
+    <div className="Login-dialog position-absolute top-50 start-50 translate-middle bg-white p-4" style={{
       borderRadius: '10px',
       zIndex: 2
     }}>
