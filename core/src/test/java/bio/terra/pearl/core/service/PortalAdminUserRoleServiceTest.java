@@ -64,10 +64,7 @@ public class PortalAdminUserRoleServiceTest extends BaseSpringBootTest {
 
         PortalAdminUserRole portalAdminUserRole1 = PortalAdminUserRole.builder().portalAdminUserId(portalAdminUser.getId()).roleId(role1.getId()).build();
         PortalAdminUserRole portalAdminUserRole2 = PortalAdminUserRole.builder().portalAdminUserId(portalAdminUser.getId()).roleId(role2.getId()).build();
-        assertThat(savedAdminUserRoles, containsInAnyOrder(
-                matchingPortalAdminUserRole(portalAdminUserRole1),
-                matchingPortalAdminUserRole(portalAdminUserRole2)
-        ));
+        assertThat(savedAdminUserRoles, containsInAnyOrder("one", "two"));
     }
 
     @Transactional
@@ -99,7 +96,7 @@ public class PortalAdminUserRoleServiceTest extends BaseSpringBootTest {
         var updatedAdminUserRoles = portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("new"));
 
         PortalAdminUserRole portalAdminUserRole2 = PortalAdminUserRole.builder().portalAdminUserId(portalAdminUser.getId()).roleId(newRole.getId()).build();
-        assertThat(updatedAdminUserRoles, containsInAnyOrder(matchingPortalAdminUserRole(portalAdminUserRole2)));
+        assertThat(updatedAdminUserRoles, containsInAnyOrder("new"));
 
         var updatedRolesForAdminUser = portalAdminUserRoleService.getRolesForAdminUser(portalAdminUser.getId());
         assertThat(updatedRolesForAdminUser, containsInAnyOrder(matchingPortalAdminUserRole(portalAdminUserRole2)));

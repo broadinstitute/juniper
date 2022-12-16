@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.admin;
 
 import bio.terra.pearl.core.dao.admin.PortalAdminUserRoleDao;
 import bio.terra.pearl.core.model.admin.PortalAdminUserRole;
+import bio.terra.pearl.core.model.admin.Role;
 import bio.terra.pearl.core.service.exception.RoleNotFoundException;
 import bio.terra.pearl.core.service.exception.UserNotFoundException;
 import bio.terra.pearl.core.service.exception.ValidationException;
@@ -30,18 +31,26 @@ public class PortalAdminUserRoleService {
         return portalAdminUserRoleDao.findByPortalAdminUserId(adminUserId);
     }
 
-    // TODO: Should this take a PortalAdminUser ID or an AdminUserId and a Portal ID (or shortcode)?
+    /**
+     * Replaces the roles for the given admin user based on the given role names. Any roles that the admin user may have
+     * previously had will be removed if they are not included in the list of role names.
+     *
+     * @param portalAdminUserId UUID of the portal admin user
+     * @param roleNames names of roles to set
+     * @return a list of role names that were actually set
+     * @throws ValidationException when the portal admin user or any of the roles are not found
+     */
     @Transactional
-    public List<PortalAdminUserRole> setRoles(UUID portalAdminUserId, List<String> roleNames) throws ValidationException {
-        var portalAdminUser = portalAdminUserService.findByPortalAdminUserId(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
+    public List<String> setRoles(UUID portalAdminUserId, List<String> roleNames) throws ValidationException {
+        var portalAdminUser = portalAdminUserService.findOne(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
         var roles = roleNames.stream().map(roleName -> roleService.findByName(roleName).orElseThrow(() -> new RoleNotFoundException(roleName))).toList();
 
         portalAdminUserRoleDao.deleteByPortalAdminUserId(portalAdminUser.getId());
-        var adminUserRoles = roles.stream().map(role -> {
+        roles.forEach(role -> {
             PortalAdminUserRole portalAdminUserRole = PortalAdminUserRole.builder().portalAdminUserId(portalAdminUserId).roleId(role.getId()).build();
-            return portalAdminUserRoleDao.create(portalAdminUserRole);
-        }).toList();
+            portalAdminUserRoleDao.create(portalAdminUserRole);
+        });
 
-        return adminUserRoles;
+        return roles.stream().map(Role::getName).toList();
     }
 }

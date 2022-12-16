@@ -20,7 +20,7 @@ public class PortalAdminUserService {
         return portalAdminUserDao.create(portalAdminUser);
     }
 
-    public Optional<PortalAdminUser> findByPortalAdminUserId(UUID portalAdminUserId) {
+    public Optional<PortalAdminUser> findOne(UUID portalAdminUserId) {
         return portalAdminUserDao.find(portalAdminUserId);
     }
 }

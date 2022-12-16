@@ -51,8 +51,8 @@ public class AdminUserController implements AdminUserApi {
 
   // TODO: return something useful here... but what? PortalAdminUserRoles? Role names?
   @Override
-  public ResponseEntity<Void> setRoles(UUID userId, RoleList body) throws ValidationException {
-    var portalAdminUserRoles = portalAdminUserRoleService.setRoles(userId, body.getRoles());
-    return ResponseEntity.noContent().build();
+  public ResponseEntity<RoleList> setRoles(UUID userId, RoleList body) throws ValidationException {
+    var roleNames = portalAdminUserRoleService.setRoles(userId, body.getRoles());
+    return ResponseEntity.ok(new RoleList().roles(roleNames));
   }
 }

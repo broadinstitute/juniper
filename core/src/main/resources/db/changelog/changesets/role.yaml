@@ -24,7 +24,7 @@ databaseChangeLog:
               - column: *idColumn
               - column: *createdAt
               - column: *lastUpdatedAt
-              - column: { name: name, type: text }
+              - column: { name: name, type: text, constraints: { nullable: false, unique: true } }
         - createTable:
             tableName: portal_admin_user_role
             columns:

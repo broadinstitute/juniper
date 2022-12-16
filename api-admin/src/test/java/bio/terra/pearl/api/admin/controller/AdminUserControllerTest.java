@@ -34,11 +34,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-/**
- * Together with the code generated from openapi.yml, a Controller is responsible for: *
- * implementing *Api methods * calling *Service methods * translating Service results (including
- * exceptions) into HTTP responses
- */
 @ContextConfiguration(classes = AdminUserController.class)
 @WebMvcTest
 public class AdminUserControllerTest {
@@ -99,27 +94,13 @@ public class AdminUserControllerTest {
   public void testSetRolesReturnsNoContentForGoodRequest() {
     var userId = UUID.randomUUID();
     var roleNames = List.of("one", "two");
+    when(mockPortalAdminUserRoleService.setRoles(userId, roleNames)).thenReturn(roleNames);
+    var expectedRoleList = new RoleList().roles(roleNames);
 
     var response = adminUserController.setRoles(userId, new RoleList().roles(roleNames));
 
-    assertThat(response, equalTo(ResponseEntity.noContent().build()));
+    assertThat(response, equalTo(ResponseEntity.ok(expectedRoleList)));
     verify(mockPortalAdminUserRoleService).setRoles(userId, roleNames);
-  }
-
-  @Test
-  public void oldTestSetRolesReturnsBadRequestForNonExistentRole() throws Exception {
-    doThrow(new RoleNotFoundException("nil"))
-        .when(mockPortalAdminUserRoleService)
-        .setRoles(any(), anyList());
-
-    RoleList requestBody = new RoleList().roles(List.of("nil"));
-    MockHttpServletRequestBuilder request =
-        post(setRolesEndpoint.formatted(UUID.randomUUID()))
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(requestBody));
-    ResultActions result = mockMvc.perform(request);
-
-    result.andExpect(status().isBadRequest());
   }
 
   @Test

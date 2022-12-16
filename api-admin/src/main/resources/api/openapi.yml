@@ -136,12 +136,16 @@ paths:
         - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
       requestBody:
         content:
-          'application/json':
+          application/json:
             schema:
               $ref: '#/components/schemas/RoleList'
       responses:
-        '204':
+        '200':
           description: roles updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleList'
         '500':
           $ref: '#/components/responses/ServerError'
 
