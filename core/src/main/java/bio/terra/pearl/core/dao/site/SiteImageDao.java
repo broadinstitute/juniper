@@ -2,10 +2,10 @@ package bio.terra.pearl.core.dao.site;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
 import bio.terra.pearl.core.model.site.SiteImage;
+import java.util.Optional;
+import java.util.UUID;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Component
 public class SiteImageDao extends BaseJdbiDao<SiteImage> {
@@ -16,6 +16,10 @@ public class SiteImageDao extends BaseJdbiDao<SiteImage> {
     @Override
     protected Class<SiteImage> getClazz() {
         return SiteImage.class;
+    }
+
+    public Optional<SiteImage> findOne(String shortcode) {
+        return findByProperty("shortcode", shortcode);
     }
 
     public void deleteBySiteContentId(UUID siteContentId) {

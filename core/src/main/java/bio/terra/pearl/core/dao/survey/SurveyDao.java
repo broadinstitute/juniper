@@ -16,14 +16,7 @@ public class SurveyDao extends BaseJdbiDao<Survey> {
     }
 
     public Optional<Survey> findByStableId(String stableId, int version) {
-        return jdbi.withHandle(handle ->
-                handle.createQuery("select * from " + tableName
-                                + " where stable_id = :stableId and version = :version")
-                        .bind("stableId", stableId)
-                        .bind("version", version)
-                        .mapTo(clazz)
-                        .findOne()
-        );
+        return findByTwoProperties("stable_id", stableId, "version", version);
     }
 
     public List<Survey> findByPortalId(UUID portalId) {

@@ -20,21 +20,30 @@ export type LocalSiteContent = {
 
 export type HtmlPage = {
   title: string,
+  path: string,
   sections: HtmlSection[]
 }
 
 export type NavbarItem = {
-  title: string,
+  label: string,
   externalLink: string,
-  stableId: string,
   navbarItemType: string
+  htmlPage: HtmlPage
 }
 
 export type HtmlSection = {
-  rawContent: string
+  id: string,
+  sectionType: string,
+  rawContent: string | null,
+  sectionConfig: string | null
 }
 
-let bearerToken: string | null = null
+export type ButtonConfig = { text: string, href: string }
+
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+export type SectionConfig = { [index: string]: any }
+
+const bearerToken: string | null = null
 const API_ROOT = `${process.env.REACT_APP_API_SERVER}/${process.env.REACT_APP_API_ROOT}`
 
 export default {
@@ -56,7 +65,7 @@ export default {
     }
   },
 
-  async processJsonResponse(response: any) {
+  async processJsonResponse(response: Response) {
     const obj = await response.json()
     if (response.ok) {
       return obj
@@ -70,17 +79,27 @@ export default {
   }
 }
 
+/**
+ * Returns a url suitable for inclusion in an <img> tag based on a image shortcode
+ */
+export function getImageUrl(imageShortcode: string) {
+  const { shortname, envName } = getEnvSpec()
+  return `${API_ROOT}/portals/v1/${shortname}/env/${envName}/siteImages/${imageShortcode}`
+}
+
 export type EnvSpec = {
   shortname: string,
   envName: string
 }
 
+/** gets the current environment params */
 export function getEnvSpec(): EnvSpec {
   return readEnvFromHostname(window.location.hostname)
 }
 
+/** parses shortcode and environment from hostname */
 function readEnvFromHostname(hostname: string): EnvSpec {
-  let shortname, envName = ''
+  let shortname; let envName = ''
   const splitHostname = hostname.split('.')
   if (Object.keys(ALLOWED_ENV_NAMES).includes(splitHostname[0])) {
     envName = ALLOWED_ENV_NAMES[splitHostname[0]]
@@ -89,7 +108,7 @@ function readEnvFromHostname(hostname: string): EnvSpec {
     envName = 'LIVE'
     shortname = splitHostname[0]
   }
-  return {envName, shortname}
+  return { envName, shortname }
 }
 
 const ALLOWED_ENV_NAMES: Record<string, string> = {

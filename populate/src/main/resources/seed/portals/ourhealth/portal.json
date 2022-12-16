@@ -13,28 +13,7 @@
         "password": "broad_institute",
         "initialized": true
       },
-      "siteContent": {
-        "stableId": "oh_portalContent",
-        "version": 1,
-        "defaultLanguage": "en",
-        "localizedSiteContents": [{
-          "language": "en",
-          "landingPage": {
-            "title": "OurHealth portal home",
-            "sections": [{
-              "sectionType": "RAW_HTML",
-              "rawContent": "<div>OurHealth landing page -- you made it!</div>"
-            },{
-              "sectionType": "RAW_HTML",
-              "rawContent": "<div>This is another section</div>"
-            }]
-          }
-        }],
-        "siteImageDtos": [{
-          "uploadFileName": "Banner-image.png",
-          "populateFileName": "images/Banner-image.png"
-        }]
-      },
+      "siteContentFile": "siteContent.json",
       "participantUserFiles": [
         "participants/jsalk.json"
       ]

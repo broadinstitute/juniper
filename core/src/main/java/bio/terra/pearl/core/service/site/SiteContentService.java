@@ -8,6 +8,7 @@ import bio.terra.pearl.core.service.CrudService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -22,6 +23,10 @@ public class SiteContentService extends CrudService<SiteContent, SiteContentDao>
         super(dao);
         this.localizedSiteContentService = localizedSiteContentService;
         this.siteImageService = siteImageService;
+    }
+
+    public Optional<SiteContent> findOne(String stableId, int version) {
+        return dao.findOne(stableId, version);
     }
 
     @Override

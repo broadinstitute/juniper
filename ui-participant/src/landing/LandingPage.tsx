@@ -1,20 +1,14 @@
-import React from "react";
-import {HtmlPage, PortalEnvironment} from "api/api";
+import React from 'react'
+import { Outlet } from 'react-router-dom'
 
-import {Outlet} from "react-router-dom";
-
-function LandingPageView({ homePage, currentEnv }: {homePage: HtmlPage, currentEnv: PortalEnvironment}) {
+/** renders the landing page for a portal (e.g. hearthive.org) */
+function LandingPageView() {
   return <div className="LandingPage">
     <div className="container-fluid bg-white min-vh-100 d-flex flex-column p-0">
       <div>
       </div>
       <div className="flex-grow-1">
-        { homePage.sections.map(section => <div>
-          <br/>
-          <div dangerouslySetInnerHTML={{__html: section.rawContent}}>
-
-          </div>
-        </div>)}
+        <Outlet/>
       </div>
     </div>
   </div>
