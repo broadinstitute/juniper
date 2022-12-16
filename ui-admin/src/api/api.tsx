@@ -1,6 +1,3 @@
-import * as queryString from 'query-string'
-
-
 export type AdminUser = {
   username: string,
   token: string
@@ -33,7 +30,7 @@ export default {
     }
   },
 
-  async processJsonResponse(response: any) {
+  async processJsonResponse(response: Response) {
     const obj = await response.json()
     if (response.ok) {
       return obj

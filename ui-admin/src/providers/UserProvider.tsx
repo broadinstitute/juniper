@@ -24,13 +24,14 @@ export type UserContextT = {
 /** current user object context */
 export const UserContext = React.createContext<UserContextT>({
   user: anonymousUser,
-  loginUser: (user: AdminUser) => { throw new Error('context not yet initialized') },
+  loginUser: () => { throw new Error('context not yet initialized') },
   logoutUser: () =>  { throw new Error('context not yet initialized') }
 })
 const STORAGE_TOKEN_PROP = 'loginToken'
 
 
-export default function UserProvider({  children }: { children: any}) {
+/** Provider for the current logged-in user. */
+export default function UserProvider({  children }: { children: React.ReactNode}) {
   const [userState, setUserState] = useState<User>(anonymousUser)
   const [isLoading, setIsLoading] = useState(true)
 

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import 'react-notifications-component/dist/theme.css'
 import 'styles/notifications.css'
 import 'survey-core/defaultV2.min.css'
@@ -8,10 +8,10 @@ import './App.css'
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
 import { UserContext, UserContextT } from 'providers/UserProvider'
 import { ReactNotifications } from 'react-notifications-component'
-import NavbarProvider, { NavbarContext, NavbarContextT } from './navbar/NavbarProvider'
+import NavbarProvider, { NavbarContext } from './navbar/NavbarProvider'
 import AdminNavbar from './navbar/AdminNavbar'
 import PortalList from './portal/PortalList'
-import PortalProvider from './providers/PortalProvider'
+import PortalProvider from './portal/PortalProvider'
 import PortalDashboard from './portal/PortalDashboard'
 
 /** container for the app including the router  */

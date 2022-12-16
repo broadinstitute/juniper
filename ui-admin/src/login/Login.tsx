@@ -1,13 +1,14 @@
-import React, { useState } from 'react'
-import './Login.css'
+import React, { SyntheticEvent, useState } from 'react'
 import microsoftLogo from 'images/microsoft_logo.png'
 import Api, { AdminUser } from 'api/api'
 
+/** component for showing a login dialog that hides other content on the page */
 function Login({ loginUser }: {loginUser: (user: AdminUser) => void}) {
   const [emailAddress, setEmailAddress] = useState('')
   const [isError, setIsError] = useState(false)
 
-  function unauthedLogin(event?: any) {
+  /** log in with just an email, ignoring auth */
+  function unauthedLogin(event: SyntheticEvent) {
     event.preventDefault()
     Api.unauthedLogin(emailAddress).then((adminUser: AdminUser) => {
       loginUser(adminUser)
@@ -17,8 +18,18 @@ function Login({ loginUser }: {loginUser: (user: AdminUser) => void}) {
   }
 
   return <div className="Login">
-    <div className="Login-overlay"></div>
-    <div className="Login-dialog position-absolute top-50 start-50 translate-middle">
+    <div className="Login-overlay h-100 w-100" style={{
+      top: 0,
+      left: 0,
+      position: 'fixed',
+      zIndex: 1,
+      opacity: 0.4,
+      backgroundColor: '#888'
+    }}></div>
+    <div className="Login-dialog position-absolute top-50 start-50 translate-middle bg-white p-2" style={{
+      borderRadius: '10px',
+      zIndex: 2
+    }}>
       <form onSubmit={unauthedLogin}>
         <button type="button" className="btn btn-secondary">
           <img src={microsoftLogo}/> Login with Microsoft
