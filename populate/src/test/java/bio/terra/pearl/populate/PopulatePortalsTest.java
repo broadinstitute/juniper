@@ -76,7 +76,7 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
 
         Study mainStudy = portal.getPortalStudies().stream().findFirst().get().getStudy();
         Set<StudyEnvironment> studyEnvs = studyEnvironmentService.findByStudy(mainStudy.getId());
-        Assertions.assertEquals(1, studyEnvs.size());
+        Assertions.assertEquals(3, studyEnvs.size());
         UUID sandboxEnvironmentId = studyEnvs.stream().filter(
                 sEnv -> sEnv.getEnvironmentName().equals(EnvironmentName.sandbox))
                 .findFirst().get().getId();
