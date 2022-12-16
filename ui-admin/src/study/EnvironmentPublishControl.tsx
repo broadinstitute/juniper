@@ -3,13 +3,15 @@ import Modal from 'react-bootstrap/Modal'
 import React, { useState } from 'react'
 import Select from 'react-select'
 
-const ALLOWED_COPY_FLOWS: any = {
+type SelectOptionType = { label: string, value: string }
+
+const ALLOWED_COPY_FLOWS: Record<string, string[]> = {
   irb: ['sandbox'],
   sandbox: ['irb', 'live'],
   live: ['irb']
 }
 
-
+/** modal allowing a user to copy one environment's configs over to another */
 function EnvironmentPublishControl({ destEnv, study, publishFunc }: {destEnv: StudyEnvironment,
   publishFunc: (source: string, dest: string) => void, study: Study}) {
   const [showModal, setShowModal] = useState(false)
@@ -21,6 +23,7 @@ function EnvironmentPublishControl({ destEnv, study, publishFunc }: {destEnv: St
   })
   const [sourceEnvName, setSourceEnvName] = useState<string>(allowedSourceNames[0])
 
+  /** user presed ok -- publish */
   function handleOk() {
     publishFunc(sourceEnvName, destEnvName)
     setShowModal(false)
@@ -39,7 +42,8 @@ function EnvironmentPublishControl({ destEnv, study, publishFunc }: {destEnv: St
   if (allowedSourceNames.length > 1) {
     envSelector = <> Copy from&nbsp;
       <Select options={opts} value={currentVal}
-        onChange={(opt: any) => setSourceEnvName(opt?.value)} />
+        onChange={(opt: SelectOptionType | null) =>
+          setSourceEnvName(opt?.value ? opt?.value : allowedSourceNames[0])} />
       <button className="btn btn-secondary" onClick={() => setShowModal(true)}>Copy</button>
     </>
   }
@@ -69,6 +73,7 @@ function EnvironmentPublishControl({ destEnv, study, publishFunc }: {destEnv: St
   </div>
 }
 
+/** gets the environments that have been initialized based on their config */
 function getInitializedEnvironmentNames(study: Study): string[] {
   return study.studyEnvironments.filter(env => env.studyEnvironmentConfig.initialized)
     .map(env => env.environmentName)

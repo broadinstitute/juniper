@@ -28,6 +28,7 @@ function PortalDashboard({ portal }: {portal: Portal}) {
   </div>
 }
 
+/** Reads the portal object to show in the dashboard from context */
 export default function PortalDashboardFromContext() {
   const portalContext = useContext(PortalContext) as LoadedPortalContextT
   return <PortalDashboard portal={portalContext.portal as Portal}/>

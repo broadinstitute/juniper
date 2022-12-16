@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { StudyContext, StudyContextT } from './StudyProvider'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import Api, { StudyEnvironment } from '../api/api'
+import { StudyEnvironment } from 'api/api'
 import { Link } from 'react-router-dom'
 import { faCogs } from '@fortawesome/free-solid-svg-icons/faCogs'
 import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons/faClipboardCheck'
@@ -10,13 +10,13 @@ import EnvironmentPublishControl from './EnvironmentPublishControl'
 
 const ENVIRONMENT_ORDER = ['sandbox', 'irb', 'live']
 
-const ENVIRONMENT_ICON_MAP: any = {
+const ENVIRONMENT_ICON_MAP: Record<string, React.ReactNode> = {
   sandbox: <FontAwesomeIcon className="fa-3x ms-2 env-icon text-muted" icon={faCogs}/>,
   irb: <FontAwesomeIcon className="fa-3x ms-2 env-icon text-gray text-muted" icon={faClipboardCheck}/>,
   live: <FontAwesomeIcon className="fa-3x ms-2  env-icon text-gray text-muted" icon={faUsers}/>
 }
 
-
+/** shows the study environments and configuration options */
 export default function StudyDashboard() {
   const studyContext = useContext(StudyContext) as StudyContextT
   const study = studyContext.study
@@ -25,7 +25,8 @@ export default function StudyDashboard() {
     .map(envName => study.studyEnvironments.find(env => env.environmentName === envName))
     .filter(e => e) as StudyEnvironment[]
 
-  async function publish(source: string, dest: string) {
+  /** copies one environment to another */
+  async function publish() {
     alert('not yet implemented')
     // const updatedEnv = await Api.publishFromEnvironment(study.shortname, source, dest)
     // const updatedStudy = _cloneDeep(study)
@@ -66,6 +67,7 @@ export default function StudyDashboard() {
   </div>
 }
 
+/** shows the basic setup of a study environment */
 function EnvironmentSummary({ studyEnv }: {studyEnv: StudyEnvironment}) {
   const config = studyEnv.studyEnvironmentConfig
   return <div>
@@ -77,7 +79,7 @@ function EnvironmentSummary({ studyEnv }: {studyEnv: StudyEnvironment}) {
   </div>
 }
 
-
+/** indicates that an environment is not yet initialized */
 function EnvironmentEmptyMessage({ studyEnv }: {studyEnv: StudyEnvironment}) {
   if (studyEnv.environmentName === 'IRB') {
     return <div>
