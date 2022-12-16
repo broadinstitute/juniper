@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.ResponseSnapshot;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
@@ -15,11 +16,9 @@ import bio.terra.pearl.populate.dto.EnrolleePopDto;
 import bio.terra.pearl.populate.dto.survey.ResponseSnapshotPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Optional;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleePopulator extends Populator<Enrollee> {
@@ -49,7 +48,7 @@ public class EnrolleePopulator extends Populator<Enrollee> {
         EnrolleePopDto enrolleeDto = objectMapper.readValue(fileString, EnrolleePopDto.class);
         Optional<Enrollee> existingEnrollee = enrolleeService.findOneByShortcode(enrolleeDto.getShortcode());
         existingEnrollee.ifPresent(exEnrollee ->
-                enrolleeService.delete(exEnrollee.getId(), new HashSet<>())
+                enrolleeService.delete(exEnrollee.getId(), CascadeProperty.EMPTY_SET)
         );
         StudyEnvironment attachedEnv = studyEnvironmentService
                 .findByStudy(config.getStudyShortcode(), config.getEnvironmentName()).get();
