@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Outlet, useNavigate, useParams } from 'react-router-dom'
+import { Outlet, useParams } from 'react-router-dom'
 import Api, { Portal } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 
@@ -17,13 +17,13 @@ export type PortalParams = {
 }
 
 export const PortalContext = React.createContext<PortalContextT>({
-  updatePortal: (portal: Portal) => alert('error - portal not yet loaded'),
+  updatePortal: () => alert('error - portal not yet loaded'),
   portal: null,
   isLoading: true,
   isError: false
 })
 
-
+/** routable component wrapper for PortalProvider */
 export default function RoutablePortalProvider() {
   const params = useParams<PortalParams>()
   const portalShortname: string | undefined = params.portalShortname
@@ -39,11 +39,12 @@ export default function RoutablePortalProvider() {
 
 /** context provider for a portal object */
 function PortalProvider({ shortname, children }:
-                       { shortname: string, children: any}) {
+                       { shortname: string, children: React.ReactNode}) {
   const [portalState, setPortalState] = useState<Portal | null>(null)
   const [isError, setIsError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
+  /** update the portal object to sync its state with the server */
   function updatePortal(updatedPortal: Portal) {
     setPortalState(updatedPortal)
   }
@@ -52,7 +53,7 @@ function PortalProvider({ shortname, children }:
     Api.getPortal(shortname).then(result => {
       setPortalState(result)
       setIsLoading(false)
-    }).catch(e => {
+    }).catch(() => {
       setIsError(true)
       setIsLoading(false)
       setPortalState(null)
