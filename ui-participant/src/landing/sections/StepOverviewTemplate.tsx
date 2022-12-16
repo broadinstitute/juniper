@@ -1,10 +1,10 @@
 import _ from 'lodash'
 import React from 'react'
 import { ButtonConfig } from 'api/api'
-/* eslint-disable */
+import PearlImage from '../../util/PearlImage'
 
 type StepProps = {
-  imageStableId: string,
+  imageShortcode: string,
   duration: string,
   blurb: string
 }
@@ -34,13 +34,13 @@ function StepOverviewTemplate({
     </h1>
     <div className={'row'}>
       {
-        _.map(steps, ({ imageStableId, duration, blurb }: StepProps, i: number) => {
+        _.map(steps, ({ imageShortcode, duration, blurb }: StepProps, i: number) => {
           return <>
             { i > 0 ? <div className={'col'}>→</div> : null }
             <div className={'col-2'}>
               <div className="d-flex flex-column">
                 <div>
-                  {/**<ArborImage imageStableId={imageStableId} alt={''} className={'img-fluid'}/>*/}
+                  <PearlImage imageShortcode={imageShortcode} alt={''} className={'img-fluid'}/>
                 </div>
                 <div className="text-uppercase">
                   <p className="fs-5 fw-semibold mb-0">Step {i + 1}</p>

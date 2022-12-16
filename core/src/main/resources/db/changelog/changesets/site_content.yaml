@@ -30,7 +30,7 @@ databaseChangeLog:
               - column: *idColumn
               - column: *createdAt
               - column: *lastUpdatedAt
-              - column: { name: shortcode, type: text }
+              - column: { name: shortcode, type: text, constraints: {unique: true} }
               - column: { name: upload_file_name, type: text }
               - column: { name: data, type: bytea }
               - column: { name: site_content_id, type: uuid, constraints: {

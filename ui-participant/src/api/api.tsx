@@ -79,6 +79,14 @@ export default {
   }
 }
 
+/**
+ * Returns a url suitable for inclusion in an <img> tag based on a image shortcode
+ */
+export function getImageUrl(imageShortcode: string) {
+  const { shortname, envName } = getEnvSpec()
+  return `${API_ROOT}/portals/v1/${shortname}/env/${envName}/siteImages/${imageShortcode}`
+}
+
 export type EnvSpec = {
   shortname: string,
   envName: string

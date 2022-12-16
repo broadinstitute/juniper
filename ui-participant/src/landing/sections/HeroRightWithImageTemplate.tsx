@@ -1,9 +1,10 @@
 import React from 'react'
-/* eslint-disable */
+import PearlImage from '../../util/PearlImage'
+
 type HeroRightWithImageTemplateProps = {
   blurb?: string, //  text below the title
   title?: string, // large heading text
-  imageStableId?: string, // image
+  imageShortcode?: string, // image
 }
 
 /**
@@ -17,13 +18,13 @@ type HeroRightWithImageTemplateProps = {
 function HeroRightWithImageTemplate({
   config: {
     blurb,
-    imageStableId,
+    imageShortcode,
     title
   }
 }: {config: HeroRightWithImageTemplateProps}) {
   return <div className="row">
     <div className="col-lg-6">
-      {/** <ArborImage imageStableId={imageStableId} alt={''} className="img-fluid"/> */}
+      <PearlImage imageShortcode={imageShortcode} alt={''} className="img-fluid"/>
     </div>
     <div className="col-lg-6 px-5">
       <div className="d-flex flex-column justify-content-center h-100">

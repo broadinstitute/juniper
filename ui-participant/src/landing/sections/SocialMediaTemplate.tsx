@@ -1,7 +1,8 @@
 import _ from 'lodash'
 import React from 'react'
 import { ButtonConfig } from 'api/api'
-/* eslint-disable */
+import PearlImage from '../../util/PearlImage'
+
 type SocialMediaTemplateProps = {
   blurb?: string, //  text below the title
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
@@ -27,17 +28,17 @@ function SocialMediaTemplate({
 }: {config: SocialMediaTemplateProps}) {
   return <div className="container py-5">
     <div className="d-flex justify-content-center mt-5 mb-4">
-      {/** twitterHref &&
-        <ArborImage imageStableId={'ourHealthContent_1_twitter.png'} alt={'Twitter'}
-                      className="m-3" style={{width: '56px'}}/>*/
+      { twitterHref &&
+        <PearlImage imageShortcode={'ourHealthContent_1_twitter.png'} alt={'Twitter'}
+          className="m-3" style={{ width: '56px' }}/>
       }
-      {/** facebookHref &&
-          <ArborImage imageStableId={'ourHealthContent_1_facebook.png'} alt={'Facebook'}
-                      className="m-3" style={{width: '54px'}}/> */
+      { facebookHref &&
+          <PearlImage imageShortcode={'ourHealthContent_1_facebook.png'} alt={'Facebook'}
+            className="m-3" style={{ width: '54px' }}/>
       }
-      {/** instagramHref &&
-          <ArborImage imageStableId={'ourHealthContent_1_instagram.png'} alt={'Instagram'}
-                      className="m-3" style={{width: '49px'}}/> */
+      { instagramHref &&
+          <PearlImage imageShortcode={'ourHealthContent_1_instagram.png'} alt={'Instagram'}
+            className="m-3" style={{ width: '49px' }}/>
       }
     </div>
     <h1 className="fs-1 fw-normal lh-sm text-center">
