@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { Outlet, useParams } from 'react-router-dom'
+import React, { useContext, useEffect, useState } from 'react'
+import { Link, Outlet, useParams } from 'react-router-dom'
 import Api, { Portal } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
+import { NavbarContext } from '../navbar/NavbarProvider'
 
 
 export type PortalContextT = {
@@ -37,18 +38,20 @@ export default function RoutablePortalProvider() {
   if (!portalShortcode) {
     return <span>No portal selected</span>
   }
-  return <PortalProvider shortname={portalShortcode}>
+  return <PortalProvider shortcode={portalShortcode}>
     <Outlet/>
   </PortalProvider>
 }
 
 
 /** context provider for a portal object */
-function PortalProvider({ shortname, children }:
-                       { shortname: string, children: React.ReactNode}) {
+function PortalProvider({ shortcode, children }:
+                       { shortcode: string, children: React.ReactNode}) {
   const [portalState, setPortalState] = useState<Portal | null>(null)
   const [isError, setIsError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+
+  const navContext = useContext(NavbarContext)
 
   /** update the portal object to sync its state with the server */
   function updatePortal(updatedPortal: Portal) {
@@ -56,15 +59,17 @@ function PortalProvider({ shortname, children }:
   }
 
   useEffect(() => {
-    Api.getPortal(shortname).then(result => {
+    Api.getPortal(shortcode).then(result => {
       setPortalState(result)
+      navContext.setBreadCrumbs([<Link className="text-white" to={`/${shortcode}`}>
+        {result.name}</Link>])
       setIsLoading(false)
     }).catch(() => {
       setIsError(true)
       setIsLoading(false)
       setPortalState(null)
     })
-  }, [shortname])
+  }, [shortcode])
 
   const portalContext: PortalContextT  = {
     portal: portalState,

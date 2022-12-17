@@ -1,7 +1,8 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { LoadedPortalContextT, PortalContext } from 'portal/PortalProvider'
 import { Portal } from 'api/api'
 import { Link } from 'react-router-dom'
+import { NavbarContext } from '../navbar/NavbarProvider'
 
 /** Page an admin user sees immediately after logging in */
 function PortalDashboard({ portal }: {portal: Portal}) {
