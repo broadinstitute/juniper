@@ -1,7 +1,7 @@
 package bio.terra.pearl.populate;
 
 import bio.terra.pearl.populate.service.PopulateDispatcher;
-import bio.terra.pearl.populate.service.SetupPopulator;
+import bio.terra.pearl.populate.service.BaseSeedPopulator;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -36,8 +36,8 @@ public class SetupPopulateTest extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testSetup() throws IOException {
-        SetupPopulator setupPopulator = (SetupPopulator) populateDispatcher.getPopulator("setup");
-        SetupPopulator.SetupStats setupStats = setupPopulator.populate("");
+        BaseSeedPopulator baseSeedPopulator = (BaseSeedPopulator) populateDispatcher.getPopulator("setup");
+        BaseSeedPopulator.SetupStats setupStats = baseSeedPopulator.populate("");
 
         Assertions.assertEquals(2, setupStats.getNumAdminUsers());
         Assertions.assertEquals(3, setupStats.getNumEnvironments());

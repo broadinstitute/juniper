@@ -12,9 +12,12 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.stereotype.Service;
 
-/** Populates entities configs needed for a new server instance, including environments and admin users */
+/**
+ * Populates entities configs needed for a new server instance, including environments and admin users.
+ * If those users/items exist, the will be updated, rather than duplicated.
+ * */
 @Service
-public class SetupPopulator extends Populator<SetupPopulator.SetupStats> {
+public class BaseSeedPopulator extends Populator<BaseSeedPopulator.SetupStats> {
     private AdminUserPopulator adminUserPopulator;
     private EnvironmentPopulator environmentPopulator;
     private AdminUserService adminUserService;
@@ -25,8 +28,8 @@ public class SetupPopulator extends Populator<SetupPopulator.SetupStats> {
     private static final List<String> ENVIRONMENTS_TO_POPULATE =
             Arrays.asList("environments/sandbox.json", "environments/irb.json", "environments/live.json");
 
-    public SetupPopulator(AdminUserPopulator adminUserPopulator, EnvironmentPopulator environmentPopulator,
-                          AdminUserService adminUserService, EnvironmentService environmentService) {
+    public BaseSeedPopulator(AdminUserPopulator adminUserPopulator, EnvironmentPopulator environmentPopulator,
+                             AdminUserService adminUserService, EnvironmentService environmentService) {
         this.adminUserPopulator = adminUserPopulator;
         this.environmentPopulator = environmentPopulator;
         this.adminUserService = adminUserService;
