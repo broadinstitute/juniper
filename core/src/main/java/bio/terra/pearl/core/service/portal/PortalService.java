@@ -4,22 +4,21 @@ import bio.terra.pearl.core.dao.portal.PortalDao;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class PortalService {
-    private PortalDao portalDao;
+public class PortalService extends CrudService<Portal, PortalDao> {
     private PortalStudyService portalStudyService;
     private PortalEnvironmentService portalEnvironmentService;
     private ParticipantUserService participantUserService;
@@ -32,7 +31,7 @@ public class PortalService {
                          PortalEnvironmentService portalEnvironmentService,
                          ParticipantUserService participantUserService,
                          SurveyService surveyService) {
-        this.portalDao = portalDao;
+        super(portalDao);
         this.portalStudyService = portalStudyService;
         this.portalEnvironmentService = portalEnvironmentService;
         this.studyService = studyService;
@@ -41,8 +40,9 @@ public class PortalService {
     }
 
     @Transactional
+    @Override
     public Portal create(Portal portal) {
-        Portal newPortal = portalDao.create(portal);
+        Portal newPortal = dao.create(portal);
 
         portal.getPortalEnvironments().forEach(portalEnvironment -> {
             portalEnvironment.setPortalId(newPortal.getId());
@@ -53,6 +53,7 @@ public class PortalService {
     }
 
     @Transactional
+    @Override
     public void delete(UUID portalId, Set<CascadeProperty> cascades) {
         List<UUID> studyIds = portalStudyService
                 .findByPortalId(portalId).stream().map(portalStudy -> portalStudy.getStudyId())
@@ -68,11 +69,15 @@ public class PortalService {
         }
         surveyService.deleteByPortalId(portalId);
 
-        portalDao.delete(portalId);
+        dao.delete(portalId);
     }
 
     public Optional<Portal> findOneByShortcode(String shortcode) {
-        return portalDao.findOneByShortcode(shortcode);
+        return dao.findOneByShortcode(shortcode);
+    }
+
+    public List<Portal> findByAdminUserId(UUID userId) {
+        return dao.findByAdminUserId(userId);
     }
 
     public enum AllowedCascades implements CascadeProperty {
