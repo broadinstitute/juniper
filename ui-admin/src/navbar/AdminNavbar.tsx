@@ -1,53 +1,38 @@
 import React, { useState, useContext } from 'react'
-import './Navbar.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { UserContext, UserContextT } from 'providers/UserProvider'
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars'
 
 import { Link } from 'react-router-dom'
+import { NavbarContextT } from './NavbarProvider'
 
-export type NavbarContextT = {
-  menuContent: React.ReactNode | null,
-  sidebarContent: React.ReactNode | null,
-  showSidebar: false,
-  setShowSidebar: (showSidebar: boolean) => void
-}
-
-export const NavbarContext = React.createContext<NavbarContextT>({
-  menuContent: null,
-  sidebarContent: null,
-  showSidebar: false,
-  setShowSidebar: () => alert('error - navbar not initialized')
-})
-
-function NavbarWrapper() {
+/** note we name this adminNavbar to avoid naming conflicts with bootstrap navbar */
+function AdminNavbar({ menuContent, showSidebar, setShowSidebar }: NavbarContextT) {
   const currentUser: UserContextT = useContext(UserContext)
-  const menuContent = useState(null)
-  const sidebarContent = useState(null)
-  const [showSidebar, setShowSidebar] = useState(false)
 
   let leftButton = <></>
   if (menuContent) {
-    leftButton = <button onClick={() => setShowSidebar(!showSidebar)}
+    leftButton = <button onClick={() => setShowSidebar(!showSidebar)} title="sidebar menu"
       className="btn btn-secondary text-white">
       <FontAwesomeIcon icon={faBars}/>
     </button>
   }
 
-
-  return <nav className="Navbar navbar navbar-expand-lg navbar-light">
+  return <nav className="Navbar navbar navbar-expand-lg navbar-light" style={{
+    backgroundColor: 'rgb(51, 136, 0)',
+    color: '#f6f6f6'
+  }}>
     <div className="container-fluid">
       <div className="d-flex align-items-center">
-        <>{ leftButton }
-          <Link className="navbar-brand ms-2 fw-bold" to="/">
-          Pearl
-          </Link>
-          { showSidebar && sidebarContent }</>
+        { leftButton }
+        <Link className="navbar-brand ms-2 fw-bold text-white" to="/">
+        Pearl
+        </Link>
       </div>
       <div className="collapse navbar-collapse" id="navbarNavDropdown">
         <ul className="navbar-nav ms-auto">
           {!currentUser.user.isAnonymous && <li className="nav-item dropdown">
-            <a className="nav-link dropdown-toggle" href="#"
+            <a className="nav-link dropdown-toggle text-white" href="#"
               role="button" data-bs-toggle="dropdown" aria-expanded="false">
               {currentUser.user.email}
             </a>
@@ -61,4 +46,4 @@ function NavbarWrapper() {
   </nav>
 }
 
-export default Navbar
+export default AdminNavbar

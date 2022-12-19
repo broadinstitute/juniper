@@ -1,13 +1,13 @@
 package bio.terra.pearl.core.dao.admin;
 
-import java.util.Optional;
-import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import java.util.Optional;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AdminUserDao extends BaseJdbiDao<AdminUser> {
+public class AdminUserDao extends BaseMutableJdbiDao<AdminUser> {
 
     public AdminUserDao(Jdbi jdbi) {
         super(jdbi);
@@ -20,5 +20,9 @@ public class AdminUserDao extends BaseJdbiDao<AdminUser> {
 
     public Optional<AdminUser> findByUsername(String email) {
         return findByProperty("username", email);
+    }
+
+    public Optional<AdminUser> findByToken(String token) {
+        return findByProperty("token", token);
     }
 }

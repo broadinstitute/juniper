@@ -6,6 +6,11 @@ export type AdminUser = {
   token: string
 };
 
+export type Portal = {
+  name: string,
+  shortcode: string
+}
+
 let bearerToken: string | null = null
 export const API_ROOT = process.env.REACT_APP_API_ROOT
 
@@ -48,12 +53,17 @@ export default {
   },
 
   async tokenLogin(token: string): Promise<AdminUser> {
-    const url =`${API_ROOT}/current_user/token_login`
+    const url =`${API_ROOT}/current-user/v1/token-login`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
       body: JSON.stringify({ token })
     })
+    return await this.processJsonResponse(response)
+  },
+
+  async getPortals(): Promise<Portal[]> {
+    const response = await fetch(`${API_ROOT}/portals/v1`, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 

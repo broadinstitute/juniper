@@ -140,6 +140,14 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
+    public List<T> findAll() {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from " + tableName)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
     /**
      * Fetches an entity with a child attached.  For example, if the parent table has a column "mailing_address_id" and
      * a field mailingAddress, this method could be used to fetch the parent with the mailing address already hydrated

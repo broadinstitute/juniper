@@ -98,7 +98,18 @@ paths:
                 type: boolean
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portal/v1/{portalShortcode}:
+  /api/portals/v1:
+    get:
+      summary: Gets a list of portals for the user
+      tags: [ portal ]
+      operationId: getAll
+      responses:
+        '200':
+          description: list of portal objects
+          content: { application/json: { schema: {type: array, items: { $ref: '#/components/schemas/PortalDto' } } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}:
     get:
       summary: Gets the portal object
       tags: [ portal ]
@@ -113,7 +124,7 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/current-user/v1/unauthed-login:
     post:
-      summary: Gets the portal object
+      summary: Unauthenticated login (dev only)
       tags: [ currentUser ]
       operationId: unauthedLogin
       parameters:
@@ -122,6 +133,22 @@ paths:
         '200':
           description: portal object
           content: { application/json: { schema: {type: object} } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/current-user/v1/token-login:
+    post:
+      summary: Token login
+      tags: [ currentUser ]
+      operationId: tokenLogin
+      requestBody:
+        required: true
+        content: { application/json: { schema: {$ref: '#/components/schemas/TokenLoginInfo' } } }
+      responses:
+        '200':
+          description: user object
+          content: { application/json: { schema: {
+            type: object
+          } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/adminUser/v1/{id}:
@@ -219,6 +246,10 @@ components:
             $ref: '#/components/schemas/ErrorReport'
 
   schemas:
+    TokenLoginInfo:
+      type: object
+      properties:
+        token: {type: string}
     AdminUserDto:
       type: object
       properties:
