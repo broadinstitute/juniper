@@ -67,6 +67,11 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async getPortal(portalShortcode: string): Promise<Portal> {
+    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}`, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   setBearerToken(token: string | null) {
     bearerToken = token
   }

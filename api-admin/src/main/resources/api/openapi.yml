@@ -106,7 +106,7 @@ paths:
       responses:
         '200':
           description: list of portal objects
-          content: { application/json: { schema: {type: array, items: { $ref: '#/components/schemas/PortalDto' } } } }
+          content: { application/json: { schema: {type: array, items: { $ref: '#/components/schemas/PortalShallowDto' } } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}:
@@ -119,7 +119,7 @@ paths:
       responses:
         '200':
           description: portal object
-          content: { application/json: { schema: {$ref: '#/components/schemas/PortalDto' }}}
+          content: { application/json: { schema: { type: object }}}
         '500':
           $ref: '#/components/responses/ServerError'
   /api/current-user/v1/unauthed-login:
@@ -203,13 +203,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object,
-                properties:
-                  message: { type: string }
+                type: object
         '500':
           $ref: '#/components/responses/ServerError'
-
-
 components:
   responses:
     SystemStatusResponse:
@@ -265,7 +261,7 @@ components:
           type: string
         statusCode:
           type: integer
-    PortalDto:
+    PortalShallowDto:
       type: object
       properties:
         id: {type: string, format: uuid}
@@ -279,6 +275,8 @@ components:
           type: array
           items: { type: string }
       required: [ roles ]
+    PortalDto:
+      type: object
     SystemStatus:
       required: [ ok, systems ]
       type: object

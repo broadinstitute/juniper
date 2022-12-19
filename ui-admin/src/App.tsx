@@ -11,6 +11,8 @@ import { ReactNotifications } from 'react-notifications-component'
 import NavbarProvider, { NavbarContext, NavbarContextT } from './navbar/NavbarProvider'
 import AdminNavbar from './navbar/AdminNavbar'
 import PortalList from './portal/PortalList'
+import PortalProvider from './providers/PortalProvider'
+import PortalDashboard from './portal/PortalDashboard'
 
 /** container for the app including the router  */
 function App() {
@@ -24,10 +26,12 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<PageFrame/>}>
+                <Route path=":portalShortname" element={<PortalProvider/>}>
+                  <Route index element={<PortalDashboard/>} />
+                </Route>
                 <Route index element={<PortalList/>} />
+                <Route path="*" element={<div>Unknown page</div>}/>
               </Route>
-
-              <Route path="*" element={<div>Unknown page</div>}/>
             </Routes>
           </BrowserRouter>
         }
