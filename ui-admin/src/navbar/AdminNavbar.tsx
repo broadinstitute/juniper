@@ -1,31 +1,17 @@
-<<<<<<< HEAD
 import React, { useContext } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { UserContext, UserContextT } from 'user/UserProvider'
-=======
-import React, { useState, useContext } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { UserContext, UserContextT } from 'providers/UserProvider'
->>>>>>> development
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars'
 
 import { Link } from 'react-router-dom'
 import { NavbarContextT } from './NavbarProvider'
 
 /** note we name this adminNavbar to avoid naming conflicts with bootstrap navbar */
-<<<<<<< HEAD
 function AdminNavbar({ breadCrumbs, sidebarContent, showSidebar, setShowSidebar }: NavbarContextT) {
   const currentUser: UserContextT = useContext(UserContext)
 
   let leftButton = <></>
   if (sidebarContent) {
-=======
-function AdminNavbar({ menuContent, showSidebar, setShowSidebar }: NavbarContextT) {
-  const currentUser: UserContextT = useContext(UserContext)
-
-  let leftButton = <></>
-  if (menuContent) {
->>>>>>> development
     leftButton = <button onClick={() => setShowSidebar(!showSidebar)} title="sidebar menu"
       className="btn btn-secondary text-white">
       <FontAwesomeIcon icon={faBars}/>
