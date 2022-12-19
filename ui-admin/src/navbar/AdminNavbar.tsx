@@ -7,15 +7,18 @@ import { Link } from 'react-router-dom'
 import { NavbarContextT } from './NavbarProvider'
 
 /** note we name this adminNavbar to avoid naming conflicts with bootstrap navbar */
-function AdminNavbar({ menuContent, showSidebar, setShowSidebar }: NavbarContextT) {
+function AdminNavbar({ breadCrumbs, sidebarContent, showSidebar, setShowSidebar }: NavbarContextT) {
   const currentUser: UserContextT = useContext(UserContext)
 
   let leftButton = <></>
-  if (menuContent) {
+  if (sidebarContent) {
     leftButton = <button onClick={() => setShowSidebar(!showSidebar)} title="sidebar menu"
       className="btn btn-secondary text-white">
       <FontAwesomeIcon icon={faBars}/>
     </button>
+  }
+  if (!breadCrumbs) {
+    breadCrumbs = []
   }
 
   return <nav className="Navbar navbar navbar-expand-lg navbar-light" style={{
@@ -30,6 +33,14 @@ function AdminNavbar({ menuContent, showSidebar, setShowSidebar }: NavbarContext
         </Link>
       </div>
       <div className="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul className="navbar-nav">
+          <li key="separator">
+            |
+          </li>
+          { breadCrumbs.map((crumb, index) => <li key={index} className="ms-3">
+            {crumb}
+          </li>)}
+        </ul>
         <ul className="navbar-nav ms-auto">
           {!currentUser.user.isAnonymous && <li className="nav-item dropdown">
             <a className="nav-link dropdown-toggle text-white" href="#"
