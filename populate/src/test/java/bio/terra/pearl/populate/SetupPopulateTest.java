@@ -36,7 +36,7 @@ public class SetupPopulateTest extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testSetup() throws IOException {
-        BaseSeedPopulator baseSeedPopulator = (BaseSeedPopulator) populateDispatcher.getPopulator("setup");
+        BaseSeedPopulator baseSeedPopulator = (BaseSeedPopulator) populateDispatcher.getPopulator("base_seed");
         BaseSeedPopulator.SetupStats setupStats = baseSeedPopulator.populate("");
 
         Assertions.assertEquals(2, setupStats.getNumAdminUsers());
