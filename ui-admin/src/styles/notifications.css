@@ -1,0 +1,55 @@
+/* styles for react-notifications popups */
+.rnc__notification-item {
+  border: 1px solid #bbb;
+  border-radius: 5px;
+}
+.rnc__notification-item .rnc__notification__message {
+  display: flex;
+  align-items: center;
+}
+
+.rnc__notification-item .rnc__notification__message svg {
+  font-size: 2em;
+  margin: 0.25em;
+  margin-right: 0.6em;
+}
+
+.rnc__notification-item .rnc__notification-content .rnc__notification-close-mark {
+  background: none;
+  top: 0.5em;
+}
+
+.rnc__notification-item .rnc__notification-content .rnc__notification-close-mark:after {
+  color:#4D72AA;
+  font-size: 1.75em;
+}
+
+.rnc__notification-item.rnc__notification-item--success {
+  background-color: #f1f6ed;
+  border-left: 1px solid #bbb;
+}
+.rnc__notification-item.rnc__notification-item--success .notification-title {
+  color: #333;
+}
+.rnc__notification-item.rnc__notification-item--success .rnc__notification-message {
+  color: #333;
+}
+.rnc__notification-item.rnc__notification-item--success svg {
+  color: #75b041;
+  margin-right: 1em;
+}
+
+.rnc__notification-item.rnc__notification-item--danger {
+  background-color: #fef4e9;
+  border-left: 1px solid #bbb;
+}
+.rnc__notification-item.rnc__notification-item--danger .rnc__notification-title {
+  color: #333;
+}
+.rnc__notification-item.rnc__notification-item--danger .rnc__notification-message {
+  color: #333;
+}
+.rnc__notification-item.rnc__notification-item--danger svg {
+  color: #f79916;
+  margin-right: 1em;
+}

@@ -23,6 +23,8 @@ public abstract class CrudService<M extends BaseEntity, D extends BaseJdbiDao<M>
         return dao.find(id);
     }
 
+    public int count() { return dao.count(); }
+
     @Transactional
     public void delete(UUID id, Set<CascadeProperty> cascade) {
         dao.delete(id);

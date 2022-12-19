@@ -64,13 +64,13 @@ public class AdminUserControllerTest {
 
   @Test
   public void testGetReturnsEmptyOptionalWhenAdminUserDoesNotExist() {
-    when(mockAdminUserService.getAdminUser(any())).thenReturn(Optional.empty());
+    when(mockAdminUserService.find(any())).thenReturn(Optional.empty());
     UUID uuid = UUID.randomUUID();
 
     var result = adminUserController.get(uuid);
 
     assertThat(result, equalTo(ResponseEntity.notFound().build()));
-    verify(mockAdminUserService).getAdminUser(uuid);
+    verify(mockAdminUserService).find(uuid);
   }
 
   @Test
@@ -78,7 +78,7 @@ public class AdminUserControllerTest {
     var userId = UUID.randomUUID();
     var adminUser = AdminUser.builder().id(userId).username("tester").build();
     var expectedAdminUserDto = new AdminUserDto().id(userId).username("tester");
-    when(mockAdminUserService.getAdminUser(userId)).thenReturn(Optional.of(adminUser));
+    when(mockAdminUserService.find(userId)).thenReturn(Optional.of(adminUser));
 
     var response = adminUserController.get(userId);
 

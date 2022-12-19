@@ -39,7 +39,7 @@ public class AdminUserController implements AdminUserApi {
   public ResponseEntity<AdminUserDto> get(UUID id) {
     Optional<AdminUserDto> adminUserDtoOpt =
         adminUserService
-            .getAdminUser(id)
+            .find(id)
             .map(
                 adminUser -> {
                   AdminUserDto adminUserDto = new AdminUserDto();
