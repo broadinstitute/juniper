@@ -31,6 +31,24 @@
       "enrolleeFiles": [
         "enrollees/jsalk.json"
       ]
+    },
+    {
+      "environmentName": "irb",
+      "studyEnvironmentConfig": {
+        "acceptingEnrollment": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": false
+      }
+    },
+    {
+      "environmentName": "live",
+      "studyEnvironmentConfig": {
+        "acceptingEnrollment": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": false
+      }
     }
   ]
 }

@@ -1,14 +1,35 @@
-import * as queryString from 'query-string'
-
-
 export type AdminUser = {
   username: string,
   token: string
 };
 
+export type Study = {
+  name: string,
+  shortcode: string,
+  studyEnvironments: StudyEnvironment[]
+}
+
+export type StudyEnvironment = {
+  environmentName: string,
+  studyEnvironmentConfig: StudyEnvironmentConfig
+}
+
+export type StudyEnvironmentConfig = {
+  passwordProtected: boolean,
+  password: string,
+  acceptingEnrollment: boolean,
+  initialized: boolean
+}
+
+
+export type PortalStudy = {
+  study: Study
+}
+
 export type Portal = {
   name: string,
-  shortcode: string
+  shortcode: string,
+  portalStudies: PortalStudy[]
 }
 
 let bearerToken: string | null = null
@@ -33,7 +54,7 @@ export default {
     }
   },
 
-  async processJsonResponse(response: any) {
+  async processJsonResponse(response: Response) {
     const obj = await response.json()
     if (response.ok) {
       return obj
@@ -64,6 +85,11 @@ export default {
 
   async getPortals(): Promise<Portal[]> {
     const response = await fetch(`${API_ROOT}/portals/v1`, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async getPortal(portalShortcode: string): Promise<Portal> {
+    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}`, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 

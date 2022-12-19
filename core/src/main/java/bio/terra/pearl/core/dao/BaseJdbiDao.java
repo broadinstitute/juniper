@@ -190,6 +190,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
+
     protected Optional<T> findByTwoProperties(String column1Name, Object column1Value,
                                               String column2Name, Object column2Value) {
         return jdbi.withHandle(handle ->
@@ -207,6 +208,15 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select * from " + tableName + " where " + columnName + " = :columnValue;")
                         .bind("columnValue", columnValue)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
+    protected List<T> findAllByPropertyCollection(String columnName, List<?> columnValues) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from " + tableName + " where " + columnName + " IN (<columnValues>);")
+                        .bindList("columnValues", columnValues)
                         .mapTo(clazz)
                         .list()
         );

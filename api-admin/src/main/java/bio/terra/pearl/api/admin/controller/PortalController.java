@@ -1,7 +1,7 @@
 package bio.terra.pearl.api.admin.controller;
 
 import bio.terra.pearl.api.admin.api.PortalApi;
-import bio.terra.pearl.api.admin.model.PortalDto;
+import bio.terra.pearl.api.admin.model.PortalShallowDto;
 import bio.terra.pearl.api.admin.service.RequestUtilService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -34,27 +33,20 @@ public class PortalController implements PortalApi {
   }
 
   @Override
-  public ResponseEntity<PortalDto> get(String portalShortcode) {
-    Optional<PortalDto> portalDtoOpt =
-        portalService
-            .findOneByShortcode(portalShortcode)
-            .map(
-                portal -> {
-                  PortalDto portalDto = new PortalDto();
-                  BeanUtils.copyProperties(portal, portalDto);
-                  return portalDto;
-                });
-    return ResponseEntity.of(portalDtoOpt);
+  public ResponseEntity<Object> get(String portalShortcode) {
+    Optional<Object> portalOpt =
+        portalService.findOneByShortcodeFullLoad(portalShortcode, "en").map(portal -> portal);
+    return ResponseEntity.of(portalOpt);
   }
 
   @Override
-  public ResponseEntity<List<PortalDto>> getAll() {
+  public ResponseEntity<List<PortalShallowDto>> getAll() {
     AdminUser adminUser = requestService.getFromRequest(request);
 
     List<Portal> portals = portalService.findByAdminUserId(adminUser.getId());
-    List<PortalDto> portalDtos =
+    List<PortalShallowDto> portalDtos =
         portals.stream()
-            .map(portal -> objectMapper.convertValue(portal, PortalDto.class))
+            .map(portal -> objectMapper.convertValue(portal, PortalShallowDto.class))
             .collect(Collectors.toList());
     return ResponseEntity.ok(portalDtos);
   }

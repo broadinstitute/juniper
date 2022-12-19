@@ -4,7 +4,7 @@ import Api, { Portal } from 'api/api'
 
 import LoadingSpinner from 'util/LoadingSpinner'
 
-
+/** Shows a user the list of portals available to them */
 function PortalList() {
   const [portalList, setPortalList] = useState<Portal[]>([])
   const [isLoading, setIsLoading] = useState(true)
