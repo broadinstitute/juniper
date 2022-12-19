@@ -1,16 +1,17 @@
 package bio.terra.pearl.core.dao;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.model.AdminUser;
-import org.junit.jupiter.api.Assertions.*;
+import bio.terra.pearl.core.dao.admin.AdminUserDao;
+import bio.terra.pearl.core.model.admin.AdminUser;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class AdminUserDaoTest extends BaseSpringBootTest {
 
@@ -29,8 +30,7 @@ public class AdminUserDaoTest extends BaseSpringBootTest {
 
         AdminUser createdUser = adminUserDao.create(adminUser);
 
-        assertNotNull(createdUser.getId());
-//        assertThat(createdUser.getUsername(), equalTo(adminUser.getUsername()));
-        assertEquals(adminUser.getUsername(), createdUser.getUsername());
+        assertThat(createdUser.getId(), notNullValue());
+        assertThat(createdUser.getUsername(), equalTo(adminUser.getUsername()));
     }
 }

@@ -1,7 +1,7 @@
-package bio.terra.pearl.core.service;
+package bio.terra.pearl.core.service.admin;
 
-import bio.terra.pearl.core.dao.AdminUserDao;
-import bio.terra.pearl.core.model.AdminUser;
+import bio.terra.pearl.core.dao.admin.AdminUserDao;
+import bio.terra.pearl.core.model.admin.AdminUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,7 +11,7 @@ import java.util.UUID;
 @Service
 public class AdminUserService {
 
-    private AdminUserDao adminUserDao;
+    private final AdminUserDao adminUserDao;
 
     public AdminUserService(AdminUserDao adminUserDao) {
         this.adminUserDao = adminUserDao;
