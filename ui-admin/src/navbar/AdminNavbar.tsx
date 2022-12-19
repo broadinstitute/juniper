@@ -31,12 +31,10 @@ function AdminNavbar({ menuContent, showSidebar, setShowSidebar }: NavbarContext
       <FontAwesomeIcon icon={faBars}/>
     </button>
   }
-<<<<<<< HEAD
+
   if (!breadCrumbs) {
     breadCrumbs = []
   }
-=======
->>>>>>> development
 
   return <nav className="Navbar navbar navbar-expand-lg navbar-light" style={{
     backgroundColor: 'rgb(51, 136, 0)',
@@ -50,7 +48,6 @@ function AdminNavbar({ menuContent, showSidebar, setShowSidebar }: NavbarContext
         </Link>
       </div>
       <div className="collapse navbar-collapse" id="navbarNavDropdown">
-<<<<<<< HEAD
         <ul className="navbar-nav">
           <li key="separator">
             |
@@ -59,8 +56,6 @@ function AdminNavbar({ menuContent, showSidebar, setShowSidebar }: NavbarContext
             {crumb}
           </li>)}
         </ul>
-=======
->>>>>>> development
         <ul className="navbar-nav ms-auto">
           {!currentUser.user.isAnonymous && <li className="nav-item dropdown">
             <a className="nav-link dropdown-toggle text-white" href="#"
