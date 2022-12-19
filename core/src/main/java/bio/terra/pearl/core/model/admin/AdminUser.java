@@ -1,5 +1,6 @@
-package bio.terra.pearl.core.model;
+package bio.terra.pearl.core.model.admin;
 
+import bio.terra.pearl.core.model.BaseEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,5 +19,4 @@ public class AdminUser extends BaseEntity {
     private Instant lastLogin;
 
     private Boolean superuser;
-//    private Portal portal;
 }

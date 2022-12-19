@@ -1,12 +1,12 @@
-package bio.terra.pearl.core.service;
+package bio.terra.pearl.core.service.admin;
 
-import bio.terra.pearl.core.dao.AdminUserDao;
-import bio.terra.pearl.core.model.AdminUser;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import bio.terra.pearl.core.dao.admin.AdminUserDao;
+import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.service.CrudService;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AdminUserService extends CrudService<AdminUser, AdminUserDao> {

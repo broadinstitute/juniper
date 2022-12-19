@@ -1,8 +1,8 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.BaseEntity;
-import bio.terra.pearl.core.service.AdminUserService;
 import bio.terra.pearl.core.service.EnvironmentService;
+import bio.terra.pearl.core.service.admin.AdminUserService;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;

@@ -140,6 +140,28 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
+  /api/adminUser/v1/{id}/roles:
+    post:
+      summary: Sets/updates the roles for an admin user
+      tags: [ admin_user ]
+      operationId: setRoles
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleList'
+      responses:
+        '200':
+          description: roles updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleList'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
   /api/internal/v1/populate/{populateType}:
     post:
       summary: Populates
@@ -204,13 +226,6 @@ components:
         username: { type: string }
         lastLogin: { type: integer }
         superuser: { type: boolean }
-    PortalDto:
-      type: object
-      properties:
-        id: {type: string, format: uuid}
-        shortcode: {type: string}
-        name: {type: string}
-        portalStudies: {type: array}
     ErrorReport:
       type: object
       required: [ message, statusCode ]
@@ -219,7 +234,20 @@ components:
           type: string
         statusCode:
           type: integer
-
+    PortalDto:
+      type: object
+      properties:
+        id: {type: string, format: uuid}
+        shortcode: {type: string}
+        name: {type: string}
+        portalStudies: {type: array}
+    RoleList:
+      type: object
+      properties:
+        roles:
+          type: array
+          items: { type: string }
+      required: [ roles ]
     SystemStatus:
       required: [ ok, systems ]
       type: object

@@ -1,8 +1,8 @@
 package bio.terra.pearl.api.admin.controller;
 
 import bio.terra.pearl.api.admin.api.CurrentUserApi;
-import bio.terra.pearl.core.model.AdminUser;
-import bio.terra.pearl.core.service.AdminUserService;
+import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.service.admin.AdminUserService;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

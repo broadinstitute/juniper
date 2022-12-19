@@ -1,0 +1,31 @@
+package bio.terra.pearl.core.dao.admin;
+
+import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.model.admin.PortalAdminUserRole;
+import org.jdbi.v3.core.Jdbi;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.UUID;
+
+// TODO: add tests???
+@Component
+public class PortalAdminUserRoleDao extends BaseJdbiDao<PortalAdminUserRole> {
+
+    public PortalAdminUserRoleDao(Jdbi jdbi) {
+        super(jdbi);
+    }
+
+    @Override
+    protected Class<PortalAdminUserRole> getClazz() {
+        return PortalAdminUserRole.class;
+    }
+
+    public List<PortalAdminUserRole> findByPortalAdminUserId(UUID portarAdminUserId) {
+        return findAllByProperty("portal_admin_user_id", portarAdminUserId);
+    }
+
+    public void deleteByPortalAdminUserId(UUID portalAdminUserId) {
+        deleteByUuidProperty("portal_admin_user_id", portalAdminUserId);
+    }
+}
