@@ -1,3 +1,5 @@
+import * as queryString from 'query-string'
+
 export type AdminUser = {
   username: string,
   token: string
