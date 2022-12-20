@@ -29,6 +29,15 @@ databaseChangeLog:
               - column: *idColumn
               - column: *createdAt
               - column: *lastUpdatedAt
+              - column: { name: rule, type: text }
+              - column: { name: allow_admin_edit, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: allow_participant_start, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: allow_participant_reedit, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: prepopulate, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: recur, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: recurrence_interval_days, type: integer }
+              - column: { name: days_after_eligible, type: integer }
+              - column: { name: survey_order, type: integer, constraints: { nullable: false } }
               - column: { name: study_environment_id, type: uuid, constraints:
                 { nullable: false, foreignKeyName: fk_study_environment_survey_env, references: study_environment(id) }
               }
@@ -36,46 +45,7 @@ databaseChangeLog:
                 { nullable: false, foreignKeyName: fk_study_environment_survey_survey, references: survey(id) }
               }
         - createTable:
-            tableName: schedule
-            columns:
-              - column: *idColumn
-              - column: *createdAt
-              - column: *lastUpdatedAt
-              - column: { name: recur, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
-              - column: { name: recurrence_interval_days, type: integer }
-        - createTable:
-            tableName: survey_batch
-            columns:
-              - column: *idColumn
-              - column: *createdAt
-              - column: *lastUpdatedAt
-              - column: { name: study_environment_id, type: uuid, constraints:
-                { nullable: false, foreignKeyName: fk_survey_batch_study_environment, references: study_environment(id) }
-              }
-              - column: { name: schedule_id, type: uuid, constraints:
-                { unique: true, foreignKeyName: fk_survey_batch_schedule, references: schedule(id) }
-              }
-              - column: { name: rule, type: text }
-              - column: { name: strict_order, type: boolean, defaultValueBoolean: false, constraints: { nullable: false }  }
-        - createTable:
-            tableName: survey_batch_survey
-            columns:
-              - column: *idColumn
-              - column: *createdAt
-              - column: *lastUpdatedAt
-              - column: { name: survey_order, type: integer }
-              - column: { name: survey_id, type: uuid, constraints:
-                { nullable: false, foreignKeyName: fk_survey_batch_survey_survey, references: survey(id) }
-              }
-              - column: { name: survey_batch_id, type: uuid, constraints:
-                { nullable: false, foreignKeyName: fk_survey_batch_survey_batch, references: survey_batch(id) }
-              }
-              - column: { name: rule, type: text }
-              - column: { name: allow_admin_edit, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
-              - column: { name: allow_participant_start, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
-              - column: { name: allow_participant_reedit, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
-              - column: { name: prepopulate, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
-        - createTable:
+
             tableName: survey_response
             columns:
               - column: *idColumn

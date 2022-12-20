@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Link, Outlet, useParams } from 'react-router-dom'
 import Api, { Portal } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { NavbarContext } from '../navbar/NavbarProvider'
+import { NavBreadcrumb } from 'navbar/AdminNavbar'
 
 
 export type PortalContextT = {
@@ -34,24 +34,22 @@ export const PortalContext = React.createContext<PortalContextT>({
 export default function RoutablePortalProvider() {
   const params = useParams<PortalParams>()
   const portalShortcode: string | undefined = params.portalShortcode
-
+  const portalContext = useContext(PortalContext)
+  const portal = portalContext.portal
   if (!portalShortcode) {
     return <span>No portal selected</span>
   }
-  return <PortalProvider shortcode={portalShortcode}>
-    <Outlet/>
-  </PortalProvider>
+
+  return <PortalProvider shortcode={portalShortcode}/>
 }
 
 
 /** context provider for a portal object */
-function PortalProvider({ shortcode, children }:
-                       { shortcode: string, children: React.ReactNode}) {
+function PortalProvider({ shortcode }:
+                       { shortcode: string}) {
   const [portalState, setPortalState] = useState<Portal | null>(null)
   const [isError, setIsError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-
-  const navContext = useContext(NavbarContext)
 
   /** update the portal object to sync its state with the server */
   function updatePortal(updatedPortal: Portal) {
@@ -61,8 +59,6 @@ function PortalProvider({ shortcode, children }:
   useEffect(() => {
     Api.getPortal(shortcode).then(result => {
       setPortalState(result)
-      navContext.setBreadCrumbs([<Link className="text-white" to={`/${shortcode}`}>
-        {result.name}</Link>])
       setIsLoading(false)
     }).catch(() => {
       setIsError(true)
@@ -91,6 +87,10 @@ function PortalProvider({ shortcode, children }:
   }
 
   return <PortalContext.Provider value={portalContext}>
-    { children }
+    <NavBreadcrumb>
+      <Link className="text-white" to={`/${shortcode}`}>
+        {portalState?.name}</Link>
+    </NavBreadcrumb>
+    <Outlet/>
   </PortalContext.Provider>
 }

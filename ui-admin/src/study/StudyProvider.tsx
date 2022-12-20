@@ -3,7 +3,7 @@ import { Link, Outlet, useParams } from 'react-router-dom'
 import { Study } from 'api/api'
 
 import { LoadedPortalContextT, PortalContext } from 'portal/PortalProvider'
-import { NavbarContext } from '../navbar/NavbarProvider'
+import { NavBreadcrumb } from 'navbar/AdminNavbar'
 
 export type StudyContextT = {
   updateStudy: (study: Study) => void
@@ -36,34 +36,32 @@ export default function RoutableStudyProvider() {
 function StudyProvider({ shortcode, children }:
                        { shortcode: string, children: React.ReactNode}) {
   const portalState = useContext(PortalContext) as LoadedPortalContextT
-  const navContext = useContext(NavbarContext)
+
 
   const matchedPortalStudy = portalState.portal.portalStudies.find(portalStudy => {
     return portalStudy.study.shortcode = shortcode
   })
-  const study = matchedPortalStudy?.study
-  useEffect(() => {
-    const newCrumbs = [...navContext.breadCrumbs]
-    newCrumbs[1] = <Link className="text-white" to={`/${portalState.portal.shortcode}/studies/${study?.shortcode}`}>
-      {study?.name}</Link>
-    navContext.setBreadCrumbs(newCrumbs)
-  }, [])
-
-
   if (!matchedPortalStudy) {
     return <div>Study could not be loaded or found.</div>
   }
+
+  const study = matchedPortalStudy?.study
+
   /** updates the study context -- does NOT update the server */
   function updateStudy(study: Study) {
     alert(`not implemented yet ${study.shortcode}`)
   }
 
   const studyContext = {
-    study: matchedPortalStudy.study,
+    study,
     updateStudy // eslint-disable-line no-unused-vars
   }
 
   return <StudyContext.Provider value={studyContext}>
+    <NavBreadcrumb>
+      <Link className="text-white" to={`/${portalState.portal.shortcode}/studies/${study?.shortcode}`}>
+        {study?.name}</Link>
+    </NavBreadcrumb>
     { children }
   </StudyContext.Provider>
 }

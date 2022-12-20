@@ -213,7 +213,11 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
-    protected List<T> findAllByPropertyCollection(String columnName, List<?> columnValues) {
+    protected List<T> findAllByPropertyCollection(String columnName, Collection<?> columnValues) {
+        if (columnValues.isEmpty()) {
+            // short circuit this case because bindList errors if list is empty
+            return new ArrayList<>();
+        }
         return jdbi.withHandle(handle ->
                 handle.createQuery("select * from " + tableName + " where " + columnName + " IN (<columnValues>);")
                         .bindList("columnValues", columnValues)

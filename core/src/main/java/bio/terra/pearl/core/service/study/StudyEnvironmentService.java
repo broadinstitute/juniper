@@ -1,37 +1,32 @@
 package bio.terra.pearl.core.service.study;
 
 import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
-import bio.terra.pearl.core.dao.survey.StudyEnvrionmentSurveyDao;
+import bio.terra.pearl.core.dao.study.StudyEnvironmentSurveyDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
-import bio.terra.pearl.core.model.survey.SurveyBatch;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.survey.SurveyBatchService;
+import java.util.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
 
 @Service
 public class StudyEnvironmentService {
     private StudyEnvironmentDao studyEnvironmentDao;
-    private StudyEnvrionmentSurveyDao studyEnvironmentSurveyDao;
+    private StudyEnvironmentSurveyDao studyEnvironmentSurveyDao;
     private StudyEnvironmentConfigService studyEnvironmentConfigService;
-    private SurveyBatchService surveyBatchService;
     private EnrolleeService enrolleeService;
 
 
     public StudyEnvironmentService(StudyEnvironmentDao studyEnvironmentDao,
-                                   StudyEnvrionmentSurveyDao studyEnvironmentSurveyDao,
+                                   StudyEnvironmentSurveyDao studyEnvironmentSurveyDao,
                                    StudyEnvironmentConfigService studyEnvironmentConfigService,
-                                   SurveyBatchService surveyBatchService, EnrolleeService enrolleeService) {
+                                   EnrolleeService enrolleeService) {
         this.studyEnvironmentDao = studyEnvironmentDao;
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
         this.studyEnvironmentConfigService =  studyEnvironmentConfigService;
-        this.surveyBatchService = surveyBatchService;
         this.enrolleeService = enrolleeService;
     }
 
@@ -51,13 +46,9 @@ public class StudyEnvironmentService {
             studyEnv.setStudyEnvironmentConfigId(envConfig.getId());
         }
         StudyEnvironment newEnv = studyEnvironmentDao.create(studyEnv);
-        for (StudyEnvironmentSurvey studyEnvironmentSurvey : studyEnv.getStudyEnvironmentSurveys()) {
+        for (StudyEnvironmentSurvey studyEnvironmentSurvey : studyEnv.getConfiguredSurveys()) {
             studyEnvironmentSurvey.setStudyEnvironmentId(newEnv.getId());
             studyEnvironmentSurveyDao.create(studyEnvironmentSurvey);
-        }
-        for (SurveyBatch surveyBatch : studyEnv.getSurveyBatches()) {
-            surveyBatch.setStudyEnvironmentId(newEnv.getId());
-            surveyBatchService.create(surveyBatch);
         }
         newEnv.setStudyEnvironmentConfig(envConfig);
         return newEnv;
@@ -68,7 +59,6 @@ public class StudyEnvironmentService {
         StudyEnvironment studyEnv = studyEnvironmentDao.find(studyEnvironmentId).get();
         enrolleeService.deleteByStudyEnvironmentId(studyEnv.getId(), cascade);
         studyEnvironmentSurveyDao.deleteByStudyEnvironmentId(studyEnvironmentId);
-        surveyBatchService.deleteByStudyEnvironmentId(studyEnvironmentId, cascade);
         studyEnvironmentDao.delete(studyEnvironmentId);
         if (studyEnv.getStudyEnvironmentConfigId() != null) {
             studyEnvironmentConfigService.delete(studyEnv.getStudyEnvironmentConfigId());

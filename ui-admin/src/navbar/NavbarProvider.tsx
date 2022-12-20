@@ -1,12 +1,12 @@
-import React, { useState } from 'react'
+import React, { Dispatch, SetStateAction, useState } from 'react'
 
 export type NavbarContextT = {
   breadCrumbs: React.ReactNode[],
   sidebarContent: React.ReactNode | null,
   showSidebar: boolean,
   setShowSidebar: (showSidebar: boolean) => void,
-  setSidebarContent: (sidebarContent: React.ReactNode) => void,
-  setBreadCrumbs: ((breadCrumbs: React.ReactNode[]) => void)
+  setSidebarContent: Dispatch<SetStateAction<React.ReactNode>>,
+  setBreadCrumbs: Dispatch<SetStateAction<React.ReactNode[]>>
 }
 
 const emptyNavbarContext: NavbarContextT = {
