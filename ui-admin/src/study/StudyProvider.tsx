@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { Link, Outlet, useParams } from 'react-router-dom'
 import { Study } from 'api/api'
 

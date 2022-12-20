@@ -1,4 +1,4 @@
-import React, { DOMElement, useContext, useEffect, useRef } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { UserContext, UserContextT } from 'user/UserProvider'
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars'
@@ -98,14 +98,12 @@ export function NavBreadcrumb({ children }: {children: React.ReactNode}) {
   useEffect(() => {
     /** use the setState arg that takes a function to avoid race conditions */
     navContext.setBreadCrumbs((oldCrumbs: React.ReactNode[]) => {
-      const newCrumbs = [...oldCrumbs, children]
-      return newCrumbs
+      return  [...oldCrumbs, children]
     })
     /** return the function that will remove the breadcrumb */
     return () => {
       navContext.setBreadCrumbs((oldCrumbs: React.ReactNode[]) => {
-        const newCrumbs = oldCrumbs.slice(0, -1)
-        return newCrumbs
+        return oldCrumbs.slice(0, -1)
       })
     }
   }, [])

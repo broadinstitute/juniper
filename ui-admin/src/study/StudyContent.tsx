@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Select from 'react-select'
 
 import { useStudyEnvironmentOutlet } from './StudyEnvironmentProvider'
@@ -7,9 +7,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
 import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
 
+/** renders the main configuration page for a study environment */
 function StudyContent() {
   const { study, currentEnv } = useStudyEnvironmentOutlet()
-  const [showNewSurveyModal, setShowNewSurveyModal] = useState(false)
   const contentHeaderStyle = {
     marginRight: '1em',
     paddingRight: '1em',
@@ -95,9 +95,6 @@ function StudyContent() {
                   </li>
                 }) }
               </ul>
-              <button className="btn btn-secondary ms-2" type="button" onClick={() => setShowNewSurveyModal(true)}>
-                <FontAwesomeIcon icon={faPlus}></FontAwesomeIcon> New survey
-              </button>
             </div>
           </li>
           <li className="list-group-item d-flex">

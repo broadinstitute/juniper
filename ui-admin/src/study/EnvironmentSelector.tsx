@@ -1,11 +1,13 @@
 import React from 'react'
-import Select, { ActionMeta } from 'react-select'
+import Select from 'react-select'
 import { useNavigate } from 'react-router-dom'
 import { StudyEnvironment, Study } from 'api/api'
 
 type EnvOption = {label: string, value: string}
 
-function EnvironmentSelector({ study, currentEnv }: {study: Study, currentEnv: StudyEnvironment | undefined}) {
+/** dropdown for toggling the study environment */
+function EnvironmentSelector({ portalShortcode, study, currentEnv }:
+                               {portalShortcode: string, study: Study, currentEnv: StudyEnvironment | undefined}) {
   const envOptions = study.studyEnvironments.map(env => {
     return { label: env.environmentName.toLowerCase(), value: env.environmentName }
   })
@@ -16,9 +18,10 @@ function EnvironmentSelector({ study, currentEnv }: {study: Study, currentEnv: S
 
   const navigate = useNavigate()
 
-  function selectEnv(option: EnvOption | null, actionMeta: ActionMeta<EnvOption>) {
+  /** route to the selected environment */
+  function selectEnv(option: EnvOption | null) {
     const nextEnv: string = option ? option.value : ''
-    navigate(`/${study.shortcode}/env/${nextEnv.toLowerCase()}`)
+    navigate(`/${portalShortcode}/studies/${study.shortcode}/env/${nextEnv.toLowerCase()}`)
   }
 
   return <Select className="react-select" options={envOptions} value={value} onChange={selectEnv} />

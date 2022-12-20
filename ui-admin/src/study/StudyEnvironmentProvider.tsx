@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { Portal, Study } from 'api/api'
+import React, { useEffect, useContext } from 'react'
+import { Portal, Study, StudyEnvironment } from 'api/api'
 import { StudyParams, StudyContext } from 'study/StudyProvider'
 
 import { Link, Outlet, useOutletContext, useParams } from 'react-router-dom'
-import { StudyEnvironment } from 'api/api'
 import { NavBreadcrumb } from '../navbar/AdminNavbar'
 import { NavbarContext } from '../navbar/NavbarProvider'
 import StudyEnvironmentSidebar from './StudyEnvironmentSidebar'
@@ -31,6 +30,7 @@ function StudyEnvironmentProvider() {
   const currentEnvPath = `/${portal.shortcode}/studies/${study.shortcode}/env/${currentEnv.environmentName}`
   useEffect(() => {
     navContext.setSidebarContent(<StudyEnvironmentSidebar study={study}
+      portalShortcode={portal.shortcode}
       currentEnv={currentEnv}
       currentEnvPath={currentEnvPath}
       setShow={navContext.setShowSidebar}/>)
@@ -45,6 +45,7 @@ function StudyEnvironmentProvider() {
   </div>
 }
 
+/** for child routed components to access the current environment */
 export function useStudyEnvironmentOutlet() {
   return useOutletContext<StudyContextT>()
 }

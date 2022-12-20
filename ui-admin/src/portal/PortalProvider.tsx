@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, Outlet, useParams } from 'react-router-dom'
 import Api, { Portal } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
@@ -31,21 +31,19 @@ export const PortalContext = React.createContext<PortalContextT>({
 
 
 /** routable component wrapper for PortalProvider */
-export default function RoutablePortalProvider() {
+export default function PortalProvider() {
   const params = useParams<PortalParams>()
   const portalShortcode: string | undefined = params.portalShortcode
-  const portalContext = useContext(PortalContext)
-  const portal = portalContext.portal
   if (!portalShortcode) {
     return <span>No portal selected</span>
   }
 
-  return <PortalProvider shortcode={portalShortcode}/>
+  return <RawPortalProvider shortcode={portalShortcode}/>
 }
 
 
 /** context provider for a portal object */
-function PortalProvider({ shortcode }:
+function RawPortalProvider({ shortcode }:
                        { shortcode: string}) {
   const [portalState, setPortalState] = useState<Portal | null>(null)
   const [isError, setIsError] = useState(false)
