@@ -17,7 +17,7 @@ export const RedirectFromOAuth = () => {
         const result = event.payload as AuthenticationResult
         console.log('result', result)
         if (result.account) {
-          const user = { username: result.account.username, token: result.idToken };
+          const user = { username: result.account.idTokenClaims?.email as string, token: result.idToken };
           console.log('user', user)
           // TODO: figure out what needs to be in User for loginUser to be able to authenticate a token
           loginUser(user)
@@ -33,6 +33,5 @@ export const RedirectFromOAuth = () => {
     }
   }, [instance, loginUser, navigate])
 
-  // TODO: DON'T ECHO THE ACCESS TOKEN!!! This is just temporary output to prove that the
-  return <div>Access token: {user.accessToken}</div>
+  return <div>User email: {user.email}</div>
 }

@@ -25,37 +25,35 @@ import StudyContent from './study/StudyContent'
 function App() {
   const currentUser: UserContextT = useContext(UserContext)
   return (
-    <UserProvider>
-      <div className="App">
-        <ReactNotifications/>
-        <NavbarProvider>
-            <BrowserRouter>
-                <Routes>
-                    <Route element={<ProtectedRoute/>}>
-                      <Route path="/" element={<PageFrame/>}>
-                        <Route path=":portalShortcode" element={<PortalProvider/>}>
-                            <Route path="studies">
-                                <Route path=":studyShortcode" element={<RoutableStudyProvider/>}>
-                                    <Route path="env/:studyEnv" element={<StudyEnvironmentProvider/>}>
-                                      <Route index element={<StudyContent/>}/>
-                                    </Route>
-                                    <Route index element={<StudyDashboard/>}/>
-                                    <Route path="*" element={<div>Unknown study route</div>}/>
-                                </Route>
-                                <Route path="*" element={<div>Unknown studies route</div>}/>
-                            </Route>
-                            <Route index element={<PortalDashboard/>}/>
-                        </Route>
-                        <Route index element={<PortalList/>}/>
+    <div className="App">
+      <ReactNotifications/>
+      <NavbarProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<ProtectedRoute/>}>
+              <Route path="/" element={<PageFrame/>}>
+                <Route path=":portalShortcode" element={<PortalProvider/>}>
+                  <Route path="studies">
+                    <Route path=":studyShortcode" element={<RoutableStudyProvider/>}>
+                      <Route path="env/:studyEnv" element={<StudyEnvironmentProvider/>}>
+                        <Route index element={<StudyContent/>}/>
                       </Route>
+                      <Route index element={<StudyDashboard/>}/>
+                      <Route path="*" element={<div>Unknown study route</div>}/>
                     </Route>
-                    <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
-                    <Route path="*" element={<div>Unknown page</div>}/>
-                </Routes>
-            </BrowserRouter>
-        </NavbarProvider>
-      </div>
-    </UserProvider>
+                    <Route path="*" element={<div>Unknown studies route</div>}/>
+                  </Route>
+                  <Route index element={<PortalDashboard/>}/>
+                </Route>
+                <Route index element={<PortalList/>}/>
+              </Route>
+            </Route>
+            <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
+            <Route path="*" element={<div>Unknown page</div>}/>
+          </Routes>
+        </BrowserRouter>
+      </NavbarProvider>
+    </div>
   )
 }
 

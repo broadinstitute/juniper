@@ -10,15 +10,13 @@ import {AuthenticationResult} from "@azure/msal-common";
 export type User = {
     accessToken: string | null,
     isAnonymous: boolean,
-    email: string | null,
-    name: string | null
+    email: string | null
 }
 
 const anonymousUser: User = {
   accessToken: null,
   isAnonymous: true,
-  email: null,
-  name: null
+  email: null
 }
 
 export type UserContextT = {
@@ -62,8 +60,7 @@ export default function UserProvider({  children }: { children: React.ReactNode}
     setUserState({
       email: user.username,
       accessToken: user.token,
-      isAnonymous: false,
-      name: null
+      isAnonymous: false
     })
     Api.setBearerToken(user.token)
     localStorage.setItem(STORAGE_TOKEN_PROP, user.token)
