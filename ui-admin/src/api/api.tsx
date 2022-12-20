@@ -56,8 +56,25 @@ export type Portal = {
   portalStudies: PortalStudy[]
 }
 
+export type ResumableData = {
+  currentPageNo: number,
+  data: object
+}
+
+
+export type ConsentForm = {
+  id: string,
+  name: string,
+  stableId: string,
+  version: number,
+  content: string
+}
+
 let bearerToken: string | null = null
 export const API_ROOT = process.env.REACT_APP_API_ROOT
+const participantRootPath = process.env.REACT_APP_PARTICIPANT_APP_ROOT
+const participantProtocol = process.env.REACT_APP_PARTICIPANT_APP_PROTOCOL
+
 
 export default {
   getInitHeaders() {
@@ -117,7 +134,34 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async publishSurvey(studyShortcode: string, survey: Survey, environmentName: string[]): Promise<Survey> {
+    throw (`not implemented ${  studyShortcode  }${survey.stableId  }${environmentName}`)
+  },
+
+  async getSurveyVersions(studyShortname: string, stableId: string) {
+    const response = await fetch(`${API_ROOT}/studies/${studyShortname}/surveys/${stableId}`, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async setEnvironmentSurvey(studyShortname: string, environmentName: string,
+    stableId: string, version: number): Promise<Survey> {
+    const url =`${API_ROOT}/studies/${studyShortname}/env/${environmentName}/surveys/${stableId}/setVersion/${version}`
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  getParticipantLink(portalShortcode: string, envName: string): string {
+    const participantHost = `${envName}.${portalShortcode}.${participantRootPath}`
+    return `${participantProtocol}://${participantHost}`
+  },
+
   setBearerToken(token: string | null) {
     bearerToken = token
   }
+
+
 }

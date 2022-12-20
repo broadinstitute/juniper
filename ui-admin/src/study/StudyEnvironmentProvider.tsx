@@ -9,7 +9,7 @@ import StudyEnvironmentSidebar from './StudyEnvironmentSidebar'
 import { PortalContext } from '../portal/PortalProvider'
 
 
-export type StudyContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string }
+export type StudyContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
 
 /** Base page for configuring the content and integrations for a study environment */
 function StudyEnvironmentProvider() {
@@ -41,7 +41,7 @@ function StudyEnvironmentProvider() {
       <Link className="text-white" to={currentEnvPath}>
         {envName}</Link>
     </NavBreadcrumb>
-    <Outlet context={{ study, currentEnv, currentEnvPath }}/>
+    <Outlet context={{ study, currentEnv, currentEnvPath, portal }}/>
   </div>
 }
 

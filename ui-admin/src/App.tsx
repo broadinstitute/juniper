@@ -18,6 +18,7 @@ import StudyDashboard from 'study/StudyDashboard'
 import RoutableStudyProvider from './study/StudyProvider'
 import StudyEnvironmentProvider from './study/StudyEnvironmentProvider'
 import StudyContent from './study/StudyContent'
+import SurveyView from './study/surveys/SurveyView'
 
 /** container for the app including the router  */
 function App() {
@@ -35,6 +36,12 @@ function App() {
                   <Route path="studies">
                     <Route path=":studyShortcode" element={<RoutableStudyProvider/>}>
                       <Route path="env/:studyEnv" element={<StudyEnvironmentProvider/>}>
+                        <Route path="surveys">
+                          <Route path=":surveyStableId">
+                            <Route index element={<SurveyView/>}/>
+                          </Route>
+                          <Route path="*" element={<div>Unknown survey page</div>}/>
+                        </Route>
                         <Route index element={<StudyContent/>}/>
                       </Route>
                       <Route index element={<StudyDashboard/>} />

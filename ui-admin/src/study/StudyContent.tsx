@@ -6,10 +6,11 @@ import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
 import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
+import Api from 'api/api'
 
 /** renders the main configuration page for a study environment */
 function StudyContent() {
-  const { study, currentEnv } = useStudyEnvironmentOutlet()
+  const { currentEnv, portal } = useStudyEnvironmentOutlet()
   const contentHeaderStyle = {
     marginRight: '1em',
     paddingRight: '1em',
@@ -32,10 +33,6 @@ function StudyContent() {
     { label: 'Consent', value: 'consent' },
     { label: 'Medical History form', value: 'medicalHistory' }
   ]
-  const participantRootPath = process.env.REACT_APP_PARTICIPANT_APP_ROOT
-  const participantProtocol = process.env.REACT_APP_PARTICIPANT_APP_PROTOCOL
-  const participantHost = `${currentEnv.environmentName.toLowerCase()}.${study.shortcode}.${participantRootPath}`
-  const participantUrl = `${participantProtocol}://${participantHost}`
 
   const preRegSurvey = currentEnv.preRegSurvey
   const envConfig = currentEnv.studyEnvironmentConfig
@@ -44,7 +41,8 @@ function StudyContent() {
     <div className="row">
       <div className="col-12 p-3">
         <h4>{currentEnv.environmentName.toLowerCase()} environment</h4>
-        <a href={participantUrl} target="_blank">Participant view <FontAwesomeIcon icon={faExternalLink}/></a>
+        <a href={Api.getParticipantLink(portal.shortcode, currentEnv.environmentName)}
+          target="_blank">Participant view <FontAwesomeIcon icon={faExternalLink}/></a>
         { currentEnv.studyEnvironmentConfig.initialized && <ul className="list-group">
           <li className="list-group-item d-flex">
             <div className="flex-grow-1">
