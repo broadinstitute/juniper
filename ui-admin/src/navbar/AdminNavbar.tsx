@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { DOMElement, useContext, useEffect, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { UserContext, UserContextT } from 'user/UserProvider'
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars'
@@ -9,7 +9,7 @@ import { NavbarContext, NavbarContextT } from './NavbarProvider'
 /** note we name this adminNavbar to avoid naming conflicts with bootstrap navbar */
 function AdminNavbar({ breadCrumbs, sidebarContent, showSidebar, setShowSidebar }: NavbarContextT) {
   const currentUser: UserContextT = useContext(UserContext)
-
+  const sidebarRef = useRef<HTMLDivElement>(null)
   let leftButton = <></>
   if (sidebarContent) {
     leftButton = <button onClick={() => setShowSidebar(!showSidebar)} title="sidebar menu"
@@ -21,6 +21,20 @@ function AdminNavbar({ breadCrumbs, sidebarContent, showSidebar, setShowSidebar 
   if (!breadCrumbs) {
     breadCrumbs = []
   }
+
+  /** Add a handler so that clicks outside the sidebar hide the sidebar */
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target as HTMLElement)) {
+        setShowSidebar(false)
+      }
+    }
+    document.addEventListener('click', handleClickOutside, true)
+    return () => {
+      document.removeEventListener('click', handleClickOutside, true)
+    }
+  }, [])
+
 
   return <>
     <nav className="Navbar navbar navbar-expand-lg navbar-light" style={{
@@ -63,9 +77,10 @@ function AdminNavbar({ breadCrumbs, sidebarContent, showSidebar, setShowSidebar 
       backgroundColor: 'rgb(92, 101, 117)',
       maxWidth: '280px',
       minWidth: '280px',
-      height: '100%',
-      color: '#f0f0f0'
-    }}>
+      height: 'calc(100% - 56px)',
+      color: '#f0f0f0',
+      zIndex: 80
+    }} ref={sidebarRef}>
       Sidebar
       {sidebarContent}
     </div>}
