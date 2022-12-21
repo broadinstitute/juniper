@@ -29,7 +29,7 @@ databaseChangeLog:
               - column: *idColumn
               - column: *createdAt
               - column: *lastUpdatedAt
-              - column: { name: rule, type: text }
+              - column: { name: eligibility_rule, type: text }
               - column: { name: allow_admin_edit, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
               - column: { name: allow_participant_start, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
               - column: { name: allow_participant_reedit, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
