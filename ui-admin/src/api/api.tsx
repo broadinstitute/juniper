@@ -11,7 +11,31 @@ export type Study = {
 
 export type StudyEnvironment = {
   environmentName: string,
-  studyEnvironmentConfig: StudyEnvironmentConfig
+  studyEnvironmentConfig: StudyEnvironmentConfig,
+  preRegSurvey: Survey,
+  configuredSurveys: StudyEnvironmentSurvey[]
+}
+
+export type Survey = {
+  id: string,
+  name: string,
+  stableId: string,
+  version: number,
+  createdAt: string,
+  content: string
+}
+
+export type StudyEnvironmentSurvey = {
+  id: string,
+  surveyId: string,
+  survey: Survey,
+  recur: boolean,
+  recurrenceIntervalDays: number,
+  surveyOrder: number,
+  allowAdminEdit: boolean,
+  allowParticipantStart: boolean,
+  allowParticipantReedit: boolean,
+  prepopulate: boolean
 }
 
 export type StudyEnvironmentConfig = {

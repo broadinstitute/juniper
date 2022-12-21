@@ -14,18 +14,10 @@
         "password": "broad_institute",
         "initialized": true
       },
-      "surveyBatchDtos": [
+      "configuredSurveyDtos": [
         {
-          "schedule": {
-            "recur": true,
-            "recurrenceIntervalDays": 7
-          },
-          "surveyBatchSurveyDtos": [
-            {
-              "surveyStableId": "oh_medicalHistory",
-              "surveyVersion": 1
-            }
-          ]
+          "surveyStableId": "oh_medicalHistory",
+          "surveyVersion": 1
         }
       ],
       "enrolleeFiles": [

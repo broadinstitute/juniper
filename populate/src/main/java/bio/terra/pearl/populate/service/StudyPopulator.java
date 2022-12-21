@@ -1,17 +1,17 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.study.Study;
+import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.populate.dto.StudyEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.StudyPopDto;
-import bio.terra.pearl.populate.dto.survey.SurveyBatchPopDto;
+import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Optional;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StudyPopulator extends Populator<Study> {
@@ -53,8 +53,10 @@ public class StudyPopulator extends Populator<Study> {
             surveyPopulator.populate(config.newFrom(surveyFile));
         }
         for (StudyEnvironmentPopDto studyEnv : studyDto.getStudyEnvironmentDtos()) {
-            for (SurveyBatchPopDto batchPopDto : studyEnv.getSurveyBatchDtos()) {
-                surveyPopulator.attachSurveyBatchSurveys(batchPopDto);
+            for (int i = 0; i < studyEnv.getConfiguredSurveyDtos().size(); i++) {
+                StudyEnvironmentSurveyPopDto configSurveyDto = studyEnv.getConfiguredSurveyDtos().get(i);
+                StudyEnvironmentSurvey configSurvey = surveyPopulator.convertConfiguredSurvey(configSurveyDto, i);
+                studyEnv.getConfiguredSurveys().add(configSurvey);
             }
         }
 

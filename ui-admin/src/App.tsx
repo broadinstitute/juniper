@@ -16,6 +16,8 @@ import PortalProvider from 'portal/PortalProvider'
 import PortalDashboard from 'portal/PortalDashboard'
 import StudyDashboard from 'study/StudyDashboard'
 import RoutableStudyProvider from './study/StudyProvider'
+import StudyEnvironmentProvider from './study/StudyEnvironmentProvider'
+import StudyContent from './study/StudyContent'
 
 /** container for the app including the router  */
 function App() {
@@ -32,6 +34,9 @@ function App() {
                 <Route path=":portalShortcode" element={<PortalProvider/>}>
                   <Route path="studies">
                     <Route path=":studyShortcode" element={<RoutableStudyProvider/>}>
+                      <Route path="env/:studyEnv" element={<StudyEnvironmentProvider/>}>
+                        <Route index element={<StudyContent/>}/>
+                      </Route>
                       <Route index element={<StudyDashboard/>} />
                       <Route path="*" element={<div>Unknown study route</div>}/>
                     </Route>

@@ -1,18 +1,18 @@
 package bio.terra.pearl.populate.service;
 
+import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dao.SurveyPopulateDao;
-import bio.terra.pearl.populate.dto.survey.SurveyBatchPopDto;
-import bio.terra.pearl.populate.dto.survey.SurveyBatchSurveyPopDto;
+import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
 
 @Service
 public class SurveyPopulator extends Populator<Survey> {
@@ -49,12 +49,13 @@ public class SurveyPopulator extends Populator<Survey> {
         return surveyService.create(surveyPopDto);
     }
 
-    public void attachSurveyBatchSurveys(SurveyBatchPopDto batchDto) {
-        for (int i = 0; i < batchDto.getSurveyBatchSurveyDtos().size(); i++) {
-            SurveyBatchSurveyPopDto sbsPop = batchDto.getSurveyBatchSurveyDtos().get(i);
-            Survey survey = surveyService.findByStableId(sbsPop.getSurveyStableId(), sbsPop.getSurveyVersion()).get();
-            sbsPop.setSurveyId(survey.getId());
-            sbsPop.setSurveyOrder(i);
-        }
+    public StudyEnvironmentSurvey convertConfiguredSurvey(StudyEnvironmentSurveyPopDto configuredSurveyDto, int index) {
+        StudyEnvironmentSurvey configuredSurvey = new StudyEnvironmentSurvey();
+        BeanUtils.copyProperties(configuredSurveyDto, configuredSurvey);
+        Survey survey = surveyService.findByStableId(configuredSurveyDto.getSurveyStableId(),
+                configuredSurveyDto.getSurveyVersion()).get();
+        configuredSurvey.setSurveyId(survey.getId());
+        configuredSurvey.setSurveyOrder(index);
+        return configuredSurvey;
     }
 }
