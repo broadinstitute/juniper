@@ -56,11 +56,6 @@ export type Portal = {
   portalStudies: PortalStudy[]
 }
 
-export type ResumableData = {
-  currentPageNo: number,
-  data: object
-}
-
 
 export type ConsentForm = {
   id: string,
@@ -134,8 +129,15 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async publishSurvey(studyShortcode: string, survey: Survey, environmentName: string[]): Promise<Survey> {
-    throw (`not implemented ${  studyShortcode  }${survey.stableId  }${environmentName}`)
+  async publishSurvey(portalShortcode: string, survey: Survey): Promise<Survey> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys/${survey.stableId}/${survey.version}/publish`
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(survey)
+    })
+    return await this.processJsonResponse(response)
   },
 
   async getSurveyVersions(studyShortname: string, stableId: string) {
@@ -143,13 +145,15 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async setEnvironmentSurvey(studyShortname: string, environmentName: string,
-    stableId: string, version: number): Promise<Survey> {
-    const url =`${API_ROOT}/studies/${studyShortname}/env/${environmentName}/surveys/${stableId}/setVersion/${version}`
+  async updateConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string,
+    configuredSurvey: StudyEnvironmentSurvey): Promise<StudyEnvironmentSurvey> {
+    const url =`${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
+      `/env/${environmentName}/configuredSurveys/${configuredSurvey.id}`
 
     const response = await fetch(url, {
       method: 'POST',
-      headers: this.getInitHeaders()
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(configuredSurvey)
     })
     return await this.processJsonResponse(response)
   },

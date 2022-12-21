@@ -35,39 +35,6 @@ paths:
           description: "Version not configured"
         '500':
           $ref: '#/components/responses/ServerError'
-
-  # README /docs/api_versioning.md
-  /api/example/v1/message:
-    get:
-      summary: Gets your message
-      tags: [ example ]
-      operationId: getMessage
-      responses:
-        '200':
-          description: Your message
-          content:
-            application/json:
-              schema:
-                type: string
-        '404':
-          description: You don't have a message
-        '500':
-          $ref: '#/components/responses/ServerError'
-    post:
-      summary: Stores your message
-      tags: [ example ]
-      operationId: setMessage
-      requestBody:
-        content:
-          'application/json':
-            schema:
-              type: string
-        required: true
-      responses:
-        '204':
-          description: Message saved
-        '500':
-          $ref: '#/components/responses/ServerError'
   /api/example/v1/{resourceType}/{resourceId}/{action}:
     get:
       summary: Checks sam access
@@ -120,6 +87,43 @@ paths:
         '200':
           description: portal object
           content: { application/json: { schema: { type: object }}}
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/surveys/{stableId}/{version}/publish:
+    post:
+      summary: Saves the survey as a new version
+      tags: [ survey ]
+      operationId: publish
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: true, schema: { type: string } }
+        - { name: version, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: {$ref: '#/components/schemas/SurveyDto' } } }
+      responses:
+        '200':
+          description: saved survey object
+          content: { application/json: { schema: {$ref: '#/components/schemas/SurveyDto' } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys/{configSurveyId}:
+    post:
+      summary: Updates a configured survey, such as by updating to a new version of the survey
+      tags: [ configuredSurvey ]
+      operationId: patch
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: configSurveyId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/ConfiguredSurveyDto' } } }
+      responses:
+        '200':
+          description: saved configuredSurvey object
+          content: { application/json: { schema: { $ref: '#/components/schemas/ConfiguredSurveyDto' } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/current-user/v1/unauthed-login:
@@ -246,6 +250,20 @@ components:
       type: object
       properties:
         token: {type: string}
+    SurveyDto:
+      type: object
+      properties:
+        name: {type: string}
+        version: {type: integer}
+        content: {type: string}
+        stableId: {type: string}
+        id: {type: string}
+    ConfiguredSurveyDto:
+      type: object
+      properties:
+        id: {type: string }
+        surveyId: { type: string }
+        studyEnvironmentId: { type: string }
     AdminUserDto:
       type: object
       properties:

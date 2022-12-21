@@ -1,10 +1,14 @@
 package bio.terra.pearl.core.service.portal;
 
+import bio.terra.pearl.core.dao.admin.PortalAdminUserDao;
 import bio.terra.pearl.core.dao.portal.PortalDao;
+import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.exception.NotFoundException;
+import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyService;
@@ -22,6 +26,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     private PortalStudyService portalStudyService;
     private PortalEnvironmentService portalEnvironmentService;
     private ParticipantUserService participantUserService;
+    private PortalAdminUserDao portalAdminUserDao;
     private StudyService studyService;
 
     private SurveyService surveyService;
@@ -30,12 +35,13 @@ public class PortalService extends CrudService<Portal, PortalDao> {
                          StudyService studyService,
                          PortalEnvironmentService portalEnvironmentService,
                          ParticipantUserService participantUserService,
-                         SurveyService surveyService) {
+                         PortalAdminUserDao portalAdminUserDao, SurveyService surveyService) {
         super(portalDao);
         this.portalStudyService = portalStudyService;
         this.portalEnvironmentService = portalEnvironmentService;
         this.studyService = studyService;
         this.participantUserService = participantUserService;
+        this.portalAdminUserDao = portalAdminUserDao;
         this.surveyService = surveyService;
     }
 
@@ -82,6 +88,19 @@ public class PortalService extends CrudService<Portal, PortalDao> {
 
     public List<Portal> findByAdminUserId(UUID userId) {
         return dao.findByAdminUserId(userId);
+    }
+
+    public Portal authUserToPortal(AdminUser user, String portalShortcode) {
+        Optional<Portal> portalOpt = findOneByShortcode(portalShortcode);
+        if (portalOpt.isEmpty()) {
+            throw new NotFoundException("Portal not found: %s".formatted(portalShortcode));
+        }
+        Portal portal = portalOpt.get();
+        if (user.getSuperuser() || portalAdminUserDao.isUserInPortal(user.getId(), portal.getId())) {
+            return portal;
+        }
+        throw new PermissionDeniedException("User %s does not have permissions on portal %s"
+                .formatted(user.getUsername(), portalShortcode));
     }
 
     public enum AllowedCascades implements CascadeProperty {

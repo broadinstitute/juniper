@@ -49,9 +49,6 @@ export function useSurveyJSCreator(survey: Survey | ConsentForm, onChange: () =>
     newSurveyJSCreator.onPreviewSurveyCreated.add((sender: object, options: SurveyCreator) => {
       options.survey.onTextMarkdown.add(applyMarkedMarkdown)
     })
-    newSurveyJSCreator.onGenerateNewName.add(() => { console.log('newName') })
-    newSurveyJSCreator.onItemValueAdded.add(() => { console.log('item!') })
-    newSurveyJSCreator.onCollectionItemAllowOperations.add(() => { console.log('collection') })
     setSurveyJSCreator(newSurveyJSCreator)
   }, [])
 

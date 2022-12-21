@@ -4,7 +4,7 @@ import { Store } from 'react-notifications-component'
 
 import {  StudyParams } from 'study/StudyProvider'
 import { useStudyEnvironmentOutlet } from 'study/StudyEnvironmentProvider'
-import Api, { Study, StudyEnvironment, StudyEnvironmentSurvey, Survey } from 'api/api'
+import Api, { Portal, Study, StudyEnvironment, StudyEnvironmentSurvey, Survey } from 'api/api'
 import VersionSelector from './VersionSelector'
 
 import { SurveyCreatorComponent } from 'survey-creator-react'
@@ -18,8 +18,9 @@ export type SurveyParamsT = StudyParams & {
 }
 
 /** renders a survey for editing/viewing using the surveyJS editor */
-function RawSurveyView({ study, currentEnv, survey, readOnly = false }:
-                      {study: Study, currentEnv: StudyEnvironment, survey: Survey, readOnly?: boolean}) {
+function RawSurveyView({ portal, study, currentEnv, survey, readOnly = false }:
+                      {portal: Portal, study: Study, currentEnv: StudyEnvironment,
+                        survey: Survey, readOnly?: boolean}) {
   const navigate = useNavigate()
   const [isDirty, setIsDirty] = useState(false)
   const [currentSurvey, setCurrentSurvey] = useState(survey)
@@ -43,22 +44,29 @@ function RawSurveyView({ study, currentEnv, survey, readOnly = false }:
     }
     survey.content = surveyJSCreator.text
     try {
-      const updatedSurvey = await Api.publishSurvey(study.shortcode, currentSurvey,
-        [currentEnv.environmentName])
-      updateSurveyFromServer(updatedSurvey)
-      Store.addNotification(successNotification(`Saved successfully`))
+      const updatedSurvey = await Api.publishSurvey(portal.shortcode, currentSurvey)
+      const configuredSurvey = currentEnv.configuredSurveys
+        .find(s => s.survey.stableId === updatedSurvey.stableId) as StudyEnvironmentSurvey
+      const updatedConfig = { ...configuredSurvey, surveyId: updatedSurvey.id }
+      const updatedConfiguredSurvey = await Api.updateConfiguredSurvey(portal.shortcode,
+        study.shortcode, currentEnv.environmentName, updatedConfig)
+      Store.addNotification(successNotification(
+        `Updated ${currentEnv.environmentName} to version ${updatedSurvey.version}`
+      ))
+      updateSurveyFromServer(updatedSurvey, updatedConfiguredSurvey)
     } catch (e) {
       Store.addNotification(failureNotification(`save failed`))
     }
   }
 
   /** Syncs the survey with one from the server */
-  function updateSurveyFromServer(updatedSurvey: Survey) {
+  function updateSurveyFromServer(updatedSurvey: Survey, updatedConfiguredSurvey: StudyEnvironmentSurvey) {
     setCurrentSurvey(updatedSurvey)
-    const configuredSurvey = currentEnv.configuredSurveys
-      .find(s => s.survey.stableId === updatedSurvey.stableId) as StudyEnvironmentSurvey
-    configuredSurvey.surveyId = updatedSurvey.id
-    configuredSurvey.survey = updatedSurvey
+    setIsDirty(false)
+    updatedConfiguredSurvey.survey = updatedSurvey
+    const configuredSurveyIndex = currentEnv.configuredSurveys
+      .findIndex(s => s.survey.stableId === updatedSurvey.stableId)
+    currentEnv.configuredSurveys[configuredSurveyIndex] = updatedConfiguredSurvey
     if (surveyJSCreator) {
       surveyJSCreator.text = updatedSurvey.content
     }
@@ -68,10 +76,10 @@ function RawSurveyView({ study, currentEnv, survey, readOnly = false }:
   async function restoreVersion(version: number) {
     setShowVersionSelector(false)
     try {
-      const updatedSurvey = await Api.setEnvironmentSurvey(study.shortcode, currentEnv.environmentName,
-        currentSurvey.stableId, version)
-      updateSurveyFromServer(updatedSurvey)
-      Store.addNotification(successNotification(`Set to version ${updatedSurvey.version}`))
+      // const updatedSurvey = await Api.updateConfiguredSurvey(portal.shortcode, currentEnv.environmentName,
+      //   currentSurvey.stableId, version)
+      // updateSurveyFromServer(updatedSurvey)
+      // Store.addNotification(successNotification(`Set to version ${updatedSurvey.version}`))
     } catch (e) {
       Store.addNotification(failureNotification(`update failed`))
     }
@@ -87,11 +95,13 @@ function RawSurveyView({ study, currentEnv, survey, readOnly = false }:
       <div className="d-flex flex-grow-1">
         <h5>{currentSurvey.name}
           <span className="detail me-2 ms-2">version {currentSurvey.version}</span>
-          { isDirty && <span className="badge "><em>modified</em></span> }
+          { isDirty && <span className="badge" style={{ backgroundColor: 'rgb(51, 136, 0)' }} >
+            <em>modified</em>
+          </span> }
           <button className="btn-secondary btn" onClick={() => setShowVersionSelector(true)}>
             all versions <FontAwesomeIcon icon={faCaretDown}/>
           </button>
-          { showVersionSelector && <VersionSelector studyShortname={study.shortcode}
+          { showVersionSelector && <VersionSelector studyShortname={portal.shortcode}
             stableId={currentSurvey.stableId}
             show={showVersionSelector} setShow={setShowVersionSelector}
             updateVersion={restoreVersion}/> }
@@ -111,7 +121,7 @@ function SurveyView() {
   const params = useParams<SurveyParamsT>()
   const surveyStableId: string | undefined = params.surveyStableId
 
-  const { study, currentEnv } = useStudyEnvironmentOutlet()
+  const { portal, study, currentEnv } = useStudyEnvironmentOutlet()
   const [searchParams] = useSearchParams()
   const isReadonly = searchParams.get('mode') === 'view'
 
@@ -123,7 +133,7 @@ function SurveyView() {
   if (!survey) {
     return <span>The survey {surveyStableId} does not exist in this environment</span>
   }
-  return <RawSurveyView study={study} currentEnv={currentEnv} survey={survey} readOnly={isReadonly}/>
+  return <RawSurveyView portal={portal} study={study} currentEnv={currentEnv} survey={survey} readOnly={isReadonly}/>
 }
 
 export default SurveyView
