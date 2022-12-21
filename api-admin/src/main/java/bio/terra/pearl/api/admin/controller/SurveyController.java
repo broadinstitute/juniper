@@ -37,7 +37,7 @@ public class SurveyController implements SurveyApi {
       String portalShortcode, String stableId, Integer version, SurveyDto body) {
     AdminUser adminUser = requestService.getFromRequest(request);
     Portal portal = requestService.authUserToPortal(adminUser, portalShortcode);
-    if (!stableId.equals(body.getStableId()) || version != body.getVersion()) {
+    if (!stableId.equals(body.getStableId()) || !body.getVersion().equals(version)) {
       throw new IllegalArgumentException("survey parameters don't match");
     }
     Survey survey = objectMapper.convertValue(body, Survey.class);

@@ -75,6 +75,7 @@ function RawSurveyView({ portal, study, currentEnv, survey, readOnly = false }:
   /** resets the survey to a previous version */
   async function restoreVersion(version: number) {
     setShowVersionSelector(false)
+    alert(`not implemented ${  version}`)
     try {
       // const updatedSurvey = await Api.updateConfiguredSurvey(portal.shortcode, currentEnv.environmentName,
       //   currentSurvey.stableId, version)
