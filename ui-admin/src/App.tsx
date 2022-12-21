@@ -15,10 +15,11 @@ import PortalList from 'portal/PortalList'
 import PortalProvider from 'portal/PortalProvider'
 import PortalDashboard from 'portal/PortalDashboard'
 import StudyDashboard from 'study/StudyDashboard'
-import RoutableStudyProvider from './study/StudyProvider'
-import StudyEnvironmentProvider from './study/StudyEnvironmentProvider'
-import StudyContent from './study/StudyContent'
-import SurveyView from './study/surveys/SurveyView'
+import RoutableStudyProvider from 'study/StudyProvider'
+import StudyEnvironmentProvider from 'study/StudyEnvironmentProvider'
+import StudyContent from 'study/StudyContent'
+import SurveyView from 'study/surveys/SurveyView'
+
 
 /** container for the app including the router  */
 function App() {
