@@ -2,7 +2,9 @@ package bio.terra.pearl.core.model.study;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
+import bio.terra.pearl.core.model.survey.Survey;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -21,6 +23,10 @@ public class StudyEnvironment extends BaseEntity {
 
     private UUID studyEnvironmentConfigId;
     private StudyEnvironmentConfig studyEnvironmentConfig;
+    private UUID preRegSurveyId;
+    private Survey preRegSurvey;
     @Builder.Default
     private List<StudyEnvironmentSurvey> configuredSurveys = new ArrayList<>();
+    @Builder.Default
+    private List<StudyEnvironmentConsent> configuredConsents = new ArrayList<>();
 }

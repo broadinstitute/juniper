@@ -2,6 +2,7 @@ package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
+import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.populate.dto.StudyEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.StudyPopDto;
@@ -57,6 +58,10 @@ public class StudyPopulator extends Populator<Study> {
                 StudyEnvironmentSurveyPopDto configSurveyDto = studyEnv.getConfiguredSurveyDtos().get(i);
                 StudyEnvironmentSurvey configSurvey = surveyPopulator.convertConfiguredSurvey(configSurveyDto, i);
                 studyEnv.getConfiguredSurveys().add(configSurvey);
+            }
+            if (studyEnv.getPreRegSurveyDto() != null) {
+                Survey preRegSurvey = surveyPopulator.fetchFromPopDto(studyEnv.getPreRegSurveyDto()).get();
+                studyEnv.setPreRegSurveyId(preRegSurvey.getId());
             }
         }
 

@@ -44,7 +44,7 @@ function RawSurveyView({ portal, study, currentEnv, survey, readOnly = false }:
     }
     survey.content = surveyJSCreator.text
     try {
-      const updatedSurvey = await Api.createNewVersion(portal.shortcode, currentSurvey)
+      const updatedSurvey = await Api.createNewSurveyVersion(portal.shortcode, currentSurvey)
       const configuredSurvey = currentEnv.configuredSurveys
         .find(s => s.survey.stableId === updatedSurvey.stableId) as StudyEnvironmentSurvey
       const updatedConfig = { ...configuredSurvey, surveyId: updatedSurvey.id }

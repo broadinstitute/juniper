@@ -19,6 +19,7 @@ import RoutableStudyProvider from 'study/StudyProvider'
 import StudyEnvironmentProvider from 'study/StudyEnvironmentProvider'
 import StudyContent from 'study/StudyContent'
 import SurveyView from 'study/surveys/SurveyView'
+import PreRegView from './study/surveys/PreRegView'
 
 
 /** container for the app including the router  */
@@ -42,6 +43,10 @@ function App() {
                             <Route index element={<SurveyView/>}/>
                           </Route>
                           <Route path="*" element={<div>Unknown survey page</div>}/>
+                        </Route>
+                        <Route path="preReg">
+                          <Route path=":surveyStableId" element={<PreRegView/>}/>
+                          <Route path="*" element={<div>Unknown prereg page</div>}/>
                         </Route>
                         <Route index element={<StudyContent/>}/>
                       </Route>

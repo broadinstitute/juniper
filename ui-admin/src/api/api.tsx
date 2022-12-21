@@ -129,8 +129,19 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async createNewVersion(portalShortcode: string, survey: Survey): Promise<Survey> {
+  async createNewSurveyVersion(portalShortcode: string, survey: Survey): Promise<Survey> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys/${survey.stableId}/${survey.version}/newVersion`
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(survey)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async createNewPreRegVersion(portalShortcode: string, survey: Survey): Promise<Survey> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/prereg/${survey.stableId}/${survey.version}/newVersion`
 
     const response = await fetch(url, {
       method: 'POST',

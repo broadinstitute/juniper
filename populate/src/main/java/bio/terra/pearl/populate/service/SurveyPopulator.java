@@ -36,7 +36,7 @@ public class SurveyPopulator extends Populator<Survey> {
         surveyPopDto.setContent(newContent);
         UUID portalId = portalService.findOneByShortcode(config.getPortalShortcode()).get().getId();
         surveyPopDto.setPortalId(portalId);
-        Optional<Survey> existingSurveyOpt = surveyService.findByStableId(surveyPopDto.getStableId(), surveyPopDto.getVersion());
+        Optional<Survey> existingSurveyOpt = fetchFromPopDto(surveyPopDto);
 
         if (existingSurveyOpt.isPresent()) {
             Survey existingSurvey = existingSurveyOpt.get();
@@ -57,5 +57,9 @@ public class SurveyPopulator extends Populator<Survey> {
         configuredSurvey.setSurveyId(survey.getId());
         configuredSurvey.setSurveyOrder(index);
         return configuredSurvey;
+    }
+
+    public Optional<Survey> fetchFromPopDto(SurveyPopDto surveyPopDto) {
+        return surveyService.findByStableId(surveyPopDto.getStableId(), surveyPopDto.getVersion());
     }
 }
