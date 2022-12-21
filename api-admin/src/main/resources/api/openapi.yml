@@ -89,7 +89,7 @@ paths:
           content: { application/json: { schema: { type: object }}}
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/surveys/{stableId}/{version}/publish:
+  /api/portals/v1/{portalShortcode}/surveys/{stableId}/{version}/newVersion:
     post:
       summary: Saves the survey as a new version
       tags: [ survey ]
@@ -108,7 +108,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys/{configSurveyId}:
-    post:
+    patch:
       summary: Updates a configured survey, such as by updating to a new version of the survey
       tags: [ configuredSurvey ]
       operationId: patch

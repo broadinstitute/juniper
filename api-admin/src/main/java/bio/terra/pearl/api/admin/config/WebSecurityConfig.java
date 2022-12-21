@@ -20,7 +20,10 @@ public class WebSecurityConfig {
       @Override
       public void addCorsMappings(CorsRegistry registry) {
         String[] allowedCorsPatterns = env.getProperty("cors.enabled-path", String[].class);
-        registry.addMapping("/**").allowedOriginPatterns(allowedCorsPatterns);
+        registry
+            .addMapping("/**")
+            .allowedOriginPatterns(allowedCorsPatterns)
+            .allowedMethods("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH");
       }
     };
   }

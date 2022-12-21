@@ -41,7 +41,9 @@ public class SurveyController implements SurveyApi {
       throw new IllegalArgumentException("survey parameters don't match");
     }
     Survey survey = objectMapper.convertValue(body, Survey.class);
-    Survey savedSurvey = surveyService.publish(adminUser, portal, survey);
+
+    Survey savedSurvey = surveyService.createNewVersion(adminUser, portal.getId(), survey);
+
     SurveyDto savedSurveyDto = objectMapper.convertValue(savedSurvey, SurveyDto.class);
     return ResponseEntity.ok(savedSurveyDto);
   }
