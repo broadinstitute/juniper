@@ -46,7 +46,12 @@ public class FilePopulateService {
             ClassPathResource cpr = new ClassPathResource(SEED_ROOT + popSpec.getBasePath() + "/" + relativePath);
             return cpr.getInputStream();
         }
-        String pathName = System.getProperty("user.dir") + "/" + ABSOLUTE_SEED_ROOT + popSpec.getBasePath() + "/" + relativePath;
+        /**
+         * depending on whether you are running gradle or spring boot, the root directory could either be
+         * the root folder or api-admin.  So strip out api-admin if it's there
+         */
+        String projectDir = System.getProperty("user.dir").replace("/api-admin", "");
+        String pathName = projectDir + "/" + ABSOLUTE_SEED_ROOT + popSpec.getBasePath() + "/" + relativePath;
         Path filePath = Path.of(pathName);
         return Files.newInputStream(filePath);
     }
