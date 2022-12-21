@@ -25,7 +25,7 @@ public class StudyEnvironmentSurvey extends BaseEntity {
     private Integer daysAfterEligible;
 
     private int surveyOrder; // what order the survey will be given in, compared to other surveys triggered at the same time
-    private String rule;
+    private String eligibilityRule;
     @Builder.Default
     private boolean allowAdminEdit = true; // whether study staff can edit this
     @Builder.Default

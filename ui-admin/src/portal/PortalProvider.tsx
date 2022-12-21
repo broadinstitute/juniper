@@ -57,6 +57,7 @@ function RawPortalProvider({ shortcode }:
   useEffect(() => {
     Api.getPortal(shortcode).then(result => {
       setPortalState(result)
+      setIsError(false)
       setIsLoading(false)
     }).catch(() => {
       setIsError(true)
