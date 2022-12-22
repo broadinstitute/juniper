@@ -7,14 +7,14 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import java.util.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class StudyEnvironmentService {
-    private StudyEnvironmentDao studyEnvironmentDao;
+public class StudyEnvironmentService extends CrudService<StudyEnvironment, StudyEnvironmentDao> {
     private StudyEnvironmentSurveyDao studyEnvironmentSurveyDao;
     private StudyEnvironmentConfigService studyEnvironmentConfigService;
     private EnrolleeService enrolleeService;
@@ -24,28 +24,33 @@ public class StudyEnvironmentService {
                                    StudyEnvironmentSurveyDao studyEnvironmentSurveyDao,
                                    StudyEnvironmentConfigService studyEnvironmentConfigService,
                                    EnrolleeService enrolleeService) {
-        this.studyEnvironmentDao = studyEnvironmentDao;
+        super(studyEnvironmentDao);
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
         this.studyEnvironmentConfigService =  studyEnvironmentConfigService;
         this.enrolleeService = enrolleeService;
     }
 
     public Set<StudyEnvironment> findByStudy(UUID studyId) {
-        return new HashSet<>(studyEnvironmentDao.findByStudy(studyId));
+        return new HashSet<>(dao.findByStudy(studyId));
     }
 
     public Optional<StudyEnvironment> findByStudy(String studyShortcode, EnvironmentName environmentName) {
-        return studyEnvironmentDao.findByStudy(studyShortcode, environmentName);
+        return dao.findByStudy(studyShortcode, environmentName);
+    }
+
+    public StudyEnvironment update(StudyEnvironment studyEnvironment) {
+        return dao.update(studyEnvironment);
     }
 
     @Transactional
+    @Override
     public StudyEnvironment create(StudyEnvironment studyEnv) {
         StudyEnvironmentConfig envConfig = studyEnv.getStudyEnvironmentConfig();
         if (studyEnv.getStudyEnvironmentConfig() != null) {
             envConfig = studyEnvironmentConfigService.create(envConfig);
             studyEnv.setStudyEnvironmentConfigId(envConfig.getId());
         }
-        StudyEnvironment newEnv = studyEnvironmentDao.create(studyEnv);
+        StudyEnvironment newEnv = dao.create(studyEnv);
         for (StudyEnvironmentSurvey studyEnvironmentSurvey : studyEnv.getConfiguredSurveys()) {
             studyEnvironmentSurvey.setStudyEnvironmentId(newEnv.getId());
             studyEnvironmentSurveyDao.create(studyEnvironmentSurvey);
@@ -55,11 +60,12 @@ public class StudyEnvironmentService {
     }
 
     @Transactional
+    @Override
     public void delete(UUID studyEnvironmentId, Set<CascadeProperty> cascade) {
-        StudyEnvironment studyEnv = studyEnvironmentDao.find(studyEnvironmentId).get();
+        StudyEnvironment studyEnv = dao.find(studyEnvironmentId).get();
         enrolleeService.deleteByStudyEnvironmentId(studyEnv.getId(), cascade);
         studyEnvironmentSurveyDao.deleteByStudyEnvironmentId(studyEnvironmentId);
-        studyEnvironmentDao.delete(studyEnvironmentId);
+        dao.delete(studyEnvironmentId);
         if (studyEnv.getStudyEnvironmentConfigId() != null) {
             studyEnvironmentConfigService.delete(studyEnv.getStudyEnvironmentConfigId());
         }
@@ -67,7 +73,7 @@ public class StudyEnvironmentService {
 
     @Transactional
     public void deleteByStudyId(UUID studyId, Set<CascadeProperty> cascade) {
-        List<StudyEnvironment> studyEnvironments = studyEnvironmentDao.findByStudy(studyId);
+        List<StudyEnvironment> studyEnvironments = dao.findByStudy(studyId);
         studyEnvironments.forEach(studyEnv -> {
             delete(studyEnv.getId(), cascade);
         });

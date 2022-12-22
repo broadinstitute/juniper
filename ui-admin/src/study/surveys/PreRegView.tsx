@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import React, { useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
 
 import {  StudyParams } from 'study/StudyProvider'
 import { useStudyEnvironmentOutlet } from 'study/StudyEnvironmentProvider'
 import Api, { Portal, StudyEnvironment, Survey } from 'api/api'
 
-import { SurveyCreator, SurveyCreatorComponent } from 'survey-creator-react'
 import { failureNotification, successNotification } from 'util/notifications'
+import SurveyEditorView from './SurveyEditorView'
 
 export type SurveyParamsT = StudyParams & {
   surveyStableId: string,
@@ -15,71 +15,36 @@ export type SurveyParamsT = StudyParams & {
 }
 
 /** Preregistration editor.  This shares a LOT in common with SurveyView */
-function RawPreRegView({ portal, currentEnv, survey }:
-                      {portal: Portal, currentEnv: StudyEnvironment, survey: Survey}) {
-  const navigate = useNavigate()
-  const [isDirty, setIsDirty] = useState(false)
+function RawPreRegView({ portalShortcode, currentEnv, survey, studyShortcode }:
+                      {portalShortcode: string, currentEnv: StudyEnvironment, survey: Survey, studyShortcode: string}) {
   const [currentSurvey, setCurrentSurvey] = useState(survey)
-  const [surveyJSCreator, setSurveyJSCreator] = useState<SurveyCreator | null>(null)
 
-  /** sets the dirty flag on modifications */
-  function handleSurveyModification() {
-    if (!isDirty) {
-      setIsDirty(true)
-    }
+  /** update the version */
+  async function changeVersion(version: number): Promise<string> {
+    throw `Not implemented ${version}`
   }
 
-  useEffect(() => {
-    const creatorOptions = {
-      showLogicTab: false,
-      isAutoSave: false,
-      showSurveyTitle: false
-    }
-    const newSurveyJSCreator = new SurveyCreator(creatorOptions)
-    newSurveyJSCreator.text = currentSurvey.content
-    newSurveyJSCreator.survey.title = currentSurvey.name
-    newSurveyJSCreator.onModified.add(handleSurveyModification)
-    setSurveyJSCreator(newSurveyJSCreator)
-  }, [])
 
   /** saves as a new version and updates the study environment accordingly */
-  async function publish() {
-    if (!surveyJSCreator) {
-      return
-    }
-    survey.content = surveyJSCreator.text
+  async function createNewVersion(updatedContent: string): Promise<string> {
+    survey.content = updatedContent
     try {
-      const updatedSurvey = await Api.createNewPreRegVersion(portal.shortcode, currentSurvey)
+      const updatedSurvey = await Api.createNewSurveyVersion(portalShortcode, currentSurvey)
       setCurrentSurvey(updatedSurvey)
+      const updatedEnv = { id: currentEnv.id, preRegSurveyId: updatedSurvey.id }
+      const updatedStudyEnv = await Api.updateStudyEnvironment(portalShortcode, studyShortcode,
+        currentEnv.environmentName, updatedEnv)
+      currentEnv.preRegSurveyId = updatedStudyEnv.preRegSurveyId
       currentEnv.preRegSurvey = updatedSurvey
       Store.addNotification(successNotification(`Saved successfully`))
     } catch (e) {
-      Store.addNotification(failureNotification(`save failed`))
+      Store.addNotification(failureNotification(`Save failed`))
     }
+    return updatedContent
   }
 
-  /** goes back to the envrironment view */
-  function handleCancel() {
-    navigate('../../..')
-  }
-
-  return <div className="PreRegView">
-    <div className="d-flex p-2 align-items-center">
-      <div className="d-flex flex-grow-1">
-        <h5>{currentSurvey.name}
-          <span className="detail me-2 ms-2">version {currentSurvey.version}</span>
-          { isDirty && <span className="badge " style={{ backgroundColor: 'rgb(51, 136, 0)' }}>
-            <em>modified</em>
-          </span> }
-        </h5>
-      </div>
-      <button className="btn btn-primary me-md-2" type="button" onClick={publish}>
-        Save
-      </button>
-      <button className="btn btn-secondary" type="button" onClick={handleCancel}>Cancel</button>
-    </div>
-    {surveyJSCreator && <SurveyCreatorComponent creator={surveyJSCreator}/>}
-  </div>
+  return <SurveyEditorView portalShortcode={portalShortcode} currentSurvey={currentSurvey}
+    createNewVersion={createNewVersion} changeVersion={changeVersion}/>
 }
 
 /** Routable component that delegates rendering to the raw view */
@@ -87,7 +52,7 @@ function PreRegView() {
   const params = useParams<SurveyParamsT>()
   const surveyStableId: string | undefined = params.surveyStableId
 
-  const { portal, currentEnv } = useStudyEnvironmentOutlet()
+  const { portal, currentEnv, study } = useStudyEnvironmentOutlet()
 
 
   if (!surveyStableId) {
@@ -97,7 +62,8 @@ function PreRegView() {
   if (survey.stableId != surveyStableId) {
     return <span>The survey {surveyStableId} does not exist on this study</span>
   }
-  return <RawPreRegView portal={portal} currentEnv={currentEnv} survey={survey}/>
+  return <RawPreRegView portalShortcode={portal.shortcode} currentEnv={currentEnv}
+    survey={survey} studyShortcode={study.shortcode}/>
 }
 
 export default PreRegView

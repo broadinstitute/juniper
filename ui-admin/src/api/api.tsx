@@ -9,10 +9,17 @@ export type Study = {
   studyEnvironments: StudyEnvironment[]
 }
 
+export type StudyEnvironmentUpdate = {
+  id: string,
+  preRegSurveyId: string
+}
+
 export type StudyEnvironment = {
+  id: string,
   environmentName: string,
   studyEnvironmentConfig: StudyEnvironmentConfig,
   preRegSurvey: Survey,
+  preRegSurveyId: string,
   configuredSurveys: StudyEnvironmentSurvey[]
 }
 
@@ -140,13 +147,13 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async createNewPreRegVersion(portalShortcode: string, survey: Survey): Promise<Survey> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/prereg/${survey.stableId}/${survey.version}/newVersion`
-
+  async updateStudyEnvironment(portalShortcode: string, studyShortcode: string, envName: string,
+    studyEnvUpdate: StudyEnvironmentUpdate): Promise<StudyEnvironmentUpdate> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}/env/${envName}`
     const response = await fetch(url, {
-      method: 'POST',
+      method: 'PATCH',
       headers: this.getInitHeaders(),
-      body: JSON.stringify(survey)
+      body: JSON.stringify(studyEnvUpdate)
     })
     return await this.processJsonResponse(response)
   },

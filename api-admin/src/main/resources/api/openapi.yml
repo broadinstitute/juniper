@@ -126,6 +126,25 @@ paths:
           content: { application/json: { schema: { $ref: '#/components/schemas/ConfiguredSurveyDto' } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}:
+    patch:
+      summary: Updates a study environment configuration
+      tags: [ studyEnvironment ]
+      operationId: patch
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/StudyEnvironmentDto' } } }
+      responses:
+        '200':
+          description: saved studyEnvironment object
+          content: { application/json: { schema: { $ref: '#/components/schemas/StudyEnvironmentDto' } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+
   /api/current-user/v1/unauthed-login:
     post:
       summary: Unauthenticated login (dev only)
@@ -257,13 +276,18 @@ components:
         version: {type: integer}
         content: {type: string}
         stableId: {type: string}
-        id: {type: string}
+        id: {type: string, format: uuid}
     ConfiguredSurveyDto:
       type: object
       properties:
-        id: {type: string }
-        surveyId: { type: string }
-        studyEnvironmentId: { type: string }
+        id: {type: string, format: uuid }
+        surveyId: { type: string, format: uuid }
+        studyEnvironmentId: { type: string, format: uuid }
+    StudyEnvironmentDto:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        preRegSurveyId: { type: string, format: uuid }
     AdminUserDto:
       type: object
       properties:
