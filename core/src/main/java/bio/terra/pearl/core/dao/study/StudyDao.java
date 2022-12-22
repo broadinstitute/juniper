@@ -17,6 +17,7 @@ public class StudyDao  extends BaseJdbiDao<Study> {
     private StudyEnvironmentDao studyEnvironmentDao;
     private StudyEnvironmentConfigDao studyEnvironmentConfigDao;
     private StudyEnvironmentSurveyDao studyEnvironmentSurveyDao;
+    private StudyEnvironmentConsentDao studyEnvironmentConsentDao;
     private SurveyService surveyService;
 
     @Override
@@ -26,11 +27,13 @@ public class StudyDao  extends BaseJdbiDao<Study> {
 
     public StudyDao(Jdbi jdbi, StudyEnvironmentDao studyEnvironmentDao,
                     StudyEnvironmentConfigDao studyEnvironmentConfigDao,
-                    StudyEnvironmentSurveyDao studyEnvironmentSurveyDao, SurveyService surveyService) {
+                    StudyEnvironmentSurveyDao studyEnvironmentSurveyDao,
+                    StudyEnvironmentConsentDao studyEnvironmentConsentDao, SurveyService surveyService) {
         super(jdbi);
         this.studyEnvironmentDao = studyEnvironmentDao;
         this.studyEnvironmentConfigDao = studyEnvironmentConfigDao;
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
+        this.studyEnvironmentConsentDao = studyEnvironmentConsentDao;
         this.surveyService = surveyService;
     }
 
@@ -46,7 +49,8 @@ public class StudyDao  extends BaseJdbiDao<Study> {
                     .collect(Collectors.toList());
             List<StudyEnvironmentConfig> configs = studyEnvironmentConfigDao.findAll(configIds);
             /**
-             * Iterate through each environment and load the content.  This could be optimized further, but since it's
+             * Iterate through each environment and load the content.  This could be optimized further,
+             * by batching queries across environments, but since it's
              * the admin UI that loads studies like this, speed isn't as important
              */
             for (StudyEnvironment studyEnv : studyEnvs) {
@@ -58,6 +62,8 @@ public class StudyDao  extends BaseJdbiDao<Study> {
                 if (studyEnv.getPreRegSurveyId() != null) {
                     studyEnv.setPreRegSurvey(surveyService.find(studyEnv.getPreRegSurveyId()).get());
                 }
+                studyEnv.setConfiguredConsents(studyEnvironmentConsentDao
+                        .findAllByStudyEnvIdWithConsent(studyEnv.getId()));
 
             }
         });

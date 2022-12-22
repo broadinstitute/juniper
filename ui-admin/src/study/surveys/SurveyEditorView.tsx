@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { Survey } from 'api/api'
+import { Survey, VersionedForm } from 'api/api'
 import VersionSelector from './VersionSelector'
 
 import { SurveyCreatorComponent } from 'survey-creator-react'
@@ -11,17 +11,17 @@ import { faCaretDown } from '@fortawesome/free-solid-svg-icons/faCaretDown'
 
 /** renders a survey for editing/viewing using the surveyJS editor */
 export default function SurveyEditorView({
-  portalShortcode, currentSurvey, readOnly = false,
+  portalShortcode, currentForm, readOnly = false,
   createNewVersion, changeVersion
 }:
-                         {portalShortcode: string, currentSurvey: Survey, readOnly?: boolean,
+                         {portalShortcode: string, currentForm: VersionedForm, readOnly?: boolean,
                            createNewVersion: (updatedContent: string) => Promise<string>,
                            changeVersion: (version: number) => void}) {
   const navigate = useNavigate()
   const [isDirty, setIsDirty] = useState(false)
   const [showVersionSelector, setShowVersionSelector] = useState(false)
 
-  const { surveyJSCreator } = useSurveyJSCreator(currentSurvey, handleSurveyModification)
+  const { surveyJSCreator } = useSurveyJSCreator(currentForm, handleSurveyModification)
   if (surveyJSCreator) {
     surveyJSCreator.readOnly = readOnly
   }
@@ -49,8 +49,8 @@ export default function SurveyEditorView({
   return <div className="SurveyView">
     <div className="d-flex p-2 align-items-center">
       <div className="d-flex flex-grow-1">
-        <h5>{currentSurvey.name}
-          <span className="detail me-2 ms-2">version {currentSurvey.version}</span>
+        <h5>{currentForm.name}
+          <span className="detail me-2 ms-2">version {currentForm.version}</span>
           { isDirty && <span className="badge" style={{ backgroundColor: 'rgb(51, 136, 0)' }} >
             <em>modified</em>
           </span> }
@@ -58,7 +58,7 @@ export default function SurveyEditorView({
             all versions <FontAwesomeIcon icon={faCaretDown}/>
           </button>
           { showVersionSelector && <VersionSelector studyShortname={portalShortcode}
-            stableId={currentSurvey.stableId}
+            stableId={currentForm.stableId}
             show={showVersionSelector} setShow={setShowVersionSelector}
             updateVersion={changeVersion}/> }
         </h5>

@@ -1,11 +1,11 @@
 package bio.terra.pearl.api.admin.controller;
 
-import bio.terra.pearl.api.admin.api.ConfiguredSurveyApi;
-import bio.terra.pearl.api.admin.model.ConfiguredSurveyDto;
+import bio.terra.pearl.api.admin.api.ConfiguredConsentApi;
+import bio.terra.pearl.api.admin.model.ConfiguredConsentDto;
 import bio.terra.pearl.api.admin.service.RequestUtilService;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
-import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
+import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
+import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -14,17 +14,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class ConfiguredSurveyController implements ConfiguredSurveyApi {
+public class ConfiguredConsentController implements ConfiguredConsentApi {
   private RequestUtilService requestService;
   private HttpServletRequest request;
   private ObjectMapper objectMapper;
-  private StudyEnvironmentSurveyService sesService;
+  private StudyEnvironmentConsentService sesService;
 
-  public ConfiguredSurveyController(
+  public ConfiguredConsentController(
       RequestUtilService requestService,
       HttpServletRequest request,
       ObjectMapper objectMapper,
-      StudyEnvironmentSurveyService sesService) {
+      StudyEnvironmentConsentService sesService) {
     this.requestService = requestService;
     this.request = request;
     this.objectMapper = objectMapper;
@@ -32,20 +32,20 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
   }
 
   @Override
-  public ResponseEntity<ConfiguredSurveyDto> patch(
+  public ResponseEntity<ConfiguredConsentDto> patch(
       String portalShortcode,
       String studyShortcode,
       String envName,
-      UUID configuredSurveyId,
-      ConfiguredSurveyDto body) {
+      UUID configuredConsentId,
+      ConfiguredConsentDto body) {
     AdminUser adminUser = requestService.getFromRequest(request);
     requestService.authUserToPortal(adminUser, portalShortcode);
 
-    StudyEnvironmentSurvey configuredSurvey =
-        objectMapper.convertValue(body, StudyEnvironmentSurvey.class);
-    StudyEnvironmentSurvey existing = sesService.find(configuredSurvey.getId()).get();
+    StudyEnvironmentConsent configuredSurvey =
+        objectMapper.convertValue(body, StudyEnvironmentConsent.class);
+    StudyEnvironmentConsent existing = sesService.find(configuredSurvey.getId()).get();
     BeanUtils.copyProperties(body, existing);
-    StudyEnvironmentSurvey savedSes = sesService.update(adminUser, existing);
-    return ResponseEntity.ok(objectMapper.convertValue(savedSes, ConfiguredSurveyDto.class));
+    StudyEnvironmentConsent savedSes = sesService.update(adminUser, existing);
+    return ResponseEntity.ok(objectMapper.convertValue(savedSes, ConfiguredConsentDto.class));
   }
 }

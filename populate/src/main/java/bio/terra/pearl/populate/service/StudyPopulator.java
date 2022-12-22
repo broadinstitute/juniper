@@ -1,11 +1,13 @@
 package bio.terra.pearl.populate.service;
 
+import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.populate.dto.StudyEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.StudyPopDto;
+import bio.terra.pearl.populate.dto.consent.StudyEnvironmentConsentPopDto;
 import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -19,11 +21,15 @@ public class StudyPopulator extends Populator<Study> {
     private StudyService studyService;
     private EnrolleePopulator enrolleePopulator;
     private SurveyPopulator surveyPopulator;
+    private ConsentFormPopulator consentFormPopulator;
 
-    public StudyPopulator(ObjectMapper objectMapper, StudyService studyService, FilePopulateService filePopulateService, EnrolleePopulator enrolleePopulator, SurveyPopulator surveyPopulator) {
+    public StudyPopulator(ObjectMapper objectMapper, StudyService studyService,
+                          FilePopulateService filePopulateService, EnrolleePopulator enrolleePopulator,
+                          SurveyPopulator surveyPopulator, ConsentFormPopulator consentFormPopulator) {
         this.studyService = studyService;
         this.enrolleePopulator = enrolleePopulator;
         this.surveyPopulator = surveyPopulator;
+        this.consentFormPopulator = consentFormPopulator;
         this.filePopulateService = filePopulateService;
         this.objectMapper = objectMapper;
     }
@@ -49,20 +55,15 @@ public class StudyPopulator extends Populator<Study> {
             studyService.delete(study.getId(), new HashSet<>())
         );
 
-        // first, populate the surveys themselves
+        // first, populate the surveys and consent forms themselves
         for (String surveyFile : studyDto.getSurveyFiles()) {
             surveyPopulator.populate(config.newFrom(surveyFile));
         }
+        for (String consentFile : studyDto.getConsentFormFiles()) {
+            consentFormPopulator.populate(config.newFrom(consentFile));
+        }
         for (StudyEnvironmentPopDto studyEnv : studyDto.getStudyEnvironmentDtos()) {
-            for (int i = 0; i < studyEnv.getConfiguredSurveyDtos().size(); i++) {
-                StudyEnvironmentSurveyPopDto configSurveyDto = studyEnv.getConfiguredSurveyDtos().get(i);
-                StudyEnvironmentSurvey configSurvey = surveyPopulator.convertConfiguredSurvey(configSurveyDto, i);
-                studyEnv.getConfiguredSurveys().add(configSurvey);
-            }
-            if (studyEnv.getPreRegSurveyDto() != null) {
-                Survey preRegSurvey = surveyPopulator.fetchFromPopDto(studyEnv.getPreRegSurveyDto()).get();
-                studyEnv.setPreRegSurveyId(preRegSurvey.getId());
-            }
+            initializeStudyEnvironmentDto(studyEnv);
         }
 
         Study newStudy = studyService.create(studyDto);
@@ -75,6 +76,24 @@ public class StudyPopulator extends Populator<Study> {
             }
         }
         return newStudy;
+    }
+
+    /** takes a dto and hydrates it with already-populated objects (surveys, consents, etc...) */
+    private void initializeStudyEnvironmentDto(StudyEnvironmentPopDto studyEnv) {
+        for (int i = 0; i < studyEnv.getConfiguredSurveyDtos().size(); i++) {
+            StudyEnvironmentSurveyPopDto configSurveyDto = studyEnv.getConfiguredSurveyDtos().get(i);
+            StudyEnvironmentSurvey configSurvey = surveyPopulator.convertConfiguredSurvey(configSurveyDto, i);
+            studyEnv.getConfiguredSurveys().add(configSurvey);
+        }
+        if (studyEnv.getPreRegSurveyDto() != null) {
+            Survey preRegSurvey = surveyPopulator.fetchFromPopDto(studyEnv.getPreRegSurveyDto()).get();
+            studyEnv.setPreRegSurveyId(preRegSurvey.getId());
+        }
+        for (int i = 0; i < studyEnv.getConfiguredConsentDtos().size(); i++) {
+            StudyEnvironmentConsentPopDto configConsentDto = studyEnv.getConfiguredConsentDtos().get(i);
+            StudyEnvironmentConsent configConsent = consentFormPopulator.convertConfiguredConsent(configConsentDto, i);
+            studyEnv.getConfiguredConsents().add(configConsent);
+        }
     }
 
 

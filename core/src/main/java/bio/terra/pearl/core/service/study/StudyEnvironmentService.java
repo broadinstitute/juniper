@@ -1,8 +1,10 @@
 package bio.terra.pearl.core.service.study;
 
+import bio.terra.pearl.core.dao.study.StudyEnvironmentConsentDao;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentSurveyDao;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
@@ -18,16 +20,19 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     private StudyEnvironmentSurveyDao studyEnvironmentSurveyDao;
     private StudyEnvironmentConfigService studyEnvironmentConfigService;
     private EnrolleeService enrolleeService;
+    private StudyEnvironmentConsentDao studyEnvironmentConsentDao;
 
 
     public StudyEnvironmentService(StudyEnvironmentDao studyEnvironmentDao,
                                    StudyEnvironmentSurveyDao studyEnvironmentSurveyDao,
                                    StudyEnvironmentConfigService studyEnvironmentConfigService,
-                                   EnrolleeService enrolleeService) {
+                                   EnrolleeService enrolleeService,
+                                   StudyEnvironmentConsentDao studyEnvironmentConsentDao) {
         super(studyEnvironmentDao);
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
         this.studyEnvironmentConfigService =  studyEnvironmentConfigService;
         this.enrolleeService = enrolleeService;
+        this.studyEnvironmentConsentDao = studyEnvironmentConsentDao;
     }
 
     public Set<StudyEnvironment> findByStudy(UUID studyId) {
@@ -55,6 +60,10 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
             studyEnvironmentSurvey.setStudyEnvironmentId(newEnv.getId());
             studyEnvironmentSurveyDao.create(studyEnvironmentSurvey);
         }
+        for (StudyEnvironmentConsent studyEnvironmentConsent : studyEnv.getConfiguredConsents()) {
+            studyEnvironmentConsent.setStudyEnvironmentId(newEnv.getId());
+            studyEnvironmentConsentDao.create(studyEnvironmentConsent);
+        }
         newEnv.setStudyEnvironmentConfig(envConfig);
         return newEnv;
     }
@@ -65,6 +74,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         StudyEnvironment studyEnv = dao.find(studyEnvironmentId).get();
         enrolleeService.deleteByStudyEnvironmentId(studyEnv.getId(), cascade);
         studyEnvironmentSurveyDao.deleteByStudyEnvironmentId(studyEnvironmentId);
+        studyEnvironmentConsentDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         dao.delete(studyEnvironmentId);
         if (studyEnv.getStudyEnvironmentConfigId() != null) {
             studyEnvironmentConfigService.delete(studyEnv.getStudyEnvironmentConfigId());

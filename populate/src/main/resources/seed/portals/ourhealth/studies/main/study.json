@@ -5,6 +5,9 @@
     "surveys/preRegistration.json",
     "surveys/medicalHistory.json"
   ],
+  "consentFormFiles": [
+    "surveys/ourHealthConsent.json"
+  ],
   "studyEnvironmentDtos": [
     {
       "environmentName": "sandbox",
@@ -22,6 +25,12 @@
         {
           "surveyStableId": "oh_medicalHistory",
           "surveyVersion": 1
+        }
+      ],
+      "configuredConsentDtos": [
+        {
+          "consentStableId": "ourHealthConsent",
+          "consentVersion": 1
         }
       ],
       "enrolleeFiles": [

@@ -20,6 +20,7 @@ import StudyEnvironmentProvider from 'study/StudyEnvironmentProvider'
 import StudyContent from 'study/StudyContent'
 import SurveyView from 'study/surveys/SurveyView'
 import PreRegView from './study/surveys/PreRegView'
+import ConsentView from './study/surveys/ConsentView'
 
 
 /** container for the app including the router  */
@@ -43,6 +44,12 @@ function App() {
                             <Route index element={<SurveyView/>}/>
                           </Route>
                           <Route path="*" element={<div>Unknown survey page</div>}/>
+                        </Route>
+                        <Route path="consentForms">
+                          <Route path=":consentStableId">
+                            <Route index element={<ConsentView/>}/>
+                          </Route>
+                          <Route path="*" element={<div>Unknown consent page</div>}/>
                         </Route>
                         <Route path="preReg">
                           <Route path=":surveyStableId" element={<PreRegView/>}/>

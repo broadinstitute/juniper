@@ -20,10 +20,11 @@ export type StudyEnvironment = {
   studyEnvironmentConfig: StudyEnvironmentConfig,
   preRegSurvey: Survey,
   preRegSurveyId: string,
-  configuredSurveys: StudyEnvironmentSurvey[]
+  configuredSurveys: StudyEnvironmentSurvey[],
+  configuredConsents: StudyEnvironmentConsent[]
 }
 
-export type Survey = {
+export type VersionedForm = {
   id: string,
   name: string,
   stableId: string,
@@ -32,6 +33,10 @@ export type Survey = {
   content: string
 }
 
+export type Survey = VersionedForm
+
+export type ConsentForm = VersionedForm
+
 export type StudyEnvironmentSurvey = {
   id: string,
   surveyId: string,
@@ -39,6 +44,17 @@ export type StudyEnvironmentSurvey = {
   recur: boolean,
   recurrenceIntervalDays: number,
   surveyOrder: number,
+  allowAdminEdit: boolean,
+  allowParticipantStart: boolean,
+  allowParticipantReedit: boolean,
+  prepopulate: boolean
+}
+
+export type StudyEnvironmentConsent = {
+  id: string,
+  consentFormId: string,
+  consentForm: ConsentForm,
+  consentOrder: number,
   allowAdminEdit: boolean,
   allowParticipantStart: boolean,
   allowParticipantReedit: boolean,
@@ -63,14 +79,6 @@ export type Portal = {
   portalStudies: PortalStudy[]
 }
 
-
-export type ConsentForm = {
-  id: string,
-  name: string,
-  stableId: string,
-  version: number,
-  content: string
-}
 
 let bearerToken: string | null = null
 export const API_ROOT = process.env.REACT_APP_API_ROOT
@@ -147,6 +155,18 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async createNewConsentVersion(portalShortcode: string, consentForm: ConsentForm): Promise<ConsentForm> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/consentForms/`
+      + `${consentForm.stableId}/${consentForm.version}/newVersion`
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(consentForm)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async updateStudyEnvironment(portalShortcode: string, studyShortcode: string, envName: string,
     studyEnvUpdate: StudyEnvironmentUpdate): Promise<StudyEnvironmentUpdate> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}/env/${envName}`
@@ -172,6 +192,19 @@ export default {
       method: 'PATCH',
       headers: this.getInitHeaders(),
       body: JSON.stringify(configuredSurvey)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async updateConfiguredConsent(portalShortcode: string, studyShortcode: string, environmentName: string,
+    configuredConsent: StudyEnvironmentConsent): Promise<StudyEnvironmentConsent> {
+    const url =`${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
+      `/env/${environmentName}/configuredConsents/${configuredConsent.id}`
+
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(configuredConsent)
     })
     return await this.processJsonResponse(response)
   },

@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class StudyEnvironmentConsent extends BaseEntity {
     private UUID studyEnvironmentId;
-    private UUID consentId;
+    private UUID consentFormId;
     private ConsentForm consentForm;
 
     private int consentOrder; // what order the survey will be given in, compared to other surveys triggered at the same time

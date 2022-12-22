@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
@@ -28,14 +29,15 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     private ParticipantUserService participantUserService;
     private PortalAdminUserDao portalAdminUserDao;
     private StudyService studyService;
-
     private SurveyService surveyService;
+    private ConsentFormService consentFormService;
 
     public PortalService(PortalDao portalDao, PortalStudyService portalStudyService,
                          StudyService studyService,
                          PortalEnvironmentService portalEnvironmentService,
                          ParticipantUserService participantUserService,
-                         PortalAdminUserDao portalAdminUserDao, SurveyService surveyService) {
+                         PortalAdminUserDao portalAdminUserDao, SurveyService surveyService,
+                         ConsentFormService consentFormService) {
         super(portalDao);
         this.portalStudyService = portalStudyService;
         this.portalEnvironmentService = portalEnvironmentService;
@@ -43,6 +45,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         this.participantUserService = participantUserService;
         this.portalAdminUserDao = portalAdminUserDao;
         this.surveyService = surveyService;
+        this.consentFormService = consentFormService;
     }
 
     @Transactional
@@ -74,7 +77,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
             portalEnvironmentService.delete(portalEnvironment.getId(), cascades);
         }
         surveyService.deleteByPortalId(portalId);
-
+        consentFormService.deleteByPortalId(portalId);
         dao.delete(portalId);
     }
 

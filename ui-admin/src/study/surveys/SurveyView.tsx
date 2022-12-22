@@ -62,7 +62,7 @@ function RawSurveyView({ portal, study, currentEnv, survey, readOnly = false }:
     }
   }
 
-  return <SurveyEditorView portalShortcode={portal.shortcode} currentSurvey={currentSurvey} readOnly={readOnly}
+  return <SurveyEditorView portalShortcode={portal.shortcode} currentForm={currentSurvey} readOnly={readOnly}
     createNewVersion={createNewVersion} changeVersion={changeVersion}/>
 }
 

@@ -43,7 +43,7 @@ function RawPreRegView({ portalShortcode, currentEnv, survey, studyShortcode }:
     return updatedContent
   }
 
-  return <SurveyEditorView portalShortcode={portalShortcode} currentSurvey={currentSurvey}
+  return <SurveyEditorView portalShortcode={portalShortcode} currentForm={currentSurvey}
     createNewVersion={createNewVersion} changeVersion={changeVersion}/>
 }
 
