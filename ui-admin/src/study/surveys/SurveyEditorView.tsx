@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { Survey, VersionedForm } from 'api/api'
+import { VersionedForm } from 'api/api'
 import VersionSelector from './VersionSelector'
 
 import { SurveyCreatorComponent } from 'survey-creator-react'

@@ -9,9 +9,7 @@ import Api, {
   Portal,
   Study,
   StudyEnvironment,
-  StudyEnvironmentConsent,
-  StudyEnvironmentSurvey,
-  Survey
+  StudyEnvironmentConsent
 } from 'api/api'
 
 import { failureNotification, successNotification } from 'util/notifications'

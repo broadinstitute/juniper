@@ -4,7 +4,7 @@ import { Store } from 'react-notifications-component'
 
 import {  StudyParams } from 'study/StudyProvider'
 import { useStudyEnvironmentOutlet } from 'study/StudyEnvironmentProvider'
-import Api, { Portal, StudyEnvironment, Survey } from 'api/api'
+import Api, { StudyEnvironment, Survey } from 'api/api'
 
 import { failureNotification, successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
