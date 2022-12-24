@@ -2,6 +2,7 @@ import _ from 'lodash'
 import React from 'react'
 import { ButtonConfig } from 'api/api'
 import PearlImage from '../../util/PearlImage'
+import ConfiguredButton from "./ConfiguredButton";
 
 type Logo = {
   imageShortcode: string,
@@ -40,9 +41,9 @@ function HeroLeftWithImageTemplate({
       </p>
       <div className="d-grid gap-2 d-md-flex justify-content-md-start">
         {
-          _.map(buttons, ({ text, href }) => {
-            return <a key={href} href={href} role={'button'} className="btn btn-primary btn-lg px-4 me-md-2">{text}</a>
-          })
+          _.map(buttons, (buttonConfig, i) =>
+            <ConfiguredButton key={i} config={buttonConfig} className="btn btn-primary btn-lg px-4 me-md-2"/>
+          )
         }
       </div>
       <div className="d-flex flex-wrap align-items-center justify-content-between">

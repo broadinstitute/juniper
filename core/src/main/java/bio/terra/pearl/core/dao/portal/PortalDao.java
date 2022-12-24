@@ -43,7 +43,7 @@ public class PortalDao extends BaseJdbiDao<Portal> {
             List<PortalEnvironment> portalEnvs = portalEnvironmentDao.findByPortal(portal.getId());
             for (PortalEnvironment portalEnv : portalEnvs) {
                 portal.getPortalEnvironments().add(
-                        portalEnvironmentDao.loadOneWithSiteContent(shortcode,
+                        portalEnvironmentDao.loadWithSiteContent(shortcode,
                                 portalEnv.getEnvironmentName(), language).get()
                 );
             }

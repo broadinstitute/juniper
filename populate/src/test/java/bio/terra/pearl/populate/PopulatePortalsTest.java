@@ -18,16 +18,12 @@ import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.service.EnvironmentPopulator;
 import bio.terra.pearl.populate.service.PortalPopulator;
+import java.io.IOException;
+import java.util.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * Attempts to populate every portal in the seed path.
@@ -105,10 +101,10 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
     }
 
     private void checkOurhealthSiteContent(UUID portalId) {
-        PortalEnvironment portalEnvironment = portalEnvironmentService
-                .loadOneWithSiteContent("ourhealth", EnvironmentName.sandbox, "en").get();
-        Assertions.assertEquals(portalId, portalEnvironment.getPortalId());
-        HtmlSection firstLandingSection = portalEnvironment.getSiteContent().getLocalizedSiteContents()
+        PortalEnvironment portalEnv = portalEnvironmentService
+                .loadWithParticipantSiteContent("ourhealth", EnvironmentName.sandbox, "en").get();
+        Assertions.assertEquals(portalId, portalEnv.getPortalId());
+        HtmlSection firstLandingSection = portalEnv.getSiteContent().getLocalizedSiteContents()
                 .stream().findFirst().get().getLandingPage()
                 .getSections().stream().findFirst().get();
         Assertions.assertEquals(HtmlSectionType.HERO_LEFT_WITH_IMAGE, firstLandingSection.getSectionType());

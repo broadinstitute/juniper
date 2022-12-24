@@ -1,10 +1,27 @@
 export type PortalEnvironmentParams = {
-  studyShortname: string,
+  portalShortcode: string,
   environmentName: string
+}
+
+export type Portal = {
+  portalEnvironments: PortalEnvironment[],
+  portalStudies: PortalStudy[],
+  shortcode: string
 }
 
 export type PortalEnvironment = PortalEnvironmentParams & {
   siteContent: SiteContent
+}
+
+export type PortalStudy = {
+  study: Study,
+  studyEnvironments: StudyEnvironment[]
+}
+
+export type Study = {
+  name: string,
+  shortcode: string,
+  studyEnvironments: StudyEnvironment[]
 }
 
 export type SiteContent = {
@@ -38,7 +55,38 @@ export type HtmlSection = {
   sectionConfig: string | null
 }
 
-export type ButtonConfig = { text: string, href: string }
+export type SurveyJSForm = {
+  stableId: string,
+  version: number,
+  content: string,
+}
+
+export type Survey = SurveyJSForm & {
+  id: string,
+  name: string,
+  allowParticipantCompletion: boolean,
+  allowMultipleResponses: boolean,
+  allowParticipantReedit: boolean
+}
+
+export type ConsentForm = SurveyJSForm & {
+  id: string,
+  name: string
+}
+
+export type ResumableData = {
+  currentPageNo: number,
+  data: any
+}
+
+export type StudyEnvironment = {
+  studyShortcode: string,
+  preRegSurvey: Survey,
+  siteContent: SiteContent,
+  environmentName: string
+}
+
+export type ButtonConfig = { text: string, href: string, type: string, studyShortcode: string }
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export type SectionConfig = { [index: string]: any }
@@ -73,22 +121,44 @@ export default {
     return Promise.reject(response)
   },
 
-  async getPortalEnvironment(portalShortcode: string, envName: string): Promise<PortalEnvironment> {
+  async getPortal(portalShortcode: string, envName: string): Promise<Portal> {
     const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}`, this.getGetInit())
     return await this.processJsonResponse(response)
+  },
+
+  async completePreReg({portalShortcode, studyShortcode, envName, surveyStableId, surveyVersion, fullData}:
+                         {portalShortcode: string, studyShortcode: string, envName: string, surveyStableId: string,
+                           surveyVersion: number, fullData: object}): Promise<any> {
+    let url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/studies/${studyShortcode}`
+      + `/preReg/${surveyStableId}/${surveyVersion}`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify({fullData: JSON.stringify(fullData)})
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async confirmPreReg(studyShortname: string, envName: string, preRegId: string): Promise<void> {
+    const url = `${API_ROOT}/studies/${studyShortname}/env/${envName}/preReg/confirm/${preRegId}`
+    const response = await fetch(url, {headers: this.getInitHeaders()})
+    if (!response.ok) {
+      return Promise.reject(response)
+    }
   }
+
 }
 
 /**
  * Returns a url suitable for inclusion in an <img> tag based on a image shortcode
  */
 export function getImageUrl(imageShortcode: string) {
-  const { shortname, envName } = getEnvSpec()
-  return `${API_ROOT}/portals/v1/${shortname}/env/${envName}/siteImages/${imageShortcode}`
+  const { shortcode, envName } = getEnvSpec()
+  return `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/siteImages/${imageShortcode}`
 }
 
 export type EnvSpec = {
-  shortname: string,
+  shortcode: string,
   envName: string
 }
 
@@ -108,7 +178,7 @@ function readEnvFromHostname(hostname: string): EnvSpec {
     envName = 'LIVE'
     shortname = splitHostname[0]
   }
-  return { envName, shortname }
+  return { envName, shortcode: shortname }
 }
 
 const ALLOWED_ENV_NAMES: Record<string, string> = {

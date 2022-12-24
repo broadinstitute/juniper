@@ -2,9 +2,12 @@ package bio.terra.pearl.core.service.portal;
 
 import bio.terra.pearl.core.dao.admin.PortalAdminUserDao;
 import bio.terra.pearl.core.dao.portal.PortalDao;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.study.PortalStudy;
+import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
@@ -87,6 +90,25 @@ public class PortalService extends CrudService<Portal, PortalDao> {
 
     public Optional<Portal> findOneByShortcodeFullLoad(String shortcode, String language) {
         return dao.findOneByShortcodeFullLoad(shortcode, language);
+    }
+
+    /** loads a portal environment with everything needed to render the participant-facing site */
+    public Optional<Portal> loadWithParticipantSiteContent(String portalShortcode,
+                                                                       EnvironmentName environmentName,
+                                                                       String language) {
+        Optional<Portal> portalOpt = dao.findOneByShortcode(portalShortcode);
+        portalOpt.ifPresent(portal -> {
+            Optional<PortalEnvironment> portalEnv = portalEnvironmentService
+                    .loadWithParticipantSiteContent(portalShortcode, environmentName, language);
+            portal.getPortalEnvironments().add(portalEnv.get());
+            List<Study> studies = studyService.findWithPreregContent(portalShortcode, environmentName);
+            for (Study study : studies) {
+                portal.getPortalStudies().add(
+                        PortalStudy.builder().study(study).build()
+                );
+            }
+        });
+        return portalOpt;
     }
 
     public List<Portal> findByAdminUserId(UUID userId) {

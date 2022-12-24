@@ -19,9 +19,4 @@ public class ParsedSnapshot {
     private UUID participantUserId;
     private UUID surveyResponseId;
     private ResponseData data;
-
-    @Getter @Setter @NoArgsConstructor
-    public static class ResponseData {
-        private List<ResponseDataItem> items;
-    }
 }
