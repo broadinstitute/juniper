@@ -1,3 +1,5 @@
+import {DenormalizedPreRegResponse, DenormalizedResponse} from "../util/surveyJsUtils";
+
 export type PortalEnvironmentParams = {
   portalShortcode: string,
   environmentName: string
@@ -126,25 +128,46 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async completePreReg({portalShortcode, studyShortcode, envName, surveyStableId, surveyVersion, fullData}:
+  /** submit preregistration survey data */
+  async completePreReg({portalShortcode, studyShortcode, envName, surveyStableId, surveyVersion, preRegResponse}:
                          {portalShortcode: string, studyShortcode: string, envName: string, surveyStableId: string,
-                           surveyVersion: number, fullData: object}): Promise<any> {
+                           surveyVersion: number, preRegResponse: DenormalizedPreRegResponse}): Promise<any> {
     let url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/studies/${studyShortcode}`
       + `/preReg/${surveyStableId}/${surveyVersion}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
-      body: JSON.stringify({fullData: JSON.stringify(fullData)})
+      body: JSON.stringify(preRegResponse)
     })
     return await this.processJsonResponse(response)
   },
 
-  async confirmPreReg(studyShortname: string, envName: string, preRegId: string): Promise<void> {
-    const url = `${API_ROOT}/studies/${studyShortname}/env/${envName}/preReg/confirm/${preRegId}`
+  /**
+   * confirms that a client-side saved preregistration id is still valid.  For cases where the user refreshes the
+   * page while on registration
+   */
+  async confirmPreReg(portalShortcode: string, studyShortcode: string, envName: string, preRegId: string):
+    Promise<void> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/studies/${studyShortcode}`
+      + `/preReg/${preRegId}/confirm`
     const response = await fetch(url, {headers: this.getInitHeaders()})
     if (!response.ok) {
       return Promise.reject(response)
     }
+  },
+
+  /** submits registration data for a particular study, from an anonymous user */
+  async registerForStudy({portalShortcode, studyShortcode, envName, preRegId, fullData}:
+                   {portalShortcode: string, studyShortcode: string, envName: string,
+                     preRegId: string, fullData: object}): Promise<any> {
+    let url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/studies/${studyShortcode}`
+      + `/preReg/${preRegId}/register`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify({fullData})
+    })
+    return await this.processJsonResponse(response)
   }
 
 }

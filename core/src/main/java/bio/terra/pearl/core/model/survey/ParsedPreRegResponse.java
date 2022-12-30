@@ -5,11 +5,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-/**
- * Object model for survey response data that has been parsed.
- */
-@Getter @Setter @NoArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
 @SuperBuilder
-public class ParsedSnapshot extends ResponseSnapshot {
+public class ParsedPreRegResponse extends PreregistrationResponse {
     private ResponseData parsedData;
 }

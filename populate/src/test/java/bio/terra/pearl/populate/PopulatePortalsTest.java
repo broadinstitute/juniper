@@ -96,7 +96,7 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
         ResponseSnapshot medHistorySnapshot = surveyResponseService.findOneWithLastSnapshot(medHistoryResp.getId())
                 .get().getLastSnapshot();
         ParsedSnapshot parsedSnap = responseSnapshotService.parse(medHistorySnapshot);
-        ResponseDataItem firstAnswer = parsedSnap.getData().getItems().get(0);
+        ResponseDataItem firstAnswer = parsedSnap.getParsedData().getItems().get(0);
         Assertions.assertEquals("yesSpecificallyAboutMyHeart", firstAnswer.getSimpleValue());
     }
 

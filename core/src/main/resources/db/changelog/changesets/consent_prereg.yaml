@@ -83,6 +83,7 @@ databaseChangeLog:
               - column: *idColumn
               - column: *createdAt
               - column: *lastUpdatedAt
+              - column: { name: qualified, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
               - column: { name: survey_id, type: uuid, constraints:
                 { nullable: false, foreignKeyName: fk_consent_response_consent, references: survey(id) }
               }

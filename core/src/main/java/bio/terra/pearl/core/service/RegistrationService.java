@@ -7,6 +7,8 @@ import bio.terra.pearl.core.model.survey.PreregistrationResponse;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,5 +43,9 @@ public class RegistrationService {
         response.setStudyEnvironmentId(studyEnv.getId());
         response.setFullData(fullData);
         return preregistrationResponseDao.create(response);
+    }
+
+    public Optional<PreregistrationResponse> find(UUID preRegResponseId) {
+        return preregistrationResponseDao.find(preRegResponseId);
     }
 }

@@ -64,9 +64,23 @@ paths:
       requestBody:
         content:
           application/json:
-            schema: {type: object, properties:
-                                     fullData: { type: string }
-            }
+            schema: {type: object}
+      responses:
+        '200':
+          description: preregistration response
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/preReg/{preRegResponseId}/confirm:
+    get:
+      summary: Confirms a preregistration id
+      tags: [ preregistration ]
+      operationId: confirm
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: preRegResponseId, in: path, required: true, schema: { type: string, format: uuid} }
       responses:
         '200':
           description: preregistration response

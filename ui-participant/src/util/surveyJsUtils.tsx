@@ -1,7 +1,7 @@
-import {useState, useEffect, useRef} from "react";
+import React, {useState, useEffect, useRef} from "react";
 
 import {Model, StylesManager, Question, Serializer} from "survey-core";
-import {SurveyModel} from "survey-react-ui";
+import {SurveyModel, Survey as SurveyJSComponent} from "survey-react-ui";
 import {ConsentForm, ResumableData, Survey, SurveyJSForm} from "api/api";
 import {useSearchParams} from "react-router-dom";
 import {getSurveyElementList} from "./pearlSurveyUtils";
@@ -108,15 +108,17 @@ export function useSurveyJSModel(form: SurveyJSForm, resumeData: ResumableData |
       //surveyModel.onTextMarkdown.add(applyMarkedMarkdown)
     }
   }, [surveyModel])
-
-  return {surveyModel, refreshSurvey, pageNumber: surveyModel ? surveyModel.currentPageNo + 1 : 1}
+  const pageNumber = surveyModel ? surveyModel.currentPageNo + 1 : 1
+  const SurveyComponent = surveyModel ? <SurveyJSComponent model={surveyModel}/> : <></>
+  return {surveyModel, refreshSurvey, pageNumber, SurveyComponent }
 }
 
 export enum SourceType {
   PARTICIPANT = "PARTICIPANT",
   ADMIN = "ADMIN",
   CLINICAL_RECORD = "CLINICAL RECORD",
-  PROXY = "PROXY"
+  PROXY = "PROXY",
+  ANON = 'ANON' // for not-logged-in users (e.g. preregistration)
 }
 
 export type DenormalizedResponse = {
@@ -125,7 +127,13 @@ export type DenormalizedResponse = {
   participantShortcode: string,
   sourceShortcode: string,
   sourceType: SourceType,
-  items: DenormalizedResponseItem[]
+  parsedData: {
+    items: DenormalizedResponseItem[]
+  }
+}
+
+export type DenormalizedPreRegResponse = DenormalizedResponse & {
+  qualified: boolean
 }
 
 export type DenormalizedResponseItem = {
@@ -136,13 +144,20 @@ export type DenormalizedResponseItem = {
   answerDisplayValue: any,
 }
 
+export type SurveyJsItem = {
+  name: string,
+  title: string,
+  value: object,
+  displayValue: string
+}
+
 /** write out the responses to the survey in a denormalized way, so that, e.g., the question text is preserved alongside
  * the answers
  */
-export function generateDenormalizedData({survey, surveyJSModel, data, participantShortcode,
+export function generateDenormalizedData({survey, surveyJSModel, participantShortcode,
                                            sourceShortcode, sourceType}:
                                            {survey: Survey | ConsentForm, surveyJSModel: SurveyModel,
-                                             data: any, participantShortcode: string,
+                                             participantShortcode: string,
                                              sourceShortcode: string, sourceType: SourceType}) : DenormalizedResponse {
   const response = {
     formStableId: survey.stableId,
@@ -150,15 +165,18 @@ export function generateDenormalizedData({survey, surveyJSModel, data, participa
     participantShortcode,
     sourceShortcode,
     sourceType,
-    items: []
+    parsedData: {
+      items: []
+    }
   } as DenormalizedResponse
-  response.items = Object.keys(data).map((key: string) => {
+  const data = surveyJSModel.getPlainData()
+  response.parsedData.items = data.map(({name, title, value, displayValue}: SurveyJsItem) => {
     return {
-      stableId: key,
-      questionText: surveyJSModel.getQuestionByName(key).title,
-      questionType: surveyJSModel.getQuestionByName(key).getType(),
-      answerValue: data[key],
-      answerDisplayValue: surveyJSModel.getQuestionByName(key).getDisplayValue(false, data[key])
+      stableId: name,
+      questionText: title,
+      questionType: surveyJSModel.getQuestionByName(name)?.getType(),
+      value: value,
+      displayValue: displayValue
     }
   })
 
