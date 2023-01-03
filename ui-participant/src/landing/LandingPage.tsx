@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import { Outlet } from 'react-router-dom'
 
 /** renders the landing page for a portal (e.g. hearthive.org) */

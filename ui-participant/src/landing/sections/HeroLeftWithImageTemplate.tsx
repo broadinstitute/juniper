@@ -2,7 +2,7 @@ import _ from 'lodash'
 import React from 'react'
 import { ButtonConfig } from 'api/api'
 import PearlImage from '../../util/PearlImage'
-import ConfiguredButton from "./ConfiguredButton";
+import ConfiguredButton from './ConfiguredButton'
 
 type Logo = {
   imageShortcode: string,

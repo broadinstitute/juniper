@@ -1,10 +1,10 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, { useState, useEffect } from 'react'
 
-import {Model, StylesManager, Question, Serializer} from "survey-core";
-import {SurveyModel, Survey as SurveyJSComponent} from "survey-react-ui";
-import {ConsentForm, ResumableData, Survey, SurveyJSForm} from "api/api";
-import {useSearchParams} from "react-router-dom";
-import {getSurveyElementList} from "./pearlSurveyUtils";
+import { Model, StylesManager, Question, Serializer } from 'survey-core'
+import { SurveyModel, Survey as SurveyJSComponent } from 'survey-react-ui'
+import { ConsentForm, ResumableData, Survey, SurveyJSForm } from 'api/api'
+import { useSearchParams } from 'react-router-dom'
+import { getSurveyElementList } from './pearlSurveyUtils'
 
 
 const PAGE_NUMBER_PARAM_NAME = 'page'
@@ -25,9 +25,9 @@ export function useRoutablePageNumber(): PageNumberControl {
   if (pageParam) {
     urlPageNumber = parseInt(pageParam)
   }
-  // newPageNumber should
+  /** update the url with the new page number */
   function updatePageNumber(newPageNumber: number) {
-    setSearchParams({page: (newPageNumber).toString()})
+    setSearchParams({ page: (newPageNumber).toString() })
   }
 
   return {
@@ -50,22 +50,21 @@ export function useRoutablePageNumber(): PageNumberControl {
  * @param onComplete handler for when the survey is complete.  Note that surveyjs by default will immediately hide the
  * survey on completion and display a completion banner.  To continue displaying the form, use the
  * `refreshSurvey` function
- * @param pageNumber the page number to display
- * @param updatePageNumber a function to update the page number in response to user actions
- * @return the surveyModel, a refresh function, and the current page number suitable for display (1-indexed)
+ * @param pager the control object for paging the survey
  */
 export function useSurveyJSModel(form: SurveyJSForm, resumeData: ResumableData | null,
-                                 onComplete: () => void, pager: PageNumberControl) {
+  onComplete: () => void, pager: PageNumberControl) {
   const [surveyModel, setSurveyModel] = useState<SurveyModel | null>(null)
 
-  function handlePageChanged(model: SurveyModel, options: any) {
+  /** hand a page change by updating state of both the surveyJS model and our internal state*/
+  function handlePageChanged(model: SurveyModel, options: any) { // eslint-disable-line @typescript-eslint/no-explicit-any, max-len
     const newPage = options.newCurrentPage.num
     pager.updatePageNumber(newPage)
   }
 
   /** syncs the surveyJS survey model with the given data/pageNumber */
   function refreshSurvey(refreshData: ResumableData | null, pagerPageNumber: number | null) {
-    StylesManager.applyTheme("defaultV2");
+    StylesManager.applyTheme('defaultV2')
     const newSurveyModel = new Model(extractSurveyContent(form))
 
     if (refreshData) {
@@ -110,14 +109,14 @@ export function useSurveyJSModel(form: SurveyJSForm, resumeData: ResumableData |
   }, [surveyModel])
   const pageNumber = surveyModel ? surveyModel.currentPageNo + 1 : 1
   const SurveyComponent = surveyModel ? <SurveyJSComponent model={surveyModel}/> : <></>
-  return {surveyModel, refreshSurvey, pageNumber, SurveyComponent }
+  return { surveyModel, refreshSurvey, pageNumber, SurveyComponent }
 }
 
 export enum SourceType {
-  PARTICIPANT = "PARTICIPANT",
-  ADMIN = "ADMIN",
-  CLINICAL_RECORD = "CLINICAL RECORD",
-  PROXY = "PROXY",
+  PARTICIPANT = 'PARTICIPANT',
+  ADMIN = 'ADMIN',
+  CLINICAL_RECORD = 'CLINICAL RECORD',
+  PROXY = 'PROXY',
   ANON = 'ANON' // for not-logged-in users (e.g. preregistration)
 }
 
@@ -140,8 +139,8 @@ export type DenormalizedResponseItem = {
   stableId: string,
   questionText: string,
   questionType: string,
-  answerValue: any,
-  answerDisplayValue: any,
+  answerValue: string | object | undefined,
+  answerDisplayValue: string | object | undefined,
 }
 
 export type SurveyJsItem = {
@@ -154,8 +153,10 @@ export type SurveyJsItem = {
 /** write out the responses to the survey in a denormalized way, so that, e.g., the question text is preserved alongside
  * the answers
  */
-export function generateDenormalizedData({survey, surveyJSModel, participantShortcode,
-                                           sourceShortcode, sourceType}:
+export function generateDenormalizedData({
+  survey, surveyJSModel, participantShortcode,
+  sourceShortcode, sourceType
+}:
                                            {survey: Survey | ConsentForm, surveyJSModel: SurveyModel,
                                              participantShortcode: string,
                                              sourceShortcode: string, sourceType: SourceType}) : DenormalizedResponse {
@@ -170,13 +171,13 @@ export function generateDenormalizedData({survey, surveyJSModel, participantShor
     }
   } as DenormalizedResponse
   const data = surveyJSModel.getPlainData()
-  response.parsedData.items = data.map(({name, title, value, displayValue}: SurveyJsItem) => {
+  response.parsedData.items = data.map(({ name, title, value, displayValue }: SurveyJsItem) => {
     return {
       stableId: name,
       questionText: title,
       questionType: surveyJSModel.getQuestionByName(name)?.getType(),
-      value: value,
-      displayValue: displayValue
+      value,
+      displayValue
     }
   })
 
@@ -199,7 +200,7 @@ export function extractSurveyContent(survey: SurveyJSForm) {
         if (!matchedTemplate) {
           // TODO this is an error we'd want to log in prod systems
           if (process.env.NODE_ENV === 'development') {
-            alert("unmatched template " + templateName)
+            alert(`unmatched template ${  templateName}`)
           }
           return
         }

@@ -3,11 +3,11 @@ import React, { useContext } from 'react'
 import LandingPage from 'landing/LandingPage'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { PortalContext } from 'providers/PortalProvider'
-import {LocalSiteContent, NavbarItem, Portal, PortalEnvironment} from 'api/api'
+import { LocalSiteContent, NavbarItem, Portal } from 'api/api'
 import HtmlPageView from './landing/sections/HtmlPageView'
-import PreRegistration from "./landing/registration/Preregistration";
-import Registration from "./landing/registration/Registration";
-import RegistrationOutlet from "./landing/registration/RegistrationOutlet";
+import PreRegistration from './landing/registration/Preregistration'
+import Registration from './landing/registration/Registration'
+import RegistrationOutlet from './landing/registration/RegistrationOutlet'
 
 /**
  * root app -- handles dynamically creating all the routes based on the siteContent
@@ -28,7 +28,7 @@ function App() {
     )
   }
   landingRoutes.push(<Route key="registration" path="study/:studyShortcode/join"
-                            element={<RegistrationOutlet portal={portal}/>}>
+    element={<RegistrationOutlet portal={portal}/>}>
     <Route path="preReg" element={<PreRegistration/>}/>
     <Route path="register" element={<Registration/>}/>
   </Route>)

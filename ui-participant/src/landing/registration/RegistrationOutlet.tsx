@@ -1,10 +1,10 @@
-import Api, {Portal, StudyEnvironment} from "../../api/api";
-import {Outlet, useNavigate, useOutletContext, useParams} from "react-router-dom";
-import React, {useEffect, useState} from "react";
+import Api, { Portal, StudyEnvironment } from '../../api/api'
+import { Outlet, useNavigate, useOutletContext, useParams } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
 
 /** store the preregistration response id in local storage so a page refresh does not lose their progress.
  * The user isn't signed in yet (since they don't have an account), so local storage is the best way to keep this. */
-const PREREG_ID_STORAGE_KEY = "preRegResponseId"
+const PREREG_ID_STORAGE_KEY = 'preRegResponseId'
 
 export type RegistrationContextT = {
   studyEnv: StudyEnvironment,
@@ -13,6 +13,7 @@ export type RegistrationContextT = {
   preRegResponseId: string | null,
   updatePreRegResponseId: (newId: string | null) => void
 }
+/** convenience function for using the outlet context */
 export function useRegistrationOutlet() {
   return useOutletContext<RegistrationContextT>()
 }
@@ -24,11 +25,11 @@ type StudyEnvironmentParams = {
 /** handles selecting/loading the correct study environment, and managing the preregistration response id.
  * If a valid preregId exists, this will redirect to the registration page.  If not, it will route to
  * the prereg page */
-export default function RegistrationOutlet({portal}: {portal: Portal}) {
+export default function RegistrationOutlet({ portal }: {portal: Portal}) {
   const [preRegResponseId, setPreRegResponseId] = useState<string | null>(localStorage.getItem(PREREG_ID_STORAGE_KEY))
   const params = useParams<StudyEnvironmentParams>()
   const navigate = useNavigate()
-  let studyShortcode: string | undefined = params.studyShortcode
+  const studyShortcode: string | undefined = params.studyShortcode
 
   /** updates the state and localStorage */
   function updatePreRegResponseId(preRegId: string | null) {
@@ -39,7 +40,6 @@ export default function RegistrationOutlet({portal}: {portal: Portal}) {
       navigate('register')
     }
     setPreRegResponseId(preRegId)
-
   }
 
   if (!studyShortcode) {
@@ -71,8 +71,10 @@ export default function RegistrationOutlet({portal}: {portal: Portal}) {
     }
   }, [])
 
-  return <Outlet context={{portalShortcode: portal.shortcode,
-    studyShortcode, studyEnv, preRegResponseId, updatePreRegResponseId}}/>
+  return <Outlet context={{
+    portalShortcode: portal.shortcode,
+    studyShortcode, studyEnv, preRegResponseId, updatePreRegResponseId
+  }}/>
 }
 
 

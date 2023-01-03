@@ -1,4 +1,4 @@
-import {DenormalizedPreRegResponse, DenormalizedResponse} from "../util/surveyJsUtils";
+import { DenormalizedPreRegResponse } from '../util/surveyJsUtils'
 
 export type PortalEnvironmentParams = {
   portalShortcode: string,
@@ -78,7 +78,7 @@ export type ConsentForm = SurveyJSForm & {
 
 export type ResumableData = {
   currentPageNo: number,
-  data: any
+  data: object
 }
 
 export type StudyEnvironment = {
@@ -87,6 +87,11 @@ export type StudyEnvironment = {
   siteContent: SiteContent,
   environmentName: string
 }
+
+export type PreregistrationResponse = {
+  id: string
+}
+
 
 export type ButtonConfig = { text: string, href: string, type: string, studyShortcode: string }
 
@@ -129,10 +134,11 @@ export default {
   },
 
   /** submit preregistration survey data */
-  async completePreReg({portalShortcode, studyShortcode, envName, surveyStableId, surveyVersion, preRegResponse}:
+  async completePreReg({ portalShortcode, studyShortcode, envName, surveyStableId, surveyVersion, preRegResponse }:
                          {portalShortcode: string, studyShortcode: string, envName: string, surveyStableId: string,
-                           surveyVersion: number, preRegResponse: DenormalizedPreRegResponse}): Promise<any> {
-    let url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/studies/${studyShortcode}`
+                           surveyVersion: number, preRegResponse: DenormalizedPreRegResponse}):
+    Promise<PreregistrationResponse> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/studies/${studyShortcode}`
       + `/preReg/${surveyStableId}/${surveyVersion}`
     const response = await fetch(url, {
       method: 'POST',
@@ -150,22 +156,22 @@ export default {
     Promise<void> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/studies/${studyShortcode}`
       + `/preReg/${preRegId}/confirm`
-    const response = await fetch(url, {headers: this.getInitHeaders()})
+    const response = await fetch(url, { headers: this.getInitHeaders() })
     if (!response.ok) {
       return Promise.reject(response)
     }
   },
 
   /** submits registration data for a particular study, from an anonymous user */
-  async registerForStudy({portalShortcode, studyShortcode, envName, preRegId, fullData}:
+  async registerForStudy({ portalShortcode, studyShortcode, envName, preRegId, fullData }:
                    {portalShortcode: string, studyShortcode: string, envName: string,
-                     preRegId: string, fullData: object}): Promise<any> {
-    let url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/studies/${studyShortcode}`
+                     preRegId: string, fullData: object}): Promise<object> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/studies/${studyShortcode}`
       + `/preReg/${preRegId}/register`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
-      body: JSON.stringify({fullData})
+      body: JSON.stringify({ fullData })
     })
     return await this.processJsonResponse(response)
   }

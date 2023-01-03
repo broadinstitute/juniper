@@ -28,17 +28,20 @@ export type PearlQuestion = Question & {
   type: string
 }
 
+/** Gets a flattened list of the survey elements */
 export function getSurveyElementList(surveyModel: PearlSurvey) {
   return surveyModel.pages.map(page => {
     return getContainerElementList(page, true)
   }).flat()
 }
 
-export function getContainerElementList(container: ElementContainer, isPage: boolean) {
+/** Gets a flattened list of elements from a container (page or panel) */
+export function getContainerElementList(container: ElementContainer, isPage: boolean):
+  (ElementBase | ElementContainer)[] {
   const containerEl = { ...container, type: isPage ? 'page' : 'panel' }
-  const containerChildren: any = container.elements.map((element: any) => {
-    if (element.elements) {
-      return getContainerElementList(element, false)
+  const containerChildren = container.elements.map((element: (ElementBase | ElementContainer)) => {
+    if ((element as ElementContainer).elements) {
+      return getContainerElementList(element as ElementContainer, false)
     }
     return element
   })

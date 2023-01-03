@@ -1,7 +1,7 @@
-import React from "react";
-import {StudyEnvironment} from "api/api";
-import {Link} from "react-router-dom";
+import React from 'react'
+import { Link } from 'react-router-dom'
 
+/** Placeholder page for after reigstration is complete -- this will be obsoleted by B2C */
 export default function RegistrationComplete() {
   return <div className="text-center">
     <h3>Thanks</h3>
@@ -9,5 +9,4 @@ export default function RegistrationComplete() {
 
     <p><Link className="btn btn-primary" to={'/login'}>Login</Link></p>
   </div>
-
 }

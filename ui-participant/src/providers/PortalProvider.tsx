@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Api, {getEnvSpec, EnvSpec, Portal} from 'api/api'
+import Api, { getEnvSpec, EnvSpec, Portal } from 'api/api'
 
 
 /** current user object context */
