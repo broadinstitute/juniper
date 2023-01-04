@@ -1,4 +1,5 @@
-import {Configuration, LogLevel} from "@azure/msal-browser";
+import _ from 'lodash'
+import { WebStorageStateStore } from "oidc-client-ts";
 
 // adapted from https://learn.microsoft.com/en-us/azure/active-directory-b2c/configure-authentication-sample-spa-app
 /**
@@ -9,7 +10,38 @@ import {Configuration, LogLevel} from "@azure/msal-browser";
 const aadB2cName = process.env.REACT_APP_B2C_TENANT_NAME ? process.env.REACT_APP_B2C_TENANT_NAME : 'NAME_NEEDED'
 const aadb2cClientId = process.env.REACT_APP_B2C_CLIENT_ID  ? process.env.REACT_APP_B2C_CLIENT_ID : 'ID_NEEDED'
 
-console.log(aadB2cName, aadb2cClientId)
+export const getLocalStorage = _.once(() => {
+  return window.localStorage
+})
+
+// TODO: This is a modified copy of code from Terra UI. It could use some clean-up.
+export const getOidcConfig = () => {
+  const metadata = {
+    authorization_endpoint:
+      `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev/oauth2/v2.0/authorize`,
+    token_endpoint:
+      `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev/oauth2/v2.0/token`
+  }
+  return {
+    authority: `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev`,
+    client_id: aadb2cClientId,
+    popup_redirect_uri: `${window.origin}/redirect-from-oauth`,
+    silent_redirect_uri: `${window.origin}/redirect-from-oauth-silent`,
+    metadata,
+    prompt: 'consent login',
+    scope: 'openid email profile',
+    loadUserInfo: false,
+    stateStore: new WebStorageStateStore({ store: getLocalStorage() }),
+    userStore: new WebStorageStateStore({ store: getLocalStorage() }),
+    automaticSilentRenew: true,
+    // Leo's setCookie interval is currently 5 min, set refresh auth then 5 min 30 seconds to gurantee that setCookie's
+    // token won't expire between 2 setCookie api calls
+    accessTokenExpiringNotificationTimeInSeconds: 330,
+    includeIdTokenInSilentRenew: true,
+    extraQueryParams: { access_type: 'offline' },
+    redirect_uri: ''
+  }
+}
 
 export const b2cPolicies = {
   names: {
@@ -24,92 +56,3 @@ export const b2cPolicies = {
   },
   authorityDomain: `https://${aadB2cName}.b2clogin.com`
 }
-
-/**
- * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/configuration.md
- */
-export const msalConfig: Configuration = {
-  auth: {
-    clientId: aadb2cClientId,
-    authority: b2cPolicies.authorities.signUpSignIn.authority,
-    knownAuthorities: [b2cPolicies.authorityDomain],
-    redirectUri: "http://localhost:3000/redirect-from-oauth",
-    // redirectUri: "https://jwt.ms/",
-    postLogoutRedirectUri: "/",
-    navigateToLoginRequestUrl: false
-  },
-  cache: {
-    cacheLocation: "sessionStorage",
-    storeAuthStateInCookie: false
-  },
-  system: {
-    loggerOptions: {
-      loggerCallback: (level: number, message: string, containsPii: boolean) => {
-        // all participant logins should be assumed to contain PII, so don't log
-        return;
-      }
-    }
-  }
-}
-
-/**
- * https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#openid-connect-scopes
- */
-export const loginRequest = {
-  scopes: []
-}
-
-// const b2cPolicies = {
-//   names: {
-//     signUpSignIn: "B2C_1_susi_reset_v2",
-//     editProfile: "B2C_1_edit_profile_v2"
-//   },
-//   authorities: {
-//     signUpSignIn: {
-//       authority: "https://fabrikamb2c.b2clogin.com/fabrikamb2c.onmicrosoft.com/B2C_1_susi_reset_v2",
-//     },
-//     editProfile: {
-//       authority: "https://fabrikamb2c.b2clogin.com/fabrikamb2c.onmicrosoft.com/B2C_1_edit_profile_v2"
-//     }
-//   },
-//   authorityDomain: "fabrikamb2c.b2clogin.com"
-// }
-
-// export const msalConfig = {
-//   auth: {
-//     clientId: "bbd07d43-01cb-4b69-8fd0-5746d9a5c9fe",
-//     // authority: b2cPolicies.authorities.signUpSignIn.authority,
-//     // knownAuthorities: [b2cPolicies.authorityDomain],
-//     redirectUri: "http://localhost:3000"
-//     // You must register this URI on Azure Portal/App Registration. Defaults to "window.location.href".
-//   },
-//   cache: {
-//     cacheLocation: "sessionStorage",
-//     // Configures cache location. "sessionStorage" is more secure, but "localStorage" gives you SSO between tabs.
-//     storeAuthStateInCookie: false
-//     // If you wish to store cache items in cookies as well as browser cache, set this to "true".
-//   },
-//   system: {
-//     loggerOptions: {
-//       loggerCallback: (level: any, message: any, containsPii: any) => {
-//         if (containsPii) {
-//           return;
-//         }
-//         // switch (level) {
-//         //   case msal.LogLevel.Error:
-//         //     console.error(message);
-//         //     return;
-//         //   case msal.LogLevel.Info:
-//         //     console.info(message);
-//         //     return;
-//         //   case msal.LogLevel.Verbose:
-//         //     console.debug(message);
-//         //     return;
-//         //   case msal.LogLevel.Warning:
-//         //     console.warn(message);
-//         //     return;
-//         // }
-//       }
-//     }
-//   }
-// }

@@ -1,15 +1,20 @@
 import React, { SyntheticEvent, useState } from 'react'
 import microsoftLogo from 'images/microsoft_logo.png'
 import Api, { AdminUser } from 'api/api'
-import { useMsal } from "@azure/msal-react";
 import { useUser } from "user/UserProvider";
+import { useAuth } from "react-oidc-context";
 
 /** component for showing a login dialog that hides other content on the page */
 function Login() {
   const [emailAddress, setEmailAddress] = useState('')
   const [isError, setIsError] = useState(false)
   const { user, loginUser } = useUser()
-  const { instance } = useMsal()
+  const auth = useAuth()
+
+  const signIn = async () => {
+    const user = await auth.signinPopup()
+    return user
+  }
 
   /** log in with just an email, ignoring auth */
   function unauthedLogin(event: SyntheticEvent) {
@@ -36,7 +41,7 @@ function Login() {
       zIndex: 2
     }}>
       <form onSubmit={unauthedLogin}>
-        <button type="button" className="btn btn-secondary" onClick={() => instance.loginRedirect({ scopes: [] })}>
+        <button type="button" className="btn btn-secondary" onClick={() => signIn()}>
           <img src={microsoftLogo}/> Login with Microsoft
         </button>
         <hr/>
