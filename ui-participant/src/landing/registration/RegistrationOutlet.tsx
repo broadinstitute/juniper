@@ -37,7 +37,7 @@ export default function RegistrationOutlet({ portal }: {portal: Portal}) {
       localStorage.removeItem(PREREG_ID_STORAGE_KEY)
     } else {
       localStorage.setItem(PREREG_ID_STORAGE_KEY, preRegId)
-      navigate('register')
+      navigate('register', { replace: true })
     }
     setPreRegResponseId(preRegId)
   }
@@ -61,13 +61,13 @@ export default function RegistrationOutlet({ portal }: {portal: Portal}) {
       Api.confirmPreReg(portal.shortcode, studyEnv.studyShortcode, studyEnv.environmentName,
         preRegResponseId).then(() => {
         //this is a valid pre-reg, redirect to the registration page
-        navigate('register')
+        navigate('register', { replace: true })
       }).catch(() => {
         updatePreRegResponseId(null)
-        navigate('preReg')
+        navigate('preReg', { replace: true })
       })
     } else {
-      navigate('preReg')
+      navigate('preReg', { replace: true })
     }
   }, [])
 

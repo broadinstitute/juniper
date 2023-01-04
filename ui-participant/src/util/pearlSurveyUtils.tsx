@@ -37,7 +37,7 @@ export function getSurveyElementList(surveyModel: PearlSurvey) {
 
 /** Gets a flattened list of elements from a container (page or panel) */
 export function getContainerElementList(container: ElementContainer, isPage: boolean):
-  (ElementBase | ElementContainer)[] {
+  (ElementBase | ElementContainer | PearlQuestion)[] {
   const containerEl = { ...container, type: isPage ? 'page' : 'panel' }
   const containerChildren = container.elements.map((element: (ElementBase | ElementContainer)) => {
     if ((element as ElementContainer).elements) {
