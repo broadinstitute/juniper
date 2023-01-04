@@ -6,11 +6,10 @@ import 'survey-creator-core/survey-creator-core.min.css'
 
 import './App.css'
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
-import UserProvider, { UserContext, UserContextT } from 'user/UserProvider'
 import { ReactNotifications } from 'react-notifications-component'
 
-import { RedirectFromOAuth } from "./login/RedirectFromOAuth";
-import { ProtectedRoute } from "./login/ProtectedRoute";
+import { RedirectFromOAuth } from './login/RedirectFromOAuth'
+import { ProtectedRoute } from './login/ProtectedRoute'
 import NavbarProvider, { NavbarContext } from 'navbar/NavbarProvider'
 import AdminNavbar from 'navbar/AdminNavbar'
 import PortalList from 'portal/PortalList'
@@ -23,7 +22,6 @@ import StudyContent from './study/StudyContent'
 
 /** container for the app including the router  */
 function App() {
-  const currentUser: UserContextT = useContext(UserContext)
   return (
     <div className="App">
       <ReactNotifications/>

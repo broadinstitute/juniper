@@ -1,7 +1,6 @@
 import _ from 'lodash'
-import { WebStorageStateStore } from "oidc-client-ts";
+import { WebStorageStateStore } from 'oidc-client-ts'
 
-// adapted from https://learn.microsoft.com/en-us/azure/active-directory-b2c/configure-authentication-sample-spa-app
 /**
  * To learn more about user flows, visit: https://docs.microsoft.com/en-us/azure/active-directory-b2c/user-flow-overview
  * To learn more about custom policies,
@@ -17,15 +16,20 @@ export const getLocalStorage = _.once(() => {
 // TODO: This is a modified copy of code from Terra UI. It could use some clean-up.
 export const getOidcConfig = () => {
   const metadata = {
+    // eslint-disable-next-line
     authorization_endpoint:
       `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev/oauth2/v2.0/authorize`,
+    // eslint-disable-next-line
     token_endpoint:
       `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev/oauth2/v2.0/token`
   }
   return {
     authority: `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev`,
+    // eslint-disable-next-line
     client_id: aadb2cClientId,
+    // eslint-disable-next-line
     popup_redirect_uri: `${window.origin}/redirect-from-oauth`,
+    // eslint-disable-next-line
     silent_redirect_uri: `${window.origin}/redirect-from-oauth-silent`,
     metadata,
     prompt: 'consent login',
@@ -38,16 +42,18 @@ export const getOidcConfig = () => {
     // token won't expire between 2 setCookie api calls
     accessTokenExpiringNotificationTimeInSeconds: 330,
     includeIdTokenInSilentRenew: true,
+    // eslint-disable-next-line
     extraQueryParams: { access_type: 'offline' },
+    // eslint-disable-next-line
     redirect_uri: ''
   }
 }
 
 export const b2cPolicies = {
   names: {
-    signUpSignIn: "b2c_1_susi",
-    forgotPassword: "b2c_1_reset",
-    editProfile: "b2c_1_edit_profile"
+    signUpSignIn: 'b2c_1_susi',
+    forgotPassword: 'b2c_1_reset',
+    editProfile: 'b2c_1_edit_profile'
   },
   authorities: {
     signUpSignIn: {

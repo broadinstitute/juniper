@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import LoadingSpinner from '../util/LoadingSpinner'
 import Api, { AdminUser } from 'api/api'
-import { useAuth } from "react-oidc-context";
+import { useAuth } from 'react-oidc-context'
 
 export type User = {
     accessToken: string | null,
@@ -22,7 +22,7 @@ export type UserContextT = {
 }
 
 /** current user object context */
-export const UserContext = React.createContext<UserContextT>({
+const UserContext = React.createContext<UserContextT>({
   user: anonymousUser,
   loginUser: () => { throw new Error('context not yet initialized') },
   logoutUser: () =>  { throw new Error('context not yet initialized') }
