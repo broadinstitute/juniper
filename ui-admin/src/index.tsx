@@ -8,8 +8,8 @@ import App from './App'
 
 import reportWebVitals from './reportWebVitals'
 import UserProvider from 'user/UserProvider'
-import { AuthProvider } from "react-oidc-context";
-import { getOidcConfig } from "./authConfig";
+import { AuthProvider } from 'react-oidc-context'
+import { getOidcConfig } from './authConfig'
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

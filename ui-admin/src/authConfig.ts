@@ -9,42 +9,38 @@ import { WebStorageStateStore } from 'oidc-client-ts'
 const aadB2cName = process.env.REACT_APP_B2C_TENANT_NAME ? process.env.REACT_APP_B2C_TENANT_NAME : 'NAME_NEEDED'
 const aadb2cClientId = process.env.REACT_APP_B2C_CLIENT_ID  ? process.env.REACT_APP_B2C_CLIENT_ID : 'ID_NEEDED'
 
-export const getLocalStorage = _.once(() => {
-  return window.localStorage
-})
-
 // TODO: This is a modified copy of code from Terra UI. It could use some clean-up.
 export const getOidcConfig = () => {
   const metadata = {
-    // eslint-disable-next-line
+    // eslint-disable-next-line camelcase
     authorization_endpoint:
       `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev/oauth2/v2.0/authorize`,
-    // eslint-disable-next-line
+    // eslint-disable-next-line camelcase
     token_endpoint:
       `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev/oauth2/v2.0/token`
   }
   return {
     authority: `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev`,
-    // eslint-disable-next-line
+    // eslint-disable-next-line camelcase
     client_id: aadb2cClientId,
-    // eslint-disable-next-line
+    // eslint-disable-next-line camelcase
     popup_redirect_uri: `${window.origin}/redirect-from-oauth`,
-    // eslint-disable-next-line
+    // eslint-disable-next-line camelcase
     silent_redirect_uri: `${window.origin}/redirect-from-oauth-silent`,
     metadata,
     prompt: 'consent login',
     scope: 'openid email profile',
     loadUserInfo: false,
-    stateStore: new WebStorageStateStore({ store: getLocalStorage() }),
-    userStore: new WebStorageStateStore({ store: getLocalStorage() }),
+    stateStore: new WebStorageStateStore({ store: window.localStorage }),
+    userStore: new WebStorageStateStore({ store: window.localStorage }),
     automaticSilentRenew: true,
     // Leo's setCookie interval is currently 5 min, set refresh auth then 5 min 30 seconds to gurantee that setCookie's
     // token won't expire between 2 setCookie api calls
     accessTokenExpiringNotificationTimeInSeconds: 330,
     includeIdTokenInSilentRenew: true,
-    // eslint-disable-next-line
+    // eslint-disable-next-line camelcase
     extraQueryParams: { access_type: 'offline' },
-    // eslint-disable-next-line
+    // eslint-disable-next-line camelcase
     redirect_uri: ''
   }
 }
