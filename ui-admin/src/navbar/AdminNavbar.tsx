@@ -10,14 +10,7 @@ import { NavbarContext, NavbarContextT } from './NavbarProvider'
 function AdminNavbar({ breadCrumbs, sidebarContent, showSidebar, setShowSidebar }: NavbarContextT) {
   const currentUser: UserContextT = useContext(UserContext)
   const sidebarRef = useRef<HTMLDivElement>(null)
-  let leftButton = <></>
-  if (sidebarContent) {
-    leftButton = <button onClick={() => setShowSidebar(!showSidebar)} title="sidebar menu"
-      className="btn btn-secondary text-white">
-      <FontAwesomeIcon icon={faBars}/>
-    </button>
-  }
-
+  const sidebarToggleRef = useRef<HTMLButtonElement>(null)
   if (!breadCrumbs) {
     breadCrumbs = []
   }
@@ -25,7 +18,9 @@ function AdminNavbar({ breadCrumbs, sidebarContent, showSidebar, setShowSidebar 
   /** Add a handler so that clicks outside the sidebar hide the sidebar */
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target as HTMLElement)) {
+      // exclude clicks inside the sidebar or of the toggle button
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target as HTMLElement) &&
+          sidebarToggleRef.current && !sidebarToggleRef.current.contains(event.target as HTMLElement)) {
         setShowSidebar(false)
       }
     }
@@ -43,7 +38,10 @@ function AdminNavbar({ breadCrumbs, sidebarContent, showSidebar, setShowSidebar 
     }}>
       <div className="container-fluid">
         <div className="d-flex align-items-center">
-          { leftButton }
+          <button onClick={() => setShowSidebar(!showSidebar)} title="sidebar menu" ref={sidebarToggleRef}
+            className="btn btn-secondary text-white">
+            <FontAwesomeIcon icon={faBars}/>
+          </button>
           <Link className="navbar-brand ms-2 fw-bold text-white" to="/">
           Pearl
           </Link>
@@ -71,7 +69,7 @@ function AdminNavbar({ breadCrumbs, sidebarContent, showSidebar, setShowSidebar 
         </div>
       </div>
     </nav>
-    {showSidebar && <div style={{
+    {(showSidebar && sidebarContent) && <div style={{
       position: 'absolute',
       top: '56px',
       backgroundColor: 'rgb(92, 101, 117)',
@@ -81,7 +79,6 @@ function AdminNavbar({ breadCrumbs, sidebarContent, showSidebar, setShowSidebar 
       color: '#f0f0f0',
       zIndex: 80
     }} ref={sidebarRef}>
-      Sidebar
       {sidebarContent}
     </div>}
   </>
