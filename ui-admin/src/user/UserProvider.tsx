@@ -32,7 +32,7 @@ const STORAGE_TOKEN_PROP = 'loginToken'
 export const useUser = () => useContext(UserContext)
 
 /** Provider for the current logged-in user. */
-export default function UserProvider({  children }: { children: React.ReactNode}) {
+export default function UserProvider({ children }: { children: React.ReactNode }) {
   const [userState, setUserState] = useState<User>(anonymousUser)
   const [isLoading, setIsLoading] = useState(true)
   const auth = useAuth()

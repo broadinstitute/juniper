@@ -19,39 +19,46 @@ import StudyDashboard from 'study/StudyDashboard'
 import RoutableStudyProvider from './study/StudyProvider'
 import StudyEnvironmentProvider from './study/StudyEnvironmentProvider'
 import StudyContent from './study/StudyContent'
+import { getOidcConfig } from './authConfig'
+import { AuthProvider } from 'react-oidc-context'
+import UserProvider from './user/UserProvider'
 
 /** container for the app including the router  */
 function App() {
   return (
-    <div className="App">
-      <ReactNotifications/>
-      <NavbarProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route element={<ProtectedRoute/>}>
-              <Route path="/" element={<PageFrame/>}>
-                <Route path=":portalShortcode" element={<PortalProvider/>}>
-                  <Route path="studies">
-                    <Route path=":studyShortcode" element={<RoutableStudyProvider/>}>
-                      <Route path="env/:studyEnv" element={<StudyEnvironmentProvider/>}>
-                        <Route index element={<StudyContent/>}/>
+    <AuthProvider {...getOidcConfig()}>
+      <UserProvider>
+        <div className="App">
+          <ReactNotifications/>
+          <NavbarProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route element={<ProtectedRoute/>}>
+                  <Route path="/" element={<PageFrame/>}>
+                    <Route path=":portalShortcode" element={<PortalProvider/>}>
+                      <Route path="studies">
+                        <Route path=":studyShortcode" element={<RoutableStudyProvider/>}>
+                          <Route path="env/:studyEnv" element={<StudyEnvironmentProvider/>}>
+                            <Route index element={<StudyContent/>}/>
+                          </Route>
+                          <Route index element={<StudyDashboard/>}/>
+                          <Route path="*" element={<div>Unknown study route</div>}/>
+                        </Route>
+                        <Route path="*" element={<div>Unknown studies route</div>}/>
                       </Route>
-                      <Route index element={<StudyDashboard/>}/>
-                      <Route path="*" element={<div>Unknown study route</div>}/>
+                      <Route index element={<PortalDashboard/>}/>
                     </Route>
-                    <Route path="*" element={<div>Unknown studies route</div>}/>
+                    <Route index element={<PortalList/>}/>
                   </Route>
-                  <Route index element={<PortalDashboard/>}/>
                 </Route>
-                <Route index element={<PortalList/>}/>
-              </Route>
-            </Route>
-            <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
-            <Route path="*" element={<div>Unknown page</div>}/>
-          </Routes>
-        </BrowserRouter>
-      </NavbarProvider>
-    </div>
+                <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
+                <Route path="*" element={<div>Unknown page</div>}/>
+              </Routes>
+            </BrowserRouter>
+          </NavbarProvider>
+        </div>
+      </UserProvider>
+    </AuthProvider>
   )
 }
 
