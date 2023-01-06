@@ -6,9 +6,10 @@ import 'survey-creator-core/survey-creator-core.min.css'
 
 import './App.css'
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
-import { UserContext, UserContextT } from 'user/UserProvider'
 import { ReactNotifications } from 'react-notifications-component'
 
+import { RedirectFromOAuth } from './login/RedirectFromOAuth'
+import { ProtectedRoute } from './login/ProtectedRoute'
 import NavbarProvider, { NavbarContext } from 'navbar/NavbarProvider'
 import AdminNavbar from 'navbar/AdminNavbar'
 import PortalList from 'portal/PortalList'
@@ -18,40 +19,46 @@ import StudyDashboard from 'study/StudyDashboard'
 import RoutableStudyProvider from './study/StudyProvider'
 import StudyEnvironmentProvider from './study/StudyEnvironmentProvider'
 import StudyContent from './study/StudyContent'
+import { getOidcConfig } from './authConfig'
+import { AuthProvider } from 'react-oidc-context'
+import UserProvider from './user/UserProvider'
 
 /** container for the app including the router  */
 function App() {
-  const currentUser: UserContextT = useContext(UserContext)
   return (
-    <div className="App">
-      <ReactNotifications />
-      <NavbarProvider>
-        { currentUser.user.isAnonymous && <div className="App-splash-background"/> }
-        { !currentUser.user.isAnonymous &&
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<PageFrame/>}>
-                <Route path=":portalShortcode" element={<PortalProvider/>}>
-                  <Route path="studies">
-                    <Route path=":studyShortcode" element={<RoutableStudyProvider/>}>
-                      <Route path="env/:studyEnv" element={<StudyEnvironmentProvider/>}>
-                        <Route index element={<StudyContent/>}/>
+    <AuthProvider {...getOidcConfig()}>
+      <UserProvider>
+        <div className="App">
+          <ReactNotifications/>
+          <NavbarProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route element={<ProtectedRoute/>}>
+                  <Route path="/" element={<PageFrame/>}>
+                    <Route path=":portalShortcode" element={<PortalProvider/>}>
+                      <Route path="studies">
+                        <Route path=":studyShortcode" element={<RoutableStudyProvider/>}>
+                          <Route path="env/:studyEnv" element={<StudyEnvironmentProvider/>}>
+                            <Route index element={<StudyContent/>}/>
+                          </Route>
+                          <Route index element={<StudyDashboard/>}/>
+                          <Route path="*" element={<div>Unknown study route</div>}/>
+                        </Route>
+                        <Route path="*" element={<div>Unknown studies route</div>}/>
                       </Route>
-                      <Route index element={<StudyDashboard/>} />
-                      <Route path="*" element={<div>Unknown study route</div>}/>
+                      <Route index element={<PortalDashboard/>}/>
                     </Route>
-                    <Route path="*" element={<div>Unknown studies route</div>}/>
+                    <Route index element={<PortalList/>}/>
                   </Route>
-                  <Route index element={<PortalDashboard/>} />
                 </Route>
-                <Route index element={<PortalList/>} />
+                <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
                 <Route path="*" element={<div>Unknown page</div>}/>
-              </Route>
-            </Routes>
-          </BrowserRouter>
-        }
-      </NavbarProvider>
-    </div>
+              </Routes>
+            </BrowserRouter>
+          </NavbarProvider>
+        </div>
+      </UserProvider>
+    </AuthProvider>
   )
 }
 
