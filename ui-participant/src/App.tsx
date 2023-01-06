@@ -1,8 +1,8 @@
-import React, { useContext } from 'react'
+import React from 'react'
 
 import LandingPage from 'landing/LandingPage'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import {usePortalEnv} from 'providers/PortalProvider'
+import { usePortalEnv } from 'providers/PortalProvider'
 import { NavbarItem } from 'api/api'
 import HtmlPageView from './landing/sections/HtmlPageView'
 import PreRegistration from './landing/registration/Preregistration'
@@ -13,7 +13,7 @@ import RegistrationOutlet from './landing/registration/RegistrationOutlet'
  * root app -- handles dynamically creating all the routes based on the siteContent
  */
 function App() {
-  const {localContent, portal} = usePortalEnv()
+  const { localContent, portal } = usePortalEnv()
 
   let landingRoutes: JSX.Element[] = []
   if (localContent.navbarItems) {

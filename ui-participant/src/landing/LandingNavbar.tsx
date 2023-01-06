@@ -1,21 +1,22 @@
-import React from "react";
-import {NavLink} from "react-router-dom";
-import {NavbarItem, getImageUrl} from "api/api";
-import {usePortalEnv} from "providers/PortalProvider";
+import React from 'react'
+import { NavLink } from 'react-router-dom'
+import { getImageUrl, NavbarItem } from 'api/api'
+import { usePortalEnv } from 'providers/PortalProvider'
 
+/** renders the navbar for participant landing page (for not-logged-in participants) */
 export default function LandingNavbar() {
-  const {localContent} = usePortalEnv()
+  const { localContent } = usePortalEnv()
   const navLinks = localContent.navbarItems
 
   return <nav className="LandingNavbar navbar navbar-expand-lg navbar-light">
     <div className="container-fluid">
       <NavLink to="/" className="navbar-brand">
-        <img className="Navbar-logo" style={{maxHeight: '30px'}}
-             src={getImageUrl(localContent.navLogoShortcode)} alt="logo"/>
+        <img className="Navbar-logo" style={{ maxHeight: '30px' }}
+          src={getImageUrl(localContent.navLogoShortcode)} alt="logo"/>
       </NavLink>
       <div className="collapse navbar-collapse" id="navbarNavDropdown">
         <ul className="navbar-nav">
-          { navLinks.map((navLink: any, index: number) => <li key={index} >
+          {navLinks.map((navLink: NavbarItem, index: number) => <li key={index}>
             <CustomNavLink navLink={navLink}/>
           </li>)}
         </ul>
@@ -29,10 +30,13 @@ export default function LandingNavbar() {
   </nav>
 }
 
-
-export function CustomNavLink({navLink}: {navLink: NavbarItem}) {
-  function mailingList(navLinkObj: any) {
-    alert("mailing list")
+/** renders a single navBarItem. This will likely get split out into subcomponents for each type as they are
+ * implemented
+ */
+export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
+  /** will eventually popup a modal allowing email address entry */
+  function mailingList(navLinkObj: NavbarItem) {
+    alert(`mailing list ${navLinkObj.label}`)
   }
 
   if (navLink.itemType === 'INTERNAL') {

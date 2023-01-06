@@ -1,5 +1,5 @@
-import React, {useContext, useEffect, useState} from 'react'
-import Api, {getEnvSpec, EnvSpec, Portal, PortalEnvironment, LocalSiteContent} from 'api/api'
+import React, { useContext, useEffect, useState } from 'react'
+import Api, { getEnvSpec, EnvSpec, Portal, PortalEnvironment, LocalSiteContent } from 'api/api'
 
 
 /** current portal object context */
@@ -15,12 +15,12 @@ export type PortalEnvContextT = {
 export function usePortalEnv(): PortalEnvContextT {
   const portal = useContext(PortalContext)
   if (!portal) {
-    throw('Portal environment not initialized')
+    throw ('Portal environment not initialized')
   }
   // the api guarantees the first environment and first localizedSiteContents returned are the correct ones
   const portalEnv = portal.portalEnvironments[0]
   const localContent = portalEnv.siteContent.localizedSiteContents[0]
-  return {portal, portalEnv, localContent}
+  return { portal, portalEnv, localContent }
 }
 
 /**

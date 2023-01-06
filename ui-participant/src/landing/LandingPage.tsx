@@ -1,6 +1,6 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
-import LandingNavbar from "./LandingNavbar";
+import LandingNavbar from './LandingNavbar'
 
 /** renders the landing page for a portal (e.g. hearthive.org) */
 function LandingPageView() {

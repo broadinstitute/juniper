@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import React, {CSSProperties} from 'react'
+import React, { CSSProperties } from 'react'
 import { ButtonConfig, getImageUrl } from 'api/api'
 import PearlImage from '../../util/PearlImage'
 import ConfiguredButton from './ConfiguredButton'
