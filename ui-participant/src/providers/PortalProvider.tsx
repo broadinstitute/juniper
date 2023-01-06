@@ -1,9 +1,27 @@
-import React, { useEffect, useState } from 'react'
-import Api, { getEnvSpec, EnvSpec, Portal } from 'api/api'
+import React, {useContext, useEffect, useState} from 'react'
+import Api, {getEnvSpec, EnvSpec, Portal, PortalEnvironment, LocalSiteContent} from 'api/api'
 
 
-/** current user object context */
-export const PortalContext = React.createContext<Portal | null>(null)
+/** current portal object context */
+const PortalContext = React.createContext<Portal | null>(null)
+
+export type PortalEnvContextT = {
+  portal: Portal,
+  portalEnv: PortalEnvironment,
+  localContent: LocalSiteContent
+}
+
+/** use the loaded portal.  Attempting to call this outside of PortalProvider children will throw an exception */
+export function usePortalEnv(): PortalEnvContextT {
+  const portal = useContext(PortalContext)
+  if (!portal) {
+    throw('Portal environment not initialized')
+  }
+  // the api guarantees the first environment and first localizedSiteContents returned are the correct ones
+  const portalEnv = portal.portalEnvironments[0]
+  const localContent = portalEnv.siteContent.localizedSiteContents[0]
+  return {portal, portalEnv, localContent}
+}
 
 /**
  * Provider for the current user object.

@@ -14,6 +14,7 @@ import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
+import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -34,13 +35,14 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     private StudyService studyService;
     private SurveyService surveyService;
     private ConsentFormService consentFormService;
+    private SiteContentService siteContentService;
 
     public PortalService(PortalDao portalDao, PortalStudyService portalStudyService,
                          StudyService studyService,
                          PortalEnvironmentService portalEnvironmentService,
                          ParticipantUserService participantUserService,
                          PortalAdminUserDao portalAdminUserDao, SurveyService surveyService,
-                         ConsentFormService consentFormService) {
+                         ConsentFormService consentFormService, SiteContentService siteContentService) {
         super(portalDao);
         this.portalStudyService = portalStudyService;
         this.portalEnvironmentService = portalEnvironmentService;
@@ -49,6 +51,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         this.portalAdminUserDao = portalAdminUserDao;
         this.surveyService = surveyService;
         this.consentFormService = consentFormService;
+        this.siteContentService = siteContentService;
     }
 
     @Transactional
@@ -81,6 +84,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         }
         surveyService.deleteByPortalId(portalId);
         consentFormService.deleteByPortalId(portalId);
+        siteContentService.deleteByPortalId(portalId);
         dao.delete(portalId);
     }
 
@@ -131,6 +135,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     public enum AllowedCascades implements CascadeProperty {
         PARTICIPANT_USER,
         STUDY,
+        SITE_CONTENT,
         PORTAL_STUDY;
 
     }

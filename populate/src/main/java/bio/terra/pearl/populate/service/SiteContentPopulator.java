@@ -1,28 +1,30 @@
 package bio.terra.pearl.populate.service;
 
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.site.HtmlPage;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.site.SiteImage;
+import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.site.SiteImageService;
 import bio.terra.pearl.populate.dto.site.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
 
 @Service
 public class SiteContentPopulator extends Populator<SiteContent> {
     private SiteContentService siteContentService;
     private SiteImageService siteImageService;
+    private PortalService portalService;
 
     public SiteContentPopulator(SiteContentService siteContentService,
                                 SiteImageService siteImageService,
                                 FilePopulateService filePopulateService,
-                                ObjectMapper objectMapper) {
+                                ObjectMapper objectMapper, PortalService portalService) {
+        this.portalService = portalService;
         this.objectMapper = objectMapper;
         this.filePopulateService = filePopulateService;
         this.siteContentService = siteContentService;
@@ -34,11 +36,12 @@ public class SiteContentPopulator extends Populator<SiteContent> {
         SiteContentPopDto siteContentDto = objectMapper.readValue(fileString, SiteContentPopDto.class);
         Optional<SiteContent> existingContent = siteContentService
                 .findOne(siteContentDto.getStableId(), siteContentDto.getVersion());
-        existingContent.ifPresent(exContent -> {
-            // for now, delete and recreate.  Later, as environments start sharing site contents,
-            // we may need a more sophisticated approach.
-            siteContentService.delete(exContent.getId(), new HashSet<>());
-        });
+        if (existingContent.isPresent()) {
+            // for now, assume that if it exists, it has already been refreshed via populating another environment.
+            return existingContent.get();
+        };
+        Portal attachedPortal = portalService.findOneByShortcode(config.getPortalShortcode()).get();
+        siteContentDto.setPortalId(attachedPortal.getId());
         for (LocalizedSiteContentPopDto lsc : siteContentDto.getLocalizedSiteContentDtos()) {
             lsc.setLandingPage(parseHtmlPageDto(lsc.getLandingPage()));
             for (NavbarItemPopDto navItem : lsc.getNavbarItemDtos()) {
@@ -51,6 +54,7 @@ public class SiteContentPopulator extends Populator<SiteContent> {
         siteContentDto.getLocalizedSiteContents().addAll(siteContentDto.getLocalizedSiteContentDtos());
         SiteContent savedContent = siteContentService.create(siteContentDto);
         populateImages(siteContentDto, savedContent.getId(), config);
+
         return savedContent;
     }
 

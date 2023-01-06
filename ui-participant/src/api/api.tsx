@@ -34,7 +34,8 @@ export type SiteContent = {
 export type LocalSiteContent = {
   language: string,
   navbarItems: NavbarItem[],
-  landingPage: HtmlPage
+  landingPage: HtmlPage,
+  navLogoShortcode: string
 }
 
 export type HtmlPage = {
@@ -46,7 +47,7 @@ export type HtmlPage = {
 export type NavbarItem = {
   label: string,
   externalLink: string,
-  navbarItemType: string
+  itemType: string
   htmlPage: HtmlPage
 }
 

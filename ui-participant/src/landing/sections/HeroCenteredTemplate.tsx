@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import React from 'react'
 import { ButtonConfig } from 'api/api'
+import ReactMarkdown from 'react-markdown'
 
 type HeroCenteredTemplateProps = {
   background?: string, // background CSS style (e.g. `linear-gradient(...)`)
@@ -22,7 +23,7 @@ function HeroCenteredTemplate({ config: { background, backgroundColor, color, bl
         {title}
       </h1>
       <p className="fs-5">
-        {blurb}
+        <ReactMarkdown>{blurb ? blurb : ''}</ReactMarkdown>
       </p>
     </div>
     <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
