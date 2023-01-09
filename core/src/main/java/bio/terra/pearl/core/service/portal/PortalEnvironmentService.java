@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.service.portal;
 
 import bio.terra.pearl.core.dao.portal.PortalEnvironmentDao;
-import bio.terra.pearl.core.dao.study.StudyDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
@@ -22,18 +21,15 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
     private PortalEnvironmentConfigService portalEnvironmentConfigService;
     private PortalParticipantUserService portalParticipantUserService;
     private ParticipantUserService participantUserService;
-    private StudyDao studyDao;
 
     public PortalEnvironmentService(PortalEnvironmentDao portalEnvironmentDao,
                                     PortalEnvironmentConfigService portalEnvironmentConfigService,
                                     PortalParticipantUserService portalParticipantUserService,
-                                    ParticipantUserService participantUserService,
-                                    StudyDao studyDao) {
+                                    ParticipantUserService participantUserService) {
         super(portalEnvironmentDao);
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.participantUserService = participantUserService;
-        this.studyDao = studyDao;
     }
 
     public List<PortalEnvironment> findByPortal(UUID portalId) {
