@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { UserContext, UserContextT } from 'user/UserProvider'
+import { UserContextT, useUser } from 'user/UserProvider'
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars'
 
 import { Link } from 'react-router-dom'
@@ -8,7 +8,7 @@ import { NavbarContext, NavbarContextT } from './NavbarProvider'
 
 /** note we name this adminNavbar to avoid naming conflicts with bootstrap navbar */
 function AdminNavbar({ breadCrumbs, sidebarContent, showSidebar, setShowSidebar }: NavbarContextT) {
-  const currentUser: UserContextT = useContext(UserContext)
+  const currentUser: UserContextT = useUser()
   const sidebarRef = useRef<HTMLDivElement>(null)
   const sidebarToggleRef = useRef<HTMLButtonElement>(null)
   if (!breadCrumbs) {
