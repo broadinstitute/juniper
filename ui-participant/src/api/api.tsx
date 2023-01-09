@@ -1,4 +1,4 @@
-import {DenormalizedPreRegResponse} from '../util/surveyJsUtils'
+import { DenormalizedPreRegResponse } from '../util/surveyJsUtils'
 
 export type PortalEnvironmentParams = {
   portalShortcode: string,
@@ -140,7 +140,7 @@ export default {
   },
 
   /** submit preregistration survey data */
-  async completePreReg({portalShortcode, studyShortcode, envName, surveyStableId, surveyVersion, preRegResponse}:
+  async completePreReg({ portalShortcode, studyShortcode, envName, surveyStableId, surveyVersion, preRegResponse }:
                          {
                            portalShortcode: string, studyShortcode: string, envName: string, surveyStableId: string,
                            surveyVersion: number, preRegResponse: DenormalizedPreRegResponse
@@ -164,14 +164,14 @@ export default {
     Promise<void> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/studies/${studyShortcode}`
       + `/preReg/${preRegId}/confirm`
-    const response = await fetch(url, {headers: this.getInitHeaders()})
+    const response = await fetch(url, { headers: this.getInitHeaders() })
     if (!response.ok) {
       return Promise.reject(response)
     }
   },
 
   /** submits registration data for a particular study, from an anonymous user */
-  async registerForStudy({portalShortcode, studyShortcode, envName, preRegId, fullData}:
+  async registerForStudy({ portalShortcode, studyShortcode, envName, preRegId, fullData }:
                            {
                              portalShortcode: string, studyShortcode: string, envName: string,
                              preRegId: string, fullData: object
@@ -181,7 +181,7 @@ export default {
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
-      body: JSON.stringify({fullData})
+      body: JSON.stringify({ fullData })
     })
     return await this.processJsonResponse(response)
   }
@@ -192,7 +192,7 @@ export default {
  * Returns a url suitable for inclusion in an <img> tag based on a image shortcode
  */
 export function getImageUrl(imageShortcode: string) {
-  const {shortcode, envName} = getEnvSpec()
+  const { shortcode, envName } = getEnvSpec()
   return `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/siteImages/${imageShortcode}`
 }
 
@@ -208,7 +208,7 @@ export function getEnvSpec(): EnvSpec {
 
 /** parses shortcode and environment from hostname */
 function readEnvFromHostname(hostname: string): EnvSpec {
-  let shortname;
+  let shortname
   let envName = ''
   const splitHostname = hostname.split('.')
   if (Object.keys(ALLOWED_ENV_NAMES).includes(splitHostname[0])) {
@@ -218,7 +218,7 @@ function readEnvFromHostname(hostname: string): EnvSpec {
     envName = 'LIVE'
     shortname = splitHostname[0]
   }
-  return {envName, shortcode: shortname}
+  return { envName, shortcode: shortname }
 }
 
 const ALLOWED_ENV_NAMES: Record<string, string> = {
