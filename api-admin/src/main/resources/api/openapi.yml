@@ -129,11 +129,10 @@ paths:
     post:
       summary: Saves the consentForm as a new version
       tags: [ consentForm ]
-      operationId: publish
+      operationId: newVersion
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: stableId, in: path, required: true, schema: { type: string } }
-        - { name: version, in: path, required: true, schema: { type: integer } }
       requestBody:
         required: true
         content: { application/json: { schema: { $ref: '#/components/schemas/VersionedFormDto' } } }

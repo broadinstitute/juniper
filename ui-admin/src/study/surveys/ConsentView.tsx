@@ -73,7 +73,7 @@ export type ConsentParamsT = StudyParams & {
 }
 
 /** routable component for survey editing */
-function SurveyView() {
+function ConsentView() {
   const params = useParams<ConsentParamsT>()
   const consentStableId: string | undefined = params.consentStableId
 
@@ -92,4 +92,4 @@ function SurveyView() {
   return <RawConsentView portal={portal} study={study} currentEnv={currentEnv} consent={consent} readOnly={isReadonly}/>
 }
 
-export default SurveyView
+export default ConsentView
