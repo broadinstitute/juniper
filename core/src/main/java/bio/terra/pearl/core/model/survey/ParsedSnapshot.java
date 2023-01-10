@@ -5,23 +5,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
-import java.util.UUID;
-
 /**
- * Object model for survey response data.
- * Note that we serialize the data as strings for simplicity and performance, but this is the underlying model
+ * Object model for survey response data that has been parsed.
  */
 @Getter @Setter @NoArgsConstructor
 @SuperBuilder
-public class ParsedSnapshot {
-    private UUID adminUserId;
-    private UUID participantUserId;
-    private UUID surveyResponseId;
-    private ResponseData data;
-
-    @Getter @Setter @NoArgsConstructor
-    public static class ResponseData {
-        private List<ResponseDataItem> items;
-    }
+public class ParsedSnapshot extends ResponseSnapshot {
+    private ResponseData parsedData;
 }

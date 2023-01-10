@@ -1,0 +1,101 @@
+databaseChangeLog:
+  - changeSet:
+      id: "consent_prereg"
+      author: dbush
+      changes:
+        - createTable:
+            tableName: consent_form
+            columns:
+              - column: &idColumn
+                  { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: &createdAt
+                  { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: &lastUpdatedAt
+                  { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: name, type: text }
+              - column: { name: stable_id, type: text, constraints: { nullable: false } }
+              - column: { name: version, type: integer, constraints: { nullable: false } }
+              - column: { name: content, type: text }
+              - column: { name: portal_id, type: uuid, constraints:
+                { foreignKeyName: fk_consent_form_portal_id, references: portal(id) }
+              }
+        - addUniqueConstraint:
+            tableName: consent_form
+            constraintName: uc_consent_form_stable_id_version
+            columnNames: stable_id, version
+        - createTable:
+            tableName: study_environment_consent
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: eligibility_rule, type: text }
+              - column: { name: allow_admin_edit, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: allow_participant_start, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: allow_participant_reedit, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: prepopulate, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: consent_order, type: integer, constraints: { nullable: false } }
+              - column: { name: study_environment_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_study_environment_consent_env, references: study_environment(id) }
+              }
+              - column: { name: consent_form_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_study_environment_consent_consent, references: consent_form(id) }
+              }
+        - createTable:
+            tableName: consent_response
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: consented, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: completed, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: consent_form_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_consent_response_consent, references: consent_form(id) }
+              }
+              - column: { name: enrollee_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_consent_response_enrollee, references: enrollee(id) }
+              }
+              - column: { name: resume_data, type: text }
+              - column: { name: full_data, type: text }
+              - column: { name: creating_participant_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_consent_response_participant_user, references: participant_user(id) }
+              }
+              - column: { name: creating_admin_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_consent_response_admin_user, references: admin_user(id) }
+              }
+        - sql:  # addCheckConstraint is only available for LiquibasePro, so add this check via raw sql
+            sql: alter table consent_response add constraint chk_consent_response_has_user check (creating_participant_user_id != null or creating_admin_user_id != null);
+        - addColumn:
+            tableName: study_environment
+            columns:
+              - column: { name: pre_reg_survey_id, type: uuid, constraints:
+                { foreignKeyName: fk_study_env_prereg_survey, references: survey(id) }
+              }
+        - addColumn:
+            tableName: portal_environment
+            columns:
+              - column: { name: pre_reg_survey_id, type: uuid, constraints:
+                { foreignKeyName: fk_portal_env_prereg_survey, references: survey(id) }
+              }
+        - createTable:
+            tableName: preregistration_response
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: qualified, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: survey_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_consent_response_consent, references: survey(id) }
+              }
+              - column: { name: enrollee_id, type: uuid, constraints:
+                { foreignKeyName: fk_consent_response_enrollee, references: enrollee(id) }
+              }
+              - column: { name: full_data, type: text }
+              - column: { name: creating_participant_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_consent_response_participant_user, references: participant_user(id) }
+              }
+              - column: { name: study_environment_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_prereg_response_study_env, references: study_environment(id) }
+              }
+
+

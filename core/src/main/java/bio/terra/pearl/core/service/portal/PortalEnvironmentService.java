@@ -8,14 +8,13 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PortalEnvironmentService extends CrudService<PortalEnvironment, PortalEnvironmentDao> {
@@ -45,9 +44,11 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         return dao.update(portalEnvironment);
     }
 
-    public Optional<PortalEnvironment> loadOneWithSiteContent(String portalShortcode, EnvironmentName environmentName,
-                                                              String language) {
-        return dao.loadOneWithSiteContent(portalShortcode, environmentName, language);
+    /** loads a portal environment with everything needed to render the participant-facing site */
+    public Optional<PortalEnvironment> loadWithParticipantSiteContent(String portalShortcode,
+                                                                       EnvironmentName environmentName,
+                                                                       String language) {
+        return dao.loadWithSiteContent(portalShortcode, environmentName, language);
     }
 
     @Transactional

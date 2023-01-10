@@ -74,7 +74,17 @@ function StudyContent() {
               <h6>Consent forms</h6>
             </div>
             <div className="flex-grow-1">
-              not yet implemented
+              <ul className="list-group">
+                { currentEnv.configuredConsents.map(config => {
+                  const consentForm = config.consentForm
+                  return <li className="list-group-item" key={consentForm.stableId}>
+                    {consentForm.name} <span className="detail">v{consentForm.version}</span>
+                    <Link to={`consentForms/${consentForm.stableId}?mode=view`} className="ms-4">view</Link>
+                    { <Link to={`consentForms/${consentForm.stableId}`} className="ms-3">
+                      edit</Link> }
+                  </li>
+                }) }
+              </ul>
             </div>
           </li>
           <li className="list-group-item d-flex">

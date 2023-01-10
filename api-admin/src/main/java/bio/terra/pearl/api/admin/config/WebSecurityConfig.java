@@ -23,6 +23,7 @@ public class WebSecurityConfig {
         registry
             .addMapping("/**")
             .allowedOriginPatterns(allowedCorsPatterns)
+            // update to support PATCH
             .allowedMethods("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH");
       }
     };

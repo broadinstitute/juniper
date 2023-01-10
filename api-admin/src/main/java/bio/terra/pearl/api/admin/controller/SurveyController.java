@@ -1,12 +1,11 @@
 package bio.terra.pearl.api.admin.controller;
 
 import bio.terra.pearl.api.admin.api.SurveyApi;
-import bio.terra.pearl.api.admin.model.SurveyDto;
+import bio.terra.pearl.api.admin.model.VersionedFormDto;
 import bio.terra.pearl.api.admin.service.RequestUtilService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +23,6 @@ public class SurveyController implements SurveyApi {
       RequestUtilService requestService,
       HttpServletRequest request,
       SurveyService surveyService,
-      PortalService portalService,
       ObjectMapper objectMapper) {
     this.requestService = requestService;
     this.request = request;
@@ -33,18 +31,19 @@ public class SurveyController implements SurveyApi {
   }
 
   @Override
-  public ResponseEntity<SurveyDto> publish(
-      String portalShortcode, String stableId, Integer version, SurveyDto body) {
+  public ResponseEntity<VersionedFormDto> newVersion(
+      String portalShortcode, String stableId, VersionedFormDto body) {
     AdminUser adminUser = requestService.getFromRequest(request);
     Portal portal = requestService.authUserToPortal(adminUser, portalShortcode);
-    if (!stableId.equals(body.getStableId()) || !body.getVersion().equals(version)) {
+    if (!stableId.equals(body.getStableId())) {
       throw new IllegalArgumentException("survey parameters don't match");
     }
     Survey survey = objectMapper.convertValue(body, Survey.class);
 
     Survey savedSurvey = surveyService.createNewVersion(adminUser, portal.getId(), survey);
 
-    SurveyDto savedSurveyDto = objectMapper.convertValue(savedSurvey, SurveyDto.class);
+    VersionedFormDto savedSurveyDto =
+        objectMapper.convertValue(savedSurvey, VersionedFormDto.class);
     return ResponseEntity.ok(savedSurveyDto);
   }
 }

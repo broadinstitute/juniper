@@ -14,6 +14,7 @@ import java.util.UUID;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+/** populator for surveys and consent forms */
 @Service
 public class SurveyPopulator extends Populator<Survey> {
     private SurveyService surveyService;
@@ -21,7 +22,9 @@ public class SurveyPopulator extends Populator<Survey> {
     private SurveyPopulateDao surveyPopulateDao;
 
     public SurveyPopulator(SurveyService surveyService,
-                           ObjectMapper objectMapper, FilePopulateService filePopulateService, PortalService portalService, SurveyPopulateDao surveyPopulateDao) {
+                           ObjectMapper objectMapper, FilePopulateService filePopulateService,
+                           PortalService portalService,
+                           SurveyPopulateDao surveyPopulateDao) {
         this.portalService = portalService;
         this.surveyPopulateDao = surveyPopulateDao;
         this.objectMapper = objectMapper;
@@ -36,7 +39,7 @@ public class SurveyPopulator extends Populator<Survey> {
         surveyPopDto.setContent(newContent);
         UUID portalId = portalService.findOneByShortcode(config.getPortalShortcode()).get().getId();
         surveyPopDto.setPortalId(portalId);
-        Optional<Survey> existingSurveyOpt = surveyService.findByStableId(surveyPopDto.getStableId(), surveyPopDto.getVersion());
+        Optional<Survey> existingSurveyOpt = fetchFromPopDto(surveyPopDto);
 
         if (existingSurveyOpt.isPresent()) {
             Survey existingSurvey = existingSurveyOpt.get();
@@ -57,5 +60,9 @@ public class SurveyPopulator extends Populator<Survey> {
         configuredSurvey.setSurveyId(survey.getId());
         configuredSurvey.setSurveyOrder(index);
         return configuredSurvey;
+    }
+
+    public Optional<Survey> fetchFromPopDto(SurveyPopDto surveyPopDto) {
+        return surveyService.findByStableId(surveyPopDto.getStableId(), surveyPopDto.getVersion());
     }
 }

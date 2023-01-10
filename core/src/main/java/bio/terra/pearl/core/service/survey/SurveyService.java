@@ -38,6 +38,7 @@ public class SurveyService extends CrudService<Survey, SurveyDao> {
         // TODO check user permissions
         Survey newSurvey = new Survey();
         BeanUtils.copyProperties(survey, newSurvey, "id", "version", "createdAt", "lastUpdatedAt");
+        newSurvey.setPortalId(portalId);
         int nextVersion = dao.getNextVersion(survey.getStableId());
         newSurvey.setVersion(nextVersion);
         return create(newSurvey);

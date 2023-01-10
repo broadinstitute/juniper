@@ -2,14 +2,14 @@ package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.dao.survey.ResponseSnapshotDao;
 import bio.terra.pearl.core.model.survey.ParsedSnapshot;
+import bio.terra.pearl.core.model.survey.ResponseData;
 import bio.terra.pearl.core.model.survey.ResponseSnapshot;
 import bio.terra.pearl.core.service.CrudService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ResponseSnapshotService extends CrudService<ResponseSnapshot, ResponseSnapshotDao> {
@@ -21,12 +21,12 @@ public class ResponseSnapshotService extends CrudService<ResponseSnapshot, Respo
     }
 
     public ParsedSnapshot parse(ResponseSnapshot snapshot) throws IOException {
-        ParsedSnapshot.ResponseData data = objectMapper.readValue(snapshot.getFullData(), ParsedSnapshot.ResponseData.class);
+        ResponseData data = objectMapper.readValue(snapshot.getFullData(), ResponseData.class);
         ParsedSnapshot parsedSnap = ParsedSnapshot.builder()
-                .adminUserId(snapshot.getCreatingAdminUserId())
+                .creatingAdminUserId(snapshot.getCreatingAdminUserId())
                 .surveyResponseId(snapshot.getSurveyResponseId())
-                .participantUserId(snapshot.getCreatingParticipantUserId())
-                .data(data)
+                .creatingParticipantUserId(snapshot.getCreatingParticipantUserId())
+                .parsedData(data)
                 .build();
         return parsedSnap;
     }

@@ -55,9 +55,7 @@ databaseChangeLog:
               - column: { name: site_content_id, type: uuid, constraints: {
                 nullable: false, foreignKeyName: fk_localized_site_content_site_id, references: site_content(id)
               } }
-              - column: { name: nav_logo_id, type: uuid, constraints: {
-                foreignKeyName: fk_localized_site_content_logo_id, references: site_image(id)
-              } }
+              - column: { name: nav_logo_shortcode, type: text}
               - column: { name: landing_page_id, type: uuid, constraints: {
                 foreignKeyName: fk_localized_site_landing_page_id, references: html_page(id)
               } }

@@ -89,22 +89,21 @@ paths:
           content: { application/json: { schema: { type: object }}}
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/surveys/{stableId}/{version}/newVersion:
+  /api/portals/v1/{portalShortcode}/surveys/{stableId}/newVersion:
     post:
       summary: Saves the survey as a new version
       tags: [ survey ]
-      operationId: publish
+      operationId: newVersion
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: stableId, in: path, required: true, schema: { type: string } }
-        - { name: version, in: path, required: true, schema: { type: integer } }
       requestBody:
         required: true
-        content: { application/json: { schema: {$ref: '#/components/schemas/SurveyDto' } } }
+        content: { application/json: { schema: {$ref: '#/components/schemas/VersionedFormDto' } } }
       responses:
         '200':
           description: saved survey object
-          content: { application/json: { schema: {$ref: '#/components/schemas/SurveyDto' } } }
+          content: { application/json: { schema: {$ref: '#/components/schemas/VersionedFormDto' } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys/{configSurveyId}:
@@ -116,7 +115,7 @@ paths:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: configSurveyId, in: path, required: true, schema: { type: string } }
+        - { name: configSurveyId, in: path, required: true, schema: { type: string, format: uuid } }
       requestBody:
         required: true
         content: { application/json: { schema: { $ref: '#/components/schemas/ConfiguredSurveyDto' } } }
@@ -126,6 +125,61 @@ paths:
           content: { application/json: { schema: { $ref: '#/components/schemas/ConfiguredSurveyDto' } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/consentForms/{stableId}/{version}/newVersion:
+    post:
+      summary: Saves the consentForm as a new version
+      tags: [ consentForm ]
+      operationId: newVersion
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/VersionedFormDto' } } }
+      responses:
+        '200':
+          description: saved survey object
+          content: { application/json: { schema: { $ref: '#/components/schemas/VersionedFormDto' } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredConsents/{configConsentId}:
+    patch:
+      summary: Updates a configured consent, such as by updating to a new version of the consent
+      tags: [ configuredConsent ]
+      operationId: patch
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: configConsentId, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/ConfiguredConsentDto' } } }
+      responses:
+        '200':
+          description: saved configuredConsent object
+          content: { application/json: { schema: { $ref: '#/components/schemas/ConfiguredConsentDto' } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}:
+    patch:
+      summary: Updates a study environment configuration
+      tags: [ studyEnvironment ]
+      operationId: patch
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/StudyEnvironmentDto' } } }
+      responses:
+        '200':
+          description: saved studyEnvironment object
+          content: { application/json: { schema: { $ref: '#/components/schemas/StudyEnvironmentDto' } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+
   /api/current-user/v1/unauthed-login:
     post:
       summary: Unauthenticated login (dev only)
@@ -250,20 +304,31 @@ components:
       type: object
       properties:
         token: {type: string}
-    SurveyDto:
+    VersionedFormDto:
       type: object
       properties:
         name: {type: string}
         version: {type: integer}
         content: {type: string}
         stableId: {type: string}
-        id: {type: string}
+        id: {type: string, format: uuid}
     ConfiguredSurveyDto:
       type: object
       properties:
-        id: {type: string }
-        surveyId: { type: string }
-        studyEnvironmentId: { type: string }
+        id: {type: string, format: uuid }
+        surveyId: { type: string, format: uuid }
+        studyEnvironmentId: { type: string, format: uuid }
+    ConfiguredConsentDto:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        consentFormId: { type: string, format: uuid }
+        studyEnvironmentId: { type: string, format: uuid }
+    StudyEnvironmentDto:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        preRegSurveyId: { type: string, format: uuid }
     AdminUserDto:
       type: object
       properties:
