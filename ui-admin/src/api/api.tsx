@@ -145,7 +145,7 @@ export default {
   },
 
   async createNewSurveyVersion(portalShortcode: string, survey: Survey): Promise<Survey> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys/${survey.stableId}/${survey.version}/newVersion`
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys/${survey.stableId}/newVersion`
 
     const response = await fetch(url, {
       method: 'POST',

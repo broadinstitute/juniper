@@ -87,7 +87,7 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/siteImages/{imageShortcode}:
+  /api/portals/v1/{portalShortcode}/env/{envName}/siteImages/{shortcodeOrId}:
     get:
       summary: Returns the binary image data for the image of the given shortcode
       tags: [ siteImage ]
@@ -95,7 +95,7 @@ paths:
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: imageShortcode, in: path, required: true, schema: { type: string } }
+        - { name: shortcodeOrId, in: path, required: true, schema: { type: string } }
       responses:
         '200':
           description: image data

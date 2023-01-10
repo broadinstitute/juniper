@@ -1,0 +1,35 @@
+{
+  "name": "Pacing study",
+  "shortcode": "pacing",
+  "surveyFiles": [],
+  "consentFormFiles": [],
+  "studyEnvironmentDtos": [
+    {
+      "environmentName": "sandbox",
+      "studyEnvironmentConfig": {
+        "acceptingEnrollment": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": true
+      }
+    },
+    {
+      "environmentName": "irb",
+      "studyEnvironmentConfig": {
+        "acceptingEnrollment": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": false
+      }
+    },
+    {
+      "environmentName": "live",
+      "studyEnvironmentConfig": {
+        "acceptingEnrollment": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": false
+      }
+    }
+  ]
+}

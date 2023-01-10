@@ -1,0 +1,43 @@
+{
+  "name": "HeartHive",
+  "shortcode": "hearthive",
+  "populateStudyFiles": [
+    "studies/cardiomyopathy/study.json",
+    "studies/pacing/study.json"
+  ],
+  "portalEnvironmentDtos": [
+    {
+      "environmentName": "sandbox",
+      "portalEnvironmentConfig": {
+        "acceptingRegistration": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": true
+      },
+      "siteContentFile": "siteContent.json",
+      "participantUserFiles": []
+    },
+    {
+      "environmentName": "irb",
+      "portalEnvironmentConfig": {
+        "acceptingRegistration": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": false
+      },
+      "siteContentFile": "siteContent.json",
+      "participantUserFiles": []
+    },
+    {
+      "environmentName": "live",
+      "portalEnvironmentConfig": {
+        "acceptingRegistration": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": false
+      },
+      "siteContentFile": "siteContent.json",
+      "participantUserFiles": []
+    }
+  ]
+}

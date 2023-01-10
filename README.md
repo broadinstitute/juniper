@@ -16,9 +16,21 @@ and so this is also where liquibase lives.  Running the CoreCliApp will do nothi
 Contains functionality for populating entities from files, as well as basic seed data.  this includes populate
 DTOs, and populate services.  the PopulateCliApp can be used to populate specific entities from files via command-line
 
-#### Admin API server
-The API server serves requests from the Admin UI. It is built on top of the services in both core and populate.
-In development, it serves at localhost:8080
+#### Study Manager Tool
+
+##### Study manager API
+   The Admin API server serves requests from the Admin UI. It is built on top of the services in both core and populate.
+   In development, it serves at localhost:8080.  Lives in `api-admin` directory
+##### Study Manager UI
+   Study manager UI is a create-react-app SPA.  Lives in `ui-admin` directory.  Serves on localhost:3000 in development
+
+#### Participant
+##### Participant API
+   The Participant API server serves requests from the Participant UI. It is built on top of the services in both core and populate.
+   In development, it serves at localhost:8081.  Lives in `api-participant` directory
+##### Study Manager UI
+   Participant UI is a create-react-app SPA.  Lives in `ui-participant` directory.  Serves on localhost:3001 in development
+   
 
 
 ## Local development
