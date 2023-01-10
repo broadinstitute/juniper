@@ -2,6 +2,7 @@ package bio.terra.pearl.core.model.survey;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import java.util.UUID;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,4 +25,6 @@ public class PreregistrationResponse extends BaseEntity {
     private UUID surveyId;
     private UUID studyEnvironmentId;
     private String fullData;
+    @Builder.Default
+    private boolean qualified = false; // whether or not the responses meet the criteria for eligibility.
 }

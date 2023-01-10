@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.study;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentConsentDao;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentSurveyDao;
+import bio.terra.pearl.core.dao.survey.PreregistrationResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -21,18 +22,21 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     private StudyEnvironmentConfigService studyEnvironmentConfigService;
     private EnrolleeService enrolleeService;
     private StudyEnvironmentConsentDao studyEnvironmentConsentDao;
+    private PreregistrationResponseDao preregistrationResponseDao;
 
 
     public StudyEnvironmentService(StudyEnvironmentDao studyEnvironmentDao,
                                    StudyEnvironmentSurveyDao studyEnvironmentSurveyDao,
                                    StudyEnvironmentConfigService studyEnvironmentConfigService,
                                    EnrolleeService enrolleeService,
-                                   StudyEnvironmentConsentDao studyEnvironmentConsentDao) {
+                                   StudyEnvironmentConsentDao studyEnvironmentConsentDao,
+                                   PreregistrationResponseDao preregistrationResponseDao) {
         super(studyEnvironmentDao);
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
         this.studyEnvironmentConfigService =  studyEnvironmentConfigService;
         this.enrolleeService = enrolleeService;
         this.studyEnvironmentConsentDao = studyEnvironmentConsentDao;
+        this.preregistrationResponseDao = preregistrationResponseDao;
     }
 
     public Set<StudyEnvironment> findByStudy(UUID studyId) {
@@ -75,6 +79,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         enrolleeService.deleteByStudyEnvironmentId(studyEnv.getId(), cascade);
         studyEnvironmentSurveyDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         studyEnvironmentConsentDao.deleteByStudyEnvironmentId(studyEnvironmentId);
+        preregistrationResponseDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         dao.delete(studyEnvironmentId);
         if (studyEnv.getStudyEnvironmentConfigId() != null) {
             studyEnvironmentConfigService.delete(studyEnv.getStudyEnvironmentConfigId());

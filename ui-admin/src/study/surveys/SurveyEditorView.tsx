@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { VersionedForm } from 'api/api'
@@ -21,16 +21,16 @@ export default function SurveyEditorView({
   const [isDirty, setIsDirty] = useState(false)
   const [showVersionSelector, setShowVersionSelector] = useState(false)
 
+  /** indicate the survey has been modified */
+  const handleSurveyModification = useCallback(() => {
+    //setIsDirty(true)
+  }, [])
+
   const { surveyJSCreator } = useSurveyJSCreator(currentForm, handleSurveyModification)
   if (surveyJSCreator) {
     surveyJSCreator.readOnly = readOnly
   }
-  /** indicate the survey has been modified */
-  function handleSurveyModification() {
-    if (!isDirty) {
-      setIsDirty(true)
-    }
-  }
+
 
   /** when save is pressed, call the handling function, and then update the survey with the response */
   async function handleSave() {

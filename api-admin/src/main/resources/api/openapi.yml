@@ -89,15 +89,14 @@ paths:
           content: { application/json: { schema: { type: object }}}
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/surveys/{stableId}/{version}/newVersion:
+  /api/portals/v1/{portalShortcode}/surveys/{stableId}/newVersion:
     post:
       summary: Saves the survey as a new version
       tags: [ survey ]
-      operationId: publish
+      operationId: newVersion
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: stableId, in: path, required: true, schema: { type: string } }
-        - { name: version, in: path, required: true, schema: { type: integer } }
       requestBody:
         required: true
         content: { application/json: { schema: {$ref: '#/components/schemas/VersionedFormDto' } } }
@@ -130,11 +129,10 @@ paths:
     post:
       summary: Saves the consentForm as a new version
       tags: [ consentForm ]
-      operationId: publish
+      operationId: newVersion
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: stableId, in: path, required: true, schema: { type: string } }
-        - { name: version, in: path, required: true, schema: { type: integer } }
       requestBody:
         required: true
         content: { application/json: { schema: { $ref: '#/components/schemas/VersionedFormDto' } } }

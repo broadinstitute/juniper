@@ -18,10 +18,8 @@ function PortalDashboard({ portal }: {portal: Portal}) {
             return <li key={index} className="list-group-item">
               <h6>{portalStudy.study.name}</h6>
               <Link to={`studies/${study.shortcode}`}>Configure content</Link>
-
             </li>
           }
-
           )}
         </ul>
       </div>

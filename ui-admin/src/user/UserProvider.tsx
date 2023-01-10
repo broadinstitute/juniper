@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import Login from '../login/Login'
+import React, { useContext, useEffect, useState } from 'react'
 import LoadingSpinner from '../util/LoadingSpinner'
 import Api, { AdminUser } from 'api/api'
+import { useAuth } from 'react-oidc-context'
 
 export type User = {
     accessToken: string | null,
@@ -22,18 +22,20 @@ export type UserContextT = {
 }
 
 /** current user object context */
-export const UserContext = React.createContext<UserContextT>({
+const UserContext = React.createContext<UserContextT>({
   user: anonymousUser,
   loginUser: () => { throw new Error('context not yet initialized') },
   logoutUser: () =>  { throw new Error('context not yet initialized') }
 })
 const STORAGE_TOKEN_PROP = 'loginToken'
 
+export const useUser = () => useContext(UserContext)
 
 /** Provider for the current logged-in user. */
-export default function UserProvider({  children }: { children: React.ReactNode}) {
+export default function UserProvider({ children }: { children: React.ReactNode }) {
   const [userState, setUserState] = useState<User>(anonymousUser)
   const [isLoading, setIsLoading] = useState(true)
+  const auth = useAuth()
 
   const loginUser = (user: AdminUser) => {
     setUserState({
@@ -52,13 +54,22 @@ export default function UserProvider({  children }: { children: React.ReactNode}
     window.location.href = '/'
   }
 
-  const context: UserContextT = {
+  const userContext: UserContextT = {
     user: userState,
     loginUser,
     logoutUser
   }
 
   useEffect(() => {
+    auth.events.addUserLoaded(user => {
+      console.log(user)
+      const adminUser = {
+        username: user?.profile?.email as string,
+        token: user.id_token as string
+      }
+      loginUser(adminUser)
+    })
+
     const token = localStorage.getItem(STORAGE_TOKEN_PROP)
     if (token) {
       Api.tokenLogin(token).then(user => {
@@ -73,10 +84,9 @@ export default function UserProvider({  children }: { children: React.ReactNode}
     }
   }, [])
   return (
-    <UserContext.Provider value={context}>
+    <UserContext.Provider value={userContext}>
       <LoadingSpinner isLoading={isLoading}>
         { children }
-        { userState.isAnonymous && <Login loginUser={loginUser}/>}
       </LoadingSpinner>
     </UserContext.Provider>
   )

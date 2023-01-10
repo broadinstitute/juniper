@@ -4,7 +4,7 @@ export type NavbarContextT = {
   breadCrumbs: React.ReactNode[],
   sidebarContent: React.ReactNode | null,
   showSidebar: boolean,
-  setShowSidebar: (showSidebar: boolean) => void,
+  setShowSidebar: Dispatch<SetStateAction<boolean>>,
   setSidebarContent: Dispatch<SetStateAction<React.ReactNode>>,
   setBreadCrumbs: Dispatch<SetStateAction<React.ReactNode[]>>
 }

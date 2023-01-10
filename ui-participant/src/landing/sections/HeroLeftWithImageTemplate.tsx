@@ -1,7 +1,8 @@
 import _ from 'lodash'
-import React from 'react'
-import { ButtonConfig } from 'api/api'
+import React, { CSSProperties } from 'react'
+import { ButtonConfig, getImageUrl } from 'api/api'
 import PearlImage from '../../util/PearlImage'
+import ConfiguredButton from './ConfiguredButton'
 
 type Logo = {
   imageShortcode: string,
@@ -15,18 +16,22 @@ type HeroLeftWithImageTemplateProps = {
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   title?: string, // large heading text
   imageShortcode?: string, // image
+  backgroundImageShortcode?: string // background image
   logos?: Logo[]
 }
 
 /**
  * Template for a hero with text content on the left and an image on the right.
- * TODO -- implement images
  */
 function HeroLeftWithImageTemplate({
-  config: { background, blurb, buttons, imageShortcode, logos, title }
+  config: { background, blurb, buttons, imageShortcode, backgroundImageShortcode, logos, title }
 }: {config: HeroLeftWithImageTemplateProps}) {
+  const styleProps: CSSProperties = { background }
+  if (backgroundImageShortcode) {
+    styleProps.backgroundImage = `url('${getImageUrl(backgroundImageShortcode)}')`
+  }
   return <div className="row flex-lg-row-reverse"
-    style={{ background }}>
+    style={styleProps}>
     <div className="col-10 col-sm-8 col-lg-6 p-0">
       <PearlImage imageShortcode={imageShortcode} alt={''}
         className={'d-block mx-lg-auto img-fluid p-0'}/>
@@ -40,9 +45,9 @@ function HeroLeftWithImageTemplate({
       </p>
       <div className="d-grid gap-2 d-md-flex justify-content-md-start">
         {
-          _.map(buttons, ({ text, href }) => {
-            return <a key={href} href={href} role={'button'} className="btn btn-primary btn-lg px-4 me-md-2">{text}</a>
-          })
+          _.map(buttons, (buttonConfig, i) =>
+            <ConfiguredButton key={i} config={buttonConfig} className="btn btn-primary btn-lg px-4 me-md-2"/>
+          )
         }
       </div>
       <div className="d-flex flex-wrap align-items-center justify-content-between">
