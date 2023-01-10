@@ -49,6 +49,12 @@ public class PreregistrationController implements PreregistrationApi {
     }
   }
 
+  /**
+   * Confirms that a given preRegResponseId is valid to be used for a reigstration. This is
+   * necessary for cases where the UI caches the registration ID across page refreshes, to ensure
+   * the participant won't complete registration only to find out the linked preregistration was not
+   * valid.
+   */
   @Override
   public ResponseEntity<Object> confirm(
       String portalShortcode, String envName, String studyShortcode, UUID preRegResponseId) {

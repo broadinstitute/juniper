@@ -31,11 +31,11 @@ public class ConsentFormController implements ConsentFormApi {
   }
 
   @Override
-  public ResponseEntity<VersionedFormDto> publish(
-      String portalShortcode, String stableId, Integer version, VersionedFormDto body) {
+  public ResponseEntity<VersionedFormDto> newVersion(
+      String portalShortcode, String stableId, VersionedFormDto body) {
     AdminUser adminUser = requestService.getFromRequest(request);
     Portal portal = requestService.authUserToPortal(adminUser, portalShortcode);
-    if (!stableId.equals(body.getStableId()) || !body.getVersion().equals(version)) {
+    if (!stableId.equals(body.getStableId())) {
       throw new IllegalArgumentException("form parameters don't match");
     }
     ConsentForm consentForm = objectMapper.convertValue(body, ConsentForm.class);

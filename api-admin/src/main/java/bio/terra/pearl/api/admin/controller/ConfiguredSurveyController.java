@@ -18,17 +18,17 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
   private RequestUtilService requestService;
   private HttpServletRequest request;
   private ObjectMapper objectMapper;
-  private StudyEnvironmentSurveyService sesService;
+  private StudyEnvironmentSurveyService studyEnvSurveyService;
 
   public ConfiguredSurveyController(
       RequestUtilService requestService,
       HttpServletRequest request,
       ObjectMapper objectMapper,
-      StudyEnvironmentSurveyService sesService) {
+      StudyEnvironmentSurveyService studyEnvSurveyService) {
     this.requestService = requestService;
     this.request = request;
     this.objectMapper = objectMapper;
-    this.sesService = sesService;
+    this.studyEnvSurveyService = studyEnvSurveyService;
   }
 
   @Override
@@ -43,9 +43,9 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
 
     StudyEnvironmentSurvey configuredSurvey =
         objectMapper.convertValue(body, StudyEnvironmentSurvey.class);
-    StudyEnvironmentSurvey existing = sesService.find(configuredSurvey.getId()).get();
+    StudyEnvironmentSurvey existing = studyEnvSurveyService.find(configuredSurvey.getId()).get();
     BeanUtils.copyProperties(body, existing);
-    StudyEnvironmentSurvey savedSes = sesService.update(adminUser, existing);
+    StudyEnvironmentSurvey savedSes = studyEnvSurveyService.update(adminUser, existing);
     return ResponseEntity.ok(objectMapper.convertValue(savedSes, ConfiguredSurveyDto.class));
   }
 }

@@ -18,17 +18,17 @@ public class ConfiguredConsentController implements ConfiguredConsentApi {
   private RequestUtilService requestService;
   private HttpServletRequest request;
   private ObjectMapper objectMapper;
-  private StudyEnvironmentConsentService sesService;
+  private StudyEnvironmentConsentService studyEnvConsentService;
 
   public ConfiguredConsentController(
       RequestUtilService requestService,
       HttpServletRequest request,
       ObjectMapper objectMapper,
-      StudyEnvironmentConsentService sesService) {
+      StudyEnvironmentConsentService studyEnvConsentService) {
     this.requestService = requestService;
     this.request = request;
     this.objectMapper = objectMapper;
-    this.sesService = sesService;
+    this.studyEnvConsentService = studyEnvConsentService;
   }
 
   @Override
@@ -43,9 +43,9 @@ public class ConfiguredConsentController implements ConfiguredConsentApi {
 
     StudyEnvironmentConsent configuredSurvey =
         objectMapper.convertValue(body, StudyEnvironmentConsent.class);
-    StudyEnvironmentConsent existing = sesService.find(configuredSurvey.getId()).get();
+    StudyEnvironmentConsent existing = studyEnvConsentService.find(configuredSurvey.getId()).get();
     BeanUtils.copyProperties(body, existing);
-    StudyEnvironmentConsent savedSes = sesService.update(adminUser, existing);
-    return ResponseEntity.ok(objectMapper.convertValue(savedSes, ConfiguredConsentDto.class));
+    StudyEnvironmentConsent savedConsent = studyEnvConsentService.update(adminUser, existing);
+    return ResponseEntity.ok(objectMapper.convertValue(savedConsent, ConfiguredConsentDto.class));
   }
 }

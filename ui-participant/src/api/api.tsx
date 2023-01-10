@@ -94,7 +94,12 @@ export type PreregistrationResponse = {
 }
 
 
-export type ButtonConfig = { text: string, href: string, type: string, studyShortcode: string }
+export type ButtonConfig = {
+  text: string,
+  href: string,
+  type: string, // for buttons that aren't just hrefs, a 'type' can be specified.  Currently "join" is the only type
+  studyShortcode: string
+}
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export type SectionConfig = { [index: string]: any }
@@ -136,8 +141,10 @@ export default {
 
   /** submit preregistration survey data */
   async completePreReg({ portalShortcode, studyShortcode, envName, surveyStableId, surveyVersion, preRegResponse }:
-                         {portalShortcode: string, studyShortcode: string, envName: string, surveyStableId: string,
-                           surveyVersion: number, preRegResponse: DenormalizedPreRegResponse}):
+                         {
+                           portalShortcode: string, studyShortcode: string, envName: string, surveyStableId: string,
+                           surveyVersion: number, preRegResponse: DenormalizedPreRegResponse
+                         }):
     Promise<PreregistrationResponse> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/studies/${studyShortcode}`
       + `/preReg/${surveyStableId}/${surveyVersion}`
@@ -165,8 +172,10 @@ export default {
 
   /** submits registration data for a particular study, from an anonymous user */
   async registerForStudy({ portalShortcode, studyShortcode, envName, preRegId, fullData }:
-                   {portalShortcode: string, studyShortcode: string, envName: string,
-                     preRegId: string, fullData: object}): Promise<object> {
+                           {
+                             portalShortcode: string, studyShortcode: string, envName: string,
+                             preRegId: string, fullData: object
+                           }): Promise<object> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/studies/${studyShortcode}`
       + `/preReg/${preRegId}/register`
     const response = await fetch(url, {
@@ -199,7 +208,8 @@ export function getEnvSpec(): EnvSpec {
 
 /** parses shortcode and environment from hostname */
 function readEnvFromHostname(hostname: string): EnvSpec {
-  let shortname; let envName = ''
+  let shortname
+  let envName = ''
   const splitHostname = hostname.split('.')
   if (Object.keys(ALLOWED_ENV_NAMES).includes(splitHostname[0])) {
     envName = ALLOWED_ENV_NAMES[splitHostname[0]]
