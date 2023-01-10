@@ -1,15 +1,15 @@
 import React from 'react'
-import Api from 'api/api'
-import { DenormalizedPreRegResponse, generateDenormalizedData, SourceType, useSurveyJSModel } from 'util/surveyJsUtils'
-import { useRegistrationOutlet } from './RegistrationOutlet'
+import Api, {Survey} from 'api/api'
+import {DenormalizedPreRegResponse, generateDenormalizedData, SourceType, useSurveyJSModel} from 'util/surveyJsUtils'
+import {useRegistrationOutlet} from './PortalRegistrationOutlet'
 
 /** Renders a preregistration form, and handles submitting the user-inputted response */
 export default function PreRegistrationView() {
-  const { portalShortcode, studyShortcode, studyEnv, updatePreRegResponseId } = useRegistrationOutlet()
-  const survey = studyEnv.preRegSurvey
+  const {studyShortcode, preRegSurvey, preRegResponseId, updatePreRegResponseId} = useRegistrationOutlet()
+  const survey = preRegSurvey as Survey
   // for now, we assume all pre-screeners are a single page
-  const pager = { pageNumber: 0, updatePageNumber: () => 0 }
-  const { surveyModel, refreshSurvey, SurveyComponent } =
+  const pager = {pageNumber: 0, updatePageNumber: () => 0}
+  const {surveyModel, refreshSurvey, SurveyComponent} =
     useSurveyJSModel(survey, null, handleComplete, pager)
 
   /** submit the form */
@@ -22,10 +22,8 @@ export default function PreRegistrationView() {
       sourceShortcode: 'ANON', sourceType: SourceType.ANON
     })
     // for now, we assume the survey is constructed so that it cannot be submitted with invalid/incomplete answers
-    const preRegResponse = { ...denormedResponse, qualified: true } as DenormalizedPreRegResponse
+    const preRegResponse = {...denormedResponse, qualified: true} as DenormalizedPreRegResponse
     Api.completePreReg({
-      portalShortcode,
-      envName: studyEnv.environmentName,
       studyShortcode,
       surveyStableId: survey.stableId,
       surveyVersion: survey.version,
@@ -42,6 +40,6 @@ export default function PreRegistrationView() {
   }
 
   return <div>
-    { SurveyComponent }
+    {SurveyComponent}
   </div>
 }

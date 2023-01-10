@@ -1,31 +1,21 @@
-import Api, { Portal, StudyEnvironment } from '../../api/api'
-import { Outlet, useNavigate, useOutletContext, useParams } from 'react-router-dom'
-import React, { useEffect, useState } from 'react'
+import Api, {Portal} from '../../api/api'
+import {Outlet, useNavigate, useParams} from 'react-router-dom'
+import React, {useEffect, useState} from 'react'
 
 /** store the preregistration response id in local storage so a page refresh does not lose their progress.
  * The user isn't signed in yet (since they don't have an account), so local storage is the best way to keep this. */
-const PREREG_ID_STORAGE_KEY = 'preRegResponseId'
-
-export type RegistrationContextT = {
-  studyEnv: StudyEnvironment,
-  studyShortcode: string,
-  portalShortcode: string,
-  preRegResponseId: string | null,
-  updatePreRegResponseId: (newId: string | null) => void
-}
-/** convenience function for using the outlet context */
-export function useRegistrationOutlet() {
-  return useOutletContext<RegistrationContextT>()
-}
+const PREREG_ID_STORAGE_KEY = 'portalPreRegResponseId'
 
 type StudyEnvironmentParams = {
-  studyShortcode: string,
+  studyShortcode: string
+
 }
 
-/** handles selecting/loading the correct study environment, and managing the preregistration response id.
+/**
+ * handles selecting/loading the correct study environment, and managing the preregistration response id.
  * If a valid preregId exists, this will redirect to the registration page.  If not, it will route to
  * the prereg page */
-export default function RegistrationOutlet({ portal }: {portal: Portal}) {
+export default function StudyRegistrationOutlet({portal}: { portal: Portal }) {
   const [preRegResponseId, setPreRegResponseId] = useState<string | null>(localStorage.getItem(PREREG_ID_STORAGE_KEY))
   const params = useParams<StudyEnvironmentParams>()
   const navigate = useNavigate()
@@ -37,7 +27,7 @@ export default function RegistrationOutlet({ portal }: {portal: Portal}) {
       localStorage.removeItem(PREREG_ID_STORAGE_KEY)
     } else {
       localStorage.setItem(PREREG_ID_STORAGE_KEY, preRegId)
-      navigate('register', { replace: true })
+      navigate('register', {replace: true})
     }
     setPreRegResponseId(preRegId)
   }
@@ -58,16 +48,15 @@ export default function RegistrationOutlet({ portal }: {portal: Portal}) {
 
   useEffect(() => {
     if (preRegResponseId) {
-      Api.confirmPreReg(portal.shortcode, studyEnv.studyShortcode, studyEnv.environmentName,
-        preRegResponseId).then(() => {
+      Api.confirmStudyPreReg(preRegResponseId, studyEnv.studyShortcode).then(() => {
         //this is a valid pre-reg, redirect to the registration page
-        navigate('register', { replace: true })
+        navigate('register', {replace: true})
       }).catch(() => {
         updatePreRegResponseId(null)
-        navigate('preReg', { replace: true })
+        navigate('preReg', {replace: true})
       })
     } else {
-      navigate('preReg', { replace: true })
+      navigate('preReg', {replace: true})
     }
   }, [])
 
