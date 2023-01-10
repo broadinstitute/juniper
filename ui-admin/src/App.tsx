@@ -1,49 +1,92 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import 'react-notifications-component/dist/theme.css'
+import 'styles/notifications.css'
+import 'survey-core/defaultV2.min.css'
+import 'survey-creator-core/survey-creator-core.min.css'
 
-import LandingPage from 'landing/LandingPage'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { usePortalEnv } from 'providers/PortalProvider'
-import { NavbarItem } from 'api/api'
-import HtmlPageView from './landing/sections/HtmlPageView'
-import PreRegistration from './landing/registration/Preregistration'
-import Registration from './landing/registration/Registration'
-import RegistrationOutlet from './landing/registration/RegistrationOutlet'
+import './App.css'
+import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
+import { ReactNotifications } from 'react-notifications-component'
 
-/**
- * root app -- handles dynamically creating all the routes based on the siteContent
- */
+import { RedirectFromOAuth } from './login/RedirectFromOAuth'
+import { ProtectedRoute } from './login/ProtectedRoute'
+import NavbarProvider, { NavbarContext } from 'navbar/NavbarProvider'
+import AdminNavbar from 'navbar/AdminNavbar'
+import PortalList from 'portal/PortalList'
+import PortalProvider from 'portal/PortalProvider'
+import PortalDashboard from 'portal/PortalDashboard'
+import StudyDashboard from 'study/StudyDashboard'
+
+import RoutableStudyProvider from 'study/StudyProvider'
+import StudyEnvironmentProvider from 'study/StudyEnvironmentProvider'
+import StudyContent from 'study/StudyContent'
+import SurveyView from 'study/surveys/SurveyView'
+import PreRegView from './study/surveys/PreRegView'
+import ConsentView from './study/surveys/ConsentView'
+import { getOidcConfig } from './authConfig'
+import { AuthProvider } from 'react-oidc-context'
+import UserProvider from './user/UserProvider'
+
+
+/** container for the app including the router  */
 function App() {
-  const { localContent, portal } = usePortalEnv()
-
-  let landingRoutes: JSX.Element[] = []
-  if (localContent.navbarItems) {
-    landingRoutes = localContent.navbarItems
-      .filter((navItem: NavbarItem) => navItem.itemType === 'INTERNAL')
-      .map((navItem: NavbarItem, index: number) => <Route key={index} path={navItem.htmlPage.path}
-        element={<HtmlPageView page={navItem.htmlPage}/>}/>)
-    landingRoutes.push(
-      <Route index key="main" element={<HtmlPageView page={localContent.landingPage}/>}/>
-    )
-  }
-  landingRoutes.push(<Route key="registration" path="study/:studyShortcode/join"
-    element={<RegistrationOutlet portal={portal}/>}>
-    <Route path="preReg" element={<PreRegistration/>}/>
-    <Route path="register" element={<Registration/>}/>
-  </Route>)
-
   return (
-    <div className="App d-flex flex-column min-vh-100 bg-white">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LandingPage/>}>
-            {landingRoutes}
-          </Route>
-          <Route path="*" element={<div>unmatched route</div>}/>
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <AuthProvider {...getOidcConfig()}>
+      <UserProvider>
+        <div className="App">
+          <ReactNotifications />
+          <NavbarProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route element={<ProtectedRoute/>}>
+                  <Route path="/" element={<PageFrame/>}>
+                    <Route path=":portalShortcode" element={<PortalProvider/>}>
+                      <Route path="studies">
+                        <Route path=":studyShortcode" element={<RoutableStudyProvider/>}>
+                          <Route path="env/:studyEnv" element={<StudyEnvironmentProvider/>}>
+                            <Route path="surveys">
+                              <Route path=":surveyStableId">
+                                <Route index element={<SurveyView/>}/>
+                              </Route>
+                              <Route path="*" element={<div>Unknown survey page</div>}/>
+                            </Route>
+                            <Route path="consentForms">
+                              <Route path=":consentStableId">
+                                <Route index element={<ConsentView/>}/>
+                              </Route>
+                              <Route path="*" element={<div>Unknown consent page</div>}/>
+                            </Route>
+                            <Route path="preReg">
+                              <Route path=":surveyStableId" element={<PreRegView/>}/>
+                              <Route path="*" element={<div>Unknown prereg page</div>}/>
+                            </Route>
+                            <Route index element={<StudyContent/>}/>
+                          </Route>
+                          <Route index element={<StudyDashboard/>}/>
+                        </Route>
+                      </Route>
+                      <Route index element={<PortalDashboard/>}/>
+                    </Route>
+                    <Route index element={<PortalList/>}/>
+                  </Route>
+                  <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
+                  <Route path="*" element={<div>Unknown page</div>}/>
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          </NavbarProvider>
+        </div>
+      </UserProvider>
+    </AuthProvider>
   )
 }
 
-
+/** Renders the navbar and footer for the page */
+function PageFrame() {
+  const navContext = useContext(NavbarContext)
+  return <div>
+    <AdminNavbar {...navContext}/>
+    <Outlet/>
+  </div>
+}
 export default App
