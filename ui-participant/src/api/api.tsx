@@ -1,4 +1,4 @@
-import { DenormalizedPreRegResponse } from '../util/surveyJsUtils'
+import {DenormalizedPreRegResponse} from '../util/surveyJsUtils'
 
 export type PortalEnvironmentParams = {
   portalShortcode: string,
@@ -12,7 +12,8 @@ export type Portal = {
 }
 
 export type PortalEnvironment = PortalEnvironmentParams & {
-  siteContent: SiteContent
+  siteContent: SiteContent,
+  preRegSurvey: Survey
 }
 
 export type PortalStudy = {
@@ -134,20 +135,39 @@ export default {
     return Promise.reject(response)
   },
 
-  async getPortal(portalShortcode: string, envName: string): Promise<Portal> {
-    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}`, this.getGetInit())
+  async getPortal(): Promise<Portal> {
+    const {shortcode, envName} = getEnvSpec()
+    const response = await fetch(`${API_ROOT}/portals/v1/${shortcode}/env/${envName}`, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
-  /** submit preregistration survey data */
-  async completePreReg({ portalShortcode, studyShortcode, envName, surveyStableId, surveyVersion, preRegResponse }:
-                         {
-                           portalShortcode: string, studyShortcode: string, envName: string, surveyStableId: string,
-                           surveyVersion: number, preRegResponse: DenormalizedPreRegResponse
-                         }):
+  /** submit study preregistration survey data */
+  async completeStudyPreReg({studyShortcode, surveyStableId, surveyVersion, preRegResponse}:
+                              {
+                                studyShortcode: string, surveyStableId: string,
+                                surveyVersion: number, preRegResponse: DenormalizedPreRegResponse
+                              }):
     Promise<PreregistrationResponse> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/studies/${studyShortcode}`
+    const {shortcode, envName} = getEnvSpec()
+    const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/studies/${studyShortcode}`
       + `/preReg/${surveyStableId}/${surveyVersion}`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(preRegResponse)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  /** submit study preregistration survey data */
+  async completePortalPreReg({surveyStableId, surveyVersion, preRegResponse}:
+                               {
+                                 surveyStableId: string, surveyVersion: number,
+                                 preRegResponse: DenormalizedPreRegResponse
+                               }):
+    Promise<PreregistrationResponse> {
+    const {shortcode, envName} = getEnvSpec()
+    const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/preReg/${surveyStableId}/${surveyVersion}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
@@ -160,28 +180,44 @@ export default {
    * confirms that a client-side saved preregistration id is still valid.  For cases where the user refreshes the
    * page while on registration
    */
-  async confirmPreReg(portalShortcode: string, studyShortcode: string, envName: string, preRegId: string):
+  async confirmStudyPreReg(preRegId: string, studyShortcode: string):
     Promise<void> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/studies/${studyShortcode}`
+    const {shortcode, envName} = getEnvSpec()
+    const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/studies/${studyShortcode}`
       + `/preReg/${preRegId}/confirm`
-    const response = await fetch(url, { headers: this.getInitHeaders() })
+    const response = await fetch(url, {headers: this.getInitHeaders()})
+    if (!response.ok) {
+      return Promise.reject(response)
+    }
+  },
+
+  /**
+   * confirms that a client-side saved preregistration id is still valid.  For cases where the user refreshes the
+   * page while on registration
+   */
+  async confirmPortalPreReg(preRegId: string):
+    Promise<void> {
+    const {shortcode, envName} = getEnvSpec()
+    const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}`
+      + `/preReg/${preRegId}/confirm`
+    const response = await fetch(url, {headers: this.getInitHeaders()})
     if (!response.ok) {
       return Promise.reject(response)
     }
   },
 
   /** submits registration data for a particular study, from an anonymous user */
-  async registerForStudy({ portalShortcode, studyShortcode, envName, preRegId, fullData }:
+  async registerForStudy({studyShortcode, preRegId, fullData}:
                            {
-                             portalShortcode: string, studyShortcode: string, envName: string,
-                             preRegId: string, fullData: object
+                             studyShortcode: string, preRegId: string, fullData: object
                            }): Promise<object> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/studies/${studyShortcode}`
+    const {shortcode, envName} = getEnvSpec()
+    const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/studies/${studyShortcode}`
       + `/preReg/${preRegId}/register`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
-      body: JSON.stringify({ fullData })
+      body: JSON.stringify({fullData})
     })
     return await this.processJsonResponse(response)
   }
@@ -192,7 +228,7 @@ export default {
  * Returns a url suitable for inclusion in an <img> tag based on a image shortcode
  */
 export function getImageUrl(imageShortcode: string) {
-  const { shortcode, envName } = getEnvSpec()
+  const {shortcode, envName} = getEnvSpec()
   return `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/siteImages/${imageShortcode}`
 }
 
@@ -218,7 +254,7 @@ function readEnvFromHostname(hostname: string): EnvSpec {
     envName = 'LIVE'
     shortname = splitHostname[0]
   }
-  return { envName, shortcode: shortname }
+  return {envName, shortcode: shortname}
 }
 
 const ALLOWED_ENV_NAMES: Record<string, string> = {
