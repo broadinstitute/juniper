@@ -1,6 +1,6 @@
 package bio.terra.pearl.core.dao.study;
 
-import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -11,7 +11,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StudyEnvironmentSurveyDao extends BaseJdbiDao<StudyEnvironmentSurvey> {
+public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironmentSurvey> {
     private SurveyDao surveyDao;
     public StudyEnvironmentSurveyDao(Jdbi jdbi, SurveyDao surveyDao) {
         super(jdbi);

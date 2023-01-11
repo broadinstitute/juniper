@@ -27,6 +27,15 @@ public class SurveyDao extends BaseJdbiDao<Survey> {
         return findAllByPropertyCollection("id", ids);
     }
 
+    public int getNextVersion(String stableId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select max(version) from " + tableName + " where stable_id = :stableId")
+                        .bind("stableId", stableId)
+                        .mapTo(int.class)
+                        .one()
+        ) + 1;
+    }
+
     @Override
     protected Class<Survey> getClazz() {
         return Survey.class;

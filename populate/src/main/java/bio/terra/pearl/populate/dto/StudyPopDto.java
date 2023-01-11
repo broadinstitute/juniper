@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @Getter @Setter @NoArgsConstructor
 public class StudyPopDto extends Study {
     private List<String> surveyFiles;
+    private List<String> consentFormFiles;
     private List<StudyEnvironmentPopDto> studyEnvironmentDtos = new ArrayList<>();
 
     /**

@@ -49,4 +49,11 @@ public class SiteContentService extends CrudService<SiteContent, SiteContentDao>
         siteImageService.deleteBySiteContent(siteContentId);
         dao.delete(siteContentId);
     }
+
+    public void deleteByPortalId(UUID portalId) {
+        List<SiteContent> siteContents = dao.findByPortalId(portalId);
+        for (SiteContent siteContent : siteContents) {
+            delete(siteContent.getId(), CascadeProperty.EMPTY_SET);
+        }
+    }
 }

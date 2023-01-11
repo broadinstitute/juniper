@@ -48,14 +48,17 @@ public class PortalEnvironmentDao extends BaseMutableJdbiDao<PortalEnvironment> 
         );
     }
 
-    public Optional<PortalEnvironment> loadOneWithSiteContent(String shortcode, EnvironmentName environmentName,
-                                                              String language) {
+    public Optional<PortalEnvironment> loadWithSiteContent(String shortcode,
+                                                                      EnvironmentName environmentName,
+                                                                      String language) {
         Optional<PortalEnvironment> portalEnvOpt = findOne(shortcode, environmentName);
         portalEnvOpt.ifPresent(portalEnv -> {
             portalEnv.setPortalEnvironmentConfig(
                     portalEnvironmentConfigDao.find(portalEnv.getPortalEnvironmentConfigId()).orElse(null)
             );
-            portalEnv.setSiteContent(siteContentDao.findOneFull(portalEnv.getSiteContentId(), language).orElse(null));
+            portalEnv.setSiteContent(siteContentDao.findOneFull(portalEnv.getSiteContentId(), language)
+                    .orElse(null));
+
         });
         return portalEnvOpt;
     }

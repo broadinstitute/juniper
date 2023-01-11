@@ -38,6 +38,10 @@ public class SiteContentDao extends BaseJdbiDao<SiteContent> {
         return findByTwoProperties("stable_id", stableId, "version", version);
     }
 
+    public List<SiteContent> findByPortalId(UUID portalId) {
+        return findAllByProperty("portal_id", portalId);
+    }
+
     /**
      * returns a fully hydrated SiteContent with all kids attached of the specified language
      * images are excluded

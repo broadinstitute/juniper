@@ -7,7 +7,6 @@ import java.beans.Introspector;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import org.apache.commons.lang3.StringUtils;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.RowMapper;
@@ -21,7 +20,6 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     protected List<String> insertFields;
     protected List<String> insertFieldSymbols;
     protected List<String> insertColumns;
-    protected String updateFieldString;
 
     protected List<String> getQueryFields;
     protected List<String> getQueryFieldSymbols;
@@ -87,13 +85,6 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
                 .collect(Collectors.toList());
     }
 
-    protected String generateUpdateFieldString(List<String> insertFieldSymbols, List<String> insertColumns) {
-        return IntStream
-                .range(0, insertFieldSymbols.size())
-                .mapToObj(i -> insertColumns.get(i) + " = " + insertFieldSymbols.get(i))
-                .collect(Collectors.joining(", "));
-    }
-
     protected String getTableName() {
         return toSnakeCase(getClazz().getSimpleName());
     };
@@ -107,7 +98,6 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         getQueryFields = generateGetFields(clazz);
         getQueryFieldSymbols = getQueryFields.stream().map(field -> ":" + field).collect(Collectors.toList());
         getQueryColumns = generateGetColumns(getQueryFields);
-        updateFieldString = generateUpdateFieldString(insertFieldSymbols, insertColumns);
         tableName = getTableName();
         initializeRowMapper(jdbi);
     }

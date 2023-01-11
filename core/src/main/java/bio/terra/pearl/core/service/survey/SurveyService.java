@@ -1,15 +1,16 @@
 package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.dao.survey.SurveyDao;
+import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CrudService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SurveyService extends CrudService<Survey, SurveyDao> {
@@ -30,4 +31,16 @@ public class SurveyService extends CrudService<Survey, SurveyDao> {
         }
     }
 
+    /** create a new version of the given survey with updated content.  the version will be the next
+     * available number for the given stableId */
+    @Transactional
+    public Survey createNewVersion(AdminUser user, UUID portalId, Survey survey) {
+        // TODO check user permissions
+        Survey newSurvey = new Survey();
+        BeanUtils.copyProperties(survey, newSurvey, "id", "version", "createdAt", "lastUpdatedAt");
+        newSurvey.setPortalId(portalId);
+        int nextVersion = dao.getNextVersion(survey.getStableId());
+        newSurvey.setVersion(nextVersion);
+        return create(newSurvey);
+    }
 }

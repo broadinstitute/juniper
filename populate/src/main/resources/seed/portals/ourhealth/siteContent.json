@@ -14,7 +14,10 @@
           "imageShortcode": "oh_portalContent_1_banner40238bbb.png",
           "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
           "buttons": [
-            {"text": "Join OurHealth", "href": "/join"}
+            {"text": "Join OurHealth",
+              "type": "join",
+              "studyShortcode": "ourheart"
+            }
           ],
           "logos": [
             {"imageShortcode": "ourHealthContent_1_BI.png", "alt": "Broad Institute"},

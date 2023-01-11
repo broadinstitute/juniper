@@ -70,3 +70,15 @@ a {
   width: 100%;
 }
 
+.svc-creator__banner {
+  display: none !important;
+}
+
+.svc-json-editor-tab__content {
+  min-height: 80vh;
+}
+.svc-tab-designer_content {
+  max-height: 90vh;
+}
+
+

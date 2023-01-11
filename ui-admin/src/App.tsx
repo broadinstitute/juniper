@@ -16,12 +16,17 @@ import PortalList from 'portal/PortalList'
 import PortalProvider from 'portal/PortalProvider'
 import PortalDashboard from 'portal/PortalDashboard'
 import StudyDashboard from 'study/StudyDashboard'
-import RoutableStudyProvider from './study/StudyProvider'
-import StudyEnvironmentProvider from './study/StudyEnvironmentProvider'
-import StudyContent from './study/StudyContent'
+
+import RoutableStudyProvider from 'study/StudyProvider'
+import StudyEnvironmentProvider from 'study/StudyEnvironmentProvider'
+import StudyContent from 'study/StudyContent'
+import SurveyView from 'study/surveys/SurveyView'
+import PreRegView from './study/surveys/PreRegView'
+import ConsentView from './study/surveys/ConsentView'
 import { getOidcConfig } from './authConfig'
 import { AuthProvider } from 'react-oidc-context'
 import UserProvider from './user/UserProvider'
+
 
 /** container for the app including the router  */
 function App() {
@@ -29,7 +34,7 @@ function App() {
     <AuthProvider {...getOidcConfig()}>
       <UserProvider>
         <div className="App">
-          <ReactNotifications/>
+          <ReactNotifications />
           <NavbarProvider>
             <BrowserRouter>
               <Routes>
@@ -39,20 +44,34 @@ function App() {
                       <Route path="studies">
                         <Route path=":studyShortcode" element={<RoutableStudyProvider/>}>
                           <Route path="env/:studyEnv" element={<StudyEnvironmentProvider/>}>
+                            <Route path="surveys">
+                              <Route path=":surveyStableId">
+                                <Route index element={<SurveyView/>}/>
+                              </Route>
+                              <Route path="*" element={<div>Unknown survey page</div>}/>
+                            </Route>
+                            <Route path="consentForms">
+                              <Route path=":consentStableId">
+                                <Route index element={<ConsentView/>}/>
+                              </Route>
+                              <Route path="*" element={<div>Unknown consent page</div>}/>
+                            </Route>
+                            <Route path="preReg">
+                              <Route path=":surveyStableId" element={<PreRegView/>}/>
+                              <Route path="*" element={<div>Unknown prereg page</div>}/>
+                            </Route>
                             <Route index element={<StudyContent/>}/>
                           </Route>
                           <Route index element={<StudyDashboard/>}/>
-                          <Route path="*" element={<div>Unknown study route</div>}/>
                         </Route>
-                        <Route path="*" element={<div>Unknown studies route</div>}/>
                       </Route>
                       <Route index element={<PortalDashboard/>}/>
                     </Route>
                     <Route index element={<PortalList/>}/>
                   </Route>
+                  <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
+                  <Route path="*" element={<div>Unknown page</div>}/>
                 </Route>
-                <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
-                <Route path="*" element={<div>Unknown page</div>}/>
               </Routes>
             </BrowserRouter>
           </NavbarProvider>

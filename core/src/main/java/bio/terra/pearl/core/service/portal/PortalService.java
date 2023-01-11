@@ -1,11 +1,20 @@
 package bio.terra.pearl.core.service.portal;
 
+import bio.terra.pearl.core.dao.admin.PortalAdminUserDao;
 import bio.terra.pearl.core.dao.portal.PortalDao;
+import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.study.PortalStudy;
+import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.consent.ConsentFormService;
+import bio.terra.pearl.core.service.exception.NotFoundException;
+import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
+import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -22,21 +31,27 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     private PortalStudyService portalStudyService;
     private PortalEnvironmentService portalEnvironmentService;
     private ParticipantUserService participantUserService;
+    private PortalAdminUserDao portalAdminUserDao;
     private StudyService studyService;
-
     private SurveyService surveyService;
+    private ConsentFormService consentFormService;
+    private SiteContentService siteContentService;
 
     public PortalService(PortalDao portalDao, PortalStudyService portalStudyService,
                          StudyService studyService,
                          PortalEnvironmentService portalEnvironmentService,
                          ParticipantUserService participantUserService,
-                         SurveyService surveyService) {
+                         PortalAdminUserDao portalAdminUserDao, SurveyService surveyService,
+                         ConsentFormService consentFormService, SiteContentService siteContentService) {
         super(portalDao);
         this.portalStudyService = portalStudyService;
         this.portalEnvironmentService = portalEnvironmentService;
         this.studyService = studyService;
         this.participantUserService = participantUserService;
+        this.portalAdminUserDao = portalAdminUserDao;
         this.surveyService = surveyService;
+        this.consentFormService = consentFormService;
+        this.siteContentService = siteContentService;
     }
 
     @Transactional
@@ -68,7 +83,8 @@ public class PortalService extends CrudService<Portal, PortalDao> {
             portalEnvironmentService.delete(portalEnvironment.getId(), cascades);
         }
         surveyService.deleteByPortalId(portalId);
-
+        consentFormService.deleteByPortalId(portalId);
+        siteContentService.deleteByPortalId(portalId);
         dao.delete(portalId);
     }
 
@@ -80,13 +96,46 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         return dao.findOneByShortcodeFullLoad(shortcode, language);
     }
 
+    /** loads a portal environment with everything needed to render the participant-facing site */
+    public Optional<Portal> loadWithParticipantSiteContent(String portalShortcode,
+                                                                       EnvironmentName environmentName,
+                                                                       String language) {
+        Optional<Portal> portalOpt = dao.findOneByShortcode(portalShortcode);
+        portalOpt.ifPresent(portal -> {
+            Optional<PortalEnvironment> portalEnv = portalEnvironmentService
+                    .loadWithParticipantSiteContent(portalShortcode, environmentName, language);
+            portal.getPortalEnvironments().add(portalEnv.get());
+            List<Study> studies = studyService.findWithPreregContent(portalShortcode, environmentName);
+            for (Study study : studies) {
+                portal.getPortalStudies().add(
+                        PortalStudy.builder().study(study).build()
+                );
+            }
+        });
+        return portalOpt;
+    }
+
     public List<Portal> findByAdminUserId(UUID userId) {
         return dao.findByAdminUserId(userId);
+    }
+
+    public Portal authUserToPortal(AdminUser user, String portalShortcode) {
+        Optional<Portal> portalOpt = findOneByShortcode(portalShortcode);
+        if (portalOpt.isEmpty()) {
+            throw new NotFoundException("Portal not found: %s".formatted(portalShortcode));
+        }
+        Portal portal = portalOpt.get();
+        if (user.getSuperuser() || portalAdminUserDao.isUserInPortal(user.getId(), portal.getId())) {
+            return portal;
+        }
+        throw new PermissionDeniedException("User %s does not have permissions on portal %s"
+                .formatted(user.getUsername(), portalShortcode));
     }
 
     public enum AllowedCascades implements CascadeProperty {
         PARTICIPANT_USER,
         STUDY,
+        SITE_CONTENT,
         PORTAL_STUDY;
 
     }

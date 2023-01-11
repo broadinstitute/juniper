@@ -25,18 +25,8 @@ public class BaseJdbiDaoTests {
                 fields.containsAll(expectedFields));
     }
 
-    @Test
-    public void testGenerateUpdateFieldString() {
-        SimpleModelDao testDao = new SimpleModelDao(null);
-
-        Assertions.assertEquals("bool_field = :boolField, created_at = :createdAt," +
-                " instant_field = :instantField, int_field = :intField, last_updated_at = :lastUpdatedAt," +
-                " string_field = :stringField, uuid_field = :uuidField",
-                testDao.updateFieldString);
-    }
-
     @Getter @Setter
-    class SimpleModel extends BaseEntity {
+    private class SimpleModel extends BaseEntity {
         private boolean boolField;
         private int intField;
         private String stringField;
@@ -45,7 +35,7 @@ public class BaseJdbiDaoTests {
         private Study relatedStudy;
     }
 
-    class SimpleModelDao extends BaseJdbiDao<SimpleModel> {
+    private class SimpleModelDao extends BaseJdbiDao<SimpleModel> {
         public SimpleModelDao(Jdbi jdbi) {
             super(jdbi);
         }

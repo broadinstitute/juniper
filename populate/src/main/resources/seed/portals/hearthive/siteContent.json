@@ -1,0 +1,54 @@
+{
+  "stableId": "hh_portalContent",
+  "version": 1,
+  "defaultLanguage": "en",
+  "localizedSiteContentDtos": [{
+    "language": "en",
+    "navLogoShortcode": "hh_portalContent_1_hex_round.webp",
+    "landingPage": {
+      "title": "The Heart Hive",
+      "sectionDtos": [{
+        "sectionType": "HERO_LEFT_WITH_IMAGE",
+        "sectionConfigJson": {
+          "title": "Turning today's heart disease into tomorrow's heart health.",
+          "blurb": "Save lives by advancing research.",
+          "imageShortcode": "hh_portalContent_1_participant_smile.webp",
+          "backgroundImageShortcode": "hh_portalContent_1_main_banner.webp",
+          "buttons": [
+            {"text": "Register now",
+              "type": "join"
+            }
+          ],
+          "logos": []
+        }
+      }]
+    },
+    "navbarItemDtos": [{
+      "itemType": "INTERNAL",
+      "label": "Current research",
+      "htmlPageDto": {
+        "path": "research",
+        "title": "Heart Hive -- Current Research",
+        "sectionDtos": [{
+          "sectionType": "HERO_CENTERED",
+          "sectionConfigJson": {
+            "title": "Current research",
+            "blurb": "##### The Heart Hive Cardiomyopathy Study\n[ClinicalTrials.gov Identifier: NCT04612296](https://clinicaltrials.gov/ct2/show/NCT04612296)\n ##### The Heart Hive COVID-19 Study\n[ClinicalTrials.gov Identifier: NCT04468256](https://clinicaltrials.gov/ct2/show/NCT04468256)\n\n##### Other Heart Hive activities:\n\nDCM Medication survey from [Dr Brian Halliday](https://www.imperial.ac.uk/people/b.halliday)"
+          }
+        }]
+      }
+    }]
+  }],
+  "siteImageDtos": [{
+    "uploadFileName": "main_banner.webp",
+    "populateFileName": "images/main_banner.webp"
+  },
+  {
+    "uploadFileName": "participant_smile.webp",
+    "populateFileName": "images/participant_smile.webp"
+  },
+  {
+    "uploadFileName": "HEX_Round.webp",
+    "populateFileName": "images/HEX_round.webp"
+  }]
+}
