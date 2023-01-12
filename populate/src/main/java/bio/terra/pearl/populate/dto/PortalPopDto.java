@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 @Getter @Setter @NoArgsConstructor
 public class PortalPopDto extends Portal {
+    private Set<String> surveyFiles = new HashSet<>(); // surveys that are not specific to a study (e.g. preReg)
     private Set<String> populateStudyFiles = new HashSet<>();
     private List<PortalEnvironmentPopDto> portalEnvironmentDtos;
     /**

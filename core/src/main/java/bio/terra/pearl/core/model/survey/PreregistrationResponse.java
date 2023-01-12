@@ -20,10 +20,11 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 public class PreregistrationResponse extends BaseEntity {
-    private UUID enrolleeId;
+    private UUID portalParticipantUserId;
+    /** if the user was already signed into another portal, we might be able to capture that user id here */
     private UUID creatingParticipantUserId;
     private UUID surveyId;
-    private UUID studyEnvironmentId;
+    private UUID portalEnvironmentId;
     private String fullData;
     @Builder.Default
     private boolean qualified = false; // whether or not the responses meet the criteria for eligibility.

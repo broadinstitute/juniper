@@ -18,7 +18,6 @@ public class PortalParticipantUser extends BaseEntity {
     private UUID participantUserId;
     private PortalEnvironment portalEnvironment;
     private UUID portalEnvironmentId;
-
     private Profile profile;
     private UUID profileId;
 }

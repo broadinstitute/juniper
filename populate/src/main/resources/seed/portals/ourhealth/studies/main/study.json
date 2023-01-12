@@ -17,7 +17,7 @@
         "password": "broad_institute",
         "initialized": true
       },
-      "preRegSurveyDto": {
+      "preEnrollSurveyDto": {
         "stableId": "oh_preregistation",
         "version": 1
       },

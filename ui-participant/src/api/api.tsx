@@ -142,24 +142,6 @@ export default {
   },
 
   /** submit study preregistration survey data */
-  async completeStudyPreReg({studyShortcode, surveyStableId, surveyVersion, preRegResponse}:
-                              {
-                                studyShortcode: string, surveyStableId: string,
-                                surveyVersion: number, preRegResponse: DenormalizedPreRegResponse
-                              }):
-    Promise<PreregistrationResponse> {
-    const {shortcode, envName} = getEnvSpec()
-    const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/studies/${studyShortcode}`
-      + `/preReg/${surveyStableId}/${surveyVersion}`
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: this.getInitHeaders(),
-      body: JSON.stringify(preRegResponse)
-    })
-    return await this.processJsonResponse(response)
-  },
-
-  /** submit study preregistration survey data */
   async completePortalPreReg({surveyStableId, surveyVersion, preRegResponse}:
                                {
                                  surveyStableId: string, surveyVersion: number,
@@ -180,11 +162,11 @@ export default {
    * confirms that a client-side saved preregistration id is still valid.  For cases where the user refreshes the
    * page while on registration
    */
-  async confirmStudyPreReg(preRegId: string, studyShortcode: string):
+  async confirmStudyPreEnroll(preEnroll: string, studyShortcode: string):
     Promise<void> {
     const {shortcode, envName} = getEnvSpec()
     const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/studies/${studyShortcode}`
-      + `/preReg/${preRegId}/confirm`
+      + `/preEnroll/${preEnroll}/confirm`
     const response = await fetch(url, {headers: this.getInitHeaders()})
     if (!response.ok) {
       return Promise.reject(response)
@@ -207,17 +189,16 @@ export default {
   },
 
   /** submits registration data for a particular study, from an anonymous user */
-  async registerForStudy({studyShortcode, preRegId, fullData}:
-                           {
-                             studyShortcode: string, preRegId: string, fullData: object
-                           }): Promise<object> {
+  async register({preRegResponseId, fullData}: { preRegResponseId: string, fullData: object }): Promise<object> {
     const {shortcode, envName} = getEnvSpec()
-    const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/studies/${studyShortcode}`
-      + `/preReg/${preRegId}/register`
+    let url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/register`
+    if (preRegResponseId) {
+      url += `?preRegResponseId=${preRegResponseId}`
+    }
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
-      body: JSON.stringify({fullData})
+      body: JSON.stringify(fullData)
     })
     return await this.processJsonResponse(response)
   }

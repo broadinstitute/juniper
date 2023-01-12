@@ -85,9 +85,9 @@ public class StudyPopulator extends Populator<Study> {
             StudyEnvironmentSurvey configSurvey = surveyPopulator.convertConfiguredSurvey(configSurveyDto, i);
             studyEnv.getConfiguredSurveys().add(configSurvey);
         }
-        if (studyEnv.getPreRegSurveyDto() != null) {
-            Survey preRegSurvey = surveyPopulator.fetchFromPopDto(studyEnv.getPreRegSurveyDto()).get();
-            studyEnv.setPreRegSurveyId(preRegSurvey.getId());
+        if (studyEnv.getPreEnrollSurveyDto() != null) {
+            Survey preEnrollSurvey = surveyPopulator.fetchFromPopDto(studyEnv.getPreEnrollSurveyDto()).get();
+            studyEnv.setPreEnrollSurveyId(preEnrollSurvey.getId());
         }
         for (int i = 0; i < studyEnv.getConfiguredConsentDtos().size(); i++) {
             StudyEnvironmentConsentPopDto configConsentDto = studyEnv.getConfiguredConsentDtos().get(i);

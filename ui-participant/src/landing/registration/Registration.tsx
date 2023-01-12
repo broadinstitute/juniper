@@ -39,14 +39,6 @@ const registrationSurvey = {
           'isRequired': true,
           'inputType': 'email',
           'placeholder': 'name@email.com'
-        },
-        {
-          'type': 'text',
-          'name': 'reg_password',
-          'title': 'Password',
-          'isRequired': true,
-          'inputType': 'password',
-          'placeholder': 'choose a password'
         }
       ]
     }
@@ -66,7 +58,7 @@ const registrationSurveyModel: Survey = {
 
 /** show the participant registration page */
 export default function Registration() {
-  const {studyShortcode, studyEnv, preRegResponseId} = useRegistrationOutlet()
+  const {preRegResponseId} = useRegistrationOutlet()
   // for now, assume registration surveys are a single page
   const pager = {pageNumber: 0, updatePageNumber: () => 0}
   const {surveyModel, refreshSurvey} = useSurveyJSModel(registrationSurveyModel, null, onComplete, pager)
@@ -82,9 +74,8 @@ export default function Registration() {
       sourceShortcode: 'ANON', sourceType: SourceType.ANON
     })
     const resumeData = surveyModel?.data
-    Api.registerForStudy({
-      studyShortcode,
-      preRegId: preRegResponseId as string,
+    Api.register({
+      preRegResponseId: preRegResponseId as string,
       fullData: denormedResponse
     })
       .then(() => {

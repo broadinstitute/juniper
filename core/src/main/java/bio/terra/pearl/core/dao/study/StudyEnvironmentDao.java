@@ -66,8 +66,8 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
         for (StudyEnvironment studyEnv : studyEnvs) {
             studyEnv.setStudyEnvironmentConfig(studyEnvironmentConfigDao
                     .find(studyEnv.getStudyEnvironmentConfigId()).get());
-            if (studyEnv.getPreRegSurveyId() != null) {
-                studyEnv.setPreRegSurvey(surveyDao.find(studyEnv.getPreRegSurveyId()).get());
+            if (studyEnv.getPreEnrollSurveyId() != null) {
+                studyEnv.setPreEnrollSurvey(surveyDao.find(studyEnv.getPreEnrollSurveyId()).get());
             }
         };
         return studyEnvs;

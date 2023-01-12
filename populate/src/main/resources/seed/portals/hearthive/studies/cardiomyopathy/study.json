@@ -2,7 +2,7 @@
   "name": "Cardiomyopathy study",
   "shortcode": "cmyop",
   "surveyFiles": [
-    "surveys/preRegistration.json"
+    "surveys/preEnrollment.json"
   ],
   "consentFormFiles": [],
   "studyEnvironmentDtos": [
@@ -13,6 +13,10 @@
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true
+      },
+      "preEnrollSurveyDto": {
+        "stableId": "hh_cmyop_preEnroll",
+        "version": 1
       }
     },
     {

@@ -7,7 +7,6 @@ import React, {useEffect, useState} from 'react'
 const PREREG_ID_STORAGE_KEY = 'preRegResponseId'
 
 export type RegistrationContextT = {
-  studyShortcode: string | null,
   preRegSurvey: Survey | null,
   preRegResponseId: string | null,
   updatePreRegResponseId: (newId: string | null) => void
