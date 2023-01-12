@@ -1,9 +1,9 @@
-import React, {useState} from 'react'
-import {Survey as SurveyComponent} from 'survey-react-ui'
-import {generateDenormalizedData, SourceType, useSurveyJSModel} from 'util/surveyJsUtils'
-import Api, {Survey} from 'api/api'
+import React, { useState } from 'react'
+import { Survey as SurveyComponent } from 'survey-react-ui'
+import { generateDenormalizedData, SourceType, useSurveyJSModel } from 'util/surveyJsUtils'
+import Api, { Survey } from 'api/api'
 import RegistrationComplete from './RegistrationComplete'
-import {useRegistrationOutlet} from './PortalRegistrationOutlet'
+import { useRegistrationOutlet } from './PortalRegistrationOutlet'
 
 /** This registration survey is a hardcoded temporary survey until we have MS B2C integration. */
 const registrationSurvey = {
@@ -58,10 +58,10 @@ const registrationSurveyModel: Survey = {
 
 /** show the participant registration page */
 export default function Registration() {
-  const {preRegResponseId} = useRegistrationOutlet()
+  const { preRegResponseId } = useRegistrationOutlet()
   // for now, assume registration surveys are a single page
-  const pager = {pageNumber: 0, updatePageNumber: () => 0}
-  const {surveyModel, refreshSurvey} = useSurveyJSModel(registrationSurveyModel, null, onComplete, pager)
+  const pager = { pageNumber: 0, updatePageNumber: () => 0 }
+  const { surveyModel, refreshSurvey } = useSurveyJSModel(registrationSurveyModel, null, onComplete, pager)
   const [isRegistered, setIsRegistered] = useState(false)
 
   /** submit the response */
@@ -81,10 +81,10 @@ export default function Registration() {
       .then(() => {
         setIsRegistered(true)
       }).catch(() => {
-      alert('an error occurred.  Please retry.  If this persists, contact us')
-      // if there's an error, reshow the survey (for now, assume registration is a single page)
-      refreshSurvey(resumeData, 1)
-    })
+        alert('an error occurred.  Please retry.  If this persists, contact us')
+        // if there's an error, reshow the survey (for now, assume registration is a single page)
+        refreshSurvey(resumeData, 1)
+      })
   }
 
   return <div>
