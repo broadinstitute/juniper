@@ -1,5 +1,6 @@
 import React from 'react'
 
+/** Shows a page indicating the person is ineligible to register for the portal */
 export default function Ineligible() {
   return <div className="container text-center mt-5">
     <p>
@@ -12,7 +13,7 @@ export default function Ineligible() {
       Enter your email address to be notified when new study opportunities are available.<br/>
       <form>
         <input type="email" size={30} className="m-2" placeholder="name@email.com"/><br/>
-        <button type="button" className="btn btn-primary" onClick={() => alert("not implemented yet")}>Submit</button>
+        <button type="button" className="btn btn-primary" onClick={() => alert('not implemented yet')}>Submit</button>
       </form>
 
     </p>
