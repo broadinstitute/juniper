@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, {useEffect, useState} from 'react'
 
-import { Model, StylesManager, Question, Serializer } from 'survey-core'
-import { SurveyModel, Survey as SurveyJSComponent } from 'survey-react-ui'
-import { ConsentForm, ResumableData, Survey, SurveyJSForm } from 'api/api'
-import { useSearchParams } from 'react-router-dom'
-import { getSurveyElementList } from './pearlSurveyUtils'
+import {Model, Question, Serializer, StylesManager} from 'survey-core'
+import {Survey as SurveyJSComponent, SurveyModel} from 'survey-react-ui'
+import {ConsentForm, ResumableData, Survey, SurveyJSForm} from 'api/api'
+import {useSearchParams} from 'react-router-dom'
+import {getSurveyElementList} from './pearlSurveyUtils'
 
 
 const PAGE_NUMBER_PARAM_NAME = 'page'
@@ -25,9 +25,10 @@ export function useRoutablePageNumber(): PageNumberControl {
   if (pageParam) {
     urlPageNumber = parseInt(pageParam)
   }
+
   /** update the url with the new page number */
   function updatePageNumber(newPageNumber: number) {
-    setSearchParams({ page: (newPageNumber).toString() })
+    setSearchParams({page: (newPageNumber).toString()})
   }
 
   return {
@@ -53,7 +54,7 @@ export function useRoutablePageNumber(): PageNumberControl {
  * @param pager the control object for paging the survey
  */
 export function useSurveyJSModel(form: SurveyJSForm, resumeData: ResumableData | null,
-  onComplete: () => void, pager: PageNumberControl) {
+                                 onComplete: () => void, pager: PageNumberControl) {
   const [surveyModel, setSurveyModel] = useState<SurveyModel | null>(null)
 
   /** hand a page change by updating state of both the surveyJS model and our internal state*/
@@ -109,7 +110,7 @@ export function useSurveyJSModel(form: SurveyJSForm, resumeData: ResumableData |
   }, [surveyModel])
   const pageNumber = surveyModel ? surveyModel.currentPageNo + 1 : 1
   const SurveyComponent = surveyModel ? <SurveyJSComponent model={surveyModel}/> : <></>
-  return { surveyModel, refreshSurvey, pageNumber, SurveyComponent }
+  return {surveyModel, refreshSurvey, pageNumber, SurveyComponent}
 }
 
 export enum SourceType {
@@ -150,16 +151,24 @@ export type SurveyJsItem = {
   displayValue: string
 }
 
+// SurveyJS doesn't seem to export their calculated value type, so we define a shim here
+type CalculatedValue = {
+  name: string,
+  value: string | boolean | null | number | object
+}
+
 /** write out the responses to the survey in a denormalized way, so that, e.g., the question text is preserved alongside
  * the answers
  */
 export function generateDenormalizedData({
-  survey, surveyJSModel, participantShortcode,
-  sourceShortcode, sourceType
-}:
-                                           {survey: Survey | ConsentForm, surveyJSModel: SurveyModel,
+                                           survey, surveyJSModel, participantShortcode,
+                                           sourceShortcode, sourceType
+                                         }:
+                                           {
+                                             survey: Survey | ConsentForm, surveyJSModel: SurveyModel,
                                              participantShortcode: string,
-                                             sourceShortcode: string, sourceType: SourceType}) : DenormalizedResponse {
+                                             sourceShortcode: string, sourceType: SourceType
+                                           }): DenormalizedResponse {
   const response = {
     formStableId: survey.stableId,
     formVersion: survey.version,
@@ -170,8 +179,10 @@ export function generateDenormalizedData({
       items: []
     }
   } as DenormalizedResponse
+  // the getPlainData call does not include the calculated values, but getAllValues does not include display values,
+  // so to get the format we need we call getPlainData for questions, and then combine that with calculatedValues
   const data = surveyJSModel.getPlainData()
-  response.parsedData.items = data.map(({ name, title, value, displayValue }: SurveyJsItem) => {
+  const questionItems = data.map(({name, title, value, displayValue}: SurveyJsItem) => {
     return {
       stableId: name,
       questionText: title,
@@ -181,15 +192,28 @@ export function generateDenormalizedData({
     }
   })
 
+  const computedValues = getCalculatedValues(surveyJSModel)
+  response.parsedData.items = questionItems.concat(computedValues)
   return response
+}
+
+function getCalculatedValues(surveyJSModel: SurveyModel) {
+  return surveyJSModel.calculatedValues.map((calculatedValue: CalculatedValue) => {
+    return {
+      stableId: calculatedValue.name,
+      value: calculatedValue.value,
+      questionType: 'calculated'
+    }
+  })
+  return
 }
 
 /** transform the stored survey representation into what SurveyJS expects */
 export function extractSurveyContent(survey: SurveyJSForm) {
   const parsedSurvey = JSON.parse(survey.content)
   const questionTemplates = parsedSurvey.questionTemplates as Question[]
-  Serializer.addProperty('survey', { name: 'questionTemplates', category: 'general' })
-  Serializer.addProperty('question', { name: 'questionTemplateName', category: 'general' })
+  Serializer.addProperty('survey', {name: 'questionTemplates', category: 'general'})
+  Serializer.addProperty('question', {name: 'questionTemplateName', category: 'general'})
 
   if (questionTemplates) {
     const elementList = getSurveyElementList(parsedSurvey)
@@ -200,7 +224,7 @@ export function extractSurveyContent(survey: SurveyJSForm) {
         if (!matchedTemplate) {
           // TODO this is an error we'd want to log in prod systems
           if (process.env.NODE_ENV === 'development') {
-            alert(`unmatched template ${  templateName}`)
+            alert(`unmatched template ${templateName}`)
           }
           return
         }

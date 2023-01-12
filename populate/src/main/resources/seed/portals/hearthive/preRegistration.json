@@ -15,33 +15,26 @@
             "html": "<h3 class=\"text-center fw-bold\">Join the HeartHive portal which has been set up by Imperial College London!</h3>\n\n"
           },
           {
-            "type": "text",
+            "type": "radiogroup",
             "name": "hh_cmyop_prereg_age",
-            "title": "How old are you?",
+            "title": "Are you 18 or older?",
             "isRequired": true,
-            "validators": [
+            "choices": [
               {
-                "type": "numeric",
-                "text": "You must be 18 or older to participate",
-                "minValue": 18
+                "value": "yes",
+                "text": "Yes"
+              },
+              {
+                "value": "no",
+                "text": "No"
               }
-            ],
-            "inputType": "number",
-            "min": 0,
-            "max": 130
+            ]
           },
           {
             "type": "radiogroup",
-            "name": "hh_cmyop_prereg_liveInUk",
-            "title": "Do you live in the United Kingdom?",
+            "name": "hh_cmyop_prereg_heartHx",
+            "title": "Do you have a history of heart disease or cardiomyopathy or a genetic diagnosis that places you at an increased risk of heart disease?",
             "isRequired": true,
-            "validators": [
-              {
-                "type": "expression",
-                "text": "You must live in the United Kingdom to join our study",
-                "expression": "{hh_cmyop_prereg_liveInUk} = 'yes'"
-              }
-            ],
             "choices": [
               {
                 "value": "yes",
@@ -54,6 +47,13 @@
             ]
           }
         ]
+      }
+    ],
+    "calculatedValues": [
+      {
+        "name": "qualified",
+        "expression": "{hh_cmyop_prereg_heartHx} = 'yes' && {hh_cmyop_prereg_age} = 'yes'",
+        "includeIntoResult": true
       }
     ]
   }

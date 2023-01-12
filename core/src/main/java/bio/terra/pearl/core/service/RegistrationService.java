@@ -67,9 +67,12 @@ public class RegistrationService {
         return preregistrationResponseDao.find(preRegResponseId);
     }
 
+
+    public record RegistrationResult(ParticipantUser participantUser,
+                                     PortalParticipantUser portalParticipantUser) {}
     /** creates a new PortalParticipantUser, and also a new ParticipantUser if necessary */
     @Transactional
-    public ParticipantUser register(String portalShortcode, EnvironmentName environmentName,
+    public RegistrationResult register(String portalShortcode, EnvironmentName environmentName,
                          ParsedSnapshot response, UUID preRegResponseId) {
         RequiredRegistrationInfo info = extractRegistrationValues(response);
         PortalEnvironment portalEnv = portalEnvService.findOne(portalShortcode, environmentName).get();
@@ -101,8 +104,7 @@ public class RegistrationService {
             preRegResponse.setPortalParticipantUserId(savedPPUSer.getId());
             preregistrationResponseDao.update(preRegResponse);
         }
-        user.getPortalParticipantUsers().add(savedPPUSer);
-        return user;
+        return new RegistrationResult(user, savedPPUSer);
     }
 
     protected PreregistrationResponse validatePreRegResponseId(UUID preRegResponseId) {

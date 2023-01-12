@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.portal;
 
 import bio.terra.pearl.core.dao.portal.PortalEnvironmentDao;
+import bio.terra.pearl.core.dao.survey.PreregistrationResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
@@ -21,15 +22,18 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
     private PortalEnvironmentConfigService portalEnvironmentConfigService;
     private PortalParticipantUserService portalParticipantUserService;
     private ParticipantUserService participantUserService;
+    private PreregistrationResponseDao preregistrationResponseDao;
 
     public PortalEnvironmentService(PortalEnvironmentDao portalEnvironmentDao,
                                     PortalEnvironmentConfigService portalEnvironmentConfigService,
                                     PortalParticipantUserService portalParticipantUserService,
-                                    ParticipantUserService participantUserService) {
+                                    ParticipantUserService participantUserService,
+                                    PreregistrationResponseDao preregistrationResponseDao) {
         super(portalEnvironmentDao);
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.participantUserService = participantUserService;
+        this.preregistrationResponseDao = preregistrationResponseDao;
     }
 
     public List<PortalEnvironment> findByPortal(UUID portalId) {
@@ -71,6 +75,8 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
                 .findByPortalEnvironmentId(id).stream().map(pUser -> pUser.getParticipantUserId())
                 .collect(Collectors.toList());
         portalParticipantUserService.deleteByPortalEnvironmentId(id);
+        // clean up any preregistration responses not associated with a user
+        preregistrationResponseDao.deleteByPortalEnvironmentId(id);
         if (cascades.contains(PortalService.AllowedCascades.PARTICIPANT_USER)) {
             participantUserService.deleteOrphans(participantUserIds, cascades);
         }

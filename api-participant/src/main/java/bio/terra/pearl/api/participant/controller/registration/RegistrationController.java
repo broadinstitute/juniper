@@ -2,7 +2,6 @@ package bio.terra.pearl.api.participant.controller.registration;
 
 import bio.terra.pearl.api.participant.api.RegistrationApi;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.survey.ParsedSnapshot;
 import bio.terra.pearl.core.service.RegistrationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,8 +26,8 @@ public class RegistrationController implements RegistrationApi {
     ParsedSnapshot response = objectMapper.convertValue(body, ParsedSnapshot.class);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
-    ParticipantUser user =
+    RegistrationService.RegistrationResult registrationResult =
         registrationService.register(portalShortcode, environmentName, response, preRegResponseId);
-    return ResponseEntity.ok(user);
+    return ResponseEntity.ok(registrationResult);
   }
 }
