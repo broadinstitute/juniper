@@ -328,7 +328,7 @@ components:
       type: object
       properties:
         id: { type: string, format: uuid }
-        preRegSurveyId: { type: string, format: uuid }
+        preEnrollSurveyId: { type: string, format: uuid }
     AdminUserDto:
       type: object
       properties:

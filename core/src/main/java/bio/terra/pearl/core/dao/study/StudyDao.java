@@ -75,8 +75,8 @@ public class StudyDao  extends BaseJdbiDao<Study> {
                         .filter(config -> config.getId().equals(studyEnv.getStudyEnvironmentConfigId()))
                         .findFirst().get());
                 studyEnv.setConfiguredSurveys(studyEnvironmentSurveyDao.findAllByStudyEnvIdWithSurvey(studyEnv.getId()));
-                if (studyEnv.getPreRegSurveyId() != null) {
-                    studyEnv.setPreRegSurvey(surveyService.find(studyEnv.getPreRegSurveyId()).get());
+                if (studyEnv.getPreEnrollSurveyId() != null) {
+                    studyEnv.setPreEnrollSurvey(surveyService.find(studyEnv.getPreEnrollSurveyId()).get());
                 }
                 studyEnv.setConfiguredConsents(studyEnvironmentConsentDao
                         .findAllByStudyEnvIdWithConsent(studyEnv.getId()));

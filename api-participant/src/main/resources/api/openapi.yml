@@ -50,7 +50,7 @@ paths:
           content: { application/json: { schema: { type: object }}}
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/preReg/{surveyStableId}/{surveyVersion}:
+  /api/portals/v1/{portalShortcode}/env/{envName}/preReg/{surveyStableId}/{surveyVersion}:
     post:
       summary: Submits a preregistration survey
       tags: [ preregistration ]
@@ -58,7 +58,6 @@ paths:
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: surveyStableId, in: path, required: true, schema: { type: string } }
         - { name: surveyVersion, in: path, required: true, schema: { type: integer } }
       requestBody:
@@ -71,7 +70,7 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/preReg/{preRegResponseId}/confirm:
+  /api/portals/v1/{portalShortcode}/env/{envName}/preReg/{preRegResponseId}/confirm:
     get:
       summary: Confirms a preregistration id
       tags: [ preregistration ]
@@ -81,6 +80,25 @@ paths:
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: preRegResponseId, in: path, required: true, schema: { type: string, format: uuid} }
+      responses:
+        '200':
+          description: preregistration response
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/register:
+    post:
+      summary: Submits a registration survey
+      tags: [ registration ]
+      operationId: register
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: preRegResponseId, in: query, required: false, schema: { type: string, format: uuid } }
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object }
       responses:
         '200':
           description: preregistration response

@@ -4,10 +4,9 @@ import LandingPage from 'landing/LandingPage'
 import {BrowserRouter, Route, Routes} from 'react-router-dom'
 import {usePortalEnv} from 'providers/PortalProvider'
 import {NavbarItem} from 'api/api'
-import HtmlPageView from './landing/sections/HtmlPageView'
-import PreRegistration from './landing/registration/Preregistration'
-import Registration from './landing/registration/Registration'
-import StudyRegistrationOutlet from "./landing/registration/StudyRegistrationOutlet";
+import HtmlPageView from 'landing/sections/HtmlPageView'
+import PreRegistration from 'landing/registration/Preregistration'
+import Registration from 'landing/registration/Registration'
 import PortalRegistrationOutlet from "./landing/registration/PortalRegistrationOutlet";
 
 /**
@@ -26,12 +25,6 @@ function App() {
       <Route index key="main" element={<HtmlPageView page={localContent.landingPage}/>}/>
     )
   }
-  // add routes for study-specific registration from not-signed-in users
-  landingRoutes.push(<Route key="studyReg" path="study/:studyShortcode/join"
-                            element={<StudyRegistrationOutlet portal={portal}/>}>
-    <Route path="preReg" element={<PreRegistration/>}/>
-    <Route path="register" element={<Registration/>}/>
-  </Route>)
   // add routes for portal registration not tied to a specific study (e.g. 'join HeartHive')
   landingRoutes.push(<Route key="portalReg" path="/join"
                             element={<PortalRegistrationOutlet portal={portal}/>}>

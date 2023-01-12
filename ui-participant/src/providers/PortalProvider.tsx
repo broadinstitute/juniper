@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react'
-import Api, { getEnvSpec, EnvSpec, Portal, PortalEnvironment, LocalSiteContent } from 'api/api'
+import React, {useContext, useEffect, useState} from 'react'
+import Api, {EnvSpec, getEnvSpec, LocalSiteContent, Portal, PortalEnvironment} from 'api/api'
 
 
 /** current portal object context */
@@ -20,21 +20,21 @@ export function usePortalEnv(): PortalEnvContextT {
   // the api guarantees the first environment and first localizedSiteContents returned are the correct ones
   const portalEnv = portal.portalEnvironments[0]
   const localContent = portalEnv.siteContent.localizedSiteContents[0]
-  return { portal, portalEnv, localContent }
+  return {portal, portalEnv, localContent}
 }
 
 /**
  * Provider for the current user object.
  * if a user object has already been obtained, it can be passed-in
  */
-export default function PortalProvider({ children }: { children: React.ReactNode}) {
+export default function PortalProvider({children}: { children: React.ReactNode }) {
   const [envState, setEnvState] = useState<Portal | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const envSpec: EnvSpec = getEnvSpec()
 
   useEffect(() => {
-    Api.getPortal(envSpec.shortcode, envSpec.envName).then(result => {
+    Api.getPortal().then(result => {
       setEnvState(result)
       setIsError(false)
       setIsLoading(false)
@@ -45,17 +45,17 @@ export default function PortalProvider({ children }: { children: React.ReactNode
   }, [])
 
   return <>
-    { isLoading && <div className="bg-white h-100 w-100">
+    {isLoading && <div className="bg-white h-100 w-100">
       <div className="position-absolute top-50 start-50 translate-middle">Loading...</div>
-    </div> }
-    { isError && <div className="bg-white h-100 w-100">
+    </div>}
+    {isError && <div className="bg-white h-100 w-100">
       <div className="position-absolute top-50 start-50 translate-middle">
         The page you are looking for does not exist
       </div>
     </div>}
-    { !isLoading && !isError && <PortalContext.Provider value={envState}>
+    {!isLoading && !isError && <PortalContext.Provider value={envState}>
       {children}
-    </PortalContext.Provider> }
+    </PortalContext.Provider>}
   </>
 }
 

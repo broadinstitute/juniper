@@ -5,7 +5,7 @@ import {useRegistrationOutlet} from './PortalRegistrationOutlet'
 
 /** Renders a preregistration form, and handles submitting the user-inputted response */
 export default function PreRegistrationView() {
-  const {studyShortcode, preRegSurvey, preRegResponseId, updatePreRegResponseId} = useRegistrationOutlet()
+  const {preRegSurvey, updatePreRegResponseId} = useRegistrationOutlet()
   const survey = preRegSurvey as Survey
   // for now, we assume all pre-screeners are a single page
   const pager = {pageNumber: 0, updatePageNumber: () => 0}
@@ -23,8 +23,7 @@ export default function PreRegistrationView() {
     })
     // for now, we assume the survey is constructed so that it cannot be submitted with invalid/incomplete answers
     const preRegResponse = {...denormedResponse, qualified: true} as DenormalizedPreRegResponse
-    Api.completePreReg({
-      studyShortcode,
+    Api.completePortalPreReg({
       surveyStableId: survey.stableId,
       surveyVersion: survey.version,
       preRegResponse

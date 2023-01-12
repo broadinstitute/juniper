@@ -2,6 +2,7 @@ package bio.terra.pearl.core.dao.portal;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.dao.site.SiteContentDao;
+import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import org.apache.commons.lang3.StringUtils;
@@ -17,12 +18,14 @@ import java.util.stream.Collectors;
 public class PortalEnvironmentDao extends BaseMutableJdbiDao<PortalEnvironment> {
     private PortalEnvironmentConfigDao portalEnvironmentConfigDao;
     private SiteContentDao siteContentDao;
+    private SurveyDao surveyDao;
     public PortalEnvironmentDao(Jdbi jdbi,
                                 PortalEnvironmentConfigDao portalEnvironmentConfigDao,
-                                SiteContentDao siteContentDao) {
+                                SiteContentDao siteContentDao, SurveyDao surveyDao) {
         super(jdbi);
         this.portalEnvironmentConfigDao = portalEnvironmentConfigDao;
         this.siteContentDao = siteContentDao;
+        this.surveyDao = surveyDao;
     }
 
     @Override
@@ -48,6 +51,7 @@ public class PortalEnvironmentDao extends BaseMutableJdbiDao<PortalEnvironment> 
         );
     }
 
+    /** load with everything needed to display the participant-facing site */
     public Optional<PortalEnvironment> loadWithSiteContent(String shortcode,
                                                                       EnvironmentName environmentName,
                                                                       String language) {
@@ -58,7 +62,9 @@ public class PortalEnvironmentDao extends BaseMutableJdbiDao<PortalEnvironment> 
             );
             portalEnv.setSiteContent(siteContentDao.findOneFull(portalEnv.getSiteContentId(), language)
                     .orElse(null));
-
+            if (portalEnv.getPreRegSurveyId() != null) {
+                portalEnv.setPreRegSurvey(surveyDao.find(portalEnv.getPreRegSurveyId()).get());
+            }
         });
         return portalEnvOpt;
     }

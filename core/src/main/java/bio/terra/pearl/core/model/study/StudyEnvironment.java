@@ -23,8 +23,8 @@ public class StudyEnvironment extends BaseEntity {
 
     private UUID studyEnvironmentConfigId;
     private StudyEnvironmentConfig studyEnvironmentConfig;
-    private UUID preRegSurveyId;
-    private Survey preRegSurvey;
+    private UUID preEnrollSurveyId;
+    private Survey preEnrollSurvey;
     @Builder.Default
     private List<StudyEnvironmentSurvey> configuredSurveys = new ArrayList<>();
     @Builder.Default
