@@ -141,7 +141,7 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  /** submit study preregistration survey data */
+  /** submit portal preregistration survey data */
   async completePortalPreReg({ surveyStableId, surveyVersion, preRegResponse }:
                                {
                                  surveyStableId: string, surveyVersion: number,
@@ -188,7 +188,7 @@ export default {
     }
   },
 
-  /** submits registration data for a particular study, from an anonymous user */
+  /** submits registration data for a particular portal, from an anonymous user */
   async register({ preRegResponseId, fullData }: { preRegResponseId: string, fullData: object }): Promise<object> {
     const { shortcode, envName } = getEnvSpec()
     let url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/register`

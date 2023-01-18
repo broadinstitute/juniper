@@ -18,7 +18,7 @@ export function useRegistrationOutlet() {
 }
 
 /**
- * handles selecting/loading the correct study environment, and managing the preregistration response id.
+ * handles managing any preregistration response id and routing to pre-reg pages as needed.
  * If a valid preregId exists, this will redirect to the registration page.  If not, it will route to
  * the prereg page */
 export default function PortalRegistrationOutlet({ portal }: { portal: Portal }) {
@@ -31,7 +31,7 @@ export default function PortalRegistrationOutlet({ portal }: { portal: Portal })
       localStorage.removeItem(PREREG_ID_STORAGE_KEY)
     } else {
       localStorage.setItem(PREREG_ID_STORAGE_KEY, preRegId)
-      navigate('register', { replace: true })
+      navigate('register')
     }
     setPreRegResponseId(preRegId)
   }
