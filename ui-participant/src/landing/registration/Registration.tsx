@@ -3,7 +3,7 @@ import { Survey as SurveyComponent } from 'survey-react-ui'
 import { generateDenormalizedData, SourceType, useSurveyJSModel } from 'util/surveyJsUtils'
 import Api, { Survey } from 'api/api'
 import RegistrationComplete from './RegistrationComplete'
-import { useRegistrationOutlet } from './RegistrationOutlet'
+import { useRegistrationOutlet } from './PortalRegistrationOutlet'
 
 /** This registration survey is a hardcoded temporary survey until we have MS B2C integration. */
 const registrationSurvey = {
@@ -39,14 +39,6 @@ const registrationSurvey = {
           'isRequired': true,
           'inputType': 'email',
           'placeholder': 'name@email.com'
-        },
-        {
-          'type': 'text',
-          'name': 'reg_password',
-          'title': 'Password',
-          'isRequired': true,
-          'inputType': 'password',
-          'placeholder': 'choose a password'
         }
       ]
     }
@@ -66,24 +58,24 @@ const registrationSurveyModel: Survey = {
 
 /** show the participant registration page */
 export default function Registration() {
-  const { portalShortcode, studyShortcode, studyEnv, preRegResponseId } = useRegistrationOutlet()
+  const { preRegResponseId } = useRegistrationOutlet()
   // for now, assume registration surveys are a single page
   const pager = { pageNumber: 0, updatePageNumber: () => 0 }
   const { surveyModel, refreshSurvey } = useSurveyJSModel(registrationSurveyModel, null, onComplete, pager)
   const [isRegistered, setIsRegistered] = useState(false)
+
   /** submit the response */
   function onComplete() {
-    if (!surveyModel) { return }
+    if (!surveyModel) {
+      return
+    }
     const denormedResponse = generateDenormalizedData({
       survey: registrationSurveyModel, surveyJSModel: surveyModel, participantShortcode: 'ANON',
       sourceShortcode: 'ANON', sourceType: SourceType.ANON
     })
     const resumeData = surveyModel?.data
-    Api.registerForStudy({
-      portalShortcode,
-      studyShortcode,
-      envName: studyEnv.environmentName,
-      preRegId: preRegResponseId as string,
+    Api.register({
+      preRegResponseId: preRegResponseId as string,
       fullData: denormedResponse
     })
       .then(() => {

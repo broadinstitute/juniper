@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.model.survey;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ResponseData {
-    private List<ResponseDataItem> items;
+    private List<ResponseDataItem> items = new ArrayList<>();
 }
 
 

@@ -12,7 +12,8 @@ export type Portal = {
 }
 
 export type PortalEnvironment = PortalEnvironmentParams & {
-  siteContent: SiteContent
+  siteContent: SiteContent,
+  preRegSurvey: Survey
 }
 
 export type PortalStudy = {
@@ -134,20 +135,21 @@ export default {
     return Promise.reject(response)
   },
 
-  async getPortal(portalShortcode: string, envName: string): Promise<Portal> {
-    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}`, this.getGetInit())
+  async getPortal(): Promise<Portal> {
+    const { shortcode, envName } = getEnvSpec()
+    const response = await fetch(`${API_ROOT}/portals/v1/${shortcode}/env/${envName}`, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
-  /** submit preregistration survey data */
-  async completePreReg({ portalShortcode, studyShortcode, envName, surveyStableId, surveyVersion, preRegResponse }:
-                         {
-                           portalShortcode: string, studyShortcode: string, envName: string, surveyStableId: string,
-                           surveyVersion: number, preRegResponse: DenormalizedPreRegResponse
-                         }):
+  /** submit portal preregistration survey data */
+  async completePortalPreReg({ surveyStableId, surveyVersion, preRegResponse }:
+                               {
+                                 surveyStableId: string, surveyVersion: number,
+                                 preRegResponse: DenormalizedPreRegResponse
+                               }):
     Promise<PreregistrationResponse> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/studies/${studyShortcode}`
-      + `/preReg/${surveyStableId}/${surveyVersion}`
+    const { shortcode, envName } = getEnvSpec()
+    const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/preReg/${surveyStableId}/${surveyVersion}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
@@ -160,9 +162,25 @@ export default {
    * confirms that a client-side saved preregistration id is still valid.  For cases where the user refreshes the
    * page while on registration
    */
-  async confirmPreReg(portalShortcode: string, studyShortcode: string, envName: string, preRegId: string):
+  async confirmStudyPreEnroll(preEnroll: string, studyShortcode: string):
     Promise<void> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/studies/${studyShortcode}`
+    const { shortcode, envName } = getEnvSpec()
+    const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/studies/${studyShortcode}`
+      + `/preEnroll/${preEnroll}/confirm`
+    const response = await fetch(url, { headers: this.getInitHeaders() })
+    if (!response.ok) {
+      return Promise.reject(response)
+    }
+  },
+
+  /**
+   * confirms that a client-side saved preregistration id is still valid.  For cases where the user refreshes the
+   * page while on registration
+   */
+  async confirmPortalPreReg(preRegId: string):
+    Promise<void> {
+    const { shortcode, envName } = getEnvSpec()
+    const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}`
       + `/preReg/${preRegId}/confirm`
     const response = await fetch(url, { headers: this.getInitHeaders() })
     if (!response.ok) {
@@ -170,18 +188,17 @@ export default {
     }
   },
 
-  /** submits registration data for a particular study, from an anonymous user */
-  async registerForStudy({ portalShortcode, studyShortcode, envName, preRegId, fullData }:
-                           {
-                             portalShortcode: string, studyShortcode: string, envName: string,
-                             preRegId: string, fullData: object
-                           }): Promise<object> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/studies/${studyShortcode}`
-      + `/preReg/${preRegId}/register`
+  /** submits registration data for a particular portal, from an anonymous user */
+  async register({ preRegResponseId, fullData }: { preRegResponseId: string, fullData: object }): Promise<object> {
+    const { shortcode, envName } = getEnvSpec()
+    let url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/register`
+    if (preRegResponseId) {
+      url += `?preRegResponseId=${preRegResponseId}`
+    }
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
-      body: JSON.stringify({ fullData })
+      body: JSON.stringify(fullData)
     })
     return await this.processJsonResponse(response)
   }

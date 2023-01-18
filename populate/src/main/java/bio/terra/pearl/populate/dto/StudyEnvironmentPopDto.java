@@ -25,5 +25,5 @@ public class StudyEnvironmentPopDto extends StudyEnvironment {
     @Builder.Default
     private List<String> enrolleeFiles = new ArrayList<>();
 
-    private SurveyPopDto preRegSurveyDto;
+    private SurveyPopDto preEnrollSurveyDto;
 }

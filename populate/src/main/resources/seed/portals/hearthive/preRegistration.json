@@ -1,0 +1,60 @@
+{
+  "stableId": "hh_preregistation",
+  "version": 1,
+  "name": "Pre-registration",
+  "jsonContent": {
+    "title": "cardiomyopathy pre-registration",
+    "logoPosition": "right",
+    "pages": [
+      {
+        "name": "page1",
+        "elements": [
+          {
+            "type": "html",
+            "name": "descriptionText",
+            "html": "<h3 class=\"text-center fw-bold\">Join the HeartHive portal which has been set up by Imperial College London!</h3>\n\n"
+          },
+          {
+            "type": "radiogroup",
+            "name": "hh_cmyop_prereg_age",
+            "title": "Are you 18 or older?",
+            "isRequired": true,
+            "choices": [
+              {
+                "value": "yes",
+                "text": "Yes"
+              },
+              {
+                "value": "no",
+                "text": "No"
+              }
+            ]
+          },
+          {
+            "type": "radiogroup",
+            "name": "hh_cmyop_prereg_heartHx",
+            "title": "Do you have a history of heart disease or cardiomyopathy or a genetic diagnosis that places you at an increased risk of heart disease?",
+            "isRequired": true,
+            "choices": [
+              {
+                "value": "yes",
+                "text": "Yes"
+              },
+              {
+                "value": "no",
+                "text": "No"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "calculatedValues": [
+      {
+        "name": "qualified",
+        "expression": "{hh_cmyop_prereg_heartHx} = 'yes' && {hh_cmyop_prereg_age} = 'yes'",
+        "includeIntoResult": true
+      }
+    ]
+  }
+}

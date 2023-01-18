@@ -36,7 +36,7 @@ public class StudyEnvironmentController implements StudyEnvironmentApi {
     requestService.authUserToPortal(adminUser, portalShortcode);
 
     StudyEnvironment existing = studyEnvService.find(body.getId()).get();
-    existing.setPreRegSurveyId(body.getPreRegSurveyId());
+    existing.setPreEnrollSurveyId(body.getPreEnrollSurveyId());
     StudyEnvironment savedStudyEnv = studyEnvService.update(existing);
     return ResponseEntity.ok(objectMapper.convertValue(savedStudyEnv, StudyEnvironmentDto.class));
   }

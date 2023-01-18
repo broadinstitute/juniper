@@ -1,5 +1,5 @@
 {
-  "stableId": "hh_preregistation",
+  "stableId": "hh_cmyop_preEnroll",
   "version": 1,
   "name": "Pre-registration",
   "jsonContent": {
@@ -24,45 +24,6 @@
                 "type": "expression",
                 "text": "You must have a diagnosis of cardiomyopathy to join this study",
                 "expression": "{hearthive_prereg_dx} = 'yes'"
-              }
-            ],
-            "choices": [
-              {
-                "value": "yes",
-                "text": "Yes"
-              },
-              {
-                "value": "no",
-                "text": "No"
-              }
-            ]
-          },
-          {
-            "type": "text",
-            "name": "hh_cmyop_prereg_age",
-            "title": "How old are you?",
-            "isRequired": true,
-            "validators": [
-              {
-                "type": "numeric",
-                "text": "You must be 18 or older to participate",
-                "minValue": 18
-              }
-            ],
-            "inputType": "number",
-            "min": 0,
-            "max": 130
-          },
-          {
-            "type": "radiogroup",
-            "name": "hh_cmyop_prereg_liveInUk",
-            "title": "Do you live in the United Kingdom?",
-            "isRequired": true,
-            "validators": [
-              {
-                "type": "expression",
-                "text": "You must live in the United Kingdom to join our study",
-                "expression": "{hearthive_prereg_liveInUk} = 'yes'"
               }
             ],
             "choices": [

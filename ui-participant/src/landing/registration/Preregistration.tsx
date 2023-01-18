@@ -1,12 +1,14 @@
 import React from 'react'
-import Api from 'api/api'
+import Api, { Survey } from 'api/api'
 import { DenormalizedPreRegResponse, generateDenormalizedData, SourceType, useSurveyJSModel } from 'util/surveyJsUtils'
-import { useRegistrationOutlet } from './RegistrationOutlet'
+import { useRegistrationOutlet } from './PortalRegistrationOutlet'
+import { useNavigate } from 'react-router-dom'
 
 /** Renders a preregistration form, and handles submitting the user-inputted response */
 export default function PreRegistrationView() {
-  const { portalShortcode, studyShortcode, studyEnv, updatePreRegResponseId } = useRegistrationOutlet()
-  const survey = studyEnv.preRegSurvey
+  const { preRegSurvey, updatePreRegResponseId } = useRegistrationOutlet()
+  const navigate = useNavigate()
+  const survey = preRegSurvey as Survey
   // for now, we assume all pre-screeners are a single page
   const pager = { pageNumber: 0, updatePageNumber: () => 0 }
   const { surveyModel, refreshSurvey, SurveyComponent } =
@@ -21,17 +23,19 @@ export default function PreRegistrationView() {
       survey, surveyJSModel: surveyModel, participantShortcode: 'ANON',
       sourceShortcode: 'ANON', sourceType: SourceType.ANON
     })
-    // for now, we assume the survey is constructed so that it cannot be submitted with invalid/incomplete answers
-    const preRegResponse = { ...denormedResponse, qualified: true } as DenormalizedPreRegResponse
-    Api.completePreReg({
-      portalShortcode,
-      envName: studyEnv.environmentName,
-      studyShortcode,
+    const qualified = surveyModel.getCalculatedValueByName('qualified').value
+    const preRegResponse = { ...denormedResponse, qualified } as DenormalizedPreRegResponse
+    // submit the form even if it isn't eligible, so we can track stats on exclusions
+    Api.completePortalPreReg({
       surveyStableId: survey.stableId,
       surveyVersion: survey.version,
       preRegResponse
     }).then(result => {
-      updatePreRegResponseId(result.id)
+      if (!qualified) {
+        navigate('../ineligible')
+      } else {
+        updatePreRegResponseId(result.id)
+      }
     }).catch(() => {
       alert('an error occurred, please retry')
       updatePreRegResponseId(null)
@@ -42,6 +46,6 @@ export default function PreRegistrationView() {
   }
 
   return <div>
-    { SurveyComponent }
+    {SurveyComponent}
   </div>
 }

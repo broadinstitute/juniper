@@ -27,7 +27,6 @@ public class PreregistrationController implements PreregistrationApi {
   public ResponseEntity<Object> createAnonymous(
       String portalShortcode,
       String envName,
-      String studyShortcode,
       String surveyStableId,
       Integer surveyVersion,
       Object body) {
@@ -37,12 +36,7 @@ public class PreregistrationController implements PreregistrationApi {
       String responseData = objectMapper.writeValueAsString(response.getParsedData());
       PreregistrationResponse createdResponse =
           registrationService.createAnonymousPreregistration(
-              portalShortcode,
-              environmentName,
-              studyShortcode,
-              surveyStableId,
-              surveyVersion,
-              responseData);
+              portalShortcode, environmentName, surveyStableId, surveyVersion, responseData);
       return ResponseEntity.ok(createdResponse);
     } catch (JsonProcessingException e) {
       throw new IllegalArgumentException("malformatted response data", e);
