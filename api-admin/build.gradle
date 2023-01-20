@@ -41,6 +41,7 @@ task copyWebApp(type: Copy) {
 bootJar.dependsOn(copyWebApp)
 bootRun.dependsOn(copyWebApp)
 test.dependsOn(copyWebApp)
+spotbugsTest.dependsOn(copyWebApp)
 
 test {
     useJUnitPlatform ()
