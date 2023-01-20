@@ -1,0 +1,14 @@
+// adapted from https://shekhargulati.com/2019/01/13/running-tests-and-building-react-applications-with-gradle-build-tool/
+
+plugins {
+    id "com.moowork.node" version "1.2.0"
+}
+
+apply plugin: 'base'
+apply plugin: "com.moowork.node"
+
+task bundle(type: NpmTask, dependsOn: npmInstall) {
+    args = ['run', 'build']
+}
+
+assemble.dependsOn(bundle)
