@@ -42,6 +42,8 @@ bootJar.dependsOn(copyWebApp)
 bootRun.dependsOn(copyWebApp)
 test.dependsOn(copyWebApp)
 spotbugsTest.dependsOn(copyWebApp)
+jar.dependsOn(copyWebApp)
+compileTestJava.dependsOn(copyWebApp)
 
 test {
     useJUnitPlatform ()
