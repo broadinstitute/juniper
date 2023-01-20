@@ -67,7 +67,7 @@ class PublicApiControllerTest {
 
   @Test
   void testIndex() throws Exception {
-    this.mockMvc.perform(get("/hearthive/")).andExpect(redirectedUrl(null));
+    this.mockMvc.perform(get("/ourhealth/studies/ourheart")).andExpect(redirectedUrl(null));
     this.mockMvc.perform(get("/hearthive")).andExpect(redirectedUrl(null));
   }
 }
