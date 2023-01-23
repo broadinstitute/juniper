@@ -1,5 +1,10 @@
 import { DenormalizedPreRegResponse } from '../util/surveyJsUtils'
 
+export type ParticipantUser = {
+  username: string,
+  token: string
+};
+
 export type PortalEnvironmentParams = {
   portalShortcode: string,
   environmentName: string
@@ -94,6 +99,14 @@ export type PreregistrationResponse = {
   id: string
 }
 
+export type RegistrationResponse = {
+  participantUser: ParticipantUser,
+  portalParticipantUser: PortalParticipantUser
+}
+
+export type PortalParticipantUser = {
+  profile: object
+}
 
 export type ButtonConfig = {
   text: string,
@@ -105,7 +118,7 @@ export type ButtonConfig = {
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export type SectionConfig = { [index: string]: any }
 
-const bearerToken: string | null = null
+let bearerToken: string | null = null
 const API_ROOT = `${process.env.REACT_APP_API_SERVER}/${process.env.REACT_APP_API_ROOT}`
 
 export default {
@@ -189,7 +202,8 @@ export default {
   },
 
   /** submits registration data for a particular portal, from an anonymous user */
-  async register({ preRegResponseId, fullData }: { preRegResponseId: string, fullData: object }): Promise<object> {
+  async register({ preRegResponseId, fullData }: { preRegResponseId: string, fullData: object }):
+    Promise<RegistrationResponse> {
     const { shortcode, envName } = getEnvSpec()
     let url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/register`
     if (preRegResponseId) {
@@ -201,6 +215,42 @@ export default {
       body: JSON.stringify(fullData)
     })
     return await this.processJsonResponse(response)
+  },
+
+  async unauthedLogin(username: string): Promise<ParticipantUser> {
+    const { shortcode, envName } = getEnvSpec()
+    const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/current-user/unauthed-login?${new URLSearchParams({
+      username
+    })}`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async refreshLogin(token: string): Promise<ParticipantUser> {
+    this.setBearerToken(token)
+    const { shortcode, envName } = getEnvSpec()
+    const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/current-user/refresh`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async logout(): Promise<void> {
+    const { shortcode, envName } = getEnvSpec()
+    const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/current-user/logout`
+    await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
+  },
+
+  setBearerToken(token: string | null) {
+    bearerToken = token
   }
 
 }

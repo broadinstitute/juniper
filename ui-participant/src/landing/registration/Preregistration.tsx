@@ -32,6 +32,7 @@ export default function PreRegistrationView() {
       preRegResponse
     }).then(result => {
       if (!qualified) {
+        updatePreRegResponseId(null)
         navigate('../ineligible')
       } else {
         updatePreRegResponseId(result.id)

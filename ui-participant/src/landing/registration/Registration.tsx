@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import { generateDenormalizedData, SourceType, useSurveyJSModel } from 'util/surveyJsUtils'
 import Api, { Survey } from 'api/api'
-import RegistrationComplete from './RegistrationComplete'
 import { useRegistrationOutlet } from './PortalRegistrationOutlet'
+import { useUser } from '../../providers/UserProvider'
+import { useNavigate } from 'react-router-dom'
 
 /** This registration survey is a hardcoded temporary survey until we have MS B2C integration. */
 const registrationSurvey = {
@@ -58,11 +59,12 @@ const registrationSurveyModel: Survey = {
 
 /** show the participant registration page */
 export default function Registration() {
-  const { preRegResponseId } = useRegistrationOutlet()
+  const { preRegResponseId, updatePreRegResponseId } = useRegistrationOutlet()
   // for now, assume registration surveys are a single page
   const pager = { pageNumber: 0, updatePageNumber: () => 0 }
   const { surveyModel, refreshSurvey } = useSurveyJSModel(registrationSurveyModel, null, onComplete, pager)
-  const [isRegistered, setIsRegistered] = useState(false)
+  const { loginUser } = useUser()
+  const navigate = useNavigate()
 
   /** submit the response */
   function onComplete() {
@@ -78,8 +80,10 @@ export default function Registration() {
       preRegResponseId: preRegResponseId as string,
       fullData: denormedResponse
     })
-      .then(() => {
-        setIsRegistered(true)
+      .then(response => {
+        updatePreRegResponseId(null)
+        loginUser(response.participantUser)
+        navigate('/hub')
       }).catch(() => {
         alert('an error occurred.  Please retry.  If this persists, contact us')
         // if there's an error, reshow the survey (for now, assume registration is a single page)
@@ -88,7 +92,6 @@ export default function Registration() {
   }
 
   return <div>
-    {(!isRegistered && surveyModel) && <SurveyComponent model={surveyModel}/>}
-    {isRegistered && <RegistrationComplete/>}
+    {(surveyModel) && <SurveyComponent model={surveyModel}/>}
   </div>
 }

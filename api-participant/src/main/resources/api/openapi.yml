@@ -78,7 +78,6 @@ paths:
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: preRegResponseId, in: path, required: true, schema: { type: string, format: uuid} }
       responses:
         '200':
@@ -122,6 +121,52 @@ paths:
               schema:
                 type: string
                 format: binary
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/current-user/unauthed-login:
+    post:
+      summary: Development endpoint for logging in a user just on email address
+      tags: [ currentUser ]
+      operationId: unauthedLogin
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: username, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: current user object with token
+          content:
+            application/json: # see https://superuser.com/questions/979135/is-there-a-generic-mime-type-for-all-image-files
+              schema: {type: object}
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/current-user/refresh:
+    post:
+      summary: logs in a user from a token
+      tags: [ currentUser ]
+      operationId: refresh
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: current user object with token
+          content:
+            application/json: # see https://superuser.com/questions/979135/is-there-a-generic-mime-type-for-all-image-files
+              schema: { type: object }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/current-user/logout:
+    post:
+      summary: logs out the current user (baased on their bearer token)
+      tags: [ currentUser ]
+      operationId: logout
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: logout successful
         '500':
           $ref: '#/components/responses/ServerError'
 

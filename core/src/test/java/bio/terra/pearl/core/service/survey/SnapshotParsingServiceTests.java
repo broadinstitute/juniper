@@ -1,12 +1,9 @@
 package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.survey.ParsedSnapshotFactory;
 import bio.terra.pearl.core.model.survey.ParsedSnapshot;
-import bio.terra.pearl.core.model.survey.ResponseData;
-import bio.terra.pearl.core.model.survey.ResponseDataItem;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.IntNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -20,14 +17,10 @@ public class SnapshotParsingServiceTests extends BaseSpringBootTest {
 
     @Test
     public void testParsing() {
-        ResponseData responseData = new ResponseData();
-        responseData.getItems().add(ResponseDataItem.builder()
-                .stableId("testSurvey_q1").value(new TextNode("value1")).build());
-        responseData.getItems().add(ResponseDataItem.builder()
-                .stableId("testSurvey_q2").value(new IntNode(2)).build());
-        ParsedSnapshot snapshot = new ParsedSnapshot();
-        snapshot.setParsedData(responseData);
-
+        ParsedSnapshot snapshot = ParsedSnapshotFactory.fromMap(Map.of(
+                "testSurvey_q1", "value1",
+                "testSurvey_q2", 2
+        ));
         TestTargetObj targetObj = snapshotParsingService.extractValues(snapshot, TARGET_MAP, TestTargetObj.class);
 
         Assertions.assertEquals("value1", targetObj.prop1);

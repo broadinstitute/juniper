@@ -2,8 +2,8 @@ package bio.terra.pearl.api.admin.controller;
 
 import bio.terra.pearl.api.admin.api.CurrentUserApi;
 import bio.terra.pearl.api.admin.model.TokenLoginInfo;
+import bio.terra.pearl.api.admin.service.CurrentUserService;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.service.CurrentUserService;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
