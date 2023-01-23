@@ -38,6 +38,9 @@ task copyWebApp(type: Copy) {
     into "$rootDir/api-admin/build/resources/main/static"
 }
 
+// TODO this isn't quite the right way to specify this dependency, and we are still getting some warnings about
+// "Task <<>> uses this output of task ':api-admin:copyWebApp' without having it as a dependency"
+// This should be upgraded accordingly to fix that
 bootJar.dependsOn(copyWebApp)
 bootRun.dependsOn(copyWebApp)
 test.dependsOn(copyWebApp)

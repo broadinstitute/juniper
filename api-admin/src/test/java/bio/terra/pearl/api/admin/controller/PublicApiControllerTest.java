@@ -1,11 +1,10 @@
-package bio.terra.javatemplate.api;
+package bio.terra.pearl.api.admin.controller;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import bio.terra.pearl.api.admin.config.VersionConfiguration;
-import bio.terra.pearl.api.admin.controller.PublicApiController;
 import bio.terra.pearl.api.admin.model.SystemStatus;
 import bio.terra.pearl.api.admin.service.StatusService;
 import org.junit.jupiter.api.Test;
@@ -66,8 +65,15 @@ class PublicApiControllerTest {
   }
 
   @Test
-  void testIndex() throws Exception {
+  void testForwarding() throws Exception {
+    // Check that all non-resource, non-api paths are forwarded to index
     this.mockMvc.perform(get("/ourhealth/studies/ourheart")).andExpect(forwardedUrl("/"));
     this.mockMvc.perform(get("/hearthive")).andExpect(forwardedUrl("/"));
+  }
+
+  @Test
+  void testResourceGets() throws Exception {
+    this.mockMvc.perform(get("/foo/bar/image.png")).andExpect(status().isNotFound());
+    this.mockMvc.perform(get("/favicon.ico")).andExpect(status().isOk());
   }
 }
