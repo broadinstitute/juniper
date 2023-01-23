@@ -59,7 +59,7 @@ jobs:
       
       - name: Build image locally with jib
         run: |
-          ./gradlew --build-cache :service:jibDockerBuild \
+          ./gradlew --build-cache :api-admin:jibDockerBuild \
           --image=${{ steps.image-name.outputs.name }} \
           -Djib.console=plain
       
