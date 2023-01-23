@@ -8,7 +8,7 @@ on:
 
 env:
   SERVICE_NAME: ${{ github.event.repository.name }}
-  GOOGLE_PROJECT: dsp-artfact-registry
+  GOOGLE_PROJECT: dsp-artifact-registry
   GOOGLE_DOCKER_REPOSITORY: us-central1-docker.pkg.dev
   IMAGE_REPOSITORY_NAME: ddp
 
