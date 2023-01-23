@@ -51,8 +51,11 @@ public class PreregistrationController implements PreregistrationApi {
    */
   @Override
   public ResponseEntity<Object> confirm(
-      String portalShortcode, String envName, String studyShortcode, UUID preRegResponseId) {
+      String portalShortcode, String envName, UUID preRegResponseId) {
     Optional<PreregistrationResponse> responseOpt = registrationService.find(preRegResponseId);
+    if (responseOpt.isPresent() && responseOpt.get().getPortalParticipantUserId() != null) {
+      return ResponseEntity.unprocessableEntity().body("Already registered");
+    }
     return ResponseEntity.of(responseOpt.map(response -> response));
   }
 }

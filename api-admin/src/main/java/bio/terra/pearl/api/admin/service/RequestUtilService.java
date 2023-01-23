@@ -4,7 +4,6 @@ import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.common.iam.BearerTokenFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
-import bio.terra.pearl.core.service.CurrentUserService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;

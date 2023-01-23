@@ -99,6 +99,14 @@ export type PreregistrationResponse = {
   id: string
 }
 
+export type RegistrationResponse = {
+  participantUser: ParticipantUser,
+  portalParticipantUser: PortalParticipantUser
+}
+
+export type PortalParticipantUser = {
+  profile: object
+}
 
 export type ButtonConfig = {
   text: string,
@@ -194,7 +202,8 @@ export default {
   },
 
   /** submits registration data for a particular portal, from an anonymous user */
-  async register({preRegResponseId, fullData}: { preRegResponseId: string, fullData: object }): Promise<object> {
+  async register({preRegResponseId, fullData}: { preRegResponseId: string, fullData: object }):
+    Promise<RegistrationResponse> {
     const {shortcode, envName} = getEnvSpec()
     let url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/register`
     if (preRegResponseId) {
@@ -209,7 +218,8 @@ export default {
   },
 
   async unauthedLogin(username: string): Promise<ParticipantUser> {
-    const url = `${API_ROOT}/current-user/v1/unauthed-login?${new URLSearchParams({
+    const {shortcode, envName} = getEnvSpec()
+    const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/current-user/unauthed-login?${new URLSearchParams({
       username
     })}`
     const response = await fetch(url, {
@@ -219,14 +229,24 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async tokenLogin(token: string): Promise<ParticipantUser> {
-    const url = `${API_ROOT}/current-user/v1/token-login`
+  async refreshLogin(token: string): Promise<ParticipantUser> {
+    this.setBearerToken(token)
+    const {shortcode, envName} = getEnvSpec()
+    const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/current-user/refresh`
     const response = await fetch(url, {
       method: 'POST',
-      headers: this.getInitHeaders(),
-      body: JSON.stringify({token})
+      headers: this.getInitHeaders()
     })
     return await this.processJsonResponse(response)
+  },
+
+  async logout(): Promise<void> {
+    const {shortcode, envName} = getEnvSpec()
+    const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/current-user/logout`
+    await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
   },
 
   setBearerToken(token: string | null) {

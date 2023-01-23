@@ -4,15 +4,15 @@ import Api, {ParticipantUser} from 'api/api'
 import {useAuth} from 'react-oidc-context'
 
 export type User = {
-  accessToken: string | null,
+  token: string | null,
   isAnonymous: boolean,
-  email: string | null
+  username: string | null
 }
 
 const anonymousUser: User = {
-  accessToken: null,
+  token: null,
   isAnonymous: true,
-  email: null
+  username: null
 }
 
 export type UserContextT = {
@@ -43,8 +43,8 @@ export default function UserProvider({children}: { children: React.ReactNode }) 
 
   const loginUser = (user: ParticipantUser) => {
     setUserState({
-      email: user.username,
-      accessToken: user.token,
+      username: user.username,
+      token: user.token,
       isAnonymous: false
     })
     Api.setBearerToken(user.token)
@@ -55,7 +55,6 @@ export default function UserProvider({children}: { children: React.ReactNode }) 
     setUserState(anonymousUser)
     Api.setBearerToken(null)
     localStorage.removeItem(STORAGE_TOKEN_PROP)
-    window.location.href = '/'
   }
 
   const userContext: UserContextT = {
@@ -76,7 +75,7 @@ export default function UserProvider({children}: { children: React.ReactNode }) 
 
     const token = localStorage.getItem(STORAGE_TOKEN_PROP)
     if (token) {
-      Api.tokenLogin(token).then(user => {
+      Api.refreshLogin(token).then(user => {
         loginUser(user)
         setIsLoading(false)
       }).catch(() => {

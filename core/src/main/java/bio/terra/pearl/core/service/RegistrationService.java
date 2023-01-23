@@ -70,6 +70,7 @@ public class RegistrationService {
 
     public record RegistrationResult(ParticipantUser participantUser,
                                      PortalParticipantUser portalParticipantUser) {}
+
     /** creates a new PortalParticipantUser, and also a new ParticipantUser if necessary */
     @Transactional
     public RegistrationResult register(String portalShortcode, EnvironmentName environmentName,

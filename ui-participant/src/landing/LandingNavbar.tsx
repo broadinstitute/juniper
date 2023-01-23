@@ -1,12 +1,23 @@
 import React from 'react'
 import {NavLink} from 'react-router-dom'
-import {getImageUrl, NavbarItem} from 'api/api'
+import Api, {getImageUrl, NavbarItem} from 'api/api'
 import {usePortalEnv} from 'providers/PortalProvider'
+import {useUser} from "../providers/UserProvider";
 
 /** renders the navbar for participant landing page (for not-logged-in participants) */
 export default function LandingNavbar() {
   const {localContent} = usePortalEnv()
+  const {user, logoutUser} = useUser()
   const navLinks = localContent.navbarItems
+
+  function doLogout() {
+    Api.logout().then(response => {
+      logoutUser()
+      window.location.href = '/'
+    }).catch((e) => {
+      alert("an error occurred during logout " + e)
+    })
+  }
 
   return <nav className="LandingNavbar navbar navbar-expand-lg navbar-light">
     <div className="container-fluid">
@@ -21,9 +32,18 @@ export default function LandingNavbar() {
           </li>)}
         </ul>
         <ul className="navbar-nav ms-auto">
-          <li className="nav-item dropdown">
+          {user.isAnonymous && <li className="nav-item">
             <NavLink className="nav-link" to="hub">Login</NavLink>
-          </li>
+          </li>}
+          {!user.isAnonymous && <li className="nav-item dropdown">
+            <a className="nav-link dropdown-toggle" href="#"
+               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {user.username}
+            </a>
+            <ul className="dropdown-menu">
+              <li><a className="dropdown-item" onClick={doLogout}>Logout</a></li>
+            </ul>
+          </li>}
         </ul>
       </div>
     </div>
