@@ -1,5 +1,10 @@
 name: Publish and deploy
-on: create
+on:
+  push:
+    branches: [ development ]
+    paths-ignore: [ '*.md' ]
+  pull_request:
+    branches: [ '**' ]
 
 env:
   SERVICE_NAME: ${{ github.event.repository.name }}
@@ -7,7 +12,6 @@ env:
 
 jobs:
   publish-job:
-    if: startsWith(github.ref, 'refs/tags')
     permissions:
       contents: 'read'
       id-token:  'write'
@@ -26,15 +30,21 @@ jobs:
           distribution: 'adopt'
           cache: 'gradle'
       
-      - name: Parse Tag
+      - name: Bump Version
+        uses: databiosphere/github-actions/actions/bumper@bumper-0.0.6
         id: tag
-        run: echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
+        env:
+          DEFAULT_BUMP: patch
+          RELEASE_BRANCHES: ${{ github.event.repository.default_branch }}
+          GITHUB_TOKEN: ${{ secrets.BROADBOT_TOKEN }}
+          VERSION_FILE_PATH: settings.gradle
+          VERSION_LINE_MATCH: "^\\s*gradle.ext.releaseVersion\\s*=\\s*'.*'"
       
       - name: Auth to Google
         uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: projects/1038484894585/locations/global/workloadIdentityPools/github-wi-pool/providers/github-wi-provider
-          service_account: gcr-publish@broad-dsp-gcr-publich.iam.gserviceaccout.com
+          service_account: gcr-publish@broad-dsp-gcr-publish.iam.gserviceaccout.com
       
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v1
@@ -51,7 +61,12 @@ jobs:
           ./gradlew --build-cache :service:jibDockerBuild \
           --image=${{ steps.image-name.outputs.name }} \
           -Djib.console=plain
-          
+      
+      - name: Run Trivy Vulnerability Scan
+        uses: broadinstitute/dsp-appsec-trivy-action@v1
+        with:
+          image: ${{ steps.image-name.outputs.name }}
+
       - name: Push GCR image
         run: docker push ${{ steps.image-name.outputs.name }}
       
