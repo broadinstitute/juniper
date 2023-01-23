@@ -1,6 +1,6 @@
-import {UserManager} from 'oidc-client-ts'
-import React, {useEffect} from 'react'
-import {getOidcConfig} from '../authConfig'
+import { UserManager } from 'oidc-client-ts'
+import React, { useEffect } from 'react'
+import { getOidcConfig } from '../authConfig'
 
 export const RedirectFromOAuth = () => {
   const userManager = new UserManager(getOidcConfig())

@@ -1,29 +1,30 @@
 import React from 'react'
-import {NavLink} from 'react-router-dom'
-import Api, {getImageUrl, NavbarItem} from 'api/api'
-import {usePortalEnv} from 'providers/PortalProvider'
-import {useUser} from "../providers/UserProvider";
+import { NavLink } from 'react-router-dom'
+import Api, { getImageUrl, NavbarItem } from 'api/api'
+import { usePortalEnv } from 'providers/PortalProvider'
+import { useUser } from '../providers/UserProvider'
 
 /** renders the navbar for participant landing page (for not-logged-in participants) */
 export default function LandingNavbar() {
-  const {localContent} = usePortalEnv()
-  const {user, logoutUser} = useUser()
+  const { localContent } = usePortalEnv()
+  const { user, logoutUser } = useUser()
   const navLinks = localContent.navbarItems
 
+  /** send a logout to the api then logout */
   function doLogout() {
-    Api.logout().then(response => {
+    Api.logout().then(() => {
       logoutUser()
       window.location.href = '/'
-    }).catch((e) => {
-      alert("an error occurred during logout " + e)
+    }).catch(e => {
+      alert(`an error occurred during logout ${e}`)
     })
   }
 
   return <nav className="LandingNavbar navbar navbar-expand-lg navbar-light">
     <div className="container-fluid">
       <NavLink to="/" className="navbar-brand">
-        <img className="Navbar-logo" style={{maxHeight: '30px'}}
-             src={getImageUrl(localContent.navLogoShortcode)} alt="logo"/>
+        <img className="Navbar-logo" style={{ maxHeight: '30px' }}
+          src={getImageUrl(localContent.navLogoShortcode)} alt="logo"/>
       </NavLink>
       <div className="collapse navbar-collapse" id="navbarNavDropdown">
         <ul className="navbar-nav">
@@ -37,7 +38,7 @@ export default function LandingNavbar() {
           </li>}
           {!user.isAnonymous && <li className="nav-item dropdown">
             <a className="nav-link dropdown-toggle" href="#"
-               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              role="button" data-bs-toggle="dropdown" aria-expanded="false">
               {user.username}
             </a>
             <ul className="dropdown-menu">
@@ -53,7 +54,7 @@ export default function LandingNavbar() {
 /** renders a single navBarItem. This will likely get split out into subcomponents for each type as they are
  * implemented
  */
-export function CustomNavLink({navLink}: { navLink: NavbarItem }) {
+export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
   /** will eventually popup a modal allowing email address entry */
   function mailingList(navLinkObj: NavbarItem) {
     alert(`mailing list ${navLinkObj.label}`)

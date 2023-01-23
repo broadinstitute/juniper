@@ -1,4 +1,4 @@
-import {WebStorageStateStore} from 'oidc-client-ts'
+import { WebStorageStateStore } from 'oidc-client-ts'
 
 /**
  * To learn more about user flows, visit: https://docs.microsoft.com/en-us/azure/active-directory-b2c/user-flow-overview
@@ -30,15 +30,15 @@ export const getOidcConfig = () => {
     prompt: 'consent login',
     scope: 'openid email profile',
     loadUserInfo: false,
-    stateStore: new WebStorageStateStore({store: window.localStorage}),
-    userStore: new WebStorageStateStore({store: window.localStorage}),
+    stateStore: new WebStorageStateStore({ store: window.localStorage }),
+    userStore: new WebStorageStateStore({ store: window.localStorage }),
     automaticSilentRenew: true,
     // Leo's setCookie interval is currently 5 min, set refresh auth then 5 min 30 seconds to gurantee that setCookie's
     // token won't expire between 2 setCookie api calls
     accessTokenExpiringNotificationTimeInSeconds: 330,
     includeIdTokenInSilentRenew: true,
     // eslint-disable-next-line camelcase
-    extraQueryParams: {access_type: 'offline'},
+    extraQueryParams: { access_type: 'offline' },
     // eslint-disable-next-line camelcase
     redirect_uri: ''
   }
