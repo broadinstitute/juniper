@@ -1,0 +1,60 @@
+name: Publish and deploy
+on: create
+
+env:
+  SERVICE_NAME: ${{ github.event.repository.name }}
+  GOOGLE_PROJECT: broad-dsp-gcr-public
+
+jobs:
+  publish-job:
+    if: startsWith(github.ref, 'refs/tags')
+    permissions:
+      contents: 'read'
+      id-token:  'write'
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - name: Checkout Current Code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.BROADBOT_TOKEN }}
+      - name: Set Up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          cache: 'gradle'
+      
+      - name: Parse Tag
+        id: tag
+        run: echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
+      
+      - name: Auth to Google
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: projects/1038484894585/locations/global/workloadIdentityPools/github-wi-pool/providers/github-wi-provider
+          service_account: gcr-publish@broad-dsp-gcr-publich.iam.gserviceaccout.com
+      
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Explicitly auth Docker for GCR
+        run: gcloud auth configure-docker --quiet
+
+      - name: Construct docker image name and tag
+        id: image-name
+        run: echo "name=gcr.io/${GOOGLE_PROJECT}/${SERVICE_NAME}:${{ steps.tag.outputs.tag }}" >> $GITHUB_OUTPUT
+      
+      - name: Build image locally with jib
+        run: |
+          ./gradlew --build-cache :service:jibDockerBuild \
+          --image=${{ steps.image-name.outputs.name }} \
+          -Djib.console=plain
+          
+      - name: Push GCR image
+        run: docker push ${{ steps.image-name.outputs.name }}
+      
+
+
+
