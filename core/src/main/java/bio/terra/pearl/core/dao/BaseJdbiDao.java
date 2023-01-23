@@ -107,12 +107,11 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     }
 
     public T create(T modelObj) {
-        if (modelObj.getId() != null) {
-            throw new IllegalArgumentException("object passed to create already has id - " + modelObj.getId());
-        }
+        String idClause = modelObj.getId() != null ? "id, " : "";
+        String idValue = modelObj.getId() != null ? "'" + modelObj.getId().toString() + "', " : "";
         return jdbi.withHandle(handle ->
-                handle.createUpdate("insert into " + tableName + " (" + StringUtils.join(insertColumns, ", ") +") " +
-                                "values (" + StringUtils.join(insertFieldSymbols, ", ") + ");")
+                handle.createUpdate("insert into " + tableName + " (" + idClause + StringUtils.join(insertColumns, ", ") +") " +
+                                "values (" + idValue + StringUtils.join(insertFieldSymbols, ", ") + ");")
                         .bindBean(modelObj)
                         .executeAndReturnGeneratedKeys()
                         .mapTo(clazz)
@@ -128,6 +127,10 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
                         .mapTo(clazz)
                         .findOne()
         );
+    }
+
+    public List<T> findAllById(List<UUID> ids) {
+        return findAllByPropertyCollection("id", ids);
     }
 
     public List<T> findAll() {

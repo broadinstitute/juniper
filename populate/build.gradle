@@ -1,15 +1,11 @@
 plugins {
+    id 'bio.terra.java-common-conventions'
     id "io.freefair.lombok" version "5.3.3.3"
     id 'java'
 }
 
 group = 'bio.terra.pearl.core'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     implementation project(':core')

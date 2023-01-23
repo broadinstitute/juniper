@@ -24,7 +24,7 @@ public class BaseSeedPopulator extends Populator<BaseSeedPopulator.SetupStats> {
     private EnvironmentService environmentService;
 
     private static final List<String> ADMIN_USERS_TO_POPULATE =
-            Arrays.asList("adminUsers/dbush.json", "adminUsers/breilly.json");
+            Arrays.asList("adminUsers/dbush.json", "adminUsers/breilly.json", "adminUsers/breilly.firecloud.json");
     private static final List<String> ENVIRONMENTS_TO_POPULATE =
             Arrays.asList("environments/sandbox.json", "environments/irb.json", "environments/live.json");
 

@@ -1,4 +1,4 @@
-import { WebStorageStateStore } from 'oidc-client-ts'
+import {UserManagerSettings, WebStorageStateStore} from 'oidc-client-ts'
 
 /**
  * To learn more about user flows, visit: https://docs.microsoft.com/en-us/azure/active-directory-b2c/user-flow-overview
@@ -9,7 +9,7 @@ const aadB2cName = process.env.REACT_APP_B2C_TENANT_NAME ? process.env.REACT_APP
 const aadb2cClientId = process.env.REACT_APP_B2C_CLIENT_ID  ? process.env.REACT_APP_B2C_CLIENT_ID : 'ID_NEEDED'
 
 // TODO: This is a modified copy of code from Terra UI. It could use some clean-up.
-export const getOidcConfig = () => {
+export const getOidcConfig = (): UserManagerSettings => {
   const metadata = {
     // eslint-disable-next-line camelcase
     authorization_endpoint:
@@ -22,6 +22,8 @@ export const getOidcConfig = () => {
     authority: `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev`,
     // eslint-disable-next-line camelcase
     client_id: aadb2cClientId,
+    // eslint-disable-next-line camelcase
+    redirect_uri: `${window.origin}/redirect-from-oauth`,
     // eslint-disable-next-line camelcase
     popup_redirect_uri: `${window.origin}/redirect-from-oauth`,
     // eslint-disable-next-line camelcase
@@ -38,9 +40,7 @@ export const getOidcConfig = () => {
     accessTokenExpiringNotificationTimeInSeconds: 330,
     includeIdTokenInSilentRenew: true,
     // eslint-disable-next-line camelcase
-    extraQueryParams: { access_type: 'offline' },
-    // eslint-disable-next-line camelcase
-    redirect_uri: ''
+    extraQueryParams: { access_type: 'offline' }
   }
 }
 

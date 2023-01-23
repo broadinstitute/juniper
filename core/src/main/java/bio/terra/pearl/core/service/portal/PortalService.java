@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.portal;
 
+import bio.terra.common.iam.SamUser;
 import bio.terra.pearl.core.dao.admin.PortalAdminUserDao;
 import bio.terra.pearl.core.dao.portal.PortalDao;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -18,11 +19,15 @@ import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import bio.terra.pearl.core.service.terra.SamService;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.broadinstitute.dsde.workbench.client.sam.ApiException;
+import org.broadinstitute.dsde.workbench.client.sam.model.UserResourcesResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,13 +41,15 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     private SurveyService surveyService;
     private ConsentFormService consentFormService;
     private SiteContentService siteContentService;
+    private SamService samService;
 
     public PortalService(PortalDao portalDao, PortalStudyService portalStudyService,
                          StudyService studyService,
                          PortalEnvironmentService portalEnvironmentService,
                          ParticipantUserService participantUserService,
                          PortalAdminUserDao portalAdminUserDao, SurveyService surveyService,
-                         ConsentFormService consentFormService, SiteContentService siteContentService) {
+                         ConsentFormService consentFormService, SiteContentService siteContentService,
+                         SamService samService) {
         super(portalDao);
         this.portalStudyService = portalStudyService;
         this.portalEnvironmentService = portalEnvironmentService;
@@ -52,6 +59,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         this.surveyService = surveyService;
         this.consentFormService = consentFormService;
         this.siteContentService = siteContentService;
+        this.samService = samService;
     }
 
     @Transactional
@@ -117,6 +125,17 @@ public class PortalService extends CrudService<Portal, PortalDao> {
 
     public List<Portal> findByAdminUserId(UUID userId) {
         return dao.findByAdminUserId(userId);
+    }
+
+    public List<Portal> findBySamUser(SamUser samUser) {
+        List<UserResourcesResponse> userResourcesResponses = null;
+        try {
+            userResourcesResponses = samService.listPortals(samUser);
+        } catch (ApiException e) {
+            throw new RuntimeException(e);
+        }
+        var portalIds = userResourcesResponses.stream().map(r -> UUID.fromString(r.getResourceId())).toList();
+        return dao.findAllById(portalIds);
     }
 
     public Portal authUserToPortal(AdminUser user, String portalShortcode) {

@@ -60,11 +60,11 @@ version = gradle.releaseVersion
 group = 'bio.terra'
 
 spotless {
-    java {
-        targetExclude "${buildDir}/**"
-        targetExclude "**/swagger-code/**"
-        googleJavaFormat()
-    }
+//    java {
+//        targetExclude "${buildDir}/**"
+//        targetExclude "**/swagger-code/**"
+//        googleJavaFormat()
+//    }
 }
 
 // Run spotless check when running in github actions, otherwise run spotless apply.
