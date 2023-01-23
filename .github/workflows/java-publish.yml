@@ -9,6 +9,7 @@ on:
 env:
   SERVICE_NAME: ${{ github.event.repository.name }}
   GOOGLE_PROJECT: broad-dsp-gcr-public
+  GOOGLE_DOCKER_REPOSITORY: us-central1-docker.pkg.dev
 
 jobs:
   publish-job:
@@ -44,17 +45,17 @@ jobs:
         uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: projects/1038484894585/locations/global/workloadIdentityPools/github-wi-pool/providers/github-wi-provider
-          service_account: gcr-publish@broad-dsp-gcr-publish.iam.gserviceaccout.com
+          service_account: dsp-artifact-registry-push@dsp-artifact-registry.iam.gserviceaccout.com
       
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v1
 
       - name: Explicitly auth Docker for GCR
-        run: gcloud auth configure-docker --quiet
+        run: gcloud auth configure-docker $GOOGLE_DOCKER_REPOSITORY --quiet
 
       - name: Construct docker image name and tag
         id: image-name
-        run: echo "name=gcr.io/${GOOGLE_PROJECT}/${SERVICE_NAME}:${{ steps.tag.outputs.tag }}" >> $GITHUB_OUTPUT
+        run: echo "name=${GOOGLE_DOCKER_REPOSITORY}/${GOOGLE_PROJECT}/${IMAGE_REPOSITORY_NAME}/${SERVICE_NAME}:${{ steps.tag.outputs.tag }}" >> $GITHUB_OUTPUT
       
       - name: Build image locally with jib
         run: |
