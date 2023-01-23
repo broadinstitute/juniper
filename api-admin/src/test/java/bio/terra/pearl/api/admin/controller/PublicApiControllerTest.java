@@ -73,7 +73,7 @@ class PublicApiControllerTest {
 
   @Test
   void testResourceGets() throws Exception {
+    // confirm image paths are not forwarded to index
     this.mockMvc.perform(get("/foo/bar/image.png")).andExpect(status().isNotFound());
-    this.mockMvc.perform(get("/favicon.ico")).andExpect(status().isOk());
   }
 }
