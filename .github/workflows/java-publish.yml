@@ -8,8 +8,9 @@ on:
 
 env:
   SERVICE_NAME: ${{ github.event.repository.name }}
-  GOOGLE_PROJECT: broad-dsp-gcr-public
+  GOOGLE_PROJECT: dsp-artfact-registry
   GOOGLE_DOCKER_REPOSITORY: us-central1-docker.pkg.dev
+  IMAGE_REPOSITORY_NAME: ddp
 
 jobs:
   publish-job:
