@@ -15,7 +15,7 @@ jobs:
       tag: ${{ steps.tag.outputs.tag }}
     steps:
       - name: Checkout current code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           token: ${{ secrets.BROADBOT_TOKEN }} # this allows the push to succeed later
       - name: Bump the tag to a new version
@@ -29,4 +29,3 @@ jobs:
           RELEASE_BRANCHES: development
           VERSION_FILE_PATH: settings.gradle
           VERSION_LINE_MATCH: "^\\s*gradle.ext.releaseVersion\\s*=\\s*'.*'"
-          VERSION_SUFFIX: SNAPSHOT
