@@ -1,6 +1,6 @@
 {
   "name": "OurHealth consent",
-  "stableId": "ourHealthConsent",
+  "stableId": "oh_oh_consent",
   "version": 1,
   "jsonContent":
 {
@@ -47,28 +47,22 @@
         {
           "type": "text",
           "isRequired": true,
-          "name": "oh_consent_legalName",
+          "name": "oh_oh_consent_legalName",
           "title": "Full legal name (type)"
         },
         {
           "type": "text",
           "isRequired": true,
-          "name": "oh_consent_signatureDate",
+          "name": "oh_oh_consent_signatureDate",
           "title": "Date/Time (type)"
         },
         {
           "type": "signaturepad",
           "isRequired": true,
-          "name": "oh_consent_signature",
+          "name": "oh_oh_consent_signature",
           "title": "Signature"
         }
       ]
-    }
-  ],
-  "triggers": [
-    {
-      "type": "complete",
-      "expression": "{oh_consent_checkbox} = 'yes'"
     }
   ]
 }

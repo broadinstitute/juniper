@@ -48,14 +48,14 @@ public class SiteImageService extends CrudService<SiteImage, SiteImageDao> {
     /**
      * A shortcode is a globally unique, URL-safe identifier.
      * Shortcode is the upload filename with whitespace replaced with _,
-     * stripped of special characters and whitespace except ".", then lowercased.
+     * stripped of special characters and whitespace except "." "_" or "-", then lowercased.
      * The siteContent shortcode and version are then prepended to ensure uniqueness
      */
     public static String generateShortcode(String uploadFileName,
                                            String siteContentStableId, int siteContentVersion) {
         String cleanFileName = uploadFileName.toLowerCase()
                 .replaceAll("\\s", "_")
-                .replaceAll("[^a-z\\d\\._]", "");
+                .replaceAll("[^a-z\\d\\._\\-]", "");
         return  siteContentStableId + "_" + siteContentVersion + "_" + cleanFileName;
     }
 

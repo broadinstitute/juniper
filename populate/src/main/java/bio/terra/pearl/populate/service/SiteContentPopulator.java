@@ -74,11 +74,16 @@ public class SiteContentPopulator extends Populator<SiteContent> {
     private void populateImages(SiteContentPopDto siteContent, UUID portalEnvId, FilePopulateConfig config)
             throws IOException {
         for (SiteImagePopDto imageDto : siteContent.getSiteImageDtos()) {
-            byte[] imageContent = filePopulateService.readBinaryFile(imageDto.getPopulateFileName(), config);
+            String popFileName = imageDto.getPopulateFileName();
+            byte[] imageContent = filePopulateService.readBinaryFile(popFileName, config);
+            String uploadFileName = imageDto.getUploadFileName();
+            if (uploadFileName == null) {
+                uploadFileName = popFileName.substring(popFileName.lastIndexOf("/") + 1);
+            }
             SiteImage image = SiteImage.builder()
                     .data(imageContent)
                     .siteContentId(portalEnvId)
-                    .uploadFileName(imageDto.getUploadFileName())
+                    .uploadFileName(uploadFileName)
                     .build();
             siteImageService.create(image);
         }

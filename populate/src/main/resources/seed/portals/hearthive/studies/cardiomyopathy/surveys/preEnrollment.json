@@ -19,13 +19,6 @@
             "name": "hh_cmyop_prereg_dx",
             "title": "Have you been diagnosed with cardiomyopathy",
             "isRequired": true,
-            "validators": [
-              {
-                "type": "expression",
-                "text": "You must have a diagnosis of cardiomyopathy to join this study",
-                "expression": "{hearthive_prereg_dx} = 'yes'"
-              }
-            ],
             "choices": [
               {
                 "value": "yes",
@@ -38,6 +31,13 @@
             ]
           }
         ]
+      }
+    ],
+    "calculatedValues": [
+      {
+        "name": "qualified",
+        "expression": "{hh_cmyop_prereg_dx} = 'yes'",
+        "includeIntoResult": true
       }
     ]
   }

@@ -1,5 +1,5 @@
 {
-  "stableId": "oh_preregistation",
+  "stableId": "oh_oh_preenroll",
   "version": 1,
   "name": "Pre-registration",
   "jsonContent": {
@@ -16,16 +16,9 @@
         },
         {
           "type": "radiogroup",
-          "name": "ourhealth_prereg_ancestry",
+          "name": "oh_oh_preenroll_ancestry",
           "title": "Are you of South Asian ancestry?",
           "isRequired": true,
-          "validators": [
-            {
-              "type": "expression",
-              "text": "You must be of South Asian ancestry to join our study",
-              "expression": "{ourhealth_prereg_ancestry} = 'yes'"
-            }
-          ],
           "choices": [
             {
               "value": "yes",
@@ -39,32 +32,18 @@
         },
         {
           "type": "text",
-          "name": "ourhealth_prereg_age",
+          "name": "oh_oh_preenroll_age",
           "title": "How old are you?",
           "isRequired": true,
-          "validators": [
-            {
-              "type": "numeric",
-              "text": "You must be 18 or older to participate",
-              "minValue": 18
-            }
-          ],
           "inputType": "number",
           "min": 0,
           "max": 130
         },
         {
           "type": "radiogroup",
-          "name": "ourhealth_prereg_liveInUs",
+          "name": "oh_oh_preenroll_liveInUs",
           "title": "Do you live in the United States?",
           "isRequired": true,
-          "validators": [
-            {
-              "type": "expression",
-              "text": "You must live in the United States to join our study",
-              "expression": "{ourhealth_prereg_liveInUs} = 'yes'"
-            }
-          ],
           "choices": [
             {
               "value": "yes",
@@ -77,6 +56,13 @@
           ]
         }
       ]
+    }
+  ],
+  "calculatedValues": [
+    {
+      "name": "qualified",
+      "expression": "{oh_oh_preenroll_liveInUs} = 'yes' && {oh_oh_preenroll_age} = 'yes' && {oh_oh_preenroll_ancestry} = 'yes'",
+      "includeIntoResult": true
     }
   ]
 }

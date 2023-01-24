@@ -2,7 +2,7 @@
   "name": "Longitudinal heart health study",
   "shortcode": "ourheart",
   "surveyFiles": [
-    "surveys/preRegistration.json",
+    "surveys/preEnroll.json",
     "surveys/medicalHistory.json"
   ],
   "consentFormFiles": [
@@ -18,18 +18,18 @@
         "initialized": true
       },
       "preEnrollSurveyDto": {
-        "stableId": "oh_preregistation",
+        "stableId": "oh_oh_preenroll",
         "version": 1
       },
       "configuredSurveyDtos": [
         {
-          "surveyStableId": "oh_medicalHistory",
+          "surveyStableId": "oh_oh_medHx",
           "surveyVersion": 1
         }
       ],
       "configuredConsentDtos": [
         {
-          "consentStableId": "ourHealthConsent",
+          "consentStableId": "oh_oh_consent",
           "consentVersion": 1
         }
       ],
