@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # Only tag a new release if prior steps were successful and triggering commit is a merge to mainline
-    if: success() && github.ref == 'refs/heads/${{ github.event.repository.default_branch }}'
+    if: success() && github.ref == 'refs/heads/development'
 
     steps:
       - name: Trigger Tag Workflow
