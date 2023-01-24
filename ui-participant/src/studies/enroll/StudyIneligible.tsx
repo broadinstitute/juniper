@@ -6,8 +6,5 @@ export default function StudyIneligible() {
     <p>
       You are not currently eligible to participate in this study.
     </p>
-    <p>
-      Use the Mailing List link above if you would like to be notified about any new studies or other news.
-    </p>
   </div>
 }
