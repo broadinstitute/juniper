@@ -1,4 +1,4 @@
-import {DenormalizedPreRegResponse} from '../util/surveyJsUtils'
+import { DenormalizedPreRegResponse } from '../util/surveyJsUtils'
 
 export type ParticipantUser = {
   username: string,
@@ -149,19 +149,19 @@ export default {
   },
 
   async getPortal(): Promise<Portal> {
-    const {shortcode, envName} = getEnvSpec()
+    const { shortcode, envName } = getEnvSpec()
     const response = await fetch(`${API_ROOT}/portals/v1/${shortcode}/env/${envName}`, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
   /** submit portal preregistration survey data */
-  async completePortalPreReg({surveyStableId, surveyVersion, preRegResponse}:
+  async completePortalPreReg({ surveyStableId, surveyVersion, preRegResponse }:
                                {
                                  surveyStableId: string, surveyVersion: number,
                                  preRegResponse: DenormalizedPreRegResponse
                                }):
     Promise<PreregistrationResponse> {
-    const {shortcode, envName} = getEnvSpec()
+    const { shortcode, envName } = getEnvSpec()
     const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/preReg/${surveyStableId}/${surveyVersion}`
     const response = await fetch(url, {
       method: 'POST',
@@ -177,10 +177,10 @@ export default {
    */
   async confirmStudyPreEnroll(preEnroll: string, studyShortcode: string):
     Promise<void> {
-    const {shortcode, envName} = getEnvSpec()
+    const { shortcode, envName } = getEnvSpec()
     const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/studies/${studyShortcode}`
       + `/preEnroll/${preEnroll}/confirm`
-    const response = await fetch(url, {headers: this.getInitHeaders()})
+    const response = await fetch(url, { headers: this.getInitHeaders() })
     if (!response.ok) {
       return Promise.reject(response)
     }
@@ -192,19 +192,19 @@ export default {
    */
   async confirmPortalPreReg(preRegId: string):
     Promise<void> {
-    const {shortcode, envName} = getEnvSpec()
+    const { shortcode, envName } = getEnvSpec()
     const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}`
       + `/preReg/${preRegId}/confirm`
-    const response = await fetch(url, {headers: this.getInitHeaders()})
+    const response = await fetch(url, { headers: this.getInitHeaders() })
     if (!response.ok) {
       return Promise.reject(response)
     }
   },
 
   /** submits registration data for a particular portal, from an anonymous user */
-  async register({preRegResponseId, fullData}: { preRegResponseId: string, fullData: object }):
+  async register({ preRegResponseId, fullData }: { preRegResponseId: string, fullData: object }):
     Promise<RegistrationResponse> {
-    const {shortcode, envName} = getEnvSpec()
+    const { shortcode, envName } = getEnvSpec()
     let url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/register`
     if (preRegResponseId) {
       url += `?preRegResponseId=${preRegResponseId}`
@@ -218,7 +218,7 @@ export default {
   },
 
   async unauthedLogin(username: string): Promise<ParticipantUser> {
-    const {shortcode, envName} = getEnvSpec()
+    const { shortcode, envName } = getEnvSpec()
     const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/current-user/unauthed-login?${new URLSearchParams({
       username
     })}`
@@ -231,7 +231,8 @@ export default {
 
   async refreshLogin(token: string): Promise<ParticipantUser> {
     this.setBearerToken(token)
-    const {shortcode, envName} = getEnvSpec()
+    const { shortcode, envName } = getEnvSpec()
+
     const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/current-user/refresh`
     const response = await fetch(url, {
       method: 'POST',
@@ -241,7 +242,7 @@ export default {
   },
 
   async logout(): Promise<void> {
-    const {shortcode, envName} = getEnvSpec()
+    const { shortcode, envName } = getEnvSpec()
     const url = `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/current-user/logout`
     await fetch(url, {
       method: 'POST',
@@ -259,7 +260,7 @@ export default {
  * Returns a url suitable for inclusion in an <img> tag based on a image shortcode
  */
 export function getImageUrl(imageShortcode: string) {
-  const {shortcode, envName} = getEnvSpec()
+  const { shortcode, envName } = getEnvSpec()
   return `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/siteImages/${imageShortcode}`
 }
 
@@ -285,7 +286,7 @@ function readEnvFromHostname(hostname: string): EnvSpec {
     envName = 'LIVE'
     shortname = splitHostname[0]
   }
-  return {envName, shortcode: shortname}
+  return { envName, shortcode: shortname }
 }
 
 const ALLOWED_ENV_NAMES: Record<string, string> = {

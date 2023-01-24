@@ -11,10 +11,12 @@ plugins {
 apply from: 'generators.gradle'
 apply from: 'publishing.gradle'
 
+
 dependencies {
     implementation 'bio.terra:terra-common-lib'
     implementation project(':core')
     implementation project(':populate')
+    implementation project(':ui-admin')
     implementation 'org.apache.commons:commons-dbcp2'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -30,6 +32,21 @@ dependencies {
     }
     testImplementation 'org.mockito:mockito-inline'
 }
+
+task copyWebApp(type: Copy) {
+    from "$rootDir/ui-admin/build"
+    into "$rootDir/api-admin/build/resources/main/static"
+}
+
+// TODO this isn't quite the right way to specify this dependency, and we are still getting some warnings about
+// "Task <<>> uses this output of task ':api-admin:copyWebApp' without having it as a dependency"
+// This should be upgraded accordingly to fix that
+bootJar.dependsOn(copyWebApp)
+bootRun.dependsOn(copyWebApp)
+test.dependsOn(copyWebApp)
+spotbugsTest.dependsOn(copyWebApp)
+jar.dependsOn(copyWebApp)
+compileTestJava.dependsOn(copyWebApp)
 
 test {
     useJUnitPlatform ()

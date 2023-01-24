@@ -50,7 +50,7 @@ spring:
           maxAge: 0
           mustRevalidate: true
         useLastModified: false
-      staticLocations: classpath:/api/
+      staticLocations: classpath:/api/,classpath:/static/
   jpa:
     show-sql: true
     properties:
