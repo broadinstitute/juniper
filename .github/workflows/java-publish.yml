@@ -61,18 +61,18 @@ jobs:
       - name: Push GCR image
         run: docker push ${{ steps.image-name.outputs.name }}
       
-      # - name: Notify slack on failure
-      #   uses: broadinstitute/action-slack@v3.8.0
-      #   if: failure()
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #   with:
-      #     channel: '#your_channel'
-      #     status: failure
-      #     author_name: Publish to dev
-      #     fields: job
-      #     text: 'Publish failed :sadpanda:'
-      #     username: 'Terra Java Project Template GitHub Action'
+      - name: Notify slack on failure
+        uses: broadinstitute/action-slack@v3.8.0
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          channel: '#pearl-dev-notifications'
+          status: failure
+          author_name: Publish to dev
+          fields: job
+          text: 'Publish failed :sadpanda:'
+          username: 'Pearl Build Notifications'
   
   # Uncomment once we have a dev deployment running to start reporting new builds and auto-deploying them
   # via dsp-devops tooling
