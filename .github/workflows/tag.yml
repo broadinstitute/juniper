@@ -1,5 +1,5 @@
 
-name: tag
+name: Tag
 on:
   workflow_dispatch:
   workflow_call:

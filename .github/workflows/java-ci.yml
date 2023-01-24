@@ -63,7 +63,7 @@ jobs:
       - name: Trigger Trivy Scan
         uses: broadinstitute/workflow-dispatch@v1
         with:
-          workflow: trivy
+          workflow: Trivy
           token: ${{ secrets.BROADBOT_TOKEN }}
           ref: ${{ github.event.pull_request.head.ref }}
   
@@ -78,5 +78,5 @@ jobs:
       - name: Trigger Tag Workflow
         uses: broadinstitute/workflow-dispatch@v1
         with:
-          workflow: tag
+          workflow: Tag
           token: ${{ secrets.BROADBOT_TOKEN }}
