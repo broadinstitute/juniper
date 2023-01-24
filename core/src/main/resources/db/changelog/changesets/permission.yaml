@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: permission
+      author: breilly
+      changes:
+        - createTable:
+            tableName: permission
+            columns:
+              - column: &idColumn
+                  { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: &createdAt
+                  { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: &lastUpdatedAt
+                  { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: name, type: text, constraints: { nullable: false, unique: true } }
+        - createTable:
+            tableName: role_permission
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: role_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_role_permission_role, references: role(id)
+              } }
+              - column: { name: permission_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_role_permission_permission, references: permission(id)
+              } }
