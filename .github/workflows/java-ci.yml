@@ -56,30 +56,30 @@ jobs:
   # before the following steps will work
 
   # Run DSP App Sec Trivy Scanner on PRs
-  # dispatch-trivy:
-  #   needs: [ build ]
-  #   runs-on: ubuntu-latest
+  dispatch-trivy:
+    needs: [ build ]
+    runs-on: ubuntu-latest
 
-  #   if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request'
 
-  #   steps:
-  #     - name: Trigger Trivy Scan
-  #       uses: broadinstitute/workflow-dispatch@v1
-  #       with:
-  #         workflow: Trivy
-  #         token: ${{ secrets.BROADBOT_TOKEN }}
-  #         ref: ${{ github.event.pull_request.head.ref }}
+    steps:
+      - name: Trigger Trivy Scan
+        uses: broadinstitute/workflow-dispatch@v1
+        with:
+          workflow: Trivy
+          token: ${{ secrets.BROADBOT_TOKEN }}
+          ref: ${{ github.event.pull_request.head.ref }}
   
-  # dispatch-tag:
-  #   needs: [ build ]
-  #   runs-on: ubuntu-latest
+  dispatch-tag:
+    needs: [ build ]
+    runs-on: ubuntu-latest
 
-  #   # Only tag a new release if prior steps were successful and triggering commit is a merge to mainline
-  #   if: success() && github.ref == 'refs/heads/${{ github.event.repository.default_branch }}'
+    # Only tag a new release if prior steps were successful and triggering commit is a merge to mainline
+    if: success() && github.ref == 'refs/heads/development'
 
-  #   steps:
-  #     - name: Trigger Tag Workflow
-  #       uses: broadinstitute/workflow-dispatch@v1
-  #       with:
-  #         workflow: Tag
-  #         token: ${{ secrets.BROADBOT_TOKEN }}
+    steps:
+      - name: Trigger Tag Workflow
+        uses: broadinstitute/workflow-dispatch@v1
+        with:
+          workflow: Tag
+          token: ${{ secrets.BROADBOT_TOKEN }}
