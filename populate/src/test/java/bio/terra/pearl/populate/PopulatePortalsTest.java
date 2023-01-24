@@ -86,7 +86,7 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
     }
 
     private void checkOurhealthSurveys(Enrollee jonas) throws IOException {
-        Survey medHistorySurvey = surveyService.findByStableId("oh_medicalHistory", 1).get();
+        Survey medHistorySurvey = surveyService.findByStableId("oh_oh_medHx", 1).get();
 
         List<SurveyResponse> jonasResponses = surveyResponseService.findByEnrolleeId(jonas.getId());
         Assertions.assertEquals(1, jonasResponses.size());
