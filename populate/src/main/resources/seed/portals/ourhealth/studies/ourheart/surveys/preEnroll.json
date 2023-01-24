@@ -61,7 +61,7 @@
   "calculatedValues": [
     {
       "name": "qualified",
-      "expression": "{oh_oh_preenroll_liveInUs} = 'yes' && {oh_oh_preenroll_age} = 'yes' && {oh_oh_preenroll_ancestry} = 'yes'",
+      "expression": "{oh_oh_preenroll_liveInUs} = 'yes' && {oh_oh_preenroll_age} > 17 && {oh_oh_preenroll_ancestry} = 'yes'",
       "includeIntoResult": true
     }
   ]
