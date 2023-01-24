@@ -11,7 +11,12 @@
 
 name: Java CI
 
-on: [push]
+on:
+  push:
+    branches: [ development ]
+    paths-ignore: [ '*.md']
+  pull_request:
+    branches: [ '**' ]
 
 jobs:
   build:
@@ -46,3 +51,35 @@ jobs:
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
           arguments: build
+
+  # Need to uncomment these in follow up PR, The new Trivy and Tag workflows need to exist on the development branch
+  # before the following steps will work
+
+  # Run DSP App Sec Trivy Scanner on PRs
+  # dispatch-trivy:
+  #   needs: [ build ]
+  #   runs-on: ubuntu-latest
+
+  #   if: github.event_name == 'pull_request'
+
+  #   steps:
+  #     - name: Trigger Trivy Scan
+  #       uses: broadinstitute/workflow-dispatch@v1
+  #       with:
+  #         workflow: Trivy
+  #         token: ${{ secrets.BROADBOT_TOKEN }}
+  #         ref: ${{ github.event.pull_request.head.ref }}
+  
+  # dispatch-tag:
+  #   needs: [ build ]
+  #   runs-on: ubuntu-latest
+
+  #   # Only tag a new release if prior steps were successful and triggering commit is a merge to mainline
+  #   if: success() && github.ref == 'refs/heads/${{ github.event.repository.default_branch }}'
+
+  #   steps:
+  #     - name: Trigger Tag Workflow
+  #       uses: broadinstitute/workflow-dispatch@v1
+  #       with:
+  #         workflow: Tag
+  #         token: ${{ secrets.BROADBOT_TOKEN }}
