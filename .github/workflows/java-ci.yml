@@ -13,7 +13,7 @@ name: Java CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ development ]
     paths-ignore: [ '*.md']
   pull_request:
     branches: [ '**' ]
@@ -54,7 +54,7 @@ jobs:
 
   # Need to uncomment these in follow up PR, The new Trivy and Tag workflows need to exist on the development branch
   # before the following steps will work
-   
+
   # Run DSP App Sec Trivy Scanner on PRs
   # dispatch-trivy:
   #   needs: [ build ]
