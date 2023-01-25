@@ -12,4 +12,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class Permission extends BaseEntity {
     private String name;
+    private String displayName;
+    private String description;
 }

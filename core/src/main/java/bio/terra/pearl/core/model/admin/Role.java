@@ -14,6 +14,8 @@ import java.util.Set;
 @NoArgsConstructor
 public class Role extends BaseEntity {
     private String name;
+    private String displayName;
+    private String description;
     @Builder.Default
     private Set<Permission> permissions = new HashSet<>();
 }
