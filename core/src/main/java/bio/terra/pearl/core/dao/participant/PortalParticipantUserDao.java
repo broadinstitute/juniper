@@ -2,12 +2,11 @@ package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import org.jdbi.v3.core.Jdbi;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.jdbi.v3.core.Jdbi;
+import org.springframework.stereotype.Component;
 
 @Component
 public class PortalParticipantUserDao extends BaseJdbiDao<PortalParticipantUser> {
@@ -28,6 +27,20 @@ public class PortalParticipantUserDao extends BaseJdbiDao<PortalParticipantUser>
                                 + " where participant_user_id = :userId and portal_environment_id = :portalEnvId")
                         .bind("userId", userId)
                         .bind("portalEnvId", portalEnvId)
+                        .mapTo(clazz)
+                        .findOne()
+        );
+    }
+
+    public Optional<PortalParticipantUser> findOne(UUID participantUserId, String portalShortcode) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select " + prefixedGetQueryColumns("a") + " from " + tableName + " a "
+                        + " join portal_environment on portal_environment_id = portal_environment.id"
+                        + " join portal on portal.id = portal_environment.portal_id"
+                        + " join participant_user on participant_user_id = participant_user.id"
+                        + " where portal.shortcode = :portalShortcode and participant_user_id = :participantUserId")
+                        .bind("portalShortcode", portalShortcode)
+                        .bind("participantUserId", participantUserId)
                         .mapTo(clazz)
                         .findOne()
         );

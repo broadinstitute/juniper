@@ -97,5 +97,28 @@ databaseChangeLog:
               - column: { name: portal_environment_id, type: uuid, constraints:
                 { nullable: false, foreignKeyName: fk_prereg_response_portal_env, references: portal_environment(id) }
               }
+        - createTable:
+            tableName: pre_enrollment_response
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: qualified, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: survey_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_consent_response_consent, references: survey(id) }
+              }
+              - column: { name: portal_participant_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_prereg_response_portal_pt_id, references: portal_participant_user(id) }
+              }
+              - column: { name: full_data, type: text }
+              - column: { name: creating_participant_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_consent_response_participant_user, references: participant_user(id) }
+              }
+              - column: { name: study_environment_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_pre_enrollment_study_env, references: study_environment(id) }
+              }
+              - column: { name: enrollee_id, type: uuid, constraints:
+                { foreignKeyName: fk_pre_enroll_enrollee, references: enrollee(id) }
+              }
 
 

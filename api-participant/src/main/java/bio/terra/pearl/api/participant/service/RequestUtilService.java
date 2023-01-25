@@ -19,7 +19,7 @@ public class RequestUtilService {
   }
 
   /** gets the user from the request, throwing an exception if not present */
-  public ParticipantUser getFromRequest(HttpServletRequest request) {
+  public ParticipantUser userFromRequest(HttpServletRequest request) {
     String token = tokenFromRequest(request);
     Optional<ParticipantUser> userOpt = currentUserService.findByToken(token);
     if (userOpt.isEmpty()) {

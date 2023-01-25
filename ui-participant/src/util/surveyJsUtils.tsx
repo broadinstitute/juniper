@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useState} from 'react'
 
-import { Model, Question, Serializer, StylesManager } from 'survey-core'
-import { Survey as SurveyJSComponent, SurveyModel } from 'survey-react-ui'
-import { ConsentForm, ResumableData, Survey, SurveyJSForm } from 'api/api'
-import { useSearchParams } from 'react-router-dom'
-import { getSurveyElementList } from './pearlSurveyUtils'
+import {Model, Question, Serializer, StylesManager} from 'survey-core'
+import {Survey as SurveyJSComponent, SurveyModel} from 'survey-react-ui'
+import {ConsentForm, ResumableData, Survey, SurveyJSForm} from 'api/api'
+import {useSearchParams} from 'react-router-dom'
+import {getSurveyElementList} from './pearlSurveyUtils'
 
 
 const PAGE_NUMBER_PARAM_NAME = 'page'
@@ -28,7 +28,7 @@ export function useRoutablePageNumber(): PageNumberControl {
 
   /** update the url with the new page number */
   function updatePageNumber(newPageNumber: number) {
-    setSearchParams({ page: (newPageNumber).toString() })
+    setSearchParams({page: (newPageNumber).toString()})
   }
 
   return {
@@ -54,7 +54,7 @@ export function useRoutablePageNumber(): PageNumberControl {
  * @param pager the control object for paging the survey
  */
 export function useSurveyJSModel(form: SurveyJSForm, resumeData: ResumableData | null,
-  onComplete: () => void, pager: PageNumberControl) {
+                                 onComplete: () => void, pager: PageNumberControl) {
   const [surveyModel, setSurveyModel] = useState<SurveyModel | null>(null)
 
   /** hand a page change by updating state of both the surveyJS model and our internal state*/
@@ -110,7 +110,7 @@ export function useSurveyJSModel(form: SurveyJSForm, resumeData: ResumableData |
   }, [surveyModel])
   const pageNumber = surveyModel ? surveyModel.currentPageNo + 1 : 1
   const SurveyComponent = surveyModel ? <SurveyJSComponent model={surveyModel}/> : <></>
-  return { surveyModel, refreshSurvey, pageNumber, SurveyComponent }
+  return {surveyModel, refreshSurvey, pageNumber, SurveyComponent}
 }
 
 export enum SourceType {
@@ -132,8 +132,19 @@ export type DenormalizedResponse = {
   }
 }
 
-export type DenormalizedPreRegResponse = DenormalizedResponse & {
+export type DenormalizedPreRegResponse = {
+  parsedData: {
+    items: DenormalizedResponseItem[]
+  }
   qualified: boolean
+}
+
+export type DenormalizedPreEnrollResponse = {
+  parsedData: {
+    items: DenormalizedResponseItem[]
+  }
+  qualified: boolean,
+  studyEnvironmentId: string
 }
 
 export type DenormalizedResponseItem = {
@@ -161,9 +172,9 @@ type CalculatedValue = {
  * the answers
  */
 export function generateDenormalizedData({
-  survey, surveyJSModel, participantShortcode,
-  sourceShortcode, sourceType
-}:
+                                           survey, surveyJSModel, participantShortcode,
+                                           sourceShortcode, sourceType
+                                         }:
                                            {
                                              survey: Survey | ConsentForm, surveyJSModel: SurveyModel,
                                              participantShortcode: string,
@@ -182,7 +193,7 @@ export function generateDenormalizedData({
   // the getPlainData call does not include the calculated values, but getAllValues does not include display values,
   // so to get the format we need we call getPlainData for questions, and then combine that with calculatedValues
   const data = surveyJSModel.getPlainData()
-  const questionItems = data.map(({ name, title, value, displayValue }: SurveyJsItem) => {
+  const questionItems = data.map(({name, title, value, displayValue}: SurveyJsItem) => {
     return {
       stableId: name,
       questionText: title,
@@ -212,8 +223,8 @@ function getCalculatedValues(surveyJSModel: SurveyModel): DenormalizedResponseIt
 export function extractSurveyContent(survey: SurveyJSForm) {
   const parsedSurvey = JSON.parse(survey.content)
   const questionTemplates = parsedSurvey.questionTemplates as Question[]
-  Serializer.addProperty('survey', { name: 'questionTemplates', category: 'general' })
-  Serializer.addProperty('question', { name: 'questionTemplateName', category: 'general' })
+  Serializer.addProperty('survey', {name: 'questionTemplates', category: 'general'})
+  Serializer.addProperty('question', {name: 'questionTemplateName', category: 'general'})
 
   if (questionTemplates) {
     const elementList = getSurveyElementList(parsedSurvey)

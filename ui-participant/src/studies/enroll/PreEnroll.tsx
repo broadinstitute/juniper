@@ -1,18 +1,18 @@
 import React from 'react'
 import Api from 'api/api'
-import { DenormalizedPreRegResponse, generateDenormalizedData, SourceType, useSurveyJSModel } from 'util/surveyJsUtils'
-import { useNavigate } from 'react-router-dom'
-import { useEnrollContext } from './StudyEnrollOutlet'
+import {DenormalizedPreEnrollResponse, generateDenormalizedData, SourceType, useSurveyJSModel} from 'util/surveyJsUtils'
+import {useNavigate} from 'react-router-dom'
+import {StudyEnrollContext} from './StudyEnrollRouter'
 
 
 /** Renders a pre-enrollment form, and handles submitting the user-inputted response */
-export default function PreEnrollView() {
-  const { studyEnv, updatePreEnrollResponseId } = useEnrollContext()
+export default function PreEnrollView({enrollContext}: { enrollContext: StudyEnrollContext }) {
+  const {studyEnv, updatePreEnrollResponseId} = enrollContext
   const survey = studyEnv.preEnrollSurvey
   const navigate = useNavigate()
   // for now, we assume all pre-screeners are a single page
-  const pager = { pageNumber: 0, updatePageNumber: () => 0 }
-  const { surveyModel, refreshSurvey, SurveyComponent } =
+  const pager = {pageNumber: 0, updatePageNumber: () => 0}
+  const {surveyModel, refreshSurvey, SurveyComponent} =
     useSurveyJSModel(survey, null, handleComplete, pager)
 
   /** submit the form */
@@ -25,13 +25,16 @@ export default function PreEnrollView() {
       sourceShortcode: 'ANON', sourceType: SourceType.ANON
     })
     const qualified = surveyModel.getCalculatedValueByName('qualified').value
-    const preRegResponse = { ...denormedResponse, qualified } as DenormalizedPreRegResponse
+    const preEnrollResponse = {
+      ...denormedResponse,
+      qualified,
+      studyEnvironmentId: studyEnv.id
+    } as DenormalizedPreEnrollResponse
     // submit the form even if it isn't eligible, so we can track stats on exclusions
-    // TODO update to use a study-specific endpoint
-    Api.completePortalPreReg({
+    Api.submitPreEnrollResponse({
       surveyStableId: survey.stableId,
       surveyVersion: survey.version,
-      preRegResponse
+      preEnrollResponse
     }).then(result => {
       if (!qualified) {
         navigate('../ineligible')

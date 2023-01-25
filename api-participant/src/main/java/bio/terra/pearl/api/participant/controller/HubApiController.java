@@ -19,7 +19,7 @@ public class HubApiController {
   }
 
   public ResponseEntity<Object> get(String portalShortcode, String envName) {
-    ParticipantUser user = requestUtilService.getFromRequest(request);
+    ParticipantUser user = requestUtilService.userFromRequest(request);
     return null;
   }
 
