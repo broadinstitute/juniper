@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service;
+package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.participant.MailingAddressFactory;

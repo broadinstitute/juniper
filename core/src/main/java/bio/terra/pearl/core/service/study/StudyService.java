@@ -62,7 +62,4 @@ public class StudyService extends CrudService<Study, StudyDao> {
             }
         });
     }
-
-
-
 }

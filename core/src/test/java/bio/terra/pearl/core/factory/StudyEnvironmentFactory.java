@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.factory;
 
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
@@ -34,5 +35,14 @@ public class StudyEnvironmentFactory {
 
     public StudyEnvironment buildPersisted(String testName) {
         return studyEnvironmentService.create(builderWithDependencies(testName).build());
+    }
+
+    public StudyEnvironment buildPersisted(PortalEnvironment portalEnvironment, String testName) {
+        Study study = studyFactory.buildPersisted(portalEnvironment.getPortalId(), testName);
+        StudyEnvironment studyEnv = StudyEnvironment.builder()
+                .studyId(study.getId())
+                .environmentName(portalEnvironment.getEnvironmentName())
+                .studyEnvironmentConfig(new StudyEnvironmentConfig()).build();
+        return studyEnvironmentService.create(studyEnv);
     }
 }

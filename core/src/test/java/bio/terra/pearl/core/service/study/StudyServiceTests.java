@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service;
+package bio.terra.pearl.core.service.study;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
@@ -6,6 +6,7 @@ import bio.terra.pearl.core.factory.StudyFactory;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.service.CascadeTree;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import org.apache.commons.lang3.RandomStringUtils;

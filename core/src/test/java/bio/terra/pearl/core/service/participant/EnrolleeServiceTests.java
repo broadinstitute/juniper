@@ -1,9 +1,8 @@
-package bio.terra.pearl.core.service;
+package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
