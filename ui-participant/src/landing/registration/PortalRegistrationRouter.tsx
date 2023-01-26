@@ -1,10 +1,10 @@
-import Api, {Portal, Survey} from 'api/api'
-import {Route, Routes, useNavigate} from 'react-router-dom'
-import React, {useEffect, useState} from 'react'
-import {useUser} from 'providers/UserProvider'
-import Ineligible from "./Ineligible"
-import PreRegistration from "./Preregistration";
-import Registration from "./Registration";
+import Api, { Portal, Survey } from 'api/api'
+import { Route, Routes, useNavigate } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { useUser } from 'providers/UserProvider'
+import Ineligible from './Ineligible'
+import PreRegistration from './Preregistration'
+import Registration from './Registration'
 
 /** store the preregistration response id in local storage so a page refresh does not lose their progress.
  * The user isn't signed in yet (since they don't have an account), so local storage is the best way to keep this. */
@@ -21,15 +21,15 @@ export type RegistrationContextT = {
  * If a valid preregId exists, this will redirect to the registration page.  If not, it will route to
  * the prereg page */
 export default function PortalRegistrationRouter({
-                                                   portal,
-                                                   returnTo = '/hub'
-                                                 }: { portal: Portal, returnTo: string | null }) {
+  portal,
+  returnTo = '/hub'
+}: { portal: Portal, returnTo: string | null }) {
   const [preRegResponseId, setPreRegResponseId] = useState<string | null>(localStorage.getItem(PREREG_ID_STORAGE_KEY))
   const portalEnv = portal.portalEnvironments[0]
   const preRegSurvey = portalEnv.preRegSurvey
   const [preRegSatisfied, setPreRegSatisfied] = useState(!portalEnv.preRegSurvey)
   const navigate = useNavigate()
-  const {user} = useUser()
+  const { user } = useUser()
 
   /** updates the state and localStorage */
   function updatePreRegResponseId(preRegId: string | null) {
@@ -70,9 +70,9 @@ export default function PortalRegistrationRouter({
     }
     // navigate according to whether they need to complete a preReg survey
     if (preRegSatisfied) {
-      navigate('register', {replace: true})
+      navigate('register', { replace: true })
     } else {
-      navigate('prereg', {replace: true})
+      navigate('prereg', { replace: true })
     }
   }, [preRegSatisfied])
 
@@ -83,7 +83,7 @@ export default function PortalRegistrationRouter({
   }
 
   return <Routes>
-    <Route path="ineligible" element={<Ineligible registrationContext={registrationContext}/>}/>
+    <Route path="ineligible" element={<Ineligible/>}/>
     <Route path="preReg" element={<PreRegistration registrationContext={registrationContext}/>}/>
     <Route path="register" element={<Registration registrationContext={registrationContext} returnTo={returnTo}/>}/>
   </Routes>

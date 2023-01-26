@@ -1,8 +1,7 @@
 import React from 'react'
-import {RegistrationContextT} from "./PortalRegistrationRouter";
 
 /** Shows a page indicating the person is ineligible to register for the portal */
-export default function Ineligible({registrationContext}: { registrationContext: RegistrationContextT }) {
+export default function Ineligible() {
   return <div className="container text-center mt-5">
     <p>
       You are not currently eligible to participate in any current studies.

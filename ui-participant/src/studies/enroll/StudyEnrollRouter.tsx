@@ -1,14 +1,14 @@
-import React, {useEffect, useState} from 'react'
-import {useUser} from 'providers/UserProvider'
-import {Route, Routes, useNavigate, useParams} from 'react-router-dom'
-import {usePortalEnv} from 'providers/PortalProvider'
-import {Enrollee, ParticipantUser, Portal, StudyEnvironment} from 'api/api'
+import React, { useEffect, useState } from 'react'
+import { useUser } from 'providers/UserProvider'
+import { Route, Routes, useNavigate, useParams } from 'react-router-dom'
+import { usePortalEnv } from 'providers/PortalProvider'
+import { Enrollee, ParticipantUser, Portal, StudyEnvironment } from 'api/api'
 import LandingNavbar from '../../landing/LandingNavbar'
-import Api from "../../api/api";
-import PreEnrollView from "./PreEnroll";
-import StudyIneligible from "./StudyIneligible";
-import PortalRegistrationRouter from "../../landing/registration/PortalRegistrationRouter";
-import LoadingSpinner from "../../util/LoadingSpinner";
+import Api from '../../api/api'
+import PreEnrollView from './PreEnroll'
+import StudyIneligible from './StudyIneligible'
+import PortalRegistrationRouter from '../../landing/registration/PortalRegistrationRouter'
+import LoadingSpinner from '../../util/LoadingSpinner'
 
 /** store the preregistration response id in local storage so a page refresh does not lose their progress.
  * The user might not be signed in yet (since they don't have an account),
@@ -26,7 +26,7 @@ export type StudyEnrollContext = {
 /** Handles routing and loading for enrollment in a study */
 export default function StudyEnrollRouter() {
   const studyShortcode = useParams().studyShortcode
-  const {portal} = usePortalEnv()
+  const { portal } = usePortalEnv()
   const matchedStudy = portal.portalStudies.find(pStudy => pStudy.study.shortcode === studyShortcode)?.study
   const studyEnv = matchedStudy?.studyEnvironments[0]
   if (!studyEnv || !studyShortcode) {
@@ -36,9 +36,9 @@ export default function StudyEnrollRouter() {
 }
 
 /** handles the rendering and useEffect logic */
-function StudyEnrollOutletMatched({portal, studyEnv, studyShortcode}:
+function StudyEnrollOutletMatched({ portal, studyEnv, studyShortcode }:
                                     { portal: Portal, studyEnv: StudyEnvironment, studyShortcode: string }) {
-  const {user} = useUser()
+  const { user } = useUser()
   const navigate = useNavigate()
   const [enrollee, setEnrollee] = useState<Enrollee | null>(null)
   const [preEnrollResponseId, setPreEnrollResponseId] = useState<string | null>(localStorage.getItem(PRE_ENROLL_ID_KEY))
@@ -79,11 +79,11 @@ function StudyEnrollOutletMatched({portal, studyEnv, studyShortcode}:
       if (user.isAnonymous) {
         navigate('register')
       } else {
-        Api.createEnrollee({studyShortcode, preEnrollResponseId}).then(response => {
+        Api.createEnrollee({ studyShortcode, preEnrollResponseId }).then(response => {
           setEnrollee(response)
           navigate('newEnrollee')
         }).catch(() => {
-          alert("an error occurred, please try again, or contact support")
+          alert('an error occurred, please try again, or contact support')
         })
       }
     } else {
@@ -98,7 +98,7 @@ function StudyEnrollOutletMatched({portal, studyEnv, studyShortcode}:
     <LandingNavbar/>
     <Routes>
       <Route path="preEnroll" element={<PreEnrollView enrollContext={enrollContext}/>}/>
-      <Route path="ineligible" element={<StudyIneligible enrollContext={enrollContext}/>}/>
+      <Route path="ineligible" element={<StudyIneligible/>}/>
       <Route path="register/*" element={<PortalRegistrationRouter portal={portal} returnTo={null}/>}/>
       <Route path="newEnrollee/*" element={<div> Enrollee shortcode {enrollee?.shortcode} </div>}/>
       <Route index element={<LoadingSpinner/>}/>

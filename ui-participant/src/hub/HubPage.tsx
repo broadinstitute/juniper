@@ -1,10 +1,10 @@
 import React from 'react'
-import {usePortalEnv} from '../providers/PortalProvider'
-import {NavLink} from 'react-router-dom'
+import { usePortalEnv } from '../providers/PortalProvider'
+import { NavLink } from 'react-router-dom'
 
 /** renders the logged-in hub page */
 export default function HubPage() {
-  const {portal} = usePortalEnv()
+  const { portal } = usePortalEnv()
   const portalStudies = portal.portalStudies
 
   return <div>
