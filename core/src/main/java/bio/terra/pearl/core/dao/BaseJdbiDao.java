@@ -138,19 +138,20 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
+    /** finds all the entities by the given ids */
+    public List<T> findAll(List<UUID> uuids) {
+        return findAllByPropertyCollection("id", uuids);
+    }
+
     /**
      * Fetches an entity with a child attached.  For example, if the parent table has a column "mailing_address_id" and
      * a field mailingAddress, this method could be used to fetch the parent with the mailing address already hydrated
      * and do so in a single SQL query
      */
     protected Optional<T> findWithChild(UUID id, String childIdPropertyName, String childPropertyName, BaseJdbiDao childDao) {
-        List<String> parentCols = getQueryColumns.stream().map(col -> "a." + col + " a_" + col)
-                .collect(Collectors.toList());
-        List<String> childCols = ((List<String>) childDao.getQueryColumns).stream().map(col -> "b." + col + " b_" + col)
-                .collect(Collectors.toList());
         return jdbi.withHandle(handle ->
-                handle.createQuery("select " + String.join(", ", parentCols) + ", "
-                        + String.join(", ", childCols)
+                handle.createQuery("select " + prefixedGetQueryColumns("a") + ", "
+                        + childDao.prefixedGetQueryColumns("b")
                         + " from " + tableName + " a left join " + childDao.tableName
                         + " b on a." + toSnakeCase(childIdPropertyName) + " = b.id"
                         + " where a.id = :id")

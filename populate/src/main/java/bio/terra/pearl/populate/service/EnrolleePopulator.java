@@ -2,6 +2,7 @@ package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.ResponseSnapshot;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -9,6 +10,7 @@ import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
+import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -25,6 +27,7 @@ public class EnrolleePopulator extends Populator<Enrollee> {
     private EnrolleeService enrolleeService;
     private StudyEnvironmentService studyEnvironmentService;
     private ParticipantUserService participantUserService;
+    private PortalParticipantUserService portalParticipantUserService;
     private SurveyService surveyService;
     private SurveyResponseService surveyResponseService;
 
@@ -32,8 +35,10 @@ public class EnrolleePopulator extends Populator<Enrollee> {
                              ObjectMapper objectMapper,
                              EnrolleeService enrolleeService,
                              StudyEnvironmentService studyEnvironmentService,
-                             ParticipantUserService participantUserService, SurveyService surveyService,
+                             ParticipantUserService participantUserService,
+                             PortalParticipantUserService portalParticipantUserService, SurveyService surveyService,
                              SurveyResponseService surveyResponseService) {
+        this.portalParticipantUserService = portalParticipantUserService;
         this.surveyService = surveyService;
         this.surveyResponseService = surveyResponseService;
         this.objectMapper = objectMapper;
@@ -55,7 +60,10 @@ public class EnrolleePopulator extends Populator<Enrollee> {
         enrolleeDto.setStudyEnvironmentId(attachedEnv.getId());
         ParticipantUser attachedUser = participantUserService
                 .findOne(enrolleeDto.getLinkedUsername(), config.getEnvironmentName()).get();
+        PortalParticipantUser ppUser = portalParticipantUserService
+                .findOne(attachedUser.getId(), config.getPortalShortcode()).get();
         enrolleeDto.setParticipantUserId(attachedUser.getId());
+        enrolleeDto.setProfileId(ppUser.getProfileId());
         Enrollee enrollee = enrolleeService.create(enrolleeDto);
         for (SurveyResponsePopDto responsePopDto : enrolleeDto.getSurveyResponseDtos()) {
             populateResponse(enrollee, responsePopDto);

@@ -83,7 +83,7 @@ function StudyEnrollOutletMatched({portal, studyEnv, studyShortcode}:
     }
     if (preEnrollSatisfied) {
       if (user.isAnonymous) {
-        navigate('register')
+        navigate('register')``
       } else {
         // when preEnroll is satisfied, and we have a user, we're clear to create an Enrollee
         Api.createEnrollee({studyShortcode, preEnrollResponseId}).then(response => {

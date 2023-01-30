@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
 
-import {  StudyParams } from 'study/StudyProvider'
-import { useStudyEnvironmentOutlet } from 'study/StudyEnvironmentProvider'
+import {  StudyParams } from 'study/StudyRouter'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Api, { StudyEnvironment, Survey } from 'api/api'
 
 import { failureNotification, successNotification } from 'util/notifications'
@@ -34,8 +34,8 @@ function RawPreRegView({ portalShortcode, currentEnv, survey, studyShortcode }:
       const updatedEnv = { id: currentEnv.id, preRegSurveyId: updatedSurvey.id }
       const updatedStudyEnv = await Api.updateStudyEnvironment(portalShortcode, studyShortcode,
         currentEnv.environmentName, updatedEnv)
-      currentEnv.preRegSurveyId = updatedStudyEnv.preRegSurveyId
-      currentEnv.preRegSurvey = updatedSurvey
+      currentEnv.preEnrollSurveyId = updatedStudyEnv.preRegSurveyId
+      currentEnv.preEnrollSurvey = updatedSurvey
       Store.addNotification(successNotification(`Saved successfully`))
     } catch (e) {
       Store.addNotification(failureNotification(`Save failed`))
@@ -48,17 +48,17 @@ function RawPreRegView({ portalShortcode, currentEnv, survey, studyShortcode }:
 }
 
 /** Routable component that delegates rendering to the raw view */
-function PreRegView() {
+function PreEnrollView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const params = useParams<SurveyParamsT>()
   const surveyStableId: string | undefined = params.surveyStableId
 
-  const { portal, currentEnv, study } = useStudyEnvironmentOutlet()
+  const { portal, currentEnv, study } = studyEnvContext
 
 
   if (!surveyStableId) {
     return <span>you need to specify both name and version of the prereg urvey</span>
   }
-  const survey = currentEnv.preRegSurvey
+  const survey = currentEnv.preEnrollSurvey
   if (survey.stableId != surveyStableId) {
     return <span>The survey {surveyStableId} does not exist on this study</span>
   }
@@ -66,4 +66,4 @@ function PreRegView() {
     survey={survey} studyShortcode={study.shortcode}/>
 }
 
-export default PreRegView
+export default PreEnrollView

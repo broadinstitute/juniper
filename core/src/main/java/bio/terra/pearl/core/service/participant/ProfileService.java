@@ -5,6 +5,7 @@ import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.model.participant.MailingAddress;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.CrudService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,12 +13,11 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-public class ProfileService {
-    private ProfileDao profileDao;
+public class ProfileService extends CrudService<Profile, ProfileDao> {
     private MailingAddressDao mailingAddressDao;
 
     public ProfileService(ProfileDao profileDao, MailingAddressDao mailingAddressDao) {
-        this.profileDao = profileDao;
+        super(profileDao);
         this.mailingAddressDao = mailingAddressDao;
     }
 
@@ -28,15 +28,15 @@ public class ProfileService {
             newAddress = mailingAddressDao.create(profile.getMailingAddress());
             profile.setMailingAddressId(newAddress.getId());
         }
-        Profile newProfile = profileDao.create(profile);
+        Profile newProfile = dao.create(profile);
         newProfile.setMailingAddress(newAddress);
         return newProfile;
     }
 
     @Transactional
     public void delete(UUID profileId, Set<CascadeProperty> cascade) {
-        Profile profile = profileDao.find(profileId).get();
-        profileDao.delete(profileId);
+        Profile profile = dao.find(profileId).get();
+        dao.delete(profileId);
         if (profile.getMailingAddressId() != null) {
             mailingAddressDao.delete(profile.getMailingAddressId());
         }

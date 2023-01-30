@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
 
-import {  StudyParams } from 'study/StudyProvider'
-import { useStudyEnvironmentOutlet } from 'study/StudyEnvironmentProvider'
+import {  StudyParams } from 'study/StudyRouter'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Api, { Portal, Study, StudyEnvironment, StudyEnvironmentSurvey, Survey } from 'api/api'
 
 import { failureNotification, successNotification } from 'util/notifications'
@@ -14,8 +14,8 @@ export type SurveyParamsT = StudyParams & {
 }
 
 /** Handles logic for updating study environment surveys */
-function RawSurveyView({ portal, study, currentEnv, survey, readOnly = false }:
-                      {portal: Portal, study: Study, currentEnv: StudyEnvironment,
+function RawSurveyView({ portal, currentEnv, study, survey, readOnly = false }:
+                      {portal: Portal, currentEnv: StudyEnvironment, study: Study,
                         survey: Survey, readOnly?: boolean}) {
   const [currentSurvey, setCurrentSurvey] = useState(survey)
   /** saves the survey as a new version */
@@ -67,11 +67,11 @@ function RawSurveyView({ portal, study, currentEnv, survey, readOnly = false }:
 }
 
 /** routable component for survey editing */
-function SurveyView() {
+function SurveyView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const params = useParams<SurveyParamsT>()
   const surveyStableId: string | undefined = params.surveyStableId
 
-  const { portal, study, currentEnv } = useStudyEnvironmentOutlet()
+  const { portal, currentEnv, study } = studyEnvContext
   const [searchParams] = useSearchParams()
   const isReadonly = searchParams.get('mode') === 'view'
 
