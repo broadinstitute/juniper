@@ -17,12 +17,15 @@ public class EnrolleeDao extends BaseJdbiDao<Enrollee> {
     private ProfileDao profileDao;
     private SurveyResponseDao surveyResponseDao;
     private ConsentResponseDao consentResponseDao;
+    private ParticipantTaskDao participantTaskDao;
+
     public EnrolleeDao(Jdbi jdbi, ProfileDao profileDao, SurveyResponseDao surveyResponseDao,
-                       ConsentResponseDao consentResponseDao) {
+                       ConsentResponseDao consentResponseDao, ParticipantTaskDao participantTaskDao) {
         super(jdbi);
         this.profileDao = profileDao;
         this.surveyResponseDao = surveyResponseDao;
         this.consentResponseDao = consentResponseDao;
+        this.participantTaskDao = participantTaskDao;
     }
 
     @Override
@@ -47,9 +50,10 @@ public class EnrolleeDao extends BaseJdbiDao<Enrollee> {
         Optional<Enrollee> enrolleeOpt = findByTwoProperties("study_environment_id", studyEnvironmentId,
                 "shortcode", shortcode);
         enrolleeOpt.ifPresent(enrollee -> {
-            enrollee.getSurveyResponses().addAll(surveyResponseDao.findByEnrolleeId(enrollee.getId()));
+            enrollee.getSurveyResponses().addAll(surveyResponseDao.findByEnrolleeIdWithLastSnapshot(enrollee.getId()));
             enrollee.getConsentResponses().addAll(consentResponseDao.findByEnrolleeId(enrollee.getId()));
             enrollee.setProfile(profileDao.find(enrollee.getProfileId()).get());
+            enrollee.getParticipantTasks().addAll(participantTaskDao.findByEnrolleeId(enrollee.getId()));
         });
         return enrolleeOpt;
     }

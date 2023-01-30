@@ -9,9 +9,10 @@ import {
   SurveyResponse
 } from 'api/api'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, Route, Routes } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck'
+import EnrolleeSurveyView from './survey/EnrolleeSurveyView'
 
 export type SurveyWithResponsesT = {
   survey: StudyEnvironmentSurvey,
@@ -37,14 +38,15 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
   const surveys = currentEnv.configuredSurveys
   const responseMap: ResponseMapT = {}
   surveys.forEach(configSurvey => {
-    const matchedResponses = enrollee.surveyResponses.filter(response => configSurvey.id === response.surveyId)
+    const matchedResponses = enrollee.surveyResponses.filter(response => configSurvey.survey.id === response.surveyId)
     responseMap[configSurvey.survey.stableId] = { survey: configSurvey, responses: matchedResponses }
   })
 
   const consents = currentEnv.configuredConsents
   const consentMap: ConsentResponseMapT = {}
   consents.forEach(configConsent => {
-    const matchedResponses = enrollee.consentResponses.filter(response => configConsent.id === response.consentFormId)
+    const matchedResponses = enrollee.consentResponses
+      .filter(response => configConsent.consentForm.id === response.consentFormId)
     consentMap[configConsent.consentForm.stableId] = { consent: configConsent, responses: matchedResponses }
   })
 
@@ -96,8 +98,23 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                       <NavLink to={`surveys/${stableId}`} className={getLinkStyle}>
                         { survey.survey.name }
                         {responseMap[stableId].responses.length > 0 &&
-                          <span className="badge align-middle">{responseMap[stableId].responses.length}</span>
+                          <span className="badge align-middle" style={{  background: '#888', marginLeft: '0.5em' }}>
+                            {responseMap[stableId].responses.length}
+                          </span>
                         }
+                      </NavLink>
+                    </li>
+                  }) }
+                </ul>
+              </li>
+              <li className="list-group-item subgroup">
+                Tasks
+                <ul className="list-group">
+                  { enrollee.participantTasks.map(task => {
+                    return <li className="list-group-item" key={task.id}>
+                      <NavLink to={`tasks/${task.id}`} className={getLinkStyle}>
+                        { task.taskType }: {task.targetName}
+                        <span className="detail">{task.status}</span>
                       </NavLink>
                     </li>
                   }) }
@@ -106,7 +123,21 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
             </ul>
           </div>
           <div className="participantTabContent flex-grow-1 bg-white p-3">
-            <Outlet/>
+            <Routes>
+              <Route path="profile" element={<div>profile</div>}/>
+              <Route path="consents" element={<div>consents</div>}/>
+              <Route path="preRegistration" element={<div>preEnroll</div>}/>
+              <Route path="surveys">
+                <Route path=":surveyStableId" element={<EnrolleeSurveyView enrollee={enrollee}
+                  responseMap={responseMap}/>}/>
+                <Route path="*" element={<div>Unknown participant survey page</div>}/>
+              </Route>
+              <Route path="consents">
+                <Route path=":consentStableId" element={<div>consent</div>}/>
+                <Route path="*" element={<div>Unknown participant survey page</div>}/>
+              </Route>
+              <Route path="*" element={<div>unknown enrollee route</div>}/>
+            </Routes>
           </div>
         </div>
       </div>

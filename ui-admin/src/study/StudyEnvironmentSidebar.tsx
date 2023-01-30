@@ -3,6 +3,10 @@ import { Study, StudyEnvironment } from 'api/api'
 import EnvironmentSelector from './EnvironmentSelector'
 import { Link, NavLink } from 'react-router-dom'
 
+const sidebarLinkStyle = {
+  color: '#fff'
+}
+
 /** Sidebar for navigating around configuration of a study environment */
 function StudyEnvironmentSidebar({ portalShortcode, study, currentEnv, currentEnvPath, setShow }:
                                    {portalShortcode: string, study: Study, currentEnv: StudyEnvironment | undefined,
@@ -35,27 +39,32 @@ function StudyEnvironmentSidebar({ portalShortcode, study, currentEnv, currentEn
         <hr/>
       </li>
       <li>
-        <NavLink to={getLinkPath('participants')} className={getLinkStyle} onClick={() => setShow(false)}>
+        <NavLink to={getLinkPath('participants')} className={getLinkStyle} onClick={() => setShow(false)}
+          style={sidebarLinkStyle}>
           Participants
         </NavLink>
       </li>
       <li>
-        <NavLink to={getLinkPath('content')} className={getLinkStyle} onClick={() => setShow(false)}>
+        <NavLink to={getLinkPath('content')} className={getLinkStyle} onClick={() => setShow(false)}
+          style={sidebarLinkStyle}>
           Content
         </NavLink>
       </li>
       <li>
-        <NavLink to={getLinkPath('users')} className={getLinkStyle} onClick={() => setShow(false)}>
+        <NavLink to={getLinkPath('users')} className={getLinkStyle} onClick={() => setShow(false)}
+          style={sidebarLinkStyle}>
           Users
         </NavLink>
       </li>
       <li>
-        <NavLink to={getLinkPath('theme')} className={getLinkStyle} onClick={() => setShow(false)}>
+        <NavLink to={getLinkPath('theme')} className={getLinkStyle} onClick={() => setShow(false)}
+          style={sidebarLinkStyle}>
           Theme
         </NavLink>
       </li>
       <li>
-        <NavLink to={getLinkPath('advanced')} className={getLinkStyle} onClick={() => setShow(false)}>
+        <NavLink to={getLinkPath('advanced')} className={getLinkStyle} onClick={() => setShow(false)}
+          style={sidebarLinkStyle}>
           Advanced Options
         </NavLink>
       </li>

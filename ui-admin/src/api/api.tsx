@@ -90,6 +90,7 @@ export type Enrollee = {
   consentResponses: ConsentResponse[],
   preRegResponse: PreregistrationResponse,
   preEnrollResponse: PreregistrationResponse,
+  participantTasks: ParticipantTask[],
   profile: Profile
 }
 
@@ -132,6 +133,16 @@ export type ConsentResponse = {
   consented: boolean,
   consentFormId: string,
   fullData: string
+}
+
+export type ParticipantTask = {
+  id: string,
+  completedAt: number,
+  status: string,
+  taskType: string,
+  targetName: string,
+  taskOrder: number,
+  blocksHub: boolean
 }
 
 let bearerToken: string | null = null
