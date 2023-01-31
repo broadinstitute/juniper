@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.admin.Role;
 import bio.terra.pearl.core.service.exception.RoleNotFoundException;
 import bio.terra.pearl.core.service.exception.UserNotFoundException;
 import bio.terra.pearl.core.service.exception.ValidationException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,15 +16,25 @@ import java.util.UUID;
 @Service
 public class PortalAdminUserRoleService {
 
+    private PermissionService permissionService;
+
     private PortalAdminUserRoleDao portalAdminUserRoleDao;
 
     private PortalAdminUserService portalAdminUserService;
 
+    private RolePermissionService rolePermissionService;
+
     private RoleService roleService;
 
-    public PortalAdminUserRoleService(PortalAdminUserRoleDao portalAdminUserRoleDao, PortalAdminUserService portalAdminUserService, RoleService roleService) {
+    public PortalAdminUserRoleService(PermissionService permissionService,
+                                      PortalAdminUserRoleDao portalAdminUserRoleDao,
+                                      @Lazy PortalAdminUserService portalAdminUserService,
+                                      RolePermissionService rolePermissionService,
+                                      RoleService roleService) {
+        this.permissionService = permissionService;
         this.portalAdminUserRoleDao = portalAdminUserRoleDao;
         this.portalAdminUserService = portalAdminUserService;
+        this.rolePermissionService = rolePermissionService;
         this.roleService = roleService;
     }
 
@@ -52,5 +63,22 @@ public class PortalAdminUserRoleService {
         });
 
         return roles.stream().map(Role::getName).toList();
+    }
+
+    public List<PortalAdminUserRole> findByPortalAdminUserIdWithRolesAndPermissions(UUID portalAdminUserId) {
+        var portalAdminUserRoles = portalAdminUserRoleDao.findByPortalAdminUserId(portalAdminUserId);
+        portalAdminUserRoles.forEach(portalAdminUserRole -> {
+            roleService.findOne(portalAdminUserRole.getRoleId())
+                    .ifPresent(role -> {
+                        var rolePermissions = rolePermissionService.findByRole(role.getId());
+                        rolePermissions.forEach(rolePermission -> {
+                            permissionService.find(rolePermission.getPermissionId()).ifPresent(permission -> {
+                                role.getPermissions().add(permission);
+                            });
+                        });
+                        portalAdminUserRole.setRole(role);
+                    });
+        });
+        return portalAdminUserRoles;
     }
 }
