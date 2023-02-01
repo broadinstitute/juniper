@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.model.participant;
+package bio.terra.pearl.core.model.workflow;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import java.time.Instant;

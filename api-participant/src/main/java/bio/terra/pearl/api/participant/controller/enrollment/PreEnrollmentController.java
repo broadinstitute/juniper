@@ -4,7 +4,7 @@ import bio.terra.pearl.api.participant.api.PreEnrollmentApi;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
 import bio.terra.pearl.core.model.survey.ParsedPreEnrollResponse;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
-import bio.terra.pearl.core.service.study.EnrollmentService;
+import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;

@@ -21,10 +21,9 @@ public class ConsentResponse extends BaseEntity {
     private UUID enrolleeId;
     private UUID creatingParticipantUserId;
     private UUID creatingAdminUserId;
-    private UUID surveyId;
-    private UUID lastSnapshotId;
+    private UUID consentFormId;
     @Builder.Default
-    private boolean complete = false;
+    private boolean completed = false;
     @Builder.Default
     private boolean consented = false;
     // the JSON that surveyJS needs to pick up a survey where it was last left, stored as string for performance reasons

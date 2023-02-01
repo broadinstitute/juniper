@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.model.participant;
+package bio.terra.pearl.core.model.workflow;
 
 /**
  * This is not, and likely should not be, an exhaustive list of all possible task statuses.  Rather, it

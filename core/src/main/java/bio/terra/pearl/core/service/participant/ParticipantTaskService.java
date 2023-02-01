@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.dao.participant.ParticipantTaskDao;
-import bio.terra.pearl.core.model.participant.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.CrudService;
 import java.util.List;
 import java.util.UUID;

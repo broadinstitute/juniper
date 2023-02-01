@@ -111,7 +111,7 @@ export type ResponseSnapshot = {
 }
 
 export type SurveyResponse = {
-  createdAt: string,
+  createdAt: number, // this is a java instant, so number of seconds since epoch start
   lastUpdatedAt: string,
   surveyId: string,
   surveyStableId: string,
@@ -129,7 +129,7 @@ export type PreregistrationResponse = {
 
 export type ConsentResponse = {
   id: string,
-  createdAt: string,
+  createdAt: number,
   consented: boolean,
   consentFormId: string,
   fullData: string

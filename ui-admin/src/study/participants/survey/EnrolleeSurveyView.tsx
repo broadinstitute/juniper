@@ -7,6 +7,7 @@ import SurveyEditView from './SurveyEditView'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { ResponseMapT } from '../EnrolleeView'
 import { EnrolleeParams } from '../EnrolleeRouter'
+import { instantToDefaultString } from '../../../util/timeUtils'
 
 
 export default function EnrolleeSurveyView({ enrollee, responseMap }:
@@ -43,7 +44,7 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, responses }:
   return <div>
     <h6>{configSurvey.survey.name}</h6>
     <div>
-      <span className="fst-italic">completed {lastResponse.createdAt}</span>
+      <span className="fst-italic">completed {instantToDefaultString(lastResponse.createdAt)}</span>
       <button className="ms-5 btn btn-secondary" onClick={() => setIsEditing(!isEditing)}>
         {isEditing ? 'cancel' : 'update / edit'}
       </button>

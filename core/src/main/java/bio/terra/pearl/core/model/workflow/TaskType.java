@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.model.participant;
+package bio.terra.pearl.core.model.workflow;
 
 public enum TaskType {
     CONSENT,

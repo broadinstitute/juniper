@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.ParsedSnapshot;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalService;
+import bio.terra.pearl.core.service.workflow.RegistrationService;
 import java.util.Map;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;

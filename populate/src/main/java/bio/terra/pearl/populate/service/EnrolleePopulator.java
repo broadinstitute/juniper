@@ -1,5 +1,7 @@
 package bio.terra.pearl.populate.service;
 
+import bio.terra.pearl.core.model.consent.ConsentForm;
+import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -8,6 +10,8 @@ import bio.terra.pearl.core.model.survey.ResponseSnapshot;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.consent.ConsentFormService;
+import bio.terra.pearl.core.service.consent.ConsentResponseService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
@@ -15,6 +19,7 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dto.EnrolleePopDto;
+import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.ResponseSnapshotPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +35,8 @@ public class EnrolleePopulator extends Populator<Enrollee> {
     private PortalParticipantUserService portalParticipantUserService;
     private SurveyService surveyService;
     private SurveyResponseService surveyResponseService;
+    private ConsentFormService consentFormService;
+    private ConsentResponseService consentResponseService;
 
     public EnrolleePopulator(FilePopulateService filePopulateService,
                              ObjectMapper objectMapper,
@@ -37,10 +44,13 @@ public class EnrolleePopulator extends Populator<Enrollee> {
                              StudyEnvironmentService studyEnvironmentService,
                              ParticipantUserService participantUserService,
                              PortalParticipantUserService portalParticipantUserService, SurveyService surveyService,
-                             SurveyResponseService surveyResponseService) {
+                             SurveyResponseService surveyResponseService, ConsentFormService consentFormService,
+                             ConsentResponseService consentResponseService) {
         this.portalParticipantUserService = portalParticipantUserService;
         this.surveyService = surveyService;
         this.surveyResponseService = surveyResponseService;
+        this.consentFormService = consentFormService;
+        this.consentResponseService = consentResponseService;
         this.objectMapper = objectMapper;
         this.filePopulateService = filePopulateService;
         this.enrolleeService = enrolleeService;
@@ -68,6 +78,9 @@ public class EnrolleePopulator extends Populator<Enrollee> {
         for (SurveyResponsePopDto responsePopDto : enrolleeDto.getSurveyResponseDtos()) {
             populateResponse(enrollee, responsePopDto);
         }
+        for (ConsentResponsePopDto consentPopDto : enrolleeDto.getConsentResponseDtos()) {
+            populateConsent(enrollee, consentPopDto);
+        }
         return enrollee;
     }
 
@@ -91,6 +104,23 @@ public class EnrolleePopulator extends Populator<Enrollee> {
         }
         SurveyResponse savedResponse = surveyResponseService.create(response);
         enrollee.getSurveyResponses().add(savedResponse);
+    }
+
+    private void populateConsent(Enrollee enrollee, ConsentResponsePopDto responsePopDto) {
+        ConsentForm consentForm = consentFormService.findByStableId(responsePopDto.getConsentStableId(),
+                responsePopDto.getConsentVersion()).get();
+
+        ConsentResponse response = ConsentResponse.builder()
+                .consentFormId(consentForm.getId())
+                .enrolleeId(enrollee.getId())
+                .creatingParticipantUserId(enrollee.getParticipantUserId())
+                .consented(responsePopDto.isConsented())
+                .fullData(responsePopDto.getFullDataJson().toString())
+                .resumeData(responsePopDto.getResumeDataJson().toString())
+                .build();
+
+        ConsentResponse savedResponse = consentResponseService.create(response);
+        enrollee.getConsentResponses().add(savedResponse);
     }
 }
 

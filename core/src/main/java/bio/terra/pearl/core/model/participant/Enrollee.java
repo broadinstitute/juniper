@@ -3,6 +3,7 @@ package bio.terra.pearl.core.model.participant;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;

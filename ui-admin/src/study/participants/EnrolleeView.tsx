@@ -13,6 +13,7 @@ import { NavLink, Outlet, Route, Routes } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck'
 import EnrolleeSurveyView from './survey/EnrolleeSurveyView'
+import EnrolleeConsentView from './consent/EnrolleeConsentView'
 
 export type SurveyWithResponsesT = {
   survey: StudyEnvironmentSurvey,
@@ -133,7 +134,8 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                 <Route path="*" element={<div>Unknown participant survey page</div>}/>
               </Route>
               <Route path="consents">
-                <Route path=":consentStableId" element={<div>consent</div>}/>
+                <Route path=":consentStableId" element={<EnrolleeConsentView enrollee={enrollee}
+                  responseMap={consentMap}/>}/>
                 <Route path="*" element={<div>Unknown participant survey page</div>}/>
               </Route>
               <Route path="*" element={<div>unknown enrollee route</div>}/>
