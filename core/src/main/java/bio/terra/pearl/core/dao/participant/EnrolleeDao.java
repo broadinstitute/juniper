@@ -28,6 +28,10 @@ public class EnrolleeDao extends BaseJdbiDao<Enrollee> {
         return findAllByProperty("study_environment_id", studyEnvironmentId);
     }
 
+    public List<Enrollee> findByParticipantUserId(UUID userId) {
+        return findAllByProperty("participant_user_id", userId);
+    }
+
     public int countByStudyEnvironment(UUID studyEnvironmentId) {
         return countByProperty("study_environment_id", studyEnvironmentId);
     }

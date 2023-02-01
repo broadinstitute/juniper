@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { useUser } from 'providers/UserProvider'
-import { Route, Routes, useNavigate, useParams } from 'react-router-dom'
-import { usePortalEnv } from 'providers/PortalProvider'
-import { Enrollee, ParticipantUser, Portal, StudyEnvironment } from 'api/api'
+import React, {useEffect, useState} from 'react'
+import {useUser} from 'providers/UserProvider'
+import {Route, Routes, useNavigate, useParams} from 'react-router-dom'
+import {usePortalEnv} from 'providers/PortalProvider'
+import {Enrollee, ParticipantUser, Portal, StudyEnvironment} from 'api/api'
 import LandingNavbar from '../../landing/LandingNavbar'
 import Api from '../../api/api'
 import PreEnrollView from './PreEnroll'
@@ -26,7 +26,7 @@ export type StudyEnrollContext = {
 /** Handles routing and loading for enrollment in a study */
 export default function StudyEnrollRouter() {
   const studyShortcode = useParams().studyShortcode
-  const { portal } = usePortalEnv()
+  const {portal} = usePortalEnv()
   const matchedStudy = portal.portalStudies.find(pStudy => pStudy.study.shortcode === studyShortcode)?.study
   const studyEnv = matchedStudy?.studyEnvironments[0]
   if (!studyEnv || !studyShortcode) {
@@ -36,9 +36,9 @@ export default function StudyEnrollRouter() {
 }
 
 /** handles the rendering and useEffect logic */
-function StudyEnrollOutletMatched({ portal, studyEnv, studyShortcode }:
+function StudyEnrollOutletMatched({portal, studyEnv, studyShortcode}:
                                     { portal: Portal, studyEnv: StudyEnvironment, studyShortcode: string }) {
-  const { user } = useUser()
+  const {user, enrollees} = useUser()
   const navigate = useNavigate()
   const [enrollee, setEnrollee] = useState<Enrollee | null>(null)
   const [preEnrollResponseId, setPreEnrollResponseId] = useState<string | null>(localStorage.getItem(PRE_ENROLL_ID_KEY))
@@ -75,11 +75,18 @@ function StudyEnrollOutletMatched({ portal, studyEnv, studyShortcode }:
 
   // when either preEnrollment or login status changes, navigate accordingly
   useEffect(() => {
+    const isAlreadyEnrolled = !!enrollees.find(rollee => rollee.studyEnvironmentId === studyEnv.id)
+    if (isAlreadyEnrolled) {
+      alert("you are already enrolled in this study")
+      navigate('/hub')
+      return
+    }
     if (preEnrollSatisfied) {
       if (user.isAnonymous) {
         navigate('register')
       } else {
-        Api.createEnrollee({ studyShortcode, preEnrollResponseId }).then(response => {
+        // when preEnroll is satisfied, and we have a user, we're clear to create an Enrollee
+        Api.createEnrollee({studyShortcode, preEnrollResponseId}).then(response => {
           setEnrollee(response)
           navigate('newEnrollee')
         }).catch(() => {

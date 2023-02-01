@@ -1,9 +1,14 @@
-import { DenormalizedPreEnrollResponse, DenormalizedPreRegResponse } from '../util/surveyJsUtils'
+import {DenormalizedPreEnrollResponse, DenormalizedPreRegResponse} from '../util/surveyJsUtils'
 
 export type ParticipantUser = {
   username: string,
   token: string
 };
+
+export type LoginResult = {
+  user: ParticipantUser,
+  enrollees: Enrollee[]
+}
 
 export type PortalEnvironmentParams = {
   portalShortcode: string,
@@ -105,7 +110,8 @@ export type PreEnrollmentResponse = {
 }
 
 export type Enrollee = {
-  shortcode: string
+  shortcode: string,
+  studyEnvironmentId: string
 }
 
 export type RegistrationResponse = {
@@ -158,13 +164,13 @@ export default {
   },
 
   async getPortal(): Promise<Portal> {
-    const { shortcode, envName } = getEnvSpec()
+    const {shortcode, envName} = getEnvSpec()
     const response = await fetch(`${API_ROOT}/portals/v1/${shortcode}/env/${envName}`, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
   /** submit portal preregistration survey data */
-  async submitPreRegResponse({ surveyStableId, surveyVersion, preRegResponse }:
+  async submitPreRegResponse({surveyStableId, surveyVersion, preRegResponse}:
                                {
                                  surveyStableId: string, surveyVersion: number,
                                  preRegResponse: DenormalizedPreRegResponse
@@ -186,14 +192,14 @@ export default {
   async confirmPreRegResponse(preRegId: string):
     Promise<void> {
     const url = `${baseEnvUrl()}/preReg/${preRegId}/confirm`
-    const response = await fetch(url, { headers: this.getInitHeaders() })
+    const response = await fetch(url, {headers: this.getInitHeaders()})
     if (!response.ok) {
       return Promise.reject(response)
     }
   },
 
   /** submit study pre-enrollment survey data */
-  async submitPreEnrollResponse({ surveyStableId, surveyVersion, preEnrollResponse }:
+  async submitPreEnrollResponse({surveyStableId, surveyVersion, preEnrollResponse}:
                                   {
                                     surveyStableId: string, surveyVersion: number,
                                     preEnrollResponse: DenormalizedPreEnrollResponse
@@ -215,14 +221,14 @@ export default {
   async confirmPreEnrollResponse(preRegId: string):
     Promise<void> {
     const url = `${baseEnvUrl()}/preEnroll/${preRegId}/confirm`
-    const response = await fetch(url, { headers: this.getInitHeaders() })
+    const response = await fetch(url, {headers: this.getInitHeaders()})
     if (!response.ok) {
       return Promise.reject(response)
     }
   },
 
   /** submits registration data for a particular portal, from an anonymous user */
-  async register({ preRegResponseId, fullData }: { preRegResponseId: string, fullData: object }):
+  async register({preRegResponseId, fullData}: { preRegResponseId: string, fullData: object }):
     Promise<RegistrationResponse> {
     let url = `${baseEnvUrl()}/register`
     if (preRegResponseId) {
@@ -237,7 +243,7 @@ export default {
   },
 
   /** creates an enrollee for the signed-in user and study.  */
-  async createEnrollee({ studyShortcode, preEnrollResponseId }:
+  async createEnrollee({studyShortcode, preEnrollResponseId}:
                          { studyShortcode: string, preEnrollResponseId: string | null }):
     Promise<Enrollee> {
     let url = `${baseEnvUrl()}/studies/${studyShortcode}/enrollee`
@@ -251,7 +257,7 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async unauthedLogin(username: string): Promise<ParticipantUser> {
+  async unauthedLogin(username: string): Promise<LoginResult> {
     const url = `${baseEnvUrl()}/current-user/unauthed-login?${new URLSearchParams({
       username
     })}`
@@ -262,7 +268,7 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async refreshLogin(token: string): Promise<ParticipantUser> {
+  async refreshLogin(token: string): Promise<LoginResult> {
     this.setBearerToken(token)
 
     const url = `${baseEnvUrl()}/current-user/refresh`
@@ -288,7 +294,7 @@ export default {
 
 /** get the baseurl for endpoints that include the portal and environment */
 function baseEnvUrl() {
-  const { shortcode, envName } = getEnvSpec()
+  const {shortcode, envName} = getEnvSpec()
   return `${API_ROOT}/portals/v1/${shortcode}/env/${envName}`
 }
 
@@ -321,7 +327,7 @@ function readEnvFromHostname(hostname: string): EnvSpec {
     envName = 'LIVE'
     shortname = splitHostname[0]
   }
-  return { envName, shortcode: shortname }
+  return {envName, shortcode: shortname}
 }
 
 const ALLOWED_ENV_NAMES: Record<string, string> = {

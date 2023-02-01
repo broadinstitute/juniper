@@ -35,9 +35,9 @@ public class PortalParticipantUserDao extends BaseJdbiDao<PortalParticipantUser>
     public Optional<PortalParticipantUser> findOne(UUID participantUserId, String portalShortcode) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select " + prefixedGetQueryColumns("a") + " from " + tableName + " a "
-                        + " join portal_environment on portal_environment_id = portal_environment.id"
+                        + " join portal_environment on a.portal_environment_id = portal_environment.id"
                         + " join portal on portal.id = portal_environment.portal_id"
-                        + " join participant_user on participant_user_id = participant_user.id"
+                        + " join participant_user on a.participant_user_id = participant_user.id"
                         + " where portal.shortcode = :portalShortcode and participant_user_id = :participantUserId")
                         .bind("portalShortcode", portalShortcode)
                         .bind("participantUserId", participantUserId)
@@ -47,7 +47,7 @@ public class PortalParticipantUserDao extends BaseJdbiDao<PortalParticipantUser>
     }
 
     public List<PortalParticipantUser> findByParticipantUserId(UUID userId) {
-        return findAllByProperty("participant_user_od", userId);
+        return findAllByProperty("participant_user_id", userId);
     }
 
     public List<PortalParticipantUser> findByPortalEnvironmentId(UUID portalEnvId) {

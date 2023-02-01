@@ -1,14 +1,14 @@
-import React, { SyntheticEvent, useState } from 'react'
+import React, {SyntheticEvent, useState} from 'react'
 import microsoftLogo from 'images/microsoft_logo.png'
-import Api, { ParticipantUser } from 'api/api'
-import { useUser } from 'providers/UserProvider'
-import { useAuth } from 'react-oidc-context'
+import Api, {LoginResult} from 'api/api'
+import {useUser} from 'providers/UserProvider'
+import {useAuth} from 'react-oidc-context'
 
 /** component for showing a login dialog that hides other content on the page */
 function Login() {
   const [emailAddress, setEmailAddress] = useState('')
   const [isError, setIsError] = useState(false)
-  const { loginUser } = useUser()
+  const {loginUser} = useUser()
   const auth = useAuth()
 
   const signIn = async () => {
@@ -19,8 +19,8 @@ function Login() {
   /** log in with just an email, ignoring auth */
   function unauthedLogin(event: SyntheticEvent) {
     event.preventDefault()
-    Api.unauthedLogin(emailAddress).then((user: ParticipantUser) => {
-      loginUser(user)
+    Api.unauthedLogin(emailAddress).then((result: LoginResult) => {
+      loginUser(result)
     }).catch(() => {
       setIsError(true)
     })
@@ -48,8 +48,8 @@ function Login() {
         <div className="mb-3">
           <label htmlFor="inputLoginEmail" className="form-label">Email address</label>
           <input type="email" className="form-control" id="inputLoginEmail" aria-describedby="emailHelp"
-            value={emailAddress}
-            onChange={event => setEmailAddress(event.target.value)}/>
+                 value={emailAddress}
+                 onChange={event => setEmailAddress(event.target.value)}/>
           <div id="emailHelp" className="form-text">development login only</div>
         </div>
         <button type="submit" className="btn btn-primary w-100">Login</button>

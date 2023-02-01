@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.participant.controller.enrollment;
 
 import bio.terra.pearl.api.participant.api.PreEnrollmentApi;
+import bio.terra.pearl.api.participant.service.RequestUtilService;
 import bio.terra.pearl.core.model.survey.ParsedPreEnrollResponse;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.service.study.EnrollmentService;
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -15,10 +17,18 @@ import org.springframework.stereotype.Controller;
 public class PreEnrollmentController implements PreEnrollmentApi {
   private ObjectMapper objectMapper;
   private EnrollmentService enrollmentService;
+  private RequestUtilService requestUtilService;
+  private HttpServletRequest request;
 
-  public PreEnrollmentController(ObjectMapper objectMapper, EnrollmentService enrollmentService) {
+  public PreEnrollmentController(
+      ObjectMapper objectMapper,
+      EnrollmentService enrollmentService,
+      RequestUtilService requestUtilService,
+      HttpServletRequest request) {
     this.objectMapper = objectMapper;
     this.enrollmentService = enrollmentService;
+    this.requestUtilService = requestUtilService;
+    this.request = request;
   }
 
   @Override
@@ -42,7 +52,7 @@ public class PreEnrollmentController implements PreEnrollmentApi {
   }
 
   /**
-   * Confirms that a given preEnrollResponseId is valid to be used for a enrollment. This is
+   * Confirms that a given preEnrollResponseId is valid to be used for an enrollment. This is
    * necessary for cases where the UI caches the ID across page refreshes, to ensure the participant
    * won't complete enrollment only to find out the linked pre-enroll was not valid.
    */

@@ -34,6 +34,10 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.findOneByShortcode(shortcode);
     }
 
+    public List<Enrollee> findByParticipantUserId(UUID userId) {
+        return dao.findByParticipantUserId(userId);
+    }
+
     @Override
     @Transactional
     public void delete(UUID enrolleeId, Set<CascadeProperty> cascades) {

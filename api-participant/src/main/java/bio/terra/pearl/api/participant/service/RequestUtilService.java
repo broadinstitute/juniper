@@ -20,12 +20,16 @@ public class RequestUtilService {
 
   /** gets the user from the request, throwing an exception if not present */
   public ParticipantUser userFromRequest(HttpServletRequest request) {
-    String token = tokenFromRequest(request);
-    Optional<ParticipantUser> userOpt = currentUserService.findByToken(token);
+    Optional<ParticipantUser> userOpt = userOptFromRequest(request);
     if (userOpt.isEmpty()) {
       throw new UnauthorizedException("User not found");
     }
     return userOpt.get();
+  }
+
+  public Optional<ParticipantUser> userOptFromRequest(HttpServletRequest request) {
+    String token = tokenFromRequest(request);
+    return currentUserService.findByToken(token);
   }
 
   public String tokenFromRequest(HttpServletRequest request) {
