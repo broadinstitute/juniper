@@ -1,15 +1,13 @@
 import React from 'react'
 import {
-  ConsentForm,
   ConsentResponse,
   Enrollee,
   StudyEnvironmentConsent,
   StudyEnvironmentSurvey,
-  Survey,
   SurveyResponse
 } from 'api/api'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import { NavLink, Outlet, Route, Routes } from 'react-router-dom'
+import { NavLink, Route, Routes } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck'
 import EnrolleeSurveyView from './survey/EnrolleeSurveyView'
@@ -28,11 +26,13 @@ export type ConsentWithResponsesT = {
 }
 export type ConsentResponseMapT = {[stableId: string] : ConsentWithResponsesT}
 
+/** shows a master-detail view for an enrollee with sub views on surveys, tasks, etc... */
 export default function EnrolleeView({ enrollee, studyEnvContext }:
 {enrollee: Enrollee, studyEnvContext: StudyEnvContextT}) {
-  const { currentEnv, study, portal } = studyEnvContext
+  const { currentEnv } = studyEnvContext
 
-  function getLinkStyle({ isActive }: {isActive: boolean}) {
+  /** gets classes to apply to nav links */
+  function getLinkCssClasses({ isActive }: {isActive: boolean}) {
     return `nav-link ${isActive ? 'active' : ''}`
   }
 
@@ -69,10 +69,10 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
           <div className="participantTabs">
             <ul className="list-group">
               <li className="list-group-item">
-                <NavLink to="profile" className={getLinkStyle}>Profile</NavLink>
+                <NavLink to="profile" className={getLinkCssClasses}>Profile</NavLink>
               </li>
               <li className="list-group-item">
-                <NavLink to="preRegistration" className={getLinkStyle}>Preregistration</NavLink>
+                <NavLink to="preRegistration" className={getLinkCssClasses}>Preregistration</NavLink>
               </li>
               <li className="list-group-item subgroup">
                 Consents
@@ -80,7 +80,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                   { consents.map(consent => {
                     const stableId = consent.consentForm.stableId
                     return <li className="list-group-item" key={stableId}>
-                      <NavLink to={`consents/${stableId}`} className={getLinkStyle}>
+                      <NavLink to={`consents/${stableId}`} className={getLinkCssClasses}>
                         { consent.consentForm.name }
                         { isConsented(consentMap[stableId].responses) &&
                           <FontAwesomeIcon className="text-success ms-2 fa-lg" icon={faCheck}/>
@@ -96,7 +96,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                   { surveys.map(survey => {
                     const stableId = survey.survey.stableId
                     return <li className="list-group-item" key={stableId}>
-                      <NavLink to={`surveys/${stableId}`} className={getLinkStyle}>
+                      <NavLink to={`surveys/${stableId}`} className={getLinkCssClasses}>
                         { survey.survey.name }
                         {responseMap[stableId].responses.length > 0 &&
                           <span className="badge align-middle" style={{  background: '#888', marginLeft: '0.5em' }}>
@@ -113,7 +113,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                 <ul className="list-group">
                   { enrollee.participantTasks.map(task => {
                     return <li className="list-group-item" key={task.id}>
-                      <NavLink to={`tasks/${task.id}`} className={getLinkStyle}>
+                      <NavLink to={`tasks/${task.id}`} className={getLinkCssClasses}>
                         { task.taskType }: {task.targetName}
                         <span className="detail">{task.status}</span>
                       </NavLink>
@@ -138,6 +138,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                   responseMap={consentMap}/>}/>
                 <Route path="*" element={<div>Unknown participant survey page</div>}/>
               </Route>
+              <Route index element={<div>Enrollee page</div>}/>
               <Route path="*" element={<div>unknown enrollee route</div>}/>
             </Routes>
           </div>
@@ -147,6 +148,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
   </div>
 }
 
+/** TODO -- this should be computed server-side */
 function isConsented(responses: ConsentResponse[]) {
   // for now, just check the most recent for consent
   return responses.length > 0 && responses[responses.length - 1].consented

@@ -1,12 +1,13 @@
 import React from 'react'
 import { ConsentForm, Survey } from 'api/api'
 
+/** renders every item in a survey response */
 export default function SurveyFullDataView({ fullData, survey }: {fullData: string, survey: Survey | ConsentForm}) {
   const denormalizedData = JSON.parse(fullData) as DenormalizedResponse
-
+  console.log(`rendering data for survey ${survey.stableId} -- question text not yet implemented`)
   return <div>
-    {denormalizedData.items.map(dataItem => {
-      let displayValue: any = dataItem.displayValue
+    {denormalizedData.items.map((dataItem, index) => {
+      let displayValue: React.ReactNode = dataItem.displayValue
       if (!displayValue) {
         displayValue = dataItem.simpleValue
       }
@@ -15,7 +16,7 @@ export default function SurveyFullDataView({ fullData, survey }: {fullData: stri
       } else if (dataItem.stableId === 'signature') {
         displayValue = <img src={dataItem.simpleValue}/>
       }
-      return <div>
+      return <div key={index}>
         <label>{dataItem.questionText} <span className="detail">({dataItem.stableId})</span></label>
         <pre>{displayValue}</pre>
       </div>
@@ -43,6 +44,6 @@ export type DenormalizedResponseItem = {
   stableId: string,
   questionText: string,
   questionType: string,
-  simpleValue: any,
-  displayValue: any,
+  simpleValue: string,
+  displayValue: string,
 }

@@ -1,23 +1,18 @@
-import React, { useState } from 'react'
+import React  from 'react'
 import {
-  ConsentResponse,
-  Enrollee,
-  StudyEnvironmentConsent,
-  StudyEnvironmentSurvey,
-  Survey,
-  SurveyResponse
+  ConsentResponse, Enrollee,
+  StudyEnvironmentConsent
 } from 'api/api'
 
 import { useParams } from 'react-router-dom'
 import SurveyFullDataView from 'study/participants/survey/SurveyFullDataView'
-import SurveyEditView from 'study/participants/survey/SurveyEditView'
-import { ConsentResponseMapT, ResponseMapT } from '../EnrolleeView'
+import { ConsentResponseMapT } from '../EnrolleeView'
 import { EnrolleeParams } from '../EnrolleeRouter'
-import { instantToDefaultString } from '../../../util/timeUtils'
+import { instantToDefaultString } from 'util/timeUtils'
 
-
+/** shows consent forms for a given enrollee, based on url params specifying the form */
 export default function EnrolleeConsentView({ enrollee, responseMap }:
-                                             {enrollee: Enrollee, responseMap: ConsentResponseMapT}) {
+                                             { enrollee: Enrollee, responseMap: ConsentResponseMapT}) {
   const params = useParams<EnrolleeParams>()
 
   const consentStableId: string | undefined = params.consentStableId
@@ -30,15 +25,15 @@ export default function EnrolleeConsentView({ enrollee, responseMap }:
     return <div>Unknown survey stableId</div>
   }
 
-  return <RawEnrolleeConsentView enrollee={enrollee}
-    configConsent={surveyAndResponses.consent} responses={surveyAndResponses.responses}/>
+  return <RawEnrolleeConsentView enrollee={enrollee} configConsent={surveyAndResponses.consent}
+    responses={surveyAndResponses.responses}/>
 }
 
+/** shows a given consent form for an enrollee */
 export function RawEnrolleeConsentView({ enrollee, configConsent, responses }:
    {enrollee: Enrollee, configConsent: StudyEnvironmentConsent, responses: ConsentResponse[]}) {
-  const [isEditing, setIsEditing] = useState(false)
   if (responses.length === 0) {
-    return <div>No responses</div>
+    return <div>No responses for {enrollee.shortcode}</div>
   }
   // just show the last response for now
   const lastResponse = responses[responses.length - 1]

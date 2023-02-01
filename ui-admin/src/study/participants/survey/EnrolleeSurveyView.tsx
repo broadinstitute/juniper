@@ -1,15 +1,14 @@
 import React, { useState } from 'react'
-import { Enrollee, StudyEnvironmentSurvey, Survey, SurveyResponse } from 'api/api'
+import { Enrollee, StudyEnvironmentSurvey, SurveyResponse } from 'api/api'
 
 import { useParams } from 'react-router-dom'
 import SurveyFullDataView from './SurveyFullDataView'
 import SurveyEditView from './SurveyEditView'
-import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { ResponseMapT } from '../EnrolleeView'
 import { EnrolleeParams } from '../EnrolleeRouter'
 import { instantToDefaultString } from '../../../util/timeUtils'
 
-
+/** Show responses for a survey based on url param */
 export default function EnrolleeSurveyView({ enrollee, responseMap }:
   {enrollee: Enrollee, responseMap: ResponseMapT}) {
   const params = useParams<EnrolleeParams>()
@@ -28,11 +27,12 @@ export default function EnrolleeSurveyView({ enrollee, responseMap }:
     configSurvey={surveyAndResponses.survey} responses={surveyAndResponses.responses}/>
 }
 
+/** show responses for a survey */
 export function RawEnrolleeSurveyView({ enrollee, configSurvey, responses }:
   {enrollee: Enrollee, configSurvey: StudyEnvironmentSurvey, responses: SurveyResponse[]}) {
   const [isEditing, setIsEditing] = useState(false)
   if (responses.length === 0) {
-    return <div>No responses</div>
+    return <div>No responses for enrollee {enrollee.shortcode}</div>
   }
   // just show the last response for now
   const lastResponse = responses[responses.length - 1]

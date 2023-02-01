@@ -5,6 +5,7 @@ import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import EnrolleeRouter from './EnrolleeRouter'
 import { NavBreadcrumb } from '../../navbar/AdminNavbar'
 
+/** routes to list or individual enrollee view as appropriate */
 export default function ParticipantsRouter({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   return <>
     <NavBreadcrumb>

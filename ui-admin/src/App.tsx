@@ -15,7 +15,6 @@ import AdminNavbar from 'navbar/AdminNavbar'
 import PortalList from 'portal/PortalList'
 import PortalProvider from 'portal/PortalProvider'
 import PortalDashboard from 'portal/PortalDashboard'
-import StudyDashboard from 'study/StudyDashboard'
 
 import StudyRouter from 'study/StudyRouter'
 import { getOidcConfig } from './authConfig'

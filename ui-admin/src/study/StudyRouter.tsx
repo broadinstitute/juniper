@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { Link, Outlet, Route, Routes, useParams } from 'react-router-dom'
+import { Link, Route, Routes, useParams } from 'react-router-dom'
 import { Study } from 'api/api'
 
 import { LoadedPortalContextT, PortalContext } from 'portal/PortalProvider'
@@ -48,19 +48,14 @@ function StudyRouterFromShortcode({ shortcode }:
 
   const study = matchedPortalStudy?.study
 
-  /** updates the study context -- does NOT update the server */
-  function updateStudy(study: Study) {
-    alert(`not implemented yet ${study.shortcode}`)
-  }
-
   return <>
     <NavBreadcrumb>
       <Link className="text-white" to={`/${portalState.portal.shortcode}/studies/${study?.shortcode}`}>
         {study?.name}</Link>
     </NavBreadcrumb>
     <Routes>
-      <Route path="env/:studyEnv/*" element={<StudyEnvironmentRouter study={study} updateStudy={updateStudy}/>}/>
-      <Route index element={<StudyDashboard study={study} updateStudy={updateStudy}/>}/>
+      <Route path="env/:studyEnv/*" element={<StudyEnvironmentRouter study={study}/>}/>
+      <Route index element={<StudyDashboard study={study}/>}/>
     </Routes>
   </>
 }

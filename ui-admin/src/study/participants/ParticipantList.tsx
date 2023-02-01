@@ -6,6 +6,7 @@ import { failureNotification } from 'util/notifications'
 import { Link } from 'react-router-dom'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 
+/** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
   const [participantList, setParticipantList] = useState<EnrolleeSearchResult[]>([])
@@ -15,7 +16,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     Api.getEnrollees(portal.shortcode, study.shortcode, currentEnv.environmentName).then(result => {
       setParticipantList(result)
       setIsLoading(false)
-    }).catch(e => {
+    }).catch(() => {
       Store.addNotification(failureNotification(`Error loading participants`))
     })
   }, [])

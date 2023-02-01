@@ -2,7 +2,7 @@ import React, { useEffect, useContext } from 'react'
 import { Portal, Study, StudyEnvironment } from 'api/api'
 import { StudyParams } from 'study/StudyRouter'
 
-import { Link, Outlet, Route, Routes, useOutletContext, useParams } from 'react-router-dom'
+import { Link, Route, Routes, useParams } from 'react-router-dom'
 import { NavBreadcrumb } from '../navbar/AdminNavbar'
 import { NavbarContext } from '../navbar/NavbarProvider'
 import StudyEnvironmentSidebar from './StudyEnvironmentSidebar'
@@ -17,7 +17,7 @@ import ParticipantsRouter from './participants/ParticipantsRouter'
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
 
 /** Base page for configuring the content and integrations for a study environment */
-function StudyEnvironmentRouter({ study, updateStudy }: {study: Study, updateStudy: (study: Study) => void}) {
+function StudyEnvironmentRouter({ study }: {study: Study}) {
   const params = useParams<StudyParams>()
   const envName: string | undefined = params.studyEnv
   const navContext = useContext(NavbarContext)

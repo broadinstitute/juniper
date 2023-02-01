@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link, Route, Routes, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { StudyParams } from '../StudyRouter'
 import Api, { Enrollee } from '../../api/api'
 import { Store } from 'react-notifications-component'
@@ -15,6 +15,7 @@ export type EnrolleeParams = StudyParams & {
   consentStableId: string
 }
 
+/** Handles loading a specific enrollee from the server, and then delegating to EnrolleeView for rendering */
 export default function EnrolleeRouter({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
   const params = useParams<EnrolleeParams>()
@@ -26,7 +27,7 @@ export default function EnrolleeRouter({ studyEnvContext }: {studyEnvContext: St
     Api.getEnrollee(portal.shortcode, study.shortcode, currentEnv.environmentName, enrolleeShortcode).then(result => {
       setEnrollee(result)
       setIsLoading(false)
-    }).catch(e => {
+    }).catch(() => {
       Store.addNotification(failureNotification(`Error loading participants`))
     })
   }, [enrolleeShortcode])

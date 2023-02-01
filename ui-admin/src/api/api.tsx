@@ -101,7 +101,7 @@ export type Profile = {
 
 export type ResumableData = {
   currentPageNo: number,
-  data: any
+  data: object
 }
 
 export type ResponseSnapshot = {
@@ -298,6 +298,7 @@ export default {
   }
 }
 
+/** base api path for study-scoped api requests */
 function baseStudyEnvUrl(portalShortcode: string, studyShortcode: string, envName: string) {
   return `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}/env/${envName}`
 }

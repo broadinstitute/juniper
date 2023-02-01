@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React  from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Study, StudyEnvironment } from 'api/api'
 import { Link } from 'react-router-dom'
@@ -16,7 +16,7 @@ const ENVIRONMENT_ICON_MAP: Record<string, React.ReactNode> = {
 }
 
 /** shows the study environments and configuration options */
-export default function StudyDashboard({ study, updateStudy }: {study: Study, updateStudy: (study:Study)=>void}) {
+export default function StudyDashboard({ study }: {study: Study}) {
   const sortedEnvironments = ENVIRONMENT_ORDER
     .map(envName => study.studyEnvironments.find(env => env.environmentName === envName))
     .filter(e => e) as StudyEnvironment[]
@@ -91,4 +91,3 @@ function EnvironmentEmptyMessage({ studyEnv }: {studyEnv: StudyEnvironment}) {
     publish it here.<br/>
   </div>
 }
-

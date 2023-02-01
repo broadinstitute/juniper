@@ -55,7 +55,7 @@ public class ConsentTaskDispatcherTests extends BaseSpringBootTest {
                 .build();
         List<StudyEnvironmentConsent> studyEnvConsents = Arrays.asList(studyEnvConsent);
         List<ParticipantTask> consentTasks = consentTaskDispatcher
-                .buildConsentTasks(enrolleeEvent, allTasks, enrolleeRuleData, studyEnvConsents);
+                .buildConsentTasks(enrolleeEvent, enrolleeRuleData, studyEnvConsents);
 
         assertThat(consentTasks, hasSize(1));
         ParticipantTask newTask = consentTasks.get(0);
