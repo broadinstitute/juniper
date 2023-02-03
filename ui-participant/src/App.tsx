@@ -11,8 +11,8 @@ import { getOidcConfig } from './authConfig'
 import UserProvider from './providers/UserProvider'
 import { ProtectedRoute } from './login/ProtectedRoute'
 import { RedirectFromOAuth } from './login/RedirectFromOAuth'
-import HubPage from './hub/HubPage'
 import StudyEnrollRouter from './studies/enroll/StudyEnrollRouter'
+import HubRouter from './hub/HubRouter'
 
 
 /**
@@ -42,9 +42,7 @@ function App() {
         <div className="App d-flex flex-column min-vh-100 bg-white">
           <BrowserRouter>
             <Routes>
-              <Route path="/hub" element={<ProtectedRoute/>}>
-                <Route index element={<HubPage/>}/>
-              </Route>
+              <Route path="/hub/*" element={<ProtectedRoute><HubRouter/></ProtectedRoute>}/>
               <Route path="/studies/:studyShortcode">
                 <Route path="join/*" element={<StudyEnrollRouter/>}/>
                 <Route index element={<div>study specific page -- TBD</div>}/>

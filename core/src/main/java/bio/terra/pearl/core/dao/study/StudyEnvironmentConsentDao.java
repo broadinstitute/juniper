@@ -5,6 +5,7 @@ import bio.terra.pearl.core.dao.consent.ConsentFormDao;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
@@ -37,6 +38,11 @@ public class StudyEnvironmentConsentDao extends BaseMutableJdbiDao<StudyEnvironm
                     .findFirst().get());
         }
         return studyEnvConsents;
+    }
+
+    public Optional<StudyEnvironmentConsent> findByConsentForm(UUID studyEnvId, UUID consentFormId) {
+        return findByTwoProperties("study_environment_id",studyEnvId,
+                "consent_form_id", consentFormId);
     }
 
     public void deleteByStudyEnvironmentId(UUID studyEnvId) {

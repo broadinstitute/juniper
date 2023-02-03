@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+/** See https://broadworkbench.atlassian.net/wiki/spaces/PEARL/pages/2669281289/Consent+forms */
 @Getter
 @Setter
 @NoArgsConstructor

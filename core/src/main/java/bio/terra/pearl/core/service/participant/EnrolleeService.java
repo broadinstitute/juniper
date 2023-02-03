@@ -2,12 +2,14 @@ package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.consent.ConsentResponseService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import java.security.SecureRandom;
@@ -26,6 +28,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private SurveyResponseService surveyResponseService;
     private ParticipantTaskService participantTaskService;
     private StudyEnvironmentService studyEnvironmentService;
+    private ConsentResponseService consentResponseService;
+
 
     private SecureRandom secureRandom;
 
@@ -33,11 +37,12 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            SurveyResponseService surveyResponseService,
                            ParticipantTaskService participantTaskService,
                            @Lazy StudyEnvironmentService studyEnvironmentService,
-                           SecureRandom secureRandom) {
+                           ConsentResponseService consentResponseService, SecureRandom secureRandom) {
         super(enrolleeDao);
         this.surveyResponseService = surveyResponseService;
         this.participantTaskService = participantTaskService;
         this.studyEnvironmentService = studyEnvironmentService;
+        this.consentResponseService = consentResponseService;
         this.secureRandom = secureRandom;
     }
 
@@ -47,6 +52,10 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
 
     public List<Enrollee> findByParticipantUserId(UUID userId) {
         return dao.findByParticipantUserId(userId);
+    }
+
+    public Optional<Enrollee> findByParticipantUserId( UUID participantUserId, UUID studyEnvironmentId) {
+        return dao.findByParticipantUserId(participantUserId, studyEnvironmentId);
     }
 
     public List<Enrollee> findByStudyEnvironment(UUID studyEnvironmentId) {
@@ -72,6 +81,9 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     public void delete(UUID enrolleeId, Set<CascadeProperty> cascades) {
         for (SurveyResponse surveyResponse : surveyResponseService.findByEnrolleeId(enrolleeId)) {
             surveyResponseService.delete(surveyResponse.getId(), cascades);
+        }
+        for (ConsentResponse consentResponse : consentResponseService.findByEnrolleeId(enrolleeId)) {
+            consentResponseService.delete(consentResponse.getId(), cascades);
         }
         participantTaskService.deleteByEnrolleeId(enrolleeId);
         dao.delete(enrolleeId);

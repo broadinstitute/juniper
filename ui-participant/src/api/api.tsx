@@ -101,6 +101,27 @@ export type StudyEnvironment = {
   environmentName: string
 }
 
+
+export type StudyEnvironmentConsent = {
+  id: string,
+  consentFormId: string,
+  consentForm: ConsentForm,
+  consentOrder: number,
+  allowAdminEdit: boolean,
+  allowParticipantStart: boolean,
+  allowParticipantReedit: boolean,
+  prepopulate: boolean
+}
+
+export type ConsentResponse = {
+  id: string,
+  createdAt: number,
+  consented: boolean,
+  consentFormId: string,
+  resumeData: string,
+  fullData: string
+}
+
 export type PreregistrationResponse = {
   id: string
 }
@@ -110,13 +131,32 @@ export type PreEnrollmentResponse = {
 }
 
 export type Enrollee = {
+  id: string,
   shortcode: string,
-  studyEnvironmentId: string
+  studyEnvironmentId: string,
+  participantTasks: ParticipantTask[]
+}
+
+export type ParticipantTask = {
+  id: string,
+  targetStableId: string,
+  targetAssignedVersion: number,
+  createdAt: number,
+  targetName: string,
+  taskType: string,
+  blocksHub: boolean,
+  taskOrder: number,
+  status: string
 }
 
 export type RegistrationResponse = {
   participantUser: ParticipantUser,
   portalParticipantUser: PortalParticipantUser
+}
+
+export type ConsentWithResponses = {
+  studyEnvironmentConsent: StudyEnvironmentConsent,
+  consentResponses: ConsentResponse[]
 }
 
 export type PortalParticipantUser = {
@@ -257,6 +297,18 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async fetchConsentAndResponses({ studyShortcode, stableId, version, taskId }: {
+    studyShortcode: string,
+    stableId: string, version: number, taskId: string | null
+  }): Promise<ConsentWithResponses> {
+    let url = `${baseStudyEnvUrl(studyShortcode)}/consents/${stableId}/${version}`
+    if (taskId) {
+      url = `${url}?taskId=${taskId}`
+    }
+    const response = await fetch(url, { headers: this.getInitHeaders() })
+    return await this.processJsonResponse(response)
+  },
+
   async unauthedLogin(username: string): Promise<LoginResult> {
     const url = `${baseEnvUrl()}/current-user/unauthed-login?${new URLSearchParams({
       username
@@ -296,6 +348,12 @@ export default {
 function baseEnvUrl() {
   const { shortcode, envName } = getEnvSpec()
   return `${API_ROOT}/portals/v1/${shortcode}/env/${envName}`
+}
+
+/** get the baseurl for endpoints that include the portal and environment and study */
+function baseStudyEnvUrl(studyShortcode: string) {
+  const { shortcode, envName } = getEnvSpec()
+  return `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/studies/${studyShortcode}`
 }
 
 /**
