@@ -20,7 +20,8 @@ public class StudyEnvironmentConsent extends BaseEntity {
 
     private int consentOrder; // what order the consent will be given in, compared to other consents triggered at the same time
     private String eligibilityRule;
-    private boolean studyRequired;
+    @Builder.Default
+    private boolean studyRequired = true;
     @Builder.Default
     private boolean allowAdminEdit = false; // whether study staff can edit this
     @Builder.Default

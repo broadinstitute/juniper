@@ -4,14 +4,14 @@ import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.consent.ConsentFormFactory;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
-import bio.terra.pearl.core.model.participant.*;
+import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.workflow.EnrolleeCreationEvent;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -43,7 +43,6 @@ public class ConsentTaskDispatcherTests extends BaseSpringBootTest {
                 .portalParticipantUser(ppUser)
                 .studyEnvironment(studyEnv)
                 .build();
-        List<ParticipantTask> allTasks = new ArrayList<>();
         EnrolleeRuleData enrolleeRuleData = EnrolleeRuleData.builder()
                 .enrollee(enrollee)
                 .build();
