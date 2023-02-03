@@ -9,7 +9,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 /**
- * Preregistration response is different than a SurveyResponse since it comes while a user is not authenticated,
+ * Preregistration response is different than a SurveyResponse since it may come while a user is not authenticated,
  * and therefore never should be resumed, and so doesn't need snapshots -- it can only be created once and then
  * the data is never updated.
  * However, if the user goes on to register, this response should be linked to the user, so that the data

@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.survey;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
+import bio.terra.pearl.core.model.survey.ResponseSnapshot;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,17 @@ public class SurveyResponseDao extends BaseMutableJdbiDao<SurveyResponse> {
 
     public List<SurveyResponse> findByEnrolleeId(UUID enrolleeId) {
         return findAllByProperty("enrollee_id", enrolleeId);
+    }
+
+    public List<SurveyResponse> findByEnrolleeIdWithLastSnapshot(UUID enrolleeId) {
+        List<SurveyResponse> responses = findAllByProperty("enrollee_id", enrolleeId);
+        List<UUID> snapshotIds = responses.stream().map(response -> response.getLastSnapshotId()).toList();
+        List<ResponseSnapshot> snapshots = responseSnapshotDao.findAll(snapshotIds);
+        for (SurveyResponse response : responses) {
+            response.setLastSnapshot(snapshots.stream()
+                    .filter(snap -> snap.getId().equals(response.getLastSnapshotId())).findFirst().orElse(null));
+        }
+        return responses;
     }
 
     public Optional<SurveyResponse> findOneWithLastSnapshot(UUID responseId) {

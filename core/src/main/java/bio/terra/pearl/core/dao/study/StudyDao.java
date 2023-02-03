@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.StringUtils;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
@@ -44,10 +43,8 @@ public class StudyDao  extends BaseJdbiDao<Study> {
     }
 
     public List<Study> findByPortal(String portalShortcode) {
-        List<String> primaryCols = getQueryColumns.stream().map(col -> "a." + col)
-                .collect(Collectors.toList());
         return jdbi.withHandle(handle ->
-                handle.createQuery("select " + StringUtils.join(primaryCols, ", ") + " from " + tableName
+                handle.createQuery("select " + prefixedGetQueryColumns("a") + " from " + tableName
                                 + " a join portal_study on a.id = portal_study.study_id "
                                 + " join portal on portal_study.portal_id = portal.id"
                                 + " where portal.shortcode = :portalShortcode")

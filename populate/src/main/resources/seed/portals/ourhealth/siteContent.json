@@ -4,6 +4,7 @@
   "defaultLanguage": "en",
   "localizedSiteContentDtos": [{
     "language": "en",
+    "navLogoShortcode": "oh_portalContent_1_ourhealth-logo.png",
     "landingPage": {
       "title": "OurHealth portal home",
       "sectionDtos": [{
@@ -11,7 +12,7 @@
         "sectionConfigJson": {
           "title": "Help us understand and improve cardiovascular disease risk among South Asian populations.",
           "blurb": "The OurHealth study aims to build a coalition of researchers and participants to better understand – and ultimately overcome – the persistently high rates of cardiovascular diseases among South Asian populations through the creation and study of a new cohort.",
-          "imageShortcode": "oh_portalContent_1_banner40238bbb.png",
+          "imageShortcode": "oh_portalContent_1_banner-40238bbb.png",
           "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
           "buttons": [
             {"text": "Join OurHealth",
@@ -32,10 +33,10 @@
     }
   }],
   "siteImageDtos": [{
-    "uploadFileName": "Banner-image.png",
     "populateFileName": "images/Banner-image.png"
   }, {
-    "uploadFileName": "Banner-40238bbb.png",
     "populateFileName": "images/Banner-40238bbb.png"
+  }, {
+    "populateFileName": "images/ourhealth-logo.png"
   }]
 }

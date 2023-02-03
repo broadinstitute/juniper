@@ -132,8 +132,19 @@ export type DenormalizedResponse = {
   }
 }
 
-export type DenormalizedPreRegResponse = DenormalizedResponse & {
+export type DenormalizedPreRegResponse = {
+  parsedData: {
+    items: DenormalizedResponseItem[]
+  }
   qualified: boolean
+}
+
+export type DenormalizedPreEnrollResponse = {
+  parsedData: {
+    items: DenormalizedResponseItem[]
+  }
+  qualified: boolean,
+  studyEnvironmentId: string
 }
 
 export type DenormalizedResponseItem = {

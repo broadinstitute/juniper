@@ -2,7 +2,7 @@ import React from 'react'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import { generateDenormalizedData, SourceType, useSurveyJSModel } from 'util/surveyJsUtils'
 import Api, { Survey } from 'api/api'
-import { useRegistrationOutlet } from './PortalRegistrationOutlet'
+import { RegistrationContextT } from './PortalRegistrationRouter'
 import { useUser } from '../../providers/UserProvider'
 import { useNavigate } from 'react-router-dom'
 
@@ -58,8 +58,11 @@ const registrationSurveyModel: Survey = {
 }
 
 /** show the participant registration page */
-export default function Registration() {
-  const { preRegResponseId, updatePreRegResponseId } = useRegistrationOutlet()
+export default function Registration({ registrationContext, returnTo }: {
+  registrationContext: RegistrationContextT,
+  returnTo: string | null
+}) {
+  const { preRegResponseId, updatePreRegResponseId } = registrationContext
   // for now, assume registration surveys are a single page
   const pager = { pageNumber: 0, updatePageNumber: () => 0 }
   const { surveyModel, refreshSurvey } = useSurveyJSModel(registrationSurveyModel, null, onComplete, pager)
@@ -82,8 +85,10 @@ export default function Registration() {
     })
       .then(response => {
         updatePreRegResponseId(null)
-        loginUser(response.participantUser)
-        navigate('/hub')
+        loginUser({ user: response.participantUser, enrollees: [] })
+        if (returnTo) {
+          navigate(returnTo)
+        }
       }).catch(() => {
         alert('an error occurred.  Please retry.  If this persists, contact us')
         // if there's an error, reshow the survey (for now, assume registration is a single page)

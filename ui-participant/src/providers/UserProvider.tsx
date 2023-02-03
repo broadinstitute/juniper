@@ -1,29 +1,29 @@
 import React, { useContext, useEffect, useState } from 'react'
 import LoadingSpinner from '../util/LoadingSpinner'
-import Api, { ParticipantUser } from 'api/api'
+import Api, { Enrollee, LoginResult, ParticipantUser } from 'api/api'
 import { useAuth } from 'react-oidc-context'
 
-export type User = {
-  token: string | null,
-  isAnonymous: boolean,
-  username: string | null
+export type User = ParticipantUser & {
+  isAnonymous: boolean
 }
 
 const anonymousUser: User = {
-  token: null,
+  token: '',
   isAnonymous: true,
-  username: null
+  username: 'anonymous'
 }
 
 export type UserContextT = {
   user: User,
-  loginUser: (user: ParticipantUser) => void,
+  enrollees: Enrollee[],
+  loginUser: (result: LoginResult) => void,
   logoutUser: () => void
 }
 
 /** current user object context */
 const UserContext = React.createContext<UserContextT>({
   user: anonymousUser,
+  enrollees: [],
   loginUser: () => {
     throw new Error('context not yet initialized')
   },
@@ -37,28 +37,25 @@ export const useUser = () => useContext(UserContext)
 
 /** Provider for the current logged-in user. */
 export default function UserProvider({ children }: { children: React.ReactNode }) {
-  const [userState, setUserState] = useState<User>(anonymousUser)
+  const [loginState, setLoginState] = useState<LoginResult | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const auth = useAuth()
 
-  const loginUser = (user: ParticipantUser) => {
-    setUserState({
-      username: user.username,
-      token: user.token,
-      isAnonymous: false
-    })
-    Api.setBearerToken(user.token)
-    localStorage.setItem(STORAGE_TOKEN_PROP, user.token)
+  const loginUser = (loginResult: LoginResult) => {
+    setLoginState(loginResult)
+    Api.setBearerToken(loginResult.user.token)
+    localStorage.setItem(STORAGE_TOKEN_PROP, loginResult.user.token)
   }
 
   const logoutUser = () => {
-    setUserState(anonymousUser)
+    setLoginState(null)
     Api.setBearerToken(null)
     localStorage.removeItem(STORAGE_TOKEN_PROP)
   }
 
   const userContext: UserContextT = {
-    user: userState,
+    user: loginState ? { ...loginState.user, isAnonymous: false } : anonymousUser,
+    enrollees: loginState ? loginState.enrollees : [],
     loginUser,
     logoutUser
   }
@@ -66,17 +63,18 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     auth.events.addUserLoaded(user => {
       console.log(user)
-      const adminUser = {
-        username: user?.profile?.email as string,
-        token: user.id_token as string
-      }
-      loginUser(adminUser)
+      // const adminUser = {
+      //   username: user?.profile?.email as string,
+      //   token: user.id_token as string
+      // }
+      // TODO -- call server API to create/log in user to the server
+      // loginUser(adminUser)
     })
 
     const token = localStorage.getItem(STORAGE_TOKEN_PROP)
     if (token) {
-      Api.refreshLogin(token).then(user => {
-        loginUser(user)
+      Api.refreshLogin(token).then(loginResult => {
+        loginUser(loginResult)
         setIsLoading(false)
       }).catch(() => {
         setIsLoading(false)

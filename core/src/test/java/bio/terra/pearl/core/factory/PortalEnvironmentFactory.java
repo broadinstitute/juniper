@@ -16,7 +16,7 @@ public class PortalEnvironmentFactory {
     @Autowired
     private PortalFactory portalFactory;
     @Autowired
-    private PortalEnvironmentService studyEnvironmentService;
+    private PortalEnvironmentService portalEnvironmentService;
 
     public PortalEnvironment.PortalEnvironmentBuilder builder(String testName) {
         EnvironmentName envName = EnvironmentName.values()[RandomUtils.nextInt(0, 3)];
@@ -33,6 +33,6 @@ public class PortalEnvironmentFactory {
     }
 
     public PortalEnvironment buildPersisted(String testName) {
-        return studyEnvironmentService.create(builderWithDependencies(testName).build());
+        return portalEnvironmentService.create(builderWithDependencies(testName).build());
     }
 }

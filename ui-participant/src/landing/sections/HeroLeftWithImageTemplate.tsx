@@ -24,8 +24,16 @@ type HeroLeftWithImageTemplateProps = {
  * Template for a hero with text content on the left and an image on the right.
  */
 function HeroLeftWithImageTemplate({
-  config: { background, blurb, buttons, imageShortcode, backgroundImageShortcode, logos, title }
-}: {config: HeroLeftWithImageTemplateProps}) {
+  config: {
+    background,
+    blurb,
+    buttons,
+    imageShortcode,
+    backgroundImageShortcode,
+    logos,
+    title
+  }
+}: { config: HeroLeftWithImageTemplateProps }) {
   const styleProps: CSSProperties = { background }
   if (backgroundImageShortcode) {
     styleProps.backgroundImage = `url('${getImageUrl(backgroundImageShortcode)}')`
@@ -52,8 +60,8 @@ function HeroLeftWithImageTemplate({
       </div>
       <div className="d-flex flex-wrap align-items-center justify-content-between">
         {_.map(logos, ({ imageShortcode, alt }) => {
-          return <PearlImage imageShortcode={imageShortcode} alt={alt} className={'m-1'}/>
-        }) }
+          return <PearlImage key={imageShortcode} imageShortcode={imageShortcode} alt={alt} className={'m-1'}/>
+        })}
       </div>
     </div>
   </div>

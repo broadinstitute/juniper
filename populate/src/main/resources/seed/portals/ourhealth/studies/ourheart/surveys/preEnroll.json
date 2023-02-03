@@ -1,0 +1,69 @@
+{
+  "stableId": "oh_oh_preenroll",
+  "version": 1,
+  "name": "Pre-registration",
+  "jsonContent": {
+  "title": "OurHealth pre-registration",
+  "logoPosition": "right",
+  "pages": [
+    {
+      "name": "page1",
+      "elements": [
+        {
+          "type": "html",
+          "name": "descriptionText",
+          "html": "<h3 class=\"text-center fw-bold\">Thank you for your interest in joining the Our Health Project!</h3>\n<p class=\"mt-5\">\nComplete the form below to tell us about yourself. Our goal is to learn more about genetic and other risk factors that increase the risk of cardiovascular diseases among South Asian populations. With this effort we plan to collect health information from you and your medical records as well as collect, process, and store a sample of your saliva for research purposes.</p>\n<p>\nWe will record your answers but will only keep detailed contact information if you qualify for the study and want to participate. We will not keep or store your contact information if you do not qualify for the study.</p>"
+        },
+        {
+          "type": "radiogroup",
+          "name": "oh_oh_preenroll_ancestry",
+          "title": "Are you of South Asian ancestry?",
+          "isRequired": true,
+          "choices": [
+            {
+              "value": "yes",
+              "text": "Yes"
+            },
+            {
+              "value": "no",
+              "text": "No"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "name": "oh_oh_preenroll_age",
+          "title": "How old are you?",
+          "isRequired": true,
+          "inputType": "number",
+          "min": 0,
+          "max": 130
+        },
+        {
+          "type": "radiogroup",
+          "name": "oh_oh_preenroll_liveInUs",
+          "title": "Do you live in the United States?",
+          "isRequired": true,
+          "choices": [
+            {
+              "value": "yes",
+              "text": "Yes"
+            },
+            {
+              "value": "no",
+              "text": "No"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "calculatedValues": [
+    {
+      "name": "qualified",
+      "expression": "{oh_oh_preenroll_liveInUs} = 'yes' && {oh_oh_preenroll_age} > 17 && {oh_oh_preenroll_ancestry} = 'yes'",
+      "includeIntoResult": true
+    }
+  ]
+}
+}

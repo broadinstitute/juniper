@@ -1,6 +1,6 @@
 import React, { SyntheticEvent, useState } from 'react'
 import microsoftLogo from 'images/microsoft_logo.png'
-import Api, { ParticipantUser } from 'api/api'
+import Api, { LoginResult } from 'api/api'
 import { useUser } from 'providers/UserProvider'
 import { useAuth } from 'react-oidc-context'
 
@@ -19,8 +19,8 @@ function Login() {
   /** log in with just an email, ignoring auth */
   function unauthedLogin(event: SyntheticEvent) {
     event.preventDefault()
-    Api.unauthedLogin(emailAddress).then((user: ParticipantUser) => {
-      loginUser(user)
+    Api.unauthedLogin(emailAddress).then((result: LoginResult) => {
+      loginUser(result)
     }).catch(() => {
       setIsError(true)
     })

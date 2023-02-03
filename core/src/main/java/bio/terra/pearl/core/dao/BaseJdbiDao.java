@@ -138,6 +138,11 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
+    /** finds all the entities by the given ids */
+    public List<T> findAll(List<UUID> uuids) {
+        return findAllByPropertyCollection("id", uuids);
+    }
+
     /**
      * Fetches an entity with a child attached.  For example, if the parent table has a column "mailing_address_id" and
      * a field mailingAddress, this method could be used to fetch the parent with the mailing address already hydrated
@@ -154,7 +159,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
                         + " from " + tableName + " a left join " + childDao.tableName
                         + " b on a." + toSnakeCase(childIdPropertyName) + " = b.id"
                         + " where a.id = :id")
-                        .bind("id", id)
+                        .bind("id", id )
                         .registerRowMapper(clazz, getRowMapper("a"))
                         .registerRowMapper(childDao.clazz, childDao.getRowMapper("b"))
                         .reduceRows((Map<UUID, T> map, RowView rowView) -> {
@@ -165,7 +170,6 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
                                 PropertyAccessor accessor = PropertyAccessorFactory.forBeanPropertyAccess(parent);
                                 accessor.setPropertyValue(childPropertyName, rowView.getRow(childDao.getClazz()));
                             }
-
                         })
                         .findFirst()
         );
@@ -275,6 +279,12 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
                 .mapTo(Integer.class)
                 .one()
         );
+    }
+
+    protected String prefixedGetQueryColumns(String prefix) {
+        List<String> prefixedCols = getQueryColumns.stream().map(col -> prefix + "." + col)
+                .collect(Collectors.toList());
+        return StringUtils.join(prefixedCols, ", ");
     }
 
     // from https://stackoverflow.com/questions/10310321/regex-for-converting-camelcase-to-camel-case-in-java

@@ -36,3 +36,9 @@ databaseChangeLog:
               - column: { name: profile_id, type: uuid, constraints: {
                 foreignKeyName: fk_portal_participant_user_profile, references: profile(id)
               } }
+        - addColumn:
+            tableName: enrollee
+            columns:
+              - column: { name: profile_id, type: uuid, constraints: {
+                foreignKeyName: fk_enrollee_profile, references: profile(id)
+              } }

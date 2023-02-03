@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.factory.participant;
 
 import bio.terra.pearl.core.factory.EnvironmentFactory;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -33,5 +34,11 @@ public class ParticipantUserFactory {
 
     public ParticipantUser buildPersisted(ParticipantUser.ParticipantUserBuilder builder, String testName) {
         return participantUserService.create(builder.build());
+    }
+
+    public ParticipantUser buildPersisted(EnvironmentName envName, String testName) {
+        ParticipantUser.ParticipantUserBuilder userBuilder = builder("testEnroll")
+                .environmentName(envName);
+        return buildPersisted(userBuilder, "testEnroll");
     }
 }

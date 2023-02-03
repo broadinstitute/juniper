@@ -2,7 +2,7 @@
   "name": "OurHealth",
   "shortcode": "ourhealth",
   "populateStudyFiles": [
-    "studies/main/study.json"
+    "studies/ourheart/study.json"
   ],
   "portalEnvironmentDtos": [
     {

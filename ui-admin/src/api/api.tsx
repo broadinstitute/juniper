@@ -18,8 +18,8 @@ export type StudyEnvironment = {
   id: string,
   environmentName: string,
   studyEnvironmentConfig: StudyEnvironmentConfig,
-  preRegSurvey: Survey,
-  preRegSurveyId: string,
+  preEnrollSurvey: Survey,
+  preEnrollSurveyId: string,
   configuredSurveys: StudyEnvironmentSurvey[],
   configuredConsents: StudyEnvironmentConsent[]
 }
@@ -79,6 +79,71 @@ export type Portal = {
   portalStudies: PortalStudy[]
 }
 
+export type EnrolleeSearchResult = {
+  enrollee: Enrollee,
+  profile: Profile
+}
+
+export type Enrollee = {
+  shortcode: string,
+  surveyResponses: SurveyResponse[],
+  consentResponses: ConsentResponse[],
+  preRegResponse: PreregistrationResponse,
+  preEnrollResponse: PreregistrationResponse,
+  participantTasks: ParticipantTask[],
+  profile: Profile
+}
+
+export type Profile = {
+  givenName: string,
+  familyName: string
+}
+
+export type ResumableData = {
+  currentPageNo: number,
+  data: object
+}
+
+export type ResponseSnapshot = {
+  createdAt: string,
+  resumableData: string,
+  fullData: string
+}
+
+export type SurveyResponse = {
+  createdAt: number, // this is a java instant, so number of seconds since epoch start
+  lastUpdatedAt: string,
+  surveyId: string,
+  surveyStableId: string,
+  surveyVersion: string,
+  snapshots: ResponseSnapshot[],
+  lastSnapshot: ResponseSnapshot
+}
+
+export type PreregistrationResponse = {
+  createdAt: string,
+  fullData: string,
+  surveyStableId: string,
+  surveyVersion: string
+}
+
+export type ConsentResponse = {
+  id: string,
+  createdAt: number,
+  consented: boolean,
+  consentFormId: string,
+  fullData: string
+}
+
+export type ParticipantTask = {
+  id: string,
+  completedAt: number,
+  status: string,
+  taskType: string,
+  targetName: string,
+  taskOrder: number,
+  blocksHub: boolean
+}
 
 let bearerToken: string | null = null
 export const API_ROOT = process.env.REACT_APP_API_ROOT
@@ -209,6 +274,20 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async getEnrollees(portalShortcode: string, studyShortcode: string, envName: string):
+    Promise<EnrolleeSearchResult[]> {
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async getEnrollee(portalShortcode: string, studyShortcode: string, envName: string, enrolleeShortcode: string):
+    Promise<Enrollee> {
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   getParticipantLink(portalShortcode: string, envName: string): string {
     const participantHost = `${envName}.${portalShortcode}.${participantRootPath}`
     return `${participantProtocol}://${participantHost}`
@@ -217,6 +296,9 @@ export default {
   setBearerToken(token: string | null) {
     bearerToken = token
   }
+}
 
-
+/** base api path for study-scoped api requests */
+function baseStudyEnvUrl(portalShortcode: string, studyShortcode: string, envName: string) {
+  return `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}/env/${envName}`
 }
