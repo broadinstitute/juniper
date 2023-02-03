@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
 
-import {  StudyParams } from 'study/StudyProvider'
-import { useStudyEnvironmentOutlet } from 'study/StudyEnvironmentProvider'
+import {  StudyParams } from 'study/StudyRouter'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Api, {
   ConsentForm,
   Portal,
@@ -73,11 +73,11 @@ export type ConsentParamsT = StudyParams & {
 }
 
 /** routable component for survey editing */
-function ConsentView() {
+function ConsentView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const params = useParams<ConsentParamsT>()
   const consentStableId: string | undefined = params.consentStableId
 
-  const { portal, study, currentEnv } = useStudyEnvironmentOutlet()
+  const { portal, currentEnv, study } = studyEnvContext
   const [searchParams] = useSearchParams()
   const isReadonly = searchParams.get('mode') === 'view'
 

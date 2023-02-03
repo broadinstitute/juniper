@@ -4,7 +4,7 @@ import bio.terra.pearl.api.participant.api.RegistrationApi;
 import bio.terra.pearl.api.participant.service.CurrentUserService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.survey.ParsedSnapshot;
-import bio.terra.pearl.core.service.RegistrationService;
+import bio.terra.pearl.core.service.workflow.RegistrationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;

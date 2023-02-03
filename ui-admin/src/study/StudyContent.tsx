@@ -1,7 +1,7 @@
 import React from 'react'
 import Select from 'react-select'
 
-import { useStudyEnvironmentOutlet } from './StudyEnvironmentProvider'
+import { StudyEnvContextT } from './StudyEnvironmentRouter'
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
@@ -9,8 +9,8 @@ import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink
 import Api from 'api/api'
 
 /** renders the main configuration page for a study environment */
-function StudyContent() {
-  const { currentEnv, portal } = useStudyEnvironmentOutlet()
+function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
+  const { currentEnv, portal } = studyEnvContext
   const contentHeaderStyle = {
     marginRight: '1em',
     paddingRight: '1em',
@@ -34,7 +34,7 @@ function StudyContent() {
     { label: 'Medical History form', value: 'medicalHistory' }
   ]
 
-  const preRegSurvey = currentEnv.preRegSurvey
+  const preEnrollSurvey = currentEnv.preEnrollSurvey
   const envConfig = currentEnv.studyEnvironmentConfig
 
   return <div className="StudyContent container">
@@ -57,15 +57,15 @@ function StudyContent() {
           </li>
           <li className="list-group-item d-flex">
             <div style={contentHeaderStyle}>
-              <h6>Pre-registration questionnaire</h6>
+              <h6>Pre-enrollment questionnaire</h6>
             </div>
             <div className="flex-grow-1">
-              { preRegSurvey && <div>
-                {preRegSurvey.name} <span className="detail">v{preRegSurvey.version}</span>
-                <Link to={`preReg/${preRegSurvey.stableId}?mode=view`} className="ms-4">
+              { preEnrollSurvey && <div>
+                {preEnrollSurvey.name} <span className="detail">v{preEnrollSurvey.version}</span>
+                <Link to={`preEnroll/${preEnrollSurvey.stableId}?mode=view`} className="ms-4">
                   view
                 </Link>
-                <Link to={`preReg/${preRegSurvey.stableId}`} className="ms-3">edit</Link>
+                <Link to={`preEnroll/${preEnrollSurvey.stableId}`} className="ms-3">edit</Link>
               </div>}
             </div>
           </li>

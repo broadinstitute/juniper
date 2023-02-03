@@ -17,14 +17,7 @@ public class ParticipantUserDao extends BaseMutableJdbiDao<ParticipantUser> {
 
 
    public Optional<ParticipantUser> findOne(String username, EnvironmentName environmentName) {
-      return jdbi.withHandle(handle ->
-              handle.createQuery("select * from " + tableName
-                              + " where username = :username and environment_name = :environmentName")
-                      .bind("username", username)
-                      .bind("environmentName", environmentName)
-                      .mapTo(clazz)
-                      .findOne()
-      );
+      return findByTwoProperties("username", username, "environment_name", environmentName);
    }
 
    public Optional<ParticipantUser> findByToken(String token) {

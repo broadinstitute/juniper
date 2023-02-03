@@ -15,14 +15,8 @@ import AdminNavbar from 'navbar/AdminNavbar'
 import PortalList from 'portal/PortalList'
 import PortalProvider from 'portal/PortalProvider'
 import PortalDashboard from 'portal/PortalDashboard'
-import StudyDashboard from 'study/StudyDashboard'
 
-import RoutableStudyProvider from 'study/StudyProvider'
-import StudyEnvironmentProvider from 'study/StudyEnvironmentProvider'
-import StudyContent from 'study/StudyContent'
-import SurveyView from 'study/surveys/SurveyView'
-import PreRegView from './study/surveys/PreRegView'
-import ConsentView from './study/surveys/ConsentView'
+import StudyRouter from 'study/StudyRouter'
 import { getOidcConfig } from './authConfig'
 import { AuthProvider } from 'react-oidc-context'
 import UserProvider from './user/UserProvider'
@@ -42,28 +36,7 @@ function App() {
                   <Route path="/" element={<PageFrame/>}>
                     <Route path=":portalShortcode" element={<PortalProvider/>}>
                       <Route path="studies">
-                        <Route path=":studyShortcode" element={<RoutableStudyProvider/>}>
-                          <Route path="env/:studyEnv" element={<StudyEnvironmentProvider/>}>
-                            <Route path="surveys">
-                              <Route path=":surveyStableId">
-                                <Route index element={<SurveyView/>}/>
-                              </Route>
-                              <Route path="*" element={<div>Unknown survey page</div>}/>
-                            </Route>
-                            <Route path="consentForms">
-                              <Route path=":consentStableId">
-                                <Route index element={<ConsentView/>}/>
-                              </Route>
-                              <Route path="*" element={<div>Unknown consent page</div>}/>
-                            </Route>
-                            <Route path="preReg">
-                              <Route path=":surveyStableId" element={<PreRegView/>}/>
-                              <Route path="*" element={<div>Unknown prereg page</div>}/>
-                            </Route>
-                            <Route index element={<StudyContent/>}/>
-                          </Route>
-                          <Route index element={<StudyDashboard/>}/>
-                        </Route>
+                        <Route path=":studyShortcode/*" element={<StudyRouter/>}/>
                       </Route>
                       <Route index element={<PortalDashboard/>}/>
                     </Route>

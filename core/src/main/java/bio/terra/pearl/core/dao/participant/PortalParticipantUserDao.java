@@ -22,14 +22,8 @@ public class PortalParticipantUserDao extends BaseJdbiDao<PortalParticipantUser>
     }
 
     public Optional<PortalParticipantUser> findOne(UUID userId, UUID portalEnvId) {
-        return jdbi.withHandle(handle ->
-                handle.createQuery("select * from " + tableName
-                                + " where participant_user_id = :userId and portal_environment_id = :portalEnvId")
-                        .bind("userId", userId)
-                        .bind("portalEnvId", portalEnvId)
-                        .mapTo(clazz)
-                        .findOne()
-        );
+        return findByTwoProperties("participant_user_id", userId,
+                "portal_environment_id", portalEnvId);
     }
 
     public Optional<PortalParticipantUser> findOne(UUID participantUserId, String portalShortcode) {

@@ -4,7 +4,10 @@ import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.common.iam.BearerTokenFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.study.PortalStudy;
+import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.PortalService;
+import bio.terra.pearl.core.service.study.PortalStudyService;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
@@ -15,14 +18,17 @@ public class RequestUtilService {
   private CurrentUserService currentUserService;
   private BearerTokenFactory bearerTokenFactory;
   private PortalService portalService;
+  private PortalStudyService portalStudyService;
 
   public RequestUtilService(
       CurrentUserService currentUserService,
       BearerTokenFactory bearerTokenFactory,
-      PortalService portalService) {
+      PortalService portalService,
+      PortalStudyService portalStudyService) {
     this.currentUserService = currentUserService;
     this.bearerTokenFactory = bearerTokenFactory;
     this.portalService = portalService;
+    this.portalStudyService = portalStudyService;
   }
 
   /** gets the user from the request, throwing an exception if not present */
@@ -37,5 +43,18 @@ public class RequestUtilService {
 
   public Portal authUserToPortal(AdminUser user, String portalShortcode) {
     return portalService.authUserToPortal(user, portalShortcode);
+  }
+
+  public PortalStudy authUserToStudy(
+      AdminUser user, String portalShortcode, String studyShortcode) {
+    Portal portal = authUserToPortal(user, portalShortcode);
+    Optional<PortalStudy> portalStudy =
+        portalStudyService.findStudyInPortal(studyShortcode, portal.getId());
+    if (portalStudy.isEmpty()) {
+      throw new PermissionDeniedException(
+          "User %s does not have permissions on study %s"
+              .formatted(user.getUsername(), studyShortcode));
+    }
+    return portalStudy.get();
   }
 }

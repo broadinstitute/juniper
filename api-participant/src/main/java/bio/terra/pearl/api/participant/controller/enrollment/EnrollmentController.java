@@ -5,7 +5,7 @@ import bio.terra.pearl.api.participant.service.RequestUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.service.study.EnrollmentService;
+import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;

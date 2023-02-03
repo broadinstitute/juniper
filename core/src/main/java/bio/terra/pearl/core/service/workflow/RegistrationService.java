@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service;
+package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.dao.survey.PreregistrationResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;

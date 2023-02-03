@@ -4,7 +4,7 @@ import bio.terra.pearl.api.participant.api.PreregistrationApi;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.survey.ParsedPreRegResponse;
 import bio.terra.pearl.core.model.survey.PreregistrationResponse;
-import bio.terra.pearl.core.service.RegistrationService;
+import bio.terra.pearl.core.service.workflow.RegistrationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;

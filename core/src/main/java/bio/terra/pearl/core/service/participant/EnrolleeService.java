@@ -1,32 +1,43 @@
 package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     public static final String PARTICIPANT_SHORTCODE_ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static final int PARTICIPANT_SHORTCODE_LENGTH = 6;
     private SurveyResponseService surveyResponseService;
+    private ParticipantTaskService participantTaskService;
+    private StudyEnvironmentService studyEnvironmentService;
 
     private SecureRandom secureRandom;
 
-    public EnrolleeService(EnrolleeDao enrolleeDao, SurveyResponseService surveyResponseService,
+    public EnrolleeService(EnrolleeDao enrolleeDao,
+                           SurveyResponseService surveyResponseService,
+                           ParticipantTaskService participantTaskService,
+                           @Lazy StudyEnvironmentService studyEnvironmentService,
                            SecureRandom secureRandom) {
         super(enrolleeDao);
         this.surveyResponseService = surveyResponseService;
+        this.participantTaskService = participantTaskService;
+        this.studyEnvironmentService = studyEnvironmentService;
         this.secureRandom = secureRandom;
     }
 
@@ -38,12 +49,31 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.findByParticipantUserId(userId);
     }
 
+    public List<Enrollee> findByStudyEnvironment(UUID studyEnvironmentId) {
+        return dao.findByStudyEnvironment(studyEnvironmentId);
+    }
+
+    public Optional<Enrollee> findByStudyEnvironment(String studyShortcode, EnvironmentName envName, String shortcode) {
+        StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
+        return dao.findByStudyEnvironment(studyEnv.getId(), shortcode);
+    }
+
+    public List<EnrolleeSearchResult> search(String studyShortcode, EnvironmentName envName) {
+        StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
+        return dao.searchByStudyEnvironment(studyEnv.getId());
+    }
+
+    public int countByStudyEnvironmentId(UUID studyEnvironmentId) {
+        return dao.countByStudyEnvironment(studyEnvironmentId);
+    }
+
     @Override
     @Transactional
     public void delete(UUID enrolleeId, Set<CascadeProperty> cascades) {
         for (SurveyResponse surveyResponse : surveyResponseService.findByEnrolleeId(enrolleeId)) {
             surveyResponseService.delete(surveyResponse.getId(), cascades);
         }
+        participantTaskService.deleteByEnrolleeId(enrolleeId);
         dao.delete(enrolleeId);
     }
 
@@ -52,14 +82,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         for (Enrollee enrollee : dao.findByStudyEnvironment(studyEnvironmentId)) {
             delete(enrollee.getId(), cascade);
         }
-    }
-
-    public List<Enrollee> findByStudyEnvironment(UUID studyEnvironmentId) {
-        return dao.findByStudyEnvironment(studyEnvironmentId);
-    }
-
-    public int countByStudyEnvironmentId(UUID studyEnvironmentId) {
-        return dao.countByStudyEnvironment(studyEnvironmentId);
     }
 
     @Transactional
