@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.service.CrudService;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -19,5 +20,9 @@ public class StudyEnvironmentConsentService extends CrudService<StudyEnvironment
 
     public List<StudyEnvironmentConsent> findAllByStudyEnvIdWithConsent(UUID studyEnvId) {
         return dao.findAllByStudyEnvIdWithConsent(studyEnvId);
+    }
+
+    public Optional<StudyEnvironmentConsent> findByConsentForm(UUID studyEnvId, UUID consentFormId) {
+        return dao.findByConsentForm(studyEnvId, consentFormId);
     }
 }

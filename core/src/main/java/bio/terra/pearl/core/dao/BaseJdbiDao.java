@@ -197,6 +197,18 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
+    protected List<T> findAllByTwoProperties(String column1Name, Object column1Value,
+                                              String column2Name, Object column2Value) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from " + tableName + " where " + column1Name + " = :column1Value"
+                                + " and " + column2Name + " = :column2Value;")
+                        .bind("column1Value", column1Value)
+                        .bind("column2Value", column2Value)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
 
     protected List<T> findAllByProperty(String columnName, Object columnValue) {
         return jdbi.withHandle(handle ->

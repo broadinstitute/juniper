@@ -29,7 +29,7 @@ databaseChangeLog:
                 { foreignKeyName: fk_task_enrollee, references: enrollee(id) }
               }
               - column: { name: portal_participant_user_id, type: uuid, constraints:
-                { foreignKeyName: fk_task_portal_participant_user, references: portal_participant_user(id) }
+                { nullable: false, foreignKeyName: fk_task_portal_participant_user, references: portal_participant_user(id) }
               }
         - createIndex:  # task list will grow large, index by portal_participant_user_id since that's how we'll fetch hubs
             tableName: participant_task

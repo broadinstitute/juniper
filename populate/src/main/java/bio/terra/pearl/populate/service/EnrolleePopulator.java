@@ -13,12 +13,14 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dto.EnrolleePopDto;
+import bio.terra.pearl.populate.dto.ParticipantTaskPopDto;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.ResponseSnapshotPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
@@ -37,6 +39,7 @@ public class EnrolleePopulator extends Populator<Enrollee> {
     private SurveyResponseService surveyResponseService;
     private ConsentFormService consentFormService;
     private ConsentResponseService consentResponseService;
+    private ParticipantTaskService participantTaskService;
 
     public EnrolleePopulator(FilePopulateService filePopulateService,
                              ObjectMapper objectMapper,
@@ -45,12 +48,14 @@ public class EnrolleePopulator extends Populator<Enrollee> {
                              ParticipantUserService participantUserService,
                              PortalParticipantUserService portalParticipantUserService, SurveyService surveyService,
                              SurveyResponseService surveyResponseService, ConsentFormService consentFormService,
-                             ConsentResponseService consentResponseService) {
+                             ConsentResponseService consentResponseService,
+                             ParticipantTaskService participantTaskService) {
         this.portalParticipantUserService = portalParticipantUserService;
         this.surveyService = surveyService;
         this.surveyResponseService = surveyResponseService;
         this.consentFormService = consentFormService;
         this.consentResponseService = consentResponseService;
+        this.participantTaskService = participantTaskService;
         this.objectMapper = objectMapper;
         this.filePopulateService = filePopulateService;
         this.enrolleeService = enrolleeService;
@@ -80,6 +85,9 @@ public class EnrolleePopulator extends Populator<Enrollee> {
         }
         for (ConsentResponsePopDto consentPopDto : enrolleeDto.getConsentResponseDtos()) {
             populateConsent(enrollee, consentPopDto);
+        }
+        for (ParticipantTaskPopDto taskDto : enrolleeDto.getParticipantTaskDtos()) {
+            populateTask(enrollee, ppUser, taskDto);
         }
         return enrollee;
     }
@@ -121,6 +129,13 @@ public class EnrolleePopulator extends Populator<Enrollee> {
 
         ConsentResponse savedResponse = consentResponseService.create(response);
         enrollee.getConsentResponses().add(savedResponse);
+    }
+
+    private void populateTask(Enrollee enrollee, PortalParticipantUser ppUser, ParticipantTaskPopDto taskDto) {
+        taskDto.setEnrolleeId(enrollee.getId());
+        taskDto.setStudyEnvironmentId(enrollee.getStudyEnvironmentId());
+        taskDto.setPortalParticipantUserId(ppUser.getId());
+        participantTaskService.create(taskDto);
     }
 }
 

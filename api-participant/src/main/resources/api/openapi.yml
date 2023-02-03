@@ -136,6 +136,24 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/consents/{stableId}/{version}:
+    get:
+      summary: Gets a consent form and any existing responses for the signed-in user
+      tags: [ consentResponse ]
+      operationId: formAndResponses
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: false, schema: { type: string } }
+        - { name: version, in: path, required: true, schema: { type: integer } }
+        - { name: taskId, in: query, required: false, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: consent form and past responses
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/register:
     post:
       summary: Submits a registration survey

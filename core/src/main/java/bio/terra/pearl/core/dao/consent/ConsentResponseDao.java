@@ -22,4 +22,9 @@ public class ConsentResponseDao extends BaseJdbiDao<ConsentResponse> {
     public List<ConsentResponse> findByEnrolleeId(UUID enrolleeId) {
         return findAllByProperty("enrollee_id", enrolleeId);
     }
+
+    public List<ConsentResponse> findByEnrolleeId(UUID enrolleeId, UUID consentFormId) {
+        return findAllByTwoProperties("enrollee_id", enrolleeId,
+                "consent_form_id", consentFormId);
+    }
 }
