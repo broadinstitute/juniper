@@ -16,7 +16,8 @@
       "siteContentFile": "siteContent.json",
       "participantUserFiles": [
         "participants/jsalk.json",
-        "participants/newEnrollee.json"
+        "participants/newEnrollee.json",
+        "participants/consentedEnrollee.json"
       ]
     }
   ]

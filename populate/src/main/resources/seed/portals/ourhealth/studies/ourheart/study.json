@@ -35,7 +35,8 @@
       ],
       "enrolleeFiles": [
         "enrollees/jsalk.json",
-        "enrollees/newEnrollee.json"
+        "enrollees/newEnrollee.json",
+        "enrollees/consentedEnrollee.json"
       ]
     },
     {

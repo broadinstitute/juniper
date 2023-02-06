@@ -23,12 +23,11 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class ParticipantTask extends BaseEntity {
     private Instant completedAt;
-    private String status;
+    private TaskStatus status;
     private TaskType taskType;
     private String targetName;
     private String targetStableId;
     private int targetAssignedVersion;
-    private int targetCompletedVersion;
     private int taskOrder;
     private boolean blocksHub;
     private UUID studyEnvironmentId;

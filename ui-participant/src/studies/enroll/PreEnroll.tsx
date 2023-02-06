@@ -1,18 +1,18 @@
-import React, { useEffect } from 'react'
+import React, {useEffect} from 'react'
 import Api from 'api/api'
-import { DenormalizedPreEnrollResponse, generateDenormalizedData, SourceType, useSurveyJSModel } from 'util/surveyJsUtils' // eslint-disable-line max-len
-import { useNavigate } from 'react-router-dom'
-import { StudyEnrollContext } from './StudyEnrollRouter'
+import {generateFormResponseDto, PreEnrollResponseDto, SourceType, useSurveyJSModel} from 'util/surveyJsUtils' // eslint-disable-line max-len
+import {useNavigate} from 'react-router-dom'
+import {StudyEnrollContext} from './StudyEnrollRouter'
 
 
 /** Renders a pre-enrollment form, and handles submitting the user-inputted response */
-export default function PreEnrollView({ enrollContext }: { enrollContext: StudyEnrollContext }) {
-  const { studyEnv, updatePreEnrollResponseId } = enrollContext
+export default function PreEnrollView({enrollContext}: { enrollContext: StudyEnrollContext }) {
+  const {studyEnv, updatePreEnrollResponseId} = enrollContext
   const survey = studyEnv.preEnrollSurvey
   const navigate = useNavigate()
   // for now, we assume all pre-screeners are a single page
-  const pager = { pageNumber: 0, updatePageNumber: () => 0 }
-  const { surveyModel, refreshSurvey, SurveyComponent } =
+  const pager = {pageNumber: 0, updatePageNumber: () => 0}
+  const {surveyModel, refreshSurvey, SurveyComponent} =
     useSurveyJSModel(survey, null, handleComplete, pager)
 
   /** submit the form */
@@ -20,16 +20,15 @@ export default function PreEnrollView({ enrollContext }: { enrollContext: StudyE
     if (!surveyModel) {
       return
     }
-    const denormedResponse = generateDenormalizedData({
-      survey, surveyJSModel: surveyModel, participantShortcode: 'ANON',
-      sourceShortcode: 'ANON', sourceType: SourceType.ANON
+    const responseDto = generateFormResponseDto({
+      surveyJSModel: surveyModel, enrolleeId: null, sourceType: SourceType.ANON
     })
     const qualified = surveyModel.getCalculatedValueByName('qualified').value
     const preEnrollResponse = {
-      ...denormedResponse,
+      ...responseDto,
       qualified,
       studyEnvironmentId: studyEnv.id
-    } as DenormalizedPreEnrollResponse
+    } as PreEnrollResponseDto
     // submit the form even if it isn't eligible, so we can track stats on exclusions
     Api.submitPreEnrollResponse({
       surveyStableId: survey.stableId,

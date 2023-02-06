@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import LoadingSpinner from '../util/LoadingSpinner'
-import Api, { Enrollee, LoginResult, ParticipantUser } from 'api/api'
-import { useAuth } from 'react-oidc-context'
+import Api, {Enrollee, LoginResult, ParticipantUser} from 'api/api'
+import {useAuth} from 'react-oidc-context'
 
 export type User = ParticipantUser & {
   isAnonymous: boolean
@@ -15,9 +15,10 @@ const anonymousUser: User = {
 
 export type UserContextT = {
   user: User,
-  enrollees: Enrollee[],
+  enrollees: Enrollee[],  // this data is included to speed initial hub rendering.  it is NOT kept current
   loginUser: (result: LoginResult) => void,
-  logoutUser: () => void
+  logoutUser: () => void,
+  updateEnrollee: (enrollee: Enrollee) => void
 }
 
 /** current user object context */
@@ -29,6 +30,9 @@ const UserContext = React.createContext<UserContextT>({
   },
   logoutUser: () => {
     throw new Error('context not yet initialized')
+  },
+  updateEnrollee: () => {
+    throw new Error('context not yet initialized')
   }
 })
 const STORAGE_TOKEN_PROP = 'loginToken'
@@ -36,7 +40,7 @@ const STORAGE_TOKEN_PROP = 'loginToken'
 export const useUser = () => useContext(UserContext)
 
 /** Provider for the current logged-in user. */
-export default function UserProvider({ children }: { children: React.ReactNode }) {
+export default function UserProvider({children}: { children: React.ReactNode }) {
   const [loginState, setLoginState] = useState<LoginResult | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const auth = useAuth()
@@ -53,11 +57,26 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     localStorage.removeItem(STORAGE_TOKEN_PROP)
   }
 
+  function updateEnrollee(enrollee: Enrollee) {
+    setLoginState(oldState => {
+      if (oldState == null) {
+        return oldState
+      }
+      const updatedEnrollees = oldState.enrollees.filter(exEnrollee => exEnrollee.shortcode != enrollee.shortcode)
+      updatedEnrollees.push(enrollee)
+      return {
+        user: oldState?.user,
+        enrollees: updatedEnrollees
+      }
+    })
+  }
+
   const userContext: UserContextT = {
-    user: loginState ? { ...loginState.user, isAnonymous: false } : anonymousUser,
+    user: loginState ? {...loginState.user, isAnonymous: false} : anonymousUser,
     enrollees: loginState ? loginState.enrollees : [],
     loginUser,
-    logoutUser
+    logoutUser,
+    updateEnrollee
   }
 
   useEffect(() => {

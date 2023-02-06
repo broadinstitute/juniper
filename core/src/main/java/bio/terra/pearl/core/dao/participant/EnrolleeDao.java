@@ -1,6 +1,6 @@
 package bio.terra.pearl.core.dao.participant;
 
-import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -13,7 +13,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EnrolleeDao extends BaseJdbiDao<Enrollee> {
+public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
     private ProfileDao profileDao;
     private SurveyResponseDao surveyResponseDao;
     private ConsentResponseDao consentResponseDao;
@@ -51,6 +51,14 @@ public class EnrolleeDao extends BaseJdbiDao<Enrollee> {
                 "study_environment_id", studyEnvironmentId);
     }
 
+    public Optional<Enrollee> findByEnrolleeId(UUID userId, UUID enrolleeId) {
+        return findByTwoProperties("participant_user_id", userId, "id", enrolleeId);
+    }
+
+    public Optional<Enrollee> findByEnrolleeId(UUID userId, String enrolleeShortcode) {
+        return findByTwoProperties("participant_user_id", userId, "shortcode", enrolleeShortcode);
+    }
+
     public Optional<Enrollee> findByStudyEnvironment(UUID studyEnvironmentId, String shortcode) {
         Optional<Enrollee> enrolleeOpt = findByTwoProperties("study_environment_id", studyEnvironmentId,
                 "shortcode", shortcode);
@@ -78,5 +86,10 @@ public class EnrolleeDao extends BaseJdbiDao<Enrollee> {
     }
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
         deleteByUuidProperty("study_environment_id", studyEnvironmentId);
+    }
+
+    /** updates the global consent status of the enrollee */
+    public void updateConsented(UUID enrolleeId, boolean consented) {
+        updateProperty(enrolleeId, "consented", consented);
     }
 }

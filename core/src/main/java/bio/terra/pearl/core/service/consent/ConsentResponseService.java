@@ -4,29 +4,52 @@ import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
 import bio.terra.pearl.core.dao.consent.ConsentWithResponses;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
+import bio.terra.pearl.core.model.consent.ConsentResponseDto;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.workflow.HubResponse;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.ParticipantTaskService;
+import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
+import bio.terra.pearl.core.service.workflow.EnrolleeEventService;
 import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ConsentResponseService extends CrudService<ConsentResponse, ConsentResponseDao> {
+    private static final Logger logger = LoggerFactory.getLogger(ConsentResponseService.class);
     private ConsentFormService consentFormService;
     private StudyEnvironmentConsentService studyEnvironmentConsentService;
     private EnrolleeService enrolleeService;
+    private EnrolleeRuleService enrolleeRuleService;
+    private ParticipantTaskService participantTaskService;
+    private PortalParticipantUserService portalParticipantUserService;
+    private EnrolleeEventService enrolleeEventService;
 
     public ConsentResponseService(ConsentResponseDao dao, ConsentFormService consentFormService,
                                   StudyEnvironmentConsentService studyEnvironmentConsentService,
-                                  @Lazy EnrolleeService enrolleeService) {
+                                  @Lazy EnrolleeService enrolleeService, EnrolleeRuleService enrolleeRuleService,
+                                  ParticipantTaskService participantTaskService,
+                                  PortalParticipantUserService portalParticipantUserService,
+                                  EnrolleeEventService enrolleeEventService) {
         super(dao);
         this.consentFormService = consentFormService;
         this.studyEnvironmentConsentService = studyEnvironmentConsentService;
         this.enrolleeService = enrolleeService;
+        this.enrolleeRuleService = enrolleeRuleService;
+        this.participantTaskService = participantTaskService;
+        this.portalParticipantUserService = portalParticipantUserService;
+        this.enrolleeEventService = enrolleeEventService;
     }
 
     public List<ConsentResponse> findByEnrolleeId(UUID enrolleeId) {
@@ -35,8 +58,9 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
 
 
     public ConsentWithResponses findWithResponses(UUID studyEnvId, String stableId, Integer version,
-                                                  UUID participantUserId) {
-        Enrollee enrollee = enrolleeService.findByParticipantUserId(participantUserId, studyEnvId).get();
+                                                  String enrolleeShortcode, UUID participantUserId) {
+        Enrollee enrollee = enrolleeService.findOneByShortcode(enrolleeShortcode).get();
+        enrolleeService.authParticipantUserToEnrollee(participantUserId, enrollee.getId());
         ConsentForm form = consentFormService.findByStableId(stableId, version).get();
         List<ConsentResponse> responses = dao.findByEnrolleeId(enrollee.getId(), form.getId());
         StudyEnvironmentConsent configConsent = studyEnvironmentConsentService
@@ -46,4 +70,42 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
             configConsent, responses
         );
     }
+
+    /**
+     * Creates a consent response and fires appropriate downstream events.  Note this method is *not*
+     * transactional, as if an error occurs in downstream event processing, we still want to save the consent data
+     */
+    public HubResponse<ConsentResponse> submitResponse(String portalShortcode, UUID participantUserId,
+                                                       String enrolleeShortcode, UUID taskId, ConsentResponseDto responseDto) {
+        Enrollee enrollee = enrolleeService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
+        PortalParticipantUser ppUser = portalParticipantUserService.findOne(participantUserId, portalShortcode).get();
+        ConsentResponse response = create(participantUserId, enrollee.getId(), responseDto);
+
+        // update the task with an appropriate status
+        TaskStatus newStatus = response.isConsented() ? TaskStatus.COMPLETE : TaskStatus.REJECTED;
+        participantTaskService.updateTaskStatus(taskId, newStatus);
+
+        EnrolleeConsentEvent event = enrolleeEventService.publishEnrolleeConsentEvent(enrollee, response, ppUser);
+        HubResponse hubResponse = HubResponse.builder()
+                .response(event.getConsentResponse())
+                .tasks(event.getEnrollee().getParticipantTasks().stream().toList())
+                .enrollee(event.getEnrollee()).build();
+        return hubResponse;
+    }
+
+
+    @Transactional
+    public ConsentResponse create(UUID participantUserId, UUID enrolleeId,
+                                                     ConsentResponseDto responseDto) {
+        ConsentResponse response = ConsentResponse.builder()
+                .consentFormId(responseDto.getConsentFormId())
+                .creatingParticipantUserId(participantUserId)
+                .consented(responseDto.isConsented())
+                .resumeData(responseDto.getResumeData())
+                .fullData(responseDto.getFullData())
+                .enrolleeId(enrolleeId)
+                .build();
+        return dao.create(response);
+    }
+
 }

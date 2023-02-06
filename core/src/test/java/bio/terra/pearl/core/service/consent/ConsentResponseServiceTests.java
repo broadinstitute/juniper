@@ -45,13 +45,13 @@ public class ConsentResponseServiceTests extends BaseSpringBootTest {
         configConsentService.create(StudyEnvironmentConsent.builder()
                 .consentFormId(consentForm.getId())
                 .studyEnvironmentId(enrollee.getStudyEnvironmentId())
-                .consentOrder(4)
+                .consentOrder(1)
                 .build());
 
 
         ConsentWithResponses consentWithResponses = consentResponseService
-                .findWithResponses(enrollee.getStudyEnvironmentId(),
-                        consentForm.getStableId(), consentForm.getVersion(), enrollee.getParticipantUserId());
+                .findWithResponses(enrollee.getStudyEnvironmentId(), consentForm.getStableId(),
+                        consentForm.getVersion(),  enrollee.getShortcode(), enrollee.getParticipantUserId());
         assertThat(consentWithResponses, notNullValue());
         assertThat(consentWithResponses.consentResponses(), hasSize(1));
         assertThat(consentWithResponses.studyEnvironmentConsent().getConsentOrder(), equalTo(4));

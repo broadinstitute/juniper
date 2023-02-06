@@ -10,8 +10,8 @@ import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
-import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import java.util.Optional;
@@ -30,18 +30,19 @@ public class EnrollmentService {
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
     private StudyEnvironmentService studyEnvironmentService;
     private PortalParticipantUserService portalParticipantUserService;
-    private ProfileService profileService;
+    private EnrolleeRuleService enrolleeRuleService;
     private EnrolleeService enrolleeService;
 
     public EnrollmentService(SurveyService surveyService, PreEnrollmentResponseDao preEnrollmentResponseDao,
                              StudyEnvironmentService studyEnvironmentService,
                              PortalParticipantUserService portalParticipantUserService,
-                             ProfileService profileService, EnrolleeService enrolleeService) {
+                             EnrolleeRuleService enrolleeRuleService,
+                             EnrolleeService enrolleeService) {
         this.surveyService = surveyService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.studyEnvironmentService = studyEnvironmentService;
         this.portalParticipantUserService = portalParticipantUserService;
-        this.profileService = profileService;
+        this.enrolleeRuleService = enrolleeRuleService;
         this.enrolleeService = enrolleeService;
     }
 
@@ -87,14 +88,10 @@ public class EnrollmentService {
             response.setPortalParticipantUserId(ppUser.getId());
             preEnrollmentResponseDao.update(response);
         }
-        EnrolleeRuleData enrolleeRuleData = EnrolleeRuleData.builder()
-                .enrollee(enrollee)
-                .profile(profileService.find(ppUser.getProfileId()).orElse(null))
-                .build();
+        EnrolleeRuleData enrolleeRuleData = enrolleeRuleService.fetchData(enrollee);
         EnrolleeCreationEvent enrolleeEvent = EnrolleeCreationEvent.builder()
                 .enrollee(enrollee)
                 .portalParticipantUser(ppUser)
-                .studyEnvironment(studyEnv)
                 .enrolleeRuleData(enrolleeRuleData)
                 .build();
         applicationEventPublisher.publishEvent(enrolleeEvent);
