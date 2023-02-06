@@ -73,7 +73,7 @@ public class ConsentTaskDispatcher {
                 .enrolleeId(enrolleeEvent.getEnrollee().getId())
                 .portalParticipantUserId(enrolleeEvent.getPortalParticipantUser().getId())
                 .studyEnvironmentId(enrolleeEvent.getStudyEnvironment().getId())
-                .blocksHub(true) // by default, all consent tasks currently stop a user from entering the hub
+                .blocksHub(studyConsent.isStudyRequired())
                 .taskOrder(studyConsent.getConsentOrder())
                 .targetStableId(consentForm.getStableId())
                 .targetAssignedVersion(consentForm.getVersion())

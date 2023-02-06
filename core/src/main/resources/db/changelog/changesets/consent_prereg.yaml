@@ -30,10 +30,10 @@ databaseChangeLog:
               - column: *createdAt
               - column: *lastUpdatedAt
               - column: { name: eligibility_rule, type: text }
+              - column: { name: study_required, type: boolean, defaultValueBoolean: true, constraints: {nullable: false}}
               - column: { name: allow_admin_edit, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
               - column: { name: allow_participant_start, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
               - column: { name: allow_participant_reedit, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
-              - column: { name: prepopulate, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
               - column: { name: consent_order, type: integer, constraints: { nullable: false } }
               - column: { name: study_environment_id, type: uuid, constraints:
                 { nullable: false, foreignKeyName: fk_study_environment_consent_env, references: study_environment(id) }

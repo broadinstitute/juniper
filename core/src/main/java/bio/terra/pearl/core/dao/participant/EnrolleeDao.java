@@ -46,6 +46,11 @@ public class EnrolleeDao extends BaseJdbiDao<Enrollee> {
         return findAllByProperty("participant_user_id", userId);
     }
 
+    public Optional<Enrollee> findByParticipantUserId(UUID userId, UUID studyEnvironmentId) {
+        return findByTwoProperties("participant_user_id", userId,
+                "study_environment_id", studyEnvironmentId);
+    }
+
     public Optional<Enrollee> findByStudyEnvironment(UUID studyEnvironmentId, String shortcode) {
         Optional<Enrollee> enrolleeOpt = findByTwoProperties("study_environment_id", studyEnvironmentId,
                 "shortcode", shortcode);
