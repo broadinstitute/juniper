@@ -1,18 +1,18 @@
-import React, {useEffect} from 'react'
+import React, { useEffect } from 'react'
 import Api from 'api/api'
-import {generateFormResponseDto, PreEnrollResponseDto, SourceType, useSurveyJSModel} from 'util/surveyJsUtils' // eslint-disable-line max-len
-import {useNavigate} from 'react-router-dom'
-import {StudyEnrollContext} from './StudyEnrollRouter'
+import { generateFormResponseDto, PreEnrollResponseDto, SourceType, useSurveyJSModel } from 'util/surveyJsUtils' // eslint-disable-line max-len
+import { useNavigate } from 'react-router-dom'
+import { StudyEnrollContext } from './StudyEnrollRouter'
 
 
 /** Renders a pre-enrollment form, and handles submitting the user-inputted response */
-export default function PreEnrollView({enrollContext}: { enrollContext: StudyEnrollContext }) {
-  const {studyEnv, updatePreEnrollResponseId} = enrollContext
+export default function PreEnrollView({ enrollContext }: { enrollContext: StudyEnrollContext }) {
+  const { studyEnv, updatePreEnrollResponseId } = enrollContext
   const survey = studyEnv.preEnrollSurvey
   const navigate = useNavigate()
   // for now, we assume all pre-screeners are a single page
-  const pager = {pageNumber: 0, updatePageNumber: () => 0}
-  const {surveyModel, refreshSurvey, SurveyComponent} =
+  const pager = { pageNumber: 0, updatePageNumber: () => 0 }
+  const { surveyModel, refreshSurvey, SurveyComponent } =
     useSurveyJSModel(survey, null, handleComplete, pager)
 
   /** submit the form */

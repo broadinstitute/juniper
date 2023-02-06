@@ -1,10 +1,10 @@
 import React from 'react'
-import {usePortalEnv} from '../providers/PortalProvider'
-import {useUser} from '../providers/UserProvider'
-import {Enrollee, ParticipantTask, Portal, Study} from '../api/api'
+import { usePortalEnv } from '../providers/PortalProvider'
+import { useUser } from '../providers/UserProvider'
+import { Enrollee, ParticipantTask, Portal, Study } from '../api/api'
 import TaskLink from './TaskLink'
-import {useLocation} from "react-router-dom";
-import TaskStatusMessage from "./TaskStatusMessage";
+import { useLocation } from 'react-router-dom'
+import TaskStatusMessage from './TaskStatusMessage'
 
 export type HubUpdate = {
   message: {
@@ -15,15 +15,15 @@ export type HubUpdate = {
 
 /** renders the logged-in hub page */
 export default function HubPage() {
-  const {portal} = usePortalEnv()
-  const {enrollees} = useUser()
+  const { portal } = usePortalEnv()
+  const { enrollees } = useUser()
   const location = useLocation()
   /**
    * Pull any messages to be displayed as a result of where we came from e.g. "survey complete"
    * This is in accord with recommended usage of location state with React Router v6.
    */
   const hubUpdate: HubUpdate | undefined = location.state
-  let hubMessage = hubUpdate?.message
+  const hubMessage = hubUpdate?.message
 
   return <div>
     <div className="container">
@@ -44,7 +44,7 @@ export default function HubPage() {
 
 
 /** Renders pending tasks for a given study */
-function StudyTaskBox({enrollee, portal}: { enrollee: Enrollee, portal: Portal }) {
+function StudyTaskBox({ enrollee, portal }: { enrollee: Enrollee, portal: Portal }) {
   const matchedStudy = portal.portalStudies
     .find(pStudy => pStudy.study.studyEnvironments[0].id === enrollee.studyEnvironmentId)?.study as Study
   const hasStudyTasks = enrollee.participantTasks.length > 0
@@ -52,19 +52,19 @@ function StudyTaskBox({enrollee, portal}: { enrollee: Enrollee, portal: Portal }
     .sort(taskComparator)
   const inactiveTasks = enrollee.participantTasks.filter(task => !PENDING_STATUSES.includes(task.status))
     .sort(taskComparator)
-  return <div className="p-3" style={{background: '#eee', borderRadius: '5px'}}>
+  return <div className="p-3" style={{ background: '#eee', borderRadius: '5px' }}>
     <h6 className="mb-3 fw-bold">{matchedStudy.name}</h6>
     {hasStudyTasks && <div>
-      <ol style={{listStyleType: 'none', paddingInlineStart: 0, width: '100%'}}>
+      <ol style={{ listStyleType: 'none', paddingInlineStart: 0, width: '100%' }}>
         {activeTasks.map(task => <li key={task.id}>
           <TaskLink task={task} key={task.id} studyShortcode={matchedStudy.shortcode}
-                    enrolleeShortcode={enrollee.shortcode}/>
+            enrolleeShortcode={enrollee.shortcode}/>
         </li>)}
       </ol>
-      <ol style={{listStyleType: 'none', paddingInlineStart: 0, width: '100%'}}>
+      <ol style={{ listStyleType: 'none', paddingInlineStart: 0, width: '100%' }}>
         {inactiveTasks.map(task => <li key={task.id}>
           <TaskLink task={task} key={task.id} studyShortcode={matchedStudy.shortcode}
-                    enrolleeShortcode={enrollee.shortcode}/>
+            enrolleeShortcode={enrollee.shortcode}/>
         </li>)}
       </ol>
     </div>}
@@ -75,6 +75,7 @@ function StudyTaskBox({enrollee, portal}: { enrollee: Enrollee, portal: Portal }
 
 export const PENDING_STATUSES = ['NEW', 'IN_PROGRESS']
 
+/** Sorts tasks based on their internal ordering */
 function taskComparator(taskA: ParticipantTask, taskB: ParticipantTask) {
   return taskA.taskOrder - taskB.taskOrder
 }

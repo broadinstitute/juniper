@@ -1,7 +1,7 @@
-import React, {useContext, useEffect, useState} from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import LoadingSpinner from '../util/LoadingSpinner'
-import Api, {Enrollee, LoginResult, ParticipantUser} from 'api/api'
-import {useAuth} from 'react-oidc-context'
+import Api, { Enrollee, LoginResult, ParticipantUser } from 'api/api'
+import { useAuth } from 'react-oidc-context'
 
 export type User = ParticipantUser & {
   isAnonymous: boolean
@@ -40,7 +40,7 @@ const STORAGE_TOKEN_PROP = 'loginToken'
 export const useUser = () => useContext(UserContext)
 
 /** Provider for the current logged-in user. */
-export default function UserProvider({children}: { children: React.ReactNode }) {
+export default function UserProvider({ children }: { children: React.ReactNode }) {
   const [loginState, setLoginState] = useState<LoginResult | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const auth = useAuth()
@@ -57,6 +57,7 @@ export default function UserProvider({children}: { children: React.ReactNode }) 
     localStorage.removeItem(STORAGE_TOKEN_PROP)
   }
 
+  /** updates a single enrollee in the list of enrollees -- the enrollee object should contain an updated task list */
   function updateEnrollee(enrollee: Enrollee) {
     setLoginState(oldState => {
       if (oldState == null) {
@@ -72,7 +73,7 @@ export default function UserProvider({children}: { children: React.ReactNode }) 
   }
 
   const userContext: UserContextT = {
-    user: loginState ? {...loginState.user, isAnonymous: false} : anonymousUser,
+    user: loginState ? { ...loginState.user, isAnonymous: false } : anonymousUser,
     enrollees: loginState ? loginState.enrollees : [],
     loginUser,
     logoutUser,

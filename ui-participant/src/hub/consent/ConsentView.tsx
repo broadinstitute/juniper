@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {useNavigate, useParams, useSearchParams} from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import Api, {
   ConsentForm,
   ConsentResponse,
@@ -10,7 +10,7 @@ import Api, {
   StudyEnvironmentConsent
 } from 'api/api'
 
-import {Survey as SurveyComponent} from 'survey-react-ui'
+import { Survey as SurveyComponent } from 'survey-react-ui'
 import {
   ConsentResponseDto,
   generateFormResponseDto,
@@ -19,8 +19,8 @@ import {
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
-import {usePortalEnv} from 'providers/PortalProvider'
-import {useUser} from 'providers/UserProvider'
+import { usePortalEnv } from 'providers/PortalProvider'
+import { useUser } from 'providers/UserProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
 
 const TASK_ID_PARAM = 'taskId'
@@ -29,14 +29,14 @@ const TASK_ID_PARAM = 'taskId'
  * display a single consent form to a participant.  The pageNumber argument can be specified to start at the given
  * page
  */
-function RawConsentView({form, enrollee, response, resumableData, pager, studyShortcode, taskId}:
+function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, taskId }:
                           {
-                            form: ConsentForm, enrollee: Enrollee, response: ConsentResponse, taskId: string
+                            form: ConsentForm, enrollee: Enrollee, taskId: string
                             resumableData: ResumableData | null, pager: PageNumberControl, studyShortcode: string
                           }) {
-  const {surveyModel, pageNumber, refreshSurvey} = useSurveyJSModel(form, resumableData, onComplete, pager)
+  const { surveyModel, pageNumber, refreshSurvey } = useSurveyJSModel(form, resumableData, onComplete, pager)
   const navigate = useNavigate()
-  const {updateEnrollee} = useUser()
+  const { updateEnrollee } = useUser()
   if (surveyModel && resumableData) {
     // consent responses are not editable -- they must be withdrawn via separate workflow
     surveyModel.mode = 'display'
@@ -62,10 +62,10 @@ function RawConsentView({form, enrollee, response, resumableData, pager, studySh
     }).then(response => {
       response.enrollee.participantTasks = response.tasks
       updateEnrollee(response.enrollee)
-      navigate('/hub', {state: {message: {content: `${form.name} submitted`, messageType: 'success'}}})
+      navigate('/hub', { state: { message: { content: `${form.name} submitted`, messageType: 'success' } } })
     }).catch(() => {
       refreshSurvey(surveyModel.data, surveyModel.currentPageNo + 1)
-      alert("an error occurred")
+      alert('an error occurred')
     })
   }
 
@@ -80,7 +80,7 @@ function RawConsentView({form, enrollee, response, resumableData, pager, studySh
 }
 
 /** handles paging the form */
-function PagedConsentView({form, responses, enrollee, studyShortcode}:
+function PagedConsentView({ form, responses, enrollee, studyShortcode }:
                             {
                               form: StudyEnvironmentConsent, responses: ConsentResponse[], enrollee: Enrollee,
                               studyShortcode: string
@@ -97,14 +97,14 @@ function PagedConsentView({form, responses, enrollee, studyShortcode}:
 
   const pager = useRoutablePageNumber()
 
-  return <RawConsentView enrollee={enrollee} form={form.consentForm} response={response} taskId={taskId}
-                         resumableData={resumableData} pager={pager} studyShortcode={studyShortcode}/>
+  return <RawConsentView enrollee={enrollee} form={form.consentForm} taskId={taskId}
+    resumableData={resumableData} pager={pager} studyShortcode={studyShortcode}/>
 }
 
 /** handles loading the consent form and responses from the server */
 export default function ConsentView() {
-  const {portal} = usePortalEnv()
-  const {enrollees} = useUser()
+  const { portal } = usePortalEnv()
+  const { enrollees } = useUser()
   const [formAndResponses, setFormAndResponses] = useState<ConsentWithResponses | null>(null)
   const params = useParams()
   const stableId = params.stableId
@@ -123,14 +123,14 @@ export default function ConsentView() {
       .then(response => {
         setFormAndResponses(response)
       }).catch(() => {
-      alert('error loading consent form - please retry')
-    })
+        alert('error loading consent form - please retry')
+      })
   }, [])
 
   return <LoadingSpinner isLoading={!formAndResponses}>
     {formAndResponses && <PagedConsentView enrollee={enrollee} form={formAndResponses.studyEnvironmentConsent}
-                                           responses={formAndResponses.consentResponses}
-                                           studyShortcode={studyShortcode}/>}
+      responses={formAndResponses.consentResponses}
+      studyShortcode={studyShortcode}/>}
   </LoadingSpinner>
 }
 

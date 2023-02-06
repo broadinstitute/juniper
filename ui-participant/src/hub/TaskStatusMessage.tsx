@@ -1,8 +1,8 @@
 import React from 'react'
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCheck} from "@fortawesome/free-solid-svg-icons/faCheck";
-import {faTimes} from "@fortawesome/free-solid-svg-icons/faTimes";
-import {faInfo} from "@fortawesome/free-solid-svg-icons/faInfo";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck'
+import { faTimes } from '@fortawesome/free-solid-svg-icons/faTimes'
+import { faInfo } from '@fortawesome/free-solid-svg-icons/faInfo'
 
 /** I am 100% sure UX will come up with better icons/images than this -- but these are just for now */
 const ICON_MAP: Record<string, React.ReactNode> = {
@@ -15,10 +15,10 @@ const ICON_MAP: Record<string, React.ReactNode> = {
  * and have this be very simple
  */
 export default function TaskStatusMessage({
-                                            content,
-                                            messageType
-                                          }: { content: React.ReactNode, messageType: string }) {
-  return <div className="text-center p-2" style={{background: '#eee'}}>
+  content,
+  messageType
+}: { content: React.ReactNode, messageType: string }) {
+  return <div className="text-center p-2" style={{ background: '#eee' }}>
     <span>{content}</span><span className="ms-3">{ICON_MAP[messageType]}</span>
   </div>
 }

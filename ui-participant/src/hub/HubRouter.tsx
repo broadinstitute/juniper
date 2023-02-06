@@ -1,5 +1,5 @@
 import React from 'react'
-import {Route, Routes} from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import ConsentView from './consent/ConsentView'
 import HubPage from './HubPage'
 import HubNavbar from './HubNavbar'
@@ -10,7 +10,7 @@ export default function HubRouter() {
     <HubNavbar/>
     <Routes>
       <Route path="study/:studyShortcode/enrollee/:enrolleeShortcode/consent/:stableId/:version"
-             element={<ConsentView/>}/>
+        element={<ConsentView/>}/>
       <Route index element={<HubPage/>}/>
       <Route path="*" element={<div>unknown hub route</div>}/>
     </Routes>

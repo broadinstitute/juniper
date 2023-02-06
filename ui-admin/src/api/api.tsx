@@ -91,6 +91,7 @@ export type Enrollee = {
   preRegResponse: PreregistrationResponse,
   preEnrollResponse: PreregistrationResponse,
   participantTasks: ParticipantTask[],
+  consented: boolean,
   profile: Profile
 }
 

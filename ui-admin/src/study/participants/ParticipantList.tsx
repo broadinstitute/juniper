@@ -43,7 +43,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
                   </Link></td>
                   <td>{participant.profile.givenName}</td>
                   <td>{participant.profile.familyName}</td>
-                  <td>No</td>
+                  <td>{participant.enrollee.consented ? 'Yes' : 'No'}</td>
                   <td>No</td>
                 </tr>
               })}
