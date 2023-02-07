@@ -61,11 +61,12 @@ public class SurveyResponseDao extends BaseMutableJdbiDao<SurveyResponse> {
      * deletion, since that snapshot is bidirectionally linked to the response
      */
     public void clearLastSnapshotId(UUID responseId) {
-        jdbi.withHandle(handle ->
-                handle.createUpdate("update " + tableName + " set last_snapshot_id = null "
-                                + " where id = :id;")
-                        .bind("id", responseId)
-                        .execute()
-        );
+        updateProperty(responseId, "last_snapshot_id", null);
     }
+
+    public void updateLastSnapshotId(UUID responseId, UUID lastSnapshotId) {
+        updateProperty(responseId, "last_snapshot_id", lastSnapshotId);
+    }
+
+
 }

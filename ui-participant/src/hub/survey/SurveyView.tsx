@@ -12,10 +12,10 @@ import Api, {
 
 import {Survey as SurveyComponent} from 'survey-react-ui'
 import {
-  ConsentResponseDto,
   generateFormResponseDto,
   PageNumberControl,
   SourceType,
+  SurveyResponseDto,
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
@@ -46,19 +46,20 @@ function RawSurveyView({form, enrollee, resumableData, pager, studyShortcode, ta
     if (!surveyModel || !refreshSurvey) {
       return
     }
-    const consentResponseDto = generateFormResponseDto({
+    const responseDto = generateFormResponseDto({
       surveyJSModel: surveyModel, enrolleeId: enrollee.id, sourceType: SourceType.ENROLLEE
-    }) as ConsentResponseDto
+    }) as SurveyResponseDto
+    responseDto.complete = true
 
     Api.submitSurveyResponse({
       studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
-      version: form.version, response: consentResponseDto, taskId
+      version: form.version, response: responseDto, taskId
     }).then(response => {
       response.enrollee.participantTasks = response.tasks
       updateEnrollee(response.enrollee)
       navigate('/hub', {state: {message: {content: `${form.name} submitted`, messageType: 'success'}}})
     }).catch(() => {
-      refreshSurvey(surveyModel.data, surveyModel.currentPageNo + 1)
+      refreshSurvey(surveyModel, null)
       alert('an error occurred')
     })
   }

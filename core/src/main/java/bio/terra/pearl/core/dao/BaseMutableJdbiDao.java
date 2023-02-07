@@ -59,7 +59,7 @@ public abstract class BaseMutableJdbiDao<T extends BaseEntity> extends BaseJdbiD
     }
 
     /** updates a single property.  This will also updated the lastUpdatedAt property too */
-    public void updateProperty(UUID id, String propertyColumn, Object propertyValue) {
+    protected void updateProperty(UUID id, String propertyColumn, Object propertyValue) {
         jdbi.withHandle(handle ->
                 handle.createUpdate("update " + tableName + " set " + propertyColumn +
                                 " = :propertyValue, last_updated_at = :lastUpdatedAt where id = :id;")

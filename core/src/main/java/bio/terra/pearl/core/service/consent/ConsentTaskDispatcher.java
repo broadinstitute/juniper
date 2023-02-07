@@ -11,6 +11,7 @@ import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.RuleEvaluator;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
+import bio.terra.pearl.core.service.workflow.DispatcherOrder;
 import bio.terra.pearl.core.service.workflow.EnrolleeEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class ConsentTaskDispatcher {
     }
 
     @EventListener
-    @Order(1) // consent tasks get first priority over other tasks, so add them first
+    @Order(DispatcherOrder.CONSENT) // consent tasks get first priority over other tasks, so add them first
     public void createTasks(EnrolleeEvent enrolleeEvent) {
         List<StudyEnvironmentConsent> studyEnvConsents = studyEnvironmentConsentService
                 .findAllByStudyEnvIdWithConsent(enrolleeEvent.getEnrollee().getStudyEnvironmentId());

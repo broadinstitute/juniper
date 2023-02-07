@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 
+/** Adapted from https://deinum.biz/2018-08-13-Use-JDBI-With-Spring-Boot/ */
 @Configuration
 public class JdbiConfiguration {
     @Bean

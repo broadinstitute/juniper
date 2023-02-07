@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useState} from 'react'
 
-import { Model, Question, Serializer, StylesManager } from 'survey-core'
-import { Survey as SurveyJSComponent, SurveyModel } from 'survey-react-ui'
-import { ResumableData, SurveyJSForm } from 'api/api'
-import { useSearchParams } from 'react-router-dom'
-import { getSurveyElementList } from './pearlSurveyUtils'
+import {Model, Question, Serializer, StylesManager} from 'survey-core'
+import {Survey as SurveyJSComponent, SurveyModel} from 'survey-react-ui'
+import {ResumableData, SurveyJSForm} from 'api/api'
+import {useSearchParams} from 'react-router-dom'
+import {getSurveyElementList} from './pearlSurveyUtils'
 
 
 const PAGE_NUMBER_PARAM_NAME = 'page'
@@ -55,7 +55,7 @@ export function useRoutablePageNumber(): PageNumberControl {
  * @param pager the control object for paging the survey
  */
 export function useSurveyJSModel(form: SurveyJSForm, resumeData: ResumableData | null,
-  onComplete: () => void, pager: PageNumberControl) {
+                                 onComplete: () => void, pager: PageNumberControl) {
   const [surveyModel, setSurveyModel] = useState<SurveyModel | null>(null)
 
   /** hand a page change by updating state of both the surveyJS model and our internal state*/
@@ -111,7 +111,7 @@ export function useSurveyJSModel(form: SurveyJSForm, resumeData: ResumableData |
   }, [surveyModel])
   const pageNumber = surveyModel ? surveyModel.currentPageNo + 1 : 1
   const SurveyComponent = surveyModel ? <SurveyJSComponent model={surveyModel}/> : <></>
-  return { surveyModel, refreshSurvey, pageNumber, SurveyComponent }
+  return {surveyModel, refreshSurvey, pageNumber, SurveyComponent}
 }
 
 export enum SourceType {
@@ -153,7 +153,7 @@ export type ConsentResponseDto = FormResponseDto & {
 
 export type SurveyResponseDto = FormResponseDto & {
   surveyId: string,
-  completed: boolean
+  complete: boolean
 }
 
 export type FormResponseItem = {
@@ -180,7 +180,7 @@ type CalculatedValue = {
 /**
  * Takes a ConsentForm or Survey object, along with a surveyJS model of the user's input, and generates a response DTO
  */
-export function generateFormResponseDto({ surveyJSModel, enrolleeId, sourceType }:
+export function generateFormResponseDto({surveyJSModel, enrolleeId, sourceType}:
                                           {
                                             surveyJSModel: SurveyModel,
                                             enrolleeId: string | null, sourceType: SourceType
@@ -197,7 +197,7 @@ export function generateFormResponseDto({ surveyJSModel, enrolleeId, sourceType 
   // the getPlainData call does not include the calculated values, but getAllValues does not include display values,
   // so to get the format we need we call getPlainData for questions, and then combine that with calculatedValues
   const data = surveyJSModel.getPlainData()
-  const questionItems = data.map(({ name, title, value, displayValue }: SurveyJsItem) => {
+  const questionItems = data.map(({name, title, value, displayValue}: SurveyJsItem) => {
     return {
       stableId: name,
       questionText: title,
@@ -227,8 +227,8 @@ function getCalculatedValues(surveyJSModel: SurveyModel): FormResponseItem[] {
 export function extractSurveyContent(survey: SurveyJSForm) {
   const parsedSurvey = JSON.parse(survey.content)
   const questionTemplates = parsedSurvey.questionTemplates as Question[]
-  Serializer.addProperty('survey', { name: 'questionTemplates', category: 'general' })
-  Serializer.addProperty('question', { name: 'questionTemplateName', category: 'general' })
+  Serializer.addProperty('survey', {name: 'questionTemplates', category: 'general'})
+  Serializer.addProperty('question', {name: 'questionTemplateName', category: 'general'})
 
   if (questionTemplates) {
     const elementList = getSurveyElementList(parsedSurvey)

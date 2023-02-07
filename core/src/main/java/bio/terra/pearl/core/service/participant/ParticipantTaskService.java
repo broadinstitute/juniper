@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.CrudService;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,10 @@ public class ParticipantTaskService extends CrudService<ParticipantTask, Partici
     @Transactional
     public ParticipantTask updateTaskStatus(UUID taskId, TaskStatus newStatus) {
         return dao.updateTaskStatus(taskId, newStatus);
+    }
+
+    public Optional<ParticipantTask> authTaskToPortalParticipantUser(UUID taskId, UUID ppUserId) {
+        return dao.findByPortalParticipantUserId(taskId, ppUserId);
     }
 
     @Transactional
