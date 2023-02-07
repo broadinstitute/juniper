@@ -18,7 +18,6 @@ dependencies {
     implementation project(':core')
     implementation project(':populate')
     implementation project(':ui-admin')
-    ':api-admin:copyWebApp'
     implementation 'org.apache.commons:commons-dbcp2'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -40,17 +39,12 @@ task copyWebApp(type: Copy) {
     into "$rootDir/api-admin/build/resources/main/static"
 }
 
-// TODO this isn't quite the right way to specify this dependency, and we are still getting some warnings about
-// "Task <<>> uses this output of task ':api-admin:copyWebApp' without having it as a dependency"
-// This should be upgraded accordingly to fix that
-bootJar.dependsOn(copyWebApp)
-bootRun.dependsOn(copyWebApp)
-test.dependsOn(copyWebApp)
-spotbugsTest.dependsOn(copyWebApp)
-jar.dependsOn(copyWebApp)
-compileTestJava.dependsOn(copyWebApp)
-jibDockerBuild.dependsOn(copyWebApp)
-jibBuildTar.dependsOn(copyWebApp)
+// for now, only jib depends on copyWebApp, so that a npm rebuild/install will not be triggered for
+// development redeploys.  this means to deploy locally with the static assets in place you'll
+// need to run the copyWebApp task yourself
+copyWebApp.dependsOn(':ui-admin:bundle')
+jibDockerBuild.dependsOn('copyWebApp')
+
 
 test {
     useJUnitPlatform ()
