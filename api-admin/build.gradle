@@ -13,10 +13,12 @@ apply from: 'publishing.gradle'
 
 
 dependencies {
+
     implementation 'bio.terra:terra-common-lib'
     implementation project(':core')
     implementation project(':populate')
     implementation project(':ui-admin')
+    ':api-admin:copyWebApp'
     implementation 'org.apache.commons:commons-dbcp2'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -47,6 +49,8 @@ test.dependsOn(copyWebApp)
 spotbugsTest.dependsOn(copyWebApp)
 jar.dependsOn(copyWebApp)
 compileTestJava.dependsOn(copyWebApp)
+jibDockerBuild.dependsOn(copyWebApp)
+jibBuildTar.dependsOn(copyWebApp)
 
 test {
     useJUnitPlatform ()
