@@ -92,13 +92,13 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     @Override
     @Transactional
     public void delete(UUID enrolleeId, Set<CascadeProperty> cascades) {
+        participantTaskService.deleteByEnrolleeId(enrolleeId);
         for (SurveyResponse surveyResponse : surveyResponseService.findByEnrolleeId(enrolleeId)) {
             surveyResponseService.delete(surveyResponse.getId(), cascades);
         }
         for (ConsentResponse consentResponse : consentResponseService.findByEnrolleeId(enrolleeId)) {
             consentResponseService.delete(consentResponse.getId(), cascades);
         }
-        participantTaskService.deleteByEnrolleeId(enrolleeId);
         dao.delete(enrolleeId);
     }
 

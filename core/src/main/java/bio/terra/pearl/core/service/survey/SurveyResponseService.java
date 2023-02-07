@@ -1,19 +1,27 @@
 package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
+import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.TransactionHandler;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
+import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
+import bio.terra.pearl.core.service.workflow.EnrolleeEventService;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SurveyResponseService extends CrudService<SurveyResponse, SurveyResponseDao> {
@@ -22,17 +30,25 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     private SurveyService surveyService;
     private ParticipantTaskService participantTaskService;
     private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
+    private PortalParticipantUserService portalParticipantUserService;
+    private TransactionHandler transactionHandler;
+    private EnrolleeEventService enrolleeEventService;
 
     public SurveyResponseService(SurveyResponseDao dao, ResponseSnapshotService responseSnapshotService,
                                  EnrolleeService enrolleeService, SurveyService surveyService,
                                  ParticipantTaskService participantTaskService,
-                                 StudyEnvironmentSurveyService studyEnvironmentSurveyService) {
+                                 StudyEnvironmentSurveyService studyEnvironmentSurveyService,
+                                 PortalParticipantUserService portalParticipantUserService,
+                                 TransactionHandler transactionHandler, EnrolleeEventService enrolleeEventService) {
         super(dao);
         this.responseSnapshotService = responseSnapshotService;
         this.enrolleeService = enrolleeService;
         this.surveyService = surveyService;
         this.participantTaskService = participantTaskService;
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
+        this.portalParticipantUserService = portalParticipantUserService;
+        this.transactionHandler = transactionHandler;
+        this.enrolleeEventService = enrolleeEventService;
     }
 
     public List<SurveyResponse> findByEnrolleeId(UUID enrolleeId) {
@@ -93,7 +109,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
                         .orElse(null));
             }
         }
-
+        // TODO -- this lookup should be by stableId, not formId
         StudyEnvironmentSurvey configSurvey = studyEnvironmentSurveyService
                 .findBySurvey(studyEnvId, form.getId()).get();
         configSurvey.setSurvey(form);
@@ -101,6 +117,69 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
                 configSurvey, lastResponse
         );
     }
+
+    /**
+     * Creates a survey response and fires appropriate downstream events.  Note this method is *not*
+     * transactional, as if an error occurs in downstream event processing, we still want to save the survey data
+     */
+    public HubResponse<ConsentResponse> submitResponse(String portalShortcode, UUID participantUserId,
+                                                       String enrolleeShortcode, UUID taskId,
+                                                       ResponseSnapshotDto snapDto) {
+        Enrollee enrollee = enrolleeService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
+        PortalParticipantUser ppUser = portalParticipantUserService.findOne(participantUserId, portalShortcode).get();
+        ParticipantTask task = participantTaskService.authTaskToPortalParticipantUser(taskId, ppUser.getId()).get();
+
+        // find or create the SurveyResponse object to attach the snapshot
+        SurveyResponse response = transactionHandler.runInTransaction(() ->
+                createSnapshot(snapDto, task, enrollee, participantUserId));
+
+        // now update the task status and response id
+        task.setStatus(snapDto.isComplete() ? TaskStatus.COMPLETE : TaskStatus.IN_PROGRESS);
+        task.setSurveyResponseId(response.getId());
+        participantTaskService.update(task);
+
+        EnrolleeSurveyEvent event = enrolleeEventService.publishEnrolleeSurveyEvent(enrollee, response, ppUser);
+        HubResponse hubResponse = HubResponse.builder()
+                .response(event.getSurveyResponse())
+                .tasks(event.getEnrollee().getParticipantTasks().stream().toList())
+                .enrollee(event.getEnrollee()).build();
+        return hubResponse;
+    }
+
+    /** creates a new snapshot (along with a SurveyResponse container if needed) for the given task
+     * This method does not do any validation or authorization -- callers should ensure the user
+     * is authorized to update the given task/enrollee, and that the task corresponds to the snapshot
+     */
+    @Transactional
+    protected SurveyResponse createSnapshot(ResponseSnapshotDto snapDto, ParticipantTask task,
+                                      Enrollee enrollee, UUID participantUserId) {
+        UUID taskResponseId = task.getSurveyResponseId();
+        Survey survey = surveyService.findByStableId(task.getTargetStableId(), task.getTargetAssignedVersion()).get();
+        SurveyResponse existingResponse = null;
+        if (taskResponseId != null) {
+            existingResponse = dao.find(taskResponseId).get();
+        } else {
+            SurveyResponse newResponse = SurveyResponse.builder()
+                    .enrolleeId(enrollee.getId())
+                    .creatingParticipantUserId(participantUserId)
+                    .surveyId(survey.getId())
+                    .complete(snapDto.isComplete())
+                    .build();
+            existingResponse = dao.create(newResponse);
+        }
+        ResponseSnapshot snap = ResponseSnapshot.builder()
+                .surveyResponseId(existingResponse.getId())
+                .creatingParticipantUserId(participantUserId)
+                .fullData(snapDto.getFullData())
+                .resumeData(snapDto.getResumeData())
+                .build();
+        snap = responseSnapshotService.create(snap);
+        dao.updateLastSnapshotId(existingResponse.getId(), snap.getId());
+        existingResponse.setLastSnapshot(snap);
+        existingResponse.setLastSnapshotId(snap.getId());
+        return existingResponse;
+    }
+
 
     @Override
     public void delete(UUID responseId, Set<CascadeProperty> cascades) {

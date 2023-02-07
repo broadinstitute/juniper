@@ -1,4 +1,4 @@
-import {ConsentResponseDto, PreEnrollResponseDto, PreRegResponseDto} from '../util/surveyJsUtils'
+import {ConsentResponseDto, PreEnrollResponseDto, PreRegResponseDto, SurveyResponseDto} from '../util/surveyJsUtils'
 
 export type ParticipantUser = {
   username: string,
@@ -375,7 +375,7 @@ export default {
   },
 
   async submitSurveyResponse({studyShortcode, stableId, version, enrolleeShortcode, response, taskId}: {
-    studyShortcode: string, stableId: string, version: number, response: ConsentResponseDto, enrolleeShortcode: string,
+    studyShortcode: string, stableId: string, version: number, response: SurveyResponseDto, enrolleeShortcode: string,
     taskId: string
   }): Promise<HubResponse> {
     let url = `${baseStudyEnvUrl(studyShortcode)}/enrollee/${enrolleeShortcode}/surveys/${stableId}/${version}`

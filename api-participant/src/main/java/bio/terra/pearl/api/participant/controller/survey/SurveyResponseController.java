@@ -2,10 +2,11 @@ package bio.terra.pearl.api.participant.controller.survey;
 
 import bio.terra.pearl.api.participant.api.SurveyResponseApi;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
-import bio.terra.pearl.core.model.consent.ConsentResponseDto;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.ResponseSnapshotDto;
 import bio.terra.pearl.core.model.survey.SurveyWithResponse;
+import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
@@ -58,17 +59,12 @@ public class SurveyResponseController implements SurveyResponseApi {
       Integer version,
       UUID taskId,
       Object body) {
-    /**
-     * for now, we ignore the taskId. Later, we might want to validate that the task is still valid
-     * before we return all the data so that the participant doesn't fill out an irrelevant form.
-     * Not validating the task also makes it easier to spot-check survey and consent UX without
-     * specific test users
-     */
+
     ParticipantUser user = requestUtilService.userFromRequest(request);
-    ConsentResponseDto response = objectMapper.convertValue(body, ConsentResponseDto.class);
-    //    HubResponse result =
-    //        consentResponseService.submitResponse(
-    //            portalShortcode, user.getId(), enrolleeShortcode, taskId, response);
-    return null; // ResponseEntity.ok(result);
+    ResponseSnapshotDto response = objectMapper.convertValue(body, ResponseSnapshotDto.class);
+    HubResponse result =
+        surveyResponseService.submitResponse(
+            portalShortcode, user.getId(), enrolleeShortcode, taskId, response);
+    return ResponseEntity.ok(result);
   }
 }

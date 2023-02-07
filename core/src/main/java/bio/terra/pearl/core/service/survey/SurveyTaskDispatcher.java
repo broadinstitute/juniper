@@ -12,6 +12,7 @@ import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.RuleEvaluator;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
+import bio.terra.pearl.core.service.workflow.DispatcherOrder;
 import bio.terra.pearl.core.service.workflow.EnrolleeEvent;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -38,7 +39,7 @@ public class SurveyTaskDispatcher {
     }
 
     @EventListener
-    @Order(5) // survey tasks are "medium" priority, after consent tasks.
+    @Order(DispatcherOrder.SURVEY) // survey tasks are "medium" priority, after consent tasks.
     public void createSurveyTasks(EnrolleeEvent enrolleeEvent) {
         List<StudyEnvironmentSurvey> studyEnvSurveys = studyEnvironmentSurveyService
                 .findAllByStudyEnvIdWithSurvey(enrolleeEvent.getEnrollee().getStudyEnvironmentId());
