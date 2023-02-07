@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service.consent;
 
 import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
-import bio.terra.pearl.core.dao.consent.ConsentWithResponses;
+import bio.terra.pearl.core.model.consent.ConsentWithResponses;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.consent.ConsentResponseDto;
@@ -9,6 +9,7 @@ import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.workflow.HubResponse;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -79,11 +80,13 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
                                                        String enrolleeShortcode, UUID taskId, ConsentResponseDto responseDto) {
         Enrollee enrollee = enrolleeService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
         PortalParticipantUser ppUser = portalParticipantUserService.findOne(participantUserId, portalShortcode).get();
+        ParticipantTask task = participantTaskService.find(taskId).get();
         ConsentResponse response = create(participantUserId, enrollee.getId(), responseDto);
 
-        // update the task with an appropriate status
-        TaskStatus newStatus = response.isConsented() ? TaskStatus.COMPLETE : TaskStatus.REJECTED;
-        participantTaskService.updateTaskStatus(taskId, newStatus);
+        // now update the task status and response id
+        task.setStatus(response.isConsented() ? TaskStatus.COMPLETE : TaskStatus.REJECTED);
+        task.setConsentResponseId(response.getId());
+        participantTaskService.update(task);
 
         EnrolleeConsentEvent event = enrolleeEventService.publishEnrolleeConsentEvent(enrollee, response, ppUser);
         HubResponse hubResponse = HubResponse.builder()

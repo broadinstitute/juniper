@@ -25,4 +25,9 @@ public class ParticipantTaskService extends CrudService<ParticipantTask, Partici
     public ParticipantTask updateTaskStatus(UUID taskId, TaskStatus newStatus) {
         return dao.updateTaskStatus(taskId, newStatus);
     }
+
+    @Transactional
+    public ParticipantTask update(ParticipantTask task) {
+        return dao.update(task);
+    }
 }

@@ -33,6 +33,8 @@ public class ParticipantTask extends BaseEntity {
     private UUID studyEnvironmentId;
     private UUID enrolleeId;
     private UUID portalParticipantUserId;
+    private UUID surveyResponseId;
+    private UUID consentResponseId;
 }
 
 

@@ -45,6 +45,17 @@ public class SurveyResponseDao extends BaseMutableJdbiDao<SurveyResponse> {
                 "lastSnapshot", responseSnapshotDao);
     }
 
+    public Optional<SurveyResponse> findMostRecent(UUID enrolleeId, UUID surveyId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from " + tableName + " where enrollee_id = :enrolleeId"
+                                + " and survey_id = :surveyId order by created_at DESC LIMIT 1")
+                        .bind("enrolleeId", enrolleeId)
+                        .bind("surveyId", surveyId)
+                        .mapTo(clazz)
+                        .findOne()
+        );
+    }
+
     /**
      * clears the lastSnapshotId.  this is necessary in some cases to enable
      * deletion, since that snapshot is bidirectionally linked to the response

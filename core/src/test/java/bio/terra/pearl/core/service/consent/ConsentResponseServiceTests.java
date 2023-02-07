@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service.consent;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.dao.consent.ConsentWithResponses;
+import bio.terra.pearl.core.model.consent.ConsentWithResponses;
 import bio.terra.pearl.core.factory.consent.ConsentResponseFactory;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
