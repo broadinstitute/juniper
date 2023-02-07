@@ -1,13 +1,12 @@
-package bio.terra.pearl.api.participant.controller.consent;
+package bio.terra.pearl.api.participant.controller.survey;
 
-import bio.terra.pearl.api.participant.api.ConsentResponseApi;
+import bio.terra.pearl.api.participant.api.SurveyResponseApi;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
 import bio.terra.pearl.core.model.consent.ConsentResponseDto;
-import bio.terra.pearl.core.model.consent.ConsentWithResponses;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.workflow.HubResponse;
-import bio.terra.pearl.core.service.consent.ConsentResponseService;
+import bio.terra.pearl.core.model.survey.SurveyWithResponse;
+import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -15,25 +14,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class ConsentResponseController implements ConsentResponseApi {
-  private ConsentResponseService consentResponseService;
+public class SurveyResponseController implements SurveyResponseApi {
+  private SurveyResponseService surveyResponseService;
   private HttpServletRequest request;
   private RequestUtilService requestUtilService;
   private ObjectMapper objectMapper;
 
-  public ConsentResponseController(
-      ConsentResponseService consentResponseService,
+  public SurveyResponseController(
+      SurveyResponseService surveyResponseService,
       HttpServletRequest request,
       RequestUtilService requestUtilService,
       ObjectMapper objectMapper) {
-    this.consentResponseService = consentResponseService;
+    this.surveyResponseService = surveyResponseService;
     this.request = request;
     this.requestUtilService = requestUtilService;
     this.objectMapper = objectMapper;
   }
 
   @Override
-  public ResponseEntity<Object> formAndResponses(
+  public ResponseEntity<Object> formAndResponse(
       String portalShortcode,
       String envName,
       String studyShortcode,
@@ -41,17 +40,11 @@ public class ConsentResponseController implements ConsentResponseApi {
       String stableId,
       Integer version,
       UUID taskId) {
-    /**
-     * for now, we ignore the taskId. Later, we might want to validate that the task is still valid
-     * before we return all the data so that the participant doesn't fill out an irrelevant form.
-     * Not validating the task also makes it easier to spot-check survey and consent UX without
-     * specific test users
-     */
     ParticipantUser user = requestUtilService.userFromRequest(request);
     StudyEnvironment studyEnv = requestUtilService.getStudyEnv(studyShortcode, envName);
-    ConsentWithResponses result =
-        consentResponseService.findWithResponses(
-            studyEnv.getId(), stableId, version, enrolleeShortcode, user.getId());
+    SurveyWithResponse result =
+        surveyResponseService.findWithActiveResponse(
+            studyEnv.getId(), stableId, version, enrolleeShortcode, user.getId(), taskId);
     return ResponseEntity.ok(result);
   }
 
@@ -73,9 +66,9 @@ public class ConsentResponseController implements ConsentResponseApi {
      */
     ParticipantUser user = requestUtilService.userFromRequest(request);
     ConsentResponseDto response = objectMapper.convertValue(body, ConsentResponseDto.class);
-    HubResponse result =
-        consentResponseService.submitResponse(
-            portalShortcode, user.getId(), enrolleeShortcode, taskId, response);
-    return ResponseEntity.ok(result);
+    //    HubResponse result =
+    //        consentResponseService.submitResponse(
+    //            portalShortcode, user.getId(), enrolleeShortcode, taskId, response);
+    return null; // ResponseEntity.ok(result);
   }
 }

@@ -37,7 +37,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private SecureRandom secureRandom;
 
     public EnrolleeService(EnrolleeDao enrolleeDao,
-                           SurveyResponseService surveyResponseService,
+                           @Lazy SurveyResponseService surveyResponseService,
                            ParticipantTaskService participantTaskService,
                            @Lazy StudyEnvironmentService studyEnvironmentService,
                            ConsentResponseService consentResponseService, SecureRandom secureRandom) {

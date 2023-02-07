@@ -1,7 +1,5 @@
-package bio.terra.pearl.core.dao.consent;
+package bio.terra.pearl.core.model.consent;
 
-import bio.terra.pearl.core.model.consent.ConsentResponse;
-import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import java.util.List;
 
 /** convenience class for grouping together a form and its configuration and responses */

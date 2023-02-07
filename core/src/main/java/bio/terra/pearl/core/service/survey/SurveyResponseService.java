@@ -1,24 +1,38 @@
 package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
-import bio.terra.pearl.core.model.survey.ResponseSnapshot;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
-import org.springframework.stereotype.Service;
-
+import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.ParticipantTaskService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
 
 @Service
 public class SurveyResponseService extends CrudService<SurveyResponse, SurveyResponseDao> {
     private ResponseSnapshotService responseSnapshotService;
+    private EnrolleeService enrolleeService;
+    private SurveyService surveyService;
+    private ParticipantTaskService participantTaskService;
+    private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
 
-    public SurveyResponseService(SurveyResponseDao dao, ResponseSnapshotService responseSnapshotService) {
+    public SurveyResponseService(SurveyResponseDao dao, ResponseSnapshotService responseSnapshotService,
+                                 EnrolleeService enrolleeService, SurveyService surveyService,
+                                 ParticipantTaskService participantTaskService,
+                                 StudyEnvironmentSurveyService studyEnvironmentSurveyService) {
         super(dao);
         this.responseSnapshotService = responseSnapshotService;
+        this.enrolleeService = enrolleeService;
+        this.surveyService = surveyService;
+        this.participantTaskService = participantTaskService;
+        this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
     }
 
     public List<SurveyResponse> findByEnrolleeId(UUID enrolleeId) {
@@ -54,6 +68,40 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         return savedResponse;
     }
 
+    /**
+     * will load the survey and the  surveyResponse associated with the task,
+     * or the most recent survey response, with the lastSnapshot attached.
+     */
+    public SurveyWithResponse findWithActiveResponse(UUID studyEnvId, String stableId, Integer version,
+                                                     String enrolleeShortcode, UUID participantUserId, UUID taskId) {
+        Enrollee enrollee = enrolleeService.findOneByShortcode(enrolleeShortcode).get();
+        enrolleeService.authParticipantUserToEnrollee(participantUserId, enrollee.getId());
+        Survey form = surveyService.findByStableId(stableId, version).get();
+        SurveyResponse lastResponse = null;
+        if (taskId != null) {
+            // if there is an associated task, try to find an associated response
+            Optional<ParticipantTask> attachedTask = participantTaskService.find(taskId);
+            if (attachedTask.isPresent() && attachedTask.get().getSurveyResponseId() != null) {
+                lastResponse = dao.findOneWithLastSnapshot(attachedTask.get().getSurveyResponseId()).orElse(null);
+            }
+        }
+        if (lastResponse == null) {
+            // if there's no response already associated with the task, grab the most recently created
+            lastResponse = dao.findMostRecent(enrollee.getId(), form.getId()).orElse(null);
+            if (lastResponse != null && lastResponse.getLastSnapshotId() != null) {
+                lastResponse.setLastSnapshot(responseSnapshotService.find(lastResponse.getLastSnapshotId())
+                        .orElse(null));
+            }
+        }
+
+        StudyEnvironmentSurvey configSurvey = studyEnvironmentSurveyService
+                .findBySurvey(studyEnvId, form.getId()).get();
+        configSurvey.setSurvey(form);
+        return new SurveyWithResponse(
+                configSurvey, lastResponse
+        );
+    }
+
     @Override
     public void delete(UUID responseId, Set<CascadeProperty> cascades) {
         dao.clearLastSnapshotId(responseId);
@@ -63,4 +111,5 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         }
         dao.delete(responseId);
     }
+
 }
