@@ -87,6 +87,8 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     /**
      * will load the survey and the  surveyResponse associated with the task,
      * or the most recent survey response, with the lastSnapshot attached.
+     * @param taskId (optional) a task associated with this retrieval -- will be used to help identify a
+     *               specific response in cases where the enrollee has multiple responses
      */
     public SurveyWithResponse findWithActiveResponse(UUID studyEnvId, String stableId, Integer version,
                                                      String enrolleeShortcode, UUID participantUserId, UUID taskId) {
@@ -122,6 +124,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
      * Creates a survey response and fires appropriate downstream events.  Note this method is *not*
      * transactional, as if an error occurs in downstream event processing, we still want to save the survey data
      */
+    @Transactional
     public HubResponse<ConsentResponse> submitResponse(String portalShortcode, UUID participantUserId,
                                                        String enrolleeShortcode, UUID taskId,
                                                        ResponseSnapshotDto snapDto) {
@@ -130,8 +133,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         ParticipantTask task = participantTaskService.authTaskToPortalParticipantUser(taskId, ppUser.getId()).get();
 
         // find or create the SurveyResponse object to attach the snapshot
-        SurveyResponse response = transactionHandler.runInTransaction(() ->
-                createSnapshot(snapDto, task, enrollee, participantUserId));
+        SurveyResponse response = createSnapshot(snapDto, task, enrollee, participantUserId);
 
         // now update the task status and response id
         task.setStatus(snapDto.isComplete() ? TaskStatus.COMPLETE : TaskStatus.IN_PROGRESS);
@@ -146,7 +148,8 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         return hubResponse;
     }
 
-    /** creates a new snapshot (along with a SurveyResponse container if needed) for the given task
+    /**
+     * creates a new snapshot (along with a SurveyResponse container if needed) for the given task
      * This method does not do any validation or authorization -- callers should ensure the user
      * is authorized to update the given task/enrollee, and that the task corresponds to the snapshot
      */
@@ -179,7 +182,6 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         existingResponse.setLastSnapshotId(snap.getId());
         return existingResponse;
     }
-
 
     @Override
     public void delete(UUID responseId, Set<CascadeProperty> cascades) {
