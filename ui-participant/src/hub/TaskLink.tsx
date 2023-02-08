@@ -1,66 +1,70 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { ParticipantTask } from 'api/api'
-import { faCircleCheck, faCircleHalfStroke, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { faChevronRight, faCircleCheck, faCircleHalfStroke, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import { faCircle } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-export const HIGHLIGHT_STATUSES = ['NEW', 'IN_PROGRESS']
-
-const statusIconMap: Record<string, React.ReactNode> = {
-  'COMPLETE': <FontAwesomeIcon icon={faCircleCheck}/>,
-  'IN_PROGRESS': <FontAwesomeIcon icon={faCircleHalfStroke}/>,
-  'NEW': <FontAwesomeIcon icon={faCircle}/>,
-  'REJECTED': <FontAwesomeIcon icon={faTimesCircle} style={{ color: 'red' }}/>
+export type StatusDisplayInfo = {
+  icon: React.ReactNode,
+  statusDisplay: string,
+  actionDisplay?: React.ReactNode
 }
 
-/** Renders a link allowing a participant to complete a task */
+const statusDisplayMap: Record<string, StatusDisplayInfo> = {
+  'COMPLETE': {
+    icon: <FontAwesomeIcon className="me-1" icon={faCircleCheck}/>,
+    statusDisplay: 'Completed', actionDisplay: 'View'
+  },
+  'IN_PROGRESS': {
+    icon: <FontAwesomeIcon className="me-1" icon={faCircleHalfStroke}/>,
+    statusDisplay: 'In progress',
+    actionDisplay: <span>Start <FontAwesomeIcon icon={faChevronRight}/></span>
+  },
+  'NEW': {
+    icon: <FontAwesomeIcon icon={faCircle}/>,
+    statusDisplay: 'Not started',
+    actionDisplay: <span>Start <FontAwesomeIcon className="me-1" icon={faChevronRight}/></span>
+  },
+  'REJECTED': {
+    icon: <FontAwesomeIcon className="me-1" icon={faTimesCircle}/>,
+    statusDisplay: 'Declined', actionDisplay: 'View'
+  }
+}
+
+/**
+ *  Renders a link allowing a participant to complete a task
+ *  TODO-i18n this uses the task name, which is pulled from the consent/survey name, which is not i18n-able
+ *  when we upgrade this UI to support i18n, we'll have to pull task titles by loading parts of the forms themselves,
+ *  which do support i18n, and then loading from there.
+ * */
 export default function TaskLink({ task, studyShortcode, enrolleeShortcode }:
                                    { task: ParticipantTask, studyShortcode: string, enrolleeShortcode: string }) {
-  if (task.taskType === 'CONSENT') {
-    return <ConsentLink task={task} studyShortcode={studyShortcode} enrolleeShortcode={enrolleeShortcode}/>
-  } else if (task.taskType === 'SURVEY') {
-    return <SurveyLink task={task} studyShortcode={studyShortcode} enrolleeShortcode={enrolleeShortcode}/>
-  }
-  return <span>unknown task type</span>
-}
-
-/** renders a link allowing a participant to complete a consent form */
-export function ConsentLink({ task, studyShortcode, enrolleeShortcode }:
-                              { task: ParticipantTask, studyShortcode: string, enrolleeShortcode: string }) {
-  const target = `study/${studyShortcode}/enrollee/${enrolleeShortcode}/consent/${task.targetStableId}`
-    + `/${task.targetAssignedVersion}?taskId=${task.id}`
-  return <Link to={target} style={taskLinkStyle(task)}>
-    <TaskIcon task={task}/> {task.targetName}
-  </Link>
-}
-
-/** renders a link allowing a participant to complete a consent form  */
-export function SurveyLink({ task, studyShortcode, enrolleeShortcode }:
-                             { task: ParticipantTask, studyShortcode: string, enrolleeShortcode: string }) {
-  const target = `/hub/study/${studyShortcode}/enrollee/${enrolleeShortcode}/survey/${task.targetStableId}`
-    + `/${task.targetAssignedVersion}?taskId=${task.id}`
-  return <Link to={target} style={taskLinkStyle(task)}>
-    <TaskIcon task={task}/> {task.targetName}
-  </Link>
-}
-
-/** gets a font awesome icon corresponding to the task status */
-function TaskIcon({ task }: { task: ParticipantTask }) {
-  return <span className="me-2">{statusIconMap[task.status]}</span>
-}
-
-/** applies styles to the link container */
-function taskLinkStyle(task: ParticipantTask) {
-  const isHighlighted = HIGHLIGHT_STATUSES.includes(task.status)
-  return {
-    padding: '0.5em 2em',
-    borderRadius: '5px',
-    background: isHighlighted ? '#fff' : '#ddd',
-    color: isHighlighted ? undefined : '#777',
-    display: 'block',
+  return <div className="d-flex flex-row" style={{
+    padding: '1.25em 2em',
+    borderBottom: '1px solid #e4e4e4',
     width: '100%'
+  }}>
+    <div className="flex-grow-1">{task.targetName}</div>
+    <div className="ms-3">
+      {statusDisplayMap[task.status].icon} {statusDisplayMap[task.status].statusDisplay}
+    </div>
+    <div className="fw-bold ms-3 text-end" style={{ minWidth: '8em' }}><Link
+      to={getTaskPath(task, enrolleeShortcode, studyShortcode)}>{statusDisplayMap[task.status].actionDisplay}</Link>
+    </div>
+  </div>
+}
+
+/** returns a string for including in a <Link to={}> link to be navigated by the participant */
+export function getTaskPath(task: ParticipantTask, enrolleeShortcode: string, studyShortcode: string): string {
+  if (task.taskType === 'CONSENT') {
+    return `study/${studyShortcode}/enrollee/${enrolleeShortcode}/consent/${task.targetStableId}`
+      + `/${task.targetAssignedVersion}?taskId=${task.id}`
+  } else if (task.taskType === 'SURVEY') {
+    return `/hub/study/${studyShortcode}/enrollee/${enrolleeShortcode}/survey/${task.targetStableId}`
+      + `/${task.targetAssignedVersion}?taskId=${task.id}`
   }
+  return ''
 }
 
 

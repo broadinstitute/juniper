@@ -4,10 +4,12 @@ import bio.terra.pearl.api.participant.api.SurveyResponseApi;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.ResponseData;
 import bio.terra.pearl.core.model.survey.ResponseSnapshotDto;
 import bio.terra.pearl.core.model.survey.SurveyWithResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -59,12 +61,26 @@ public class SurveyResponseController implements SurveyResponseApi {
       Integer version,
       UUID taskId,
       Object body) {
-
     ParticipantUser user = requestUtilService.userFromRequest(request);
     ResponseSnapshotDto response = objectMapper.convertValue(body, ResponseSnapshotDto.class);
+    processResponseSnapshotDto(response);
     HubResponse result =
         surveyResponseService.submitResponse(
             portalShortcode, user.getId(), enrolleeShortcode, taskId, response);
     return ResponseEntity.ok(result);
+  }
+
+  /** the frontend might pass either parsed or string data back, handle either case */
+  public void processResponseSnapshotDto(ResponseSnapshotDto response) {
+    try {
+      if (response.getFullData() == null && response.getParsedData() != null) {
+        response.setFullData(objectMapper.writeValueAsString(response.getParsedData()));
+      }
+      if (response.getParsedData() == null && response.getFullData() != null) {
+        response.setParsedData(objectMapper.readValue(response.getFullData(), ResponseData.class));
+      }
+    } catch (JsonProcessingException jpe) {
+      throw new IllegalArgumentException("Could not process response:", jpe);
+    }
   }
 }

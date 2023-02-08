@@ -72,17 +72,16 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
     }
 
     /**
-     * Creates a consent response and fires appropriate downstream events.  Note this method is *not*
-     * transactional, as if an error occurs in downstream event processing, we still want to save the consent data
+     * Creates a consent response and fires appropriate downstream events.
      */
+    @Transactional
     public HubResponse<ConsentResponse> submitResponse(String portalShortcode, UUID participantUserId,
                                                        String enrolleeShortcode, UUID taskId, ConsentResponseDto responseDto) {
         Enrollee enrollee = enrolleeService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
         PortalParticipantUser ppUser = portalParticipantUserService.findOne(participantUserId, portalShortcode).get();
         ParticipantTask task = participantTaskService.authTaskToPortalParticipantUser(taskId, ppUser.getId()).get();
 
-        ConsentResponse response = transactionHandler.runInTransaction(() ->
-                create(participantUserId, enrollee.getId(), responseDto));
+        ConsentResponse response = create(participantUserId, enrollee.getId(), responseDto);
 
         // now update the task status and response id
         task.setStatus(response.isConsented() ? TaskStatus.COMPLETE : TaskStatus.REJECTED);

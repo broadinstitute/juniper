@@ -14,9 +14,12 @@ import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.ResponseSnapshotDto;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -26,6 +29,7 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.study.StudyService;
+import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -71,21 +75,18 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         assertThat(enrollee.isConsented(), equalTo(false));
     }
 
+    /** test of enroll -> consent -> survey */
     @Test
     @Transactional
-    public void testEnrollAndConsent() {
+    public void testParticipantWorkflow() {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testEnrollAndConsent");
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testEnrollAndConsent");
         ParticipantUser user = participantUserFactory.buildPersisted(studyEnv.getEnvironmentName(), "testEnrollAndConsent");
         PortalParticipantUser ppUser = PortalParticipantUser.builder()
                 .participantUserId(user.getId())
                 .portalEnvironmentId(portalEnv.getId()).build();
-
         // enrollment requires an already-existing portalParticipantUser
         portalParticipantUserService.create(ppUser);
-
-        String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
-        String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
 
         ConsentForm consent = consentFormFactory.buildPersisted("testEnrollAndConsent");
         StudyEnvironmentConsent studyEnvConsent = StudyEnvironmentConsent.builder()
@@ -101,6 +102,8 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                 .build();
         studyEnvironmentSurveyService.create(studyEnvSurvey);
 
+        String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
+        String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
         Enrollee enrollee = enrollmentService.enroll(user, portalShortcode, studyEnv.getEnvironmentName(), studyShortcode, null);
         // Because the study environment had a consent attached, a consent task should be created on enrollment
         assertThat(enrollee.getParticipantTasks(), hasSize(1));
@@ -124,6 +127,21 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         List<ParticipantTask> surveyTasks = tasks.stream().filter(task -> task.getTaskType().equals(TaskType.SURVEY)).toList();
         assertThat(surveyTasks, hasSize(1));
         assertThat(surveyTasks.get(0).getTargetStableId(), equalTo(survey.getStableId()));
+
+        // now try to complete the survey
+        ResponseSnapshotDto snapDto = ResponseSnapshotDto.builder()
+                        .fullData("{ \"items\": [{ \"simpleValue\": 1, \"stableId\": \"foo\"]}")
+                        .complete(true)
+                        .resumeData("stuff")
+                        .build();
+        HubResponse hubResponse = surveyResponseService.submitResponse(portalShortcode, user.getId(),
+                enrollee.getShortcode(), surveyTasks.get(0).getId(), snapDto);
+        List<ParticipantTask> updatedTasks = participantTaskService.findByEnrolleeId(enrollee.getId());
+        assertThat(updatedTasks, containsInAnyOrder(hubResponse.getTasks().toArray()));
+        List<ParticipantTask>  updateSurveyTasks = updatedTasks.stream().filter(task -> task.getTaskType().equals(TaskType.SURVEY)).toList();
+        assertThat(updatedTasks, hasSize(2));
+        assertThat(updateSurveyTasks, hasSize(1));
+        assertThat(updateSurveyTasks.get(0).getStatus(), equalTo(TaskStatus.COMPLETE));
     }
 
 
@@ -159,4 +177,6 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     private ParticipantTaskService participantTaskService;
     @Autowired
     private ConsentResponseService consentResponseService;
+    @Autowired
+    private SurveyResponseService surveyResponseService;
 }
