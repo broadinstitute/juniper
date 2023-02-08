@@ -26,6 +26,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
+/** listens for events and updates enrollee survey tasks accordingly */
 @Service
 public class SurveyTaskDispatcher {
     private static final Logger logger = LoggerFactory.getLogger(ConsentTaskDispatcher.class);
@@ -38,8 +39,9 @@ public class SurveyTaskDispatcher {
         this.participantTaskService = participantTaskService;
     }
 
+    /** survey tasks could be triggered by just about anything, so listen to all enrollee events */
     @EventListener
-    @Order(DispatcherOrder.SURVEY) // survey tasks are "medium" priority, after consent tasks.
+    @Order(DispatcherOrder.SURVEY)
     public void createSurveyTasks(EnrolleeEvent enrolleeEvent) {
         List<StudyEnvironmentSurvey> studyEnvSurveys = studyEnvironmentSurveyService
                 .findAllByStudyEnvIdWithSurvey(enrolleeEvent.getEnrollee().getStudyEnvironmentId());
