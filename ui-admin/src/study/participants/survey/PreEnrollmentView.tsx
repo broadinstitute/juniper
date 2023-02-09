@@ -2,7 +2,7 @@ import React from 'react'
 import SurveyFullDataView from './SurveyFullDataView'
 import { PreregistrationResponse, Survey } from 'api/api'
 
-
+/** show a preEnrollment response */
 export default function PreEnrollmentView({ preEnrollResponse, preEnrollSurvey }:
 {preEnrollResponse?: PreregistrationResponse, preEnrollSurvey: Survey}) {
   return <div>

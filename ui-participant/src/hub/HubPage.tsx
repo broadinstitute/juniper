@@ -1,9 +1,9 @@
 import React from 'react'
-import {usePortalEnv} from '../providers/PortalProvider'
-import {useUser} from '../providers/UserProvider'
-import {Enrollee, ParticipantTask, Portal, Study} from '../api/api'
+import { usePortalEnv } from '../providers/PortalProvider'
+import { useUser } from '../providers/UserProvider'
+import { Enrollee, ParticipantTask, Portal, Study } from '../api/api'
 import TaskLink from './TaskLink'
-import {useLocation} from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import TaskStatusMessage from './TaskStatusMessage'
 
 export type HubUpdate = {
@@ -15,8 +15,8 @@ export type HubUpdate = {
 
 /** renders the logged-in hub page */
 export default function HubPage() {
-  const {portal} = usePortalEnv()
-  const {enrollees} = useUser()
+  const { portal } = usePortalEnv()
+  const { enrollees } = useUser()
   const location = useLocation()
   /**
    * Pull any messages to be displayed as a result of where we came from e.g. "survey complete"
@@ -44,7 +44,7 @@ export default function HubPage() {
 
 
 /** Renders pending tasks for a given study */
-function StudyTaskBox({enrollee, portal}: { enrollee: Enrollee, portal: Portal }) {
+function StudyTaskBox({ enrollee, portal }: { enrollee: Enrollee, portal: Portal }) {
   const matchedStudy = portal.portalStudies
     .find(pStudy => pStudy.study.studyEnvironments[0].id === enrollee.studyEnvironmentId)?.study as Study
   const hasStudyTasks = enrollee.participantTasks.length > 0
@@ -53,10 +53,10 @@ function StudyTaskBox({enrollee, portal}: { enrollee: Enrollee, portal: Portal }
     <h5 className="mb-3 fw-bold">{matchedStudy.name}</h5>
     {hasStudyTasks && <div>
       <h6 className="fw-bold">Activities</h6>
-      <ol style={{listStyleType: 'none', paddingInlineStart: 0, width: '100%'}}>
+      <ol style={{ listStyleType: 'none', paddingInlineStart: 0, width: '100%' }}>
         {sortedTasks.map(task => <li key={task.id}>
           <TaskLink task={task} key={task.id} studyShortcode={matchedStudy.shortcode}
-                    enrollee={enrollee}/>
+            enrollee={enrollee}/>
         </li>)}
       </ol>
     </div>}
