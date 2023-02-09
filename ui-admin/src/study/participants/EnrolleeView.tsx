@@ -12,7 +12,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck'
 import EnrolleeSurveyView from './survey/EnrolleeSurveyView'
 import EnrolleeConsentView from './consent/EnrolleeConsentView'
-import PreEnrollView from '../surveys/PreEnrollView'
 import PreEnrollmentView from './survey/PreEnrollmentView'
 
 export type SurveyWithResponsesT = {
