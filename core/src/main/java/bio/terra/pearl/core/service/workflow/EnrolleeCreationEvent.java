@@ -1,13 +1,9 @@
 package bio.terra.pearl.core.service.workflow;
 
 
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 /**
  * contains data associated with enrollee creation.
@@ -16,10 +12,7 @@ import lombok.Setter;
  * object attached to the event.  That way later consumers will be able to see the tasks without reloading the DB
  * every time.
  */
-@Getter @Setter @Builder
-public class EnrolleeCreationEvent {
-    private Enrollee enrollee;
-    private StudyEnvironment studyEnvironment;
-    private PortalParticipantUser portalParticipantUser;
-    private EnrolleeRuleData enrolleeRuleData;
+@Getter @Setter @SuperBuilder
+public class EnrolleeCreationEvent extends EnrolleeEvent {
+
 }

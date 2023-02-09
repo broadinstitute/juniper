@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import Api from 'api/api'
-import { DenormalizedPreEnrollResponse, generateDenormalizedData, SourceType, useSurveyJSModel } from 'util/surveyJsUtils' // eslint-disable-line max-len
+import { generateFormResponseDto, PreEnrollResponseDto, SourceType, useSurveyJSModel } from 'util/surveyJsUtils' // eslint-disable-line max-len
 import { useNavigate } from 'react-router-dom'
 import { StudyEnrollContext } from './StudyEnrollRouter'
 
@@ -20,16 +20,15 @@ export default function PreEnrollView({ enrollContext }: { enrollContext: StudyE
     if (!surveyModel) {
       return
     }
-    const denormedResponse = generateDenormalizedData({
-      survey, surveyJSModel: surveyModel, participantShortcode: 'ANON',
-      sourceShortcode: 'ANON', sourceType: SourceType.ANON
+    const responseDto = generateFormResponseDto({
+      surveyJSModel: surveyModel, enrolleeId: null, sourceType: SourceType.ANON
     })
     const qualified = surveyModel.getCalculatedValueByName('qualified').value
     const preEnrollResponse = {
-      ...denormedResponse,
+      ...responseDto,
       qualified,
       studyEnvironmentId: studyEnv.id
-    } as DenormalizedPreEnrollResponse
+    } as PreEnrollResponseDto
     // submit the form even if it isn't eligible, so we can track stats on exclusions
     Api.submitPreEnrollResponse({
       surveyStableId: survey.stableId,

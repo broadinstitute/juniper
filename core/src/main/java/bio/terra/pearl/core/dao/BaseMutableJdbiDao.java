@@ -3,6 +3,7 @@ package bio.terra.pearl.core.dao;
 import bio.terra.pearl.core.model.BaseEntity;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.jdbi.v3.core.Jdbi;
@@ -54,6 +55,18 @@ public abstract class BaseMutableJdbiDao<T extends BaseEntity> extends BaseJdbiD
                         .executeAndReturnGeneratedKeys()
                         .mapTo(clazz)
                         .one()
+        );
+    }
+
+    /** updates a single property.  This will also updated the lastUpdatedAt property too */
+    public void updateProperty(UUID id, String propertyColumn, Object propertyValue) {
+        jdbi.withHandle(handle ->
+                handle.createUpdate("update " + tableName + " set " + propertyColumn +
+                                " = :propertyValue, last_updated_at = :lastUpdatedAt where id = :id;")
+                        .bind("id", id)
+                        .bind("lastUpdatedAt", Instant.now())
+                        .bind("propertyValue", propertyValue)
+                        .execute()
         );
     }
 }

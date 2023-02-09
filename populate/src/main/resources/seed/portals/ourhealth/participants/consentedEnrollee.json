@@ -1,0 +1,17 @@
+{
+  "participantUser": {
+    "username": "consented@test.com"
+  },
+  "profile": {
+    "givenName": "Con",
+    "familyName": "Senter",
+    "contactEmail": "consented@test.com",
+    "mailingAddress": {
+      "street1": "600 Muirfield Ct.",
+      "city": "Fairfield",
+      "state": "OH",
+      "country": "US",
+      "zip": "45240"
+    }
+  }
+}

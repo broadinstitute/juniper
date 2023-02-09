@@ -17,12 +17,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
+    private static final Logger logger = LoggerFactory.getLogger(EnrolleeService.class);
     public static final String PARTICIPANT_SHORTCODE_ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static final int PARTICIPANT_SHORTCODE_LENGTH = 6;
     private SurveyResponseService surveyResponseService;
@@ -67,6 +70,16 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.findByStudyEnvironment(studyEnv.getId(), shortcode);
     }
 
+    /** returns the enrollee if the user is authorized to access/modify it, throws an error otherwise */
+    public Enrollee authParticipantUserToEnrollee(UUID participantUserId, UUID enrolleeId) {
+        // for now, a user is only allowed to access an enrollee if it's themself.  Later, we'll add proxies
+        return dao.findByEnrolleeId(participantUserId, enrolleeId).get();
+    }
+    public Enrollee authParticipantUserToEnrollee(UUID participantUserId, String enrolleeShortcode) {
+        // for now, a user is only allowed to access an enrollee if it's themself.  Later, we'll add proxies
+        return dao.findByEnrolleeId(participantUserId, enrolleeShortcode).get();
+    }
+
     public List<EnrolleeSearchResult> search(String studyShortcode, EnvironmentName envName) {
         StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
         return dao.searchByStudyEnvironment(studyEnv.getId());
@@ -102,6 +115,11 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
             enrollee.setShortcode(generateShortcode());
         }
         return super.create(enrollee);
+    }
+
+    @Transactional
+    public void updateConsented(UUID enrolleeId, boolean consented) {
+         dao.updateConsented(enrolleeId, consented);
     }
 
     /** It's possible there are snazzier ways to get postgres to generate this for us,

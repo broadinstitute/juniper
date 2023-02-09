@@ -1,6 +1,6 @@
 import React from 'react'
 import { Survey as SurveyComponent } from 'survey-react-ui'
-import { generateDenormalizedData, SourceType, useSurveyJSModel } from 'util/surveyJsUtils'
+import { generateFormResponseDto, SourceType, useSurveyJSModel } from 'util/surveyJsUtils'
 import Api, { Survey } from 'api/api'
 import { RegistrationContextT } from './PortalRegistrationRouter'
 import { useUser } from '../../providers/UserProvider'
@@ -74,14 +74,13 @@ export default function Registration({ registrationContext, returnTo }: {
     if (!surveyModel) {
       return
     }
-    const denormedResponse = generateDenormalizedData({
-      survey: registrationSurveyModel, surveyJSModel: surveyModel, participantShortcode: 'ANON',
-      sourceShortcode: 'ANON', sourceType: SourceType.ANON
+    const responseDto = generateFormResponseDto({
+      surveyJSModel: surveyModel, enrolleeId: null, sourceType: SourceType.ANON
     })
     const resumeData = surveyModel?.data
     Api.register({
       preRegResponseId: preRegResponseId as string,
-      fullData: denormedResponse
+      fullData: responseDto
     })
       .then(response => {
         updatePreRegResponseId(null)

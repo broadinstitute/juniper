@@ -78,7 +78,7 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
                 .findFirst().get().getId();
 
         List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
-        Assertions.assertEquals(2, enrollees.size());
+        Assertions.assertEquals(3, enrollees.size());
         Enrollee jonas = enrollees.stream().filter(enrollee -> "JOSALK".equals(enrollee.getShortcode()))
                 .findFirst().get();
         checkOurhealthSurveys(jonas);

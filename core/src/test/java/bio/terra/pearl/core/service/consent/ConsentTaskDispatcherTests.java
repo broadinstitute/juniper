@@ -13,6 +13,7 @@ import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.workflow.EnrolleeCreationEvent;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,11 +38,11 @@ public class ConsentTaskDispatcherTests extends BaseSpringBootTest {
                 .build();
         Enrollee enrollee = Enrollee.builder()
                 .participantUserId(UUID.randomUUID())
+                .studyEnvironmentId(studyEnv.getId())
                 .build();
         EnrolleeCreationEvent enrolleeEvent = EnrolleeCreationEvent.builder()
                 .enrollee(enrollee)
                 .portalParticipantUser(ppUser)
-                .studyEnvironment(studyEnv)
                 .build();
         EnrolleeRuleData enrolleeRuleData = EnrolleeRuleData.builder()
                 .enrollee(enrollee)
@@ -54,7 +55,7 @@ public class ConsentTaskDispatcherTests extends BaseSpringBootTest {
                 .build();
         List<StudyEnvironmentConsent> studyEnvConsents = Arrays.asList(studyEnvConsent);
         List<ParticipantTask> consentTasks = consentTaskDispatcher
-                .buildConsentTasks(enrolleeEvent, enrolleeRuleData, studyEnvConsents);
+                .buildTasks(enrollee, enrolleeRuleData, ppUser.getId(), studyEnvConsents);
 
         assertThat(consentTasks, hasSize(1));
         ParticipantTask newTask = consentTasks.get(0);
@@ -69,7 +70,78 @@ public class ConsentTaskDispatcherTests extends BaseSpringBootTest {
                         .targetStableId(consent.getStableId())
                         .targetAssignedVersion(consent.getVersion())
                         .taskType(TaskType.CONSENT)
-                        .status(TaskStatus.NEW.name())
+                        .status(TaskStatus.NEW)
+                        .build(), "createdAt", "lastUpdatedAt"
+        ));
+    }
+
+    @Test
+    public void testMultipleOrderedConsentTasks() {
+        StudyEnvironment studyEnv = StudyEnvironment.builder()
+                .id(UUID.randomUUID())
+                .build();
+        PortalParticipantUser ppUser = PortalParticipantUser.builder()
+                .id(UUID.randomUUID())
+                .build();
+        Enrollee enrollee = Enrollee.builder()
+                .participantUserId(UUID.randomUUID())
+                .studyEnvironmentId(studyEnv.getId())
+                .build();
+        EnrolleeCreationEvent enrolleeEvent = EnrolleeCreationEvent.builder()
+                .enrollee(enrollee)
+                .portalParticipantUser(ppUser)
+                .build();
+        EnrolleeRuleData enrolleeRuleData = EnrolleeRuleData.builder()
+                .enrollee(enrollee)
+                .build();
+        ConsentForm consent1 = consentFormFactory.builder("testBuildConsentTasks1").build();
+        StudyEnvironmentConsent studyEnvConsent1 = StudyEnvironmentConsent.builder()
+                .consentForm(consent1)
+                .eligibilityRule(null)
+                .consentOrder(1)
+                .studyEnvironmentId(studyEnv.getId())
+                .build();
+        ConsentForm consent2 = consentFormFactory.builder("testBuildConsentTasks2").build();
+        StudyEnvironmentConsent studyEnvConsent2 = StudyEnvironmentConsent.builder()
+                .consentForm(consent2)
+                .consentOrder(2)
+                .eligibilityRule(null)
+                .studyEnvironmentId(studyEnv.getId())
+                .build();
+        List<StudyEnvironmentConsent> studyEnvConsents = Arrays.asList(studyEnvConsent1, studyEnvConsent2);
+        List<ParticipantTask> consentTasks = consentTaskDispatcher
+                .buildTasks(enrollee, enrolleeRuleData, ppUser.getId(), studyEnvConsents);
+        consentTasks.sort(Comparator.comparing(ParticipantTask::getTaskOrder));
+        assertThat(consentTasks, hasSize(2));
+
+        ParticipantTask firstTask = consentTasks.get(0);
+        assertThat(firstTask, samePropertyValuesAs(
+                ParticipantTask.builder()
+                        .blocksHub(true)
+                        .studyEnvironmentId(studyEnv.getId())
+                        .portalParticipantUserId(ppUser.getId())
+                        .enrolleeId(enrollee.getId())
+                        .taskOrder(1)
+                        .targetName(consent1.getName())
+                        .targetStableId(consent1.getStableId())
+                        .targetAssignedVersion(consent1.getVersion())
+                        .taskType(TaskType.CONSENT)
+                        .status(TaskStatus.NEW)
+                        .build(), "createdAt", "lastUpdatedAt"
+        ));
+        ParticipantTask secondTask = consentTasks.get(1);
+        assertThat(secondTask, samePropertyValuesAs(
+                ParticipantTask.builder()
+                        .blocksHub(true)
+                        .studyEnvironmentId(studyEnv.getId())
+                        .portalParticipantUserId(ppUser.getId())
+                        .enrolleeId(enrollee.getId())
+                        .taskOrder(2)
+                        .targetName(consent2.getName())
+                        .targetStableId(consent2.getStableId())
+                        .targetAssignedVersion(consent2.getVersion())
+                        .taskType(TaskType.CONSENT)
+                        .status(TaskStatus.NEW)
                         .build(), "createdAt", "lastUpdatedAt"
         ));
     }

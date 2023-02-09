@@ -27,6 +27,7 @@ public class Enrollee extends BaseEntity {
     private Profile profile;
     private UUID studyEnvironmentId;
     private String shortcode;
+    private boolean consented;
     @Builder.Default
     private boolean withdrawn = false;
     @Builder.Default

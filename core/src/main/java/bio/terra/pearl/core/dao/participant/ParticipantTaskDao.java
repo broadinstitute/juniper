@@ -2,6 +2,8 @@ package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import org.jdbi.v3.core.Jdbi;
@@ -24,5 +26,14 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
 
     public void deleteByEnrolleeId(UUID enrolleeId) {
         deleteByUuidProperty("enrollee_id", enrolleeId);
+    }
+
+    public ParticipantTask updateTaskStatus(UUID taskId, TaskStatus newStatus) {
+        ParticipantTask task = find(taskId).get();
+        task.setStatus(newStatus);
+        if (newStatus.isTerminalStatus()) {
+            task.setCompletedAt(Instant.now());
+        }
+        return update(task);
     }
 }

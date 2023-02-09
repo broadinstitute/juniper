@@ -144,7 +144,8 @@ databaseChangeLog:
               - column: *createdAt
               - column: *lastUpdatedAt
               - column: *shortcode
-              - column: { name: withdrawn, type: boolean, defaultValueBoolean: false }
+              - column: { name: withdrawn, type: boolean, defaultValueBoolean: false, constraints: { nullable: false} }
+              - column: { name: consented, type: boolean, defaultValueBoolean: false, constraints: { nullable: false} }
               - column: { name: participant_user_id, type: uuid, constraints: {
                 nullable: false, foreignKeyName: fk_enrollee_participant_user, references: participant_user(id)
               } }

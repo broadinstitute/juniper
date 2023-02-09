@@ -1,6 +1,6 @@
 import React from 'react'
 import Api, { Survey } from 'api/api'
-import { DenormalizedPreRegResponse, generateDenormalizedData, SourceType, useSurveyJSModel } from 'util/surveyJsUtils'
+import { generateFormResponseDto, PreRegResponseDto, SourceType, useSurveyJSModel } from 'util/surveyJsUtils'
 import { RegistrationContextT } from './PortalRegistrationRouter'
 import { useNavigate } from 'react-router-dom'
 
@@ -19,12 +19,11 @@ export default function PreRegistration({ registrationContext }: { registrationC
     if (!surveyModel) {
       return
     }
-    const denormedResponse = generateDenormalizedData({
-      survey, surveyJSModel: surveyModel, participantShortcode: 'ANON',
-      sourceShortcode: 'ANON', sourceType: SourceType.ANON
+    const responseDto = generateFormResponseDto({
+      surveyJSModel: surveyModel, enrolleeId: null, sourceType: SourceType.ANON
     })
     const qualified = surveyModel.getCalculatedValueByName('qualified').value
-    const preRegResponse = { ...denormedResponse, qualified } as DenormalizedPreRegResponse
+    const preRegResponse = { ...responseDto, qualified } as PreRegResponseDto
     // submit the form even if it isn't eligible, so we can track stats on exclusions
     Api.submitPreRegResponse({
       surveyStableId: survey.stableId,

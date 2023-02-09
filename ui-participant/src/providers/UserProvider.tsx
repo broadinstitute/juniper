@@ -15,9 +15,10 @@ const anonymousUser: User = {
 
 export type UserContextT = {
   user: User,
-  enrollees: Enrollee[],
+  enrollees: Enrollee[],  // this data is included to speed initial hub rendering.  it is NOT kept current
   loginUser: (result: LoginResult) => void,
-  logoutUser: () => void
+  logoutUser: () => void,
+  updateEnrollee: (enrollee: Enrollee) => void
 }
 
 /** current user object context */
@@ -28,6 +29,9 @@ const UserContext = React.createContext<UserContextT>({
     throw new Error('context not yet initialized')
   },
   logoutUser: () => {
+    throw new Error('context not yet initialized')
+  },
+  updateEnrollee: () => {
     throw new Error('context not yet initialized')
   }
 })
@@ -53,11 +57,27 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     localStorage.removeItem(STORAGE_TOKEN_PROP)
   }
 
+  /** updates a single enrollee in the list of enrollees -- the enrollee object should contain an updated task list */
+  function updateEnrollee(enrollee: Enrollee) {
+    setLoginState(oldState => {
+      if (oldState == null) {
+        return oldState
+      }
+      const updatedEnrollees = oldState.enrollees.filter(exEnrollee => exEnrollee.shortcode != enrollee.shortcode)
+      updatedEnrollees.push(enrollee)
+      return {
+        user: oldState?.user,
+        enrollees: updatedEnrollees
+      }
+    })
+  }
+
   const userContext: UserContextT = {
     user: loginState ? { ...loginState.user, isAnonymous: false } : anonymousUser,
     enrollees: loginState ? loginState.enrollees : [],
     loginUser,
-    logoutUser
+    logoutUser,
+    updateEnrollee
   }
 
   useEffect(() => {

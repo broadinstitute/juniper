@@ -34,7 +34,7 @@ export default function LandingNavbar() {
         </ul>
         <ul className="navbar-nav ms-auto">
           {user.isAnonymous && <li className="nav-item">
-            <NavLink className="nav-link" to="hub">Login</NavLink>
+            <NavLink className="nav-link" to="/hub">Login</NavLink>
           </li>}
           {!user.isAnonymous && <li className="nav-item dropdown">
             <a className="nav-link dropdown-toggle" href="#"

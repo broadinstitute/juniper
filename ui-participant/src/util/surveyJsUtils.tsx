@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import { Model, Question, Serializer, StylesManager } from 'survey-core'
 import { Survey as SurveyJSComponent, SurveyModel } from 'survey-react-ui'
-import { ConsentForm, ResumableData, Survey, SurveyJSForm } from 'api/api'
+import { ResumableData, SurveyJSForm } from 'api/api'
 import { useSearchParams } from 'react-router-dom'
 import { getSurveyElementList } from './pearlSurveyUtils'
 
@@ -28,7 +28,8 @@ export function useRoutablePageNumber(): PageNumberControl {
 
   /** update the url with the new page number */
   function updatePageNumber(newPageNumber: number) {
-    setSearchParams({ page: (newPageNumber).toString() })
+    searchParams.set('page', (newPageNumber).toString())
+    setSearchParams(searchParams)
   }
 
   return {
@@ -114,40 +115,48 @@ export function useSurveyJSModel(form: SurveyJSForm, resumeData: ResumableData |
 }
 
 export enum SourceType {
-  PARTICIPANT = 'PARTICIPANT',
+  ENROLLEE = 'ENROLLEE',
   ADMIN = 'ADMIN',
   CLINICAL_RECORD = 'CLINICAL RECORD',
   PROXY = 'PROXY',
   ANON = 'ANON' // for not-logged-in users (e.g. preregistration)
 }
 
-export type DenormalizedResponse = {
-  formStableId: string,
-  formVersion: number,
-  participantShortcode: string,
-  sourceShortcode: string,
+export type FormResponseDto = {
+  enrolleeId: string,
   sourceType: SourceType,
+  resumeData?: string,
   parsedData: {
-    items: DenormalizedResponseItem[]
+    items: FormResponseItem[]
   }
 }
 
-export type DenormalizedPreRegResponse = {
+export type PreRegResponseDto = {
   parsedData: {
-    items: DenormalizedResponseItem[]
+    items: FormResponseItem[]
   }
   qualified: boolean
 }
 
-export type DenormalizedPreEnrollResponse = {
+export type PreEnrollResponseDto = {
   parsedData: {
-    items: DenormalizedResponseItem[]
+    items: FormResponseItem[]
   }
   qualified: boolean,
   studyEnvironmentId: string
 }
 
-export type DenormalizedResponseItem = {
+export type ConsentResponseDto = FormResponseDto & {
+  consentFormId: string,
+  consented: boolean
+}
+
+export type SurveyResponseDto = FormResponseDto & {
+  surveyId: string,
+  completed: boolean
+}
+
+export type FormResponseItem = {
   stableId: string,
   questionText: string,
   questionType: string,
@@ -168,28 +177,23 @@ type CalculatedValue = {
   value: string | boolean | null | number | object
 }
 
-/** write out the responses to the survey in a denormalized way, so that, e.g., the question text is preserved alongside
- * the answers
+/**
+ * Takes a ConsentForm or Survey object, along with a surveyJS model of the user's input, and generates a response DTO
  */
-export function generateDenormalizedData({
-  survey, surveyJSModel, participantShortcode,
-  sourceShortcode, sourceType
-}:
-                                           {
-                                             survey: Survey | ConsentForm, surveyJSModel: SurveyModel,
-                                             participantShortcode: string,
-                                             sourceShortcode: string, sourceType: SourceType
-                                           }): DenormalizedResponse {
+export function generateFormResponseDto({ surveyJSModel, enrolleeId, sourceType }:
+                                          {
+                                            surveyJSModel: SurveyModel,
+                                            enrolleeId: string | null, sourceType: SourceType
+                                          }): FormResponseDto {
   const response = {
-    formStableId: survey.stableId,
-    formVersion: survey.version,
-    participantShortcode,
-    sourceShortcode,
+    enrolleeId,
     sourceType,
+    resumeData: JSON.stringify(surveyJSModel?.data),
     parsedData: {
       items: []
     }
-  } as DenormalizedResponse
+  } as FormResponseDto
+
   // the getPlainData call does not include the calculated values, but getAllValues does not include display values,
   // so to get the format we need we call getPlainData for questions, and then combine that with calculatedValues
   const data = surveyJSModel.getPlainData()
@@ -209,7 +213,7 @@ export function generateDenormalizedData({
 }
 
 /** extract the calculated values as DenormalizedResponseItems */
-function getCalculatedValues(surveyJSModel: SurveyModel): DenormalizedResponseItem[] {
+function getCalculatedValues(surveyJSModel: SurveyModel): FormResponseItem[] {
   return surveyJSModel.calculatedValues.map((calculatedValue: CalculatedValue) => {
     return {
       stableId: calculatedValue.name,

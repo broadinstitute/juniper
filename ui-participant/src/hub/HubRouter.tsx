@@ -9,8 +9,10 @@ export default function HubRouter() {
   return <>
     <HubNavbar/>
     <Routes>
-      <Route path="study/:studyShortcode/consent/:stableId/:version" element={<ConsentView/>}/>
+      <Route path="study/:studyShortcode/enrollee/:enrolleeShortcode/consent/:stableId/:version"
+        element={<ConsentView/>}/>
       <Route index element={<HubPage/>}/>
+      <Route path="*" element={<div>unknown hub route</div>}/>
     </Routes>
   </>
 }
