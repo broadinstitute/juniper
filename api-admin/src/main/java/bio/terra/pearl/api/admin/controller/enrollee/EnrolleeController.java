@@ -46,7 +46,8 @@ public class EnrolleeController implements EnrolleeApi {
     AdminUser adminUser = requestUtilService.getFromRequest(request);
     requestUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
     Optional<Enrollee> enrolleeOpt =
-        enrolleeService.findByStudyEnvironment(studyShortcode, environmentName, enrolleeShortcode);
+        enrolleeService.findByStudyEnvironmentAdminLoad(
+            studyShortcode, environmentName, enrolleeShortcode);
     return ResponseEntity.of(enrolleeOpt.map(opt -> opt));
   }
 }

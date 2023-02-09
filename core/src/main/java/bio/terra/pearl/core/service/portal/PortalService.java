@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.admin.PortalAdminUserDao;
 import bio.terra.pearl.core.dao.portal.PortalDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.PortalStudy;
@@ -14,6 +15,7 @@ import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
+import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyService;
@@ -31,6 +33,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     private PortalStudyService portalStudyService;
     private PortalEnvironmentService portalEnvironmentService;
     private ParticipantUserService participantUserService;
+    private PortalParticipantUserService portalParticipantUserService;
     private PortalAdminUserDao portalAdminUserDao;
     private StudyService studyService;
     private SurveyService surveyService;
@@ -41,6 +44,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
                          StudyService studyService,
                          PortalEnvironmentService portalEnvironmentService,
                          ParticipantUserService participantUserService,
+                         PortalParticipantUserService portalParticipantUserService,
                          PortalAdminUserDao portalAdminUserDao, SurveyService surveyService,
                          ConsentFormService consentFormService, SiteContentService siteContentService) {
         super(portalDao);
@@ -48,6 +52,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         this.portalEnvironmentService = portalEnvironmentService;
         this.studyService = studyService;
         this.participantUserService = participantUserService;
+        this.portalParticipantUserService = portalParticipantUserService;
         this.portalAdminUserDao = portalAdminUserDao;
         this.surveyService = surveyService;
         this.consentFormService = consentFormService;
@@ -119,7 +124,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         return dao.findByAdminUserId(userId);
     }
 
-    public Portal authUserToPortal(AdminUser user, String portalShortcode) {
+    public Portal authAdminToPortal(AdminUser user, String portalShortcode) {
         Optional<Portal> portalOpt = findOneByShortcode(portalShortcode);
         if (portalOpt.isEmpty()) {
             throw new NotFoundException("Portal not found: %s".formatted(portalShortcode));
@@ -130,6 +135,22 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         }
         throw new PermissionDeniedException("User %s does not have permissions on portal %s"
                 .formatted(user.getUsername(), portalShortcode));
+    }
+
+    public PortalWithPortalUser authParticipantToPortal(UUID participantUserId, String portalShortcode,
+                                                        EnvironmentName envName) {
+        Optional<Portal> portalOpt = findOneByShortcode(portalShortcode);
+        if (portalOpt.isEmpty()) {
+            throw new NotFoundException("Portal not found: %s".formatted(portalShortcode));
+        }
+        Portal portal = portalOpt.get();
+        Optional<PortalParticipantUser> ppUser = portalParticipantUserService.findOne(participantUserId, portalShortcode,
+                envName);
+        if (ppUser.isEmpty()) {
+            throw new PermissionDeniedException("User %s does not have permissions on portal %s, env %s"
+                    .formatted(participantUserId, portalShortcode, envName));
+        }
+        return new PortalWithPortalUser(portal, ppUser.get());
     }
 
     public enum AllowedCascades implements CascadeProperty {

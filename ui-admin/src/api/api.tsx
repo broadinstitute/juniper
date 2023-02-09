@@ -88,8 +88,8 @@ export type Enrollee = {
   shortcode: string,
   surveyResponses: SurveyResponse[],
   consentResponses: ConsentResponse[],
-  preRegResponse: PreregistrationResponse,
-  preEnrollResponse: PreregistrationResponse,
+  preRegResponse?: PreregistrationResponse,
+  preEnrollmentResponse?: PreregistrationResponse,
   participantTasks: ParticipantTask[],
   consented: boolean,
   profile: Profile

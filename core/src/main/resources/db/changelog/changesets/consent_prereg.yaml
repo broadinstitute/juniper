@@ -117,8 +117,11 @@ databaseChangeLog:
               - column: { name: study_environment_id, type: uuid, constraints:
                 { nullable: false, foreignKeyName: fk_pre_enrollment_study_env, references: study_environment(id) }
               }
-              - column: { name: enrollee_id, type: uuid, constraints:
-                { foreignKeyName: fk_pre_enroll_enrollee, references: enrollee(id) }
+        - addColumn:
+            tableName: enrollee
+            columns:
+              - column: { name: pre_enrollment_response_id, type: uuid, constraints:
+                { unique: true, foreignKeyName: fk_enrollee_pre_enroll_id, references: pre_enrollment_response(id) }
               }
 
 

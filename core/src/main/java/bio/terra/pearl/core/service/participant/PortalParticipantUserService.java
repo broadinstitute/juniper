@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.dao.participant.PortalParticipantUserDao;
 import bio.terra.pearl.core.dao.survey.PreregistrationResponseDao;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.CascadeProperty;
@@ -45,6 +46,10 @@ public class PortalParticipantUserService extends CrudService<PortalParticipantU
 
     public Optional<PortalParticipantUser> findOne(UUID userId, UUID portalEnvId) {
         return dao.findOne(userId, portalEnvId);
+    }
+
+    public Optional<PortalParticipantUser> findOne(UUID participantUserId, String portalShortcode, EnvironmentName envName) {
+        return dao.findOne(participantUserId, portalShortcode, envName);
     }
 
     public Optional<PortalParticipantUser> findOne(UUID participantUserId, String portalShortcode) {

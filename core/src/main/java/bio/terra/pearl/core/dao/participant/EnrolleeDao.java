@@ -2,6 +2,7 @@ package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
+import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
@@ -18,14 +19,17 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
     private SurveyResponseDao surveyResponseDao;
     private ConsentResponseDao consentResponseDao;
     private ParticipantTaskDao participantTaskDao;
+    private PreEnrollmentResponseDao preEnrollmentResponseDao;
 
     public EnrolleeDao(Jdbi jdbi, ProfileDao profileDao, SurveyResponseDao surveyResponseDao,
-                       ConsentResponseDao consentResponseDao, ParticipantTaskDao participantTaskDao) {
+                       ConsentResponseDao consentResponseDao, ParticipantTaskDao participantTaskDao,
+                       PreEnrollmentResponseDao preEnrollmentResponseDao) {
         super(jdbi);
         this.profileDao = profileDao;
         this.surveyResponseDao = surveyResponseDao;
         this.consentResponseDao = consentResponseDao;
         this.participantTaskDao = participantTaskDao;
+        this.preEnrollmentResponseDao = preEnrollmentResponseDao;
     }
 
     @Override
@@ -37,7 +41,7 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
         return findByProperty("shortcode", shortcode);
     }
 
-    public List<Enrollee> findByStudyEnvironment(UUID studyEnvironmentId) {
+    public List<Enrollee> findByStudyEnvironmentAdminLoad(UUID studyEnvironmentId) {
         return findAllByProperty("study_environment_id", studyEnvironmentId);
     }
 
@@ -59,7 +63,11 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
         return findByTwoProperties("participant_user_id", userId, "shortcode", enrolleeShortcode);
     }
 
-    public Optional<Enrollee> findByStudyEnvironment(UUID studyEnvironmentId, String shortcode) {
+    public Optional<Enrollee> findByPreEnrollResponseId(UUID preEnrollResponseId) {
+        return findByProperty("pre_enrollment_response_id", preEnrollResponseId);
+    }
+
+    public Optional<Enrollee> findByStudyEnvironmentAdminLoad(UUID studyEnvironmentId, String shortcode) {
         Optional<Enrollee> enrolleeOpt = findByTwoProperties("study_environment_id", studyEnvironmentId,
                 "shortcode", shortcode);
         enrolleeOpt.ifPresent(enrollee -> {
@@ -67,12 +75,15 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
             enrollee.getConsentResponses().addAll(consentResponseDao.findByEnrolleeId(enrollee.getId()));
             enrollee.setProfile(profileDao.find(enrollee.getProfileId()).get());
             enrollee.getParticipantTasks().addAll(participantTaskDao.findByEnrolleeId(enrollee.getId()));
+            if (enrollee.getPreEnrollmentResponseId() != null) {
+                enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).get());
+            }
         });
         return enrolleeOpt;
     }
 
     public List<EnrolleeSearchResult> searchByStudyEnvironment(UUID studyEnvironmentId) {
-        List<Enrollee> enrollees = findByStudyEnvironment(studyEnvironmentId);
+        List<Enrollee> enrollees = findByStudyEnvironmentAdminLoad(studyEnvironmentId);
         List<UUID> profileIds = enrollees.stream().map(enrollee -> enrollee.getProfileId()).toList();
         List<Profile> profiles = profileDao.findAll(profileIds);
         return enrollees.stream().map(enrollee -> EnrolleeSearchResult.builder().enrollee(enrollee)

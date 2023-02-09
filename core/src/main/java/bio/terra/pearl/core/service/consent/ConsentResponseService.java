@@ -75,10 +75,9 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
      * Creates a consent response and fires appropriate downstream events.
      */
     @Transactional
-    public HubResponse<ConsentResponse> submitResponse(String portalShortcode, UUID participantUserId,
+    public HubResponse<ConsentResponse> submitResponse(UUID participantUserId, PortalParticipantUser ppUser,
                                                        String enrolleeShortcode, UUID taskId, ConsentResponseDto responseDto) {
         Enrollee enrollee = enrolleeService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
-        PortalParticipantUser ppUser = portalParticipantUserService.findOne(participantUserId, portalShortcode).get();
         ParticipantTask task = participantTaskService.authTaskToPortalParticipantUser(taskId, ppUser.getId()).get();
 
         ConsentResponse response = create(participantUserId, enrollee.getId(), responseDto);

@@ -25,7 +25,6 @@ public class PreEnrollmentResponse extends BaseEntity {
     private UUID creatingParticipantUserId;
     private UUID surveyId;
     private UUID studyEnvironmentId;
-    private UUID enrolleeId;
     private String fullData;
     @Builder.Default
     private boolean qualified = false; // whether or not the responses meet the criteria for eligibility.

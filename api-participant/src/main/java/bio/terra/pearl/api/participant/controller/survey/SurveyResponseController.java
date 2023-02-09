@@ -2,12 +2,14 @@ package bio.terra.pearl.api.participant.controller.survey;
 
 import bio.terra.pearl.api.participant.api.SurveyResponseApi;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.ResponseData;
 import bio.terra.pearl.core.model.survey.ResponseSnapshotDto;
 import bio.terra.pearl.core.model.survey.SurveyWithResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
+import bio.terra.pearl.core.service.portal.PortalWithPortalUser;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,11 +64,14 @@ public class SurveyResponseController implements SurveyResponseApi {
       UUID taskId,
       Object body) {
     ParticipantUser user = requestUtilService.userFromRequest(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    PortalWithPortalUser portalWithPortalUser =
+        requestUtilService.authParticipantToPortal(user.getId(), portalShortcode, environmentName);
     ResponseSnapshotDto response = objectMapper.convertValue(body, ResponseSnapshotDto.class);
     processResponseSnapshotDto(response);
     HubResponse result =
         surveyResponseService.submitResponse(
-            portalShortcode, user.getId(), enrolleeShortcode, taskId, response);
+            user.getId(), portalWithPortalUser.ppUser(), enrolleeShortcode, taskId, response);
     return ResponseEntity.ok(result);
   }
 

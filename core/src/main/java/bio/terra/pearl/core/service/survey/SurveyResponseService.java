@@ -125,11 +125,11 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
      * transactional, as if an error occurs in downstream event processing, we still want to save the survey data
      */
     @Transactional
-    public HubResponse<ConsentResponse> submitResponse(String portalShortcode, UUID participantUserId,
+    public HubResponse<ConsentResponse> submitResponse(UUID participantUserId, PortalParticipantUser ppUser,
                                                        String enrolleeShortcode, UUID taskId,
                                                        ResponseSnapshotDto snapDto) {
+
         Enrollee enrollee = enrolleeService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
-        PortalParticipantUser ppUser = portalParticipantUserService.findOne(participantUserId, portalShortcode).get();
         ParticipantTask task = participantTaskService.authTaskToPortalParticipantUser(taskId, ppUser.getId()).get();
 
         // find or create the SurveyResponse object to attach the snapshot

@@ -60,10 +60,7 @@ public class PreEnrollmentController implements PreEnrollmentApi {
   public ResponseEntity<Object> confirm(
       String portalShortcode, String envName, UUID preRegResponseId) {
     Optional<PreEnrollmentResponse> responseOpt =
-        enrollmentService.findPreEnrollResponse(preRegResponseId);
-    if (responseOpt.isPresent() && responseOpt.get().getEnrolleeId() != null) {
-      return ResponseEntity.unprocessableEntity().body("Already enrolled");
-    }
+        enrollmentService.confirmPreEnrollResponse(preRegResponseId);
     return ResponseEntity.of(responseOpt.map(response -> response));
   }
 }

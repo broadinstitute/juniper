@@ -1,0 +1,30 @@
+{
+  "stableId": "oh_oh_placeholder1",
+  "version": 1,
+  "name": "Placeholder survey 1",
+  "jsonContent": {
+    "title": "Placeholder survey 1",
+    "pages": [
+      {
+        "name": "page1",
+        "elements": [
+          {
+            "name": "oh_oh_pl1_likeLife",
+            "type": "radiogroup",
+            "title": "I like my life.",
+            "choices": [
+              {
+                "text": "Yes",
+                "value": "yes"
+              },
+              {
+                "text": "No",
+                "value": "no"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

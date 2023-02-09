@@ -77,7 +77,7 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
                 sEnv -> sEnv.getEnvironmentName().equals(EnvironmentName.sandbox))
                 .findFirst().get().getId();
 
-        List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
+        List<Enrollee> enrollees = enrolleeService.findByStudyEnvironmentAdminLoad(sandboxEnvironmentId);
         Assertions.assertEquals(3, enrollees.size());
         Enrollee jonas = enrollees.stream().filter(enrollee -> "JOSALK".equals(enrollee.getShortcode()))
                 .findFirst().get();

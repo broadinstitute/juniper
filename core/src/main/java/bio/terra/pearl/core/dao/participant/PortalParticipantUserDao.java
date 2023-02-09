@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import java.util.List;
 import java.util.Optional;
@@ -26,13 +27,29 @@ public class PortalParticipantUserDao extends BaseJdbiDao<PortalParticipantUser>
                 "portal_environment_id", portalEnvId);
     }
 
-    public Optional<PortalParticipantUser> findOne(UUID participantUserId, String portalShortcode) {
+    public Optional<PortalParticipantUser> findOne(UUID participantUserId, String portalShortcode, EnvironmentName envName) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select " + prefixedGetQueryColumns("a") + " from " + tableName + " a "
                         + " join portal_environment on a.portal_environment_id = portal_environment.id"
                         + " join portal on portal.id = portal_environment.portal_id"
                         + " join participant_user on a.participant_user_id = participant_user.id"
-                        + " where portal.shortcode = :portalShortcode and participant_user_id = :participantUserId")
+                        + " where portal.shortcode = :portalShortcode and participant_user_id = :participantUserId"
+                        + " and portal_environment.environment_name = :envName;")
+                        .bind("portalShortcode", portalShortcode)
+                        .bind("participantUserId", participantUserId)
+                        .bind("envName", envName)
+                        .mapTo(clazz)
+                        .findOne()
+        );
+    }
+
+    public Optional<PortalParticipantUser> findOne(UUID participantUserId, String portalShortcode) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select " + prefixedGetQueryColumns("a") + " from " + tableName + " a "
+                                + " join portal_environment on a.portal_environment_id = portal_environment.id"
+                                + " join portal on portal.id = portal_environment.portal_id"
+                                + " join participant_user on a.participant_user_id = participant_user.id"
+                                + " where portal.shortcode = :portalShortcode and participant_user_id = :participantUserId;")
                         .bind("portalShortcode", portalShortcode)
                         .bind("participantUserId", participantUserId)
                         .mapTo(clazz)
