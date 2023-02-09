@@ -3,7 +3,9 @@
   "shortcode": "ourheart",
   "surveyFiles": [
     "surveys/preEnroll.json",
-    "surveys/medicalHistory.json"
+    "surveys/medicalHistory.json",
+    "surveys/placeholder1.json",
+    "surveys/placeholder2.json"
   ],
   "consentFormFiles": [
     "surveys/ourHealthConsent.json"
@@ -24,6 +26,14 @@
       "configuredSurveyDtos": [
         {
           "surveyStableId": "oh_oh_medHx",
+          "surveyVersion": 1
+        },
+        {
+          "surveyStableId": "oh_oh_placeholder1",
+          "surveyVersion": 1
+        },
+        {
+          "surveyStableId": "oh_oh_placeholder2",
           "surveyVersion": 1
         }
       ],

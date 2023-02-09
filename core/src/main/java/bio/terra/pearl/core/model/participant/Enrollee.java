@@ -2,6 +2,7 @@ package bio.terra.pearl.core.model.participant;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
+import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import java.util.HashSet;
@@ -26,6 +27,8 @@ public class Enrollee extends BaseEntity {
     private UUID profileId;
     private Profile profile;
     private UUID studyEnvironmentId;
+    private UUID preEnrollmentResponseId;
+    private PreEnrollmentResponse preEnrollmentResponse;
     private String shortcode;
     private boolean consented;
     @Builder.Default

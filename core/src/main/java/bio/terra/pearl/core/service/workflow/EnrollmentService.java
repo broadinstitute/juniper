@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
@@ -46,7 +47,11 @@ public class EnrollmentService {
         this.enrolleeService = enrolleeService;
     }
 
-    public Optional<PreEnrollmentResponse> findPreEnrollResponse(UUID responseId) {
+    /** confirms that the preEnrollmentResponse exists and had not yet already been used to create an enrollee */
+    public Optional<PreEnrollmentResponse> confirmPreEnrollResponse(UUID responseId) {
+        if (enrolleeService.findByPreEnrollResponseId(responseId).isPresent()) {
+            return Optional.empty();
+        }
         return preEnrollmentResponseDao.find(responseId);
     }
 
@@ -66,15 +71,15 @@ public class EnrollmentService {
     }
 
     @Transactional
-    public Enrollee enroll(ParticipantUser user, String portalShortcode, EnvironmentName envName,
+    public HubResponse<Enrollee> enroll(ParticipantUser user, PortalParticipantUser ppUser, EnvironmentName envName,
                                             String studyShortcode, UUID preEnrollResponseId) {
-        logger.info("creating enrollee for user {}, portal {}, study {}", user.getId(), portalShortcode, studyShortcode);
+        logger.info("creating enrollee for user {}, study {}", user.getId(), studyShortcode);
         StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
-        PortalParticipantUser ppUser = portalParticipantUserService.findOne(user.getId(), portalShortcode).get();
         Enrollee enrollee = Enrollee.builder()
                 .studyEnvironmentId(studyEnv.getId())
                 .participantUserId(user.getId())
                 .profileId(ppUser.getProfileId())
+                .preEnrollmentResponseId(preEnrollResponseId)
                 .build();
         enrollee = enrolleeService.create(enrollee);
         if (preEnrollResponseId != null) {
@@ -83,7 +88,6 @@ public class EnrollmentService {
                     response.getCreatingParticipantUserId() != user.getId()) {
                 throw new IllegalArgumentException("user does not match preEnrollment response user");
             }
-            response.setEnrolleeId(enrollee.getId());
             response.setCreatingParticipantUserId(user.getId());
             response.setPortalParticipantUserId(ppUser.getId());
             preEnrollmentResponseDao.update(response);
@@ -95,9 +99,14 @@ public class EnrollmentService {
                 .enrolleeRuleData(enrolleeRuleData)
                 .build();
         applicationEventPublisher.publishEvent(enrolleeEvent);
-        logger.info("created enrollee for user {}, portal {}, study {} - shortcode {}, {} tasks added",
-                user.getId(), portalShortcode, studyShortcode, enrollee.getShortcode());
-        return enrollee;
+        logger.info("created enrollee for user {}, study {} - shortcode {}, {} tasks added",
+                user.getId(), studyShortcode, enrollee.getShortcode());
+        HubResponse hubResponse = HubResponse.builder()
+                .enrollee(enrollee)
+                .response(enrollee)
+                .tasks(enrollee.getParticipantTasks().stream().toList())
+                .build();
+        return hubResponse;
     }
 
 

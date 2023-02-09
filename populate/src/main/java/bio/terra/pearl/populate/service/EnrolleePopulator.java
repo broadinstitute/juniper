@@ -1,11 +1,13 @@
 package bio.terra.pearl.populate.service;
 
+import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.ResponseSnapshot;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
@@ -22,6 +24,7 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dto.EnrolleePopDto;
 import bio.terra.pearl.populate.dto.ParticipantTaskPopDto;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
+import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.ResponseSnapshotPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,6 +38,7 @@ public class EnrolleePopulator extends Populator<Enrollee> {
     private StudyEnvironmentService studyEnvironmentService;
     private ParticipantUserService participantUserService;
     private PortalParticipantUserService portalParticipantUserService;
+    private PreEnrollmentResponseDao preEnrollmentResponseDao;
     private SurveyService surveyService;
     private SurveyResponseService surveyResponseService;
     private ConsentFormService consentFormService;
@@ -46,11 +50,13 @@ public class EnrolleePopulator extends Populator<Enrollee> {
                              EnrolleeService enrolleeService,
                              StudyEnvironmentService studyEnvironmentService,
                              ParticipantUserService participantUserService,
-                             PortalParticipantUserService portalParticipantUserService, SurveyService surveyService,
+                             PortalParticipantUserService portalParticipantUserService,
+                             PreEnrollmentResponseDao preEnrollmentResponseDao, SurveyService surveyService,
                              SurveyResponseService surveyResponseService, ConsentFormService consentFormService,
                              ConsentResponseService consentResponseService,
                              ParticipantTaskService participantTaskService) {
         this.portalParticipantUserService = portalParticipantUserService;
+        this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.surveyService = surveyService;
         this.surveyResponseService = surveyResponseService;
         this.consentFormService = consentFormService;
@@ -79,7 +85,9 @@ public class EnrolleePopulator extends Populator<Enrollee> {
                 .findOne(attachedUser.getId(), config.getPortalShortcode()).get();
         enrolleeDto.setParticipantUserId(attachedUser.getId());
         enrolleeDto.setProfileId(ppUser.getProfileId());
+
         Enrollee enrollee = enrolleeService.create(enrolleeDto);
+        populatePreEnrollResponse(enrollee, enrolleeDto);
         for (SurveyResponsePopDto responsePopDto : enrolleeDto.getSurveyResponseDtos()) {
             populateResponse(enrollee, responsePopDto);
         }
@@ -112,6 +120,29 @@ public class EnrolleePopulator extends Populator<Enrollee> {
         }
         SurveyResponse savedResponse = surveyResponseService.create(response);
         enrollee.getSurveyResponses().add(savedResponse);
+    }
+
+    /** persists any preEnrollmentResponse, and then attaches it to the enrollee */
+    private void populatePreEnrollResponse(Enrollee savedEnrolle, EnrolleePopDto enrolleeDto) {
+        PreEnrollmentResponsePopDto responsePopDto = enrolleeDto.getPreEnrollmentResponseDto();
+        if (responsePopDto == null) {
+            return;
+        }
+        Survey survey = surveyService.findByStableId(responsePopDto.getSurveyStableId(),
+                responsePopDto.getSurveyVersion()).get();
+
+        PreEnrollmentResponse response = PreEnrollmentResponse.builder()
+                .surveyId(survey.getId())
+                .creatingParticipantUserId(enrolleeDto.getParticipantUserId())
+                .studyEnvironmentId(savedEnrolle.getStudyEnvironmentId())
+                .fullData(responsePopDto.getFullDataJson().toString())
+                .build();
+
+        PreEnrollmentResponse savedResponse = preEnrollmentResponseDao.create(response);
+        savedEnrolle.setPreEnrollmentResponse(savedResponse);
+        savedEnrolle.setPreEnrollmentResponse(savedResponse);
+        savedEnrolle.setPreEnrollmentResponseId(savedResponse.getId());
+        enrolleeService.update(savedEnrolle);
     }
 
     private void populateConsent(Enrollee enrollee, ConsentResponsePopDto responsePopDto) {

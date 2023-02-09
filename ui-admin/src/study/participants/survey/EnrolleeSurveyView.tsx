@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 import SurveyFullDataView from './SurveyFullDataView'
 import SurveyEditView from './SurveyEditView'
 import { ResponseMapT } from '../EnrolleeView'
-import { EnrolleeParams } from '../EnrolleeRouter'
+import { EnrolleeParams } from '../EnrolleeLoader'
 import { instantToDefaultString } from '../../../util/timeUtils'
 
 /** Show responses for a survey based on url param */

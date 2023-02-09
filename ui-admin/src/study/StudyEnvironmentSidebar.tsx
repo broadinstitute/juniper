@@ -19,12 +19,6 @@ function StudyEnvironmentSidebar({ portalShortcode, study, currentEnv, currentEn
     return `${currentEnvPath}/${path}`
   }
 
-  /** returns a dynamic style for the link that will highlight when active */
-  function getLinkStyle({ isActive }: {isActive: boolean}) {
-    return `nav-link ${isActive ? 'active' : ''}`
-  }
-
-
   return <div className="StudySidebar d-flex flex-column flex-shrink-0 p-3 text-white">
     <h5>
       <Link className="nav-link" to={`/${study.shortcode}`}>{study.name}</Link>
@@ -39,31 +33,31 @@ function StudyEnvironmentSidebar({ portalShortcode, study, currentEnv, currentEn
         <hr/>
       </li>
       <li>
-        <NavLink to={getLinkPath('participants')} className={getLinkStyle} onClick={() => setShow(false)}
-          style={sidebarLinkStyle}>
-          Participants
-        </NavLink>
-      </li>
-      <li>
-        <NavLink to={getLinkPath('content')} className={getLinkStyle} onClick={() => setShow(false)}
+        <NavLink to={''} className="nav-link" onClick={() => setShow(false)}
           style={sidebarLinkStyle}>
           Content
         </NavLink>
       </li>
       <li>
-        <NavLink to={getLinkPath('users')} className={getLinkStyle} onClick={() => setShow(false)}
+        <NavLink to={getLinkPath('participants')} className="nav-link" onClick={() => setShow(false)}
+          style={sidebarLinkStyle}>
+          Participants
+        </NavLink>
+      </li>
+      <li>
+        <NavLink to={getLinkPath('users')} className="nav-link" onClick={() => setShow(false)}
           style={sidebarLinkStyle}>
           Users
         </NavLink>
       </li>
       <li>
-        <NavLink to={getLinkPath('theme')} className={getLinkStyle} onClick={() => setShow(false)}
+        <NavLink to={getLinkPath('theme')} className="nav-link" onClick={() => setShow(false)}
           style={sidebarLinkStyle}>
           Theme
         </NavLink>
       </li>
       <li>
-        <NavLink to={getLinkPath('advanced')} className={getLinkStyle} onClick={() => setShow(false)}
+        <NavLink to={getLinkPath('advanced')} className="nav-link" onClick={() => setShow(false)}
           style={sidebarLinkStyle}>
           Advanced Options
         </NavLink>

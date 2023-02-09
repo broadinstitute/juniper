@@ -1,0 +1,34 @@
+{
+  "stableId": "oh_oh_placeholder2",
+  "version": 1,
+  "name": "Placeholder survey 2",
+  "jsonContent": {
+    "title": "Placeholder survey 2",
+    "pages": [
+      {
+        "name": "page1",
+        "elements": [
+          {
+            "name": "oh_oh_pl2_apples",
+            "type": "radiogroup",
+            "title": "Apples are delicious.",
+            "choices": [
+              {
+                "text": "For sure",
+                "value": "forSure"
+              },
+              {
+                "text": "Maybe",
+                "value": "maybe"
+              },
+              {
+                "text": "Absolutely not",
+                "value": "absolutelyNot"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

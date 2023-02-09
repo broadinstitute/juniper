@@ -16,7 +16,7 @@ export type EnrolleeParams = StudyParams & {
 }
 
 /** Handles loading a specific enrollee from the server, and then delegating to EnrolleeView for rendering */
-export default function EnrolleeRouter({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
+export default function EnrolleeLoader({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
   const params = useParams<EnrolleeParams>()
   const enrolleeShortcode = params.enrolleeShortcode as string
