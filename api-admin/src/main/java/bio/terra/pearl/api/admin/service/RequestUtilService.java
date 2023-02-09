@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
+import com.auth0.jwt.JWT;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
@@ -34,9 +35,11 @@ public class RequestUtilService {
   /** gets the user from the request, throwing an exception if not present */
   public AdminUser getFromRequest(HttpServletRequest request) {
     String token = bearerTokenFactory.from(request).getToken();
-    Optional<AdminUser> userOpt = currentUserService.findByToken(token);
+    var decodedJWT = JWT.decode(token);
+    var email = decodedJWT.getClaim("email").asString();
+    Optional<AdminUser> userOpt = currentUserService.unauthedLogin(email);
     if (userOpt.isEmpty()) {
-      throw new UnauthorizedException("User not found");
+      throw new UnauthorizedException("User not found: " + email);
     }
     return userOpt.get();
   }
