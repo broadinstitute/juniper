@@ -5,11 +5,14 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.CrudService;
 import java.util.Optional;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AdminUserService extends CrudService<AdminUser, AdminUserDao> {
+    private static final Logger logger = LoggerFactory.getLogger(AdminUserService.class);
 
     public AdminUserService(AdminUserDao adminUserDao) {
         super(adminUserDao);
@@ -22,7 +25,9 @@ public class AdminUserService extends CrudService<AdminUser, AdminUserDao> {
     @Transactional
     @Override
     public AdminUser create(AdminUser adminUser) {
-        return dao.create(adminUser);
+        AdminUser savedUser = dao.create(adminUser);
+        logger.info("Created admin user - id: {}, username: {}", adminUser.getId(), adminUser.getUsername());
+        return savedUser;
     }
 
     @Override
