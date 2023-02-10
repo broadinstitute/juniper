@@ -2,8 +2,8 @@ package bio.terra.pearl.api.participant.controller.consent;
 
 import bio.terra.pearl.api.participant.api.ConsentResponseApi;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
-import bio.terra.pearl.core.dao.consent.ConsentWithResponses;
 import bio.terra.pearl.core.model.consent.ConsentResponseDto;
+import bio.terra.pearl.core.model.consent.ConsentWithResponses;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.HubResponse;
@@ -65,12 +65,6 @@ public class ConsentResponseController implements ConsentResponseApi {
       Integer version,
       UUID taskId,
       Object body) {
-    /**
-     * for now, we ignore the taskId. Later, we might want to validate that the task is still valid
-     * before we return all the data so that the participant doesn't fill out an irrelevant form.
-     * Not validating the task also makes it easier to spot-check survey and consent UX without
-     * specific test users
-     */
     ParticipantUser user = requestUtilService.userFromRequest(request);
     ConsentResponseDto response = objectMapper.convertValue(body, ConsentResponseDto.class);
     HubResponse result =

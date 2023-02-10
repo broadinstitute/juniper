@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,10 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
 
     public List<ParticipantTask> findByEnrolleeId(UUID enrolleeId) {
         return findAllByProperty("enrollee_id", enrolleeId);
+    }
+
+    public Optional<ParticipantTask> findByPortalParticipantUserId(UUID taskId, UUID ppUserId) {
+        return findByTwoProperties("id", taskId, "portal_participant_user_id", ppUserId);
     }
 
     public void deleteByEnrolleeId(UUID enrolleeId) {

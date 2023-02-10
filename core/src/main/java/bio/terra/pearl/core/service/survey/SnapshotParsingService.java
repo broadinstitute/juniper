@@ -28,5 +28,4 @@ public class SnapshotParsingService {
         }
         return objectMapper.convertValue(fieldValues, clazz);
     }
-
 }

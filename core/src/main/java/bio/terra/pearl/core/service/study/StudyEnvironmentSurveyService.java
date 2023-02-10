@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.service.CrudService;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -20,5 +21,9 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
 
     public List<StudyEnvironmentSurvey> findAllByStudyEnvIdWithSurvey(UUID studyEnvId) {
         return dao.findAllByStudyEnvIdWithSurvey(studyEnvId);
+    }
+
+    public Optional<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, UUID surveyId) {
+        return dao.findBySurvey(studyEnvId, surveyId);
     }
 }

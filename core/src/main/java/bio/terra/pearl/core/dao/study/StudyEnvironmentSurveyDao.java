@@ -5,6 +5,7 @@ import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.jdbi.v3.core.Jdbi;
@@ -42,5 +43,11 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
                     .findFirst().get());
         }
         return studyEnvSurvs;
+    }
+
+    /** finds by a surveyId and studyEnvironment */
+    public Optional<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, UUID consentFormId) {
+        return findByTwoProperties("study_environment_id",studyEnvId,
+                "survey_id", consentFormId);
     }
 }

@@ -107,7 +107,7 @@ export type ResumableData = {
 
 export type ResponseSnapshot = {
   createdAt: string,
-  resumableData: string,
+  resumeData: string,
   fullData: string
 }
 

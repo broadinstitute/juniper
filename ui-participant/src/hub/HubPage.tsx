@@ -52,9 +52,10 @@ function StudyTaskBox({ enrollee, portal }: { enrollee: Enrollee, portal: Portal
     .sort(taskComparator)
   const inactiveTasks = enrollee.participantTasks.filter(task => !PENDING_STATUSES.includes(task.status))
     .sort(taskComparator)
-  return <div className="p-3" style={{ background: '#eee', borderRadius: '5px' }}>
-    <h6 className="mb-3 fw-bold">{matchedStudy.name}</h6>
+  return <div className="p-3">
+    <h5 className="mb-3 fw-bold">{matchedStudy.name}</h5>
     {hasStudyTasks && <div>
+      <h6 className="fw-bold">Activities</h6>
       <ol style={{ listStyleType: 'none', paddingInlineStart: 0, width: '100%' }}>
         {activeTasks.map(task => <li key={task.id}>
           <TaskLink task={task} key={task.id} studyShortcode={matchedStudy.shortcode}

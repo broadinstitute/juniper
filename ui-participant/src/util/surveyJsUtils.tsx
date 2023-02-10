@@ -153,7 +153,7 @@ export type ConsentResponseDto = FormResponseDto & {
 
 export type SurveyResponseDto = FormResponseDto & {
   surveyId: string,
-  completed: boolean
+  complete: boolean
 }
 
 export type FormResponseItem = {
@@ -188,7 +188,7 @@ export function generateFormResponseDto({ surveyJSModel, enrolleeId, sourceType 
   const response = {
     enrolleeId,
     sourceType,
-    resumeData: JSON.stringify(surveyJSModel?.data),
+    resumeData: JSON.stringify({ data: surveyJSModel?.data, currentPageNo: surveyJSModel?.currentPageNo }),
     parsedData: {
       items: []
     }

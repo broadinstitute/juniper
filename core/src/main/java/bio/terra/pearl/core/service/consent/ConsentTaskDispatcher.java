@@ -11,6 +11,8 @@ import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.RuleEvaluator;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
+import bio.terra.pearl.core.service.workflow.DispatcherOrder;
+import bio.terra.pearl.core.service.workflow.EnrolleeCreationEvent;
 import bio.terra.pearl.core.service.workflow.EnrolleeEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +24,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
-/** Holds logic for building and processing consent tasks */
+/** Holds logic for building and processing consent tasks, and event listeners for triggering updates */
 @Service
 public class ConsentTaskDispatcher {
     private static final Logger logger = LoggerFactory.getLogger(ConsentTaskDispatcher.class);
@@ -37,9 +39,24 @@ public class ConsentTaskDispatcher {
         this.enrolleeService = enrolleeService;
     }
 
+    /**
+     * We want to listen to enrollee creation events and consent response events.  (but not survey events)
+     * see https://stackoverflow.com/questions/45884537/use-eventlistener-annotation-on-multiple-events-in-spring
+     * for why we use two separate listening methods to accomplish that
+     */
     @EventListener
-    @Order(1) // consent tasks get first priority over other tasks, so add them first
-    public void createTasks(EnrolleeEvent enrolleeEvent) {
+    @Order(DispatcherOrder.CONSENT)
+    public void handleEvent(EnrolleeCreationEvent enrolleeEvent) {
+        updateConsentTasks(enrolleeEvent);
+    }
+
+    @EventListener
+    @Order(DispatcherOrder.CONSENT)
+    public void handleEvent(EnrolleeConsentEvent enrolleeEvent) {
+        updateConsentTasks(enrolleeEvent);
+    }
+
+    public void updateConsentTasks(EnrolleeEvent enrolleeEvent) {
         List<StudyEnvironmentConsent> studyEnvConsents = studyEnvironmentConsentService
                 .findAllByStudyEnvIdWithConsent(enrolleeEvent.getEnrollee().getStudyEnvironmentId());
         List<ParticipantTask> tasks = buildTasks(enrolleeEvent.getEnrollee(), enrolleeEvent.getEnrolleeRuleData(),

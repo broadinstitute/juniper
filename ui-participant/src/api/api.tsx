@@ -1,4 +1,4 @@
-import { ConsentResponseDto, PreEnrollResponseDto, PreRegResponseDto } from '../util/surveyJsUtils'
+import { ConsentResponseDto, PreEnrollResponseDto, PreRegResponseDto, SurveyResponseDto } from '../util/surveyJsUtils'
 
 export type ParticipantUser = {
   username: string,
@@ -102,6 +102,17 @@ export type StudyEnvironment = {
 }
 
 
+export type StudyEnvironmentSurvey = {
+  id: string,
+  surveyId: string,
+  survey: Survey,
+  surveyOrder: number,
+  allowAdminEdit: boolean,
+  allowParticipantStart: boolean,
+  allowParticipantReedit: boolean,
+  prepopulate: boolean
+}
+
 export type StudyEnvironmentConsent = {
   id: string,
   consentFormId: string,
@@ -157,6 +168,26 @@ export type RegistrationResponse = {
 export type ConsentWithResponses = {
   studyEnvironmentConsent: StudyEnvironmentConsent,
   consentResponses: ConsentResponse[]
+}
+
+export type SurveyWithResponse = {
+  studyEnvironmentSurvey: StudyEnvironmentSurvey,
+  surveyResponse: SurveyResponse
+}
+
+export type ResponseSnapshot = {
+  createdAt: string,
+  resumeData: string,
+  fullData: string
+}
+
+export type SurveyResponse = {
+  createdAt: number, // this is a java instant, so number of seconds since epoch start
+  lastUpdatedAt: string,
+  surveyId: string,
+  surveyStableId: string,
+  surveyVersion: string,
+  lastSnapshot: ResponseSnapshot
 }
 
 export type HubResponse = {
@@ -320,6 +351,34 @@ export default {
     taskId: string
   }): Promise<HubResponse> {
     let url = `${baseStudyEnvUrl(studyShortcode)}/enrollee/${enrolleeShortcode}/consents/${stableId}/${version}`
+    if (taskId) {
+      url = `${url}?taskId=${taskId}`
+    }
+    const result = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(response)
+    })
+    return await this.processJsonResponse(result)
+  },
+
+  async fetchSurveyAndResponse({ studyShortcode, stableId, version, enrolleeShortcode, taskId }: {
+    studyShortcode: string, enrolleeShortcode: string,
+    stableId: string, version: number, taskId: string | null
+  }): Promise<SurveyWithResponse> {
+    let url = `${baseStudyEnvUrl(studyShortcode)}/enrollee/${enrolleeShortcode}/surveys/${stableId}/${version}`
+    if (taskId) {
+      url = `${url}?taskId=${taskId}`
+    }
+    const response = await fetch(url, { headers: this.getInitHeaders() })
+    return await this.processJsonResponse(response)
+  },
+
+  async submitSurveyResponse({ studyShortcode, stableId, version, enrolleeShortcode, response, taskId }: {
+    studyShortcode: string, stableId: string, version: number, response: SurveyResponseDto, enrolleeShortcode: string,
+    taskId: string
+  }): Promise<HubResponse> {
+    let url = `${baseStudyEnvUrl(studyShortcode)}/enrollee/${enrolleeShortcode}/surveys/${stableId}/${version}`
     if (taskId) {
       url = `${url}?taskId=${taskId}`
     }

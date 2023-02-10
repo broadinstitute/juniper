@@ -12,6 +12,7 @@ import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.RuleEvaluator;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
+import bio.terra.pearl.core.service.workflow.DispatcherOrder;
 import bio.terra.pearl.core.service.workflow.EnrolleeEvent;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -25,6 +26,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
+/** listens for events and updates enrollee survey tasks accordingly */
 @Service
 public class SurveyTaskDispatcher {
     private static final Logger logger = LoggerFactory.getLogger(ConsentTaskDispatcher.class);
@@ -37,8 +39,9 @@ public class SurveyTaskDispatcher {
         this.participantTaskService = participantTaskService;
     }
 
+    /** survey tasks could be triggered by just about anything, so listen to all enrollee events */
     @EventListener
-    @Order(5) // survey tasks are "medium" priority, after consent tasks.
+    @Order(DispatcherOrder.SURVEY)
     public void createSurveyTasks(EnrolleeEvent enrolleeEvent) {
         List<StudyEnvironmentSurvey> studyEnvSurveys = studyEnvironmentSurveyService
                 .findAllByStudyEnvIdWithSurvey(enrolleeEvent.getEnrollee().getStudyEnvironmentId());

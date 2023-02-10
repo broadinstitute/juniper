@@ -1,20 +1,17 @@
 package bio.terra.pearl.core.service.consent;
 
 import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
-import bio.terra.pearl.core.dao.consent.ConsentWithResponses;
-import bio.terra.pearl.core.model.consent.ConsentForm;
-import bio.terra.pearl.core.model.consent.ConsentResponse;
-import bio.terra.pearl.core.model.consent.ConsentResponseDto;
-import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
+import bio.terra.pearl.core.model.consent.*;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.workflow.HubResponse;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.TransactionHandler;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.workflow.EnrolleeEventService;
 import java.util.List;
@@ -31,25 +28,25 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
     private ConsentFormService consentFormService;
     private StudyEnvironmentConsentService studyEnvironmentConsentService;
     private EnrolleeService enrolleeService;
-    private EnrolleeRuleService enrolleeRuleService;
     private ParticipantTaskService participantTaskService;
     private PortalParticipantUserService portalParticipantUserService;
     private EnrolleeEventService enrolleeEventService;
+    private TransactionHandler transactionHandler;
 
     public ConsentResponseService(ConsentResponseDao dao, ConsentFormService consentFormService,
                                   StudyEnvironmentConsentService studyEnvironmentConsentService,
-                                  @Lazy EnrolleeService enrolleeService, EnrolleeRuleService enrolleeRuleService,
+                                  @Lazy EnrolleeService enrolleeService,
                                   ParticipantTaskService participantTaskService,
                                   PortalParticipantUserService portalParticipantUserService,
-                                  EnrolleeEventService enrolleeEventService) {
+                                  EnrolleeEventService enrolleeEventService, TransactionHandler transactionHandler) {
         super(dao);
         this.consentFormService = consentFormService;
         this.studyEnvironmentConsentService = studyEnvironmentConsentService;
         this.enrolleeService = enrolleeService;
-        this.enrolleeRuleService = enrolleeRuleService;
         this.participantTaskService = participantTaskService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.enrolleeEventService = enrolleeEventService;
+        this.transactionHandler = transactionHandler;
     }
 
     public List<ConsentResponse> findByEnrolleeId(UUID enrolleeId) {
@@ -62,7 +59,10 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
         Enrollee enrollee = enrolleeService.findOneByShortcode(enrolleeShortcode).get();
         enrolleeService.authParticipantUserToEnrollee(participantUserId, enrollee.getId());
         ConsentForm form = consentFormService.findByStableId(stableId, version).get();
+        // TODO we should only get the most recent response, and we should search by stableId, not form id, in
+        // case they have a previous response to a different version of the form.
         List<ConsentResponse> responses = dao.findByEnrolleeId(enrollee.getId(), form.getId());
+        // TODO this lookup should be by stabelId -- it will fail if the version has been updated
         StudyEnvironmentConsent configConsent = studyEnvironmentConsentService
                 .findByConsentForm(studyEnvId, form.getId()).get();
         configConsent.setConsentForm(form);
@@ -72,18 +72,21 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
     }
 
     /**
-     * Creates a consent response and fires appropriate downstream events.  Note this method is *not*
-     * transactional, as if an error occurs in downstream event processing, we still want to save the consent data
+     * Creates a consent response and fires appropriate downstream events.
      */
+    @Transactional
     public HubResponse<ConsentResponse> submitResponse(String portalShortcode, UUID participantUserId,
                                                        String enrolleeShortcode, UUID taskId, ConsentResponseDto responseDto) {
         Enrollee enrollee = enrolleeService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
         PortalParticipantUser ppUser = portalParticipantUserService.findOne(participantUserId, portalShortcode).get();
+        ParticipantTask task = participantTaskService.authTaskToPortalParticipantUser(taskId, ppUser.getId()).get();
+
         ConsentResponse response = create(participantUserId, enrollee.getId(), responseDto);
 
-        // update the task with an appropriate status
-        TaskStatus newStatus = response.isConsented() ? TaskStatus.COMPLETE : TaskStatus.REJECTED;
-        participantTaskService.updateTaskStatus(taskId, newStatus);
+        // now update the task status and response id
+        task.setStatus(response.isConsented() ? TaskStatus.COMPLETE : TaskStatus.REJECTED);
+        task.setConsentResponseId(response.getId());
+        participantTaskService.update(task);
 
         EnrolleeConsentEvent event = enrolleeEventService.publishEnrolleeConsentEvent(enrollee, response, ppUser);
         HubResponse hubResponse = HubResponse.builder()
