@@ -59,4 +59,8 @@ public class CurrentUserService {
   public Optional<AdminUser> findByToken(String token) {
     return adminUserDao.findByToken(token);
   }
+
+  public Optional<AdminUser> findByUsername(String username) {
+    return adminUserDao.findByUsername(username);
+  }
 }

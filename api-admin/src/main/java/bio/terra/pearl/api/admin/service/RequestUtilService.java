@@ -37,7 +37,7 @@ public class RequestUtilService {
     String token = bearerTokenFactory.from(request).getToken();
     var decodedJWT = JWT.decode(token);
     var email = decodedJWT.getClaim("email").asString();
-    Optional<AdminUser> userOpt = currentUserService.unauthedLogin(email);
+    Optional<AdminUser> userOpt = currentUserService.findByUsername(email);
     if (userOpt.isEmpty()) {
       throw new UnauthorizedException("User not found: " + email);
     }
