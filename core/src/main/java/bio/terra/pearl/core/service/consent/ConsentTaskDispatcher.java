@@ -63,8 +63,6 @@ public class ConsentTaskDispatcher {
                 enrolleeEvent.getPortalParticipantUser().getId(),
                 studyEnvConsents);
         for (ParticipantTask task : tasks) {
-            logger.info("Task creation: enrollee {}  -- task {}, target {}", enrolleeEvent.getEnrollee().getShortcode(),
-                    task.getTaskType(), task.getTargetStableId());
             task = participantTaskService.create(task);
             enrolleeEvent.getEnrollee().getParticipantTasks().add(task);
         }

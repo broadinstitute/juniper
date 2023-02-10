@@ -3,7 +3,6 @@ package bio.terra.pearl.core.service.consent;
 import bio.terra.pearl.core.dao.consent.ConsentFormDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.consent.ConsentForm;
-import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CrudService;
 import java.util.HashSet;
 import java.util.List;
@@ -15,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ConsentFormService extends CrudService<ConsentForm, ConsentFormDao> {
-
     public ConsentFormService(ConsentFormDao dao) {
         super(dao);
     }
@@ -40,6 +38,8 @@ public class ConsentFormService extends CrudService<ConsentForm, ConsentFormDao>
         newConsent.setPortalId(portalId);
         int nextVersion = dao.getNextVersion(consentForm.getStableId());
         newConsent.setVersion(nextVersion);
-        return create(newConsent);
+        ConsentForm newForm =  create(newConsent);
+        logger.info("Created new ConsentForm version:  stableId: {}, version: {}");
+        return newForm;
     }
 }
