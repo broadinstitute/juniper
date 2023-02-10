@@ -48,8 +48,61 @@ run `./local-dev/run_postgres.sh start`
 This will start a postgres container with a schema and user configured
 
 #### IDE Setup
-Open the root folder in IntelliJ.  Make sure intelliJ is set to Java 17.
+Open the root folder in IntelliJ.  
 
+* **server:**
+
+   * Make sure IntelliJ is set to Java 17 in *two* places
+
+      * Project Structure > Project Settings > Project > SDK
+      * Preferences > Build, Execution, Deployment > Build Tools > Gradle > Gradle Projects > \[this project\] > Gradle JVM
+         * Recommended setting for this is "Project SDK"
+   * create the following Spring Boot Run/Debug Configuration
+
+     ![run configuration](https://user-images.githubusercontent.com/2800795/195370172-f694b840-ae8f-4298-a43a-7ba87f944ebd.png)
+
+     In the project settings, make sure annotation processing is enabled (otherwise lombok getters/setters won't work)
+
+### Running the application
+#### Admin tool (study manager, population)
+* API (api-admin module)
+In intelliJ, you can either run ApiAdminApp (from the api-admin module) directly, or execute the "bootRun" gradle task.
+In basic development mode, this will only serve the API, not the frontend assets.
+
+To make the application useful, you will want to populate some users and studies.  After the admin API is running, 
+from the root project directory, run
+```
+./scripts/populate_setup.sh
+./scripts/populate_portal.sh ourhealth
+```
+
+##### Admin UI (ui-admin module)
+From the command line:
+  ```
+  cd ui-admin
+  npm install
+  REACT_APP_B2C_TENANT_NAME=terradevb2c REACT_APP_B2C_CLIENT_ID=$(vault read -field value secret/dsde/terra/azure/dev/b2c/application_id) npm start
+  ```
+(note that you can just run `npm start` if you don't need to test B2C login functionality)
+Then go to `localhost:3000` 
+
+##### Participant API (api-participant module)
+In intelliJ, you can either run ApiParticipantApp (from the api-participant module) directly, or execute the "bootRun" gradle task.
+In basic development mode, this will only serve the API, not the frontend assets.
+
+##### Participant UI (ui-admin module)
+* Participant UI:  From the command line:
+  ```
+  cd ui-participant
+  npm install
+  REACT_APP_B2C_TENANT_NAME=terradevb2c REACT_APP_B2C_CLIENT_ID=$(vault read -field value secret/dsde/terra/azure/dev/b2c/application_id) npm start
+  ```
+(note that you can just run `npm start` if you don't need to test B2C login functionality)
+Then go to `sandbox.ourhealth.localhost:3001`
+(Notice how you need the environment name and portal name as subdomains)
+
+
+### Feature Development 
 
 #### Adding a new model 
 1. Create the schema, models, and services
