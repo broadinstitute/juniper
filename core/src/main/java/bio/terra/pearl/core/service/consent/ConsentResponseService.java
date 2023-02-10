@@ -16,15 +16,12 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.workflow.EnrolleeEventService;
 import java.util.List;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ConsentResponseService extends CrudService<ConsentResponse, ConsentResponseDao> {
-    private static final Logger logger = LoggerFactory.getLogger(ConsentResponseService.class);
     private ConsentFormService consentFormService;
     private StudyEnvironmentConsentService studyEnvironmentConsentService;
     private EnrolleeService enrolleeService;
@@ -62,7 +59,7 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
         // TODO we should only get the most recent response, and we should search by stableId, not form id, in
         // case they have a previous response to a different version of the form.
         List<ConsentResponse> responses = dao.findByEnrolleeId(enrollee.getId(), form.getId());
-        // TODO this lookup should be by stabelId -- it will fail if the version has been updated
+        // TODO this lookup should be by stableId -- it will fail if the version has been updated
         StudyEnvironmentConsent configConsent = studyEnvironmentConsentService
                 .findByConsentForm(studyEnvId, form.getId()).get();
         configConsent.setConsentForm(form);
@@ -79,8 +76,9 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
                                                        String enrolleeShortcode, UUID taskId, ConsentResponseDto responseDto) {
         Enrollee enrollee = enrolleeService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
         ParticipantTask task = participantTaskService.authTaskToPortalParticipantUser(taskId, ppUser.getId()).get();
-
-        ConsentResponse response = create(participantUserId, enrollee.getId(), responseDto);
+        ConsentForm responseForm = consentFormService.find(responseDto.getConsentFormId()).get();
+        validateResponse(responseDto, responseForm, task);
+        ConsentResponse response = create(participantUserId, enrollee.getId(), task, responseDto);
 
         // now update the task status and response id
         task.setStatus(response.isConsented() ? TaskStatus.COMPLETE : TaskStatus.REJECTED);
@@ -88,6 +86,8 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
         participantTaskService.update(task);
 
         EnrolleeConsentEvent event = enrolleeEventService.publishEnrolleeConsentEvent(enrollee, response, ppUser);
+        logger.info("ConsentResponse submitted: enrollee: {}, formStableId: {}, formVersion: {}",
+                enrollee.getShortcode(), responseForm.getVersion(), responseForm.getStableId() );
         HubResponse hubResponse = HubResponse.builder()
                 .response(event.getConsentResponse())
                 .tasks(event.getEnrollee().getParticipantTasks().stream().toList())
@@ -97,7 +97,7 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
 
 
     @Transactional
-    public ConsentResponse create(UUID participantUserId, UUID enrolleeId,
+    public ConsentResponse create(UUID participantUserId, UUID enrolleeId, ParticipantTask task,
                                                      ConsentResponseDto responseDto) {
         ConsentResponse response = ConsentResponse.builder()
                 .consentFormId(responseDto.getConsentFormId())
@@ -108,6 +108,13 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
                 .enrolleeId(enrolleeId)
                 .build();
         return dao.create(response);
+    }
+
+    public void validateResponse(ConsentResponseDto responseDto, ConsentForm form, ParticipantTask task) {
+        if (!form.getStableId().equals(task.getTargetStableId())) {
+            throw new IllegalArgumentException("submitted form does not match assigned task");
+        }
+        // TODO validate the response has the required fields from the form
     }
 
 }

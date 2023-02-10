@@ -17,15 +17,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
-    private static final Logger logger = LoggerFactory.getLogger(EnrolleeService.class);
     public static final String PARTICIPANT_SHORTCODE_ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static final int PARTICIPANT_SHORTCODE_LENGTH = 6;
     private SurveyResponseService surveyResponseService;
@@ -122,12 +119,16 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         if (enrollee.getShortcode() == null) {
             enrollee.setShortcode(generateShortcode());
         }
-        return super.create(enrollee);
+        Enrollee savedEnrollee = dao.create(enrollee);
+        logger.info("Enrollee created.  id: {}, shortcode: {}, participantUserId", savedEnrollee.getId(),
+                savedEnrollee.getShortcode(), savedEnrollee.getParticipantUserId());
+        return savedEnrollee;
     }
 
     @Transactional
     public void updateConsented(UUID enrolleeId, boolean consented) {
-         dao.updateConsented(enrolleeId, consented);
+        dao.updateConsented(enrolleeId, consented);
+        logger.info("Updated enrollee consent status: enrollee: {}, consented {}", enrolleeId, consented);
     }
 
     /** It's possible there are snazzier ways to get postgres to generate this for us,
