@@ -121,8 +121,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     }
 
     /**
-     * Creates a survey response and fires appropriate downstream events.  Note this method is *not*
-     * transactional, as if an error occurs in downstream event processing, we still want to save the survey data
+     * Creates a survey response and fires appropriate downstream events. 
      */
     @Transactional
     public HubResponse<ConsentResponse> submitResponse(UUID participantUserId, PortalParticipantUser ppUser,
