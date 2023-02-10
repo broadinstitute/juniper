@@ -50,6 +50,31 @@ This will start a postgres container with a schema and user configured
 #### IDE Setup
 Open the root folder in IntelliJ.  Make sure intelliJ is set to Java 17.
 
+### Running the application
+#### Admin tool (study manager, population)
+##### Admin API (api-admin module)
+In intelliJ, you can either run ApiAdminApp (from the api-admin module) directly, or execute the "bootRun" gradle task.
+In basic development mode, this will only serve the API, not the frontend assets.
+To make the application useful, you will want to populate some users and studies.  From the root project directory, run
+`./scripts/populate_setup.sh`
+`./scripts/populate_portal.sh ourhealth`
+
+##### Admin UI (ui-admin module)
+In the ui-admin directory, run `npm install` then 
+`REACT_APP_B2C_TENANT_NAME=terradevb2c REACT_APP_B2C_CLIENT_ID=$(vault read -field value secret/dsde/terra/azure/dev/b2c/application_id) npm start`
+(note that you can just run `npm start` if you don't need to test B2C login functionality)
+Then go to `localhost:3000` 
+
+##### Participant API (api-participant module)
+In intelliJ, you can either run ApiParticipantApp (from the api-participant module) directly, or execute the "bootRun" gradle task.
+In basic development mode, this will only serve the API, not the frontend assets.
+##### Participant UI (ui-admin module)
+In the ui-participant directory, run `npm install` then
+`REACT_APP_B2C_TENANT_NAME=terradevb2c REACT_APP_B2C_CLIENT_ID=$(vault read -field value secret/dsde/terra/azure/dev/b2c/application_id) npm start`
+(note that you can just run `npm start` if you don't need to test B2C login functionality)
+Then go to `sandbox.ourhealth.localhost:3001`
+(Notice how you need the environment name and portal name as subdomains)
+
 
 #### Adding a new model 
 1. Create the schema, models, and services
