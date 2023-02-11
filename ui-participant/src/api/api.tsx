@@ -145,7 +145,8 @@ export type Enrollee = {
   id: string,
   shortcode: string,
   studyEnvironmentId: string,
-  participantTasks: ParticipantTask[]
+  participantTasks: ParticipantTask[],
+  consented: boolean
 }
 
 export type ParticipantTask = {
@@ -322,7 +323,7 @@ export default {
   /** creates an enrollee for the signed-in user and study.  */
   async createEnrollee({ studyShortcode, preEnrollResponseId }:
                          { studyShortcode: string, preEnrollResponseId: string | null }):
-    Promise<Enrollee> {
+    Promise<HubResponse> {
     let url = `${baseEnvUrl()}/studies/${studyShortcode}/enrollee`
     if (preEnrollResponseId) {
       url += `?preEnrollResponseId=${preEnrollResponseId}`

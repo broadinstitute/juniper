@@ -45,11 +45,11 @@ public class SurveyTaskDispatcher {
     public void createSurveyTasks(EnrolleeEvent enrolleeEvent) {
         List<StudyEnvironmentSurvey> studyEnvSurveys = studyEnvironmentSurveyService
                 .findAllByStudyEnvIdWithSurvey(enrolleeEvent.getEnrollee().getStudyEnvironmentId());
-        List<ParticipantTask> tasks = buildTasks(enrolleeEvent.getEnrollee(),
+        List<ParticipantTask> tasksToAdd = buildTasks(enrolleeEvent.getEnrollee(),
                 enrolleeEvent.getPortalParticipantUser(),
                 enrolleeEvent.getEnrolleeRuleData(),
                 studyEnvSurveys);
-        for (ParticipantTask task : tasks) {
+        for (ParticipantTask task : tasksToAdd) {
             logger.info("Task creation: enrollee {}  -- task {}, target {}", enrolleeEvent.getEnrollee().getShortcode(),
                     task.getTaskType(), task.getTargetStableId());
             task = participantTaskService.create(task);
@@ -75,8 +75,7 @@ public class SurveyTaskDispatcher {
     }
 
     public static boolean isEligibleForSurvey(String eligibilityRule, EnrolleeRuleData enrolleeRuleData) {
-        return enrolleeRuleData.getEnrollee().isConsented() &&
-                RuleEvaluator.evaluateEnrolleeRule(eligibilityRule, enrolleeRuleData);
+        return RuleEvaluator.evaluateEnrolleeRule(eligibilityRule, enrolleeRuleData);
     }
 
     /** builds a task for the given survey -- does NOT evaluate the rule */

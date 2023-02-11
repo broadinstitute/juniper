@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck'
 import EnrolleeSurveyView from './survey/EnrolleeSurveyView'
 import EnrolleeConsentView from './consent/EnrolleeConsentView'
+import PreEnrollmentView from './survey/PreEnrollmentView'
 
 export type SurveyWithResponsesT = {
   survey: StudyEnvironmentSurvey,
@@ -33,7 +34,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
 
   /** gets classes to apply to nav links */
   function getLinkCssClasses({ isActive }: {isActive: boolean}) {
-    return `nav-link ${isActive ? 'active' : ''}`
+    return isActive ? 'fw-bold' : ''
   }
 
   const surveys = currentEnv.configuredSurveys
@@ -72,7 +73,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                 <NavLink to="profile" className={getLinkCssClasses}>Profile</NavLink>
               </li>
               <li className="list-group-item">
-                <NavLink to="preRegistration" className={getLinkCssClasses}>Preregistration</NavLink>
+                <NavLink to="preRegistration" className={getLinkCssClasses}>PreEnrollment</NavLink>
               </li>
               <li className="list-group-item subgroup">
                 Consents
@@ -127,7 +128,10 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
             <Routes>
               <Route path="profile" element={<div>profile</div>}/>
               <Route path="consents" element={<div>consents</div>}/>
-              <Route path="preRegistration" element={<div>preEnroll</div>}/>
+              <Route path="preRegistration" element={
+                <PreEnrollmentView preEnrollSurvey={currentEnv.preEnrollSurvey}
+                  preEnrollResponse={enrollee.preEnrollmentResponse}/>
+              }/>
               <Route path="surveys">
                 <Route path=":surveyStableId" element={<EnrolleeSurveyView enrollee={enrollee}
                   responseMap={responseMap}/>}/>

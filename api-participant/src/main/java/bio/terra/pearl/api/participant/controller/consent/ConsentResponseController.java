@@ -2,12 +2,14 @@ package bio.terra.pearl.api.participant.controller.consent;
 
 import bio.terra.pearl.api.participant.api.ConsentResponseApi;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.ConsentResponseDto;
 import bio.terra.pearl.core.model.consent.ConsentWithResponses;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
+import bio.terra.pearl.core.service.portal.PortalWithPortalUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -66,10 +68,13 @@ public class ConsentResponseController implements ConsentResponseApi {
       UUID taskId,
       Object body) {
     ParticipantUser user = requestUtilService.userFromRequest(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    PortalWithPortalUser portalWithPortalUser =
+        requestUtilService.authParticipantToPortal(user.getId(), portalShortcode, environmentName);
     ConsentResponseDto response = objectMapper.convertValue(body, ConsentResponseDto.class);
     HubResponse result =
         consentResponseService.submitResponse(
-            portalShortcode, user.getId(), enrolleeShortcode, taskId, response);
+            user.getId(), portalWithPortalUser.ppUser(), enrolleeShortcode, taskId, response);
     return ResponseEntity.ok(result);
   }
 }

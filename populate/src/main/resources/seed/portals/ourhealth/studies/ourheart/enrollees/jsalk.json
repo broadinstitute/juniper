@@ -1,6 +1,27 @@
 {
   "linkedUsername": "jsalk@test.com",
   "shortcode": "JOSALK",
+  "preEnrollmentResponseDto": {
+    "qualified": true,
+    "surveyStableId": "oh_oh_preenroll",
+    "surveyVersion": 1,
+    "fullDataJson": {
+      "items": [
+        {
+          "stableId": "oh_oh_preenroll_ancestry",
+          "simpleValue": "yes"
+        },
+        {
+          "stableId": "oh_oh_preenroll_age",
+          "simpleValue": "24"
+        },
+        {
+          "stableId": "oh_oh_preenroll_liveInUs",
+          "simpleValue": "yes"
+        }
+      ]
+    }
+  },
   "surveyResponseDtos": [{
     "surveyStableId": "oh_oh_medHx",
     "surveyVersion": 1,

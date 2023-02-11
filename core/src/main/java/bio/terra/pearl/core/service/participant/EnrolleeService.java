@@ -61,13 +61,13 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.findByParticipantUserId(participantUserId, studyEnvironmentId);
     }
 
-    public List<Enrollee> findByStudyEnvironment(UUID studyEnvironmentId) {
-        return dao.findByStudyEnvironment(studyEnvironmentId);
+    public List<Enrollee> findByStudyEnvironmentAdminLoad(UUID studyEnvironmentId) {
+        return dao.findByStudyEnvironmentAdminLoad(studyEnvironmentId);
     }
 
-    public Optional<Enrollee> findByStudyEnvironment(String studyShortcode, EnvironmentName envName, String shortcode) {
+    public Optional<Enrollee> findByStudyEnvironmentAdminLoad(String studyShortcode, EnvironmentName envName, String shortcode) {
         StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
-        return dao.findByStudyEnvironment(studyEnv.getId(), shortcode);
+        return dao.findByStudyEnvironmentAdminLoad(studyEnv.getId(), shortcode);
     }
 
     /** returns the enrollee if the user is authorized to access/modify it, throws an error otherwise */
@@ -83,6 +83,14 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     public List<EnrolleeSearchResult> search(String studyShortcode, EnvironmentName envName) {
         StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
         return dao.searchByStudyEnvironment(studyEnv.getId());
+    }
+
+    public Enrollee update(Enrollee enrollee) {
+        return dao.update(enrollee);
+    }
+
+    public Optional<Enrollee> findByPreEnrollResponseId(UUID preEnrollResponseId) {
+        return dao.findByPreEnrollResponseId(preEnrollResponseId);
     }
 
     public int countByStudyEnvironmentId(UUID studyEnvironmentId) {
@@ -104,7 +112,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
 
     @Transactional
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId, Set<CascadeProperty> cascade) {
-        for (Enrollee enrollee : dao.findByStudyEnvironment(studyEnvironmentId)) {
+        for (Enrollee enrollee : dao.findByStudyEnvironmentAdminLoad(studyEnvironmentId)) {
             delete(enrollee.getId(), cascade);
         }
     }

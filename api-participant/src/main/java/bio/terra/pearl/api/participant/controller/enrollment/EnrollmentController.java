@@ -3,8 +3,9 @@ package bio.terra.pearl.api.participant.controller.enrollment;
 import bio.terra.pearl.api.participant.api.EnrollmentApi;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.workflow.HubResponse;
+import bio.terra.pearl.core.service.portal.PortalWithPortalUser;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -29,12 +30,18 @@ public class EnrollmentController implements EnrollmentApi {
   @Override
   public ResponseEntity<Object> createEnrollee(
       String portalShortcode, String envName, String studyShortcode, UUID preEnrollResponseId) {
-    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     ParticipantUser user = requestUtilService.userFromRequest(request);
-    Enrollee enrollee =
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    PortalWithPortalUser portalWithPortalUser =
+        requestUtilService.authParticipantToPortal(user.getId(), portalShortcode, environmentName);
+    HubResponse hubResponse =
         enrollmentService.enroll(
-            user, portalShortcode, environmentName, studyShortcode, preEnrollResponseId);
+            user,
+            portalWithPortalUser.ppUser(),
+            environmentName,
+            studyShortcode,
+            preEnrollResponseId);
 
-    return ResponseEntity.ok(enrollee);
+    return ResponseEntity.ok(hubResponse);
   }
 }

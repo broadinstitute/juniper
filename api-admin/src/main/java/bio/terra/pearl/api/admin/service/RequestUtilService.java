@@ -42,7 +42,7 @@ public class RequestUtilService {
   }
 
   public Portal authUserToPortal(AdminUser user, String portalShortcode) {
-    return portalService.authUserToPortal(user, portalShortcode);
+    return portalService.authAdminToPortal(user, portalShortcode);
   }
 
   public PortalStudy authUserToStudy(

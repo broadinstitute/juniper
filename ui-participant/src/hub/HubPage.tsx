@@ -27,7 +27,7 @@ export default function HubPage() {
 
   return <div>
     <div className="container">
-      <h5 className="text-center">Hub</h5>
+      <h5 className="text-center">Dashboard</h5>
       {!!hubMessage && <div className="row mb-2">
         <div className="col-md-12">
           <TaskStatusMessage content={hubMessage.content} messageType={hubMessage.messageType}/>
@@ -48,24 +48,15 @@ function StudyTaskBox({ enrollee, portal }: { enrollee: Enrollee, portal: Portal
   const matchedStudy = portal.portalStudies
     .find(pStudy => pStudy.study.studyEnvironments[0].id === enrollee.studyEnvironmentId)?.study as Study
   const hasStudyTasks = enrollee.participantTasks.length > 0
-  const activeTasks = enrollee.participantTasks.filter(task => PENDING_STATUSES.includes(task.status))
-    .sort(taskComparator)
-  const inactiveTasks = enrollee.participantTasks.filter(task => !PENDING_STATUSES.includes(task.status))
-    .sort(taskComparator)
+  const sortedTasks = enrollee.participantTasks.sort(taskComparator)
   return <div className="p-3">
     <h5 className="mb-3 fw-bold">{matchedStudy.name}</h5>
     {hasStudyTasks && <div>
       <h6 className="fw-bold">Activities</h6>
       <ol style={{ listStyleType: 'none', paddingInlineStart: 0, width: '100%' }}>
-        {activeTasks.map(task => <li key={task.id}>
+        {sortedTasks.map(task => <li key={task.id}>
           <TaskLink task={task} key={task.id} studyShortcode={matchedStudy.shortcode}
-            enrolleeShortcode={enrollee.shortcode}/>
-        </li>)}
-      </ol>
-      <ol style={{ listStyleType: 'none', paddingInlineStart: 0, width: '100%' }}>
-        {inactiveTasks.map(task => <li key={task.id}>
-          <TaskLink task={task} key={task.id} studyShortcode={matchedStudy.shortcode}
-            enrolleeShortcode={enrollee.shortcode}/>
+            enrollee={enrollee}/>
         </li>)}
       </ol>
     </div>}
@@ -74,9 +65,13 @@ function StudyTaskBox({ enrollee, portal }: { enrollee: Enrollee, portal: Portal
   </div>
 }
 
-export const PENDING_STATUSES = ['NEW', 'IN_PROGRESS']
+export const TASK_TYPE_ORDER = ['CONSENT', 'SURVEY']
 
-/** Sorts tasks based on their internal ordering */
+/** Sorts tasks based on their types, and then based on their internal ordering */
 function taskComparator(taskA: ParticipantTask, taskB: ParticipantTask) {
+  const typeOrder = TASK_TYPE_ORDER.indexOf(taskA.taskType) - TASK_TYPE_ORDER.indexOf(taskB.taskType)
+  if (typeOrder != 0) {
+    return typeOrder
+  }
   return taskA.taskOrder - taskB.taskOrder
 }
