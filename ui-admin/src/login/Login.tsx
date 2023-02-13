@@ -42,7 +42,7 @@ function Login() {
     }}>
       <form onSubmit={unauthedLogin}>
         <button type="button" className="btn btn-secondary" onClick={() => signIn()}>
-          <img src={microsoftLogo}/> Login with Microsoft
+          <img src={microsoftLogo}/> Login with Azure AD
         </button>
         <hr/>
         <div className="mb-3">

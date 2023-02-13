@@ -6,7 +6,7 @@
     "studies/pacing/study.json"
   ],
   "surveyFiles": [
-    "preregistration.json"
+    "preRegistration.json"
   ],
   "portalEnvironmentDtos": [
     {

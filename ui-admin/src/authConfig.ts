@@ -13,13 +13,15 @@ export const getOidcConfig = () => {
   const metadata = {
     // eslint-disable-next-line camelcase
     authorization_endpoint:
-      `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev/oauth2/v2.0/authorize`,
+      // eslint-disable-next-line max-len
+      `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_ddp_admin_signup_signin_dev/oauth2/v2.0/authorize`,
     // eslint-disable-next-line camelcase
     token_endpoint:
-      `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev/oauth2/v2.0/token`
+      // eslint-disable-next-line max-len
+      `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_ddp_admin_signup_signin_dev/oauth2/v2.0/token`
   }
   return {
-    authority: `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev`,
+    authority: `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_ddp_admin_signup_signin_dev`,
     // eslint-disable-next-line camelcase
     client_id: aadb2cClientId,
     // eslint-disable-next-line camelcase
@@ -52,7 +54,7 @@ export const b2cPolicies = {
   },
   authorities: {
     signUpSignIn: {
-      authority: `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev`
+      authority: `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_ddp_admin_signup_signin_dev`
     }
   },
   authorityDomain: `https://${aadB2cName}.b2clogin.com`
