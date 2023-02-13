@@ -21,7 +21,8 @@ export type StudyEnvironment = {
   preEnrollSurvey: Survey,
   preEnrollSurveyId: string,
   configuredSurveys: StudyEnvironmentSurvey[],
-  configuredConsents: StudyEnvironmentConsent[]
+  configuredConsents: StudyEnvironmentConsent[],
+  notificationConfigs: NotificationConfig[]
 }
 
 export type VersionedForm = {
@@ -144,6 +145,32 @@ export type ParticipantTask = {
   targetName: string,
   taskOrder: number,
   blocksHub: boolean
+}
+
+export type NotificationConfig = {
+  id: string,
+  studyEnvironmentId: string,
+  portalEnvironmentId: string,
+  active: boolean,
+  notificationType: string,
+  deliveryType: string,
+  rule: string,
+  eventType: string,
+  taskType: string,
+  taskTargetStableId: string,
+  afterMinutesIncomplete: number
+}
+
+export type Notification = {
+  id: string,
+  notificationConfigId: string,
+  deliveryStatus: string,
+  deliveryType: string,
+  sentTo: string,
+  createdAt: number,
+  lastUpdatedAt: number,
+  retries: number,
+  notificationConfig?: NotificationConfig
 }
 
 let bearerToken: string | null = null
@@ -285,6 +312,14 @@ export default {
   async getEnrollee(portalShortcode: string, studyShortcode: string, envName: string, enrolleeShortcode: string):
     Promise<Enrollee> {
     const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchEnrolleeNotifications(portalShortcode: string, studyShortcode: string, envName: string,
+    enrolleeShortcode: string): Promise<Notification[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
+      }/enrollees/${enrolleeShortcode}/notifications`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },

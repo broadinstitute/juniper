@@ -84,10 +84,10 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     @Override
     public void delete(UUID studyEnvironmentId, Set<CascadeProperty> cascade) {
         StudyEnvironment studyEnv = dao.find(studyEnvironmentId).get();
-        preEnrollmentResponseDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         enrolleeService.deleteByStudyEnvironmentId(studyEnv.getId(), cascade);
         studyEnvironmentSurveyDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         studyEnvironmentConsentDao.deleteByStudyEnvironmentId(studyEnvironmentId);
+        notificationConfigService.deleteByStudyEnvironmentId(studyEnvironmentId);
         dao.delete(studyEnvironmentId);
         if (studyEnv.getStudyEnvironmentConfigId() != null) {
             studyEnvironmentConfigService.delete(studyEnv.getStudyEnvironmentConfigId());

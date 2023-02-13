@@ -33,7 +33,7 @@ public class NotificationDispatcher {
     @Order(DispatcherOrder.NOTIFICATION)
     public void handleEvent(EnrolleeEvent event) {
         List<NotificationConfig> configs = notificationConfigService
-                .findByStudyEnvironmentId(event.getEnrollee().getStudyEnvironmentId());
+                .findByStudyEnvironmentId(event.getEnrollee().getStudyEnvironmentId(), true);
         for (NotificationConfig config: configs) {
             Class configClass = config.getEventType().eventClass;
             if (configClass.isInstance(event)) {

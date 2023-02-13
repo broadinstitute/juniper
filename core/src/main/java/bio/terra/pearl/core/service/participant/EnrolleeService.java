@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
+import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -10,6 +11,7 @@ import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
+import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import java.security.SecureRandom;
@@ -29,6 +31,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private ParticipantTaskService participantTaskService;
     private StudyEnvironmentService studyEnvironmentService;
     private ConsentResponseService consentResponseService;
+    private PreEnrollmentResponseDao preEnrollmentResponseDao;
+    private NotificationService notificationService;
 
 
     private SecureRandom secureRandom;
@@ -37,12 +41,16 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            @Lazy SurveyResponseService surveyResponseService,
                            ParticipantTaskService participantTaskService,
                            @Lazy StudyEnvironmentService studyEnvironmentService,
-                           ConsentResponseService consentResponseService, SecureRandom secureRandom) {
+                           ConsentResponseService consentResponseService,
+                           PreEnrollmentResponseDao preEnrollmentResponseDao,
+                           NotificationService notificationService, SecureRandom secureRandom) {
         super(enrolleeDao);
         this.surveyResponseService = surveyResponseService;
         this.participantTaskService = participantTaskService;
         this.studyEnvironmentService = studyEnvironmentService;
         this.consentResponseService = consentResponseService;
+        this.preEnrollmentResponseDao = preEnrollmentResponseDao;
+        this.notificationService = notificationService;
         this.secureRandom = secureRandom;
     }
 
@@ -59,7 +67,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     }
 
     public List<Enrollee> findByStudyEnvironmentAdminLoad(UUID studyEnvironmentId) {
-        return dao.findByStudyEnvironmentAdminLoad(studyEnvironmentId);
+        return dao.findByStudyEnvironmentId(studyEnvironmentId);
     }
 
     public Optional<Enrollee> findByStudyEnvironmentAdminLoad(String studyShortcode, EnvironmentName envName, String shortcode) {
@@ -97,6 +105,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     @Override
     @Transactional
     public void delete(UUID enrolleeId, Set<CascadeProperty> cascades) {
+        Enrollee enrollee = dao.find(enrolleeId).get();
         participantTaskService.deleteByEnrolleeId(enrolleeId);
         for (SurveyResponse surveyResponse : surveyResponseService.findByEnrolleeId(enrolleeId)) {
             surveyResponseService.delete(surveyResponse.getId(), cascades);
@@ -104,12 +113,16 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         for (ConsentResponse consentResponse : consentResponseService.findByEnrolleeId(enrolleeId)) {
             consentResponseService.delete(consentResponse.getId(), cascades);
         }
+        notificationService.deleteByEnrolleeId(enrolleeId);
         dao.delete(enrolleeId);
+        if (enrollee.getPreEnrollmentResponseId() != null) {
+            preEnrollmentResponseDao.delete(enrollee.getPreEnrollmentResponseId());
+        }
     }
 
     @Transactional
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId, Set<CascadeProperty> cascade) {
-        for (Enrollee enrollee : dao.findByStudyEnvironmentAdminLoad(studyEnvironmentId)) {
+        for (Enrollee enrollee : dao.findByStudyEnvironmentId(studyEnvironmentId)) {
             delete(enrollee.getId(), cascade);
         }
     }

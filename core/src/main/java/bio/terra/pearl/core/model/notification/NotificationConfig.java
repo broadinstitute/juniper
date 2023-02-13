@@ -13,11 +13,15 @@ import lombok.experimental.SuperBuilder;
  * configuration for notifications.
  * This probably should have subclasses for each NotificationType with single-table inheritance,
  * but BaseJDBIDao doesn't support that yet, so to keep our DAO infrastructure simple, we represent it as a single class.
+ *
+ * NotificationConfigs should be treated as generally immutable so that logs of notifications can point to their
+ * originating configuration. To make changes, the previous config should be deactivated, and a new one created
  */
 @Getter @Setter @SuperBuilder @NoArgsConstructor
 public class NotificationConfig extends BaseEntity {
     private UUID studyEnvironmentId;
     private UUID portalEnvironmentId;
+    private boolean active = true;
 
     private NotificationType notificationType;
     @Builder.Default

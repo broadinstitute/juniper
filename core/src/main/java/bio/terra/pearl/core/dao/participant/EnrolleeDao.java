@@ -41,7 +41,7 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
         return findByProperty("shortcode", shortcode);
     }
 
-    public List<Enrollee> findByStudyEnvironmentAdminLoad(UUID studyEnvironmentId) {
+    public List<Enrollee> findByStudyEnvironmentId(UUID studyEnvironmentId) {
         return findAllByProperty("study_environment_id", studyEnvironmentId);
     }
 
@@ -83,7 +83,7 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
     }
 
     public List<EnrolleeSearchResult> searchByStudyEnvironment(UUID studyEnvironmentId) {
-        List<Enrollee> enrollees = findByStudyEnvironmentAdminLoad(studyEnvironmentId);
+        List<Enrollee> enrollees = findByStudyEnvironmentId(studyEnvironmentId);
         List<UUID> profileIds = enrollees.stream().map(enrollee -> enrollee.getProfileId()).toList();
         List<Profile> profiles = profileDao.findAll(profileIds);
         return enrollees.stream().map(enrollee -> EnrolleeSearchResult.builder().enrollee(enrollee)
