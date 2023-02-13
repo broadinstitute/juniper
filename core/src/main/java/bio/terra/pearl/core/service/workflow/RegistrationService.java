@@ -33,19 +33,21 @@ public class RegistrationService {
     private SnapshotParsingService snapshotParsingService;
     private ParticipantUserService participantUserService;
     private PortalParticipantUserService portalParticipantUserService;
+    private EventService eventService;
 
     public RegistrationService(SurveyService surveyService,
                                PortalEnvironmentService portalEnvService,
                                PreregistrationResponseDao preregistrationResponseDao,
                                SnapshotParsingService snapshotParsingService,
                                ParticipantUserService participantUserService,
-                               PortalParticipantUserService portalParticipantUserService) {
+                               PortalParticipantUserService portalParticipantUserService, EventService eventService) {
         this.surveyService = surveyService;
         this.portalEnvService = portalEnvService;
         this.preregistrationResponseDao = preregistrationResponseDao;
         this.snapshotParsingService = snapshotParsingService;
         this.participantUserService = participantUserService;
         this.portalParticipantUserService = portalParticipantUserService;
+        this.eventService = eventService;
     }
 
     /** Creates a preregistration survey record for a user who is not signed in */
@@ -103,13 +105,14 @@ public class RegistrationService {
         profile.setFamilyName(info.getLastName());
         ppUser.setProfile(profile);
 
-        PortalParticipantUser savedPPUSer = portalParticipantUserService.create(ppUser);
+        ppUser = portalParticipantUserService.create(ppUser);
         if (preRegResponse != null) {
-            preRegResponse.setPortalParticipantUserId(savedPPUSer.getId());
+            preRegResponse.setPortalParticipantUserId(ppUser.getId());
             preregistrationResponseDao.update(preRegResponse);
         }
+        eventService.publishPortalRegistrationEvent(user, ppUser, portalEnv);
         logger.info("Portal registration: userId: {}, portal: {}", user.getId(), portalShortcode);
-        return new RegistrationResult(user, savedPPUSer);
+        return new RegistrationResult(user, ppUser);
     }
 
     protected PreregistrationResponse validatePreRegResponseId(UUID preRegResponseId) {

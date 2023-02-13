@@ -2,10 +2,13 @@ package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.survey.EnrolleeSurveyEvent;
 import org.slf4j.Logger;
@@ -20,13 +23,13 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
-public class EnrolleeEventService {
-    private static final Logger logger = LoggerFactory.getLogger(EnrolleeEventService.class);
+public class EventService {
+    private static final Logger logger = LoggerFactory.getLogger(EventService.class);
     private ParticipantTaskService participantTaskService;
     private EnrolleeRuleService enrolleeRuleService;
 
-    public EnrolleeEventService(ParticipantTaskService participantTaskService,
-                                EnrolleeRuleService enrolleeRuleService) {
+    public EventService(ParticipantTaskService participantTaskService,
+                        EnrolleeRuleService enrolleeRuleService) {
         this.participantTaskService = participantTaskService;
         this.enrolleeRuleService = enrolleeRuleService;
     }
@@ -59,6 +62,29 @@ public class EnrolleeEventService {
                 response.getSurveyId(), response.isComplete());
         applicationEventPublisher.publishEvent(event);
         return event;
+    }
+
+    public PortalRegistrationEvent publishPortalRegistrationEvent(ParticipantUser user,
+                                                                  PortalParticipantUser ppUser,
+                                                                  PortalEnvironment portalEnv) {
+        PortalRegistrationEvent event = PortalRegistrationEvent.builder()
+                .participantUser(user)
+                .newPortalUser(ppUser)
+                .portalEnvironment(portalEnv)
+                .build();
+        applicationEventPublisher.publishEvent(event);
+        return event;
+    }
+
+    public EnrolleeCreationEvent publishEnrolleeCreationEvent(Enrollee enrollee, PortalParticipantUser ppUser) {
+        EnrolleeRuleData enrolleeRuleData = enrolleeRuleService.fetchData(enrollee);
+        EnrolleeCreationEvent enrolleeEvent = EnrolleeCreationEvent.builder()
+                .enrollee(enrollee)
+                .portalParticipantUser(ppUser)
+                .enrolleeRuleData(enrolleeRuleData)
+                .build();
+        applicationEventPublisher.publishEvent(enrolleeEvent);
+        return enrolleeEvent;
     }
 
     /** adds ruleData to the event, and also ensures the enrollee task list is refreshed */

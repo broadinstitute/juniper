@@ -146,7 +146,6 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
 
     @Autowired
     private StudyEnvironmentFactory studyEnvironmentFactory;
-
     @Autowired
     private ParticipantUserFactory participantUserFactory;
     @Autowired

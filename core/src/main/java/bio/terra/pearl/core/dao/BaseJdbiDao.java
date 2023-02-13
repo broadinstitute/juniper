@@ -38,7 +38,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     }
 
     protected List<String> getInsertExcludedFields() {
-        return Arrays.asList("id", "class");
+        return Arrays.asList("id");
     }
 
     protected boolean isSimpleFieldType(Class fieldType) {
@@ -48,26 +48,23 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
                         .contains(fieldType);
     }
 
-    protected List<String> generateInsertFields(Class clazz) {
-        try {
-            BeanInfo info = Introspector.getBeanInfo(clazz);
-            List<String> allSimpleProperties = Arrays.asList(info.getPropertyDescriptors()).stream()
-                    .filter(descriptor -> isSimpleFieldType(descriptor.getPropertyType()))
-                    .filter(descriptor -> !getInsertExcludedFields().contains(descriptor.getName()))
-                    .map(descriptor -> descriptor.getName())
-                    .collect(Collectors.toList());
-            return allSimpleProperties;
-        } catch (IntrospectionException e) {
-            throw new RuntimeException("Unable to introspect " + getClazz().getName());
-        }
+    /**
+     * the fields to insert on are the 'get' fields without class and id, class because it's not a true
+     * data property, (it's just from getClass(), and 'id' because we want id to be auto-generated
+     */
+    protected List<String> generateInsertFields(Class<T> clazz) {
+        List<String> insertFields = generateGetFields(clazz);
+        insertFields.removeAll(getInsertExcludedFields());
+        return insertFields;
     }
 
-    protected List<String> generateGetFields(Class clazz) {
+    protected List<String> generateGetFields(Class<T> clazz) {
         try {
             BeanInfo info = Introspector.getBeanInfo(clazz);
             List<String> allSimpleProperties = Arrays.asList(info.getPropertyDescriptors()).stream()
                     .filter(descriptor -> isSimpleFieldType(descriptor.getPropertyType()))
                     .map(descriptor -> descriptor.getName())
+                    .filter(name -> !name.equals("class"))
                     .collect(Collectors.toList());
             return allSimpleProperties;
         } catch (IntrospectionException e) {
@@ -81,7 +78,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     }
 
     protected List<String> generateGetColumns(List<String> insertFields) {
-        return insertFields.stream().map(field -> toSnakeCase(field))
+        return getQueryFields.stream().map(field -> toSnakeCase(field))
                 .collect(Collectors.toList());
     }
 

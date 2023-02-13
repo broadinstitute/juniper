@@ -15,7 +15,7 @@ import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
-import bio.terra.pearl.core.service.workflow.EnrolleeEventService;
+import bio.terra.pearl.core.service.workflow.EventService;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -32,14 +32,14 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     private PortalParticipantUserService portalParticipantUserService;
     private TransactionHandler transactionHandler;
-    private EnrolleeEventService enrolleeEventService;
+    private EventService eventService;
 
     public SurveyResponseService(SurveyResponseDao dao, ResponseSnapshotService responseSnapshotService,
                                  EnrolleeService enrolleeService, SurveyService surveyService,
                                  ParticipantTaskService participantTaskService,
                                  StudyEnvironmentSurveyService studyEnvironmentSurveyService,
                                  PortalParticipantUserService portalParticipantUserService,
-                                 TransactionHandler transactionHandler, EnrolleeEventService enrolleeEventService) {
+                                 TransactionHandler transactionHandler, EventService eventService) {
         super(dao);
         this.responseSnapshotService = responseSnapshotService;
         this.enrolleeService = enrolleeService;
@@ -48,7 +48,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.transactionHandler = transactionHandler;
-        this.enrolleeEventService = enrolleeEventService;
+        this.eventService = eventService;
     }
 
     public List<SurveyResponse> findByEnrolleeId(UUID enrolleeId) {
@@ -140,7 +140,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         task.setSurveyResponseId(response.getId());
         participantTaskService.update(task);
 
-        EnrolleeSurveyEvent event = enrolleeEventService.publishEnrolleeSurveyEvent(enrollee, response, ppUser);
+        EnrolleeSurveyEvent event = eventService.publishEnrolleeSurveyEvent(enrollee, response, ppUser);
         logger.info("SurveyReponse received -- enrollee: {}, surveyStabledId: {}");
         HubResponse hubResponse = HubResponse.builder()
                 .response(event.getSurveyResponse())

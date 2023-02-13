@@ -13,7 +13,7 @@ import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
-import bio.terra.pearl.core.service.workflow.EnrolleeEventService;
+import bio.terra.pearl.core.service.workflow.EventService;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.context.annotation.Lazy;
@@ -27,7 +27,7 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
     private EnrolleeService enrolleeService;
     private ParticipantTaskService participantTaskService;
     private PortalParticipantUserService portalParticipantUserService;
-    private EnrolleeEventService enrolleeEventService;
+    private EventService eventService;
     private TransactionHandler transactionHandler;
 
     public ConsentResponseService(ConsentResponseDao dao, ConsentFormService consentFormService,
@@ -35,14 +35,14 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
                                   @Lazy EnrolleeService enrolleeService,
                                   ParticipantTaskService participantTaskService,
                                   PortalParticipantUserService portalParticipantUserService,
-                                  EnrolleeEventService enrolleeEventService, TransactionHandler transactionHandler) {
+                                  EventService eventService, TransactionHandler transactionHandler) {
         super(dao);
         this.consentFormService = consentFormService;
         this.studyEnvironmentConsentService = studyEnvironmentConsentService;
         this.enrolleeService = enrolleeService;
         this.participantTaskService = participantTaskService;
         this.portalParticipantUserService = portalParticipantUserService;
-        this.enrolleeEventService = enrolleeEventService;
+        this.eventService = eventService;
         this.transactionHandler = transactionHandler;
     }
 
@@ -85,7 +85,7 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
         task.setConsentResponseId(response.getId());
         participantTaskService.update(task);
 
-        EnrolleeConsentEvent event = enrolleeEventService.publishEnrolleeConsentEvent(enrollee, response, ppUser);
+        EnrolleeConsentEvent event = eventService.publishEnrolleeConsentEvent(enrollee, response, ppUser);
         logger.info("ConsentResponse submitted: enrollee: {}, formStableId: {}, formVersion: {}",
                 enrollee.getShortcode(), responseForm.getVersion(), responseForm.getStableId() );
         HubResponse hubResponse = HubResponse.builder()
