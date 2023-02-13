@@ -21,6 +21,7 @@ import lombok.experimental.SuperBuilder;
 public class NotificationConfig extends BaseEntity {
     private UUID studyEnvironmentId;
     private UUID portalEnvironmentId;
+    @Builder.Default
     private boolean active = true;
 
     private NotificationType notificationType;
