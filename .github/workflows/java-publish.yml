@@ -74,41 +74,26 @@ jobs:
           text: 'Publish failed :sadpanda:'
           username: 'Pearl Build Notifications'
   
-  # Uncomment once we have a dev deployment running to start reporting new builds and auto-deploying them
-  # via dsp-devops tooling
-  #
-  # Hey! You'll probably want to uncomment below this point: it deploys newly published versions to dev!
-  #
-  # You'll need to create a new chart entry in Beehive first, at https://broad.io/beehive/charts/new (chart 
-  # names can't be changed, so be sure beforehand). Replace 'javatemplate' below with whatever name you choose.
-  #
-  # You'll also need to add some access to your new repo to allow it to run these steps. We have docs on the
-  # whole process here: https://docs.google.com/document/d/1lkUkN2KOpHKWufaqw_RIE7EN3vN4G2xMnYBU83gi8VA/edit#heading=h.ipfs1speial
-  #
-  # Lastly, the deployment part won't work until your app has an actual chart and is deployed in dev. We can
-  # help with that, ping #dsp-devops-champions and we can point you in the right direction.
-  #
+  report-to-sherlock:
+    # Report new version of application to DSP DevOps Tooling
+    uses: broadinstitute/sherlock/.github/workflows/client-report-app-version.yaml@main
+    needs: publish-job
+    with:
+      new-version: ${{ needs.publish-job.outputs.tag }}
+      chart-name: 'd2p'
+    permissions:
+      contents: 'read'
+      id-token: 'write'
 
-  # report-to-sherlock:
-  #   # Report new version to Broad DevOps
-  #   uses: broadinstitute/sherlock/.github/workflows/client-report-app-version.yaml@main
-  #   needs: publish-job
-  #   with:
-  #     new-version: ${{ needs.publish-job.outputs.tag }}
-  #     chart-name: 'javatemplate'
-  #   permissions:
-  #     contents: 'read'
-  #     id-token: 'write'
-
-  # set-version-in-dev:
-  #   # Put new version in Broad dev environment
-  #   uses: broadinstitute/sherlock/.github/workflows/client-set-environment-app-version.yaml@main
-  #   needs: [publish-job, report-to-sherlock]
-  #   with:
-  #     new-version: ${{ needs.publish-job.outputs.tag }}
-  #     chart-name: 'javatemplate'
-  #     environment-name: 'dev'
-  #   secrets:
-  #     sync-git-token: ${{ secrets.BROADBOT_TOKEN }}
-  #   permissions:
-  #     id-token: 'write'
+  set-version-in-dev:
+    # Put new version in ddp-azure-dev environment
+    uses: broadinstitute/sherlock/.github/workflows/client-set-environment-app-version.yaml@main
+    needs: [publish-job, report-to-sherlock]
+    with:
+      new-version: ${{ needs.publish-job.outputs.tag }}
+      chart-name: 'd2p'
+      environment-name: 'ddp-azure-dev'
+    secrets:
+      sync-git-token: ${{ secrets.BROADBOT_TOKEN }}
+    permissions:
+      id-token: 'write'
