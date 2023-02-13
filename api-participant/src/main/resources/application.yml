@@ -15,7 +15,8 @@ env:
   swagger:
     # if true, the swagger UI page will be made available at swagger-ui.html -- should be false for production
     enabled: ${SWAGGER_ENABLED:false}
-
+  sendgrid:
+    apiKey: ${SENDGRID_API_KEY:nokey}
 
 # Below here is non-deployment-specific
 
