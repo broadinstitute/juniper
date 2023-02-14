@@ -14,6 +14,7 @@ apply from: 'publishing.gradle'
 dependencies {
     implementation 'bio.terra:terra-common-lib'
     implementation project(':core')
+    implementation project(':ui-participant')
     implementation 'org.apache.commons:commons-dbcp2'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -31,14 +32,14 @@ dependencies {
 }
 
 task copyWebApp(type: Copy) {
-    from "$rootDir/ui-admin/build"
-    into "$rootDir/api-admin/build/resources/main/static"
+    from "$rootDir/ui-participant/build"
+    into "$rootDir/api-participant/build/resources/main/static"
 }
 
 // for now, only jib depends on copyWebApp, so that a npm rebuild/install will not be triggered for
 // development redeploys.  this means to deploy locally with the static assets in place you'll
 // need to run the copyWebApp task yourself
-copyWebApp.dependsOn(':ui-admin:bundle')
+copyWebApp.dependsOn(':ui-participant:bundle')
 jibDockerBuild.dependsOn('copyWebApp')
 
 test {

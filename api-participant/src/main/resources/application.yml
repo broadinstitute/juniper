@@ -12,6 +12,10 @@ env:
     samplingRate: ${SAMPLING_PROBABILITY:0}
   sam:
     basePath: ${SAM_ADDRESS:https://sam.dsde-dev.broadinstitute.org}
+  swagger:
+    # if true, the swagger UI page will be made available at swagger-ui.html -- should be false for production
+    enabled: ${SWAGGER_ENABLED:false}
+
 
 # Below here is non-deployment-specific
 
@@ -50,7 +54,7 @@ spring:
           maxAge: 0
           mustRevalidate: true
         useLastModified: false
-      staticLocations: classpath:/api/
+      staticLocations: classpath:/api/,classpath:/static/
   jpa:
     show-sql: true
     properties:

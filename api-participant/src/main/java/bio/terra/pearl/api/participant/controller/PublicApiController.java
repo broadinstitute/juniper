@@ -7,6 +7,7 @@ import bio.terra.pearl.api.participant.model.VersionProperties;
 import bio.terra.pearl.api.participant.service.StatusService;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,12 +17,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class PublicApiController implements PublicApi {
   private final StatusService statusService;
   private final VersionConfiguration versionConfiguration;
+  private final Environment env;
 
   @Autowired
   public PublicApiController(
-      StatusService statusService, VersionConfiguration versionConfiguration) {
+      StatusService statusService, VersionConfiguration versionConfiguration, Environment env) {
     this.statusService = statusService;
     this.versionConfiguration = versionConfiguration;
+    this.env = env;
   }
 
   @Override
@@ -43,14 +46,23 @@ public class PublicApiController implements PublicApi {
   }
 
   /**
-   * Note that, unlike the admin-api app, we do not map the swagger-ui.html page as we don't want participants
-   * (or anyone else) attempting to use the participant api directly in production.
-   * We still keep this project swagger-ized to allow developers to use the swagger-ui in local development
-   * */
+   * Note that, unlike the admin-api app, we do not map the swagger-ui.html page in production as we
+   * don't want participants (or anyone else) attempting to use the participant api directly in
+   * production. We still keep this project swagger-ized to allow developers to use the swagger-ui
+   * in local development
+   */
+  @GetMapping(value = "/swagger-ui.html")
+  public String getSwagger() {
+    if (env.getProperty("swagger.enabled", Boolean.class, false)) {
+      return "swagger-ui.html";
+    }
+    // if not enabled, treat swagger-ui.html just like any other route and let the SPA handle it
+    return "forward:/";
+  }
 
   /**
    * enable react router to handle all non-api, non-resource paths by routing everything else to the
-   * index path.   Adapted from
+   * index path. Adapted from
    * https://stackoverflow.com/questions/47689971/how-to-work-with-react-routers-and-spring-boot-controller
    */
   @GetMapping(value = {"/{x:[\\w\\-]+}", "/{x:^(?!api$).*$}/*/{y:[\\w\\-]+}"})

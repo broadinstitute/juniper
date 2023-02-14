@@ -63,5 +63,5 @@
       "react-markdown": "<rootDir>/node_modules/react-markdown/react-markdown.min.js"
     }
   },
-  "proxy": "http://localhost:8080"
+  "proxy": "http://localhost:8081"
 }
