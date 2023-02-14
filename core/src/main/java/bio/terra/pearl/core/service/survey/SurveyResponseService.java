@@ -121,8 +121,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     }
 
     /**
-     * Creates a survey response and fires appropriate downstream events.  Note this method is *not*
-     * transactional, as if an error occurs in downstream event processing, we still want to save the survey data
+     * Creates a survey response and fires appropriate downstream events. 
      */
     @Transactional
     public HubResponse<ConsentResponse> submitResponse(UUID participantUserId, PortalParticipantUser ppUser,
@@ -131,7 +130,8 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
 
         Enrollee enrollee = enrolleeService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
         ParticipantTask task = participantTaskService.authTaskToPortalParticipantUser(taskId, ppUser.getId()).get();
-
+        Survey survey = surveyService.findByStableId(task.getTargetStableId(), task.getTargetAssignedVersion()).get();
+        validateResponse(survey, task, snapDto);
         // find or create the SurveyResponse object to attach the snapshot
         SurveyResponse response = createSnapshot(snapDto, task, enrollee, participantUserId);
 
@@ -141,6 +141,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         participantTaskService.update(task);
 
         EnrolleeSurveyEvent event = enrolleeEventService.publishEnrolleeSurveyEvent(enrollee, response, ppUser);
+        logger.info("SurveyReponse received -- enrollee: {}, surveyStabledId: {}");
         HubResponse hubResponse = HubResponse.builder()
                 .response(event.getSurveyResponse())
                 .tasks(event.getEnrollee().getParticipantTasks().stream().toList())
@@ -193,4 +194,10 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         dao.delete(responseId);
     }
 
+    public void validateResponse(Survey survey, ParticipantTask task, ResponseSnapshotDto snapshotDto) {
+        if (!survey.getStableId().equals(task.getTargetStableId())) {
+            throw new IllegalArgumentException("submitted form does not match assigned task");
+        }
+        // TODO check required fields
+    }
 }

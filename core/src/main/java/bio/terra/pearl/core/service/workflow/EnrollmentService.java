@@ -99,8 +99,8 @@ public class EnrollmentService {
                 .enrolleeRuleData(enrolleeRuleData)
                 .build();
         applicationEventPublisher.publishEvent(enrolleeEvent);
-        logger.info("created enrollee for user {}, study {} - shortcode {}, {} tasks added",
-                user.getId(), studyShortcode, enrollee.getShortcode());
+        logger.info("Enrollee created: user {}, study {}, shortcode {}, {} tasks added",
+                user.getId(), studyShortcode, enrollee.getShortcode(), enrollee.getParticipantTasks().size());
         HubResponse hubResponse = HubResponse.builder()
                 .enrollee(enrollee)
                 .response(enrollee)

@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AdminUserService extends CrudService<AdminUser, AdminUserDao> {
-
     public AdminUserService(AdminUserDao adminUserDao) {
         super(adminUserDao);
     }
@@ -22,7 +21,9 @@ public class AdminUserService extends CrudService<AdminUser, AdminUserDao> {
     @Transactional
     @Override
     public AdminUser create(AdminUser adminUser) {
-        return dao.create(adminUser);
+        AdminUser savedUser = dao.create(adminUser);
+        logger.info("Created AdminUser - id: {}, username: {}", adminUser.getId(), adminUser.getUsername());
+        return savedUser;
     }
 
     @Override
