@@ -1,5 +1,10 @@
 package bio.terra.pearl.core.service.notification;
 
+import bio.terra.pearl.core.model.notification.EmailTemplate;
+import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import com.sendgrid.*;
 import java.io.IOException;
 import java.util.Map;
@@ -13,14 +18,24 @@ import org.springframework.stereotype.Service;
 public class EmailService implements NotificationSender {
     private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
     public static final String TEST_TEMPLATE="Hello and welcome to email ${profileName}";
+    private PortalEnvironmentConfigService portalEnvConfigService;
+    private EmailTemplateService emailTemplateService;
 
-    @Async
-    public void sendNotificationAsync() {
-        sendNotification();
+    public EmailService(PortalEnvironmentConfigService portalEnvConfigService) {
+        this.portalEnvConfigService = portalEnvConfigService;
     }
 
-    public void sendNotification() {
-        Mail mail = buildEmail();
+    @Async
+    public void sendNotificationAsync(NotificationConfig config, EnrolleeRuleData ruleData) {
+        sendNotification(config, ruleData);
+    }
+
+    public void sendNotification(NotificationConfig config, EnrolleeRuleData ruleData) {
+        PortalEnvironmentConfig envConfig = portalEnvConfigService
+                .findByPortalEnvId(config.getPortalEnvironmentId()).get();
+        EmailTemplate emailTemplate = emailTemplateService.find(config.getEmailTemplateId()).get();
+        Mail mail = buildEmail(emailTemplate, ruleData, envConfig);
+
         SendGrid sg = new SendGrid(System.getenv("SENDGRID_API_KEY"));
         Request request = new Request();
         try {
@@ -37,16 +52,17 @@ public class EmailService implements NotificationSender {
         }
     }
 
-    public Mail buildEmail() {
-        Email from = new Email("dbush@broadinstitute.org");
-        String subject = "Test D2P email";
-        Email to = new Email("dbush@broadinstitute.org");
-        Content content = new Content("text/plain", buildTemplate());
+    public Mail buildEmail(EmailTemplate template, EnrolleeRuleData ruleData, PortalEnvironmentConfig envConfig) {
+        Email from = new Email(envConfig.getEmailSourceAddress());
+        String subject = template.getSubject();
+        Email to = new Email(ruleData.getProfile().getContactEmail());
+        Content content = new Content("text/plain", buildTemplate(ruleData, envConfig));
         return new Mail(from, subject, to, content);
     }
 
-    public String buildTemplate() {
-        Map<String, String> valueMap = Map.of("profileName", "Murf Hippo");
+    public String buildTemplate(EnrolleeRuleData ruleData, PortalEnvironmentConfig envConfig) {
+        Map<String, Object> valueMap = Map.of("profile", ruleData.getProfile(),
+        "portalConfig", envConfig);
         StringSubstitutor sub = new StringSubstitutor(valueMap);
         String resolvedTemplate = sub.replace(TEST_TEMPLATE);
         return resolvedTemplate;

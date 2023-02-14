@@ -2,19 +2,19 @@ package bio.terra.pearl.core.service.portal;
 
 import bio.terra.pearl.core.dao.portal.PortalEnvironmentConfigDao;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
+import bio.terra.pearl.core.service.CrudService;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class PortalEnvironmentConfigService {
-    private PortalEnvironmentConfigDao portalEnvironmentConfigDao;
+public class PortalEnvironmentConfigService extends CrudService<PortalEnvironmentConfig, PortalEnvironmentConfigDao> {
 
     public PortalEnvironmentConfigService(PortalEnvironmentConfigDao portalEnvironmentConfigDao) {
-        this.portalEnvironmentConfigDao = portalEnvironmentConfigDao;
+        super(portalEnvironmentConfigDao);
     }
 
-    @Transactional
-    public PortalEnvironmentConfig create(PortalEnvironmentConfig config) {
-        return portalEnvironmentConfigDao.create(config);
+    public Optional<PortalEnvironmentConfig> findByPortalEnvId(UUID portalEnvId) {
+        return dao.findByPortalEnvId(portalEnvId);
     }
 }

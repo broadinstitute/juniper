@@ -45,7 +45,8 @@ public class NotificationDispatcher {
             if (configClass.isInstance(event)) {
                 if (RuleEvaluator.evaluateEnrolleeRule(config.getRule(), event.getEnrolleeRuleData())) {
                     createNotification(config, event.getEnrollee(), event.getPortalParticipantUser(), event.getEnrolleeRuleData());
-                    senderMap.get(config.getDeliveryType()).sendNotification();
+                    senderMap.get(config.getDeliveryType())
+                            .sendNotification(config, event.getEnrolleeRuleData());
                 }
             }
         }
