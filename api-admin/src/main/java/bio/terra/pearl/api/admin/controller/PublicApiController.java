@@ -50,7 +50,7 @@ public class PublicApiController implements PublicApi {
 
   /**
    * enable react router to handle all non-api, non-resource paths by routing everything else to the
-   * index path adapted from
+   * index path.   Adapted from
    * https://stackoverflow.com/questions/47689971/how-to-work-with-react-routers-and-spring-boot-controller
    */
   @GetMapping(value = {"/{x:[\\w\\-]+}", "/{x:^(?!api$).*$}/*/{y:[\\w\\-]+}"})

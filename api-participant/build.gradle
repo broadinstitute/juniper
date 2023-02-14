@@ -30,6 +30,17 @@ dependencies {
     testImplementation 'org.mockito:mockito-inline'
 }
 
+task copyWebApp(type: Copy) {
+    from "$rootDir/ui-admin/build"
+    into "$rootDir/api-admin/build/resources/main/static"
+}
+
+// for now, only jib depends on copyWebApp, so that a npm rebuild/install will not be triggered for
+// development redeploys.  this means to deploy locally with the static assets in place you'll
+// need to run the copyWebApp task yourself
+copyWebApp.dependsOn(':ui-admin:bundle')
+jibDockerBuild.dependsOn('copyWebApp')
+
 test {
     useJUnitPlatform ()
 }

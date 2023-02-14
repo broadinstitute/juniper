@@ -5,6 +5,7 @@ import bio.terra.pearl.api.participant.config.VersionConfiguration;
 import bio.terra.pearl.api.participant.model.SystemStatus;
 import bio.terra.pearl.api.participant.model.VersionProperties;
 import bio.terra.pearl.api.participant.service.StatusService;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,13 +42,19 @@ public class PublicApiController implements PublicApi {
     return ResponseEntity.ok(currentVersion);
   }
 
-  @GetMapping(value = "/")
-  public String index() {
-    return "redirect:swagger-ui.html";
-  }
+  /**
+   * Note that, unlike the admin-api app, we do not map the swagger-ui.html page as we don't want participants
+   * (or anyone else) attempting to use the participant api directly in production.
+   * We still keep this project swagger-ized to allow developers to use the swagger-ui in local development
+   * */
 
-  @GetMapping(value = "/swagger-ui.html")
-  public String getSwagger() {
-    return "index";
+  /**
+   * enable react router to handle all non-api, non-resource paths by routing everything else to the
+   * index path.   Adapted from
+   * https://stackoverflow.com/questions/47689971/how-to-work-with-react-routers-and-spring-boot-controller
+   */
+  @GetMapping(value = {"/{x:[\\w\\-]+}", "/{x:^(?!api$).*$}/*/{y:[\\w\\-]+}"})
+  public String getIndex(HttpServletRequest request) {
+    return "forward:/";
   }
 }
