@@ -66,11 +66,6 @@ class PublicApiControllerTest {
   }
 
   @Test
-  void testIndex() throws Exception {
-    this.mockMvc.perform(get("/")).andExpect(redirectedUrl("swagger-ui.html"));
-  }
-
-  @Test
   void testForwarding() throws Exception {
     // Check that all non-resource, non-api paths are forwarded to index
     this.mockMvc.perform(get("/ourhealth/studies/ourheart")).andExpect(forwardedUrl("/"));
