@@ -39,7 +39,7 @@ public class SetupPopulateTest extends BaseSpringBootTest {
         BaseSeedPopulator baseSeedPopulator = (BaseSeedPopulator) populateDispatcher.getPopulator("base_seed");
         BaseSeedPopulator.SetupStats setupStats = baseSeedPopulator.populate("");
 
-        Assertions.assertEquals(2, setupStats.getNumAdminUsers());
+        Assertions.assertEquals(7, setupStats.getNumAdminUsers());
         Assertions.assertEquals(3, setupStats.getNumEnvironments());
     }
 }
