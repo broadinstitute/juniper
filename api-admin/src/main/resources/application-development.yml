@@ -1,0 +1,4 @@
+# for development, populate from local filesystem so you don't have to rebuild the jar to update population files
+env:
+  populate:
+    populate-from-classpath: false
