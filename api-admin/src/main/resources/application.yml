@@ -12,6 +12,8 @@ env:
     samplingRate: ${SAMPLING_PROBABILITY:0}
   sam:
     basePath: ${SAM_ADDRESS:https://sam.dsde-dev.broadinstitute.org}
+  populate:
+    populate-from-classpath: true
 
 # Below here is non-deployment-specific
 
@@ -92,6 +94,3 @@ terra.common:
   
 cors:
   enabled-path: http://localhost:3000,http://localhost:3005,http://*.localhost:3005,http://*.*.localhost:3005
-
-populate.populate-from-classpath: false
-

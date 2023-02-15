@@ -57,12 +57,16 @@ Open the root folder in IntelliJ.
       * Project Structure > Project Settings > Project > SDK
       * Preferences > Build, Execution, Deployment > Build Tools > Gradle > Gradle Projects > \[this project\] > Gradle JVM
          * Recommended setting for this is "Project SDK"
-   * create the following Spring Boot Run/Debug Configuration
-
-     ![run configuration](https://user-images.githubusercontent.com/2800795/195370172-f694b840-ae8f-4298-a43a-7ba87f944ebd.png)
-
-     In the project settings, make sure annotation processing is enabled (otherwise lombok getters/setters won't work)
-
+   * In the project settings, make sure annotation processing is enabled (otherwise lombok getters/setters won't work)
+   * Create two Spring Boot Run/Debug Configurations.
+     * ApiAdminApp (in api-admin module)
+       * set active profiles of "human-readable-logging" and "development"
+       * disable launch optimization
+     * ApiParticipantApp (in api-participant module)
+        * set active profiles of "human-readable-logging" and "development"
+        * disable launch optimization
+        
+         
 ### Running the application
 #### Admin tool (study manager, population)
 * API (api-admin module)
