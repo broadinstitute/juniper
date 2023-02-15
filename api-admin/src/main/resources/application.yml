@@ -16,6 +16,8 @@ env:
     populate-from-classpath: true
   sendgrid:
     apiKey: ${SENDGRID_API_KEY:nokey}
+  populate:
+    populate-from-classpath: true
 
 # Below here is non-deployment-specific
 
