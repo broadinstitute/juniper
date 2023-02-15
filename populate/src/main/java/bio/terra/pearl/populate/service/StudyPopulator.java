@@ -1,6 +1,7 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
+import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -8,8 +9,8 @@ import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.populate.dto.StudyEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.StudyPopDto;
 import bio.terra.pearl.populate.dto.consent.StudyEnvironmentConsentPopDto;
+import bio.terra.pearl.populate.dto.notifications.NotificationConfigPopDto;
 import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Optional;
@@ -22,16 +23,17 @@ public class StudyPopulator extends Populator<Study> {
     private EnrolleePopulator enrolleePopulator;
     private SurveyPopulator surveyPopulator;
     private ConsentFormPopulator consentFormPopulator;
+    private EmailTemplatePopulator emailTemplatePopulator;
 
-    public StudyPopulator(ObjectMapper objectMapper, StudyService studyService,
-                          FilePopulateService filePopulateService, EnrolleePopulator enrolleePopulator,
-                          SurveyPopulator surveyPopulator, ConsentFormPopulator consentFormPopulator) {
+    public StudyPopulator(StudyService studyService,
+                          EnrolleePopulator enrolleePopulator,
+                          SurveyPopulator surveyPopulator, ConsentFormPopulator consentFormPopulator,
+                          EmailTemplatePopulator emailTemplatePopulator) {
         this.studyService = studyService;
         this.enrolleePopulator = enrolleePopulator;
         this.surveyPopulator = surveyPopulator;
         this.consentFormPopulator = consentFormPopulator;
-        this.filePopulateService = filePopulateService;
-        this.objectMapper = objectMapper;
+        this.emailTemplatePopulator = emailTemplatePopulator;
     }
 
     @Transactional
@@ -61,6 +63,9 @@ public class StudyPopulator extends Populator<Study> {
         }
         for (String consentFile : studyDto.getConsentFormFiles()) {
             consentFormPopulator.populate(config.newFrom(consentFile));
+        }
+        for (String template : studyDto.getEmailTemplateFiles()) {
+            emailTemplatePopulator.populate(config.newFrom(template));
         }
         for (StudyEnvironmentPopDto studyEnv : studyDto.getStudyEnvironmentDtos()) {
             initializeStudyEnvironmentDto(studyEnv);
@@ -93,6 +98,10 @@ public class StudyPopulator extends Populator<Study> {
             StudyEnvironmentConsentPopDto configConsentDto = studyEnv.getConfiguredConsentDtos().get(i);
             StudyEnvironmentConsent configConsent = consentFormPopulator.convertConfiguredConsent(configConsentDto, i);
             studyEnv.getConfiguredConsents().add(configConsent);
+        }
+        for (NotificationConfigPopDto configPopDto : studyEnv.getNotificationConfigDtos()) {
+            NotificationConfig config = emailTemplatePopulator.convertNotificationConfig(configPopDto);
+            studyEnv.getNotificationConfigs().add(config);
         }
     }
 

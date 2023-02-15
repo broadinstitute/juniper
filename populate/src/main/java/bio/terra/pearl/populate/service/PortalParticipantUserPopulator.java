@@ -6,12 +6,10 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Optional;
+import org.springframework.stereotype.Component;
 
 @Component
 public class PortalParticipantUserPopulator extends Populator<PortalParticipantUser> {
@@ -19,15 +17,12 @@ public class PortalParticipantUserPopulator extends Populator<PortalParticipantU
     private PortalParticipantUserService portalParticipantUserService;
     private PortalEnvironmentService portalEnvironmentService;
 
-    public PortalParticipantUserPopulator(ObjectMapper objectMapper, ParticipantUserService participantUserService,
-                                          FilePopulateService filePopulateService,
+    public PortalParticipantUserPopulator(ParticipantUserService participantUserService,
                                           PortalParticipantUserService portalParticipantUserService,
                                           PortalEnvironmentService portalEnvironmentService) {
         this.participantUserService = participantUserService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.portalEnvironmentService = portalEnvironmentService;
-        this.filePopulateService = filePopulateService;
-        this.objectMapper = objectMapper;
     }
 
     @Override

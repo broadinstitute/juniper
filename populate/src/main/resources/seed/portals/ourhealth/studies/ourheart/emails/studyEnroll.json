@@ -1,6 +1,6 @@
 {
   "name": "Enrollment email",
-  "bodyPopulateFile": "study_enroll.html",
+  "bodyPopulateFile": "studyEnroll.html",
   "subject": "Thank you for Signing Up!",
   "stableId": "oh_oh_studyEnroll",
   "version": 1

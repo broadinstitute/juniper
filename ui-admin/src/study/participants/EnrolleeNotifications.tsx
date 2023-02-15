@@ -3,6 +3,7 @@ import Api, { Enrollee, NotificationConfig, Notification } from '../../api/api'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import LoadingSpinner from '../../util/LoadingSpinner'
 import { instantToDefaultString } from '../../util/timeUtils'
+import NotificationConfigTypeDisplay from '../notifications/NotifcationConfigTypeDisplay'
 
 /** loads the list of notifications for a given enrollee and displays them in the UI */
 export default function EnrolleeNotifications({ enrollee, studyEnvContext }:
@@ -61,14 +62,3 @@ export default function EnrolleeNotifications({ enrollee, studyEnvContext }:
   </div>
 }
 
-/** shows a summary of the notification config */
-function NotificationConfigTypeDisplay({ config }: {config?: NotificationConfig}) {
-  if (!config) {
-    return <></>
-  }
-  if (config.notificationType === 'EVENT') {
-    return <span>{config.eventType}</span>
-  } else {
-    return <span>{config.taskType} - {config.taskTargetStableId}</span>
-  }
-}

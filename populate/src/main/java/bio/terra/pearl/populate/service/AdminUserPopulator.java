@@ -4,7 +4,6 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.populate.dto.AdminUserDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashSet;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -13,10 +12,7 @@ import org.springframework.stereotype.Service;
 public class AdminUserPopulator extends Populator<AdminUser> {
     private AdminUserService adminUserService;
 
-    public AdminUserPopulator(ObjectMapper objectMapper, FilePopulateService filePopulateService,
-                              AdminUserService adminUserService) {
-        this.objectMapper = objectMapper;
-        this.filePopulateService = filePopulateService;
+    public AdminUserPopulator(AdminUserService adminUserService) {
         this.adminUserService = adminUserService;
     }
 

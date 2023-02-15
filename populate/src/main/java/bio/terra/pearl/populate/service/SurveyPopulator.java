@@ -7,7 +7,6 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dao.SurveyPopulateDao;
 import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,13 +21,10 @@ public class SurveyPopulator extends Populator<Survey> {
     private SurveyPopulateDao surveyPopulateDao;
 
     public SurveyPopulator(SurveyService surveyService,
-                           ObjectMapper objectMapper, FilePopulateService filePopulateService,
                            PortalService portalService,
                            SurveyPopulateDao surveyPopulateDao) {
         this.portalService = portalService;
         this.surveyPopulateDao = surveyPopulateDao;
-        this.objectMapper = objectMapper;
-        this.filePopulateService = filePopulateService;
         this.surveyService = surveyService;
     }
 

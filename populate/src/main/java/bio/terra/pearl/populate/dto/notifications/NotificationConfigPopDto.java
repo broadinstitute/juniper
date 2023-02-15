@@ -7,5 +7,6 @@ import lombok.Setter;
 
 @Getter @Setter @NoArgsConstructor
 public class NotificationConfigPopDto extends NotificationConfig {
-    private EmailTemplatePopDto emailTemplate;
+    private String emailTemplateStableId;
+    private int emailTemplateVersion;
 }

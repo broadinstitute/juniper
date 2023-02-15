@@ -17,6 +17,9 @@ databaseChangeLog:
               - column: { name: version, type: integer, constraints: { nullable: false } }
               - column: { name: subject, type: text, constraints: { nullable: false } }
               - column: { name: body, type: text, constraints: { nullable: false } }
+              - column: { name: portal_id, type: uuid, constraints:
+                { foreignKeyName: fk_email_template_portal, references: portal(id) }
+              }
         - addUniqueConstraint:
             tableName: email_template
             constraintName: uc_email_template_stable_id_version

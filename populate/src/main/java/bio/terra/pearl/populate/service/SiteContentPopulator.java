@@ -8,7 +8,6 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.site.SiteImageService;
 import bio.terra.pearl.populate.dto.site.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,11 +21,8 @@ public class SiteContentPopulator extends Populator<SiteContent> {
 
     public SiteContentPopulator(SiteContentService siteContentService,
                                 SiteImageService siteImageService,
-                                FilePopulateService filePopulateService,
-                                ObjectMapper objectMapper, PortalService portalService) {
+                                PortalService portalService) {
         this.portalService = portalService;
-        this.objectMapper = objectMapper;
-        this.filePopulateService = filePopulateService;
         this.siteContentService = siteContentService;
         this.siteImageService = siteImageService;
     }

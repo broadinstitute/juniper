@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
 import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
 import Api from 'api/api'
+import NotificationConfigTypeDisplay, { deliveryTypeDisplayMap } from './notifications/NotifcationConfigTypeDisplay'
 
 /** renders the main configuration page for a study environment */
 function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -107,19 +108,22 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
           </li>
           <li className="list-group-item d-flex">
             <div style={contentHeaderStyle}>
-              <h6>Triggers & Integrations</h6>
+              <h6>Participant Notifications</h6>
             </div>
             <div className="flex-grow-1">
               <ul className="list-group">
-                <li className="list-group-item d-flex">
-                  <Select options={consequenceOptions}/> &nbsp; when &nbsp;
-                  <Select options={triggerTarget}/> &nbsp; is &nbsp;
-                  <Select options={triggerOptions}/>
-                  <button className="btn btn-secondary">
-                    <FontAwesomeIcon icon={faPlus}></FontAwesomeIcon> Add
-                  </button>
+                { currentEnv.notificationConfigs.map(config => <li className="list-group-item" key={config.id}>
+                  <div className="d-flex justify-content-between">
+                    <NotificationConfigTypeDisplay config={config}/>
+                    <span>{deliveryTypeDisplayMap[config.deliveryType]}</span>
+                    <Link to={`notificationConfigs/${config.id}`}>Configure</Link>
+                  </div>
                 </li>
+                ) }
               </ul>
+              <button className="btn btn-secondary" onClick={() => alert('not yet implemented')}>
+                <FontAwesomeIcon icon={faPlus}/> Add
+              </button>
             </div>
           </li>
         </ul> }

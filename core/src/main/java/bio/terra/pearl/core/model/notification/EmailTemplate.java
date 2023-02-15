@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.notification;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,4 +17,5 @@ public class EmailTemplate extends BaseEntity {
     private String name;
     private String stableId;
     private int version;
+    private UUID portalId;
 }

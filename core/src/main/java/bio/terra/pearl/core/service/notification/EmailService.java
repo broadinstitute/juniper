@@ -30,11 +30,23 @@ public class EmailService implements NotificationSender {
         sendNotification(config, ruleData);
     }
 
+    public record EmailEnvConfig(PortalEnvironmentConfig portalEnvConfig, EmailTemplate template) {}
+
+    /**
+     * loads the environment information needed to send an email (things not specific to an enrollee/user)
+     * this method will almost certainly benefit from caching, especially with respect to bulk emails
+     */
+
+    public EmailEnvConfig loadEnvConfigAndTemplate(NotificationConfig config) {
+        return new EmailEnvConfig(
+                portalEnvConfigService.findByPortalEnvId(config.getPortalEnvironmentId()).get(),
+                emailTemplateService.find(config.getEmailTemplateId()).get()
+        );
+    }
+
     public void sendNotification(NotificationConfig config, EnrolleeRuleData ruleData) {
-        PortalEnvironmentConfig envConfig = portalEnvConfigService
-                .findByPortalEnvId(config.getPortalEnvironmentId()).get();
-        EmailTemplate emailTemplate = emailTemplateService.find(config.getEmailTemplateId()).get();
-        Mail mail = buildEmail(emailTemplate, ruleData, envConfig);
+        EmailEnvConfig emailEnvConfig = loadEnvConfigAndTemplate(config);
+        Mail mail = buildEmail(emailEnvConfig.template, ruleData, emailEnvConfig.portalEnvConfig);
 
         SendGrid sg = new SendGrid(System.getenv("SENDGRID_API_KEY"));
         Request request = new Request();
