@@ -14,4 +14,6 @@ public class EmailTemplate extends BaseEntity {
     private String body;
     private String subject;
     private String name;
+    private String stableId;
+    private int version;
 }

@@ -25,7 +25,7 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dto.EnrolleePopDto;
-import bio.terra.pearl.populate.dto.NotificationPopDto;
+import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
 import bio.terra.pearl.populate.dto.ParticipantTaskPopDto;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
