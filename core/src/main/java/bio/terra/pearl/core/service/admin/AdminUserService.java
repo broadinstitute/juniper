@@ -22,7 +22,7 @@ public class AdminUserService extends CrudService<AdminUser, AdminUserDao> {
     @Override
     public AdminUser create(AdminUser adminUser) {
         AdminUser savedUser = dao.create(adminUser);
-        logger.info("Created AdminUser - id: {}, username: {}", adminUser.getId(), adminUser.getUsername());
+        logger.info("Created AdminUser - id: {}, username: {}", savedUser.getId(), savedUser.getUsername());
         return savedUser;
     }
 

@@ -66,7 +66,15 @@ class PublicApiControllerTest {
   }
 
   @Test
-  void testIndex() throws Exception {
-    this.mockMvc.perform(get("/")).andExpect(redirectedUrl("swagger-ui.html"));
+  void testForwarding() throws Exception {
+    // Check that all non-resource, non-api paths are forwarded to index
+    this.mockMvc.perform(get("/ourhealth/studies/ourheart")).andExpect(forwardedUrl("/"));
+    this.mockMvc.perform(get("/hearthive")).andExpect(forwardedUrl("/"));
+  }
+
+  @Test
+  void testResourceGets() throws Exception {
+    // confirm image paths are not forwarded to index
+    this.mockMvc.perform(get("/foo/bar/image.png")).andExpect(status().isNotFound());
   }
 }

@@ -212,7 +212,7 @@ export type ButtonConfig = {
 export type SectionConfig = { [index: string]: any }
 
 let bearerToken: string | null = null
-const API_ROOT = `${process.env.REACT_APP_API_SERVER}/${process.env.REACT_APP_API_ROOT}`
+const API_ROOT = `${process.env.REACT_APP_API_ROOT}`
 
 export default {
   getInitHeaders() {
