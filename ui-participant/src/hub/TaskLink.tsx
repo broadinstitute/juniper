@@ -1,6 +1,6 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import { Enrollee, ParticipantTask } from 'api/api'
+import {Link} from 'react-router-dom'
+import {Enrollee, ParticipantTask} from 'api/api'
 import {
   faChevronRight,
   faCircleCheck,
@@ -8,8 +8,8 @@ import {
   faLock,
   faTimesCircle
 } from '@fortawesome/free-solid-svg-icons'
-import { faCircle } from '@fortawesome/free-regular-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {faCircle} from '@fortawesome/free-regular-svg-icons'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 
 export type StatusDisplayInfo = {
   icon: React.ReactNode,
@@ -44,7 +44,7 @@ const statusDisplayMap: Record<string, StatusDisplayInfo> = {
  *  when we upgrade this UI to support i18n, we'll have to pull task titles by loading parts of the forms themselves,
  *  which do support i18n, and then loading from there.
  * */
-export default function TaskLink({ task, studyShortcode, enrollee }:
+export default function TaskLink({task, studyShortcode, enrollee}:
                                    { task: ParticipantTask, studyShortcode: string, enrollee: Enrollee }) {
   const isAccessible = isTaskAccessible(task, enrollee)
   const styleProps = {
@@ -53,17 +53,22 @@ export default function TaskLink({ task, studyShortcode, enrollee }:
     width: '100%',
     color: isAccessible ? undefined : '#aaa'
   }
+  if (!isAccessible) {
+    return <div className="d-flex flex-row" style={styleProps}>
+      <div><FontAwesomeIcon icon={faLock} title="you must consent for the study"/></div>
+      <div className="flex-grow-1 ms-3">{task.targetName}</div>
+    </div>
+  }
   return <div className="d-flex flex-row" style={styleProps}>
-    <div className="flex-grow-1">{task.targetName}</div>
+    <div>
+      {statusDisplayMap[task.status].icon}
+    </div>
+    <div className="flex-grow-1 ms-3">
+      <Link to={getTaskPath(task, enrollee.shortcode, studyShortcode)}>{task.targetName}</Link>
+    </div>
     <div className="ms-3">
-      {statusDisplayMap[task.status].icon} {statusDisplayMap[task.status].statusDisplay}
+      {statusDisplayMap[task.status].statusDisplay}
     </div>
-    <div className="fw-bold ms-3 text-end" style={{ minWidth: '8em' }}>
-      {isAccessible && <Link to={getTaskPath(task, enrollee.shortcode, studyShortcode)}>
-        {statusDisplayMap[task.status].actionDisplay}</Link>}
-      {!isAccessible && <div><FontAwesomeIcon icon={faLock} title="you must consent for the study"/></div>}
-    </div>
-
   </div>
 }
 
@@ -80,8 +85,12 @@ export function getTaskPath(task: ParticipantTask, enrolleeShortcode: string, st
 }
 
 /** is the task actionable by the user? for now, just looks at whether they've consented */
-function isTaskAccessible(task: ParticipantTask, enrollee: Enrollee) {
+export function isTaskAccessible(task: ParticipantTask, enrollee: Enrollee) {
   return task.taskType === 'CONSENT' || enrollee.consented
 }
 
+/** is the task ready to be worked on (not done or rejected) */
+export function isTaskActive(task: ParticipantTask) {
+  return ['NEW', 'IN_PROGRESS'].includes(task.status)
+}
 
