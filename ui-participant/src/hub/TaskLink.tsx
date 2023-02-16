@@ -1,13 +1,7 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
 import {Enrollee, ParticipantTask} from 'api/api'
-import {
-  faChevronRight,
-  faCircleCheck,
-  faCircleHalfStroke,
-  faLock,
-  faTimesCircle
-} from '@fortawesome/free-solid-svg-icons'
+import {faCheck, faChevronRight, faCircleHalfStroke, faLock, faTimesCircle} from '@fortawesome/free-solid-svg-icons'
 import {faCircle} from '@fortawesome/free-regular-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 
@@ -19,11 +13,11 @@ export type StatusDisplayInfo = {
 
 const statusDisplayMap: Record<string, StatusDisplayInfo> = {
   'COMPLETE': {
-    icon: <FontAwesomeIcon className="me-1" icon={faCircleCheck}/>,
+    icon: <FontAwesomeIcon className="fa-lg" style={{color: 'green'}} icon={faCheck}/>,
     statusDisplay: 'Completed', actionDisplay: 'View'
   },
   'IN_PROGRESS': {
-    icon: <FontAwesomeIcon className="me-1" icon={faCircleHalfStroke}/>,
+    icon: <FontAwesomeIcon icon={faCircleHalfStroke}/>,
     statusDisplay: 'In progress',
     actionDisplay: <span>Start <FontAwesomeIcon icon={faChevronRight}/></span>
   },
@@ -33,7 +27,7 @@ const statusDisplayMap: Record<string, StatusDisplayInfo> = {
     actionDisplay: <span>Start <FontAwesomeIcon className="me-1" icon={faChevronRight}/></span>
   },
   'REJECTED': {
-    icon: <FontAwesomeIcon className="me-1" icon={faTimesCircle}/>,
+    icon: <FontAwesomeIcon icon={faTimesCircle}/>,
     statusDisplay: 'Declined', actionDisplay: 'View'
   }
 }
@@ -48,7 +42,7 @@ export default function TaskLink({task, studyShortcode, enrollee}:
                                    { task: ParticipantTask, studyShortcode: string, enrollee: Enrollee }) {
   const isAccessible = isTaskAccessible(task, enrollee)
   const styleProps = {
-    padding: '1.25em 2em',
+    padding: '1em 0em',
     borderBottom: '1px solid #e4e4e4',
     width: '100%',
     color: isAccessible ? undefined : '#aaa'

@@ -27,7 +27,6 @@ export default function HubPage() {
 
   return <div>
     <div className="container">
-      <h5 className="text-center">Dashboard</h5>
       {!!hubMessage && <div className="row mb-2">
         <div className="col-md-12">
           <TaskStatusMessage content={hubMessage.content} messageType={hubMessage.messageType}/>
@@ -64,20 +63,21 @@ function StudyTaskBox({enrollee, portal}: { enrollee: Enrollee, portal: Portal }
   const hasCompletedForms = completedForms.length > 0
 
   return <div className="p-3">
-    <h5 className="mb-3 fw-bold">{matchedStudy.name}</h5>
+    <h4 className="mb-3">{matchedStudy.name}</h4>
     {hasStudyTasks && <div>
       {nextTask && <div className="row">
-        <div className="col-md-12 text-center p-4">
-          <Link to={getTaskPath(nextTask, enrollee.shortcode, matchedStudy.shortcode)} className="btn btn-primary">
-            Continue {taskTypeDisplayMap[nextTask.taskType]}
+        <div className="col-md-12 text-center p-4" style={{background: '#eef'}}>
+          <Link to={getTaskPath(nextTask, enrollee.shortcode, matchedStudy.shortcode)}
+                className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
+            Continue {taskTypeDisplayMap[nextTask.taskType]}s
           </Link>
         </div>
       </div>}
-      {hasActiveConsentTasks && <TaskGrouping title="Consent" tasks={sortedConsentTasks} enrollee={enrollee}
+      {hasActiveConsentTasks && <TaskGrouping title="CONSENT" tasks={sortedConsentTasks} enrollee={enrollee}
                                               studyShortcode={matchedStudy.shortcode}/>}
-      {hasActiveSurveyTasks && <TaskGrouping title="Surveys" tasks={sortedSurveyTasks} enrollee={enrollee}
+      {hasActiveSurveyTasks && <TaskGrouping title="SURVEYS" tasks={sortedSurveyTasks} enrollee={enrollee}
                                              studyShortcode={matchedStudy.shortcode}/>}
-      {hasCompletedForms && <TaskGrouping title="Forms" tasks={completedForms} enrollee={enrollee}
+      {hasCompletedForms && <TaskGrouping title="FORMS" tasks={completedForms} enrollee={enrollee}
                                           studyShortcode={matchedStudy.shortcode}/>}
     </div>}
     {!hasStudyTasks && <span className="detail">No tasks for this study</span>}
@@ -88,8 +88,8 @@ function TaskGrouping({title, tasks, enrollee, studyShortcode}: {
   title: string, tasks: ParticipantTask[],
   enrollee: Enrollee, studyShortcode: string
 }) {
-  return <div>
-    <h6 className="fw-bold">{title}</h6>
+  return <div className="mt-4">
+    <span className="fw-bold">{title}</span>
     <ol style={{listStyleType: 'none', paddingInlineStart: 0, width: '100%'}}>
       {tasks.map(task => <li key={task.id}>
         <TaskLink task={task} key={task.id} studyShortcode={studyShortcode}
