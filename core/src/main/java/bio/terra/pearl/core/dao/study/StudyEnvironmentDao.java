@@ -1,9 +1,11 @@
 package bio.terra.pearl.core.dao.study;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
+import bio.terra.pearl.core.dao.notification.NotificationConfigDao;
 import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.service.survey.SurveyService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,10 +17,22 @@ import org.springframework.stereotype.Component;
 @Component
 public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
     private StudyEnvironmentConfigDao studyEnvironmentConfigDao;
+    private StudyEnvironmentSurveyDao studyEnvironmentSurveyDao;
+    private StudyEnvironmentConsentDao studyEnvironmentConsentDao;
+    private NotificationConfigDao notificationConfigDao;
+    private SurveyService surveyService;
     private SurveyDao surveyDao;
-    public StudyEnvironmentDao(Jdbi jdbi, StudyEnvironmentConfigDao studyEnvironmentConfigDao, SurveyDao surveyDao) {
+    public StudyEnvironmentDao(Jdbi jdbi, StudyEnvironmentConfigDao studyEnvironmentConfigDao,
+                               StudyEnvironmentSurveyDao studyEnvironmentSurveyDao,
+                               StudyEnvironmentConsentDao studyEnvironmentConsentDao,
+                               NotificationConfigDao notificationConfigDao, SurveyService surveyService,
+                               SurveyDao surveyDao) {
         super(jdbi);
         this.studyEnvironmentConfigDao = studyEnvironmentConfigDao;
+        this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
+        this.studyEnvironmentConsentDao = studyEnvironmentConsentDao;
+        this.notificationConfigDao = notificationConfigDao;
+        this.surveyService = surveyService;
         this.surveyDao = surveyDao;
     }
 
@@ -71,6 +85,20 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
             }
         };
         return studyEnvs;
+    }
+
+    /** populates the studyEnv object in-place with all the content -- consents, surveys, etc... */
+    public StudyEnvironment loadWithAllContent(StudyEnvironment studyEnv) {
+        UUID studyEnvId = studyEnv.getId();
+        studyEnv.setStudyEnvironmentConfig(studyEnvironmentConfigDao.find(studyEnv.getStudyEnvironmentConfigId()).get());
+        studyEnv.setConfiguredSurveys(studyEnvironmentSurveyDao.findAllByStudyEnvIdWithSurvey(studyEnvId));
+        if (studyEnv.getPreEnrollSurveyId() != null) {
+            studyEnv.setPreEnrollSurvey(surveyService.find(studyEnv.getPreEnrollSurveyId()).get());
+        }
+        studyEnv.setConfiguredConsents(studyEnvironmentConsentDao
+                .findAllByStudyEnvIdWithConsent(studyEnvId));
+        studyEnv.setNotificationConfigs(notificationConfigDao.findByStudyEnvironmentId(studyEnvId));
+        return studyEnv;
     }
 
     public void deleteByStudyId(UUID studyId) {

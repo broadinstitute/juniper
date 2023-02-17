@@ -13,6 +13,4 @@ import lombok.experimental.SuperBuilder;
  * every time.
  */
 @Getter @Setter @SuperBuilder
-public class EnrolleeCreationEvent extends EnrolleeEvent {
-
-}
+public class EnrolleeCreationEvent extends EnrolleeEvent { }

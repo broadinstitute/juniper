@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
-public class EnrolleeEvent {
+public abstract class EnrolleeEvent implements BaseEvent {
     private Enrollee enrollee;
     private PortalParticipantUser portalParticipantUser;
     private EnrolleeRuleData enrolleeRuleData;

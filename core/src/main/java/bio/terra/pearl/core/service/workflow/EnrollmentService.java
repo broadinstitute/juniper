@@ -11,7 +11,6 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -31,19 +30,19 @@ public class EnrollmentService {
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
     private StudyEnvironmentService studyEnvironmentService;
     private PortalParticipantUserService portalParticipantUserService;
-    private EnrolleeRuleService enrolleeRuleService;
     private EnrolleeService enrolleeService;
+    private EventService eventService;
 
     public EnrollmentService(SurveyService surveyService, PreEnrollmentResponseDao preEnrollmentResponseDao,
                              StudyEnvironmentService studyEnvironmentService,
                              PortalParticipantUserService portalParticipantUserService,
                              EnrolleeRuleService enrolleeRuleService,
-                             EnrolleeService enrolleeService) {
+                             EnrolleeService enrolleeService, EventService eventService) {
         this.surveyService = surveyService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.studyEnvironmentService = studyEnvironmentService;
         this.portalParticipantUserService = portalParticipantUserService;
-        this.enrolleeRuleService = enrolleeRuleService;
+        this.eventService = eventService;
         this.enrolleeService = enrolleeService;
     }
 
@@ -92,13 +91,7 @@ public class EnrollmentService {
             response.setPortalParticipantUserId(ppUser.getId());
             preEnrollmentResponseDao.update(response);
         }
-        EnrolleeRuleData enrolleeRuleData = enrolleeRuleService.fetchData(enrollee);
-        EnrolleeCreationEvent enrolleeEvent = EnrolleeCreationEvent.builder()
-                .enrollee(enrollee)
-                .portalParticipantUser(ppUser)
-                .enrolleeRuleData(enrolleeRuleData)
-                .build();
-        applicationEventPublisher.publishEvent(enrolleeEvent);
+        eventService.publishEnrolleeCreationEvent(enrollee, ppUser);
         logger.info("Enrollee created: user {}, study {}, shortcode {}, {} tasks added",
                 user.getId(), studyShortcode, enrollee.getShortcode(), enrollee.getParticipantTasks().size());
         HubResponse hubResponse = HubResponse.builder()

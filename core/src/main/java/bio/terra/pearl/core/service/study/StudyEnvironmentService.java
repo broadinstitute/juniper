@@ -6,11 +6,13 @@ import bio.terra.pearl.core.dao.study.StudyEnvironmentSurveyDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
+import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import java.util.*;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     private EnrolleeService enrolleeService;
     private StudyEnvironmentConsentDao studyEnvironmentConsentDao;
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
+    private NotificationConfigService notificationConfigService;
 
 
     public StudyEnvironmentService(StudyEnvironmentDao studyEnvironmentDao,
@@ -30,13 +33,14 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
                                    StudyEnvironmentConfigService studyEnvironmentConfigService,
                                    EnrolleeService enrolleeService,
                                    StudyEnvironmentConsentDao studyEnvironmentConsentDao,
-                                   PreEnrollmentResponseDao preEnrollmentResponseDao) {
+                                   PreEnrollmentResponseDao preEnrollmentResponseDao, NotificationConfigService notificationConfigService) {
         super(studyEnvironmentDao);
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
         this.studyEnvironmentConfigService =  studyEnvironmentConfigService;
         this.enrolleeService = enrolleeService;
         this.studyEnvironmentConsentDao = studyEnvironmentConsentDao;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
+        this.notificationConfigService = notificationConfigService;
     }
 
     public Set<StudyEnvironment> findByStudy(UUID studyId) {
@@ -68,6 +72,10 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
             studyEnvironmentConsent.setStudyEnvironmentId(newEnv.getId());
             studyEnvironmentConsentDao.create(studyEnvironmentConsent);
         }
+        for (NotificationConfig config : studyEnv.getNotificationConfigs()) {
+            config.setStudyEnvironmentId(newEnv.getId());
+            notificationConfigService.create(config);
+        }
         newEnv.setStudyEnvironmentConfig(envConfig);
         return newEnv;
     }
@@ -76,10 +84,10 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     @Override
     public void delete(UUID studyEnvironmentId, Set<CascadeProperty> cascade) {
         StudyEnvironment studyEnv = dao.find(studyEnvironmentId).get();
-        preEnrollmentResponseDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         enrolleeService.deleteByStudyEnvironmentId(studyEnv.getId(), cascade);
         studyEnvironmentSurveyDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         studyEnvironmentConsentDao.deleteByStudyEnvironmentId(studyEnvironmentId);
+        notificationConfigService.deleteByStudyEnvironmentId(studyEnvironmentId);
         dao.delete(studyEnvironmentId);
         if (studyEnv.getStudyEnvironmentConfigId() != null) {
             studyEnvironmentConfigService.delete(studyEnv.getStudyEnvironmentConfigId());

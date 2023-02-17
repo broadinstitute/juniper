@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: "notifications"
+      author: dbush
+      changes:
+        - createTable:
+            tableName: notification_config
+            columns:
+              - column: &idColumn
+                  { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: &createdAt
+                  { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: &lastUpdatedAt
+                  { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: rule, type: text}
+              - column: { name: active, type: boolean, defaultValueBoolean: true, constraints: { nullable: false }}
+              - column: { name: notification_type, type: text, constraints: { nullable: false }}
+              - column: { name: delivery_type, type: text, constraints: { nullable: false } }
+              - column: { name: event_type, type: text}
+              - column: { name: task_type, type: text}
+              - column: { name: task_target_stable_id, type: text}
+              - column: { name: after_minutes_incomplete, type: integer}
+              - column: { name: study_environment_id, type: uuid, constraints:
+                { foreignKeyName: fk_notification_config_study_environment, references: study_environment(id) }
+              }
+              - column: { name: portal_environment_id, type: uuid, constraints:
+                { foreignKeyName: fk_notification_config_portal_env, references: portal_environment(id) }
+              }
+        - createTable:
+            tableName: notification
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: delivery_status, type: text, constraints: { nullable: false } }
+              - column: { name: delivery_type, type: text, constraints: { nullable: false } }
+              - column: { name: sent_to, type: text }
+              - column: { name: retries, type: integer }
+              - column: { name: enrollee_id, type: uuid, constraints:
+                { foreignKeyName: fk_notification_enrollee, references: enrollee(id) }
+              }
+              - column: { name: participant_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_notification_participant_user, references: participant_user(id) }
+              }
+              - column: { name: study_environment_id, type: uuid, constraints:
+                { foreignKeyName: fk_notification_study_environment, references: study_environment(id) }
+              }
+              - column: { name: portal_environment_id, type: uuid, constraints:
+                { foreignKeyName: fk_notification_config_portal_env, references: portal_environment(id) }
+              }
+              - column: { name: notification_config_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_notification_notification_config, references: notification_config(id) }
+              }

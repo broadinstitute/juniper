@@ -2,8 +2,12 @@ package bio.terra.pearl.core.model.portal;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.survey.Survey;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,4 +28,6 @@ public class PortalEnvironment extends BaseEntity {
     private SiteContent siteContent;
     private UUID preRegSurveyId;
     private Survey preRegSurvey;
+    @Builder.Default
+    private List<NotificationConfig> notificationConfigs = new ArrayList<>();
 }

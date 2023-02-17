@@ -43,6 +43,10 @@
           "consentVersion": 1
         }
       ],
+      "notificationConfigs": [{
+        "notificationType": "EVENT",
+        "eventType": "STUDY_ENROLLMENT"
+      }],
       "enrolleeFiles": [
         "enrollees/jsalk.json",
         "enrollees/newEnrollee.json",

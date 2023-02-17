@@ -13,6 +13,7 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck'
 import EnrolleeSurveyView from './survey/EnrolleeSurveyView'
 import EnrolleeConsentView from './consent/EnrolleeConsentView'
 import PreEnrollmentView from './survey/PreEnrollmentView'
+import EnrolleeNotifications from './EnrolleeNotifications'
 
 export type SurveyWithResponsesT = {
   survey: StudyEnvironmentSurvey,
@@ -80,7 +81,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                 <ul className="list-group">
                   { consents.map(consent => {
                     const stableId = consent.consentForm.stableId
-                    return <li className="list-group-item" key={stableId}>
+                    return <li className="list-group-item border-0" key={stableId}>
                       <NavLink to={`consents/${stableId}`} className={getLinkCssClasses}>
                         { consent.consentForm.name }
                         { isConsented(consentMap[stableId].responses) &&
@@ -96,7 +97,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                 <ul className="list-group">
                   { surveys.map(survey => {
                     const stableId = survey.survey.stableId
-                    return <li className="list-group-item" key={stableId}>
+                    return <li className="list-group-item border-0" key={stableId}>
                       <NavLink to={`surveys/${stableId}`} className={getLinkCssClasses}>
                         { survey.survey.name }
                         {responseMap[stableId].responses.length > 0 &&
@@ -113,7 +114,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                 Tasks
                 <ul className="list-group">
                   { enrollee.participantTasks.map(task => {
-                    return <li className="list-group-item" key={task.id}>
+                    return <li className="list-group-item border-0" key={task.id}>
                       <NavLink to={`tasks/${task.id}`} className={getLinkCssClasses}>
                         { task.taskType }: {task.targetName}
                         <span className="detail">{task.status}</span>
@@ -121,6 +122,9 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                     </li>
                   }) }
                 </ul>
+              </li>
+              <li className="list-group-item subgroup">
+                <NavLink to="notifications" className={getLinkCssClasses}>Notifications</NavLink>
               </li>
             </ul>
           </div>
@@ -142,6 +146,9 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                   responseMap={consentMap}/>}/>
                 <Route path="*" element={<div>Unknown participant survey page</div>}/>
               </Route>
+              <Route path="notifications" element={
+                <EnrolleeNotifications enrollee={enrollee} studyEnvContext={studyEnvContext}/>
+              }/>
               <Route index element={<div>Enrollee page</div>}/>
               <Route path="*" element={<div>unknown enrollee route</div>}/>
             </Routes>

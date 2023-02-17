@@ -13,4 +13,6 @@ package bio.terra.pearl.core.service.workflow;
 public class DispatcherOrder {
     public static final int CONSENT = 5;
     public static final int SURVEY = 10;
+    // notifications should be processed last so they can include all previous processing
+    public static final int NOTIFICATION = 100;
 }

@@ -3,6 +3,7 @@ package bio.terra.pearl.populate.service;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
+import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -14,6 +15,8 @@ import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
+import bio.terra.pearl.core.service.notification.NotificationConfigService;
+import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
@@ -22,6 +25,7 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dto.EnrolleePopDto;
+import bio.terra.pearl.populate.dto.NotificationPopDto;
 import bio.terra.pearl.populate.dto.ParticipantTaskPopDto;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
@@ -29,7 +33,9 @@ import bio.terra.pearl.populate.dto.survey.ResponseSnapshotPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -44,6 +50,8 @@ public class EnrolleePopulator extends Populator<Enrollee> {
     private ConsentFormService consentFormService;
     private ConsentResponseService consentResponseService;
     private ParticipantTaskService participantTaskService;
+    private NotificationConfigService notificationConfigService;
+    private NotificationService notificationService;
 
     public EnrolleePopulator(FilePopulateService filePopulateService,
                              ObjectMapper objectMapper,
@@ -54,7 +62,9 @@ public class EnrolleePopulator extends Populator<Enrollee> {
                              PreEnrollmentResponseDao preEnrollmentResponseDao, SurveyService surveyService,
                              SurveyResponseService surveyResponseService, ConsentFormService consentFormService,
                              ConsentResponseService consentResponseService,
-                             ParticipantTaskService participantTaskService) {
+                             ParticipantTaskService participantTaskService,
+                             NotificationConfigService notificationConfigService,
+                             NotificationService notificationService) {
         this.portalParticipantUserService = portalParticipantUserService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.surveyService = surveyService;
@@ -62,6 +72,8 @@ public class EnrolleePopulator extends Populator<Enrollee> {
         this.consentFormService = consentFormService;
         this.consentResponseService = consentResponseService;
         this.participantTaskService = participantTaskService;
+        this.notificationConfigService = notificationConfigService;
+        this.notificationService = notificationService;
         this.objectMapper = objectMapper;
         this.filePopulateService = filePopulateService;
         this.enrolleeService = enrolleeService;
@@ -97,6 +109,7 @@ public class EnrolleePopulator extends Populator<Enrollee> {
         for (ParticipantTaskPopDto taskDto : enrolleeDto.getParticipantTaskDtos()) {
             populateTask(enrollee, ppUser, taskDto);
         }
+        populateNotifications(enrollee, enrolleeDto, attachedEnv.getId(), ppUser);
         return enrollee;
     }
 
@@ -167,6 +180,30 @@ public class EnrolleePopulator extends Populator<Enrollee> {
         taskDto.setStudyEnvironmentId(enrollee.getStudyEnvironmentId());
         taskDto.setPortalParticipantUserId(ppUser.getId());
         participantTaskService.create(taskDto);
+    }
+
+    private void populateNotifications(Enrollee enrollee, EnrolleePopDto enrolleeDto, UUID studyEnvironmentId,
+    PortalParticipantUser ppUser) {
+        List<NotificationConfig> notificationConfigs = notificationConfigService.findByStudyEnvironmentId(studyEnvironmentId);
+        for (NotificationPopDto notificationPopDto : enrolleeDto.getNotifications()) {
+            NotificationConfig matchedConfig = matchConfigToNotification(notificationConfigs, notificationPopDto);
+            notificationPopDto.setNotificationConfigId(matchedConfig.getId());
+            notificationPopDto.setStudyEnvironmentId(enrollee.getStudyEnvironmentId());
+            notificationPopDto.setEnrolleeId(enrollee.getId());
+            notificationPopDto.setParticipantUserId(enrollee.getParticipantUserId());
+            notificationPopDto.setPortalEnvironmentId(ppUser.getPortalEnvironmentId());
+            notificationService.create(notificationPopDto);
+        }
+    }
+
+    /** quick-and-dirty match based on types -- this is not robust but it's sufficient for our current testing needs */
+    private NotificationConfig matchConfigToNotification(List<NotificationConfig> notificationConfigs,
+                                                         NotificationPopDto notification) {
+        return notificationConfigs.stream().filter(config ->
+                config.getEventType().equals(notification.getNotificationConfigEventType()) &&
+                config.getNotificationType().equals(notification.getNotificationConfigType()) &&
+                config.getDeliveryType().equals(notification.getDeliveryType()))
+                .findFirst().orElse(null);
     }
 }
 
