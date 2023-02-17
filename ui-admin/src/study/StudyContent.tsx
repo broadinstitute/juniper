@@ -1,5 +1,4 @@
 import React from 'react'
-import Select from 'react-select'
 
 import { StudyEnvContextT } from './StudyEnvironmentRouter'
 import { Link } from 'react-router-dom'
@@ -19,21 +18,6 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
     minWidth: '200px',
     maxWidth: '200px'
   }
-  const consequenceOptions = [
-    { label: 'Send blood kit', value: 'bloodKit' },
-    { label: 'Request medical records', value: 'medRecords' }
-  ]
-
-  const triggerOptions = [
-    { label: 'completed', value: 'completion' },
-    { label: 'started', value: 'start' }
-  ]
-
-  const triggerTarget = [
-    { label: 'Enrollment', value: 'enrollment' },
-    { label: 'Consent', value: 'consent' },
-    { label: 'Medical History form', value: 'medicalHistory' }
-  ]
 
   const preEnrollSurvey = currentEnv.preEnrollSurvey
   const envConfig = currentEnv.studyEnvironmentConfig

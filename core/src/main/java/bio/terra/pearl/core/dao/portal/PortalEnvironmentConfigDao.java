@@ -20,7 +20,7 @@ public class PortalEnvironmentConfigDao extends BaseJdbiDao<PortalEnvironmentCon
     public Optional<PortalEnvironmentConfig> findByPortalEnvId(UUID portalEnvId) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select " + prefixedGetQueryColumns("a") + " from " + tableName
-                                + " a join portal_environment on portal_environment_config_id = portal_environment_config.id"
+                                + " a join portal_environment on portal_environment_config_id = a.id"
                                 + " where portal_environment.id = :portalEnvId")
                         .bind("portalEnvId", portalEnvId)
                         .mapTo(clazz)

@@ -42,7 +42,7 @@ databaseChangeLog:
                 { foreignKeyName: fk_notification_config_study_environment, references: study_environment(id) }
               }
               - column: { name: portal_environment_id, type: uuid, constraints:
-                { foreignKeyName: fk_notification_config_portal_env, references: portal_environment(id) }
+                { nullable: false, foreignKeyName: fk_notification_config_portal_env, references: portal_environment(id) }
               }
               - column: { name: email_template_id, type: uuid, constraints:
                 { foreignKeyName: fk_notification_config_email_template, references: email_template(id) }

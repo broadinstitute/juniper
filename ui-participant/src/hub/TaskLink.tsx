@@ -1,9 +1,9 @@
 import React from 'react'
-import {Link} from 'react-router-dom'
-import {Enrollee, ParticipantTask} from 'api/api'
-import {faCheck, faChevronRight, faCircleHalfStroke, faLock, faTimesCircle} from '@fortawesome/free-solid-svg-icons'
-import {faCircle} from '@fortawesome/free-regular-svg-icons'
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import { Link } from 'react-router-dom'
+import { Enrollee, ParticipantTask } from 'api/api'
+import { faCheck, faChevronRight, faCircleHalfStroke, faLock, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { faCircle } from '@fortawesome/free-regular-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export type StatusDisplayInfo = {
   icon: React.ReactNode,
@@ -13,7 +13,7 @@ export type StatusDisplayInfo = {
 
 const statusDisplayMap: Record<string, StatusDisplayInfo> = {
   'COMPLETE': {
-    icon: <FontAwesomeIcon className="fa-lg" style={{color: 'green'}} icon={faCheck}/>,
+    icon: <FontAwesomeIcon className="fa-lg" style={{ color: 'green' }} icon={faCheck}/>,
     statusDisplay: 'Completed', actionDisplay: 'View'
   },
   'IN_PROGRESS': {
@@ -38,7 +38,7 @@ const statusDisplayMap: Record<string, StatusDisplayInfo> = {
  *  when we upgrade this UI to support i18n, we'll have to pull task titles by loading parts of the forms themselves,
  *  which do support i18n, and then loading from there.
  * */
-export default function TaskLink({task, studyShortcode, enrollee}:
+export default function TaskLink({ task, studyShortcode, enrollee }:
                                    { task: ParticipantTask, studyShortcode: string, enrollee: Enrollee }) {
   const isAccessible = isTaskAccessible(task, enrollee)
   const styleProps = {

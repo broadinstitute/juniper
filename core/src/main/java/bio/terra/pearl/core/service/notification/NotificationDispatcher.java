@@ -23,14 +23,12 @@ public class NotificationDispatcher {
     private static final Logger logger = LoggerFactory.getLogger(NotificationDispatcher.class);
     private NotificationConfigService notificationConfigService;
     private NotificationService notificationService;
-    private EmailService emailService;
     private Map<NotificationDeliveryType, NotificationSender> senderMap;
 
     public NotificationDispatcher(NotificationConfigService notificationConfigService,
                                   NotificationService notificationService, EmailService emailService) {
         this.notificationConfigService = notificationConfigService;
         this.notificationService = notificationService;
-        this.emailService = emailService;
         senderMap = Map.of(NotificationDeliveryType.EMAIL, emailService);
     }
 
@@ -44,6 +42,7 @@ public class NotificationDispatcher {
             Class configClass = config.getEventType().eventClass;
             if (configClass.isInstance(event)) {
                 if (RuleEvaluator.evaluateEnrolleeRule(config.getRule(), event.getEnrolleeRuleData())) {
+                    // TODO: this should use the async call
                     createNotification(config, event.getEnrollee(), event.getPortalParticipantUser(), event.getEnrolleeRuleData());
                     senderMap.get(config.getDeliveryType())
                             .sendNotification(config, event.getEnrolleeRuleData());

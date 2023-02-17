@@ -2,7 +2,9 @@ package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.notification.EmailTemplateService;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.populate.dao.EmailTemplatePopulateDao;
 import bio.terra.pearl.populate.dto.notifications.EmailTemplatePopDto;
@@ -18,13 +20,16 @@ public class EmailTemplatePopulator extends Populator<EmailTemplate> {
     private EmailTemplateService emailTemplateService;
     private PortalService portalService;
     private EmailTemplatePopulateDao emailTemplatePopulateDao;
+    private PortalEnvironmentService portalEnvironmentService;
 
     public EmailTemplatePopulator(EmailTemplateService emailTemplateService,
                                   PortalService portalService,
-                                  EmailTemplatePopulateDao emailTemplatePopulateDao) {
+                                  EmailTemplatePopulateDao emailTemplatePopulateDao,
+                                  PortalEnvironmentService portalEnvironmentService) {
         this.emailTemplateService = emailTemplateService;
         this.portalService = portalService;
         this.emailTemplatePopulateDao = emailTemplatePopulateDao;
+        this.portalEnvironmentService = portalEnvironmentService;
     }
 
     @Override
@@ -48,9 +53,12 @@ public class EmailTemplatePopulator extends Populator<EmailTemplate> {
         return emailTemplateService.create(templatePopDto);
     }
 
-    public NotificationConfig convertNotificationConfig(NotificationConfigPopDto configPopDto) {
+    public NotificationConfig convertNotificationConfig(NotificationConfigPopDto configPopDto, FilePopulateConfig fileConfg) {
         NotificationConfig config = new NotificationConfig();
         BeanUtils.copyProperties(configPopDto, config);
+        PortalEnvironment portalEnv = portalEnvironmentService
+                .findOne(fileConfg.getPortalShortcode(), fileConfg.getEnvironmentName()).get();
+        config.setPortalEnvironmentId(portalEnv.getId());
         EmailTemplate template = emailTemplateService.findByStableId(configPopDto.getEmailTemplateStableId(),
                 configPopDto.getEmailTemplateVersion()).get();
         config.setEmailTemplateId(template.getId());

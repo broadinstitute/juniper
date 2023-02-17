@@ -158,7 +158,14 @@ export type NotificationConfig = {
   eventType: string,
   taskType: string,
   taskTargetStableId: string,
-  afterMinutesIncomplete: number
+  afterMinutesIncomplete: number,
+  emailTemplateId: string,
+  emailTemplate: EmailTemplate
+}
+
+export type EmailTemplate = {
+  subject: string,
+  body: string
 }
 
 export type Notification = {

@@ -16,6 +16,7 @@ dependencies {
     implementation project(':core')
     implementation project(':ui-participant')
     implementation 'org.apache.commons:commons-dbcp2'
+    implementation 'commons-beanutils:commons-beanutils:1.9.4'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.retry:spring-retry'

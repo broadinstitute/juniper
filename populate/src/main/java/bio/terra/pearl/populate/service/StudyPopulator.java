@@ -68,7 +68,7 @@ public class StudyPopulator extends Populator<Study> {
             emailTemplatePopulator.populate(config.newFrom(template));
         }
         for (StudyEnvironmentPopDto studyEnv : studyDto.getStudyEnvironmentDtos()) {
-            initializeStudyEnvironmentDto(studyEnv);
+            initializeStudyEnvironmentDto(studyEnv, config.newForEnv(studyEnv.getEnvironmentName()));
         }
 
         Study newStudy = studyService.create(studyDto);
@@ -84,7 +84,7 @@ public class StudyPopulator extends Populator<Study> {
     }
 
     /** takes a dto and hydrates it with already-populated objects (surveys, consents, etc...) */
-    private void initializeStudyEnvironmentDto(StudyEnvironmentPopDto studyEnv) {
+    private void initializeStudyEnvironmentDto(StudyEnvironmentPopDto studyEnv, FilePopulateConfig config) {
         for (int i = 0; i < studyEnv.getConfiguredSurveyDtos().size(); i++) {
             StudyEnvironmentSurveyPopDto configSurveyDto = studyEnv.getConfiguredSurveyDtos().get(i);
             StudyEnvironmentSurvey configSurvey = surveyPopulator.convertConfiguredSurvey(configSurveyDto, i);
@@ -100,8 +100,8 @@ public class StudyPopulator extends Populator<Study> {
             studyEnv.getConfiguredConsents().add(configConsent);
         }
         for (NotificationConfigPopDto configPopDto : studyEnv.getNotificationConfigDtos()) {
-            NotificationConfig config = emailTemplatePopulator.convertNotificationConfig(configPopDto);
-            studyEnv.getNotificationConfigs().add(config);
+            NotificationConfig notificationConfig = emailTemplatePopulator.convertNotificationConfig(configPopDto, config);
+            studyEnv.getNotificationConfigs().add(notificationConfig);
         }
     }
 

@@ -7,4 +7,8 @@ public enum EnvironmentName {
     public static EnvironmentName valueOfCaseInsensitive(String value) {
         return EnvironmentName.valueOf(value.toLowerCase());
     }
+
+    public boolean isProduction() {
+        return !this.equals(live);
+    }
 }

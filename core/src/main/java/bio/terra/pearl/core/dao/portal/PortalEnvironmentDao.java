@@ -63,4 +63,10 @@ public class PortalEnvironmentDao extends BaseMutableJdbiDao<PortalEnvironment> 
         });
         return portalEnvOpt;
     }
+
+    /** load with everything needed to display the participant-facing site */
+    public Optional<PortalEnvironment> loadWithEnvConfig(UUID portalEnvironmentId) {
+        return findWithChild(portalEnvironmentId, "portal_environment_config_id",
+                "portalEnvironmentConfig", portalEnvironmentConfigDao);
+    }
 }

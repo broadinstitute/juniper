@@ -10,8 +10,8 @@ env:
   tracing:
     exportEnabled: ${CLOUD_TRACE_ENABLED:false}
     samplingRate: ${SAMPLING_PROBABILITY:0}
-  sendgrid:
-    apiKey: ${SENDGRID_API_KEY:nokey}
+  email:
+    sendgridApiKey: ${SENDGRID_API_KEY:}
 
 # Below here is non-deployment-specific
 

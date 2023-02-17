@@ -62,8 +62,10 @@ Open the root folder in IntelliJ.
      * ApiAdminApp (in api-admin module)
        * set active profiles of "human-readable-logging" and "development"
        * disable launch optimization
+       * set environment variable: REDIRECT_ALL_EMAILS_TO=<<your email address>>
      * ApiParticipantApp (in api-participant module)
         * set active profiles of "human-readable-logging" and "development"
+        * set environment variable: REDIRECT_ALL_EMAILS_TO=<<your email address>>
         * disable launch optimization
         
          
