@@ -108,7 +108,7 @@ jobs:
         with:
           channel: '#pearl-dev-notifications'
           # Result status on the set version in dev job which actually performs the deploy
-          status: ${{ needs.*.result }}
+          status: ${{ needs.set-version-in-dev.result }}
           author_name: Auto Deploy to Dev
           fields: job
           text: Deploy to dev of ${{ needs.publish-job.outputs.tag }} resulted in ${{ needs.set-version-in-dev.result }}
