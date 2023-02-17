@@ -62,6 +62,39 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
 
         StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, portalEnv, "test");
         assertThat(replacer.replace("here's a dashboard link: ${dashboardLink}"),
-                equalTo("here's a dashboard link: <a href=\"https://newstudy.org/hub\">Go to dashboard</a>"));
+                equalTo("here's a dashboard link: <a href=\"https://irb.newstudy.org/hub\">Go to dashboard</a>"));
+    }
+
+    @Test
+    public void testDashLinkHostnamesLive() {
+        PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
+                .participantHostname("newstudy.org")
+                .build();
+        PortalEnvironment portalEnv = portalEnvironmentFactory.builder("testDashLinkHostnamesLive")
+                .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.live).build();
+        String result = EnrolleeEmailSubstitutor.getParticipantHostname(portalEnv, "snazzportal");
+        assertThat(result, equalTo("https://newstudy.org"));
+    }
+
+    @Test
+    public void testDashLinkHostnamesIrb() {
+        PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
+                .participantHostname("newstudy.org")
+                .build();
+        PortalEnvironment portalEnv = portalEnvironmentFactory.builder("testDashLinkHostnamesIrb")
+                .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
+        String result = EnrolleeEmailSubstitutor.getParticipantHostname(portalEnv, "snazzportal");
+        assertThat(result, equalTo("https://irb.newstudy.org"));
+    }
+
+    @Test
+    public void testDashLinkHostnamesLocalhost() {
+        PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
+                .participantHostname(null)
+                .build();
+        PortalEnvironment portalEnv = portalEnvironmentFactory.builder("testDashLinkHostnamesLocalhost")
+                .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.sandbox).build();
+        String result = EnrolleeEmailSubstitutor.getParticipantHostname(portalEnv, "snazzportal");
+        assertThat(result, equalTo("http://sandbox.snazzportal.localhost:3001"));
     }
 }

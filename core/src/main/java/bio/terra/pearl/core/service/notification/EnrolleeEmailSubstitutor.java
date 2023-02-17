@@ -46,10 +46,12 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
 
     public String getDashboardLink(PortalEnvironment portalEnv, String portalShortcode) {
         String href = getParticipantHostname(portalEnv, portalShortcode) + ParticipantUiConstants.DASHBOARD_PATH;
+        String dashLink = String.format("<a href=\"%s\">Go to dashboard</a>", href);
+        logger.info("DASHLINK: {}", dashLink);
         return String.format("<a href=\"%s\">Go to dashboard</a>", href);
     }
 
-    public String getParticipantHostname(PortalEnvironment portalEnv, String portalShortcode) {
+    public static String getParticipantHostname(PortalEnvironment portalEnv, String portalShortcode) {
         String participantHostname = portalEnv.getPortalEnvironmentConfig().getParticipantHostname();
         if (participantHostname == null) {
             // TODO read from environment variable once Mike adds support for it
@@ -62,7 +64,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         if (!participantHostname.contains("localhost")) {
             participantHostname = "https://" + participantHostname;
         } else {
-            participantHostname += "http://" + participantHostname;
+            participantHostname = "http://" + participantHostname;
         }
         return participantHostname;
     }

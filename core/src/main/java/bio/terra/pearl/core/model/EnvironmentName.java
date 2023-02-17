@@ -9,6 +9,6 @@ public enum EnvironmentName {
     }
 
     public boolean isProduction() {
-        return !this.equals(live);
+        return this.equals(live);
     }
 }
