@@ -69,9 +69,9 @@ jobs:
         with:
           channel: '#pearl-dev-notifications'
           status: failure
-          author_name: Publish to dev
+          author_name: Publish docker Image
           fields: job
-          text: 'Publish failed :sadpanda:'
+          text: "Publish failed :sadpanda:, image ${{ steps.image-name.outputs.name }} failed to publish"
           username: 'Pearl Build Notifications'
   
   report-to-sherlock:
@@ -97,3 +97,21 @@ jobs:
       sync-git-token: ${{ secrets.BROADBOT_TOKEN }}
     permissions:
       id-token: 'write'
+  
+  notify-upon-completion:
+    runs-on: ubuntu-latest
+    needs: [set-version-in-dev, publish-job]
+    steps:
+      - uses: broadinstitute/action-slack@v3.8.0
+        env: 
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          channel: '#pearl-dev-notifications'
+          # Result status on the set version in dev job which actually performs the deploy
+          status: ${{ needs.set-version-in-dev.result }}
+          author_name: Auto Deploy to Dev
+          fields: job
+          text: Deploy to dev of ${{ needs.publish-job.outputs.tag }} resulted in ${{ needs.set-version-in-dev.result }}
+          username: 'Pearl Build Notifications'
+
+
