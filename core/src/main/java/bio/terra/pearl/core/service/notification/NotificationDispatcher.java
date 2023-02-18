@@ -44,11 +44,15 @@ public class NotificationDispatcher {
                 if (RuleEvaluator.evaluateEnrolleeRule(config.getRule(), event.getEnrolleeRuleData())) {
                     // TODO: this should use the async call
                     createNotification(config, event.getEnrollee(), event.getPortalParticipantUser(), event.getEnrolleeRuleData());
-                    senderMap.get(config.getDeliveryType())
-                            .sendNotification(config, event.getEnrolleeRuleData());
+                    sendNotification(config, event.getEnrolleeRuleData());
                 }
             }
         }
+    }
+
+    public void sendNotification(NotificationConfig config, EnrolleeRuleData enrolleeRuleData) {
+        senderMap.get(config.getDeliveryType())
+                .sendNotification(config, enrolleeRuleData);
     }
 
     public void createNotification(NotificationConfig config, Enrollee enrollee, PortalParticipantUser ppUser,

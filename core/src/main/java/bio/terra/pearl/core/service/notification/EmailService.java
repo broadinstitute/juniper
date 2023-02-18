@@ -84,7 +84,7 @@ public class EmailService implements NotificationSender {
             } catch (IOException ex) {
                 // don't log the exception itself since the trace might have PII in it.
                 logger.error("Email failed to send: config: {}, enrollee: {}", config.getId(),
-                        ruleData.getEnrollee().getShortcode());
+                        ruleData.enrollee().getShortcode());
             }
         } else {
             // we'll usually want to avoid sending emails from CI environments
@@ -96,7 +96,7 @@ public class EmailService implements NotificationSender {
     public Mail buildEmail(EmailTemplate template, EnrolleeRuleData ruleData, PortalEnvironment portalEnv,
                            String portalShortcode) {
         Email from = new Email(portalEnv.getPortalEnvironmentConfig().getEmailSourceAddress());
-        Email to = new Email(ruleData.getProfile().getContactEmail());
+        Email to = new Email(ruleData.profile().getContactEmail());
 
         StringSubstitutor stringSubstitutor = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, portalEnv, portalShortcode);
         String subject = stringSubstitutor.replace(template.getSubject());
@@ -104,7 +104,7 @@ public class EmailService implements NotificationSender {
 
         if (!StringUtils.isEmpty(emailRedirectAddress)) {
             to =  new Email(emailRedirectAddress);
-            contentString = "<p><i>Redirected from " + ruleData.getProfile().getContactEmail()
+            contentString = "<p><i>Redirected from " + ruleData.profile().getContactEmail()
                     + "</i></p>" + contentString;
         }
 

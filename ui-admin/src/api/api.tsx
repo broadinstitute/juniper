@@ -331,6 +331,19 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async testNotification(portalShortcode: string, envName: string,
+    notificationConfigId: string, enrolleeRuleData: object): Promise<NotificationConfig> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/notificationConfigs/${notificationConfigId}`
+      + `/test`
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(enrolleeRuleData)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   getParticipantLink(portalShortcode: string, envName: string): string {
     const participantHost = `${envName}.${portalShortcode}.${participantRootPath}`
     return `${participantProtocol}://${participantHost}`

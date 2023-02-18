@@ -20,7 +20,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
     protected EnrolleeEmailSubstitutor(EnrolleeRuleData ruleData, PortalEnvironment portalEnv, String portalShortcode) {
         this.enrolleeRuleData = ruleData;
         this.portalEnvironment = portalEnv;
-        valueMap = Map.of("profile", enrolleeRuleData.getProfile(),
+        valueMap = Map.of("profile", enrolleeRuleData.profile(),
                 "portalEnv", portalEnv,
                 "envConfig", portalEnv.getPortalEnvironmentConfig(),
                 "dashboardLink", getDashboardLink(portalEnv, portalShortcode));
@@ -39,7 +39,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
             return PropertyUtils.getNestedProperty(valueMap, key).toString();
         } catch (Exception e) {
             logger.error("Could not resolve template value {}, environment: {}, enrollee: {}",
-                    key, portalEnvironment.getId(), enrolleeRuleData.getEnrollee().getShortcode());
+                    key, portalEnvironment.getId(), enrolleeRuleData.enrollee().getShortcode());
         }
         return "";
     }

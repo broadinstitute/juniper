@@ -23,7 +23,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
     public void profileVariablesAreReplaced() {
         Profile profile = Profile.builder().givenName("tester").build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeRuleData ruleData = EnrolleeRuleData.builder().enrollee(enrollee).profile(profile).build();
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
 
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder().build();
         PortalEnvironment portalEnv = portalEnvironmentFactory.builder("profileVariablesAreReplaced")
@@ -37,7 +37,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
     public void envConfigVariablesAreReplaced() {
         Profile profile = Profile.builder().build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeRuleData ruleData = EnrolleeRuleData.builder().enrollee(enrollee).profile(profile).build();
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("testHostName")
                 .build();
@@ -53,7 +53,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
     public void testDashLinkVariablesReplaced() {
         Profile profile = Profile.builder().build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeRuleData ruleData = EnrolleeRuleData.builder().enrollee(enrollee).profile(profile).build();
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("newstudy.org")
                 .build();

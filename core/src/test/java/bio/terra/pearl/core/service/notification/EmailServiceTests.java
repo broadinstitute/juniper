@@ -23,8 +23,7 @@ public class EmailServiceTests {
                 .contactEmail("test@test.com")
                 .build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeRuleData ruleData = EnrolleeRuleData.builder()
-                .enrollee(enrollee).profile(profile).build();
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
         PortalEnvironmentConfig portalEnvConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("info@portal.org").build();
         PortalEnvironment portalEnv = PortalEnvironment.builder()
