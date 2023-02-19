@@ -1,9 +1,9 @@
 import React from 'react'
 import { usePortalEnv } from '../providers/PortalProvider'
 import { useUser } from '../providers/UserProvider'
-import { Enrollee, ParticipantTask, Portal, Study } from '../api/api'
+import { Enrollee, ParticipantTask, Portal, PortalStudy, Study } from '../api/api'
 import TaskLink from './TaskLink'
-import { useLocation } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import TaskStatusMessage from './TaskStatusMessage'
 
 export type HubUpdate = {
@@ -24,6 +24,7 @@ export default function HubPage() {
    */
   const hubUpdate: HubUpdate | undefined = location.state
   const hubMessage = hubUpdate?.message
+  const unjoinedStudies = portal.portalStudies.filter(pStudy => !userHasJoinedPortalStudy(pStudy, enrollees))
 
   return <div>
     <div className="container">
@@ -36,6 +37,17 @@ export default function HubPage() {
       <div className="row">
         <div className="col-md-6">
           {enrollees.map(enrollee => <StudyTaskBox enrollee={enrollee} portal={portal} key={enrollee.id}/>)}
+        </div>
+      </div>
+      <div className="row justify-content-center">
+        <div className="col-md-6">
+          <h3 className="text-center">Studies you can join</h3>
+          <ul className="list-group">
+            {unjoinedStudies.map(portalStudy => <li key={portalStudy.study.shortcode} className="list-group-item">
+              <h6>{portalStudy.study.name}</h6>
+              <NavLink to={`/studies/${portalStudy.study.shortcode}/join`}>Join</NavLink>
+            </li>)}
+          </ul>
         </div>
       </div>
     </div>
@@ -74,4 +86,9 @@ function taskComparator(taskA: ParticipantTask, taskB: ParticipantTask) {
     return typeOrder
   }
   return taskA.taskOrder - taskB.taskOrder
+}
+
+/** whether the list of enrollees contains an enrollee matching the study */
+function userHasJoinedPortalStudy(portalStudy: PortalStudy, enrollees: Enrollee[]) {
+  return !!enrollees.find(enrollee => enrollee.studyEnvironmentId === portalStudy.study.studyEnvironments[0].id)
 }
