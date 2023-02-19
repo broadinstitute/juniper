@@ -6,12 +6,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.UUID;
-
 @Getter @Setter @SuperBuilder @NoArgsConstructor
 public class SiteImage extends BaseEntity {
-    private String shortcode;
+    private String cleanFileName;
+    private int version;
     private String uploadFileName;
     private byte[] data;
-    private UUID siteContentId;
+    // store these by portal shortcode to prioritize fast fetching based on urls that have the shortcode
+    private String portalShortcode;
 }

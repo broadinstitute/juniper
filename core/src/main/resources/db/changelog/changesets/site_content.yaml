@@ -30,12 +30,17 @@ databaseChangeLog:
               - column: *idColumn
               - column: *createdAt
               - column: *lastUpdatedAt
-              - column: { name: shortcode, type: text, constraints: {unique: true} }
+              - column: { name: clean_file_name, type: text, constraints: {nullable: false} }
+              - column: { name: version, type: integer, constraints: { nullable: false }}
               - column: { name: upload_file_name, type: text }
               - column: { name: data, type: bytea }
-              - column: { name: site_content_id, type: uuid, constraints: {
-                nullable: false, foreignKeyName: fk_site_image_site_id, references: site_content(id)
+              - column: { name: portal_shortcode, type: text, constraints: {
+                nullable: false, foreignKeyName: fk_site_image_portal_shortcode, references: portal(shortcode)
               } }
+        - addUniqueConstraint:
+            tableName: site_image
+            constraintName: site_image_clean_file_name_version
+            columnNames: clean_file_name, version, portal_shortcode
         - createTable:
             tableName: html_page
             columns:
@@ -44,7 +49,6 @@ databaseChangeLog:
               - column: *lastUpdatedAt
               - column: { name: title, type: text }
               - column: { name: path, type: text }
-
         - createTable:
             tableName: localized_site_content
             columns:
@@ -55,7 +59,8 @@ databaseChangeLog:
               - column: { name: site_content_id, type: uuid, constraints: {
                 nullable: false, foreignKeyName: fk_localized_site_content_site_id, references: site_content(id)
               } }
-              - column: { name: nav_logo_shortcode, type: text}
+              - column: { name: nav_logo_clean_file_name, type: text}
+              - column: { name: nav_logo_version, type: integer}
               - column: { name: landing_page_id, type: uuid, constraints: {
                 foreignKeyName: fk_localized_site_landing_page_id, references: html_page(id)
               } }

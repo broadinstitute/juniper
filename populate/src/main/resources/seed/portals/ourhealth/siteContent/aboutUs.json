@@ -1,0 +1,45 @@
+{
+  "itemType": "INTERNAL",
+  "label": "About us",
+  "htmlPageDto": {
+    "title": "About us",
+    "path": "aboutUs",
+    "sectionDtos": [{
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "About us"
+      }
+    },{
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "backgroundColor": "#d8b4ca",
+        "title": "Mission",
+        "blurb": "The OurHealth team is deeply committed to improving our understanding of the underlying genetic factors or cardiovascular risk in South Asian populations.\n\nParticipants drive forward research by providing information about their lifestyle habits and medical history in the form of survey responses, as well as by donating biological samples for study and analysis. From these data. the OurHealth study team sequences and analyzes the data to uncover genomic trends, potentially revealing patterns in the causality of high cardiovascular disease in South Asian populations.\n\nSouth Asians have historically been underrepresented in genetic studies, a disparity the OurHeath team hones to address with your help.</p>"
+      }
+    },
+      {
+        "sectionType": "HERO_CENTERED",
+        "sectionConfigJson": {
+          "title": "Background",
+          "blurb": "Drs. Pradeep Natarajan and Amit Khera have years of experience in looking at genetic effects of disease overall. Recently, the have focused on genetics within South Asian populations.\n\nBy closely studying the contribution of genetics towards heart and metabolic disease in individuals of Sputh Asian ancestry living outside the United States, Drs Natarajan and Khera have helped develop a new genotyping array optimized for South Asians. Unfortunately, South Asian datasets remain limited in size, cultural diversity, and diaspora representation.\n\nHelp us close this gap! Join the OurHealth study and contribute to improving South Asian heart health."
+        }
+      },
+      {
+        "sectionType": "PHOTO_BLURB_GRID",
+        "sectionConfigJson": {
+          "title": "Our Team",
+          "subGrids": [{
+            "photoBios": [{
+              "name": "Pradeep Natarajan MD MMSc",
+              "blurb": "Co-Principal Investigator, OurHealth\n\nDirector of Preventive Cardiology, Massachusetts General Hospital\n\nPaul & Phyllis Fireman Endowed Chair in Vascular Medicine, Massachusetts General Hospital\n\nAssociate Professor of Medicine, Harvard Medical School\n\nAssociate Member, Broad Institute of Harvard and MIT",
+              "image": { "cleanFileName": "pradeep_natarajan.jpg", "version": 1}
+            },{
+              "name": "Amit Khera MD MSc",
+              "blurb": "Co-Principal Investigator, OurHealth",
+              "image": { "cleanFileName": "amit_khera.jpg", "version": 1}
+            }]
+          }]
+        }
+      }]
+  }
+}

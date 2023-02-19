@@ -30,7 +30,7 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
     }
 
     public void deleteByEnrolleeId(UUID enrolleeId) {
-        deleteByUuidProperty("enrollee_id", enrolleeId);
+        deleteByProperty("enrollee_id", enrolleeId);
     }
 
     public ParticipantTask updateTaskStatus(UUID taskId, TaskStatus newStatus) {

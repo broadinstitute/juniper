@@ -76,7 +76,7 @@ public class PortalParticipantUserDao extends BaseJdbiDao<PortalParticipantUser>
 
 
     public void deleteByPortalEnvironmentId(UUID portalEnvId) {
-        deleteByUuidProperty("portal_environment_id", portalEnvId);
+        deleteByProperty("portal_environment_id", portalEnvId);
     }
 
 }

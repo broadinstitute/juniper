@@ -18,10 +18,10 @@ public class PreregistrationResponseDao extends BaseMutableJdbiDao<Preregistrati
     }
 
     public void deleteByPortalEnvironmentId(UUID studyEnvId) {
-        deleteByUuidProperty("portal_environment_id", studyEnvId);
+        deleteByProperty("portal_environment_id", studyEnvId);
     }
 
     public void deleteByPortalParticipantUserId(UUID portalParticipantUserId) {
-        deleteByUuidProperty("portal_participant_user_id", portalParticipantUserId);
+        deleteByProperty("portal_participant_user_id", portalParticipantUserId);
     }
 }

@@ -14,12 +14,23 @@
         "initialized": true,
         "emailSourceAddress": "dbush@broadinstitute.org"
       },
-      "siteContentFile": "siteContent.json",
+      "siteContentFile": "siteContent/siteContent.json",
       "participantUserFiles": [
         "participants/jsalk.json",
         "participants/newEnrollee.json",
         "participants/consentedEnrollee.json"
       ]
     }
-  ]
+  ],
+  "siteImageDtos": [{
+    "populateFileName": "images/Banner-image.png"
+  }, {
+    "populateFileName": "images/Banner-40238bbb.png"
+  }, {
+    "populateFileName": "images/ourhealth-logo.png"
+  }, {
+    "populateFileName": "images/Amit_Khera.jpg"
+  }, {
+    "populateFileName": "images/Pradeep_Natarajan.jpg"
+  }]
 }

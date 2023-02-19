@@ -255,7 +255,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
-    protected void deleteByUuidProperty(String columnName, UUID columnValue) {
+    protected void deleteByProperty(String columnName, Object columnValue) {
         jdbi.withHandle(handle ->
                 handle.createUpdate("delete from " + tableName + " where " + columnName + " = :propertyValue;")
                         .bind("propertyValue", columnValue)

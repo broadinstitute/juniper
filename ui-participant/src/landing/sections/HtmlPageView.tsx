@@ -7,10 +7,11 @@ import HeroLeftWithImageTemplate from './HeroLeftWithImageTemplate'
 import HeroRightWithImageTemplate from './HeroRightWithImageTemplate'
 import StepOverviewTemplate from './StepOverviewTemplate'
 import SocialMediaTemplate from './SocialMediaTemplate'
-import { HtmlPage, HtmlSection, SectionConfig } from 'api/api'
+import {HtmlPage, HtmlSection, SectionConfig} from 'api/api'
 import RawHtmlTemplate from './RawHtmlTemplate'
+import PhotoBlurbGrid from "./PhotoBlurbGrid";
 
-type TemplateComponent = ({ config, rawContent }: {config: SectionConfig, rawContent: string | null}) => JSX.Element
+type TemplateComponent = ({config, rawContent}: { config: SectionConfig, rawContent: string | null }) => JSX.Element
 
 const templateComponents: { [index: string]: TemplateComponent } = {
   'FAQ': FrequentlyAskedQuestionsTemplate,
@@ -19,11 +20,12 @@ const templateComponents: { [index: string]: TemplateComponent } = {
   'HERO_RIGHT_WITH_IMAGE': HeroRightWithImageTemplate,
   'SOCIAL_MEDIA': SocialMediaTemplate,
   'STEP_OVERVIEW': StepOverviewTemplate,
+  'PHOTO_BLURB_GRID': PhotoBlurbGrid,
   'RAW_HTML': RawHtmlTemplate
 }
 
 /** renders a configured HtmlPage */
-export default function HtmlPageView({ page }: { page: HtmlPage }) {
+export default function HtmlPageView({page}: { page: HtmlPage }) {
   return <>
     {
       _.map(page.sections, (section: HtmlSection) => {

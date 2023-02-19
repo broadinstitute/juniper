@@ -96,7 +96,7 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
         return countByProperty("study_environment_id", studyEnvironmentId);
     }
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
-        deleteByUuidProperty("study_environment_id", studyEnvironmentId);
+        deleteByProperty("study_environment_id", studyEnvironmentId);
     }
 
     /** updates the global consent status of the enrollee */

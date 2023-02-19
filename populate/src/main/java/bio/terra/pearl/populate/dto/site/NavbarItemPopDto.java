@@ -8,4 +8,5 @@ import lombok.Setter;
 @Getter @Setter @NoArgsConstructor
 public class NavbarItemPopDto extends NavbarItem {
     private HtmlPagePopDto htmlPageDto;
+    private String populateFileName;
 }

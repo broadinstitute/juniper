@@ -38,6 +38,6 @@ public class PortalStudyDao extends BaseJdbiDao<PortalStudy> {
     }
 
     public void deleteByPortalId(UUID portalId) {
-        deleteByUuidProperty("portal_id", portalId);
+        deleteByProperty("portal_id", portalId);
     }
 }

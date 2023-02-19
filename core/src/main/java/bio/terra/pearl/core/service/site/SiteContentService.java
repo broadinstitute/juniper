@@ -15,14 +15,10 @@ import java.util.UUID;
 @Service
 public class SiteContentService extends CrudService<SiteContent, SiteContentDao> {
     private LocalizedSiteContentService localizedSiteContentService;
-    private SiteImageService siteImageService;
 
-    public SiteContentService(SiteContentDao dao,
-                              LocalizedSiteContentService localizedSiteContentService,
-                              SiteImageService siteImageService) {
+    public SiteContentService(SiteContentDao dao, LocalizedSiteContentService localizedSiteContentService) {
         super(dao);
         this.localizedSiteContentService = localizedSiteContentService;
-        this.siteImageService = siteImageService;
     }
 
     public Optional<SiteContent> findOne(String stableId, int version) {
@@ -46,7 +42,6 @@ public class SiteContentService extends CrudService<SiteContent, SiteContentDao>
         for (LocalizedSiteContent localSite : localSites) {
             localizedSiteContentService.delete(localSite.getId(), cascade);
         }
-        siteImageService.deleteBySiteContent(siteContentId);
         dao.delete(siteContentId);
     }
 

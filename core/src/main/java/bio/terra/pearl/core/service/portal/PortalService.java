@@ -18,6 +18,7 @@ import bio.terra.pearl.core.service.notification.EmailTemplateService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.site.SiteContentService;
+import bio.terra.pearl.core.service.site.SiteImageService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -41,6 +42,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     private ConsentFormService consentFormService;
     private SiteContentService siteContentService;
     private EmailTemplateService emailTemplateService;
+    private SiteImageService siteImageService;
 
     public PortalService(PortalDao portalDao, PortalStudyService portalStudyService,
                          StudyService studyService,
@@ -49,7 +51,8 @@ public class PortalService extends CrudService<Portal, PortalDao> {
                          PortalParticipantUserService portalParticipantUserService,
                          PortalAdminUserDao portalAdminUserDao, SurveyService surveyService,
                          ConsentFormService consentFormService, SiteContentService siteContentService,
-                         EmailTemplateService emailTemplateService) {
+                         EmailTemplateService emailTemplateService,
+                         SiteImageService siteImageService) {
         super(portalDao);
         this.portalStudyService = portalStudyService;
         this.portalEnvironmentService = portalEnvironmentService;
@@ -61,6 +64,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         this.consentFormService = consentFormService;
         this.siteContentService = siteContentService;
         this.emailTemplateService = emailTemplateService;
+        this.siteImageService = siteImageService;
     }
 
     @Transactional
@@ -79,6 +83,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     @Transactional
     @Override
     public void delete(UUID portalId, Set<CascadeProperty> cascades) {
+        Portal portal = dao.find(portalId).get();
         List<UUID> studyIds = portalStudyService
                 .findByPortalId(portalId).stream().map(portalStudy -> portalStudy.getStudyId())
                         .collect(Collectors.toList());
@@ -95,6 +100,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         consentFormService.deleteByPortalId(portalId);
         siteContentService.deleteByPortalId(portalId);
         emailTemplateService.deleteByPortalId(portalId);
+        siteImageService.deleteByPortalShortcode(portal.getShortcode());
         dao.delete(portalId);
     }
 

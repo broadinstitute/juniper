@@ -1,10 +1,10 @@
 import React from 'react'
-import PearlImage from '../../util/PearlImage'
+import PearlImage, {PearlImageProps} from '../../util/PearlImage'
 
 type HeroRightWithImageTemplateProps = {
   blurb?: string, //  text below the title
   title?: string, // large heading text
-  imageShortcode?: string, // image
+  image?: PearlImageProps, // image
 }
 
 /**
@@ -16,15 +16,15 @@ type HeroRightWithImageTemplateProps = {
  * @param {string?} props.content.imageStableId - stable ID of the image
  */
 function HeroRightWithImageTemplate({
-  config: {
-    blurb,
-    imageShortcode,
-    title
-  }
-}: {config: HeroRightWithImageTemplateProps}) {
+                                      config: {
+                                        blurb,
+                                        image,
+                                        title
+                                      }
+                                    }: { config: HeroRightWithImageTemplateProps }) {
   return <div className="row">
     <div className="col-lg-6">
-      <PearlImage imageShortcode={imageShortcode} alt={''} className="img-fluid"/>
+      <PearlImage image={image} className="img-fluid"/>
     </div>
     <div className="col-lg-6 px-5">
       <div className="d-flex flex-column justify-content-center h-100">

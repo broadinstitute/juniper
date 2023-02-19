@@ -25,6 +25,6 @@ public class NavbarItemDao extends BaseJdbiDao<NavbarItem> {
     }
 
     public void deleteByLocalSiteId(UUID localSiteId) {
-        deleteByUuidProperty("localized_site_content_id", localSiteId);
+        deleteByProperty("localized_site_content_id", localSiteId);
     }
 }

@@ -36,6 +36,6 @@ public class HtmlSectionDao  extends BaseJdbiDao<HtmlSection> {
     }
 
     public void deleteByPageId(UUID htmlPageId) {
-        deleteByUuidProperty("html_page_id", htmlPageId);
+        deleteByProperty("html_page_id", htmlPageId);
     }
 }

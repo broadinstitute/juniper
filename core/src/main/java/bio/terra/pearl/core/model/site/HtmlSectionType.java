@@ -7,5 +7,6 @@ public enum HtmlSectionType {
     HERO_RIGHT_WITH_IMAGE,
     STEP_OVERVIEW,
     FAQ,
-    SOCIAL_MEDIA
+    SOCIAL_MEDIA,
+    PHOTO_BLURB_GRID
 }

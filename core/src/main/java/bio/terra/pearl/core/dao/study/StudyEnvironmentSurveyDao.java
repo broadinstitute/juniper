@@ -25,7 +25,7 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
     }
 
     public void deleteByStudyEnvironmentId(UUID studyEnvId) {
-        deleteByUuidProperty("study_environment_id", studyEnvId);
+        deleteByProperty("study_environment_id", studyEnvId);
     }
 
     public List<StudyEnvironmentSurvey> findAllByStudyEnvironmentId(UUID studyEnvId) {

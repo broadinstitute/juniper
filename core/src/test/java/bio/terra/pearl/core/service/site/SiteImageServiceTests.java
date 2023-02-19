@@ -16,17 +16,17 @@ public class SiteImageServiceTests extends BaseSpringBootTest {
     private SiteImageFactory siteImageFactory;
 
     @Test
-    public void testGenerateBasicShortcode() {
+    public void testGenerateCleanFileName() {
         String shortcode = SiteImageService
-                .generateShortcode("foo.gif", "site", 1);
-        Assertions.assertEquals("site_1_foo.gif", shortcode);
+                .cleanFileName("foo.gif");
+        Assertions.assertEquals("foo.gif", shortcode);
     }
 
     @Test
     public void testGenerateSpecialCharShortcode() {
         String shortcode = SiteImageService
-                .generateShortcode("spaces Capitals (1).gif", "site", 1);
-        Assertions.assertEquals("site_1_spaces_capitals_1.gif", shortcode);
+                .cleanFileName("spaces Capitals (1).gif");
+        Assertions.assertEquals("spaces_capitals_1.gif", shortcode);
     }
 
     @Test
@@ -35,7 +35,8 @@ public class SiteImageServiceTests extends BaseSpringBootTest {
         SiteImage image = siteImageFactory.builderWithDependencies("testSiteImageCrud").build();
         SiteImage savedImage = siteImageService.create(image);
         Assertions.assertNotNull(savedImage.getId());
-        SiteImage imageByShortCode = siteImageService.findOne(savedImage.getShortcode()).get();
+        SiteImage imageByShortCode = siteImageService.findOne(savedImage.getPortalShortcode(),
+                savedImage.getCleanFileName(), savedImage.getVersion()  ).get();
         Assertions.assertEquals(savedImage.getId(), imageByShortCode.getId());
     }
 }
