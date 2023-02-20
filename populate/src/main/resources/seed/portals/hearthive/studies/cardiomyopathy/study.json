@@ -4,7 +4,9 @@
   "surveyFiles": [
     "surveys/preEnrollment.json"
   ],
-  "consentFormFiles": [],
+  "consentFormFiles": [
+    "surveys/consent.json"
+  ],
   "studyEnvironmentDtos": [
     {
       "environmentName": "sandbox",
@@ -17,7 +19,22 @@
       "preEnrollSurveyDto": {
         "stableId": "hh_cmyop_preEnroll",
         "version": 1
-      }
+      },
+      "configuredConsentDtos": [
+        {
+          "consentStableId": "hh_cmyop_consent",
+          "consentVersion": 1
+        }
+      ],
+      "notificationConfigs": [{
+        "notificationType": "EVENT",
+        "eventType": "STUDY_ENROLLMENT"
+      }],
+      "enrolleeFiles": [
+        "enrollees/gertrudeElion.json",
+        "enrollees/newEnrollee.json",
+        "enrollees/consentedEnrollee.json"
+      ]
     },
     {
       "environmentName": "irb",

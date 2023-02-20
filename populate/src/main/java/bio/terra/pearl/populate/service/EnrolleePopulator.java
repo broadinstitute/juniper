@@ -12,6 +12,7 @@ import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.ResponseSnapshot;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
@@ -179,7 +180,20 @@ public class EnrolleePopulator extends Populator<Enrollee> {
         taskDto.setEnrolleeId(enrollee.getId());
         taskDto.setStudyEnvironmentId(enrollee.getStudyEnvironmentId());
         taskDto.setPortalParticipantUserId(ppUser.getId());
+        if (taskDto.getTargetName() == null) {
+            taskDto.setTargetName(getTargetName(taskDto.getTaskType(), taskDto.getTargetStableId(),
+                    taskDto.getTargetAssignedVersion()));
+        }
         participantTaskService.create(taskDto);
+    }
+
+    private String getTargetName(TaskType taskType, String stableId, int version) {
+        if (taskType.equals(TaskType.SURVEY)) {
+            return surveyService.findByStableId(stableId, version).get().getName();
+        } else if (taskType.equals(TaskType.CONSENT)) {
+            return consentFormService.findByStableId(stableId, version).get().getName();
+        }
+        throw new IllegalArgumentException("cannot find target name for TaskType " + taskType);
     }
 
     private void populateNotifications(Enrollee enrollee, EnrolleePopDto enrolleeDto, UUID studyEnvironmentId,

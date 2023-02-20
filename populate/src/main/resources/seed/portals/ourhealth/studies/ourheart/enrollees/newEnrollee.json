@@ -1,10 +1,9 @@
 {
   "linkedUsername": "newbie@test.com",
-  "shortcode": "NEWBIE",
+  "shortcode": "OHNEWB",
   "participantTaskDtos": [{
     "status": "NEW",
     "taskType": "CONSENT",
-    "targetName": "OurHealth consent",
     "targetStableId": "oh_oh_consent",
     "targetAssignedVersion": 1,
     "taskOrder": 1,

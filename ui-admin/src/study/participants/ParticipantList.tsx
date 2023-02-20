@@ -37,7 +37,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
             </thead>
             <tbody>
               { participantList.map(participant => {
-                return <tr>
+                return <tr key={participant.enrollee.shortcode}>
                   <td><Link to={`${currentEnvPath}/participants/${participant.enrollee.shortcode}`}>
                     {participant.enrollee.shortcode}
                   </Link></td>
