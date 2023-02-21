@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import 'react-notifications-component/dist/theme.css'
 import 'styles/notifications.css'
 import 'survey-core/defaultV2.min.css'
@@ -20,12 +20,21 @@ import StudyRouter from 'study/StudyRouter'
 import { getOidcConfig } from './authConfig'
 import { AuthProvider } from 'react-oidc-context'
 import UserProvider from './user/UserProvider'
+import Api, { Config } from "./api/api";
 
 
 /** container for the app including the router  */
 function App() {
-  return (
-    <AuthProvider {...getOidcConfig()}>
+  const [config, setConfig] = useState<Config>()
+
+  useEffect(() => {
+    Api.getConfig().then(config => {
+      setConfig(config)
+    })
+  }, [])
+
+  return typeof config == 'undefined' ? <></> : (
+    <AuthProvider {...getOidcConfig(config.b2cTenantName, config.b2cClientId)}>
       <UserProvider>
         <div className="App">
           <ReactNotifications />
