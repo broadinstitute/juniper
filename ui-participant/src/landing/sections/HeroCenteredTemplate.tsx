@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import React from 'react'
-import {ButtonConfig} from 'api/api'
+import { ButtonConfig } from 'api/api'
 import ReactMarkdown from 'react-markdown'
 
 type HeroCenteredTemplateProps = {
@@ -18,14 +18,14 @@ const blurbAlignAllowed = ['center', 'right', 'left']
 /**
  * Template for rendering a hero with centered content.
  */
-function HeroCenteredTemplate({config: {background, backgroundColor, color, blurb, blurbAlign, buttons, title}}:
+function HeroCenteredTemplate({ config: { background, backgroundColor, color, blurb, blurbAlign, buttons, title } }:
                                 { config: HeroCenteredTemplateProps }) {
   const blurbAlignIndex = blurbAlignAllowed.indexOf(blurbAlign ?? 'center')
   const cleanBlurbAlign: string = blurbAlignAllowed[blurbAlignIndex === -1 ? 0 : blurbAlignIndex] ?? 'center'
   const blurbStyle = {
     textAlign: cleanBlurbAlign as CanvasTextAlign
   }
-  return <div className="py-5 text-center" style={{background, backgroundColor, color}}>
+  return <div className="py-5 text-center" style={{ background, backgroundColor, color }}>
     <div className="col-lg-6 mx-auto">
       <h1 className="fs-1 fw-normal lh-sm mb-4">
         {title}
@@ -36,7 +36,7 @@ function HeroCenteredTemplate({config: {background, backgroundColor, color, blur
     </div>
     <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
       {
-        _.map(buttons, ({text, href}) => {
+        _.map(buttons, ({ text, href }) => {
           // TODO: allow customization of button styling
           return <a href={href} role={'button'} className="btn btn-light btn-lg px-4 me-md-2">{text}</a>
         })
