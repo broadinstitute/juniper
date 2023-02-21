@@ -1,10 +1,10 @@
 import React from 'react'
-import {usePortalEnv} from '../providers/PortalProvider'
-import {useUser} from '../providers/UserProvider'
+import { usePortalEnv } from '../providers/PortalProvider'
+import { useUser } from '../providers/UserProvider'
 
-import {Enrollee, ParticipantTask, Portal, PortalStudy, Study} from '../api/api'
-import TaskLink, {getTaskPath, isTaskAccessible, isTaskActive} from './TaskLink'
-import {Link, NavLink, useLocation} from 'react-router-dom'
+import { Enrollee, ParticipantTask, Portal, PortalStudy, Study } from '../api/api'
+import TaskLink, { getTaskPath, isTaskAccessible, isTaskActive } from './TaskLink'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 
 import TaskStatusMessage from './TaskStatusMessage'
 
@@ -17,8 +17,8 @@ export type HubUpdate = {
 
 /** renders the logged-in hub page */
 export default function HubPage() {
-  const {portal} = usePortalEnv()
-  const {enrollees} = useUser()
+  const { portal } = usePortalEnv()
+  const { enrollees } = useUser()
   const location = useLocation()
   /**
    * Pull any messages to be displayed as a result of where we came from e.g. "survey complete"
@@ -61,7 +61,7 @@ const taskTypeDisplayMap: Record<string, string> = {
 }
 
 /** Renders pending tasks for a given study */
-function StudyTaskBox({enrollee, portal}: { enrollee: Enrollee, portal: Portal }) {
+function StudyTaskBox({ enrollee, portal }: { enrollee: Enrollee, portal: Portal }) {
   const matchedStudy = portal.portalStudies
     .find(pStudy => pStudy.study.studyEnvironments[0].id === enrollee.studyEnvironmentId)?.study as Study
   const hasStudyTasks = enrollee.participantTasks.length > 0
@@ -80,35 +80,35 @@ function StudyTaskBox({enrollee, portal}: { enrollee: Enrollee, portal: Portal }
     <h4 className="mb-3">{matchedStudy.name}</h4>
     {hasStudyTasks && <div>
       {nextTask && <div className="row">
-        <div className="col-md-12 text-center p-4" style={{background: '#eef'}}>
+        <div className="col-md-12 text-center p-4" style={{ background: '#eef' }}>
           <Link to={getTaskPath(nextTask, enrollee.shortcode, matchedStudy.shortcode)}
-                className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
+            className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
             Continue {taskTypeDisplayMap[nextTask.taskType]}s
           </Link>
         </div>
       </div>}
       {hasActiveConsentTasks && <TaskGrouping title="CONSENT" tasks={sortedConsentTasks} enrollee={enrollee}
-                                              studyShortcode={matchedStudy.shortcode}/>}
+        studyShortcode={matchedStudy.shortcode}/>}
       {hasActiveSurveyTasks && <TaskGrouping title="SURVEYS" tasks={sortedSurveyTasks} enrollee={enrollee}
-                                             studyShortcode={matchedStudy.shortcode}/>}
+        studyShortcode={matchedStudy.shortcode}/>}
       {hasCompletedForms && <TaskGrouping title="FORMS" tasks={completedForms} enrollee={enrollee}
-                                          studyShortcode={matchedStudy.shortcode}/>}
+        studyShortcode={matchedStudy.shortcode}/>}
     </div>}
     {!hasStudyTasks && <span className="detail">No tasks for this study</span>}
   </div>
 }
 
 /** renders a group like "CONSENTS" or "SURVEYS" */
-function TaskGrouping({title, tasks, enrollee, studyShortcode}: {
+function TaskGrouping({ title, tasks, enrollee, studyShortcode }: {
   title: string, tasks: ParticipantTask[],
   enrollee: Enrollee, studyShortcode: string
 }) {
   return <div className="mt-4">
     <span className="fw-bold">{title}</span>
-    <ol style={{listStyleType: 'none', paddingInlineStart: 0, width: '100%'}}>
+    <ol style={{ listStyleType: 'none', paddingInlineStart: 0, width: '100%' }}>
       {tasks.map(task => <li key={task.id}>
         <TaskLink task={task} key={task.id} studyShortcode={studyShortcode}
-                  enrollee={enrollee}/>
+          enrollee={enrollee}/>
       </li>)}
     </ol>
   </div>
