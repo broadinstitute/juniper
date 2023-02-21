@@ -13,9 +13,11 @@ public class SiteImageFactory {
     private PortalFactory portalFactory;
 
     public SiteImage.SiteImageBuilder builder(String testName) {
+        String filename = testName + RandomStringUtils.randomAlphabetic(3) + ".png";
         return SiteImage.builder().data("abc123".getBytes())
                 .version(1)
-                .uploadFileName(testName + RandomStringUtils.randomAlphabetic(3) + ".png");
+                .uploadFileName(filename)
+                .cleanFileName(filename);
 
     }
 

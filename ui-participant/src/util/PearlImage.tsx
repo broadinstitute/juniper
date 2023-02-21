@@ -1,5 +1,5 @@
-import React, {CSSProperties} from 'react'
-import {getImageUrl} from 'api/api'
+import React, { CSSProperties } from 'react'
+import { getImageUrl } from 'api/api'
 
 export type PearlImageProps = {
   cleanFileName: string,
@@ -10,7 +10,7 @@ export type PearlImageProps = {
 }
 
 /** renders an image that is part of a SiteContent spec */
-export default function PearlImage({image, className, style}: {
+export default function PearlImage({ image, className, style }: {
   image?: PearlImageProps,
   className?: string, style?: CSSProperties
 }) {
@@ -18,5 +18,5 @@ export default function PearlImage({image, className, style}: {
     return <></>
   }
   return <img src={getImageUrl(image.cleanFileName, image.version)} alt={image.alt} loading="lazy"
-              className={className} style={style}/>
+    className={className} style={style}/>
 }

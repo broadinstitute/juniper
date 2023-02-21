@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 public class SiteImageServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -38,5 +40,26 @@ public class SiteImageServiceTests extends BaseSpringBootTest {
         SiteImage imageByShortCode = siteImageService.findOne(savedImage.getPortalShortcode(),
                 savedImage.getCleanFileName(), savedImage.getVersion()  ).get();
         Assertions.assertEquals(savedImage.getId(), imageByShortCode.getId());
+    }
+
+    @Test
+    @Transactional
+    public void testAddsCleanFileName() {
+        SiteImage image = siteImageFactory.builderWithDependencies("testSiteImageAddsCleanFileName")
+                .cleanFileName(null)
+                .build();
+        SiteImage savedImage = siteImageService.create(image);
+        assertThat(savedImage.getCleanFileName(), equalTo(SiteImageService.cleanFileName(image.getUploadFileName())));
+    }
+
+    @Test
+    @Transactional
+    public void testSanitizesCleanFileName() {
+        String dirtyFileName = "testSanitizesCleanFileName with spaces.png";
+        SiteImage image = siteImageFactory.builderWithDependencies("testSanitizesCleanFileName")
+                .cleanFileName(dirtyFileName)
+                .build();
+        SiteImage savedImage = siteImageService.create(image);
+        assertThat(savedImage.getCleanFileName(), equalTo( SiteImageService.cleanFileName(dirtyFileName)));
     }
 }

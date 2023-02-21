@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.dao;
+package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.participant.ParticipantUserDao;

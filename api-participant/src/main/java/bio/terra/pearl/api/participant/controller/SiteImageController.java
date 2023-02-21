@@ -22,7 +22,6 @@ public class SiteImageController implements SiteImageApi {
       String portalShortcode, String envName, String cleanFileName, Integer version) {
     Optional<SiteImage> siteImageOpt;
 
-    // if it wasn't a UUID, it's a shortcode
     siteImageOpt = siteImageService.findOne(portalShortcode, cleanFileName, version);
     return convertToResourceResponse(siteImageOpt);
   }

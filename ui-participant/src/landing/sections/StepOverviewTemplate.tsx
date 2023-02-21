@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import React from 'react'
-import {ButtonConfig} from 'api/api'
-import PearlImage, {PearlImageProps} from 'util/PearlImage'
+import { ButtonConfig } from 'api/api'
+import PearlImage, { PearlImageProps } from 'util/PearlImage'
 
 type StepProps = {
   image: PearlImageProps,
@@ -20,21 +20,21 @@ type StepOverviewTemplateProps = {
  * Template for rendering a step overview
  */
 function StepOverviewTemplate({
-                                config: {
-                                  background,
-                                  buttons,
-                                  steps,
-                                  title
-                                }
-                              }: { config: StepOverviewTemplateProps }) {
+  config: {
+    background,
+    buttons,
+    steps,
+    title
+  }
+}: { config: StepOverviewTemplateProps }) {
   // TODO: improve layout code for better flexing, especially with <> 4 steps
-  return <div className="p-5" style={{background}}>
+  return <div className="p-5" style={{ background }}>
     <h1 className="fs-1 fw-normal lh-sm mb-3 text-center">
       {title}
     </h1>
     <div className={'row'}>
       {
-        _.map(steps, ({image, duration, blurb}: StepProps, i: number) => {
+        _.map(steps, ({ image, duration, blurb }: StepProps, i: number) => {
           return <>
             {i > 0 ? <div className={'col'}>→</div> : null}
             <div className={'col-2'}>
@@ -59,7 +59,7 @@ function StepOverviewTemplate({
     </div>
     <div className="d-grid gap-2 d-md-flex justify-content-md-start">
       {
-        _.map(buttons, ({text, href}) => {
+        _.map(buttons, ({ text, href }) => {
           return <a href={href} role={'button'} className="btn btn-primary btn-lg px-4 me-md-2">{text}</a>
         })
       }

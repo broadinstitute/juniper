@@ -1,17 +1,15 @@
-package bio.terra.pearl.core.dao;
+package bio.terra.pearl.core.dao.site;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.dao.site.SiteContentDao;
 import bio.terra.pearl.core.factory.site.SiteContentFactory;
 import bio.terra.pearl.core.model.site.*;
 import bio.terra.pearl.core.service.site.SiteContentService;
+import java.util.Arrays;
+import java.util.HashSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Arrays;
-import java.util.HashSet;
 
 public class SiteContentDaoTests extends BaseSpringBootTest {
     @Autowired

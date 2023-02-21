@@ -8,6 +8,10 @@ import lombok.experimental.SuperBuilder;
 
 @Getter @Setter @SuperBuilder @NoArgsConstructor
 public class SiteImage extends BaseEntity {
+    /**
+     * the cleanFileName essentially serves as a stableId -- we call it cleanFileName here to indicate its origin.
+     * and because it is not required to be globally unique like other stableIds -- it just has to be unique within a portal
+      */
     private String cleanFileName;
     private int version;
     private String uploadFileName;
