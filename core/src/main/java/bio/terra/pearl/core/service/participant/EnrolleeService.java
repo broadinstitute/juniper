@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.CascadeProperty;
@@ -60,6 +61,10 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
 
     public List<Enrollee> findByParticipantUserId(UUID userId) {
         return dao.findByParticipantUserId(userId);
+    }
+
+    public List<Enrollee> findByPortalParticipantUser(PortalParticipantUser ppUser) {
+        return dao.findByProfileId(ppUser.getProfileId());
     }
 
     public Optional<Enrollee> findByParticipantUserId( UUID participantUserId, UUID studyEnvironmentId) {

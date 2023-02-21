@@ -242,8 +242,7 @@ export default {
   },
 
   async getPortal(): Promise<Portal> {
-    const { shortcode, envName } = getEnvSpec()
-    const response = await fetch(`${API_ROOT}/portals/v1/${shortcode}/env/${envName}`, this.getGetInit())
+    const response = await fetch(baseEnvUrl(true), this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
@@ -254,7 +253,7 @@ export default {
                                  preRegResponse: PreRegResponseDto
                                }):
     Promise<PreregistrationResponse> {
-    const url = `${baseEnvUrl()}/preReg/${surveyStableId}/${surveyVersion}`
+    const url = `${baseEnvUrl(true)}/preReg/${surveyStableId}/${surveyVersion}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
@@ -269,7 +268,7 @@ export default {
    */
   async confirmPreRegResponse(preRegId: string):
     Promise<void> {
-    const url = `${baseEnvUrl()}/preReg/${preRegId}/confirm`
+    const url = `${baseEnvUrl(true)}/preReg/${preRegId}/confirm`
     const response = await fetch(url, { headers: this.getInitHeaders() })
     if (!response.ok) {
       return Promise.reject(response)
@@ -283,7 +282,7 @@ export default {
                                     preEnrollResponse: PreEnrollResponseDto
                                   }):
     Promise<PreEnrollmentResponse> {
-    const url = `${baseEnvUrl()}/preEnroll/${surveyStableId}/${surveyVersion}`
+    const url = `${baseEnvUrl(true)}/preEnroll/${surveyStableId}/${surveyVersion}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
@@ -298,7 +297,7 @@ export default {
    */
   async confirmPreEnrollResponse(preRegId: string):
     Promise<void> {
-    const url = `${baseEnvUrl()}/preEnroll/${preRegId}/confirm`
+    const url = `${baseEnvUrl(true)}/preEnroll/${preRegId}/confirm`
     const response = await fetch(url, { headers: this.getInitHeaders() })
     if (!response.ok) {
       return Promise.reject(response)
@@ -308,7 +307,7 @@ export default {
   /** submits registration data for a particular portal, from an anonymous user */
   async register({ preRegResponseId, fullData }: { preRegResponseId: string, fullData: object }):
     Promise<RegistrationResponse> {
-    let url = `${baseEnvUrl()}/register`
+    let url = `${baseEnvUrl(true)}/register`
     if (preRegResponseId) {
       url += `?preRegResponseId=${preRegResponseId}`
     }
@@ -324,7 +323,7 @@ export default {
   async createEnrollee({ studyShortcode, preEnrollResponseId }:
                          { studyShortcode: string, preEnrollResponseId: string | null }):
     Promise<HubResponse> {
-    let url = `${baseEnvUrl()}/studies/${studyShortcode}/enrollee`
+    let url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee`
     if (preEnrollResponseId) {
       url += `?preEnrollResponseId=${preEnrollResponseId}`
     }
@@ -339,7 +338,8 @@ export default {
     studyShortcode: string, enrolleeShortcode: string,
     stableId: string, version: number, taskId: string | null
   }): Promise<ConsentWithResponses> {
-    let url = `${baseStudyEnvUrl(studyShortcode)}/enrollee/${enrolleeShortcode}/consents/${stableId}/${version}`
+    let url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}`
+      + `/consents/${stableId}/${version}`
     if (taskId) {
       url = `${url}?taskId=${taskId}`
     }
@@ -351,7 +351,8 @@ export default {
     studyShortcode: string, stableId: string, version: number, response: ConsentResponseDto, enrolleeShortcode: string,
     taskId: string
   }): Promise<HubResponse> {
-    let url = `${baseStudyEnvUrl(studyShortcode)}/enrollee/${enrolleeShortcode}/consents/${stableId}/${version}`
+    let url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}`
+      + `/consents/${stableId}/${version}`
     if (taskId) {
       url = `${url}?taskId=${taskId}`
     }
@@ -367,7 +368,8 @@ export default {
     studyShortcode: string, enrolleeShortcode: string,
     stableId: string, version: number, taskId: string | null
   }): Promise<SurveyWithResponse> {
-    let url = `${baseStudyEnvUrl(studyShortcode)}/enrollee/${enrolleeShortcode}/surveys/${stableId}/${version}`
+    let url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}`
+      + `/surveys/${stableId}/${version}`
     if (taskId) {
       url = `${url}?taskId=${taskId}`
     }
@@ -379,7 +381,8 @@ export default {
     studyShortcode: string, stableId: string, version: number, response: SurveyResponseDto, enrolleeShortcode: string,
     taskId: string
   }): Promise<HubResponse> {
-    let url = `${baseStudyEnvUrl(studyShortcode)}/enrollee/${enrolleeShortcode}/surveys/${stableId}/${version}`
+    let url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}`
+      + `/surveys/${stableId}/${version}`
     if (taskId) {
       url = `${url}?taskId=${taskId}`
     }
@@ -392,7 +395,7 @@ export default {
   },
 
   async unauthedLogin(username: string): Promise<LoginResult> {
-    const url = `${baseEnvUrl()}/current-user/unauthed-login?${new URLSearchParams({
+    const url = `${baseEnvUrl(true)}/current-user/unauthed-login?${new URLSearchParams({
       username
     })}`
     const response = await fetch(url, {
@@ -405,7 +408,7 @@ export default {
   async refreshLogin(token: string): Promise<LoginResult> {
     this.setBearerToken(token)
 
-    const url = `${baseEnvUrl()}/current-user/refresh`
+    const url = `${baseEnvUrl(false)}/current-user/refresh`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()
@@ -414,7 +417,7 @@ export default {
   },
 
   async logout(): Promise<void> {
-    const url = `${baseEnvUrl()}/current-user/logout`
+    const url = `${baseEnvUrl(false)}/current-user/logout`
     await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()
@@ -427,22 +430,21 @@ export default {
 }
 
 /** get the baseurl for endpoints that include the portal and environment */
-function baseEnvUrl() {
+function baseEnvUrl(isPublic: boolean) {
   const { shortcode, envName } = getEnvSpec()
-  return `${API_ROOT}/portals/v1/${shortcode}/env/${envName}`
+  return `${API_ROOT}/${isPublic ? 'public/' : ''}portals/v1/${shortcode}/env/${envName}`
 }
 
 /** get the baseurl for endpoints that include the portal and environment and study */
-function baseStudyEnvUrl(studyShortcode: string) {
-  const { shortcode, envName } = getEnvSpec()
-  return `${API_ROOT}/portals/v1/${shortcode}/env/${envName}/studies/${studyShortcode}`
+function baseStudyEnvUrl(isPublic: boolean, studyShortcode: string) {
+  return `${baseEnvUrl(isPublic)}/studies/${studyShortcode}`
 }
 
 /**
  * Returns a url suitable for inclusion in an <img> tag based on a image shortcode
  */
 export function getImageUrl(imageShortcode: string) {
-  return `${baseEnvUrl()}/siteImages/${imageShortcode}`
+  return `${baseEnvUrl(true)}/siteImages/${imageShortcode}`
 }
 
 export type EnvSpec = {

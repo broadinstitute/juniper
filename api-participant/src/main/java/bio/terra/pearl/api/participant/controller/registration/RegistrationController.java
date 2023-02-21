@@ -37,7 +37,10 @@ public class RegistrationController implements RegistrationApi {
     if (registrationResult.participantUser().getToken() == null) {
       CurrentUserService.UserWithEnrollees loggedInUser =
           currentUserService
-              .unauthedLogin(registrationResult.participantUser().getUsername(), environmentName)
+              .unauthedLogin(
+                  registrationResult.participantUser().getUsername(),
+                  portalShortcode,
+                  environmentName)
               .get();
       registrationResult =
           new RegistrationService.RegistrationResult(

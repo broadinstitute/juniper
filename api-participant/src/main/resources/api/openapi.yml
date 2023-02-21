@@ -36,7 +36,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /api/portals/v1/{portalShortcode}/env/{envName}:
+  /api/public/portals/v1/{portalShortcode}/env/{envName}:
     get:
       summary: Gets the portal object
       tags: [ portal ]
@@ -50,7 +50,7 @@ paths:
           content: { application/json: { schema: { type: object }}}
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/preReg/{surveyStableId}/{surveyVersion}:
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/preReg/{surveyStableId}/{surveyVersion}:
     post:
       summary: Submits a preregistration survey
       tags: [ preregistration ]
@@ -70,7 +70,7 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/preReg/{preRegResponseId}/confirm:
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/preReg/{preRegResponseId}/confirm:
     get:
       summary: Confirms a preregistration id
       tags: [ preregistration ]
@@ -85,7 +85,7 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/preEnroll/{surveyStableId}/{surveyVersion}:
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/preEnroll/{surveyStableId}/{surveyVersion}:
     post:
       summary: Submits a pre-enrollment survey
       tags: [ preEnrollment ]
@@ -105,9 +105,9 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/preEnroll/{preEnrollResponseId}/confirm:
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/preEnroll/{preEnrollResponseId}/confirm:
     get:
-      summary: Confirms a preregistration id
+      summary: Confirms a preEnrollment id
       tags: [ preEnrollment ]
       operationId: confirm
       parameters:
@@ -218,7 +218,7 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/register:
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/register:
     post:
       summary: Submits a registration survey
       tags: [ registration ]
@@ -237,7 +237,7 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/siteImages/{shortcodeOrId}:
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/siteImages/{shortcodeOrId}:
     get:
       summary: Returns the binary image data for the image of the given shortcode
       tags: [ siteImage ]
@@ -256,7 +256,7 @@ paths:
                 format: binary
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/current-user/unauthed-login:
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/current-user/unauthed-login:
     post:
       summary: Development endpoint for logging in a user just on email address
       tags: [ currentUser ]

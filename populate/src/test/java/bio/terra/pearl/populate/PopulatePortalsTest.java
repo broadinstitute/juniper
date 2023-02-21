@@ -19,7 +19,12 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.service.EnvironmentPopulator;
 import bio.terra.pearl.populate.service.PortalPopulator;
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
  * environment can be created with all functionality accessible.
  */
 public class PopulatePortalsTest extends BaseSpringBootTest {
-    private List<String> environmentPrereqs = Arrays.asList("sandbox", "irb", "live");
     @Autowired
     private PortalPopulator portalPopulator;
     @Autowired
@@ -52,13 +56,10 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
     @Autowired
     private SiteContentService siteContentService;
 
-    @Test
-    @Transactional
-    public void testPopulateAll() throws IOException {
-        for (String envName : environmentPrereqs) {
+    private void setUpEnvironments() throws IOException {
+        for (EnvironmentName envName : EnvironmentName.values()) {
             environmentPopulator.populate("environments/" + envName + ".json");
         }
-        checkOurHealth();
     }
 
     /**
@@ -66,7 +67,10 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
      * This test will need to be updated as we change/update the prepopulated data.
      * @throws IOException
      */
-    private void checkOurHealth() throws IOException {
+    @Test
+    @Transactional
+    public void testPopulateOurHealth() throws IOException {
+        setUpEnvironments();
         Portal portal = portalPopulator.populate("portals/ourhealth/portal.json");
         Assertions.assertEquals("ourhealth", portal.getShortcode());
 
@@ -74,12 +78,12 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
         Set<StudyEnvironment> studyEnvs = studyEnvironmentService.findByStudy(mainStudy.getId());
         Assertions.assertEquals(3, studyEnvs.size());
         UUID sandboxEnvironmentId = studyEnvs.stream().filter(
-                sEnv -> sEnv.getEnvironmentName().equals(EnvironmentName.sandbox))
+                        sEnv -> sEnv.getEnvironmentName().equals(EnvironmentName.sandbox))
                 .findFirst().get().getId();
 
         List<Enrollee> enrollees = enrolleeService.findByStudyEnvironmentAdminLoad(sandboxEnvironmentId);
         Assertions.assertEquals(3, enrollees.size());
-        Enrollee jonas = enrollees.stream().filter(enrollee -> "JOSALK".equals(enrollee.getShortcode()))
+        Enrollee jonas = enrollees.stream().filter(enrollee -> "OHSALK".equals(enrollee.getShortcode()))
                 .findFirst().get();
         checkOurhealthSurveys(jonas);
         checkOurhealthSiteContent(portal.getId());
@@ -108,5 +112,28 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
                 .stream().findFirst().get().getLandingPage()
                 .getSections().stream().findFirst().get();
         Assertions.assertEquals(HtmlSectionType.HERO_LEFT_WITH_IMAGE, firstLandingSection.getSectionType());
+    }
+
+    @Test
+    @Transactional
+    public void testPopulateHeartHive() throws IOException {
+        setUpEnvironments();
+        Portal portal = portalPopulator.populate("portals/hearthive/portal.json");
+        Assertions.assertEquals("hearthive", portal.getShortcode());
+        assertThat(portal.getPortalStudies(), hasSize(2));
+        Study myopathyStudy = portal.getPortalStudies().stream()
+                .filter(portalStudy -> portalStudy.getStudy().getShortcode().equals("cmyop"))
+                .findFirst().get().getStudy();
+        Set<StudyEnvironment> studyEnvs = studyEnvironmentService.findByStudy(myopathyStudy.getId());
+        Assertions.assertEquals(3, studyEnvs.size());
+        UUID sandboxEnvironmentId = studyEnvs.stream().filter(
+                        sEnv -> sEnv.getEnvironmentName().equals(EnvironmentName.sandbox))
+                .findFirst().get().getId();
+
+        List<Enrollee> enrollees = enrolleeService.findByStudyEnvironmentAdminLoad(sandboxEnvironmentId);
+        Assertions.assertEquals(3, enrollees.size());
+        Enrollee gertrude = enrollees.stream().filter(enrollee -> "HHGELI".equals(enrollee.getShortcode()))
+                .findFirst().get();
+        assertThat(gertrude.getPreEnrollmentResponseId(), notNullValue());
     }
 }
