@@ -20,7 +20,7 @@ import StudyRouter from 'study/StudyRouter'
 import { getOidcConfig } from './authConfig'
 import { AuthProvider } from 'react-oidc-context'
 import UserProvider from './user/UserProvider'
-import Api, { Config } from "./api/api";
+import Api, { Config } from './api/api'
 
 
 /** container for the app including the router  */
