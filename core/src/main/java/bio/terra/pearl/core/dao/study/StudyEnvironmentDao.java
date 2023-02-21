@@ -97,7 +97,7 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
         }
         studyEnv.setConfiguredConsents(studyEnvironmentConsentDao
                 .findAllByStudyEnvIdWithConsent(studyEnvId));
-        studyEnv.setNotificationConfigs(notificationConfigDao.findByStudyEnvironmentId(studyEnvId));
+        studyEnv.setNotificationConfigs(notificationConfigDao.findByStudyEnvWithTemplates(studyEnvId, true));
         return studyEnv;
     }
 

@@ -55,6 +55,11 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         return dao.loadWithSiteContent(portalShortcode, environmentName, language);
     }
 
+    /** loads a portal environment with everything needed to render the participant-facing site */
+    public Optional<PortalEnvironment> loadWithEnvConfig(UUID portalEnvironmentId) {
+        return dao.loadWithEnvConfig(portalEnvironmentId);
+    }
+
     @Transactional
     @Override
     public PortalEnvironment create(PortalEnvironment portalEnvironment) {
@@ -71,6 +76,8 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
     @Transactional
     @Override
     public void delete(UUID id, Set<CascadeProperty> cascades) {
+        PortalEnvironment portalEnvironment = dao.find(id).get();
+        UUID envConfigId = portalEnvironment.getPortalEnvironmentConfigId();
         List<UUID> participantUserIds = portalParticipantUserService
                 .findByPortalEnvironmentId(id).stream().map(pUser -> pUser.getParticipantUserId())
                 .collect(Collectors.toList());
@@ -81,6 +88,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
             participantUserService.deleteOrphans(participantUserIds, cascades);
         }
         dao.delete(id);
+        portalEnvironmentConfigService.delete(envConfigId, cascades);
     }
 
     public enum AllowedCascades implements CascadeProperty {

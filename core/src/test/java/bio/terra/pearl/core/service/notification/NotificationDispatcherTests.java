@@ -25,6 +25,7 @@ public class NotificationDispatcherTests extends BaseSpringBootTest {
                 .eventType(NotificationEventType.STUDY_ENROLLMENT)
                 .deliveryType(NotificationDeliveryType.EMAIL)
                 .notificationType(NotificationType.EVENT)
+                .portalEnvironmentId(enrolleeWithPPUser.portalParticipantUser().getPortalEnvironmentId())
                 .build();
         config = notificationConfigService.create(config);
 

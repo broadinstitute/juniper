@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.notification;
 import bio.terra.pearl.core.model.notification.Notification;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
+import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
@@ -10,6 +11,7 @@ import bio.terra.pearl.core.service.rule.RuleEvaluator;
 import bio.terra.pearl.core.service.workflow.DispatcherOrder;
 import bio.terra.pearl.core.service.workflow.EnrolleeEvent;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -21,11 +23,13 @@ public class NotificationDispatcher {
     private static final Logger logger = LoggerFactory.getLogger(NotificationDispatcher.class);
     private NotificationConfigService notificationConfigService;
     private NotificationService notificationService;
+    private Map<NotificationDeliveryType, NotificationSender> senderMap;
 
     public NotificationDispatcher(NotificationConfigService notificationConfigService,
-                                  NotificationService notificationService) {
+                                  NotificationService notificationService, EmailService emailService) {
         this.notificationConfigService = notificationConfigService;
         this.notificationService = notificationService;
+        senderMap = Map.of(NotificationDeliveryType.EMAIL, emailService);
     }
 
     /** notifications could be triggered by just about anything, so listen to all enrollee events */
@@ -38,10 +42,17 @@ public class NotificationDispatcher {
             Class configClass = config.getEventType().eventClass;
             if (configClass.isInstance(event)) {
                 if (RuleEvaluator.evaluateEnrolleeRule(config.getRule(), event.getEnrolleeRuleData())) {
+                    // TODO: this should use the async call
                     createNotification(config, event.getEnrollee(), event.getPortalParticipantUser(), event.getEnrolleeRuleData());
+                    sendNotification(config, event.getEnrolleeRuleData());
                 }
             }
         }
+    }
+
+    public void sendNotification(NotificationConfig config, EnrolleeRuleData enrolleeRuleData) {
+        senderMap.get(config.getDeliveryType())
+                .sendNotification(config, enrolleeRuleData);
     }
 
     public void createNotification(NotificationConfig config, Enrollee enrollee, PortalParticipantUser ppUser,

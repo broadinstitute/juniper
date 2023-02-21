@@ -32,6 +32,8 @@ databaseChangeLog:
               - column: { name: password, type: text }
               - column: { name: accepting_registration, type: boolean, defaultValueBoolean: true }
               - column: { name: initialized, type: boolean, defaultValueBoolean: false }
+              - column: { name: participant_hostname, type: text }
+              - column: { name: email_source_address, type: text }
         - createTable:
             tableName: portal_environment
             columns:

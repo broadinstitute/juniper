@@ -27,7 +27,8 @@ public class FilePopulateService {
 
     public FilePopulateService(Environment environment) {
         this.environment = environment;
-        this.isPopulateFromClasspath = environment.getProperty("env.populate.populate-from-classpath", Boolean.class, true);
+        this.isPopulateFromClasspath = environment
+                .getProperty("env.populate.populate-from-classpath", Boolean.class, true);
     }
 
     public String readFile(String relativePath, FilePopulateConfig popSpec) throws IOException {

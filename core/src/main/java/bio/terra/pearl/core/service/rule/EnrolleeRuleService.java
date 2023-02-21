@@ -14,9 +14,6 @@ public class EnrolleeRuleService {
     }
 
     public EnrolleeRuleData fetchData(Enrollee enrollee) {
-        return EnrolleeRuleData.builder()
-                .enrollee(enrollee)
-                .profile(profileService.find(enrollee.getProfileId()).orElse(null))
-                .build();
+        return new EnrolleeRuleData(enrollee, profileService.find(enrollee.getProfileId()).orElse(null));
     }
 }

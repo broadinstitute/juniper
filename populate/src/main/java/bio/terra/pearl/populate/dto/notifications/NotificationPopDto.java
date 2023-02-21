@@ -1,4 +1,4 @@
-package bio.terra.pearl.populate.dto;
+package bio.terra.pearl.populate.dto.notifications;
 
 import bio.terra.pearl.core.model.notification.Notification;
 import bio.terra.pearl.core.model.notification.NotificationEventType;

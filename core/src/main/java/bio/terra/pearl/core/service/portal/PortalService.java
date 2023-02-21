@@ -14,6 +14,7 @@ import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
+import bio.terra.pearl.core.service.notification.EmailTemplateService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.site.SiteContentService;
@@ -39,6 +40,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     private SurveyService surveyService;
     private ConsentFormService consentFormService;
     private SiteContentService siteContentService;
+    private EmailTemplateService emailTemplateService;
 
     public PortalService(PortalDao portalDao, PortalStudyService portalStudyService,
                          StudyService studyService,
@@ -46,7 +48,8 @@ public class PortalService extends CrudService<Portal, PortalDao> {
                          ParticipantUserService participantUserService,
                          PortalParticipantUserService portalParticipantUserService,
                          PortalAdminUserDao portalAdminUserDao, SurveyService surveyService,
-                         ConsentFormService consentFormService, SiteContentService siteContentService) {
+                         ConsentFormService consentFormService, SiteContentService siteContentService,
+                         EmailTemplateService emailTemplateService) {
         super(portalDao);
         this.portalStudyService = portalStudyService;
         this.portalEnvironmentService = portalEnvironmentService;
@@ -57,6 +60,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         this.surveyService = surveyService;
         this.consentFormService = consentFormService;
         this.siteContentService = siteContentService;
+        this.emailTemplateService = emailTemplateService;
     }
 
     @Transactional
@@ -90,6 +94,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         surveyService.deleteByPortalId(portalId);
         consentFormService.deleteByPortalId(portalId);
         siteContentService.deleteByPortalId(portalId);
+        emailTemplateService.deleteByPortalId(portalId);
         dao.delete(portalId);
     }
 

@@ -1,4 +1,6 @@
-# for development, populate from local filesystem so you don't have to rebuild the jar to update population files
+
 env:
-  populate:
+  populate: # for development, populate from local filesystem so you don't have to rebuild the jar to update population files
     populate-from-classpath: false
+  email: # for development, it's usually convenient to redirect all emails to the developer's email address
+    redirectAllTo: ${REDIRECT_ALL_EMAILS_TO:}
