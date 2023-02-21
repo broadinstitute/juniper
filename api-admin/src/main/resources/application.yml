@@ -14,6 +14,8 @@ env:
     basePath: ${SAM_ADDRESS:https://sam.dsde-dev.broadinstitute.org}
   populate:
     populate-from-classpath: true
+  email:
+    sendgridApiKey: ${SENDGRID_API_KEY:}
 
 # Below here is non-deployment-specific
 

@@ -14,7 +14,6 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.populate.dto.PortalEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.PortalPopDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -35,9 +34,7 @@ public class PortalPopulator extends Populator<Portal> {
     private PortalParticipantUserPopulator portalParticipantUserPopulator;
 
 
-    public PortalPopulator(FilePopulateService filePopulateService,
-                           ObjectMapper objectMapper,
-                           PortalService portalService,
+    public PortalPopulator(PortalService portalService,
                            StudyPopulator studyPopulator,
                            PortalStudyService portalStudyService,
                            SiteContentPopulator siteContentPopulator,
@@ -48,11 +45,9 @@ public class PortalPopulator extends Populator<Portal> {
         this.portalParticipantUserPopulator = portalParticipantUserPopulator;
         this.portalEnvironmentService = portalEnvironmentService;
         this.surveyPopulator = surveyPopulator;
-        this.filePopulateService = filePopulateService;
         this.portalService = portalService;
         this.studyPopulator = studyPopulator;
         this.portalStudyService = portalStudyService;
-        this.objectMapper = objectMapper;
     }
 
     @Transactional

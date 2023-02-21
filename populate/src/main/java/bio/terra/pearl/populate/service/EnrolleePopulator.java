@@ -25,13 +25,12 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dto.EnrolleePopDto;
-import bio.terra.pearl.populate.dto.NotificationPopDto;
 import bio.terra.pearl.populate.dto.ParticipantTaskPopDto;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
+import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.ResponseSnapshotPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -53,9 +52,7 @@ public class EnrolleePopulator extends Populator<Enrollee> {
     private NotificationConfigService notificationConfigService;
     private NotificationService notificationService;
 
-    public EnrolleePopulator(FilePopulateService filePopulateService,
-                             ObjectMapper objectMapper,
-                             EnrolleeService enrolleeService,
+    public EnrolleePopulator(EnrolleeService enrolleeService,
                              StudyEnvironmentService studyEnvironmentService,
                              ParticipantUserService participantUserService,
                              PortalParticipantUserService portalParticipantUserService,
@@ -74,8 +71,6 @@ public class EnrolleePopulator extends Populator<Enrollee> {
         this.participantTaskService = participantTaskService;
         this.notificationConfigService = notificationConfigService;
         this.notificationService = notificationService;
-        this.objectMapper = objectMapper;
-        this.filePopulateService = filePopulateService;
         this.enrolleeService = enrolleeService;
         this.studyEnvironmentService = studyEnvironmentService;
         this.participantUserService = participantUserService;

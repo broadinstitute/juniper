@@ -20,10 +20,12 @@ dependencies {
     implementation group: 'org.jdbi', name: 'jdbi3-postgres', version: '3.34.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:2.7.5'
     implementation 'org.apache.commons:commons-text:1.10.0'
+    implementation 'commons-beanutils:commons-beanutils:1.9.4'
     implementation 'org.liquibase:liquibase-core:4.17.2'
     implementation 'org.yaml:snakeyaml:1.33'
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
+    implementation 'com.sendgrid:sendgrid-java:4.0.1'
 
     liquibaseRuntime 'org.liquibase:liquibase-core'
     liquibaseRuntime 'info.picocli:picocli:4.6.1'

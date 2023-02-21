@@ -39,5 +39,21 @@
     "targetAssignedVersion": 1,
     "taskOrder": 1,
     "blocksHub": false
+  },{
+    "status": "NEW",
+    "taskType": "SURVEY",
+    "targetName": "Placeholder survey 1",
+    "targetStableId": "oh_oh_placeholder1",
+    "targetAssignedVersion": 1,
+    "taskOrder": 2,
+    "blocksHub": false
+  },{
+    "status": "NEW",
+    "taskType": "SURVEY",
+    "targetName": "Placeholder survey 2",
+    "targetStableId": "oh_oh_placeholder2",
+    "targetAssignedVersion": 1,
+    "taskOrder": 3,
+    "blocksHub": false
   }]
 }

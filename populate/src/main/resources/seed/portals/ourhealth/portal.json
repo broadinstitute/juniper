@@ -11,7 +11,8 @@
         "acceptingRegistration": true,
         "passwordProtected": false,
         "password": "broad_institute",
-        "initialized": true
+        "initialized": true,
+        "emailSourceAddress": "dbush@broadinstitute.org"
       },
       "siteContentFile": "siteContent.json",
       "participantUserFiles": [

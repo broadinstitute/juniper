@@ -27,7 +27,8 @@ public class NotificationConfig extends BaseEntity {
     private NotificationType notificationType;
     @Builder.Default
     private NotificationDeliveryType deliveryType = NotificationDeliveryType.EMAIL;
-
+    private UUID emailTemplateId;
+    private EmailTemplate emailTemplate;
     private String rule;
 
     private NotificationEventType eventType; // for notificationTypes of ON_EVENT

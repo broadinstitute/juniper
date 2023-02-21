@@ -1,0 +1,3 @@
+env:
+  email: # for development, it's usually convenient to redirect all emails to the developer's email address
+    redirectAllTo: ${REDIRECT_ALL_EMAILS_TO:}
