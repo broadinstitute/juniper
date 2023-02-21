@@ -85,7 +85,7 @@ From the command line:
   ```
   cd ui-admin
   npm install
-  REACT_APP_B2C_TENANT_NAME=terradevb2c REACT_APP_B2C_CLIENT_ID=$(vault read -field value secret/dsde/terra/azure/dev/b2c/application_id) npm start
+  REACT_APP_B2C_TENANT_NAME=ddpdevb2c REACT_APP_B2C_CLIENT_ID=$(vault read -field value secret/dsp/ddp/b2c/dev/application_id) npm start
   ```
 (note that you can just run `npm start` if you don't need to test B2C login functionality)
 Then go to `localhost:3000` 
