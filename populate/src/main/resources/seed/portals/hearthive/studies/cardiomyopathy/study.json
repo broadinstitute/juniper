@@ -7,6 +7,9 @@
   "consentFormFiles": [
     "surveys/consent.json"
   ],
+  "emailTemplateFiles": [
+    "emails/studyEnroll.json"
+  ],
   "studyEnvironmentDtos": [
     {
       "environmentName": "sandbox",
@@ -26,9 +29,11 @@
           "consentVersion": 1
         }
       ],
-      "notificationConfigs": [{
+      "notificationConfigDtos": [{
         "notificationType": "EVENT",
-        "eventType": "STUDY_ENROLLMENT"
+        "eventType": "STUDY_ENROLLMENT",
+        "emailTemplateStableId": "hh_cymop_studyEnroll",
+        "emailTemplateVersion": 1
       }],
       "enrolleeFiles": [
         "enrollees/gertrudeElion.json",
