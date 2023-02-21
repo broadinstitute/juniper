@@ -77,7 +77,19 @@ export type PortalStudy = {
 export type Portal = {
   name: string,
   shortcode: string,
-  portalStudies: PortalStudy[]
+  portalStudies: PortalStudy[],
+  portalEnvironments: PortalEnvironment[]
+}
+
+export type PortalEnvironment = {
+  environmentName: string,
+  portalEnvironmentConfig: PortalEnvironmentConfig
+}
+
+export type PortalEnvironmentConfig = {
+  acceptingRegistration: boolean,
+  password: string,
+  passwordProtected: boolean
 }
 
 export type EnrolleeSearchResult = {

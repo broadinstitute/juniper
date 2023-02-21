@@ -9,7 +9,7 @@
       "environmentName": "sandbox",
       "portalEnvironmentConfig": {
         "acceptingRegistration": true,
-        "passwordProtected": false,
+        "passwordProtected": true,
         "password": "broad_institute",
         "initialized": true,
         "emailSourceAddress": "dbush@broadinstitute.org"
