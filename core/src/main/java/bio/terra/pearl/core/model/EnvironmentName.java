@@ -8,7 +8,7 @@ public enum EnvironmentName {
         return EnvironmentName.valueOf(value.toLowerCase());
     }
 
-    public boolean isProduction() {
+    public boolean isLive() {
         return this.equals(live);
     }
 }

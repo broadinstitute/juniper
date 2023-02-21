@@ -58,7 +58,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
             participantHostname = portalShortcode + "." + ParticipantUiConstants.LOCAL_DEV_HOSTNAME;
         }
 
-        if (!portalEnv.getEnvironmentName().isProduction()) {
+        if (!portalEnv.getEnvironmentName().isLive()) {
             participantHostname = portalEnv.getEnvironmentName() + "." + participantHostname;
         }
         if (!participantHostname.contains("localhost")) {
