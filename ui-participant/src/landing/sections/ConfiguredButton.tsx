@@ -6,10 +6,10 @@ import { Link } from 'react-router-dom'
 export default function ConfiguredButton({ config, className }: { config: ButtonConfig, className: string }) {
   if (config.type === 'join') {
     if (config.studyShortcode) {
-      return <Link to={`studies/${config.studyShortcode}/join`}
+      return <Link to={`/studies/${config.studyShortcode}/join`}
         className={className}>{config.text}</Link>
     } else {
-      return <Link to={`join`}
+      return <Link to={`/join`}
         className={className}>{config.text}</Link>
     }
   }

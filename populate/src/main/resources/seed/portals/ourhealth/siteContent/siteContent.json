@@ -26,6 +26,8 @@
     },
     "navbarItemDtos": [{
       "populateFileName": "aboutUs.json"
+    },{
+      "populateFileName": "participation.json"
     }]
   }]
 }

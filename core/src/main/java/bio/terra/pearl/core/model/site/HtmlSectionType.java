@@ -8,5 +8,6 @@ public enum HtmlSectionType {
     STEP_OVERVIEW,
     FAQ,
     SOCIAL_MEDIA,
-    PHOTO_BLURB_GRID
+    PHOTO_BLURB_GRID,
+    PARTICIPATION_DETAIL
 }

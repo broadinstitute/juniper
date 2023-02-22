@@ -2,6 +2,7 @@ import _ from 'lodash'
 import React from 'react'
 import { ButtonConfig } from 'api/api'
 import ReactMarkdown from 'react-markdown'
+import ConfiguredButton from './ConfiguredButton'
 
 type HeroCenteredTemplateProps = {
   background?: string, // background CSS style (e.g. `linear-gradient(...)`)
@@ -36,9 +37,9 @@ function HeroCenteredTemplate({ config: { background, backgroundColor, color, bl
     </div>
     <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
       {
-        _.map(buttons, ({ text, href }) => {
+        _.map(buttons, button => {
           // TODO: allow customization of button styling
-          return <a href={href} role={'button'} className="btn btn-light btn-lg px-4 me-md-2">{text}</a>
+          return <ConfiguredButton config={button} className='btn btn-light btn-lg px-4 me-md-2'/>
         })
       }
     </div>

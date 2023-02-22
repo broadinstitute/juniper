@@ -29,7 +29,12 @@ public class SiteImageController implements SiteImageApi {
   private ResponseEntity<Resource> convertToResourceResponse(Optional<SiteImage> imageOpt) {
     Optional<Resource> imageResourceOpt = Optional.empty();
     if (imageOpt.isPresent()) {
-      imageResourceOpt = Optional.of(new ByteArrayResource(imageOpt.get().getData()));
+      SiteImage image = imageOpt.get();
+      if (image.getCleanFileName().endsWith(".svg")) {
+        imageResourceOpt = Optional.of(new Resource(imageOpt.get().getData()));
+      } else {
+        imageResourceOpt = Optional.of(new ByteArrayResource(imageOpt.get().getData()));
+      }
     }
     return ResponseEntity.of(imageResourceOpt);
   }

@@ -10,6 +10,7 @@ import SocialMediaTemplate from './SocialMediaTemplate'
 import { HtmlPage, HtmlSection, SectionConfig } from 'api/api'
 import RawHtmlTemplate from './RawHtmlTemplate'
 import PhotoBlurbGrid from './PhotoBlurbGrid'
+import ParticipationDetailTemplate from './ParticipationDetailTemplate'
 
 type TemplateComponent = ({ config, rawContent }: { config: SectionConfig, rawContent: string | null }) => JSX.Element
 
@@ -21,6 +22,7 @@ const templateComponents: { [index: string]: TemplateComponent } = {
   'SOCIAL_MEDIA': SocialMediaTemplate,
   'STEP_OVERVIEW': StepOverviewTemplate,
   'PHOTO_BLURB_GRID': PhotoBlurbGrid,
+  'PARTICIPATION_DETAIL': ParticipationDetailTemplate,
   'RAW_HTML': RawHtmlTemplate
 }
 

@@ -32,5 +32,13 @@
     "populateFileName": "images/Amit_Khera.jpg"
   }, {
     "populateFileName": "images/Pradeep_Natarajan.jpg"
+  }, {
+    "populateFileName": "images/consent_step.png"
+  }, {
+    "populateFileName": "images/survey_step.png"
+  }, {
+    "populateFileName": "images/saliva_step.png"
+  }, {
+    "populateFileName": "images/engagement_step.png"
   }]
 }
