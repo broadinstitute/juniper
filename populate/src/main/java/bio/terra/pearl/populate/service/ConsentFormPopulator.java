@@ -7,7 +7,6 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.populate.dao.ConsentFormPopulateDao;
 import bio.terra.pearl.populate.dto.consent.ConsentFormPopDto;
 import bio.terra.pearl.populate.dto.consent.StudyEnvironmentConsentPopDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,14 +20,11 @@ public class ConsentFormPopulator extends Populator<ConsentForm> {
     private PortalService portalService;
     private ConsentFormPopulateDao consentFormPopulateDao;
 
-    public ConsentFormPopulator(ConsentFormService consentFormService, FilePopulateService filePopulateService,
-                                PortalService portalService, ConsentFormPopulateDao consentFormPopulateDao,
-                                ObjectMapper objectMapper) {
+    public ConsentFormPopulator(ConsentFormService consentFormService,
+                                PortalService portalService, ConsentFormPopulateDao consentFormPopulateDao) {
         this.consentFormService = consentFormService;
         this.portalService = portalService;
-        this.filePopulateService = filePopulateService;
         this.consentFormPopulateDao = consentFormPopulateDao;
-        this.objectMapper = objectMapper;
     }
 
     @Override

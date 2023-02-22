@@ -12,6 +12,7 @@ import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.ResponseSnapshot;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
@@ -25,13 +26,12 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dto.EnrolleePopDto;
-import bio.terra.pearl.populate.dto.NotificationPopDto;
 import bio.terra.pearl.populate.dto.ParticipantTaskPopDto;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
+import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.ResponseSnapshotPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -53,9 +53,7 @@ public class EnrolleePopulator extends Populator<Enrollee> {
     private NotificationConfigService notificationConfigService;
     private NotificationService notificationService;
 
-    public EnrolleePopulator(FilePopulateService filePopulateService,
-                             ObjectMapper objectMapper,
-                             EnrolleeService enrolleeService,
+    public EnrolleePopulator(EnrolleeService enrolleeService,
                              StudyEnvironmentService studyEnvironmentService,
                              ParticipantUserService participantUserService,
                              PortalParticipantUserService portalParticipantUserService,
@@ -74,8 +72,6 @@ public class EnrolleePopulator extends Populator<Enrollee> {
         this.participantTaskService = participantTaskService;
         this.notificationConfigService = notificationConfigService;
         this.notificationService = notificationService;
-        this.objectMapper = objectMapper;
-        this.filePopulateService = filePopulateService;
         this.enrolleeService = enrolleeService;
         this.studyEnvironmentService = studyEnvironmentService;
         this.participantUserService = participantUserService;
@@ -179,7 +175,20 @@ public class EnrolleePopulator extends Populator<Enrollee> {
         taskDto.setEnrolleeId(enrollee.getId());
         taskDto.setStudyEnvironmentId(enrollee.getStudyEnvironmentId());
         taskDto.setPortalParticipantUserId(ppUser.getId());
+        if (taskDto.getTargetName() == null) {
+            taskDto.setTargetName(getTargetName(taskDto.getTaskType(), taskDto.getTargetStableId(),
+                    taskDto.getTargetAssignedVersion()));
+        }
         participantTaskService.create(taskDto);
+    }
+
+    private String getTargetName(TaskType taskType, String stableId, int version) {
+        if (taskType.equals(TaskType.SURVEY)) {
+            return surveyService.findByStableId(stableId, version).get().getName();
+        } else if (taskType.equals(TaskType.CONSENT)) {
+            return consentFormService.findByStableId(stableId, version).get().getName();
+        }
+        throw new IllegalArgumentException("cannot find target name for TaskType " + taskType);
     }
 
     private void populateNotifications(Enrollee enrollee, EnrolleePopDto enrolleeDto, UUID studyEnvironmentId,

@@ -10,6 +10,9 @@
   "consentFormFiles": [
     "surveys/ourHealthConsent.json"
   ],
+  "emailTemplateFiles": [
+    "emails/studyEnroll.json"
+  ],
   "studyEnvironmentDtos": [
     {
       "environmentName": "sandbox",
@@ -43,9 +46,11 @@
           "consentVersion": 1
         }
       ],
-      "notificationConfigs": [{
+      "notificationConfigDtos": [{
         "notificationType": "EVENT",
-        "eventType": "STUDY_ENROLLMENT"
+        "eventType": "STUDY_ENROLLMENT",
+        "emailTemplateStableId": "oh_oh_studyEnroll",
+        "emailTemplateVersion": 1
       }],
       "enrolleeFiles": [
         "enrollees/jsalk.json",

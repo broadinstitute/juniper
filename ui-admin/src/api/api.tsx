@@ -158,7 +158,14 @@ export type NotificationConfig = {
   eventType: string,
   taskType: string,
   taskTargetStableId: string,
-  afterMinutesIncomplete: number
+  afterMinutesIncomplete: number,
+  emailTemplateId: string,
+  emailTemplate: EmailTemplate
+}
+
+export type EmailTemplate = {
+  subject: string,
+  body: string
 }
 
 export type Notification = {
@@ -331,6 +338,19 @@ export default {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
       }/enrollees/${enrolleeShortcode}/notifications`
     const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async testNotification(portalShortcode: string, envName: string,
+    notificationConfigId: string, enrolleeRuleData: object): Promise<NotificationConfig> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/notificationConfigs/${notificationConfigId}`
+      + `/test`
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(enrolleeRuleData)
+    })
     return await this.processJsonResponse(response)
   },
 

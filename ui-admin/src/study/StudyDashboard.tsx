@@ -71,7 +71,12 @@ function EnvironmentSummary({ studyEnv }: {studyEnv: StudyEnvironment}) {
     { config.passwordProtected && <span className="detail ms-3">{config.password}</span> }
     <br/>
     <label>Accepting enrollment:</label> {config.acceptingEnrollment ? 'Yes' : 'No'}<br/>
-    <Link to={`env/${studyEnv.environmentName}`}>View / Configure</Link>
+    <p>
+      <Link to={`env/${studyEnv.environmentName}`}>View / Configure</Link>
+    </p>
+    <p>
+      <Link to={`env/${studyEnv.environmentName}/participants`}>Participants</Link>
+    </p>
   </div>
 }
 

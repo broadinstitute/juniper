@@ -13,7 +13,7 @@ access from non-owning services is less problematic.
 3. Services should be the main source of logger.info statements.  Controllers and DAOs generally should not need loggers as
 they are covered by ingress logging, DB logging, and exception handling. 
 
-5. For CRUD services
+4. For CRUD services
    1. *create* the create method should return the object created, along with any children created attached.
    The default is to create any not-already existing children that are attached to the object
    passed to the create method

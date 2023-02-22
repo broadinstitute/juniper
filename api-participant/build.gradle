@@ -16,12 +16,14 @@ dependencies {
     implementation project(':core')
     implementation project(':ui-participant')
     implementation 'org.apache.commons:commons-dbcp2'
+    implementation 'commons-beanutils:commons-beanutils:1.9.4'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.retry:spring-retry'
     implementation 'javax.ws.rs:javax.ws.rs-api:2.1.1'
     implementation 'org.postgresql:postgresql'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'com.sendgrid:sendgrid-java:4.0.1'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {

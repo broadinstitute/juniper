@@ -4,10 +4,15 @@ import bio.terra.pearl.core.model.BaseEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 public abstract class Populator<T extends BaseEntity> {
+    // in general, we use constructor injection, but for widely-used and inherited beans with no complex dependencies
+    // annotation injection saves a lot of lines of code
+    @Autowired
     protected FilePopulateService filePopulateService;
+    @Autowired
     protected ObjectMapper objectMapper;
 
     public T populate(String filePathName) throws IOException {

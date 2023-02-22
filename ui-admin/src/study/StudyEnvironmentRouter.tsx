@@ -12,6 +12,7 @@ import ConsentView from './surveys/ConsentView'
 import PreEnrollView from './surveys/PreEnrollView'
 import StudyContent from './StudyContent'
 import ParticipantsRouter from './participants/ParticipantsRouter'
+import NotificationConfigView from './notifications/NotificationConfigView'
 
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
@@ -59,6 +60,8 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
         </Route>
         <Route path="*" element={<div>Unknown consent page</div>}/>
       </Route>
+      <Route path="notificationConfigs/:configId"
+        element={<NotificationConfigView studyEnvContext={studyEnvContext}/>}/>
       <Route path="preEnroll">
         <Route path=":surveyStableId" element={<PreEnrollView studyEnvContext={studyEnvContext}/>}/>
         <Route path="*" element={<div>Unknown prereg page</div>}/>

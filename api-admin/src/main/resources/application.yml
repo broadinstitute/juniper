@@ -17,6 +17,8 @@ env:
   b2c:
     tenantName: ${B2C_TENANT_NAME:missing_tenant_name}
     clientId: ${B2C_CLIENT_ID:missing_client_id}
+  email:
+    sendgridApiKey: ${SENDGRID_API_KEY:}
 
 # Below here is non-deployment-specific
 

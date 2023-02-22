@@ -51,6 +51,10 @@ public class FilePopulateConfig {
         return newFrom(relativeFilePath, portalShortcode, studyShortcode, environmentName);
     }
 
+    public FilePopulateConfig newForEnv(EnvironmentName environmentName) {
+        return newFrom("", portalShortcode, studyShortcode, environmentName);
+    }
+
     public FilePopulateConfig newForPortal(String relativeFilePath,
                                           String portalShortcode,
                                           EnvironmentName environmentName) {

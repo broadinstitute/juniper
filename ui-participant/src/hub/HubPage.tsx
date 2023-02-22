@@ -1,9 +1,11 @@
 import React from 'react'
 import { usePortalEnv } from '../providers/PortalProvider'
 import { useUser } from '../providers/UserProvider'
-import { Enrollee, ParticipantTask, Portal, Study } from '../api/api'
-import TaskLink from './TaskLink'
-import { useLocation } from 'react-router-dom'
+
+import { Enrollee, ParticipantTask, Portal, PortalStudy, Study } from '../api/api'
+import TaskLink, { getTaskPath, isTaskAccessible, isTaskActive } from './TaskLink'
+import { Link, NavLink, useLocation } from 'react-router-dom'
+
 import TaskStatusMessage from './TaskStatusMessage'
 
 export type HubUpdate = {
@@ -24,45 +26,98 @@ export default function HubPage() {
    */
   const hubUpdate: HubUpdate | undefined = location.state
   const hubMessage = hubUpdate?.message
+  const unjoinedStudies = portal.portalStudies.filter(pStudy => !userHasJoinedPortalStudy(pStudy, enrollees))
 
   return <div>
     <div className="container">
-      <h5 className="text-center">Dashboard</h5>
       {!!hubMessage && <div className="row mb-2">
         <div className="col-md-12">
           <TaskStatusMessage content={hubMessage.content} messageType={hubMessage.messageType}/>
         </div>
       </div>}
-      <div className="row">
+      <div className="row justify-content-center">
         <div className="col-md-6">
           {enrollees.map(enrollee => <StudyTaskBox enrollee={enrollee} portal={portal} key={enrollee.id}/>)}
+        </div>
+      </div>
+      <div className="row justify-content-center">
+        <div className="col-md-6">
+          <h3 className="text-center">Studies you can join</h3>
+          <ul className="list-group">
+            {unjoinedStudies.map(portalStudy => <li key={portalStudy.study.shortcode} className="list-group-item">
+              <h6>{portalStudy.study.name}</h6>
+              <NavLink to={`/studies/${portalStudy.study.shortcode}/join`}>Join</NavLink>
+            </li>)}
+          </ul>
         </div>
       </div>
     </div>
   </div>
 }
 
+const taskTypeDisplayMap: Record<string, string> = {
+  CONSENT: 'Consent',
+  SURVEY: 'Survey'
+}
 
 /** Renders pending tasks for a given study */
 function StudyTaskBox({ enrollee, portal }: { enrollee: Enrollee, portal: Portal }) {
   const matchedStudy = portal.portalStudies
     .find(pStudy => pStudy.study.studyEnvironments[0].id === enrollee.studyEnvironmentId)?.study as Study
   const hasStudyTasks = enrollee.participantTasks.length > 0
-  const sortedTasks = enrollee.participantTasks.sort(taskComparator)
+  const sortedConsentTasks = enrollee.participantTasks.filter(task => task.taskType === 'CONSENT' &&
+    isTaskActive(task)).sort(taskComparator)
+  const hasActiveConsentTasks = sortedConsentTasks.length > 0
+  const sortedSurveyTasks = enrollee.participantTasks.filter(task => task.taskType === 'SURVEY' &&
+    isTaskActive(task)).sort(taskComparator)
+  const hasActiveSurveyTasks = sortedSurveyTasks.length > 0
+  const nextTask = getNextTask(enrollee, [...sortedConsentTasks, ...sortedSurveyTasks])
+  const completedForms = enrollee.participantTasks.filter(task => task.taskType === 'CONSENT' &&
+    task.status === 'COMPLETE')
+  const hasCompletedForms = completedForms.length > 0
+
   return <div className="p-3">
-    <h5 className="mb-3 fw-bold">{matchedStudy.name}</h5>
+    <h4 className="mb-3">{matchedStudy.name}</h4>
     {hasStudyTasks && <div>
-      <h6 className="fw-bold">Activities</h6>
-      <ol style={{ listStyleType: 'none', paddingInlineStart: 0, width: '100%' }}>
-        {sortedTasks.map(task => <li key={task.id}>
-          <TaskLink task={task} key={task.id} studyShortcode={matchedStudy.shortcode}
-            enrollee={enrollee}/>
-        </li>)}
-      </ol>
+      {nextTask && <div className="row">
+        <div className="col-md-12 text-center p-4" style={{ background: '#eef' }}>
+          <Link to={getTaskPath(nextTask, enrollee.shortcode, matchedStudy.shortcode)}
+            className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
+            Continue {taskTypeDisplayMap[nextTask.taskType]}s
+          </Link>
+        </div>
+      </div>}
+      {hasActiveConsentTasks && <TaskGrouping title="CONSENT" tasks={sortedConsentTasks} enrollee={enrollee}
+        studyShortcode={matchedStudy.shortcode}/>}
+      {hasActiveSurveyTasks && <TaskGrouping title="SURVEYS" tasks={sortedSurveyTasks} enrollee={enrollee}
+        studyShortcode={matchedStudy.shortcode}/>}
+      {hasCompletedForms && <TaskGrouping title="FORMS" tasks={completedForms} enrollee={enrollee}
+        studyShortcode={matchedStudy.shortcode}/>}
     </div>}
     {!hasStudyTasks && <span className="detail">No tasks for this study</span>}
-
   </div>
+}
+
+/** renders a group like "CONSENTS" or "SURVEYS" */
+function TaskGrouping({ title, tasks, enrollee, studyShortcode }: {
+  title: string, tasks: ParticipantTask[],
+  enrollee: Enrollee, studyShortcode: string
+}) {
+  return <div className="mt-4">
+    <span className="fw-bold">{title}</span>
+    <ol style={{ listStyleType: 'none', paddingInlineStart: 0, width: '100%' }}>
+      {tasks.map(task => <li key={task.id}>
+        <TaskLink task={task} key={task.id} studyShortcode={studyShortcode}
+          enrollee={enrollee}/>
+      </li>)}
+    </ol>
+  </div>
+}
+
+/** returns the next actionable task for the enrollee, or undefined if there is no remaining task */
+function getNextTask(enrollee: Enrollee, sortedTasks: ParticipantTask[]) {
+  const nextTask = sortedTasks.find(task => isTaskAccessible(task, enrollee) && isTaskActive(task))
+  return nextTask
 }
 
 export const TASK_TYPE_ORDER = ['CONSENT', 'SURVEY']
@@ -74,4 +129,9 @@ function taskComparator(taskA: ParticipantTask, taskB: ParticipantTask) {
     return typeOrder
   }
   return taskA.taskOrder - taskB.taskOrder
+}
+
+/** whether the list of enrollees contains an enrollee matching the study */
+function userHasJoinedPortalStudy(portalStudy: PortalStudy, enrollees: Enrollee[]) {
+  return !!enrollees.find(enrollee => enrollee.studyEnvironmentId === portalStudy.study.studyEnvironments[0].id)
 }

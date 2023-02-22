@@ -1,0 +1,17 @@
+{
+  "participantUser": {
+    "username": "gelion@test.com"
+  },
+  "profile": {
+    "givenName": "Gertrude",
+    "familyName": "Elion",
+    "contactEmail": "gelion@test.com",
+    "mailingAddress": {
+      "street1": "45 7th Avenue",
+      "city": "New York",
+      "state": "NY",
+      "country": "US",
+      "zip": "01212"
+    }
+  }
+}

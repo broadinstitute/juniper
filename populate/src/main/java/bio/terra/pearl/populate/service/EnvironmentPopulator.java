@@ -2,21 +2,17 @@ package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.Environment;
 import bio.terra.pearl.core.service.EnvironmentService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.io.IOException;
 import java.util.Optional;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EnvironmentPopulator extends Populator<Environment> {
     private EnvironmentService environmentService;
 
-    public EnvironmentPopulator(ObjectMapper objectMapper, EnvironmentService environmentService, FilePopulateService filePopulateService) {
-        this.objectMapper = objectMapper;
+    public EnvironmentPopulator(EnvironmentService environmentService) {
         this.environmentService = environmentService;
-        this.filePopulateService = filePopulateService;
     }
 
     @Transactional
