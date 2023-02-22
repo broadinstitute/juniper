@@ -11,6 +11,8 @@ const ConfigContext = React.createContext<Config>(uninitializedConfig)
 
 export const useConfig = () => useContext(ConfigContext)
 
+export const ConfigConsumer = ConfigContext.Consumer
+
 /**
  * Loads runtime config from API. Renders a loading spinner instead of children until config has been loaded.
  */

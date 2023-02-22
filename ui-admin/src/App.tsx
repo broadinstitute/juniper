@@ -18,37 +18,45 @@ import PortalDashboard from 'portal/PortalDashboard'
 
 import StudyRouter from 'study/StudyRouter'
 import UserProvider from 'user/UserProvider'
-import ConfigProvider from 'providers/ConfigProvider'
+import ConfigProvider, { ConfigConsumer } from 'providers/ConfigProvider'
+import { getOidcConfig } from 'authConfig'
+import { AuthProvider } from 'react-oidc-context'
 
 
 /** container for the app including the router  */
 function App() {
   return (
     <ConfigProvider>
-      <UserProvider>
-        <div className="App">
-          <ReactNotifications />
-          <NavbarProvider>
-            <BrowserRouter>
-              <Routes>
-                <Route element={<ProtectedRoute/>}>
-                  <Route path="/" element={<PageFrame/>}>
-                    <Route path=":portalShortcode" element={<PortalProvider/>}>
-                      <Route path="studies">
-                        <Route path=":studyShortcode/*" element={<StudyRouter/>}/>
+      <ConfigConsumer>
+        { config =>
+          <AuthProvider {...getOidcConfig(config.b2cTenantName, config.b2cClientId)}>
+            <UserProvider>
+              <div className="App">
+                <ReactNotifications />
+                <NavbarProvider>
+                  <BrowserRouter>
+                    <Routes>
+                      <Route element={<ProtectedRoute/>}>
+                        <Route path="/" element={<PageFrame/>}>
+                          <Route path=":portalShortcode" element={<PortalProvider/>}>
+                            <Route path="studies">
+                              <Route path=":studyShortcode/*" element={<StudyRouter/>}/>
+                            </Route>
+                            <Route index element={<PortalDashboard/>}/>
+                          </Route>
+                          <Route index element={<PortalList/>}/>
+                        </Route>
+                        <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
+                        <Route path="*" element={<div>Unknown page</div>}/>
                       </Route>
-                      <Route index element={<PortalDashboard/>}/>
-                    </Route>
-                    <Route index element={<PortalList/>}/>
-                  </Route>
-                  <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
-                  <Route path="*" element={<div>Unknown page</div>}/>
-                </Route>
-              </Routes>
-            </BrowserRouter>
-          </NavbarProvider>
-        </div>
-      </UserProvider>
+                    </Routes>
+                  </BrowserRouter>
+                </NavbarProvider>
+              </div>
+            </UserProvider>
+          </AuthProvider>
+        }
+      </ConfigConsumer>
     </ConfigProvider>
   )
 }
