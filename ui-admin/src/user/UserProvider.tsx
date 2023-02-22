@@ -1,9 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import LoadingSpinner from '../util/LoadingSpinner'
 import Api, { AdminUser } from 'api/api'
-import { AuthProvider, useAuth } from 'react-oidc-context'
-import { useConfig } from 'providers/ConfigProvider'
-import { getOidcConfig } from 'authConfig'
+import { useAuth } from 'react-oidc-context'
 
 export type User = {
     accessToken: string | null,
