@@ -1,41 +1,41 @@
 import React from 'react'
 
 import LandingPage from 'landing/LandingPage'
-import {BrowserRouter, Route, Routes} from 'react-router-dom'
-import {usePortalEnv} from 'providers/PortalProvider'
-import {NavbarItem} from 'api/api'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { usePortalEnv } from 'providers/PortalProvider'
+import { NavbarItem } from 'api/api'
 import HtmlPageView from 'landing/sections/HtmlPageView'
 import PortalRegistrationRouter from './landing/registration/PortalRegistrationRouter'
-import {AuthProvider} from 'react-oidc-context'
-import {getOidcConfig} from './authConfig'
+import { AuthProvider } from 'react-oidc-context'
+import { getOidcConfig } from './authConfig'
 import UserProvider from './providers/UserProvider'
-import {ProtectedRoute} from './login/ProtectedRoute'
-import {RedirectFromOAuth} from './login/RedirectFromOAuth'
+import { ProtectedRoute } from './login/ProtectedRoute'
+import { RedirectFromOAuth } from './login/RedirectFromOAuth'
 import StudyEnrollRouter from './studies/enroll/StudyEnrollRouter'
 import HubRouter from './hub/HubRouter'
-import PortalPasswordGate from "./landing/PortalPasswordGate";
-import EnvironmentAlert from "./EnvironmentAlert";
+import PortalPasswordGate from './landing/PortalPasswordGate'
+import EnvironmentAlert from './EnvironmentAlert'
 
 
 /**
  * root app -- handles dynamically creating all the routes based on the siteContent
  */
 function App() {
-  const {localContent, portal} = usePortalEnv()
+  const { localContent, portal } = usePortalEnv()
 
   let landingRoutes: JSX.Element[] = []
   if (localContent.navbarItems) {
     landingRoutes = localContent.navbarItems
       .filter((navItem: NavbarItem) => navItem.itemType === 'INTERNAL')
       .map((navItem: NavbarItem, index: number) => <Route key={index} path={navItem.htmlPage.path}
-                                                          element={<HtmlPageView page={navItem.htmlPage}/>}/>)
+        element={<HtmlPageView page={navItem.htmlPage}/>}/>)
     landingRoutes.push(
       <Route index key="main" element={<HtmlPageView page={localContent.landingPage}/>}/>
     )
   }
   // add routes for portal registration not tied to a specific study (e.g. 'join HeartHive')
   landingRoutes.push(<Route key="portalReg" path="/join/*"
-                            element={<PortalRegistrationRouter portal={portal} returnTo="/hub"/>}>
+    element={<PortalRegistrationRouter portal={portal} returnTo="/hub"/>}>
   </Route>)
 
   return (

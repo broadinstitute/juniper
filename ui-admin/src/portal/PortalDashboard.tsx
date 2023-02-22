@@ -40,6 +40,7 @@ export default function PortalDashboardFromContext() {
   return <PortalDashboard portal={portalContext.portal as Portal}/>
 }
 
+/** show the config settings for a given environment */
 function PortalEnvConfigView({ portalEnv }: {portalEnv: PortalEnvironment}) {
   const labelStyle = { minWidth: '15em', textAlign: 'left' as const }
   return <div className="col-md-4">

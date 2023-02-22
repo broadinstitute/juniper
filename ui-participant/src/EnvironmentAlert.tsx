@@ -1,8 +1,8 @@
-import React, {useState} from "react";
-import {PortalEnvironment} from "api/api";
+import React, { useState } from 'react'
+import { PortalEnvironment } from 'api/api'
 
-export default function EnvironmentAlert({portalEnvironment}: { portalEnvironment: PortalEnvironment }) {
-
+/** shows a small banner in the top center indicating a non-live environment */
+export default function EnvironmentAlert({ portalEnvironment }: { portalEnvironment: PortalEnvironment }) {
   const [isVisible, setIsVisible] = useState(portalEnvironment.environmentName !== 'PRODUCTION')
   const alertStyle = {
     background: 'rgba(200, 200, 200, 0.5)',
@@ -19,7 +19,7 @@ export default function EnvironmentAlert({portalEnvironment}: { portalEnvironmen
     return <></>
   }
   return <div className="position-absolute top-0 start-50 translate-middle-x" style={alertStyle}
-              onClick={() => setIsVisible(false)}>
+    onClick={() => setIsVisible(false)}>
     {portalEnvironment.environmentName}
   </div>
 }
