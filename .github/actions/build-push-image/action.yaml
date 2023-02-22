@@ -31,7 +31,7 @@ runs:
       shell: bash
       run: |
         IMAGE_NAME="${{ inputs.image-repo }}/${{inputs.image-name }}:${{ inputs.version-tag }}"
-        echo "name=${IMAGE}" >> $GITHUB_OUTPUT
+        echo "name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
     - name: Auth to Google
       uses: google-github-actions/auth@v1
       with:

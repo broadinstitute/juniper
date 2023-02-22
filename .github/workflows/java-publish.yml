@@ -118,7 +118,7 @@ jobs:
   notify-upon-completion:
     runs-on: ubuntu-latest
     if: always()
-    needs: [set-version-in-dev, publish-job, get-version-tag]
+    needs: [set-version-in-dev, get-version-tag]
     steps:
       - uses: broadinstitute/action-slack@v3.8.0
         env: 
