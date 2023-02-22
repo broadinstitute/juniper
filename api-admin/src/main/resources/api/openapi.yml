@@ -35,6 +35,18 @@ paths:
           description: "Version not configured"
         '500':
           $ref: '#/components/responses/ServerError'
+
+  /config:
+    get:
+      summary: Get configuration info for authenticating with and using the API
+      tags: [ public ]
+      operationId: getConfig
+      security: [ ]
+      responses:
+        '200':
+          description: Configuration information
+          content: { application/json: { schema: { type: object } } }
+
   /api/example/v1/{resourceType}/{resourceId}/{action}:
     get:
       summary: Checks sam access

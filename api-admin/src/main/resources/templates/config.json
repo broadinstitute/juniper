@@ -1,0 +1,4 @@
+{
+  "b2cTenantName": "[(${b2cTenantName})]",
+  "b2cClientId": "[(${b2cClientId})]"
+}
