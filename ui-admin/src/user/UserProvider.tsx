@@ -1,7 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
 import LoadingSpinner from '../util/LoadingSpinner'
 import Api, { AdminUser } from 'api/api'
-import { useAuth } from 'react-oidc-context'
+import { AuthProvider, useAuth } from 'react-oidc-context'
+import { useConfig } from 'providers/ConfigProvider'
+import { getOidcConfig } from 'authConfig'
 
 export type User = {
     accessToken: string | null,
@@ -31,8 +33,8 @@ const STORAGE_TOKEN_PROP = 'loginToken'
 
 export const useUser = () => useContext(UserContext)
 
-/** Provider for the current logged-in user. */
-export default function UserProvider({ children }: { children: React.ReactNode }) {
+/** Main body of UserProvider. Requires being wrapped in AuthProvider. */
+function InnerUserProvider({ children }: { children: React.ReactNode }) {
   const [userState, setUserState] = useState<User>(anonymousUser)
   const [isLoading, setIsLoading] = useState(true)
   const auth = useAuth()
@@ -89,5 +91,16 @@ export default function UserProvider({ children }: { children: React.ReactNode }
         { children }
       </LoadingSpinner>
     </UserContext.Provider>
+  )
+}
+
+/** Provider for the current logged-in user. */
+export default function UserProvider({ children }: { children: React.ReactNode }) {
+  const config = useConfig()
+
+  return (
+    <AuthProvider {...getOidcConfig(config.b2cTenantName, config.b2cClientId)}>
+      <InnerUserProvider>{children}</InnerUserProvider>
+    </AuthProvider>
   )
 }

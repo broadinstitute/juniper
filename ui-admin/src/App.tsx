@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext } from 'react'
 import 'react-notifications-component/dist/theme.css'
 import 'styles/notifications.css'
 import 'survey-core/defaultV2.min.css'
@@ -8,8 +8,8 @@ import './App.css'
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
 import { ReactNotifications } from 'react-notifications-component'
 
-import { RedirectFromOAuth } from './login/RedirectFromOAuth'
-import { ProtectedRoute } from './login/ProtectedRoute'
+import { RedirectFromOAuth } from 'login/RedirectFromOAuth'
+import { ProtectedRoute } from 'login/ProtectedRoute'
 import NavbarProvider, { NavbarContext } from 'navbar/NavbarProvider'
 import AdminNavbar from 'navbar/AdminNavbar'
 import PortalList from 'portal/PortalList'
@@ -17,24 +17,14 @@ import PortalProvider from 'portal/PortalProvider'
 import PortalDashboard from 'portal/PortalDashboard'
 
 import StudyRouter from 'study/StudyRouter'
-import { getOidcConfig } from './authConfig'
-import { AuthProvider } from 'react-oidc-context'
-import UserProvider from './user/UserProvider'
-import Api, { Config } from './api/api'
+import UserProvider from 'user/UserProvider'
+import ConfigProvider from 'providers/ConfigProvider'
 
 
 /** container for the app including the router  */
 function App() {
-  const [config, setConfig] = useState<Config>()
-
-  useEffect(() => {
-    Api.getConfig().then(config => {
-      setConfig(config)
-    })
-  }, [])
-
-  return typeof config == 'undefined' ? <></> : (
-    <AuthProvider {...getOidcConfig(config.b2cTenantName, config.b2cClientId)}>
+  return (
+    <ConfigProvider>
       <UserProvider>
         <div className="App">
           <ReactNotifications />
@@ -59,7 +49,7 @@ function App() {
           </NavbarProvider>
         </div>
       </UserProvider>
-    </AuthProvider>
+    </ConfigProvider>
   )
 }
 
