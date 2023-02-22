@@ -11,13 +11,13 @@ type ParticipationDetailTemplateProps = {
   actionButton?: ButtonConfig, // array of objects containing `text` and `href` attributes
   title?: string, // large heading text
   image?: PearlImageProps, // image
-  stepNumberText?: string,
-  timeIndication?: string,
-  imagePosition?: string
+  stepNumberText?: string, // e.g. STEP 1
+  timeIndication?: string, // e.g. 45+ minutes
+  imagePosition?: string // left or right.  Default is right
 }
 
 /**
- * Template for a hero with text content on the left and an image on the right.
+ * Template for a participation step description
  */
 function ParticipationDetailTemplate({
   config: {
