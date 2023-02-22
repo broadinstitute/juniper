@@ -14,6 +14,9 @@ env:
     basePath: ${SAM_ADDRESS:https://sam.dsde-dev.broadinstitute.org}
   populate:
     populate-from-classpath: true
+  b2c:
+    tenantName: ${B2C_TENANT_NAME:missing_tenant_name}
+    clientId: ${B2C_CLIENT_ID:missing_client_id}
 
 # Below here is non-deployment-specific
 
@@ -70,6 +73,10 @@ spring:
 hibernate:
   packages-to-scan: bio.terra.pearl.core.model
 
+b2c:
+  tenantName: ${env.b2c.tenantName}
+  clientId: ${env.b2c.clientId}
+
 javatemplate:
   ingress:
     # Default value that's overridden by Helm.
@@ -91,6 +98,6 @@ terra.common:
   tracing:
     stackdriverExportEnabled: ${env.tracing.exportEnabled}
     samplingRate: ${env.tracing.samplingRate}
-  
+
 cors:
   enabled-path: http://localhost:3000,http://localhost:3005,http://*.localhost:3005,http://*.*.localhost:3005

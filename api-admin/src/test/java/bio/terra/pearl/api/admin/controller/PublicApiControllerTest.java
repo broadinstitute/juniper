@@ -4,6 +4,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import bio.terra.pearl.api.admin.config.B2CConfiguration;
 import bio.terra.pearl.api.admin.config.VersionConfiguration;
 import bio.terra.pearl.api.admin.model.SystemStatus;
 import bio.terra.pearl.api.admin.service.StatusService;
@@ -19,6 +20,8 @@ import org.springframework.test.web.servlet.MockMvc;
 class PublicApiControllerTest {
 
   @Autowired private MockMvc mockMvc;
+
+  @MockBean private B2CConfiguration b2CConfiguration;
 
   @MockBean private StatusService statusService;
 
@@ -75,5 +78,19 @@ class PublicApiControllerTest {
   void testResourceGets() throws Exception {
     // confirm image paths are not forwarded to index
     this.mockMvc.perform(get("/foo/bar/image.png")).andExpect(status().isNotFound());
+  }
+
+  @Test
+  void testGetConfig() throws Exception {
+    var tenantName = "test-tenant";
+    var clientId = "1234-567-890";
+    when(b2CConfiguration.tenantName()).thenReturn(tenantName);
+    when(b2CConfiguration.clientId()).thenReturn(clientId);
+
+    this.mockMvc
+        .perform(get("/config"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.b2cTenantName").value(tenantName))
+        .andExpect(jsonPath("$.b2cClientId").value(clientId));
   }
 }
