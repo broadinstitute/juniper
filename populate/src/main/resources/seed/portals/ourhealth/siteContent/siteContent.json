@@ -28,6 +28,8 @@
       "populateFileName": "aboutUs.json"
     },{
       "populateFileName": "participation.json"
+    },{
+      "populateFileName": "scientificBackground.json"
     }]
   }]
 }

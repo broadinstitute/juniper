@@ -1,0 +1,22 @@
+{
+  "itemType": "INTERNAL",
+  "label": "Scientific Background",
+  "htmlPageDto": {
+    "title": "Scientific Background",
+    "path": "background",
+    "sectionDtos": [{
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "Scientific Background",
+        "blurbAlign": "left",
+        "blurb": "Individuals of South Asian ancestry represent 23% of the global population – corresponding to 1.8 billion people – and are disproportionately afflicted by cardiometabolic diseases, primarily heart attacks, strokes, and diabetes.\n\nAn estimated 5.4 million individuals of South Asian ancestry live in the United States, one of the fastest growing ethnic subgroups. South Asians are consistently recognized to be at a 2- to 3-fold increased risk for cardiovascular disease and up to 4-fold increased risk of diabetes (especially diabetes that occurs in the absence of obesity). In the United States, South Asian ancestry is now described as a ‘risk-enhancing factor’ for cardiovascular disease in current practice guidelines, highlighting both awareness but glaring knowledge gap."
+    }},{
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
+        "blurb": "South Asians have **twice the risk** of cardiovascular disease compared to Europeans.",
+        "image": { "cleanFileName": "infographic_risk.png", "version": 1}
+      }
+    }]
+  }
+}
