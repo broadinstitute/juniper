@@ -1,9 +1,9 @@
 import _ from 'lodash'
-import React, {CSSProperties} from 'react'
-import {ButtonConfig, getImageUrl} from 'api/api'
-import PearlImage, {PearlImageProps} from '../../util/PearlImage'
+import React, { CSSProperties } from 'react'
+import { ButtonConfig, getImageUrl } from 'api/api'
+import PearlImage, { PearlImageProps } from '../../util/PearlImage'
 import ConfiguredButton from './ConfiguredButton'
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown from 'react-markdown'
 
 type HeroLeftWithImageTemplateProps = {
   background?: string, // background CSS style (e.g. `linear-gradient(...)`)
@@ -21,18 +21,18 @@ type HeroLeftWithImageTemplateProps = {
  * Template for a hero with text content on the left and an image on the right.
  */
 function HeroWithImageTemplate({
-                                 config: {
-                                   background,
-                                   blurb,
-                                   buttons,
-                                   image,
-                                   imagePosition,
-                                   backgroundImage,
-                                   logos,
-                                   title
-                                 }
-                               }: { config: HeroLeftWithImageTemplateProps }) {
-  const styleProps: CSSProperties = {background}
+  config: {
+    background,
+    blurb,
+    buttons,
+    image,
+    imagePosition,
+    backgroundImage,
+    logos,
+    title
+  }
+}: { config: HeroLeftWithImageTemplateProps }) {
+  const styleProps: CSSProperties = { background }
   if (backgroundImage) {
     styleProps.backgroundImage = `url('${getImageUrl(backgroundImage.cleanFileName, backgroundImage.version)}')`
   }
@@ -42,7 +42,7 @@ function HeroWithImageTemplate({
       <div>
         <PearlImage image={image} className="img-fluid"/>
       </div>
-      <div className="p-5 d-flex flex-column flex-grow-1 justify-content-around" style={{minWidth: '50%'}}>
+      <div className="p-5 d-flex flex-column flex-grow-1 justify-content-around" style={{ minWidth: '50%' }}>
         <h1 className="fs-1 fw-normal lh-sm">
           <ReactMarkdown>{title ? title : ''}</ReactMarkdown>
         </h1>

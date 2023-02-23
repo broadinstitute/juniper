@@ -6,12 +6,12 @@ import HeroCenteredTemplate from './HeroCenteredTemplate'
 import HeroWithImageTemplate from './HeroWithImageTemplate'
 import StepOverviewTemplate from './StepOverviewTemplate'
 import SocialMediaTemplate from './SocialMediaTemplate'
-import {HtmlPage, HtmlSection, SectionConfig} from 'api/api'
+import { HtmlPage, HtmlSection, SectionConfig } from 'api/api'
 import RawHtmlTemplate from './RawHtmlTemplate'
 import PhotoBlurbGrid from './PhotoBlurbGrid'
 import ParticipationDetailTemplate from './ParticipationDetailTemplate'
 
-type TemplateComponent = ({config, rawContent}: { config: SectionConfig, rawContent: string | null }) => JSX.Element
+type TemplateComponent = ({ config, rawContent }: { config: SectionConfig, rawContent: string | null }) => JSX.Element
 
 const templateComponents: { [index: string]: TemplateComponent } = {
   'FAQ': FrequentlyAskedQuestionsTemplate,
@@ -25,7 +25,7 @@ const templateComponents: { [index: string]: TemplateComponent } = {
 }
 
 /** renders a configured HtmlPage */
-export default function HtmlPageView({page}: { page: HtmlPage }) {
+export default function HtmlPageView({ page }: { page: HtmlPage }) {
   return <>
     {
       _.map(page.sections, (section: HtmlSection) => {

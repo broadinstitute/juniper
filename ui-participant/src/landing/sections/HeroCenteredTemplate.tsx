@@ -1,9 +1,9 @@
 import _ from 'lodash'
 import React from 'react'
-import {ButtonConfig} from 'api/api'
+import { ButtonConfig } from 'api/api'
 import ReactMarkdown from 'react-markdown'
 import ConfiguredButton from './ConfiguredButton'
-import PearlImage, {PearlImageProps} from "../../util/PearlImage";
+import PearlImage, { PearlImageProps } from '../../util/PearlImage'
 
 type HeroCenteredTemplateProps = {
   background?: string, // background CSS style (e.g. `linear-gradient(...)`)
@@ -22,18 +22,18 @@ const blurbAlignAllowed = ['center', 'right', 'left']
  * Template for rendering a hero with centered content.
  */
 function HeroCenteredTemplate({
-                                config: {
-                                  background, backgroundColor, color,
-                                  blurb, blurbAlign, buttons, title, image
-                                }
-                              }:
+  config: {
+    background, backgroundColor, color,
+    blurb, blurbAlign, buttons, title, image
+  }
+}:
                                 { config: HeroCenteredTemplateProps }) {
   const blurbAlignIndex = blurbAlignAllowed.indexOf(blurbAlign ?? 'center')
   const cleanBlurbAlign: string = blurbAlignAllowed[blurbAlignIndex === -1 ? 0 : blurbAlignIndex] ?? 'center'
   const blurbStyle = {
     textAlign: cleanBlurbAlign as CanvasTextAlign
   }
-  return <div className="py-5 text-center" style={{background, backgroundColor, color}}>
+  return <div className="py-5 text-center" style={{ background, backgroundColor, color }}>
     <div className="col-lg-6 mx-auto">
       <h1 className="fs-1 fw-normal lh-sm mb-4">
         <ReactMarkdown>{title ? title : ''}</ReactMarkdown>
