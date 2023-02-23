@@ -36,7 +36,7 @@ function HeroCenteredTemplate({
   return <div className="py-5 text-center" style={{background, backgroundColor, color}}>
     <div className="col-lg-6 mx-auto">
       <h1 className="fs-1 fw-normal lh-sm mb-4">
-        {title}
+        <ReactMarkdown>{title ? title : ''}</ReactMarkdown>
       </h1>
       <p className="fs-5 " style={blurbStyle}>
         <ReactMarkdown>{blurb ? blurb : ''}</ReactMarkdown>

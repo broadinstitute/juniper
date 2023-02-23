@@ -42,5 +42,23 @@
     "populateFileName": "images/engagement_step.png"
   }, {
     "populateFileName": "images/infographic_risk.png"
+  }, {
+    "populateFileName": "images/risk_factors.png"
+  }, {
+    "populateFileName": "images/population_rates.png"
+  }, {
+    "populateFileName": "images/individual_rates.png"
+  }, {
+    "populateFileName": "images/people_on_ipad.png"
+  }, {
+    "populateFileName": "images/idea_bulb.png"
+  }, {
+    "populateFileName": "images/step_1.png"
+  }, {
+    "populateFileName": "images/step_2.png"
+  }, {
+    "populateFileName": "images/step_3.png"
+  }, {
+    "populateFileName": "images/step_4.png"
   }]
 }

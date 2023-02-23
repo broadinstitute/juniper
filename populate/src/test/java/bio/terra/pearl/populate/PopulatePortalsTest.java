@@ -107,6 +107,6 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
         HtmlSection firstLandingSection = portalEnv.getSiteContent().getLocalizedSiteContents()
                 .stream().findFirst().get().getLandingPage()
                 .getSections().stream().findFirst().get();
-        Assertions.assertEquals(HtmlSectionType.HERO_LEFT_WITH_IMAGE, firstLandingSection.getSectionType());
+        Assertions.assertEquals(HtmlSectionType.HERO_WITH_IMAGE, firstLandingSection.getSectionType());
     }
 }
