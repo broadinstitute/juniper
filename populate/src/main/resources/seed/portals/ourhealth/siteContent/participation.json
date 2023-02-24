@@ -72,8 +72,6 @@
       "sectionType": "HERO_CENTERED",
       "sectionConfigJson": {
         "title": "You can make an impact",
-        "timeIndication": "Ongoing",
-        "stepNumberText": "STEP 4",
         "blurb": "With your help, patients can be the driving force behind transformative cardiovascular research.",
         "buttons": [{
           "type": "join",

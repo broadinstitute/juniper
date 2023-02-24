@@ -34,19 +34,19 @@ function FrequentlyAskedQuestionsTemplate({
     questions,
     title = 'Frequently Asked Questions'
   }
-}: {config: FrequentlyAskedQuestionsProps}) {
+}: { config: FrequentlyAskedQuestionsProps }) {
   return <div className="d-flex justify-content-center py-5" style={{ backgroundColor, color }}>
     <div className="col-lg-6">
       <h1 className="fs-1 fw-normal lh-sm mt-5 mb-4 text-center">{title}</h1>
       <div className='fs-5 fw-normal mb-4 text-center'>
-        {blurb && <ReactMarkdown>{blurb}</ReactMarkdown> }
+        {blurb && <ReactMarkdown>{blurb}</ReactMarkdown>}
       </div>
       <div className="border-bottom"></div>
       <div className="fs-5 fw-normal">
         {
           _.map(questions, ({ question, answer }) => {
             return <div className="border-bottom p-3">
-              <button type="button" className="btn btn-lg btn-link text-white text-decoration-none"
+              <button type="button" className="btn btn-lg btn-link text-black fw-bold text-decoration-none"
                 data-bs-toggle="collapse" data-bs-target={targetFor(question)}>
                 + {question}
               </button>

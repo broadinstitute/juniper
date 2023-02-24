@@ -12,6 +12,9 @@ export default function ConfiguredButton({ config, className }: { config: Button
       return <Link to={`/join`}
         className={className}>{config.text}</Link>
     }
+  } else if (config.type === 'internalLink') {
+    return <Link to={config.href}
+      className={className}>{config.text}</Link>
   }
   return <a href={config.href} role={'button'} className={className}>{config.text}</a>
 }
