@@ -56,10 +56,9 @@ public class SiteImageService extends CrudService<SiteImage, SiteImageDao> {
     }
 
     /**
-     * A shortcode is a globally unique, URL-safe identifier.
-     * Shortcode is the upload filename with whitespace replaced with _,
+     * A cleanFileName is a portal-scoped-unique, URL-safe identifier.
+     * cleanFileName is the upload filename with whitespace replaced with _,
      * stripped of special characters and whitespace except "." "_" or "-", then lowercased.
-     * The siteContent shortcode and version are then prepended to ensure uniqueness
      */
     public static String cleanFileName(String uploadFileName) {
         return uploadFileName.toLowerCase()

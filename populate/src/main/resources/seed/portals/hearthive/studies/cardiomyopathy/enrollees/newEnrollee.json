@@ -1,0 +1,25 @@
+{
+  "linkedUsername": "newbie@test.com",
+  "shortcode": "HHNEWB",
+  "preEnrollmentResponseDto": {
+    "qualified": true,
+    "surveyStableId": "hh_cmyop_preEnroll",
+    "surveyVersion": 1,
+    "fullDataJson": {
+      "items": [
+        {
+          "stableId": "hh_cmyop_prereg_dx",
+          "simpleValue": "yes"
+        }
+      ]
+    }
+  },
+  "participantTaskDtos": [{
+    "status": "NEW",
+    "taskType": "CONSENT",
+    "targetStableId": "hh_cmyop_consent",
+    "targetAssignedVersion": 1,
+    "taskOrder": 1,
+    "blocksHub": true
+  }]
+}

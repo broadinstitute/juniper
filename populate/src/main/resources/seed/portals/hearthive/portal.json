@@ -22,7 +22,11 @@
         "stableId": "hh_preregistation",
         "version": 1
       },
-      "participantUserFiles": []
+      "participantUserFiles": [
+        "participants/consentedEnrollee.json",
+        "participants/gertrudeElion.json",
+        "participants/newEnrollee.json"
+      ]
     },
     {
       "environmentName": "irb",
@@ -43,8 +47,7 @@
         "password": "broad_institute",
         "initialized": false
       },
-      "siteContentFile": "siteContent.json",
-      "participantUserFiles": []
+      "siteContentFile": "siteContent.json"
     }
   ]
 }

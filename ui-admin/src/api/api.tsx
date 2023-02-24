@@ -77,7 +77,19 @@ export type PortalStudy = {
 export type Portal = {
   name: string,
   shortcode: string,
-  portalStudies: PortalStudy[]
+  portalStudies: PortalStudy[],
+  portalEnvironments: PortalEnvironment[]
+}
+
+export type PortalEnvironment = {
+  environmentName: string,
+  portalEnvironmentConfig: PortalEnvironmentConfig
+}
+
+export type PortalEnvironmentConfig = {
+  acceptingRegistration: boolean,
+  password: string,
+  passwordProtected: boolean
 }
 
 export type EnrolleeSearchResult = {
@@ -180,6 +192,11 @@ export type Notification = {
   notificationConfig?: NotificationConfig
 }
 
+export type Config = {
+  b2cTenantName: string,
+  b2cClientId: string
+}
+
 let bearerToken: string | null = null
 export const API_ROOT = process.env.REACT_APP_API_ROOT
 const participantRootPath = process.env.REACT_APP_PARTICIPANT_APP_ROOT
@@ -211,6 +228,11 @@ export default {
       return obj
     }
     return Promise.reject(response)
+  },
+
+  async getConfig(): Promise<Config> {
+    const response = await fetch(`/config`)
+    return await this.processJsonResponse(response)
   },
 
   async unauthedLogin(username: string): Promise<AdminUser> {

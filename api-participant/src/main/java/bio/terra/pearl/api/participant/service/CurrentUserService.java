@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.participant.ParticipantUserDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
@@ -34,23 +35,23 @@ public class CurrentUserService {
 
   @Transactional
   public Optional<UserWithEnrollees> unauthedLogin(
-      String username, EnvironmentName environmentName) {
+      String username, String portalShortcode, EnvironmentName environmentName) {
     Optional<ParticipantUser> userOpt = participantUserDao.findOne(username, environmentName);
     if (userOpt.isPresent()) {
       ParticipantUser user = userOpt.get();
       user = updateUserToken(user);
-      return Optional.of(loadFromUser(user));
+      return Optional.of(loadFromUser(user, portalShortcode));
     }
     return Optional.empty();
   }
 
   @Transactional
-  public Optional<UserWithEnrollees> refresh(String token) {
+  public Optional<UserWithEnrollees> refresh(String token, String portalShortcode) {
     Optional<ParticipantUser> userOpt = participantUserDao.findByToken(token);
     if (userOpt.isPresent()) {
       ParticipantUser user = userOpt.get();
       user = updateUserToken(user);
-      return Optional.of(loadFromUser(user));
+      return Optional.of(loadFromUser(user, portalShortcode));
     }
     return Optional.empty();
   }
@@ -62,10 +63,13 @@ public class CurrentUserService {
     return participantUserDao.update(user);
   }
 
-  public UserWithEnrollees loadFromUser(ParticipantUser user) {
-    user.getPortalParticipantUsers()
-        .addAll(portalParticipantUserService.findByParticipantUserId(user.getId()));
-    List<Enrollee> enrollees = enrolleeService.findByParticipantUserId(user.getId());
+  public UserWithEnrollees loadFromUser(ParticipantUser user, String portalShortcode) {
+    // this get() will fail if the user has not registered for the given portal, which is what we
+    // want
+    PortalParticipantUser portalParticipantUser =
+        portalParticipantUserService.findOne(user.getId(), portalShortcode).get();
+    user.getPortalParticipantUsers().add(portalParticipantUser);
+    List<Enrollee> enrollees = enrolleeService.findByPortalParticipantUser(portalParticipantUser);
     for (Enrollee enrollee : enrollees) {
       enrollee
           .getParticipantTasks()

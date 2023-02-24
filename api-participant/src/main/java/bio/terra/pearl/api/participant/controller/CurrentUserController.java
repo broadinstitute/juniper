@@ -34,14 +34,15 @@ public class CurrentUserController implements CurrentUserApi {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     // for now, log them in as long as the username exists
     Optional<CurrentUserService.UserWithEnrollees> userOpt =
-        currentUserService.unauthedLogin(username, environmentName);
+        currentUserService.unauthedLogin(username, portalShortcode, environmentName);
     return ResponseEntity.of(userOpt.map(adminUser -> adminUser));
   }
 
   @Override
   public ResponseEntity<Object> refresh(String portalShortcode, String envName) {
     String token = requestUtilService.tokenFromRequest(request);
-    Optional<CurrentUserService.UserWithEnrollees> userOpt = currentUserService.refresh(token);
+    Optional<CurrentUserService.UserWithEnrollees> userOpt =
+        currentUserService.refresh(token, portalShortcode);
     return ResponseEntity.of(userOpt.map(user -> user));
   }
 
