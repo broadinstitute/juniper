@@ -13,6 +13,8 @@ import { ProtectedRoute } from './login/ProtectedRoute'
 import { RedirectFromOAuth } from './login/RedirectFromOAuth'
 import StudyEnrollRouter from './studies/enroll/StudyEnrollRouter'
 import HubRouter from './hub/HubRouter'
+import PortalPasswordGate from './landing/PortalPasswordGate'
+import EnvironmentAlert from './EnvironmentAlert'
 
 
 /**
@@ -37,27 +39,33 @@ function App() {
   </Route>)
 
   return (
-    <AuthProvider {...getOidcConfig()}>
-      <UserProvider>
-        <div className="App d-flex flex-column min-vh-100 bg-white">
-          <BrowserRouter>
-            <Routes>
-              <Route path="/hub/*" element={<ProtectedRoute><HubRouter/></ProtectedRoute>}/>
-              <Route path="/studies/:studyShortcode">
-                <Route path="join/*" element={<StudyEnrollRouter/>}/>
-                <Route index element={<div>study specific page -- TBD</div>}/>
-                <Route path="*" element={<div>unmatched study route</div>}/>
-              </Route>
-              <Route path="/" element={<LandingPage/>}>
-                {landingRoutes}
-                <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
-              </Route>
-              <Route path="*" element={<div>unmatched route</div>}/>
-            </Routes>
-          </BrowserRouter>
-        </div>
-      </UserProvider>
-    </AuthProvider>
+    <>
+      <EnvironmentAlert portalEnvironment={portal.portalEnvironments[0]}/>
+      <PortalPasswordGate portal={portal}>
+        <AuthProvider {...getOidcConfig()}>
+          <UserProvider>
+            <div className="App d-flex flex-column min-vh-100 bg-white">
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/hub/*" element={<ProtectedRoute><HubRouter/></ProtectedRoute>}/>
+                  <Route path="/studies/:studyShortcode">
+                    <Route path="join/*" element={<StudyEnrollRouter/>}/>
+                    <Route index element={<div>study specific page -- TBD</div>}/>
+                    <Route path="*" element={<div>unmatched study route</div>}/>
+                  </Route>
+                  <Route path="/" element={<LandingPage/>}>
+                    {landingRoutes}
+                    <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
+                  </Route>
+                  <Route path="*" element={<div>unmatched route</div>}/>
+                </Routes>
+              </BrowserRouter>
+            </div>
+          </UserProvider>
+        </AuthProvider>
+      </PortalPasswordGate>
+    </>
+
   )
 }
 

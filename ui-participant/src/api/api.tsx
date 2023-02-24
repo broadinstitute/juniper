@@ -23,7 +23,14 @@ export type Portal = {
 
 export type PortalEnvironment = PortalEnvironmentParams & {
   siteContent: SiteContent,
-  preRegSurvey: Survey
+  preRegSurvey: Survey,
+  portalEnvironmentConfig: PortalEnvironmentConfig
+}
+
+export type PortalEnvironmentConfig = {
+  password: string,
+  passwordProtected: boolean,
+  allowRegistration: boolean
 }
 
 export type PortalStudy = {
