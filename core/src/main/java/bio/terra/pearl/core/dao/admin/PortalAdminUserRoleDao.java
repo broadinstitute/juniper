@@ -26,6 +26,6 @@ public class PortalAdminUserRoleDao extends BaseJdbiDao<PortalAdminUserRole> {
     }
 
     public void deleteByPortalAdminUserId(UUID portalAdminUserId) {
-        deleteByUuidProperty("portal_admin_user_id", portalAdminUserId);
+        deleteByProperty("portal_admin_user_id", portalAdminUserId);
     }
 }

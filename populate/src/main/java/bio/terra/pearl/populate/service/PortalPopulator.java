@@ -66,6 +66,8 @@ public class PortalPopulator extends Populator<Portal> {
         );
 
         Portal portal = portalService.create(portalDto);
+        siteContentPopulator.populateImages(portalDto.getSiteImageDtos(),
+                config.newForPortal(portal.getShortcode(), portal.getShortcode(), null));
         // first, populate the surveys
         for (String surveyFile : portalDto.getSurveyFiles()) {
             surveyPopulator.populate(config.newForPortal(surveyFile, portal.getShortcode(), null));

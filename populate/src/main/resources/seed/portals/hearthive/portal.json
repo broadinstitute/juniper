@@ -49,5 +49,14 @@
       },
       "siteContentFile": "siteContent.json"
     }
-  ]
+  ],
+  "siteImageDtos": [{
+    "populateFileName": "images/main_banner.webp"
+  },
+    {
+      "populateFileName": "images/participant_smile.webp"
+    },
+    {
+      "populateFileName": "images/HEX_Round.webp"
+    }]
 }

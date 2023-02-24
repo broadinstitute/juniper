@@ -24,7 +24,7 @@ export default function LandingNavbar() {
     <div className="container-fluid">
       <NavLink to="/" className="navbar-brand">
         <img className="Navbar-logo" style={{ maxHeight: '30px' }}
-          src={getImageUrl(localContent.navLogoShortcode)} alt="logo"/>
+          src={getImageUrl(localContent.navLogoCleanFileName, localContent.navLogoVersion)} alt="logo"/>
       </NavLink>
       <div className="collapse navbar-collapse" id="navbarNavDropdown">
         <ul className="navbar-nav">

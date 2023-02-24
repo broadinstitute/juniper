@@ -23,6 +23,6 @@ public class EmailTemplateDao extends BaseJdbiDao<EmailTemplate> {
     }
 
     public void deleteByPortalId(UUID portalId) {
-        deleteByUuidProperty("portal_id", portalId);
+        deleteByProperty("portal_id", portalId);
     }
 }

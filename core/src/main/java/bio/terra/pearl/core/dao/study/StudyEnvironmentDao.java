@@ -102,6 +102,6 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
     }
 
     public void deleteByStudyId(UUID studyId) {
-        deleteByUuidProperty("study_id", studyId);
+        deleteByProperty("study_id", studyId);
     }
 }

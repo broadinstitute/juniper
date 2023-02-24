@@ -2,6 +2,8 @@ package bio.terra.pearl.populate.dto;
 
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.populate.dto.site.SiteImagePopDto;
+import java.util.ArrayList;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +18,7 @@ public class PortalPopDto extends Portal {
     private Set<String> surveyFiles = new HashSet<>(); // surveys that are not specific to a study (e.g. preReg)
     private Set<String> populateStudyFiles = new HashSet<>();
     private List<PortalEnvironmentPopDto> portalEnvironmentDtos;
+    private List<SiteImagePopDto> siteImageDtos = new ArrayList<>();
     /**
      * this allows us to pass a PopulatePortalDto to PortalService.create and have the specified environments
      * in portalEnvironmentDtos used for the creation.

@@ -3,22 +3,24 @@ import React from 'react'
 
 import FrequentlyAskedQuestionsTemplate from './FrequentlyAskedQuestionsTemplate'
 import HeroCenteredTemplate from './HeroCenteredTemplate'
-import HeroLeftWithImageTemplate from './HeroLeftWithImageTemplate'
-import HeroRightWithImageTemplate from './HeroRightWithImageTemplate'
+import HeroWithImageTemplate from './HeroWithImageTemplate'
 import StepOverviewTemplate from './StepOverviewTemplate'
 import SocialMediaTemplate from './SocialMediaTemplate'
 import { HtmlPage, HtmlSection, SectionConfig } from 'api/api'
 import RawHtmlTemplate from './RawHtmlTemplate'
+import PhotoBlurbGrid from './PhotoBlurbGrid'
+import ParticipationDetailTemplate from './ParticipationDetailTemplate'
 
-type TemplateComponent = ({ config, rawContent }: {config: SectionConfig, rawContent: string | null}) => JSX.Element
+type TemplateComponent = ({ config, rawContent }: { config: SectionConfig, rawContent: string | null }) => JSX.Element
 
 const templateComponents: { [index: string]: TemplateComponent } = {
   'FAQ': FrequentlyAskedQuestionsTemplate,
   'HERO_CENTERED': HeroCenteredTemplate,
-  'HERO_LEFT_WITH_IMAGE': HeroLeftWithImageTemplate,
-  'HERO_RIGHT_WITH_IMAGE': HeroRightWithImageTemplate,
+  'HERO_WITH_IMAGE': HeroWithImageTemplate,
   'SOCIAL_MEDIA': SocialMediaTemplate,
   'STEP_OVERVIEW': StepOverviewTemplate,
+  'PHOTO_BLURB_GRID': PhotoBlurbGrid,
+  'PARTICIPATION_DETAIL': ParticipationDetailTemplate,
   'RAW_HTML': RawHtmlTemplate
 }
 

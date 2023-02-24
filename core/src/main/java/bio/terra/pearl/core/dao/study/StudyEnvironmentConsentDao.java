@@ -46,6 +46,6 @@ public class StudyEnvironmentConsentDao extends BaseMutableJdbiDao<StudyEnvironm
     }
 
     public void deleteByStudyEnvironmentId(UUID studyEnvId) {
-        deleteByUuidProperty("study_environment_id", studyEnvId);
+        deleteByProperty("study_environment_id", studyEnvId);
     }
 }

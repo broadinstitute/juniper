@@ -14,12 +14,81 @@
         "initialized": true,
         "emailSourceAddress": "dbush@broadinstitute.org"
       },
-      "siteContentFile": "siteContent.json",
+      "siteContentFile": "siteContent/siteContent.json",
       "participantUserFiles": [
         "participants/jsalk.json",
         "participants/newEnrollee.json",
         "participants/consentedEnrollee.json"
       ]
     }
-  ]
+  ],
+  "siteImageDtos": [{
+    "populateFileName": "images/Banner-image.png"
+  }, {
+    "populateFileName": "images/Banner-40238bbb.png"
+  }, {
+    "populateFileName": "images/ourhealth-logo.png"
+  }, {
+    "populateFileName": "images/amit_khera.jpg"
+  }, {
+    "populateFileName": "images/pradeep_natarajan.jpg"
+  }, {
+    "populateFileName": "images/romit_bhattacharya.jpg"
+  }, {
+    "populateFileName": "images/kaavya_paruchuri.jpg"
+  }, {
+    "populateFileName": "images/aniruddh_patel.jpg"
+  }, {
+    "populateFileName": "images/whitney_hornsby.jpg"
+  }, {
+    "populateFileName": "images/puneet_batra.jpg"
+  }, {
+    "populateFileName": "images/sara_heidermota.jpg"
+  }, {
+    "populateFileName": "images/nishant_uppal.jpg"
+  }, {
+    "populateFileName": "images/nina_kathiresan.jpg"
+  }, {
+    "populateFileName": "images/shriee_ganesh.jpg"
+  }, {
+    "populateFileName": "images/alka_kanya.jpg"
+  }, {
+    "populateFileName": "images/sekar_kathiresan.jpg"
+  }, {
+    "populateFileName": "images/anthony_philippakis.jpg"
+  }, {
+    "populateFileName": "images/svati_shah.jpg"
+  }, {
+    "populateFileName": "images/nikhil_wagle.jpg"
+  }, {
+    "populateFileName": "images/krishna_yeshwant.jpg"
+  },{
+    "populateFileName": "images/consent_step.png"
+  }, {
+    "populateFileName": "images/survey_step.png"
+  }, {
+    "populateFileName": "images/saliva_step.png"
+  }, {
+    "populateFileName": "images/engagement_step.png"
+  }, {
+    "populateFileName": "images/infographic_risk.png"
+  }, {
+    "populateFileName": "images/risk_factors.png"
+  }, {
+    "populateFileName": "images/population_rates.png"
+  }, {
+    "populateFileName": "images/individual_rates.png"
+  }, {
+    "populateFileName": "images/people_on_ipad.png"
+  }, {
+    "populateFileName": "images/idea_bulb.png"
+  }, {
+    "populateFileName": "images/step_1.png"
+  }, {
+    "populateFileName": "images/step_2.png"
+  }, {
+    "populateFileName": "images/step_3.png"
+  }, {
+    "populateFileName": "images/step_4.png"
+  }]
 }

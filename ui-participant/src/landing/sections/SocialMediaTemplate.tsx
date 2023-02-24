@@ -25,20 +25,20 @@ function SocialMediaTemplate({
     title,
     twitterHref
   }
-}: {config: SocialMediaTemplateProps}) {
+}: { config: SocialMediaTemplateProps }) {
   return <div className="container py-5">
     <div className="d-flex justify-content-center mt-5 mb-4">
-      { twitterHref &&
-        <PearlImage imageShortcode={'ourHealthContent_1_twitter.png'} alt={'Twitter'}
+      {twitterHref &&
+        <PearlImage image={{ cleanFileName: 'twitter.png', version: 1, alt: 'Twitter' }}
           className="m-3" style={{ width: '56px' }}/>
       }
-      { facebookHref &&
-          <PearlImage imageShortcode={'ourHealthContent_1_facebook.png'} alt={'Facebook'}
-            className="m-3" style={{ width: '54px' }}/>
+      {facebookHref &&
+        <PearlImage image={{ cleanFileName: 'facebook.png', version: 1, alt: 'Facebook' }}
+          className="m-3" style={{ width: '54px' }}/>
       }
-      { instagramHref &&
-          <PearlImage imageShortcode={'ourHealthContent_1_instagram.png'} alt={'Instagram'}
-            className="m-3" style={{ width: '49px' }}/>
+      {instagramHref &&
+        <PearlImage image={{ cleanFileName: 'instagram.png', version: 1, alt: 'Instagram' }}
+          className="m-3" style={{ width: '49px' }}/>
       }
     </div>
     <h1 className="fs-1 fw-normal lh-sm text-center">

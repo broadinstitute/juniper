@@ -23,6 +23,6 @@ public class NotificationDao extends BaseMutableJdbiDao<Notification> {
     }
 
     public void deleteByEnrolleeId(UUID enrolleeId) {
-        deleteByUuidProperty("enrollee_id", enrolleeId);
+        deleteByProperty("enrollee_id", enrolleeId);
     }
 }

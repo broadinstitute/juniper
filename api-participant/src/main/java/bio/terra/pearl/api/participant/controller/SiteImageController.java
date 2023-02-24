@@ -4,7 +4,6 @@ import bio.terra.pearl.api.participant.api.SiteImageApi;
 import bio.terra.pearl.core.model.site.SiteImage;
 import bio.terra.pearl.core.service.site.SiteImageService;
 import java.util.Optional;
-import java.util.UUID;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -20,16 +19,10 @@ public class SiteImageController implements SiteImageApi {
 
   @Override
   public ResponseEntity<Resource> get(
-      String portalShortcode, String envName, String shortcodeOrId) {
-    // we ignore the portalShortcode and envName -- those are just in the URL for traceability
+      String portalShortcode, String envName, String cleanFileName, Integer version) {
     Optional<SiteImage> siteImageOpt;
-    try {
-      UUID imageId = UUID.fromString(shortcodeOrId);
-      siteImageOpt = siteImageService.find(imageId);
-    } catch (Exception e) {
-      // if it wasn't a UUID, it's a shortcode
-      siteImageOpt = siteImageService.findOne(shortcodeOrId);
-    }
+
+    siteImageOpt = siteImageService.findOne(portalShortcode, cleanFileName, version);
     return convertToResourceResponse(siteImageOpt);
   }
 

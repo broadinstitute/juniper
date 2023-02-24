@@ -23,5 +23,6 @@ public class LocalizedSiteContent extends BaseEntity {
     private HtmlPage landingPage;
     @Builder.Default
     private List<NavbarItem> navbarItems = new ArrayList<>();
-    private String navLogoShortcode;
+    private String navLogoCleanFileName;
+    private int navLogoVersion;
 }

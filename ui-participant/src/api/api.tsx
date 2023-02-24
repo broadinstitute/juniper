@@ -53,7 +53,8 @@ export type LocalSiteContent = {
   language: string,
   navbarItems: NavbarItem[],
   landingPage: HtmlPage,
-  navLogoShortcode: string
+  navLogoCleanFileName: string,
+  navLogoVersion: number
 }
 
 export type HtmlPage = {
@@ -450,8 +451,8 @@ function baseStudyEnvUrl(isPublic: boolean, studyShortcode: string) {
 /**
  * Returns a url suitable for inclusion in an <img> tag based on a image shortcode
  */
-export function getImageUrl(imageShortcode: string) {
-  return `${baseEnvUrl(true)}/siteImages/${imageShortcode}`
+export function getImageUrl(cleanFileName: string, version: number) {
+  return `${baseEnvUrl(true)}/siteImages/${version}/${cleanFileName}`
 }
 
 export type EnvSpec = {

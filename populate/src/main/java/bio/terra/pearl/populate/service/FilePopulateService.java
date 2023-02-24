@@ -1,16 +1,15 @@
 package bio.terra.pearl.populate.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
 
 /**
  * takes arguments with folder paths and maps them to a relevant file and populator.
@@ -21,12 +20,10 @@ public class FilePopulateService {
     public static final String SEED_ROOT = "seed/";
     public static final String ABSOLUTE_SEED_ROOT = "populate/src/main/resources/seed/";
 
-    private Environment environment;
     // Whether to read files from the classpath or from local directory structure
     private boolean isPopulateFromClasspath;
 
     public FilePopulateService(Environment environment) {
-        this.environment = environment;
         this.isPopulateFromClasspath = environment
                 .getProperty("env.populate.populate-from-classpath", Boolean.class, true);
     }
@@ -56,5 +53,4 @@ public class FilePopulateService {
         Path filePath = Path.of(pathName);
         return Files.newInputStream(filePath);
     }
-
 }

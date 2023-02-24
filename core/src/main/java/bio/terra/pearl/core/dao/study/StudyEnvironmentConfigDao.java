@@ -18,7 +18,7 @@ public class StudyEnvironmentConfigDao extends BaseJdbiDao<StudyEnvironmentConfi
     }
 
     public void deleteByStudyEnvironmentId(UUID studyEnvId) {
-        deleteByUuidProperty("study_environment_id", studyEnvId);
+        deleteByProperty("study_environment_id", studyEnvId);
     }
 
     public List<StudyEnvironmentConfig> findAll(List<UUID> configIds) {

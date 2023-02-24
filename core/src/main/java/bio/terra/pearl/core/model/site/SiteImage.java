@@ -6,12 +6,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.UUID;
-
 @Getter @Setter @SuperBuilder @NoArgsConstructor
 public class SiteImage extends BaseEntity {
-    private String shortcode;
+    /**
+     * the cleanFileName essentially serves as a stableId -- we call it cleanFileName here to indicate its origin.
+     * and because it is not required to be globally unique like other stableIds -- it just has to be unique within a portal
+      */
+    private String cleanFileName;
+    private int version;
     private String uploadFileName;
     private byte[] data;
-    private UUID siteContentId;
+    // store these by portal shortcode to prioritize fast fetching based on urls that have the shortcode
+    private String portalShortcode;
 }

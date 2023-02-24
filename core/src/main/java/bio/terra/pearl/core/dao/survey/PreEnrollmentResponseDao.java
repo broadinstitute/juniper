@@ -18,6 +18,6 @@ public class PreEnrollmentResponseDao extends BaseMutableJdbiDao<PreEnrollmentRe
     }
 
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
-        deleteByUuidProperty("study_environment_id", studyEnvironmentId);
+        deleteByProperty("study_environment_id", studyEnvironmentId);
     }
 }

@@ -9,8 +9,9 @@ import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.site.SiteImageService;
 import bio.terra.pearl.populate.dto.site.*;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -41,7 +42,7 @@ public class SiteContentPopulator extends Populator<SiteContent> {
         for (LocalizedSiteContentPopDto lsc : siteContentDto.getLocalizedSiteContentDtos()) {
             lsc.setLandingPage(parseHtmlPageDto(lsc.getLandingPage()));
             for (NavbarItemPopDto navItem : lsc.getNavbarItemDtos()) {
-                navItem.setHtmlPage(parseHtmlPageDto(navItem.getHtmlPageDto()));
+                initializeNavItem(navItem, config);
             }
             lsc.getNavbarItems().clear();
             lsc.getNavbarItems().addAll(lsc.getNavbarItemDtos());
@@ -49,11 +50,11 @@ public class SiteContentPopulator extends Populator<SiteContent> {
         siteContentDto.getLocalizedSiteContents().clear();
         siteContentDto.getLocalizedSiteContents().addAll(siteContentDto.getLocalizedSiteContentDtos());
         SiteContent savedContent = siteContentService.create(siteContentDto);
-        populateImages(siteContentDto, savedContent.getId(), config);
 
         return savedContent;
     }
 
+    /** we need to convert dto properties from json to Strings for storing in the DB. */
     private HtmlPage parseHtmlPageDto(HtmlPagePopDto page) {
         if (page != null) {
             for (HtmlSectionPopDto section : page.getSectionDtos()) {
@@ -67,9 +68,9 @@ public class SiteContentPopulator extends Populator<SiteContent> {
         return page;
     }
 
-    private void populateImages(SiteContentPopDto siteContent, UUID portalEnvId, FilePopulateConfig config)
+    public void populateImages(List<SiteImagePopDto> siteImages, FilePopulateConfig config)
             throws IOException {
-        for (SiteImagePopDto imageDto : siteContent.getSiteImageDtos()) {
+        for (SiteImagePopDto imageDto : siteImages) {
             String popFileName = imageDto.getPopulateFileName();
             byte[] imageContent = filePopulateService.readBinaryFile(popFileName, config);
             String uploadFileName = imageDto.getUploadFileName();
@@ -78,11 +79,22 @@ public class SiteContentPopulator extends Populator<SiteContent> {
             }
             SiteImage image = SiteImage.builder()
                     .data(imageContent)
-                    .siteContentId(portalEnvId)
+                    .portalShortcode(config.getPortalShortcode())
+                    .version(imageDto.getVersion() == 0 ? 1 : imageDto.getVersion())
                     .uploadFileName(uploadFileName)
                     .build();
             siteImageService.create(image);
         }
+    }
+
+    private void initializeNavItem(NavbarItemPopDto navItem, FilePopulateConfig config) throws IOException {
+        if (navItem.getPopulateFileName() != null) {
+            // this is populated from its own file, so read it from there.
+            String navPopulateString = filePopulateService.readFile(navItem.getPopulateFileName(), config);
+            NavbarItemPopDto popItem = objectMapper.readValue(navPopulateString, NavbarItemPopDto.class);
+            BeanUtils.copyProperties(popItem, navItem);
+        }
+        navItem.setHtmlPage(parseHtmlPageDto(navItem.getHtmlPageDto()));
     }
 
 }
