@@ -9,7 +9,7 @@
     "landingPage": {
       "title": "The Heart Hive",
       "sectionDtos": [{
-        "sectionType": "HERO_LEFT_WITH_IMAGE",
+        "sectionType": "HERO_WITH_IMAGE",
         "sectionConfigJson": {
           "title": "Turning today's heart disease into tomorrow's heart health.",
           "blurb": "Save lives by advancing research.",
