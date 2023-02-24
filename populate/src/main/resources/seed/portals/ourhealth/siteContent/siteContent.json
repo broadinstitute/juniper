@@ -9,11 +9,12 @@
     "landingPage": {
       "title": "OurHealth portal home",
       "sectionDtos": [{
-        "sectionType": "HERO_LEFT_WITH_IMAGE",
+        "sectionType": "HERO_WITH_IMAGE",
         "sectionConfigJson": {
           "title": "Help us understand and improve cardiovascular disease risk among South Asian populations.",
           "blurb": "The OurHealth study aims to build a coalition of researchers and participants to better understand – and ultimately overcome – the persistently high rates of cardiovascular diseases among South Asian populations through the creation and study of a new cohort.",
           "image": { "cleanFileName": "banner-40238bbb.png", "version": 1},
+          "imagePosition": "right",
           "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
           "buttons": [
             {"text": "Join OurHealth",
@@ -22,10 +23,107 @@
             }
           ]
         }
+      },{
+        "sectionType": "HERO_WITH_IMAGE",
+        "sectionConfigJson": {
+          "background": "#F2F2F2",
+          "title": "Why is this needed?",
+          "blurb": "Although South Asians represent 23% of the global population and have twice the risk of cardiovascular disease compared to Europeans, they are significantly underrepresented in genetic studies and research. Available datasets are limited in size, cultural diversity, and diaspora representation.",          ",image": { "cleanFileName": "banner-40238bbb.png", "version": 1},
+          "buttons": [
+            {"text": "Scientific background",
+              "type": "internalLink",
+              "href": "/background"
+            }
+          ],
+          "imagePosition": "left",
+          "image": {"cleanFileName": "idea_bulb.png", "version": 1, "className": "p-5"}
+        }
+      },{
+        "sectionType": "HERO_WITH_IMAGE",
+        "sectionConfigJson": {
+          "title": "**Who can join?** Anyone who is:",
+          "blurb": "* Living in the United States\n * Older than 18 years old\n * Comfortable filling out surveys in English\n * Of South Asian Ancestry*\n\n&nbsp;\n\n*Self-identified ancestry from one of the South Asian countries defined by the American Heart Association as Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, and Sri Lanka.",
+          "buttons": [
+            {"text": "Get Started",
+              "type": "join",
+              "studyShortcode": "ourheart"
+            }
+          ],
+          "image": {"cleanFileName": "people_on_ipad.png", "version": 1},
+          "imagePosition": "left"
+        }
+      },{
+        "sectionType": "STEP_OVERVIEW",
+        "sectionConfigJson": {
+          "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
+          "title": "How to Participate",
+          "steps": [{
+            "image": {"cleanFileName": "step_1.png", "version": 1},
+            "duration": "1 minute",
+            "blurb": "Answer eligibility questions and create your account."
+          },{
+            "image": {"cleanFileName": "step_2.png", "version": 1},
+            "duration": "5 minutes",
+            "blurb": "Read the consent form and decide if you’d like to join the study."
+          },{
+            "image": {"cleanFileName": "step_3.png", "version": 1},
+            "duration": "25-45 minutes",
+            "blurb": "Answer survey questions about you and your health."
+          },{
+            "image": {"cleanFileName": "step_3.png", "version": 1},
+            "duration": "25-45 minutes",
+            "blurb": "Provide your mailing address so we can send a sample kit."
+          }],
+          "buttons": [
+            {"text": "Learn more about Participation",
+              "type": "internalLink",
+              "href": "/participation"
+            }
+          ]
+        }
+      },{
+        "sectionType": "FAQ",
+        "sectionConfigJson": {
+          "backgroundColor": "#f2f2f2",
+          "blurb": "If your question is not answered below, you can call or email our study staff at **617&#x2011;724&#x2011;1240** or **[info@ourhealthstudy.org](mailto:info@ourhealthstudy.org)**.",
+        "questions": [
+          {
+            "question": "What is OurHealth?",
+            "answer": "OurHealth is a nonprofit research initiative that enables South Asian-identifying individuals to contribute to cardiovascular research by sharing their samples, their clinical information, and their voices."
+          },
+          {
+            "question": "Why is it needed?",
+            "answer": "Individuals of South Asian ancestry are disproportionately affected by cardiometabolic diseases, including heart disease, stroke, and diabetes. However, they have historically been under-represented in genetic studies. In the United States, South Asian ancestry is now considered a risk-enhancing factor for cardiovascular disease, highlighting an awareness but distinct knowledge gap. OurHealth aims to address this gap by creating a cohort of South Asian individuals, from whom survey and genomic data will be analyzed to further our understanding of cardiovascular disease risk within this population."
+          },
+          {
+            "question": "How can I participate?",
+            "answer": "If you are over 18 years of age and identify as South Asian, you can sign up by clicking “Join” in the top right corner of this page."
+          },
+          {
+            "question": "What does OurHealth do with the data?",
+            "answer": "Only data and/or specimens necessary for study conduct will be collected. The electronic data collected will be maintained in a secure location with appropriate protections including password protection, encryption, and/or physical security measures (locked files/areas). The specimens collected will be maintained in a secure location with appropriate protections (e.g. locked storage spaces, laboratory areas). Data and specimens will only be shared with individuals who are members of the IRB-approved research team or approved for sharing as described in the IRB protocol. Identifiers will be coded and access to files linking identifiers with coded data or specimens will be limited to the minimal necessary members of the research team. All staff are trained on and will follow the Mass General Brigham policies and procedures for maintaining appropriate confidentiality of research data and specimens. All electronic communication with participants will comply with Mass General Brigham secure communication policies."
+          }]
+        }
+      },{
+        "sectionType": "HERO_CENTERED",
+        "sectionConfigJson": {
+          "title": "You can make an impact",
+          "blurb": "With your help, patients can be the driving force behind transformative cardiovascular research.",
+          "buttons": [{
+            "type": "join",
+            "text": "Join OurHealth",
+            "studyShortcode": "ourheart"
+          }],
+          "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
+        }
       }]
     },
     "navbarItemDtos": [{
       "populateFileName": "aboutUs.json"
+    },{
+      "populateFileName": "participation.json"
+    },{
+      "populateFileName": "scientificBackground.json"
     }]
   }]
 }

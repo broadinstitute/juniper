@@ -42,7 +42,7 @@ function PhotoBlurbGrid({ config: { background, backgroundColor, color, subGrids
 function SubGridView({ subGrid }: { subGrid: SubGrid }) {
   return <div className="row justify-content-center">
     <div className="col-md-8">
-      {subGrid.title && <h5>{subGrid.title}</h5>}
+      {subGrid.title && <h3 className="text-center mt-3">{subGrid.title}</h3>}
       <div className="row">
         {subGrid.photoBios.map((bio, index) => <PhotoBioView photoBio={bio} key={index}/>)}
       </div>
@@ -52,10 +52,10 @@ function SubGridView({ subGrid }: { subGrid: SubGrid }) {
 
 /** renders a single bio with pic */
 function PhotoBioView({ photoBio }: { photoBio: PhotoBio }) {
-  return <div className="col-md-4 gx-3 gy-3 d-flex flex-column">
+  return <div className="col-md-4 gx-5 gy-3 d-flex flex-column">
     <PearlImage image={photoBio.image}/>
     <div>{photoBio.name} <span className="detail">{photoBio.title}</span></div>
-    <div className="detail">
+    <div className="detail" style={{ lineHeight: 1 }}>
       <ReactMarkdown>{photoBio.blurb ? photoBio.blurb : ''}</ReactMarkdown>
     </div>
   </div>

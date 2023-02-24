@@ -14,9 +14,10 @@ export default function PearlImage({ image, className, style }: {
   image?: PearlImageProps,
   className?: string, style?: CSSProperties
 }) {
+  const combinedClassNames = `${className ?? ''} ${image?.className ?? ''}`
   if (!image) {
     return <></>
   }
   return <img src={getImageUrl(image.cleanFileName, image.version)} alt={image.alt} loading="lazy"
-    className={className} style={style}/>
+    className={combinedClassNames} style={style}/>
 }
