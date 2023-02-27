@@ -19,6 +19,8 @@ public class StudyEnvironmentSurvey extends BaseEntity {
     private Survey survey;
     @Builder.Default
     private boolean recur = false;
+    @Builder.Default
+    private boolean required = false; // whether this is required before other non-required surveys can be taken
     // how many days between offerings of this survey (e.g. 365 for one year)
     private Integer recurrenceIntervalDays;
     // how many days after being eligible (e.g. after consent, or rule triggering) to offer the survey

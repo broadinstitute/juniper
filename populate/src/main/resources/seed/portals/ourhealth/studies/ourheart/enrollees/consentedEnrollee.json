@@ -33,9 +33,16 @@
   },{
     "status": "NEW",
     "taskType": "SURVEY",
-    "targetStableId": "oh_oh_medHx",
+    "targetStableId": "oh_oh_basicInfo",
     "targetAssignedVersion": 1,
     "taskOrder": 1,
+    "blocksHub": false
+  },{
+    "status": "NEW",
+    "taskType": "SURVEY",
+    "targetStableId": "oh_oh_medHx",
+    "targetAssignedVersion": 1,
+    "taskOrder": 2,
     "blocksHub": false
   },{
     "status": "NEW",
@@ -43,7 +50,7 @@
     "targetName": "Placeholder survey 1",
     "targetStableId": "oh_oh_placeholder1",
     "targetAssignedVersion": 1,
-    "taskOrder": 2,
+    "taskOrder": 3,
     "blocksHub": false
   },{
     "status": "NEW",
@@ -51,7 +58,7 @@
     "targetName": "Placeholder survey 2",
     "targetStableId": "oh_oh_placeholder2",
     "targetAssignedVersion": 1,
-    "taskOrder": 3,
+    "taskOrder": 4,
     "blocksHub": false
   }]
 }

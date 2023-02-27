@@ -10,10 +10,8 @@ import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
-import bio.terra.pearl.core.service.TransactionHandler;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
-import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.workflow.EventService;
 import java.util.List;
@@ -30,24 +28,21 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     private SurveyService surveyService;
     private ParticipantTaskService participantTaskService;
     private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
-    private PortalParticipantUserService portalParticipantUserService;
-    private TransactionHandler transactionHandler;
+    private SnapshotProcessingService snapshotProcessingService;
     private EventService eventService;
 
     public SurveyResponseService(SurveyResponseDao dao, ResponseSnapshotService responseSnapshotService,
                                  EnrolleeService enrolleeService, SurveyService surveyService,
                                  ParticipantTaskService participantTaskService,
                                  StudyEnvironmentSurveyService studyEnvironmentSurveyService,
-                                 PortalParticipantUserService portalParticipantUserService,
-                                 TransactionHandler transactionHandler, EventService eventService) {
+                                 SnapshotProcessingService snapshotProcessingService, EventService eventService) {
         super(dao);
         this.responseSnapshotService = responseSnapshotService;
         this.enrolleeService = enrolleeService;
         this.surveyService = surveyService;
         this.participantTaskService = participantTaskService;
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
-        this.portalParticipantUserService = portalParticipantUserService;
-        this.transactionHandler = transactionHandler;
+        this.snapshotProcessingService = snapshotProcessingService;
         this.eventService = eventService;
     }
 
@@ -130,10 +125,15 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
 
         Enrollee enrollee = enrolleeService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
         ParticipantTask task = participantTaskService.authTaskToPortalParticipantUser(taskId, ppUser.getId()).get();
-        Survey survey = surveyService.findByStableId(task.getTargetStableId(), task.getTargetAssignedVersion()).get();
+        Survey survey = surveyService.findByStableIdWithMappings(task.getTargetStableId(),
+                task.getTargetAssignedVersion()).get();
         validateResponse(survey, task, snapDto);
         // find or create the SurveyResponse object to attach the snapshot
         SurveyResponse response = createSnapshot(snapDto, task, enrollee, participantUserId);
+
+        // process any answers that need to be propagated elsewhere to the data model
+        snapshotProcessingService.processAllAnswerMappings(snapDto,
+                survey.getAnswerMappings(), ppUser, participantUserId);
 
         // now update the task status and response id
         task.setStatus(snapDto.isComplete() ? TaskStatus.COMPLETE : TaskStatus.IN_PROGRESS);

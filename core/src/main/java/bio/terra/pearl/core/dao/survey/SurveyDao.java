@@ -11,12 +11,22 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SurveyDao extends BaseJdbiDao<Survey> {
-    public SurveyDao(Jdbi jdbi) {
+    private AnswerMappingDao answerMappingDao;
+    public SurveyDao(Jdbi jdbi, AnswerMappingDao answerMappingDao) {
         super(jdbi);
+        this.answerMappingDao = answerMappingDao;
     }
 
     public Optional<Survey> findByStableId(String stableId, int version) {
         return findByTwoProperties("stable_id", stableId, "version", version);
+    }
+
+    public Optional<Survey> findByStableIdWithMappings(String stableId, int version) {
+        Optional<Survey> surveyOpt = findByTwoProperties("stable_id", stableId, "version", version);
+        surveyOpt.ifPresent(survey -> {
+            survey.setAnswerMappings(answerMappingDao.findBySurveyId(survey.getId()));
+        });
+        return surveyOpt;
     }
 
     public List<Survey> findByPortalId(UUID portalId) {

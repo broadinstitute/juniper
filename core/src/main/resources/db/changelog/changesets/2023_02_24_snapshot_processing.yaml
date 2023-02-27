@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: "surveys"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: study_environment_survey
+            columns:
+              - column: { name: required, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+        - createTable:
+            tableName: answer_mapping
+            columns:
+              - column: &idColumn
+                  { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: &createdAt
+                  { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: &lastUpdatedAt
+                  { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: question_stable_id, type: text, constraints: { nullable: false }  }
+              - column: { name: target_field, type: text, constraints: { nullable: false }  }
+              - column: { name: target_type, type: text, constraints: { nullable: false }  }
+              - column: { name: map_type, type: text, constraints: { nullable: false } }
+              - column: { name: survey_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_answer_mapping_survey_id, references: survey(id) }
+              }
+        - createTable:
+            tableName: data_change_record
+            columns:
+              - column: *idColumn
+              - column: *createdAt
+              - column: *lastUpdatedAt
+              - column: { name: model_name, type: text, constraints: { nullable: false }  }
+              - column: { name: field_name, type: text, constraints: { nullable: false }  }
+              - column: { name: old_value, type: text }
+              - column: { name: new_value, type: text }
+              - column: { name: portal_participant_user_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_change_record_pp_user_id, references: portal_participant_user(id) }
+              }
+              - column: { name: enrollee_id, type: uuid, constraints:
+                { foreignKeyName: fk_change_record_enrollee_id, references: enrollee(id) }
+              }
+              - column: { name: responsible_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_change_record_participant_user_id, references: participant_user(id) }
+              }
+              - column: { name: responsible_admin_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_change_record_admin_user_id, references: admin_user(id) }
+              }
+        - sql: # addCheckConstraint is only available for LiquibasePro, so add this check via raw sql
+            sql: alter table data_change_record add constraint chk_data_change_record_has_user check (responsible_user_id != null or responsible_admin_user_id != null);
+
