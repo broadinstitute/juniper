@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.admin.controller.internal;
 
 import bio.terra.pearl.api.admin.api.PopulateApi;
+import bio.terra.pearl.populate.service.FilePopulateConfig;
 import bio.terra.pearl.populate.service.PopulateDispatcher;
 import bio.terra.pearl.populate.service.Populator;
 import java.io.IOException;
@@ -20,6 +21,17 @@ public class PopulateController implements PopulateApi {
     Populator populator = populateDispatcher.getPopulator(populateType);
     try {
       return ResponseEntity.ok(populator.populate(filePathName));
+    } catch (IOException e) {
+      throw new RuntimeException("populate failed", e);
+    }
+  }
+
+  @Override
+  public ResponseEntity<Object> populateSurvey(String portalShortcode, String filePathName) {
+    Populator populator = populateDispatcher.getPopulator(PopulateDispatcher.PopulateType.SURVEY);
+    FilePopulateConfig config = new FilePopulateConfig(filePathName, portalShortcode);
+    try {
+      return ResponseEntity.ok(populator.populate(config));
     } catch (IOException e) {
       throw new RuntimeException("populate failed", e);
     }

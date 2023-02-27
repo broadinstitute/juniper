@@ -30,6 +30,13 @@ public class FilePopulateConfig {
         this.basePath = filePath.getParent().toString();
     }
 
+    public FilePopulateConfig(String filePathName, String portalShortcode) {
+        Path filePath = Paths.get(filePathName);
+        this.rootFileName = filePath.getFileName().toString();
+        this.basePath = filePath.getParent().toString();
+        this.portalShortcode = portalShortcode;
+    }
+
     public FilePopulateConfig newFrom(String relativeFilePath) {
         return newFrom(relativeFilePath, portalShortcode, studyShortcode, environmentName);
     }

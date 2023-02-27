@@ -13,6 +13,7 @@ public class PopulateDispatcher {
         ENVIRONMENT,
         PORTAL,
         STUDY,
+        SURVEY,
         BASE_SEED
     }
 
@@ -20,12 +21,14 @@ public class PopulateDispatcher {
                               EnvironmentPopulator environmentPopulator,
                               PortalPopulator portalPopulator,
                               StudyPopulator studyPopulator,
+                              SurveyPopulator surveyPopulator,
                               BaseSeedPopulator baseSeedPopulator) {
         this.typeMap = Map.of(
                 PopulateType.ADMIN_USER, adminUserPopulator,
                 PopulateType.ENVIRONMENT, environmentPopulator,
                 PopulateType.PORTAL, portalPopulator,
                 PopulateType.STUDY, studyPopulator,
+                PopulateType.SURVEY, surveyPopulator,
                 PopulateType.BASE_SEED, baseSeedPopulator
         );
     }
@@ -35,7 +38,11 @@ public class PopulateDispatcher {
         if (popType == null) {
             throw new IllegalArgumentException("'" + popType + "' does not match a known populator");
         }
-        return typeMap.get(popType);
+        return getPopulator(popType);
+    }
+
+    public Populator getPopulator(PopulateType populateType) {
+        return typeMap.get(populateType);
     }
 
 }
