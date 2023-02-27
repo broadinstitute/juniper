@@ -25,8 +25,9 @@
     "react-scripts": "5.0.1",
     "react-select": "^5.4.0",
     "react-table": "^7.8.0",
-    "survey-creator-react": "^1.9.50",
-    "survey-react-ui": "^1.9.50",
+    "survey-creator-react": "^1.9.75",
+    "survey-react-ui": "^1.9.75",
+    "surveyjs-widgets": "1.9.75",
     "typescript": "^4.8.2",
     "web-vitals": "^2.1.4"
   },

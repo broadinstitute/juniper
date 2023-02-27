@@ -1,10 +1,17 @@
 import { useState, useEffect } from 'react'
-import { SurveyModel } from 'survey-react-ui'
+
 import { ConsentForm, Survey } from 'api/api'
 import { SurveyCreator } from 'survey-creator-react'
-import { Question, Serializer } from 'survey-core'
+import { Question, Serializer, SurveyModel } from 'survey-core'
 import { marked } from 'marked'
 import { getSurveyElementList } from './pearlSurveyUtils'
+// eslint-disable-next-line
+// @ts-ignore
+import * as widgets from 'surveyjs-widgets'
+import * as SurveyCore from 'survey-core'
+
+// See https://surveyjs.io/form-library/examples/control-data-entry-formats-with-input-masks/reactjs#content-code
+widgets.inputmask(SurveyCore)
 
 type SurveyJsOptionConfig = {
   html: string,

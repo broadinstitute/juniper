@@ -36,6 +36,7 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
                          }) {
   const { surveyModel, pageNumber, refreshSurvey } = useSurveyJSModel(form, resumableData, onComplete, pager)
   const navigate = useNavigate()
+
   const { updateEnrollee } = useUser()
   if (surveyModel && resumableData) {
     // survey responses aren't yet editable after completion
