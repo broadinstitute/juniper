@@ -65,7 +65,7 @@ Open the root folder in IntelliJ.
        * set environment variable: `REDIRECT_ALL_EMAILS_TO=<<your email address>>`
      * ApiParticipantApp (in api-participant module)
         * set active profiles of "human-readable-logging" and "development"
-        * set environment variable: `SENDGRID_API_KEY=<<vault read --format=json secret/dsp/ddp/d2p/dev/sendgrid | jq -r .data.api_key>>`
+        * set environment variable: `SENDGRID_API_KEY=<<vault read -field=api_key secret/dsp/ddp/d2p/dev/sendgrid>>`
         * set environment variable: `REDIRECT_ALL_EMAILS_TO=<<your email address>>`
         * disable launch optimization
         
