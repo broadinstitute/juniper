@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from 'react'
 
-import { Model, Question, Serializer, StylesManager } from 'survey-core'
-import { Survey as SurveyJSComponent, SurveyModel } from 'survey-react-ui'
+import * as SurveyCore from 'survey-core'
+import { Model, Question, Serializer, StylesManager, SurveyModel } from 'survey-core'
+
+import 'inputmask/dist/inputmask/phone-codes/phone'
+// eslint-disable-next-line
+// @ts-ignore
+import * as widgets from 'surveyjs-widgets'
+import { Survey as SurveyJSComponent } from 'survey-react-ui'
 import { ResumableData, SurveyJSForm } from 'api/api'
 import { useSearchParams } from 'react-router-dom'
 import { getSurveyElementList } from './pearlSurveyUtils'
 
+// See https://surveyjs.io/form-library/examples/control-data-entry-formats-with-input-masks/reactjs#content-code
+widgets.inputmask(SurveyCore)
 
 const PAGE_NUMBER_PARAM_NAME = 'page'
 
@@ -165,7 +173,7 @@ export type FormResponseItem = {
 }
 
 export type SurveyJsItem = {
-  name: string,
+  name: string | number,
   title: string,
   value: object,
   displayValue: string
@@ -198,13 +206,14 @@ export function generateFormResponseDto({ surveyJSModel, enrolleeId, sourceType 
   // so to get the format we need we call getPlainData for questions, and then combine that with calculatedValues
   const data = surveyJSModel.getPlainData()
   const questionItems = data.map(({ name, title, value, displayValue }: SurveyJsItem) => {
+    const questionType = surveyJSModel.getQuestionByName(name.toString())?.getType()
     return {
       stableId: name,
       questionText: title,
-      questionType: surveyJSModel.getQuestionByName(name)?.getType(),
+      questionType,
       value,
-      displayValue
-    }
+      displayValue: displayValue.toString()
+    } as FormResponseItem
   })
 
   const computedValues = getCalculatedValues(surveyJSModel)
@@ -219,7 +228,7 @@ function getCalculatedValues(surveyJSModel: SurveyModel): FormResponseItem[] {
       stableId: calculatedValue.name,
       value: calculatedValue.value,
       questionType: 'calculated'
-    }
+    } as FormResponseItem
   })
 }
 

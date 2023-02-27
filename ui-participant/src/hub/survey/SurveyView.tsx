@@ -22,6 +22,7 @@ import {
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
+import { withErrorBoundary } from '../../util/ErrorBoundary'
 
 const TASK_ID_PARAM = 'taskId'
 
@@ -95,7 +96,7 @@ function PagedSurveyView({ form, activeResponse, enrollee, studyShortcode }:
 }
 
 /** handles loading the consent form and responses from the server */
-export default function SurveyView() {
+function SurveyView() {
   const { portal } = usePortalEnv()
   const { enrollees } = useUser()
   const [formAndResponses, setFormAndResponse] = useState<SurveyWithResponse | null>(null)
@@ -126,6 +127,8 @@ export default function SurveyView() {
       studyShortcode={studyShortcode}/>}
   </LoadingSpinner>
 }
+
+export default withErrorBoundary(SurveyView)
 
 /** Gets the enrollee object matching the given study */
 function enrolleeForStudy(enrollees: Enrollee[], studyShortcode: string, portal: Portal): Enrollee {
