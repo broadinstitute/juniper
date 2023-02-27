@@ -57,16 +57,16 @@ Open the root folder in IntelliJ.
       * Project Structure > Project Settings > Project > SDK
       * Preferences > Build, Execution, Deployment > Build Tools > Gradle > Gradle Projects > \[this project\] > Gradle JVM
          * Recommended setting for this is "Project SDK"
-   * In the project settings, make sure annotation processing is enabled (otherwise lombok getters/setters won't work)
+   * In Preferences > Build, Execution, Deployment > Compiler > Annotation Processors, make sure annotation processing is enabled (otherwise lombok getters/setters won't work)
    * Create two Spring Boot Run/Debug Configurations.
      * ApiAdminApp (in api-admin module)
        * set active profiles of "human-readable-logging" and "development"
        * disable launch optimization
-       * set environment variable: REDIRECT_ALL_EMAILS_TO=<<your email address>>
+       * set environment variable: `REDIRECT_ALL_EMAILS_TO=<<your email address>>`
      * ApiParticipantApp (in api-participant module)
         * set active profiles of "human-readable-logging" and "development"
-        * set environment variable: SENDGRID_API_KEY=<<vault read secret/dsp/ddp/d2p/dev/sendgrid>>
-        * set environment variable: REDIRECT_ALL_EMAILS_TO=<<your email address>>
+        * set environment variable: `SENDGRID_API_KEY=<<vault read -field=api_key secret/dsp/ddp/d2p/dev/sendgrid>>`
+        * set environment variable: `REDIRECT_ALL_EMAILS_TO=<<your email address>>`
         * disable launch optimization
         
          
@@ -79,7 +79,6 @@ In basic development mode, this will only serve the API, not the frontend assets
 To make the application useful, you will want to populate some users and studies.  After the admin API is running, 
 from the root project directory, run
 ```
-./scripts/populate_setup.sh
 ./scripts/populate_portal.sh ourhealth
 ```
 
