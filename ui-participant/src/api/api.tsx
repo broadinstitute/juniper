@@ -216,6 +216,11 @@ export type ButtonConfig = {
   studyShortcode: string
 }
 
+export type Config = {
+  b2cTenantName: string,
+  b2cClientId: string
+}
+
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export type SectionConfig = { [index: string]: any }
 
@@ -247,6 +252,11 @@ export default {
       return obj
     }
     return Promise.reject(response)
+  },
+
+  async getConfig(): Promise<Config> {
+    const response = await fetch(`/config`)
+    return await this.processJsonResponse(response)
   },
 
   async getPortal(): Promise<Portal> {
@@ -312,10 +322,23 @@ export default {
     }
   },
 
+  async register({ preRegResponseId, email }: { preRegResponseId: string, email: string }): Promise<LoginResult> {
+    let url = `${baseEnvUrl(false)}/register`
+    if (preRegResponseId) {
+      url += `?preRegResponseId=${preRegResponseId}`
+    }
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify({ email })
+    })
+    return await this.processJsonResponse(response)
+  },
+
   /** submits registration data for a particular portal, from an anonymous user */
-  async register({ preRegResponseId, fullData }: { preRegResponseId: string, fullData: object }):
+  async internalRegister({ preRegResponseId, fullData }: { preRegResponseId: string, fullData: object }):
     Promise<RegistrationResponse> {
-    let url = `${baseEnvUrl(true)}/register`
+    let url = `${baseEnvUrl(true)}/internalRegister`
     if (preRegResponseId) {
       url += `?preRegResponseId=${preRegResponseId}`
     }
@@ -406,6 +429,17 @@ export default {
     const url = `${baseEnvUrl(true)}/current-user/unauthed-login?${new URLSearchParams({
       username
     })}`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async tokenLogin(token: string): Promise<LoginResult> {
+    this.setBearerToken(token)
+
+    const url = `${baseEnvUrl(false)}/current-user/login`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()

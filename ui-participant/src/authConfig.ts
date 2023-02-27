@@ -9,23 +9,30 @@ const aadB2cName = process.env.REACT_APP_B2C_TENANT_NAME ? process.env.REACT_APP
 const aadb2cClientId = process.env.REACT_APP_B2C_CLIENT_ID ? process.env.REACT_APP_B2C_CLIENT_ID : 'ID_NEEDED'
 
 // TODO: This is a modified copy of code from Terra UI. It could use some clean-up.
-export const getOidcConfig = () => {
+export const getOidcConfig = (b2cTenantName: string = aadB2cName, b2cClientId: string = aadb2cClientId) => {
   const metadata = {
     // eslint-disable-next-line camelcase
     authorization_endpoint:
-      `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev/oauth2/v2.0/authorize`,
+      // eslint-disable-next-line max-len
+      `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/B2C_1A_ddp_participant_signup_signin_dev/oauth2/v2.0/authorize`,
     // eslint-disable-next-line camelcase
     token_endpoint:
-      `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev/oauth2/v2.0/token`
+      // eslint-disable-next-line max-len
+      `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/B2C_1A_ddp_participant_signup_signin_dev/oauth2/v2.0/token`
   }
+  console.log(`${window.origin}/redirect-from-oauth`)
   return {
-    authority: `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev`,
+    authority:
+      // eslint-disable-next-line max-len
+      `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/B2C_1A_ddp_participant_signup_signin_dev`,
     // eslint-disable-next-line camelcase
-    client_id: aadb2cClientId,
+    client_id: b2cClientId,
     // eslint-disable-next-line camelcase
-    popup_redirect_uri: `${window.origin}/redirect-from-oauth`,
+    popup_redirect_uri: `https://sandbox.ourhealth.localhost:3001/redirect-from-oauth`,
+    // popup_redirect_uri: `${window.origin}/redirect-from-oauth`,
     // eslint-disable-next-line camelcase
-    silent_redirect_uri: `${window.origin}/redirect-from-oauth-silent`,
+    silent_redirect_uri: `https://sandbox.ourhealth.localhost:3001/redirect-from-oauth-silent`,
+    // silent_redirect_uri: `${window.origin}/redirect-from-oauth-silent`,
     metadata,
     prompt: 'consent login',
     scope: 'openid email profile',
@@ -42,18 +49,4 @@ export const getOidcConfig = () => {
     // eslint-disable-next-line camelcase
     redirect_uri: ''
   }
-}
-
-export const b2cPolicies = {
-  names: {
-    signUpSignIn: 'b2c_1_susi',
-    forgotPassword: 'b2c_1_reset',
-    editProfile: 'b2c_1_edit_profile'
-  },
-  authorities: {
-    signUpSignIn: {
-      authority: `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev`
-    }
-  },
-  authorityDomain: `https://${aadB2cName}.b2clogin.com`
 }

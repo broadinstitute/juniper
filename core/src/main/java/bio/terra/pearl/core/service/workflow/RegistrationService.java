@@ -18,7 +18,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -81,6 +83,18 @@ public class RegistrationService {
     public RegistrationResult register(String portalShortcode, EnvironmentName environmentName,
                          ParsedSnapshot response, UUID preRegResponseId) {
         RequiredRegistrationInfo info = extractRegistrationValues(response);
+        return register(portalShortcode, environmentName, preRegResponseId, info);
+    }
+
+    @Transactional
+    public RegistrationResult register(String portalShortcode, EnvironmentName environmentName,
+                                       String email, UUID preRegResponseId) {
+        var info = RequiredRegistrationInfo.builder().email(email).build();
+        return register(portalShortcode, environmentName, preRegResponseId, info);
+    }
+
+    private RegistrationResult register(String portalShortcode, EnvironmentName environmentName, UUID preRegResponseId,
+                                        RequiredRegistrationInfo info) {
         PortalEnvironment portalEnv = portalEnvService.findOne(portalShortcode, environmentName).get();
         PreregistrationResponse preRegResponse = null;
         if (portalEnv.getPreRegSurveyId() != null) {
@@ -130,6 +144,8 @@ public class RegistrationService {
         return preRegResponse;
     }
 
+    @SuperBuilder
+    @NoArgsConstructor
     public static class RequiredRegistrationInfo {
         @Getter
         @Setter

@@ -45,12 +45,16 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const [isLoading, setIsLoading] = useState(true)
   const auth = useAuth()
 
+  /** Sign in to the UI based on the resolt of signing in to the API. */
   const loginUser = (loginResult: LoginResult) => {
     setLoginState(loginResult)
-    Api.setBearerToken(loginResult.user.token)
+    if (typeof loginResult.user.token !== 'undefined') {
+      Api.setBearerToken(loginResult.user.token)
+    }
     localStorage.setItem(STORAGE_TOKEN_PROP, loginResult.user.token)
   }
 
+  /** Sign out of the UI. Does not invalidate any tokens, but maybe it should... */
   const logoutUser = () => {
     setLoginState(null)
     Api.setBearerToken(null)
@@ -81,16 +85,21 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   }
 
   useEffect(() => {
+    // Add listener to auth context to process return from B2C sign-in
+    // TODO: consider only doing this for redirect-from-oauth
     auth.events.addUserLoaded(user => {
       console.log(user)
-      // const adminUser = {
-      //   username: user?.profile?.email as string,
-      //   token: user.id_token as string
-      // }
-      // TODO -- call server API to create/log in user to the server
-      // loginUser(adminUser)
+      if (user?.id_token && !user.profile.newUser) {
+        Api.tokenLogin(user.id_token).then(loginResult => {
+          loginUser(loginResult)
+          setIsLoading(false)
+        })
+      } else {
+        // TODO: handle unexpected user parameter
+      }
     })
 
+    // Recover state for a signed-in user that we might have lost due to a full page load
     const token = localStorage.getItem(STORAGE_TOKEN_PROP)
     if (token) {
       Api.refreshLogin(token).then(loginResult => {
@@ -104,6 +113,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
       setIsLoading(false)
     }
   }, [])
+
   return (
     <UserContext.Provider value={userContext}>
       <LoadingSpinner isLoading={isLoading}>

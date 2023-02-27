@@ -36,6 +36,17 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
+  /config:
+    get:
+      summary: Get configuration info for authenticating with and using the API
+      tags: [ public ]
+      operationId: getConfig
+      security: [ ]
+      responses:
+        '200':
+          description: Configuration information
+          content: { application/json: { schema: { type: object } } }
+
   /api/public/portals/v1/{portalShortcode}/env/{envName}:
     get:
       summary: Gets the portal object
@@ -218,7 +229,26 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/public/portals/v1/{portalShortcode}/env/{envName}/register:
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/internalRegister:
+    post:
+      summary: Submits a registration survey
+      tags: [ registration ]
+      operationId: internalRegister
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: preRegResponseId, in: query, required: false, schema: { type: string, format: uuid } }
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        '200':
+          description: preregistration response
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/register:
     post:
       summary: Submits a registration survey
       tags: [ registration ]
@@ -230,7 +260,8 @@ paths:
       requestBody:
         content:
           application/json:
-            schema: { type: object }
+            schema:
+              $ref: '#/components/schemas/RegistrationInfo'
       responses:
         '200':
           description: preregistration response
@@ -274,9 +305,25 @@ paths:
               schema: {type: object}
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/current-user/refresh:
+  /api/portals/v1/{portalShortcode}/env/{envName}/current-user/login:
     post:
       summary: logs in a user from a token
+      tags: [ currentUser ]
+      operationId: tokenLogin
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: current user object with token
+          content:
+            application/json: # see https://superuser.com/questions/979135/is-there-a-generic-mime-type-for-all-image-files
+              schema: { type: object }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/current-user/refresh:
+    post:
+      summary: fetches user state from a saved token to recover from a full page reload
       tags: [ currentUser ]
       operationId: refresh
       parameters:
@@ -378,6 +425,12 @@ components:
         github:
           type: string
         build:
+          type: string
+
+    RegistrationInfo:
+      type: object
+      properties:
+        email:
           type: string
 
   securitySchemes:

@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import { generateFormResponseDto, SourceType, useSurveyJSModel } from 'util/surveyJsUtils'
 import Api, { Survey } from 'api/api'
 import { RegistrationContextT } from './PortalRegistrationRouter'
 import { useUser } from '../../providers/UserProvider'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from 'react-oidc-context'
 
 /** This registration survey is a hardcoded temporary survey until we have MS B2C integration. */
 const registrationSurvey = {
@@ -57,8 +58,45 @@ const registrationSurveyModel: Survey = {
   allowParticipantReedit: false
 }
 
-/** show the participant registration page */
+/** Show the B2C participant registration page */
 export default function Registration({ registrationContext, returnTo }: {
+  registrationContext: RegistrationContextT,
+  returnTo: string | null
+}) {
+  const { preRegResponseId, updatePreRegResponseId } = registrationContext
+  const auth = useAuth()
+  const { loginUser } = useUser()
+
+  console.log(registrationContext, returnTo)
+
+  useEffect(() => {
+    const signIn = async () => {
+      const user = await auth.signinPopup()
+      console.log('auth.signinPopup:', user)
+      Api.setBearerToken(user.id_token as string)
+      const loginResult = await Api.register({
+        preRegResponseId: preRegResponseId as string,
+        email: user.profile.email as string
+      })
+      updatePreRegResponseId(null)
+      loginUser(loginResult)
+    }
+
+    signIn()
+  }, [])
+
+  // TODO: remove legacy internal registration
+  return <>
+    <p>
+      Please complete B2C registration in pop-up window.
+      For now, the internal registration form remains below if needed.
+    </p>
+    <InternalRegistration registrationContext={registrationContext} returnTo={returnTo}/>
+  </>
+}
+
+/** show the participant registration page */
+export function InternalRegistration({ registrationContext, returnTo }: {
   registrationContext: RegistrationContextT,
   returnTo: string | null
 }) {
@@ -78,7 +116,7 @@ export default function Registration({ registrationContext, returnTo }: {
       surveyJSModel: surveyModel, enrolleeId: null, sourceType: SourceType.ANON
     })
     const resumeData = surveyModel?.data
-    Api.register({
+    Api.internalRegister({
       preRegResponseId: preRegResponseId as string,
       fullData: responseDto
     })

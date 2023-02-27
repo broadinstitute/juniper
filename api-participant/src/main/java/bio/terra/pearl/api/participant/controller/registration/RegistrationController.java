@@ -1,32 +1,52 @@
 package bio.terra.pearl.api.participant.controller.registration;
 
 import bio.terra.pearl.api.participant.api.RegistrationApi;
+import bio.terra.pearl.api.participant.model.RegistrationInfo;
 import bio.terra.pearl.api.participant.service.CurrentUserService;
+import bio.terra.pearl.api.participant.service.RequestUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.survey.ParsedSnapshot;
 import bio.terra.pearl.core.service.workflow.RegistrationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
+import java.util.function.Function;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 @Controller
 public class RegistrationController implements RegistrationApi {
+  private CurrentUserService currentUserService;
+  private HttpServletRequest request;
   private ObjectMapper objectMapper;
   private RegistrationService registrationService;
-  private CurrentUserService currentUserService;
+  private RequestUtilService requestUtilService;
 
   public RegistrationController(
+      CurrentUserService currentUserService,
+      HttpServletRequest request,
       ObjectMapper objectMapper,
       RegistrationService registrationService,
-      CurrentUserService currentUserService) {
+      RequestUtilService requestUtilService) {
+    this.currentUserService = currentUserService;
+    this.request = request;
     this.objectMapper = objectMapper;
     this.registrationService = registrationService;
-    this.currentUserService = currentUserService;
+    this.requestUtilService = requestUtilService;
   }
 
   @Override
   public ResponseEntity<Object> register(
+      String portalShortcode, String envName, UUID preRegResponseId, RegistrationInfo body) {
+    var environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    registrationService.register(portalShortcode, environmentName, body.getEmail(), preRegResponseId);
+    var token = requestUtilService.tokenFromRequest(request);
+    var userWithEnrollees = currentUserService.tokenLogin(token, portalShortcode, environmentName);
+    return ResponseEntity.of(userWithEnrollees.map(Function.identity()));
+  }
+
+  @Override
+  public ResponseEntity<Object> internalRegister(
       String portalShortcode, String envName, UUID preRegResponseId, Object body) {
     ParsedSnapshot response = objectMapper.convertValue(body, ParsedSnapshot.class);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);

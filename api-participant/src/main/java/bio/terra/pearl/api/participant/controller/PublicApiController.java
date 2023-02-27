@@ -1,10 +1,12 @@
 package bio.terra.pearl.api.participant.controller;
 
 import bio.terra.pearl.api.participant.api.PublicApi;
+import bio.terra.pearl.api.participant.config.B2CConfiguration;
 import bio.terra.pearl.api.participant.config.VersionConfiguration;
 import bio.terra.pearl.api.participant.model.SystemStatus;
 import bio.terra.pearl.api.participant.model.VersionProperties;
 import bio.terra.pearl.api.participant.service.StatusService;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -15,13 +17,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class PublicApiController implements PublicApi {
+  private final B2CConfiguration b2CConfiguration;
   private final StatusService statusService;
   private final VersionConfiguration versionConfiguration;
   private final Environment env;
 
   @Autowired
   public PublicApiController(
-      StatusService statusService, VersionConfiguration versionConfiguration, Environment env) {
+      B2CConfiguration b2CConfiguration,
+      StatusService statusService,
+      VersionConfiguration versionConfiguration,
+      Environment env) {
+    this.b2CConfiguration = b2CConfiguration;
     this.statusService = statusService;
     this.versionConfiguration = versionConfiguration;
     this.env = env;
@@ -43,6 +50,12 @@ public class PublicApiController implements PublicApi {
             .github(versionConfiguration.github())
             .build(versionConfiguration.build());
     return ResponseEntity.ok(currentVersion);
+  }
+
+  @Override
+  public ResponseEntity<Object> getConfig() {
+    var config = buildConfigMap();
+    return ResponseEntity.ok(config);
   }
 
   /**
@@ -68,5 +81,11 @@ public class PublicApiController implements PublicApi {
   @GetMapping(value = {"/{x:[\\w\\-]+}", "/{x:^(?!api$).*$}/*/{y:[\\w\\-]+}"})
   public String getIndex(HttpServletRequest request) {
     return "forward:/";
+  }
+
+  private Map<String, String> buildConfigMap() {
+    return Map.of(
+        "b2cTenantName", b2CConfiguration.tenantName(),
+        "b2cClientId", b2CConfiguration.clientId());
   }
 }
