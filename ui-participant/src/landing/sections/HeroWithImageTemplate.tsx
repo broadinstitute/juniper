@@ -46,9 +46,9 @@ function HeroWithImageTemplate({
         <h1 className="fs-1 fw-normal lh-sm">
           <ReactMarkdown>{title ? title : ''}</ReactMarkdown>
         </h1>
-        <p className="fs-5">
+        <div className="fs-5">
           <ReactMarkdown>{blurb ? blurb : ''}</ReactMarkdown>
-        </p>
+        </div>
         <div className="d-grid gap-2 d-md-flex justify-content-md-start">
           {
             _.map(buttons, (buttonConfig, i) =>

@@ -44,8 +44,8 @@ function FrequentlyAskedQuestionsTemplate({
       <div className="border-bottom"></div>
       <div className="fs-5 fw-normal">
         {
-          _.map(questions, ({ question, answer }) => {
-            return <div className="border-bottom p-3">
+          _.map(questions, ({ question, answer }, i) => {
+            return <div key={i} className="border-bottom p-3">
               <button type="button" className="btn btn-lg btn-link text-black fw-bold text-decoration-none"
                 data-bs-toggle="collapse" data-bs-target={targetFor(question)}>
                 + {question}
