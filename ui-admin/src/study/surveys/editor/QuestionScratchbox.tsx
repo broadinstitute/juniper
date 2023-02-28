@@ -101,8 +101,10 @@ export default function QuestionScratchbox() {
           <div className="ms-3">
             { questionObj.choices && questionObj.choices.map((choice, index) => {
               return <div key={index} className="mt-1">
-                {choice.text}: <input type="text" size={30} value={choice.value}
-                  onChange={e => updateChoiceValue(index, e.target.value)}/>
+                <label>{choice.text}:
+                  <input type="text" size={30} value={choice.value}
+                    onChange={e => updateChoiceValue(index, e.target.value)}/>
+                </label>
               </div>
             })}
           </div>
