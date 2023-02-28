@@ -34,7 +34,7 @@ export default function QuestionScratchbox() {
     const newQuestionObj = _cloneDeep(questionObj)
     if (newQuestionObj.choices && questionObj.choices) {
       newQuestionObj.choices[index] = {
-        text: questionObj.choices[index].text,
+        ...questionObj.choices[index],
         value
       }
     }
@@ -119,10 +119,7 @@ export default function QuestionScratchbox() {
  * @param questionObj
  */
 function subPanelsForQuestion(questionObj: QuestionObj): PanelObj[] {
-  if (!questionObj.choices) {
-    return []
-  }
-  return questionObj.choices.map(choice => {
+  return (questionObj.choices || []).map(choice => {
     return {
       type: 'panel',
       title: choice.text,
