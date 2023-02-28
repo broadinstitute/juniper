@@ -22,10 +22,15 @@ public class PopulateController implements PopulateApi {
     try {
       return ResponseEntity.ok(populator.populate(filePathName));
     } catch (IOException e) {
-      throw new RuntimeException("populate failed", e);
+      throw new IllegalArgumentException("populate failed", e);
     }
   }
 
+  /**
+   * This controller does not explicitly validate the safety of the passed-in filename. Rather, it
+   * relies on FilePopulateService.getInputStream to ensure that only files from within the seed
+   * directory are allowed to be read.
+   */
   @Override
   public ResponseEntity<Object> populateSurvey(String portalShortcode, String filePathName) {
     Populator populator = populateDispatcher.getPopulator(PopulateDispatcher.PopulateType.SURVEY);
@@ -33,7 +38,7 @@ public class PopulateController implements PopulateApi {
     try {
       return ResponseEntity.ok(populator.populate(config));
     } catch (IOException e) {
-      throw new RuntimeException("populate failed", e);
+      throw new IllegalArgumentException("populate failed", e);
     }
   }
 }
