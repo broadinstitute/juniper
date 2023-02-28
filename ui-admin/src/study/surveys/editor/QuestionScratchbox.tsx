@@ -63,29 +63,39 @@ export default function QuestionScratchbox() {
           {showCopy && <button className="btn btn-secondary" onClick={copyText}>Copy</button> }
         </h6>
         <div style={{ fontFamily: 'monospace' }}>
-          name: {questionObj.namePrefix}<input type="text" size={30} value={questionObj.nameSuffix}
-            onChange={e => updateQuestionSimpleProp('nameSuffix', e.target.value)}/><br/>
+          <label>name: {questionObj.namePrefix}
+            <input type="text" size={30} value={questionObj.nameSuffix}
+              onChange={e => updateQuestionSimpleProp('nameSuffix', e.target.value)}/></label>
+          <br/>
 
-          type: <select value={questionObj.type} onChange={e => updateQuestionSimpleProp('type', e.target.value)}>
-            <option>radiogroup</option>
-            <option>checkbox</option>
-            <option>text</option>
-          </select><br/>
+          <label>type:
+            <select value={questionObj.type} onChange={e => updateQuestionSimpleProp('type', e.target.value)}>
+              <option>radiogroup</option>
+              <option>checkbox</option>
+              <option>text</option>
+            </select></label>
+          <br/>
 
-          title: <textarea rows={2} cols={80} value={questionObj.title}
-            onChange={e => updateQuestionSimpleProp('title', e.target.value)}/><br/>
+          <label>title: <textarea rows={2} cols={80} value={questionObj.title}
+            onChange={e => updateQuestionSimpleProp('title', e.target.value)}/>
+          </label><br/>
           <label>is Required:
             <input type="checkbox" checked={questionObj.isRequired}
               onChange={() => updateQuestionSimpleProp('isRequired', !questionObj.isRequired)}/>
           </label><br/>
 
-          visibleIf: <input type="text" size={80} value={questionObj.visibleIf}
-            onChange={e => updateQuestionSimpleProp('visibleIf', e.target.value)}/><br/>
+          <label>visibleIf: <input type="text" size={80} value={questionObj.visibleIf}
+            onChange={e => updateQuestionSimpleProp('visibleIf', e.target.value)}/>
+          </label><br/>
 
-          otherText: <input type="text" size={80} value={questionObj.otherText}
-            onChange={e => updateQuestionSimpleProp('otherText', e.target.value)}/><br/>
-          otherPlaceholder: <input type="text" size={80} value={questionObj.otherPlaceholder}
-            onChange={e => updateQuestionSimpleProp('otherPlaceholder', e.target.value)}/><br/>
+          <label>otherText:
+            <input type="text" size={80} value={questionObj.otherText}
+              onChange={e => updateQuestionSimpleProp('otherText', e.target.value)}/></label>
+          <br/>
+          <label>otherPlaceholder:
+            <input type="text" size={80} value={questionObj.otherPlaceholder}
+              onChange={e => updateQuestionSimpleProp('otherPlaceholder', e.target.value)}/></label>
+          <br/>
 
           choices:
           <div className="ms-3">
