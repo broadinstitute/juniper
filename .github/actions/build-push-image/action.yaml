@@ -13,6 +13,10 @@ inputs:
   gradle-build-args:
     required: true
     description: args to pass to the gradlew build command
+  publish-service-account:
+    required: false
+    description: email for the GCP service account used to publish app images
+    default: 'dsp-artifact-registry-push@dsp-artifact-registry.iam.gserviceaccount.com'
 outputs:
   published-image:
     description: The full url and tag of the published image
@@ -35,7 +39,8 @@ runs:
     - name: Auth to Google
       uses: google-github-actions/auth@v1
       with:
-        workload_identity_provider: ${{ inputs.workload-identity-provider }}
+        # this value will always be the same so specifying directly
+        workload_identity_provider: projects/1038484894585/locations/global/workloadIdentityPools/github-wi-pool/providers/github-wi-provider
         service_account: ${{ inputs.publish-service-account }}
     
     - name: Setup gcloud
