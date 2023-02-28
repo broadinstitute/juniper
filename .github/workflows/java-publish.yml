@@ -8,10 +8,7 @@ env:
   IMAGE_REPOSITORY_NAME: ddp
 
 jobs:
-  publish-job:
-    permissions:
-      contents: 'read'
-      id-token:  'write'
+  get-version-tag:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
@@ -20,47 +17,32 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.BROADBOT_TOKEN }}
-      - name: Set Up JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'adopt'
-          cache: 'gradle'
-      
-      - name: Parse tag
+      - name: Parse Tag
         id: tag
         run: echo "tag=$(git describe --tags)" >> $GITHUB_OUTPUT
-      
-      - name: Auth to Google
-        uses: google-github-actions/auth@v1
+
+  publish-admin-image:
+    needs: get-version-tag
+    permissions:
+      contents: 'read'
+      id-token:  'write'
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.build-publish.outputs.published-image }}
+    steps:
+      - name: Checkout Current Code
+        uses: actions/checkout@v3
         with:
-          workload_identity_provider: projects/1038484894585/locations/global/workloadIdentityPools/github-wi-pool/providers/github-wi-provider
-          service_account: 'dsp-artifact-registry-push@dsp-artifact-registry.iam.gserviceaccount.com'
-      
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v1
-
-      - name: Explicitly auth Docker for GCR
-        run: gcloud auth configure-docker $GOOGLE_DOCKER_REPOSITORY --quiet
-
-      - name: Construct docker image name and tag
-        id: image-name
-        run: echo "name=${GOOGLE_DOCKER_REPOSITORY}/${GOOGLE_PROJECT}/${IMAGE_REPOSITORY_NAME}/${SERVICE_NAME}:${{ steps.tag.outputs.tag }}" >> $GITHUB_OUTPUT
-      
-      - name: Build image locally with jib
-        run: |
-          ./gradlew --build-cache :api-admin:jibDockerBuild \
-          --image=${{ steps.image-name.outputs.name }} \
-          -Djib.console=plain
-      
-      - name: Run Trivy Vulnerability Scan
-        uses: broadinstitute/dsp-appsec-trivy-action@v1
+          token: ${{ secrets.BROADBOT_TOKEN }}
+      - name: build and publish image
+        id: build-publish
+        uses: ./.github/actions/build-push-image
         with:
-          image: ${{ steps.image-name.outputs.name }}
+          version-tag: ${{ needs.get-version-tag.outputs.tag }}
+          image-repo: 'us-central1-docker.pkg.dev'
+          image-name: "dsp-artifact-registry/ddp/${{ github.event.repository.name }}-admin"
+          gradle-build-args: ':api-admin:jibDockerBuild'
 
-      - name: Push GCR image
-        run: docker push ${{ steps.image-name.outputs.name }}
-      
       - name: Notify slack on failure
         uses: broadinstitute/action-slack@v3.8.0
         if: failure()
@@ -71,15 +53,50 @@ jobs:
           status: failure
           author_name: Publish docker Image
           fields: job
-          text: "Publish failed :sadpanda:, image ${{ steps.image-name.outputs.name }} failed to publish"
+          text: "Publish failed :sadpanda:, image ${{ steps.build-publish.outputs.published-image }} failed to publish"
+          username: 'Pearl Build Notifications'
+    
+  publish-participant-image:
+    needs: get-version-tag
+    permissions:
+      contents: 'read'
+      id-token:  'write'
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.build-publish.outputs.published-image }}
+    steps:
+      - name: Checkout Current Code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.BROADBOT_TOKEN }}
+      - name: build and publish image
+        id: build-publish
+        uses: ./.github/actions/build-push-image
+        with:
+          version-tag: ${{ needs.get-version-tag.outputs.tag }}
+          image-repo: 'us-central1-docker.pkg.dev'
+          image-name: "dsp-artifact-registry/ddp/${{ github.event.repository.name }}-participant"
+          gradle-build-args: ':api-participant:jibDockerBuild'
+
+      - name: Notify slack on failure
+        uses: broadinstitute/action-slack@v3.8.0
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          channel: '#pearl-dev-notifications'
+          status: failure
+          author_name: Publish docker Image
+          fields: job
+          text: "Publish failed :sadpanda:, image ${{ steps.build-publish.outputs.published-image }} failed to publish"
           username: 'Pearl Build Notifications'
   
   report-to-sherlock:
     # Report new version of application to DSP DevOps Tooling
     uses: broadinstitute/sherlock/.github/workflows/client-report-app-version.yaml@main
-    needs: publish-job
+    needs: [publish-admin-image, publish-participant-image, get-version-tag]
     with:
-      new-version: ${{ needs.publish-job.outputs.tag }}
+      new-version: ${{ needs.get-version-tag.outputs.tag }}
       chart-name: 'd2p'
     permissions:
       contents: 'read'
@@ -88,9 +105,9 @@ jobs:
   set-version-in-dev:
     # Put new version in ddp-azure-dev environment
     uses: broadinstitute/sherlock/.github/workflows/client-set-environment-app-version.yaml@main
-    needs: [publish-job, report-to-sherlock]
+    needs: [publish-job, report-to-sherlock, get-version-tag]
     with:
-      new-version: ${{ needs.publish-job.outputs.tag }}
+      new-version: ${{ needs.get-version-tag.outputs.tag }}
       chart-name: 'd2p'
       environment-name: 'ddp-azure-dev'
     secrets:
@@ -101,7 +118,7 @@ jobs:
   notify-upon-completion:
     runs-on: ubuntu-latest
     if: always()
-    needs: [set-version-in-dev, publish-job]
+    needs: [set-version-in-dev, get-version-tag]
     steps:
       - uses: broadinstitute/action-slack@v3.8.0
         env: 
@@ -112,7 +129,7 @@ jobs:
           status: ${{ needs.set-version-in-dev.result }}
           author_name: Auto Deploy to Dev
           fields: job
-          text: Deploy to dev of ${{ needs.publish-job.outputs.tag }} resulted in ${{ needs.set-version-in-dev.result }}
+          text: Deploy to dev of ${{ needs.get-version-tag.outputs.tag }} resulted in ${{ needs.set-version-in-dev.result }}
           username: 'Pearl Build Notifications'
 
 
