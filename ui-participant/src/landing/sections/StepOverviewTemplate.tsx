@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import React from 'react'
+import React, { Fragment } from 'react'
 import { ButtonConfig } from 'api/api'
 import PearlImage, { PearlImageProps } from 'util/PearlImage'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -39,7 +39,7 @@ function StepOverviewTemplate({
       <div className="col-md-10 d-flex">
         {
           _.map(steps, ({ image, duration, blurb }: StepProps, i: number) => {
-            return <>
+            return <Fragment key={i}>
               {i > 0 ? <FontAwesomeIcon className="fa-2x p-3 mt-5" icon={faArrowRight}/> : null}
               <div className="d-flex flex-column">
 
@@ -54,15 +54,15 @@ function StepOverviewTemplate({
                   </p>
                 </div>
               </div>
-            </>
+            </Fragment>
           })
         }
       </div>
     </div>
     <div className="d-grid gap-2 d-md-flex pt-4 justify-content-center">
       {
-        _.map(buttons, ({ text, href }) => {
-          return <a href={href} role={'button'} className="btn btn-primary btn-lg px-4 me-md-2">{text}</a>
+        _.map(buttons, ({ text, href }, i) => {
+          return <a key={i} href={href} role={'button'} className="btn btn-primary btn-lg px-4 me-md-2">{text}</a>
         })
       }
     </div>

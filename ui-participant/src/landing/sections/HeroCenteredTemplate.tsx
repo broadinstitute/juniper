@@ -38,18 +38,18 @@ function HeroCenteredTemplate({
       <h1 className="fs-1 fw-normal lh-sm mb-4">
         <ReactMarkdown>{title ? title : ''}</ReactMarkdown>
       </h1>
-      <p className="fs-5 " style={blurbStyle}>
+      <div className="fs-5 " style={blurbStyle}>
         <ReactMarkdown>{blurb ? blurb : ''}</ReactMarkdown>
-      </p>
+      </div>
     </div>
     <div className="col-lg-6 mx-auto">
       <PearlImage image={image} className="img-fluid"/>
     </div>
     <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
       {
-        _.map(buttons, button => {
+        _.map(buttons, (button, i) => {
           // TODO: allow customization of button styling
-          return <ConfiguredButton config={button} className='btn btn-light btn-lg px-4 me-md-2'/>
+          return <ConfiguredButton key={i} config={button} className='btn btn-light btn-lg px-4 me-md-2'/>
         })
       }
     </div>
