@@ -105,7 +105,7 @@ jobs:
   set-version-in-dev:
     # Put new version in ddp-azure-dev environment
     uses: broadinstitute/sherlock/.github/workflows/client-set-environment-app-version.yaml@main
-    needs: [publish-job, report-to-sherlock, get-version-tag]
+    needs: [publish-admin-image, publish-participant-image, report-to-sherlock, get-version-tag]
     with:
       new-version: ${{ needs.get-version-tag.outputs.tag }}
       chart-name: 'd2p'
