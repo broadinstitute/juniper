@@ -34,7 +34,7 @@ server:
   compression:
     enabled: true
     mimeTypes: text/css,application/javascript
-  port: 8080
+  port: ${SERVER_PORT:8080}
 
 spring:
   # application name and version are used to populate the logging serviceContext
