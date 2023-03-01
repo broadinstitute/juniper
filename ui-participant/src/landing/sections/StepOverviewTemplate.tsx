@@ -1,9 +1,7 @@
 import _ from 'lodash'
-import React, { Fragment } from 'react'
+import React from 'react'
 import { ButtonConfig } from 'api/api'
 import PearlImage, { PearlImageProps } from 'util/PearlImage'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import ReactMarkdown from 'react-markdown'
 
 type StepProps = {
