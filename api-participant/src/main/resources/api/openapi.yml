@@ -301,7 +301,7 @@ paths:
         '200':
           description: current user object with token
           content:
-            application/json: # see https://superuser.com/questions/979135/is-there-a-generic-mime-type-for-all-image-files
+            application/json:
               schema: {type: object}
         '500':
           $ref: '#/components/responses/ServerError'
@@ -317,7 +317,7 @@ paths:
         '200':
           description: current user object with token
           content:
-            application/json: # see https://superuser.com/questions/979135/is-there-a-generic-mime-type-for-all-image-files
+            application/json:
               schema: { type: object }
         '500':
           $ref: '#/components/responses/ServerError'
@@ -333,7 +333,7 @@ paths:
         '200':
           description: current user object with token
           content:
-            application/json: # see https://superuser.com/questions/979135/is-there-a-generic-mime-type-for-all-image-files
+            application/json:
               schema: { type: object }
         '500':
           $ref: '#/components/responses/ServerError'

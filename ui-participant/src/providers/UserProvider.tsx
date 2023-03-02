@@ -45,12 +45,9 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const [isLoading, setIsLoading] = useState(true)
   const auth = useAuth()
 
-  /** Sign in to the UI based on the resolt of signing in to the API. */
+  /** Sign in to the UI based on the result of signing in to the API. */
   const loginUser = (loginResult: LoginResult) => {
     setLoginState(loginResult)
-    if (typeof loginResult.user.token !== 'undefined') {
-      Api.setBearerToken(loginResult.user.token)
-    }
     localStorage.setItem(STORAGE_TOKEN_PROP, loginResult.user.token)
   }
 
@@ -88,7 +85,6 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     // Add listener to auth context to process return from B2C sign-in
     // TODO: consider only doing this for redirect-from-oauth
     auth.events.addUserLoaded(user => {
-      console.log(user)
       if (user?.id_token && !user.profile.newUser) {
         Api.tokenLogin(user.id_token).then(loginResult => {
           loginUser(loginResult)

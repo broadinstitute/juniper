@@ -62,7 +62,6 @@ export default function UserProvider({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     auth.events.addUserLoaded(user => {
-      console.log(user)
       const adminUser = {
         username: user?.profile?.email as string,
         token: user.id_token as string

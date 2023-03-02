@@ -67,12 +67,9 @@ export default function Registration({ registrationContext, returnTo }: {
   const auth = useAuth()
   const { loginUser } = useUser()
 
-  console.log(registrationContext, returnTo)
-
   useEffect(() => {
     const signIn = async () => {
       const user = await auth.signinPopup()
-      console.log('auth.signinPopup:', user)
       Api.setBearerToken(user.id_token as string)
       const loginResult = await Api.register({
         preRegResponseId: preRegResponseId as string,

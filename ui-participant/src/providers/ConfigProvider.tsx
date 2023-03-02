@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { PropsWithChildren, useContext, useEffect, useState } from 'react'
 import Api, { Config } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 
@@ -16,7 +16,7 @@ export const ConfigConsumer = ConfigContext.Consumer
 /**
  * Loads runtime config from API. Renders a loading spinner instead of children until config has been loaded.
  */
-export default function ConfigProvider({ children }: { children: React.ReactNode }) {
+export default function ConfigProvider({ children }: PropsWithChildren) {
   const [config, setConfig] = useState<Config>(uninitializedConfig)
   const [isLoaded, setIsLoaded] = useState(false)
   const [error, setError] = useState<string>()

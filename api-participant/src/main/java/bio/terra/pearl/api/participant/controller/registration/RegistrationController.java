@@ -39,7 +39,8 @@ public class RegistrationController implements RegistrationApi {
   public ResponseEntity<Object> register(
       String portalShortcode, String envName, UUID preRegResponseId, RegistrationInfo body) {
     var environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    registrationService.register(portalShortcode, environmentName, body.getEmail(), preRegResponseId);
+    registrationService.register(
+        portalShortcode, environmentName, body.getEmail(), preRegResponseId);
     var token = requestUtilService.tokenFromRequest(request);
     var userWithEnrollees = currentUserService.tokenLogin(token, portalShortcode, environmentName);
     return ResponseEntity.of(userWithEnrollees.map(Function.identity()));

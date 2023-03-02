@@ -6,7 +6,6 @@ import Login from 'login/Login'
 /* Inspired by https://www.robinwieruch.de/react-router-private-routes/ */
 export const ProtectedRoute = ({ children }: { children?: ReactNode }) => {
   const { user } = useUser()
-  console.log('user:', user)
 
   if (user.isAnonymous) {
     return <Login/>
