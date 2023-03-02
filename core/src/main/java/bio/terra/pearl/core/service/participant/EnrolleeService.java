@@ -20,6 +20,7 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
+import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +42,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private NotificationService notificationService;
     private PortalStudyService portalStudyService;
     private PortalService portalService;
+    private DataChangeRecordService dataChangeRecordService;
 
 
     private SecureRandom secureRandom;
@@ -52,7 +54,9 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            ConsentResponseService consentResponseService,
                            PreEnrollmentResponseDao preEnrollmentResponseDao,
                            NotificationService notificationService, PortalStudyService portalStudyService,
-                           @Lazy PortalService portalService, SecureRandom secureRandom) {
+                           @Lazy PortalService portalService,
+                           @Lazy DataChangeRecordService dataChangeRecordService,
+                           SecureRandom secureRandom) {
         super(enrolleeDao);
         this.surveyResponseService = surveyResponseService;
         this.participantTaskService = participantTaskService;
@@ -62,6 +66,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.notificationService = notificationService;
         this.portalStudyService = portalStudyService;
         this.portalService = portalService;
+        this.dataChangeRecordService = dataChangeRecordService;
         this.secureRandom = secureRandom;
     }
 
@@ -135,6 +140,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
             consentResponseService.delete(consentResponse.getId(), cascades);
         }
         notificationService.deleteByEnrolleeId(enrolleeId);
+        dataChangeRecordService.deleteByEnrolleeId(enrolleeId);
         dao.delete(enrolleeId);
         if (enrollee.getPreEnrollmentResponseId() != null) {
             preEnrollmentResponseDao.delete(enrollee.getPreEnrollmentResponseId());

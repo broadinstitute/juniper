@@ -47,7 +47,6 @@
       ]
     }, {
       "surveyStableId": "oh_oh_basicInfo",
-      "processSnapshot": true,
       "surveyVersion": 1,
       "responseSnapshotDtos": [{
         "fullDataJson": {

@@ -27,4 +27,8 @@ public class DataChangeRecordService extends CrudService<DataChangeRecord, DataC
     public void deleteByPortalParticipantUserId(UUID ppUserId) {
         dao.deleteByPortalParticipantUserId(ppUserId);
     }
+    @Transactional
+    public void deleteByEnrolleeId(UUID enrolleeId) {
+        dao.deleteByEnrolleeId(enrolleeId);
+    }
 }

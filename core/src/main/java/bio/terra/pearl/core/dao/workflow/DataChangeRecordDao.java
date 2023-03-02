@@ -26,4 +26,8 @@ public class DataChangeRecordDao extends BaseJdbiDao<DataChangeRecord> {
     public void deleteByPortalParticipantUserId(UUID ppUserId) {
         deleteByProperty("portal_participant_user_id", ppUserId);
     }
+
+    public void deleteByEnrolleeId(UUID enrolleeId) {
+        deleteByProperty("enrollee_id", enrolleeId);
+    }
 }
