@@ -27,7 +27,7 @@ export default function HubPage() {
   const hubUpdate: HubUpdate | undefined = location.state
   const hubMessage = hubUpdate?.message
   const unjoinedStudies = portal.portalStudies.filter(pStudy => !userHasJoinedPortalStudy(pStudy, enrollees))
-
+  const hasUnjoinedStudies = unjoinedStudies.length > 0
   return <div>
     <div className="container">
       {!!hubMessage && <div className="row mb-2">
@@ -40,7 +40,7 @@ export default function HubPage() {
           {enrollees.map(enrollee => <StudyTaskBox enrollee={enrollee} portal={portal} key={enrollee.id}/>)}
         </div>
       </div>
-      <div className="row justify-content-center">
+      {hasUnjoinedStudies && <div className="row justify-content-center">
         <div className="col-md-6">
           <h3 className="text-center">Studies you can join</h3>
           <ul className="list-group">
@@ -50,7 +50,7 @@ export default function HubPage() {
             </li>)}
           </ul>
         </div>
-      </div>
+      </div>}
     </div>
   </div>
 }
@@ -68,12 +68,11 @@ function StudyTaskBox({ enrollee, portal }: { enrollee: Enrollee, portal: Portal
   const sortedConsentTasks = enrollee.participantTasks.filter(task => task.taskType === 'CONSENT' &&
     isTaskActive(task)).sort(taskComparator)
   const hasActiveConsentTasks = sortedConsentTasks.length > 0
-  const sortedSurveyTasks = enrollee.participantTasks.filter(task => task.taskType === 'SURVEY' &&
-    isTaskActive(task)).sort(taskComparator)
+  const sortedSurveyTasks = enrollee.participantTasks.filter(task => task.taskType === 'SURVEY').sort(taskComparator)
   const hasActiveSurveyTasks = sortedSurveyTasks.length > 0
   const nextTask = getNextTask(enrollee, [...sortedConsentTasks, ...sortedSurveyTasks])
-  const completedForms = enrollee.participantTasks.filter(task => task.taskType === 'CONSENT' &&
-    task.status === 'COMPLETE')
+  const completedForms = enrollee.participantTasks.filter(task => task.status === 'COMPLETE' &&
+    task.taskType === 'CONSENT')
   const hasCompletedForms = completedForms.length > 0
 
   return <div className="p-3">
@@ -121,12 +120,17 @@ function getNextTask(enrollee: Enrollee, sortedTasks: ParticipantTask[]) {
 }
 
 export const TASK_TYPE_ORDER = ['CONSENT', 'SURVEY']
+export const TASK_STATUS_ORDER = ['IN_PROGRESS', 'NEW', 'COMPLETE']
 
-/** Sorts tasks based on their types, and then based on their internal ordering */
+/** Sorts tasks based on their types, then based on status, and then based on their internal ordering */
 function taskComparator(taskA: ParticipantTask, taskB: ParticipantTask) {
   const typeOrder = TASK_TYPE_ORDER.indexOf(taskA.taskType) - TASK_TYPE_ORDER.indexOf(taskB.taskType)
   if (typeOrder != 0) {
     return typeOrder
+  }
+  const statusOrder = TASK_STATUS_ORDER.indexOf(taskA.status) - TASK_STATUS_ORDER.indexOf(taskB.status)
+  if (statusOrder != 0) {
+    return statusOrder
   }
   return taskA.taskOrder - taskB.taskOrder
 }

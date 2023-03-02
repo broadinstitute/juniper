@@ -31,7 +31,7 @@ export type PearlQuestion = Question & {
 /** Gets a flattened list of the survey elements */
 export function getSurveyElementList(surveyModel: PearlSurvey) {
   return surveyModel.pages.map(page => {
-    return getContainerElementList(page, true)
+    return getContainerElementList(page as unknown as ElementContainer, true)
   }).flat()
 }
 
