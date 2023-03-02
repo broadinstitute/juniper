@@ -21,7 +21,7 @@ export default function DataChangeRecords({ enrollee, studyEnvContext }:
       })
   }, [enrollee.shortcode])
   return <div>
-    <h5>Notifications</h5>
+    <h5>Update history</h5>
     <LoadingSpinner isLoading={isLoading}>
       <table className="table table-striped">
         <thead >
