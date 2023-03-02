@@ -26,18 +26,26 @@ export default function LandingNavbar() {
         <img className="Navbar-logo" style={{ maxHeight: '30px' }}
           src={getImageUrl(localContent.navLogoCleanFileName, localContent.navLogoVersion)} alt="logo"/>
       </NavLink>
+      <button
+        aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"
+        className="navbar-toggler"
+        data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+        type="button"
+      >
+        <span className="navbar-toggler-icon" />
+      </button>
       <div className="collapse navbar-collapse" id="navbarNavDropdown">
         <ul className="navbar-nav">
-          {navLinks.map((navLink: NavbarItem, index: number) => <li key={index}>
+          {navLinks.map((navLink: NavbarItem, index: number) => <li key={index} className="nav-item">
             <CustomNavLink navLink={navLink}/>
           </li>)}
         </ul>
         <ul className="navbar-nav ms-auto">
           {user.isAnonymous && <li className="nav-item">
-            <NavLink className="nav-link" to="/hub">Login</NavLink>
+            <NavLink className="nav-link ms-3" to="/hub">Login</NavLink>
           </li>}
           {!user.isAnonymous && <li className="nav-item dropdown">
-            <a className="nav-link dropdown-toggle" href="#"
+            <a className="nav-link ms-3 dropdown-toggle" href="#"
               role="button" data-bs-toggle="dropdown" aria-expanded="false">
               {user.username}
             </a>
