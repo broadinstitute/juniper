@@ -77,23 +77,26 @@ function StudyEnrollOutletMatched({ portal, studyEnv, studyShortcode }:
     const isAlreadyEnrolled = !!enrollees.find(rollee => rollee.studyEnvironmentId === studyEnv.id)
     if (isAlreadyEnrolled) {
       alert('you are already enrolled in this study')
-      navigate('/hub')
+      navigate('/hub', { replace: true })
       return
     }
     if (preEnrollSatisfied) {
       if (user.isAnonymous) {
-        navigate('register')
+        navigate('register', { replace: true })
       } else {
         // when preEnroll is satisfied, and we have a user, we're clear to create an Enrollee
         Api.createEnrollee({ studyShortcode, preEnrollResponseId }).then(response => {
           updateEnrollee(response.enrollee)
-          navigate('/hub', { state: { message: { content: 'Welcome to the study!', messageType: 'success' } } })
+          navigate('/hub', {
+            replace: true,
+            state: { message: { content: 'Welcome to the study!', messageType: 'success' } }
+          })
         }).catch(() => {
           alert('an error occurred, please try again, or contact support')
         })
       }
     } else {
-      navigate('preEnroll')
+      navigate('preEnroll', { replace: true })
     }
   }, [preEnrollSatisfied, user.username])
 
