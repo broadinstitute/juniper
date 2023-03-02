@@ -1,5 +1,7 @@
 package bio.terra.pearl.populate.service;
 
+import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
+import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.portal.PortalService;
@@ -19,13 +21,15 @@ public class SurveyPopulator extends Populator<Survey> {
     private SurveyService surveyService;
     private PortalService portalService;
     private SurveyPopulateDao surveyPopulateDao;
+    private AnswerMappingDao answerMappingDao;
 
     public SurveyPopulator(SurveyService surveyService,
                            PortalService portalService,
-                           SurveyPopulateDao surveyPopulateDao) {
+                           SurveyPopulateDao surveyPopulateDao, AnswerMappingDao answerMappingDao) {
         this.portalService = portalService;
         this.surveyPopulateDao = surveyPopulateDao;
         this.surveyService = surveyService;
+        this.answerMappingDao = answerMappingDao;
     }
 
     @Override
@@ -43,6 +47,12 @@ public class SurveyPopulator extends Populator<Survey> {
             existingSurvey.setContent(surveyPopDto.getContent());
             existingSurvey.setName(surveyPopDto.getName());
             surveyPopulateDao.update(existingSurvey);
+            answerMappingDao.deleteBySurveyId(existingSurvey.getId());
+            existingSurvey.getAnswerMappings().clear();
+            for (AnswerMapping answerMapping : surveyPopDto.getAnswerMappings()) {
+                answerMapping.setSurveyId(existingSurvey.getId());
+                existingSurvey.getAnswerMappings().add(answerMappingDao.create(answerMapping));
+            }
             return existingSurvey;
         }
         return surveyService.create(surveyPopDto);

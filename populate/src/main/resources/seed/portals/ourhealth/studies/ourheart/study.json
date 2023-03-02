@@ -5,7 +5,8 @@
     "surveys/preEnroll.json",
     "surveys/medicalHistory.json",
     "surveys/placeholder1.json",
-    "surveys/placeholder2.json"
+    "surveys/placeholder2.json",
+    "surveys/basic.json"
   ],
   "consentFormFiles": [
     "surveys/ourHealthConsent.json"
@@ -38,6 +39,11 @@
         {
           "surveyStableId": "oh_oh_placeholder2",
           "surveyVersion": 1
+        },
+        {
+          "surveyStableId": "oh_oh_basicInfo",
+          "surveyVersion": 1,
+          "required": true
         }
       ],
       "configuredConsentDtos": [

@@ -7,7 +7,6 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
-import bio.terra.pearl.core.service.consent.ConsentTaskDispatcher;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.RuleEvaluator;
@@ -29,7 +28,7 @@ import org.springframework.stereotype.Service;
 /** listens for events and updates enrollee survey tasks accordingly */
 @Service
 public class SurveyTaskDispatcher {
-    private static final Logger logger = LoggerFactory.getLogger(ConsentTaskDispatcher.class);
+    private static final Logger logger = LoggerFactory.getLogger(SurveyTaskDispatcher.class);
     private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     private ParticipantTaskService participantTaskService;
 

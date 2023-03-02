@@ -12,7 +12,7 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import bio.terra.pearl.core.service.survey.SnapshotParsingService;
+import bio.terra.pearl.core.service.survey.SnapshotProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import java.util.Map;
 import java.util.Optional;
@@ -30,7 +30,7 @@ public class RegistrationService {
     private SurveyService surveyService;
     private PortalEnvironmentService portalEnvService;
     private PreregistrationResponseDao preregistrationResponseDao;
-    private SnapshotParsingService snapshotParsingService;
+    private SnapshotProcessingService snapshotProcessingService;
     private ParticipantUserService participantUserService;
     private PortalParticipantUserService portalParticipantUserService;
     private EventService eventService;
@@ -38,13 +38,13 @@ public class RegistrationService {
     public RegistrationService(SurveyService surveyService,
                                PortalEnvironmentService portalEnvService,
                                PreregistrationResponseDao preregistrationResponseDao,
-                               SnapshotParsingService snapshotParsingService,
+                               SnapshotProcessingService snapshotProcessingService,
                                ParticipantUserService participantUserService,
                                PortalParticipantUserService portalParticipantUserService, EventService eventService) {
         this.surveyService = surveyService;
         this.portalEnvService = portalEnvService;
         this.preregistrationResponseDao = preregistrationResponseDao;
-        this.snapshotParsingService = snapshotParsingService;
+        this.snapshotProcessingService = snapshotProcessingService;
         this.participantUserService = participantUserService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.eventService = eventService;
@@ -142,7 +142,7 @@ public class RegistrationService {
     }
 
     protected RequiredRegistrationInfo extractRegistrationValues(ParsedSnapshot data) {
-        return snapshotParsingService.extractValues(data,
+        return snapshotProcessingService.extractValues(data,
                 REGISTRATION_FIELD_MAP, RegistrationService.RequiredRegistrationInfo.class);
     }
 

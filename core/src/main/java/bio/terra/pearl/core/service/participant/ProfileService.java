@@ -6,11 +6,11 @@ import bio.terra.pearl.core.model.participant.MailingAddress;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProfileService extends CrudService<Profile, ProfileDao> {
@@ -31,6 +31,15 @@ public class ProfileService extends CrudService<Profile, ProfileDao> {
         Profile newProfile = dao.create(profile);
         newProfile.setMailingAddress(newAddress);
         return newProfile;
+    }
+
+    public Optional<Profile> loadWithMailingAddress(UUID profileId) {
+        return dao.loadWithMailingAddress(profileId);
+    }
+
+    @Transactional
+    public Profile updateWithMailingAddress(Profile profile) {
+        return dao.updateWithMailingAddress(profile);
     }
 
     @Transactional

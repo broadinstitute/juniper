@@ -1,0 +1,682 @@
+{
+  "stableId": "oh_oh_basicInfo",
+  "version": 1,
+  "name": "The Basics",
+  "answerMappings": [{
+    "questionStableId": "oh_oh_basic_firstName",
+    "targetType": "PROFILE",
+    "targetField": "givenName",
+    "mapType": "TEXT_NODE_TO_STRING"
+  },{
+    "questionStableId": "oh_oh_basic_lastName",
+    "targetType": "PROFILE",
+    "targetField": "familyName",
+    "mapType": "TEXT_NODE_TO_STRING"
+  }],
+  "jsonContent": {
+    "title": "The Basics",
+    "showQuestionNumbers": "off",
+    "pages": [
+      {
+        "elements": [
+          {
+            "name": "oh_oh_basic_firstName",
+            "type": "text",
+            "title": "First name",
+            "isRequired": true
+          }, {
+            "name": "oh_oh_basic_lastName",
+            "type": "text",
+            "title": "Last name",
+            "isRequired": true,
+            "startWithNewLine": false
+          }, {
+            "name": "oh_oh_basic_middleInitial",
+            "type": "text",
+            "title": "Middle initial",
+            "maxLength": 1,
+            "size": 1,
+            "startWithNewLine": false
+          }, {
+            "name": "oh_oh_basic_mghPatient",
+            "type": "radiogroup",
+            "title": "Are you a patient, current or former, of Mass General Brigham (Massachusetts General Hospital, Brigham & Women’s Hospital, and/or other Mass General Brigham institutions)?",
+            "isRequired": true,
+            "choices": [
+              {
+                "text": "Yes",
+                "value": "yes"
+              }, {
+                "text": "No",
+                "value": "no"
+              }
+            ]
+          }
+        ]
+      },{
+        "elements": [
+          {
+            "name": "oh_oh_basic_streetAddress",
+            "type": "text",
+            "title": "Address",
+            "isRequired": true
+          }, {
+            "name": "oh_oh_basic_city",
+            "type": "text",
+            "title": "City",
+            "isRequired": true
+          }, {
+            "name": "oh_oh_basic_state",
+            "type": "text",
+            "title": "State",
+            "maxLength": 2,
+            "size": "2",
+            "isRequired": true
+          }, {
+            "name": "oh_oh_basic_zip",
+            "type": "text",
+            "title": "Zip code",
+            "maxLength": 5,
+            "max": 99999,
+            "size": "5",
+            "inputType": "number",
+            "maxWidth": "2em",
+            "inputMask": "phone",
+            "inputFormat": "99999",
+            "isRequired": true
+          }, {
+            "name": "oh_oh_basic_email",
+            "type": "text",
+            "title": "Email address",
+            "inputType": "email",
+            "inputMask": "email",
+            "isRequired": true
+          }, {
+            "name": "oh_oh_basic_phoneNumber",
+            "type": "text",
+            "title": "Preferred phone number",
+            "inputMask": "phone",
+            "inputFormat": "999-999-9999",
+            "isRequired": true
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "name": "oh_oh_basic_dateOfBirth",
+            "type": "text",
+            "title": "Date of Birth",
+            "inputMask": "datetime",
+            "inputFormat": "mm/dd/yyyy",
+            "isRequired": true
+          }, {
+            "name": "oh_oh_basic_height",
+            "type": "multipletext",
+            "title": "Height ",
+            "itemSize": 2,
+            "items": [{
+              "name": "oh_oh_basic_heightFeet",
+              "title": "ft.",
+              "inputType": "number",
+              "max": 8
+            },{
+              "name": "oh_oh_basic_heightInches",
+              "title": "in.",
+              "inputType": "number",
+              "max": 11
+            }]
+          }
+        ]
+      }, {
+        "elements": [
+          {
+            "name": "oh_oh_basic_birthSex",
+            "type": "radiogroup",
+            "title": "What was your biological sex assigned at birth?",
+            "showOtherItem": true,
+            "otherText": "None of these describe me",
+            "otherPlaceholder": "Please describe",
+            "choices": [
+              {"text": "Female", "value": "female"},
+              {"text": "Male", "value": "male"},
+              {"text": "Intersex", "value": "intersex"}
+            ]
+          }, {
+            "name": "oh_oh_basic_gender",
+            "type": "radiogroup",
+            "title": "Which term best describes your gender identity? (Check all that apply) ",
+            "showOtherItem": true,
+            "otherText": "None of these describe me, and I’d like to write my own description (fill in the blank)",
+            "otherPlaceholder": "Please describe",
+            "choices": [
+              {"text": "Man", "value": "man"},
+              {"text": "Woman", "value": "woman"},
+              {"text": "Non-binary", "value": "nonBinary"},
+              {"text": "Transgender", "value": "transgender"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          }, {
+            "name": "oh_oh_basic_sexualOrientation",
+            "type": "checkbox",
+            "title": "Which of the following best represents how you think of yourself? (Check all that apply)",
+            "choices": [
+              {"text": "Bisexual", "value": "bisexual"},
+              {"text": "Gay", "value": "gay"},
+              {"text": "Lesbian", "value": "lesbian"},
+              {"text": "Straight/Heterosexual", "value": "straightHeterosexual"},
+              {"text": "None of these describe me, and I’d like to see additional options", "value": "noneOfThese"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          }, {
+            "name": "oh_oh_basic_sexualOrientationFollowUp",
+            "type": "radiogroup",
+            "title": "Are any of these a closer description of how you think of yourself? ",
+            "visibleIf": "{oh_oh_basic_sexualOrientation} contains 'noneOfThese'",
+            "showOtherItem": true,
+            "otherText": "No, I mean something else",
+            "otherPlaceholder": "Please specify",
+            "choices": [
+              {"text": "Queer", "value": "queer"},
+              {"text": "Polysexual, omnisexual, sapiosexual, or pansexual", "value": "polysexualOmnisexualSapiosexualOrPansexual"},
+              {"text": "Asexual", "value": "asexual"},
+              {"text": "Have not figured out or are in the process of figuring out your sexuality", "value": "haveNotFiguredOut"},
+              {"text": "Mostly straight, but sometimes attracted to people of your own sex", "value": "mostlyStraight"},
+              {"text": "Do not think of yourself as having sexuality", "value": "doNotThinkOfSexuality"},
+              {"text": "Do not use labels to identify yourself", "value": "doNotUseLabels"},
+              {"text": "Don’t know the answer", "value": "dontKnow"}
+            ]
+          }
+        ]
+      }, {
+        "elements": [
+          {
+            "name": "oh_oh_basic_educationLevel",
+            "type": "radiogroup",
+            "title": "What is the highest grade or year of school you completed? ",
+            "choices": [
+              {"text": "Never attended school or only attended kindergarten", "value": "neverAttendedSchool"},
+              {"text": "Grades 1 through 4 (Primary)", "value": "primary"},
+              {"text": "Grades 5 through 8 (Middle school)", "value": "middleSchool"},
+              {"text": "Grades 9 through 11 (Some high school)", "value": "someHighSchool"},
+              {"text": "Grade 12 or GED (High school graduate)", "value": "highSchoolGraduate"},
+              {"text": "1 to 3 years after high school (Some college, Associate’s degree, or technical school)", "value": "someCollege"},
+              {"text": "College 4 years or more (College graduate)", "value": "collegeGraduate"},
+              {"text": "Advanced degree (Master’s, Doctorate, etc.)", "value": "advancedDegree"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          }, {
+            "name": "ethnicityNote",
+            "type": "html",
+            "html": "Note, you are eligible for this study because you identify as South Asian, defined as ancestry from Bangladesh, Bhutan, India, Maldives, Nepal, Pakistan, and/or Sri Lanka."
+          }, {
+            "name": "oh_oh_basic_otherEthnicity",
+            "type": "radiogroup",
+            "title": "Outside of South Asian ethnicity, do you identify with other racial/ethnic categories?",
+            "choices": [
+              {"text": "No, I only identify with South Asian ethnicity.", "value": "no"},
+              {"text": "Yes", "value": "yes"}
+            ]
+          }, {
+            "name": "oh_oh_basic_otherEthnicityDetail",
+            "type": "checkbox",
+            "title": "Check all that apply.",
+            "visibleIf": "{oh_oh_basic_otherEthnicity} = 'yes'",
+            "hideNumber": true,
+            "choices": [
+              {"text": "White", "value": "white"},
+              {"text": "Black", "value": "black"},
+              {"text": "East of Southeast Asian", "value": "eastOfSoutheastAsian"},
+              {"text": "Native American (American Indian or Alaska Native)", "value": "nativeAmerican"},
+              {"text": "Native Hawaiian or Other Pacific Islander", "value": "pacificIslander"},
+              {"text": "None of the above", "value": "noneOfTheAbove"}
+            ]
+          },{
+            "name": "oh_oh_basic_nationalIdentity",
+            "type": "checkbox",
+            "title": "Which of the following South Asian nations do you or your family identify with? Check all that apply.",
+            "showOtherItem": true,
+            "otherText": "Other (fill in the blank)",
+            "otherPlaceholder": "Please specify",
+            "choices": [
+              {"text": "Bangladesh", "value": "bangladesh"},
+              {"text": "Bhutan", "value": "bhutan"},
+              {"text": "India", "value": "india"},
+              {"text": "Maldives", "value": "maldives"},
+              {"text": "Nepal", "value": "nepal"},
+              {"text": "Pakistan", "value": "pakistan"},
+              {"text": "Sri Lanka", "value": "sriLanka"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "oh_oh_basic_indiaRegion",
+            "type": "checkbox",
+            "title": "Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
+            "visibleIf": "{oh_oh_basic_nationalIdentity} contains 'india'",
+            "choices": [
+              {"text": "Andhra Pradesh", "value": "andhraPradesh"},
+              {"text": "Arunachal Pradesh", "value": "arunachalPradesh"},
+              {"text": "Assam", "value": "assam"},
+              {"text": "Bihar", "value": "bihar"},
+              {"text": "Chhattisgarh", "value": "chhattisgarh"},
+              {"text": "Goa", "value": "goa"},
+              {"text": "Gujarat", "value": "gujarat"},
+              {"text": "Haryana", "value": "haryana"},
+              {"text": "Himachal Pradesh", "value": "himachalPradesh"},
+              {"text": "Jharkhand", "value": "jharkhand"},
+              {"text": "Karnataka", "value": "karnataka"},
+              {"text": "Kerala", "value": "kerala"},
+              {"text": "Madhya Pradesh", "value": "madhyaPradesh"},
+              {"text": "Maharashtra", "value": "maharashtra"},
+              {"text": "Manipur", "value": "manipur"},
+              {"text": "Meghalaya", "value": "meghalaya"},
+              {"text": "Mizoram", "value": "mizoram"},
+              {"text": "Nagaland", "value": "nagaland"},
+              {"text": "Odisha", "value": "odisha"},
+              {"text": "Punjab", "value": "punjab"},
+              {"text": "Rajasthan", "value": "rajasthan"},
+              {"text": "Sikkim", "value": "sikkim"},
+              {"text": "Tamil Nadu", "value": "tamilNadu"},
+              {"text": "Telangana", "value": "telangana"},
+              {"text": "Tripura", "value": "tripura"},
+              {"text": "Uttar Pradesh", "value": "uttarPradesh"},
+              {"text": "Uttarakhand", "value": "uttarakhand"},
+              {"text": "West Bengal", "value": "westBengal"},
+              {"text": "Andaman and Nicobar Islands", "value": "andamanAndNicobarIslands"},
+              {"text": "Chandigarh", "value": "chandigarh"},
+              {"text": "Dadra Nagar Haveli and Daman Diu", "value": "dadraNagarHaveliAndDamanDiu"},
+              {"text": "Delhi", "value": "delhi"},
+              {"text": "Jammu & Kashmir", "value": "jammuKashmir"},
+              {"text": "Ladakh", "value": "ladakh"},
+              {"text": "Lakshadweep", "value": "lakshadweep"},
+              {"text": "Puducherry", "value": "puducherry"}
+            ]
+          },{
+            "name": "oh_oh_basic_pakistanRegion",
+            "type": "checkbox",
+            "title": "Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
+            "visibleIf": "{oh_oh_basic_nationalIdentity} contains 'pakistan'",
+            "choices": [
+              {"text": "Punjab", "value": "punjab"},
+              {"text": "Sindh", "value": "sindh"},
+              {"text": "Khyber Pakhtunkhwa", "value": "khyberPakhtunkhwa"},
+              {"text": "Balochistan", "value": "balochistan"},
+              {"text": "The Islamabad Capital Territory", "value": "theIslamabadCapitalTerritory"},
+              {"text": "Azad Jammu and Kashmir", "value": "azadJammuAndKashmir"},
+              {"text": "Gilgit-Baltistan", "value": "gilgitBaltistan"}
+            ]
+          },{
+            "name": "oh_oh_basic_bangladeshRegion",
+            "type": "checkbox",
+            "title": "Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
+            "visibleIf": "{oh_oh_basic_nationalIdentity} contains 'bangladesh'",
+            "choices": [
+              {"text": "Barisal", "value": "barisal"},
+              {"text": "Chittagong", "value": "chittagong"},
+              {"text": "Dhaka", "value": "dhaka"},
+              {"text": "Khulna", "value": "khulna"},
+              {"text": "Mymensingh", "value": "mymensingh"},
+              {"text": "Rajshahi", "value": "rajshahi"},
+              {"text": "Sylhet", "value": "sylhet"}
+            ]
+          },{
+            "name": "oh_oh_basic_asianLanguage",
+            "type": "radiogroup",
+            "title": "Which of the national language(s) in South Asia would you consider to be your “mother tongue”, or most identified with your family? Check all that apply. ",
+            "showOtherItem": true,
+            "otherText": "Other",
+            "otherPlaceholder": "Please specify",
+            "choices": [
+              {"text": "Assamese", "value": "assamese"},
+              {"text": "Balochi", "value": "balochi"},
+              {"text": "Bengali", "value": "bengali"},
+              {"text": "Bodo", "value": "bodo"},
+              {"text": "Dhivehi", "value": "dhivehi"},
+              {"text": "Dogri", "value": "dogri"},
+              {"text": "Dzongkha", "value": "dzongkha"},
+              {"text": "English", "value": "english"},
+              {"text": "Gujarati", "value": "gujarati"},
+              {"text": "Hindi", "value": "hindi"},
+              {"text": "Kannada", "value": "kannada"},
+              {"text": "Kashmiri", "value": "kashmiri"},
+              {"text": "Konkani", "value": "konkani"},
+              {"text": "Maithili", "value": "maithili"},
+              {"text": "Malayalam", "value": "malayalam"},
+              {"text": "Manipur (Meitei)", "value": "manipurMeitei"},
+              {"text": "Marathi", "value": "marathi"},
+              {"text": "Nepali", "value": "nepali"},
+              {"text": "Odia (Oriya)", "value": "odiaOriya"},
+              {"text": "Pashto", "value": "pashto"},
+              {"text": "Punjabi", "value": "punjabi"},
+              {"text": "Sanskrit", "value": "sanskrit"},
+              {"text": "Santali", "value": "santali"},
+              {"text": "Sindhi", "value": "sindhi"},
+              {"text": "Sinhala", "value": "sinhala"},
+              {"text": "Tamil", "value": "tamil"},
+              {"text": "Telugu", "value": "telugu"},
+              {"text": "Urdu", "value": "urdu"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          }
+
+        ]
+      }, {
+        "elements": [
+          {
+            "type": "html",
+            "name": "livingInUsprompt",
+            "html": "<b>The next questions are about living in the United States, citizenship, parents, and relationship status.</b> Please answer each question as honestly as possible. There are no right or wrong answers to any of the questions. It is important that you answer as many questions as you can. We are looking for your own answers, and not what you think your doctors, family, or friends want you to say. \n \nIf you aren’t sure how to answer a question, choose the best answer from the options given. If you do not want to answer, please select “Prefer not to answer” and move to the next question."
+          },{
+            "name": "oh_oh_basic_settledOtherRegion",
+            "type": "radiogroup",
+            "title": "Prior to coming to the USA, had you or your family settled (1 or more generations) in a different region? ",
+            "isRequired": true,
+            "choices": [
+              {"text": "No", "value": "no"},
+              {"text": "Yes", "value": "yes"}
+            ]
+          },{
+            "name": "oh_oh_basic_settledOtherRegionDetail",
+            "type": "checkbox",
+            "title": "Check all that apply.",
+            "visibleIf": "{oh_oh_basic_settledOtherRegion} = 'yes'",
+            "showOtherItem": true,
+            "otherText": "Other",
+            "otherPlaceholder": "Please specify",
+            "choices": [
+              {"text": "Australia", "value": "australia"},
+              {"text": "Canada", "value": "canada"},
+              {"text": "Caribbean", "value": "caribbean"},
+              {"text": "Fiji", "value": "fiji"},
+              {"text": "South Africa/East Africa", "value": "southAfricaEastAfrica"},
+              {"text": "UK/Europe", "value": "ukEurope"}
+            ]
+          },{
+            "name": "oh_oh_basic_continuousGenerations",
+            "type": "radiogroup",
+            "title": "For how many continuous generations has your family resided outside of the South Asian subcontinent? ",
+            "choices": [
+              {"text": "Zero (I am the first generation to leave South Asia)", "value": "zero"},
+              {"text": "1 (My parents were the first generation to leave South Asia)", "value": "parents"},
+              {"text": "2 (My grandparents were the first generation to leave South Asia)", "value": "grandparents"},
+              {"text": "3+ (My great-grandparents or older generations were the first to leave South Asia)", "value": "greatGrandparentsOrOlder"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "oh_oh_basic_citizenship",
+            "type": "radiogroup",
+            "title": "What is your citizenship status? (This type of question helps us to ensure we are surveying a diverse group of South Asians in the US)  ",
+            "choices": [
+              {"text": "United States-born citizen", "value": "unitedStatesBornCitizen"},
+              {"text": "Naturalized United States-citizen", "value": "naturalizedUnitedStatesCitizen"},
+              {"text": "Non-United States citizenship", "value": "nonUnitedStatesCitizenship"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "oh_oh_basic_yearCameToUS",
+            "type": "dropdown",
+            "title": "In what year did you come to live in the United States? ",
+            "choices": [
+              {"text": "1920", "value": "1920"},
+              {"text": "1921", "value": "1921"},
+              {"text": "1922", "value": "1922"},
+              {"text": "1923", "value": "1923"},
+              {"text": "1924", "value": "1924"},
+              {"text": "1925", "value": "1925"},
+              {"text": "1926", "value": "1926"},
+              {"text": "1927", "value": "1927"},
+              {"text": "1928", "value": "1928"},
+              {"text": "1929", "value": "1929"},
+              {"text": "1930", "value": "1930"},
+              {"text": "1931", "value": "1931"},
+              {"text": "1932", "value": "1932"},
+              {"text": "1933", "value": "1933"},
+              {"text": "1934", "value": "1934"},
+              {"text": "1935", "value": "1935"},
+              {"text": "1936", "value": "1936"},
+              {"text": "1937", "value": "1937"},
+              {"text": "1938", "value": "1938"},
+              {"text": "1939", "value": "1939"},
+              {"text": "1940", "value": "1940"},
+              {"text": "1941", "value": "1941"},
+              {"text": "1942", "value": "1942"},
+              {"text": "1943", "value": "1943"},
+              {"text": "1944", "value": "1944"},
+              {"text": "1945", "value": "1945"},
+              {"text": "1946", "value": "1946"},
+              {"text": "1947", "value": "1947"},
+              {"text": "1948", "value": "1948"},
+              {"text": "1949", "value": "1949"},
+              {"text": "1950", "value": "1950"},
+              {"text": "1951", "value": "1951"},
+              {"text": "1952", "value": "1952"},
+              {"text": "1953", "value": "1953"},
+              {"text": "1954", "value": "1954"},
+              {"text": "1955", "value": "1955"},
+              {"text": "1956", "value": "1956"},
+              {"text": "1957", "value": "1957"},
+              {"text": "1958", "value": "1958"},
+              {"text": "1959", "value": "1959"},
+              {"text": "1960", "value": "1960"},
+              {"text": "1961", "value": "1961"},
+              {"text": "1962", "value": "1962"},
+              {"text": "1963", "value": "1963"},
+              {"text": "1964", "value": "1964"},
+              {"text": "1965", "value": "1965"},
+              {"text": "1966", "value": "1966"},
+              {"text": "1967", "value": "1967"},
+              {"text": "1968", "value": "1968"},
+              {"text": "1969", "value": "1969"},
+              {"text": "1970", "value": "1970"},
+              {"text": "1971", "value": "1971"},
+              {"text": "1972", "value": "1972"},
+              {"text": "1973", "value": "1973"},
+              {"text": "1974", "value": "1974"},
+              {"text": "1975", "value": "1975"},
+              {"text": "1976", "value": "1976"},
+              {"text": "1977", "value": "1977"},
+              {"text": "1978", "value": "1978"},
+              {"text": "1979", "value": "1979"},
+              {"text": "1980", "value": "1980"},
+              {"text": "1981", "value": "1981"},
+              {"text": "1982", "value": "1982"},
+              {"text": "1983", "value": "1983"},
+              {"text": "1984", "value": "1984"},
+              {"text": "1985", "value": "1985"},
+              {"text": "1986", "value": "1986"},
+              {"text": "1987", "value": "1987"},
+              {"text": "1988", "value": "1988"},
+              {"text": "1989", "value": "1989"},
+              {"text": "1990", "value": "1990"},
+              {"text": "1991", "value": "1991"},
+              {"text": "1992", "value": "1992"},
+              {"text": "1993", "value": "1993"},
+              {"text": "1994", "value": "1994"},
+              {"text": "1995", "value": "1995"},
+              {"text": "1996", "value": "1996"},
+              {"text": "1997", "value": "1997"},
+              {"text": "1998", "value": "1998"},
+              {"text": "1999", "value": "1999"},
+              {"text": "2000", "value": "2000"},
+              {"text": "2001", "value": "2001"},
+              {"text": "2002", "value": "2002"},
+              {"text": "2003", "value": "2003"},
+              {"text": "2004", "value": "2004"},
+              {"text": "2005", "value": "2005"},
+              {"text": "2006", "value": "2006"},
+              {"text": "2007", "value": "2007"},
+              {"text": "2008", "value": "2008"},
+              {"text": "2009", "value": "2009"},
+              {"text": "2010", "value": "2010"},
+              {"text": "2011", "value": "2011"},
+              {"text": "2012", "value": "2012"},
+              {"text": "2013", "value": "2013"},
+              {"text": "2014", "value": "2014"},
+              {"text": "2015", "value": "2015"},
+              {"text": "2016", "value": "2016"},
+              {"text": "2017", "value": "2017"},
+              {"text": "2018", "value": "2018"},
+              {"text": "2019", "value": "2019"},
+              {"text": "2020", "value": "2020"},
+              {"text": "2021", "value": "2021"},
+              {"text": "2022", "value": "2022"},
+              {"text": "2023", "value": "2023"},
+              {"text": "2024", "value": "2024"}
+            ]
+          },{
+            "name": "oh_oh_basic_residencyOther",
+            "type": "radiogroup",
+            "title": "OR ",
+            "choices": [
+              {"text": "I was born in the US.", "value": "bornInTheUs"},
+              {"text": "I do not primarily reside in the US.", "value": "doNotPrimarilyResideInTheUs"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          }
+        ]
+      }, {
+        "elements": [
+          {
+            "name": "oh_oh_basic_parentsRelated",
+            "type": "radiogroup",
+            "title": "Are your parents related by blood? ",
+            "choices": [
+              {"text": "Yes", "value": "yes"},
+              {"text": "No", "value": "no"},
+              {"text": "Not sure", "value": "unsure"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "oh_oh_basic_parentsRelatedHow",
+            "type": "radiogroup",
+            "title": "How were your parents related? ",
+            "visibleIf": "{oh_oh_basic_parentsRelated} = 'yes'",
+            "choices": [
+              {"text": "First cousins", "value": "firstCousins"},
+              {"text": "Other relationship", "value": "otherRelationship"},
+              {"text": "Not sure", "value": "unsure"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "oh_oh_basic_maritalStatus",
+            "type": "radiogroup",
+            "title": "What is your marital status? ",
+            "choices": [
+              {"text": "Single", "value": "single"},
+              {"text": "Married", "value": "married"},
+              {"text": "Long-term partner/domestic partnership", "value": "longTermPartner"},
+              {"text": "Divorced/Separated", "value": "divorcedSeparated"},
+              {"text": "Widowed", "value": "widowed"},
+              {"text": "Other", "value": "other"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "oh_oh_basic_otherPeopleAtHome",
+            "type": "dropdown",
+            "title": "Not including yourself, how many other people live at home with you?",
+            "choices": [
+              {"text": "1", "value": "1"},
+              {"text": "2", "value": "2"},
+              {"text": "3", "value": "3"},
+              {"text": "4", "value": "4"},
+              {"text": "5", "value": "5"},
+              {"text": "6", "value": "6"},
+              {"text": "7", "value": "7"},
+              {"text": "8", "value": "8"},
+              {"text": "9", "value": "9"},
+              {"text": "10", "value": "10"},
+              {"text": "11", "value": "11"},
+              {"text": "12", "value": "12"},
+              {"text": "13", "value": "13"},
+              {"text": "14", "value": "14"},
+              {"text": "15", "value": "15"}
+            ]
+          },{
+            "name": "oh_oh_basic_religiousBackground",
+            "type": "checkbox",
+            "title": "Which best describe(s) your religious background? Check all that apply.",
+            "showOtherItem": true,
+            "otherText": "Other",
+            "otherPlaceholder": "Please specify",
+            "choices": [
+              {"text": "Buddhist", "value": "buddhist"},
+              {"text": "Christian", "value": "christian"},
+              {"text": "Hindu", "value": "hindu"},
+              {"text": "Jain", "value": "jain"},
+              {"text": "Jewish", "value": "jewish"},
+              {"text": "Muslim", "value": "muslim"},
+              {"text": "Sikh", "value": "sikh"},
+              {"text": "Zoroastrian", "value": "zoroastrian"},
+              {"text": "Atheist/Agnostic", "value": "atheistAgnostic"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "oh_oh_basic_howImportantReligion",
+            "type": "radiogroup",
+            "title": "How important is religion in your life? ",
+            "choices": [
+              {"text": "Very important", "value": "veryImportant"},
+              {"text": "Somewhat important", "value": "somewhatImportant"},
+              {"text": "A little important", "value": "aLittleImportant"},
+              {"text": "Not at all important", "value": "notAtAllImportant"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          }
+        ]
+      },{
+        "elements": [
+          {
+            "name": "oh_oh_basic_employmentStatus",
+            "type": "checkbox",
+            "title": "What is your current employment status? Check all that apply. ",
+            "choices": [
+              {"text": "Paid employment or self employed", "value": "paidEmploymentOrSelfEmployed"},
+              {"text": "Retired", "value": "retired"},
+              {"text": "Unemployed and looking for work", "value": "unemployedAndLooking"},
+              {"text": "Looking after home or family", "value": "lookingAfterHomeOrFamily"},
+              {"text": "Unable to work due to sickness or disability", "value": "unableToWork"},
+              {"text": "Full or Part Time student", "value": "fullOrPartTimeStudent"},
+              {"text": "None of the above", "value": "noneOfTheAbove"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "oh_oh_basic_householdIncome",
+            "type": "radiogroup",
+            "title": "One of the things we're trying to understand is how people's income may affect their use of health services. Household income includes your income plus the income of all family members in your household for the last calendar year. Include all wages and other sources of income.\n\nWhat is your annual household income from all sources? ",
+            "choices": [
+              {"text": "Less than $25,000", "value": "lessThan25k"},
+              {"text": "$25,000-$49,999", "value": "25to49k"},
+              {"text": "$50,000-$99,999", "value": "50to99k"},
+              {"text": "$100,000-$199,999", "value": "100kTo199k"},
+              {"text": "$200,000-$999,999", "value": "200kTo1m"},
+              {"text": "More than 1,000,000", "value": "moreThan1m"}
+            ]
+          },{
+            "name": "oh_oh_basic_ownOrRent",
+            "type": "radiogroup",
+            "title": "Do you own or rent the place where you live? ",
+            "choices": [
+              {"text": "Own", "value": "own"},
+              {"text": "Rent", "value": "rent"},
+              {"text": "Live with family (I am not the homeowner and do not pay rent)", "value": "liveWithFamily"},
+              {"text": "Other arrangement", "value": "other"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "oh_oh_basic_currentLivingLocation",
+            "type": "radiogroup",
+            "title": "Where are you currently living? ",
+            "visibleIf": "{oh_oh_basic_ownOrRent} = 'other'",
+            "choices": [
+              {"text": "With a friend/roommate", "value": "friendRoommate"},
+              {"text": "In a group home, nursing home, or other residential facility", "value": "residentialFacility"},
+              {"text": "Emergency shelter/homeless shelter", "value": "shelter"},
+              {"text": "Anywhere outside (e.g., street, vehicle, abandoned building)", "value": "anywhereOutside"},
+              {"text": "Other", "value": "other"}
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
