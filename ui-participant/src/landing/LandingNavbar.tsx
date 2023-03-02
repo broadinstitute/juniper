@@ -61,7 +61,8 @@ export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
   }
 
   if (navLink.itemType === 'INTERNAL') {
-    return <NavLink to={navLink.htmlPage.path} className="nav-link ms-3">{navLink.label}</NavLink>
+    // we require navbar links to be absolute rather than relative links
+    return <NavLink to={`/${navLink.htmlPage.path}`} className="nav-link ms-3">{navLink.label}</NavLink>
   } else if (navLink.itemType === 'MAILING_LIST') {
     return <a role="button" className="nav-link ms-3" onClick={() => mailingList(navLink)}>{navLink.label}</a>
   } else if (navLink.itemType === 'EXTERNAL') {
