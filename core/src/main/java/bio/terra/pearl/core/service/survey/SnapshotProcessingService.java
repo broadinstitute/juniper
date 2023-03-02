@@ -35,14 +35,17 @@ public class SnapshotProcessingService {
     }
 
     /** takes a response and a list of mappings and saves any appropriate updates to the data model
-     * also logs the changes as persisted DataChangeRecords */
+     * also logs the changes as persisted DataChangeRecords
+     * */
     @Transactional
-    public List<DataChangeRecord> processAllAnswerMappings(ParsedSnapshot snapshot, List<AnswerMapping> mappings,
-                                         PortalParticipantUser ppUser, UUID responsibleUserId) {
+    public List<DataChangeRecord> processAllAnswerMappings(ResponseData responseData, List<AnswerMapping> mappings,
+                                         PortalParticipantUser ppUser, UUID responsibleUserId, UUID enrolleeId,
+                                                           UUID surveyId) {
         if (mappings.isEmpty()) {
             return new ArrayList<>();
         }
-        ObjectWithChangeLog<Profile> profileChanges = processProfileAnswerMappings(snapshot, mappings, ppUser);
+        UUID operationId = UUID.randomUUID();
+        ObjectWithChangeLog<Profile> profileChanges = processProfileAnswerMappings(responseData, mappings, ppUser);
         /**
          * for now, it's assumed these record updates are a small number at a time -- if this gets large, it
          * might be worth creating as a batch
@@ -50,6 +53,9 @@ public class SnapshotProcessingService {
         profileChanges.changeRecords().stream().forEach(changeRecord -> {
             changeRecord.setResponsibleUserId(responsibleUserId);
             changeRecord.setPortalParticipantUserId(ppUser.getId());
+            changeRecord.setEnrolleeId(enrolleeId);
+            changeRecord.setSurveyId(surveyId);
+            changeRecord.setOperationId(operationId);
             dataChangeRecordDao.create(changeRecord);
         });
         return profileChanges.changeRecords();
@@ -60,7 +66,7 @@ public class SnapshotProcessingService {
      * this does not load the participant's profile, and instead returns an object with a null 'obj' and an empty changelist
      */
     @Transactional
-    public ObjectWithChangeLog<Profile> processProfileAnswerMappings(ParsedSnapshot snapshot, List<AnswerMapping> mappings,
+    public ObjectWithChangeLog<Profile> processProfileAnswerMappings(ResponseData responseData, List<AnswerMapping> mappings,
                                              PortalParticipantUser ppUser) {
         List<AnswerMapping> profileMappings = mappings.stream().filter(mapping ->
                 mapping.getTargetType().equals(AnswerMappingTargetType.PROFILE)).toList();
@@ -68,20 +74,20 @@ public class SnapshotProcessingService {
             return new ObjectWithChangeLog<>(null, new ArrayList<>());
         }
         Profile profile = profileService.loadWithMailingAddress(ppUser.getProfileId()).get();
-        ObjectWithChangeLog<Profile> profileChanges = mapValuesToType(snapshot, profileMappings,
+        ObjectWithChangeLog<Profile> profileChanges = mapValuesToType(responseData, profileMappings,
                 profile, AnswerMappingTargetType.PROFILE);
         profileService.updateWithMailingAddress(profile);
         return profileChanges;
     }
 
     /** returns the target object with the values from the snapshot mapped onto it.  Modifies the passed-in object */
-    public <T> ObjectWithChangeLog<T> mapValuesToType(ParsedSnapshot snapshot, List<AnswerMapping> mappings, T targetObj,
+    public <T> ObjectWithChangeLog<T> mapValuesToType(ResponseData responseData, List<AnswerMapping> mappings, T targetObj,
                                  AnswerMappingTargetType targetType) {
         HashMap<String, AnswerMapping> fieldTargetMap = new HashMap<>();
         List<DataChangeRecord> changeRecords = new ArrayList<>();
         mappings.stream().filter(mapping -> mapping.getTargetType().equals(targetType))
                 .forEach(mapping -> fieldTargetMap.put(mapping.getQuestionStableId(), mapping));
-        for (ResponseDataItem item : snapshot.getParsedData().getItems()) {
+        for (ResponseDataItem item : responseData.getItems()) {
             String stableId = item.getStableId();
             if (fieldTargetMap.containsKey(stableId) && item.getValue() != null) {
                 try {

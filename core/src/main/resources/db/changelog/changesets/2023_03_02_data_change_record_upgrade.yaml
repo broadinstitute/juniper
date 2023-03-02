@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: "change_record_update"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: data_change_record
+            columns:
+              - column: { name: operation_id, type: uuid}
+              - column: { name: survey_id, type: uuid, constraints:
+                { foreignKeyName: fk_change_record_survey_id, references: survey(id) }
+              }

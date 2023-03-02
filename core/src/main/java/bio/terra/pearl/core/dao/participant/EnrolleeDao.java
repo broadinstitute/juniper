@@ -71,19 +71,16 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
         return findByProperty("pre_enrollment_response_id", preEnrollResponseId);
     }
 
-    public Optional<Enrollee> findByStudyEnvironmentAdminLoad(UUID studyEnvironmentId, String shortcode) {
-        Optional<Enrollee> enrolleeOpt = findByTwoProperties("study_environment_id", studyEnvironmentId,
-                "shortcode", shortcode);
-        enrolleeOpt.ifPresent(enrollee -> {
-            enrollee.getSurveyResponses().addAll(surveyResponseDao.findByEnrolleeIdWithLastSnapshot(enrollee.getId()));
-            enrollee.getConsentResponses().addAll(consentResponseDao.findByEnrolleeId(enrollee.getId()));
-            enrollee.setProfile(profileDao.find(enrollee.getProfileId()).get());
-            enrollee.getParticipantTasks().addAll(participantTaskDao.findByEnrolleeId(enrollee.getId()));
-            if (enrollee.getPreEnrollmentResponseId() != null) {
-                enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).get());
-            }
-        });
-        return enrolleeOpt;
+    /** loads child relationships including survey responses, profile, etc... */
+    public Enrollee loadForAdminView(Enrollee enrollee) {
+        enrollee.getSurveyResponses().addAll(surveyResponseDao.findByEnrolleeIdWithLastSnapshot(enrollee.getId()));
+        enrollee.getConsentResponses().addAll(consentResponseDao.findByEnrolleeId(enrollee.getId()));
+        enrollee.setProfile(profileDao.find(enrollee.getProfileId()).get());
+        enrollee.getParticipantTasks().addAll(participantTaskDao.findByEnrolleeId(enrollee.getId()));
+        if (enrollee.getPreEnrollmentResponseId() != null) {
+            enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).get());
+        }
+        return enrollee;
     }
 
     public List<EnrolleeSearchResult> searchByStudyEnvironment(UUID studyEnvironmentId) {

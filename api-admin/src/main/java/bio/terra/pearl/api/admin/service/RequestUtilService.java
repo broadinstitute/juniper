@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import com.auth0.jwt.JWT;
@@ -20,6 +21,7 @@ public class RequestUtilService {
   private BearerTokenFactory bearerTokenFactory;
   private PortalService portalService;
   private PortalStudyService portalStudyService;
+  private EnrolleeService enrolleeService;
 
   public RequestUtilService(
       CurrentUserService currentUserService,

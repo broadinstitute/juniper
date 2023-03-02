@@ -22,26 +22,52 @@
       ]
     }
   },
-  "surveyResponseDtos": [{
-    "surveyStableId": "oh_oh_medHx",
-    "surveyVersion": 1,
-    "responseSnapshotDtos": [{
-      "fullDataJson": {
-        "items": [
-          {
-            "stableId": "oh_medHx_worriedHeartHealth",
-            "simpleValue": "yesSpecificallyAboutMyHeart",
-            "displayValue": "Yes, specifically about my heart"
+  "surveyResponseDtos": [
+    {
+      "surveyStableId": "oh_oh_medHx",
+      "surveyVersion": 1,
+      "responseSnapshotDtos": [
+        {
+          "fullDataJson": {
+            "items": [
+              {
+                "stableId": "oh_medHx_worriedHeartHealth",
+                "simpleValue": "yesSpecificallyAboutMyHeart",
+                "displayValue": "Yes, specifically about my heart"
+              }
+            ]
+          },
+          "resumeDataJson": {
+            "data": {
+              "oh_oh_medHx_worriedHeartHealth": "yesSpecificallyAboutMyHeart"
+            },
+            "currentPageNo": 1
           }
-        ]
-      },
-      "resumeDataJson": {
-        "data": {
-          "oh_oh_medHx_worriedHeartHealth": "yesSpecificallyAboutMyHeart"
+        }
+      ]
+    }, {
+      "surveyStableId": "oh_oh_basicInfo",
+      "processSnapshot": true,
+      "surveyVersion": 1,
+      "responseSnapshotDtos": [{
+        "fullDataJson": {
+          "items": [
+            {"stableId": "oh_oh_basic_firstName", "value": "Jonas"},
+            {"stableId": "oh_oh_basic_lastName", "value": "Salk"},
+            {"stableId": "oh_oh_basic_streetAddress", "value": "123 Walnut Street"},
+            {"stableId": "oh_oh_basic_mghPatient", "value": "yes"}
+          ]
         },
-        "currentPageNo": 1
-      }
-    }]
+        "resumeDataJson": {
+          "data": {
+            "oh_oh_basic_streetAddress": "123 Walnut Street",
+            "oh_oh_basic_mghPatient": "yes",
+            "oh_oh_basic_firstName": "Jonas",
+            "oh_oh_basic_lastName": "Salk"
+          },
+          "currentPageNo": 2
+        }
+      }]
   }],
   "consentResponseDtos": [{
     "consentStableId": "oh_oh_consent",

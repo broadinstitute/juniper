@@ -30,6 +30,10 @@ public class PortalStudyService extends CrudService<PortalStudy, PortalStudyDao>
         return dao.findByStudyId(studyId);
     }
 
+    public List<PortalStudy> findByEnrollee(String enrolleeShortcode) {
+        return dao.findByEnrollee(enrolleeShortcode);
+    }
+
     public Optional<PortalStudy> findStudyInPortal(String shortcode, UUID portalId) {
         return dao.findStudyInPortal(shortcode, portalId);
     }

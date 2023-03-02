@@ -3,16 +3,21 @@ package bio.terra.pearl.core.service.participant;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
+import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.notification.NotificationService;
+import bio.terra.pearl.core.service.portal.PortalService;
+import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import java.security.SecureRandom;
@@ -34,6 +39,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private ConsentResponseService consentResponseService;
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
     private NotificationService notificationService;
+    private PortalStudyService portalStudyService;
+    private PortalService portalService;
 
 
     private SecureRandom secureRandom;
@@ -44,7 +51,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            @Lazy StudyEnvironmentService studyEnvironmentService,
                            ConsentResponseService consentResponseService,
                            PreEnrollmentResponseDao preEnrollmentResponseDao,
-                           NotificationService notificationService, SecureRandom secureRandom) {
+                           NotificationService notificationService, PortalStudyService portalStudyService,
+                           @Lazy PortalService portalService, SecureRandom secureRandom) {
         super(enrolleeDao);
         this.surveyResponseService = surveyResponseService;
         this.participantTaskService = participantTaskService;
@@ -52,6 +60,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.consentResponseService = consentResponseService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.notificationService = notificationService;
+        this.portalStudyService = portalStudyService;
+        this.portalService = portalService;
         this.secureRandom = secureRandom;
     }
 
@@ -59,25 +69,17 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.findOneByShortcode(shortcode);
     }
 
-    public List<Enrollee> findByParticipantUserId(UUID userId) {
-        return dao.findByParticipantUserId(userId);
-    }
-
     public List<Enrollee> findByPortalParticipantUser(PortalParticipantUser ppUser) {
         return dao.findByProfileId(ppUser.getProfileId());
-    }
-
-    public Optional<Enrollee> findByParticipantUserId( UUID participantUserId, UUID studyEnvironmentId) {
-        return dao.findByParticipantUserId(participantUserId, studyEnvironmentId);
     }
 
     public List<Enrollee> findByStudyEnvironmentAdminLoad(UUID studyEnvironmentId) {
         return dao.findByStudyEnvironmentId(studyEnvironmentId);
     }
 
-    public Optional<Enrollee> findByStudyEnvironmentAdminLoad(String studyShortcode, EnvironmentName envName, String shortcode) {
-        StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
-        return dao.findByStudyEnvironmentAdminLoad(studyEnv.getId(), shortcode);
+    public Enrollee findWithAdminLoad(AdminUser adminUser, String shortcode) {
+        Enrollee enrollee = authAdminUserToEnrollee(adminUser, shortcode);
+        return dao.loadForAdminView(enrollee);
     }
 
     /** returns the enrollee if the user is authorized to access/modify it, throws an error otherwise */
@@ -85,9 +87,23 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         // for now, a user is only allowed to access an enrollee if it's themself.  Later, we'll add proxies
         return dao.findByEnrolleeId(participantUserId, enrolleeId).get();
     }
+
+    /** returns the enrollee if the user is authorized to access/modify it, throws an error otherwise */
     public Enrollee authParticipantUserToEnrollee(UUID participantUserId, String enrolleeShortcode) {
         // for now, a user is only allowed to access an enrollee if it's themself.  Later, we'll add proxies
         return dao.findByEnrolleeId(participantUserId, enrolleeShortcode).get();
+    }
+
+    /** returns the enrollee if the user is authorized to access/modify it, throws an error otherwise */
+    public Enrollee authAdminUserToEnrollee(AdminUser user, String enrolleeShortcode) {
+        // find what portal(s) the enrollee is in, and then check that the adminUser is authorized in at least one
+        List<PortalStudy> portalStudies = portalStudyService.findByEnrollee(enrolleeShortcode);
+        List<UUID> portalIds = portalStudies.stream().map(PortalStudy::getPortalId).toList();
+        if (!portalService.checkAdminInAtLeastOnePortal(user, portalIds)) {
+            throw new PermissionDeniedException("User %s does not have permissions on enrollee %s or enrollee does not exist"
+                    .formatted(user.getUsername(), enrolleeShortcode));
+        }
+        return dao.findOneByShortcode(enrolleeShortcode).get();
     }
 
     public List<EnrolleeSearchResult> search(String studyShortcode, EnvironmentName envName) {
