@@ -1,9 +1,7 @@
 import _ from 'lodash'
-import React, { Fragment } from 'react'
+import React from 'react'
 import { ButtonConfig } from 'api/api'
 import PearlImage, { PearlImageProps } from 'util/PearlImage'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import ReactMarkdown from 'react-markdown'
 
 type StepProps = {
@@ -35,29 +33,21 @@ function StepOverviewTemplate({
     <h1 className="fs-1 fw-normal lh-sm mb-3 text-center">
       <ReactMarkdown>{title ? title : ''}</ReactMarkdown>
     </h1>
-    <div className="row justify-content-center">
-      <div className="col-md-10 d-flex">
-        {
-          _.map(steps, ({ image, duration, blurb }: StepProps, i: number) => {
-            return <Fragment key={i}>
-              {i > 0 ? <FontAwesomeIcon className="fa-2x p-3 mt-5" icon={faArrowRight}/> : null}
-              <div className="d-flex flex-column">
-
-                <PearlImage image={image} className="img-fluid p-3 mx-auto" style={{ maxWidth: '200px' }}/>
-                <div className="text-uppercase">
-                  <p className="fs-5 fw-semibold mb-0">Step {i + 1}</p>
-                  <p className="fs-6">{duration}</p>
-                </div>
-                <div>
-                  <p className="fs-5 fw-normal">
-                    {blurb}
-                  </p>
-                </div>
-              </div>
-            </Fragment>
-          })
-        }
-      </div>
+    <div className="row mx-0">
+      {
+        _.map(steps, ({ image, duration, blurb }: StepProps, i: number) => {
+          return <div key={i} className="col-12 col-lg-3 d-flex flex-column align-items-center">
+            <div className="w-75 d-flex flex-column align-items-center align-items-lg-start">
+              <PearlImage image={image} className="img-fluid p-3" style={{ maxWidth: '200px' }}/>
+              <p className="text-uppercase fs-5 fw-semibold mb-0">Step {i + 1}</p>
+              <p className="text-uppercase fs-6">{duration}</p>
+              <p className="fs-5 fw-normal">
+                {blurb}
+              </p>
+            </div>
+          </div>
+        })
+      }
     </div>
     <div className="d-grid gap-2 d-md-flex pt-4 justify-content-center">
       {
