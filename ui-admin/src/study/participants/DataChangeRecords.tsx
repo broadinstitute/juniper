@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Api, { DataChangeRecord, Enrollee, Notification } from 'api/api'
+import Api, { DataChangeRecord, Enrollee } from 'api/api'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { instantToDefaultString } from 'util/timeUtils'
