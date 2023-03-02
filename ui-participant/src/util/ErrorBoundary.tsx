@@ -53,8 +53,8 @@ export default class ErrorBoundary extends React.Component<ErrorProps, ErrorStat
 }
 
 /** HOC for wrapping arbitrary components in error boundaries */
-export function withErrorBoundary<T extends object>(Component: React.ComponentType) {
-  return function SafeWrappedComponent(props: T) {
+export function withErrorBoundary<Props extends object>(Component: React.ComponentType<Props>) {
+  return function SafeWrappedComponent(props: Props) {
     return (
       <ErrorBoundary>
         <Component {...props} />

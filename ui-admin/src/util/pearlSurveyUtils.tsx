@@ -11,7 +11,9 @@ import { IPage, Question } from 'survey-core'
 const CHOICE_VALUE_MAPPINGS: Record<string, string> = {
   notSure: 'unsure',
   preferNotToAnswer: 'preferNoAnswer',
-  'noneOfThese': 'none'
+  'noneOfThese': 'none',
+  'noneOfTheseDescribeMe': 'none',
+  'dontKnowTheAnswer': 'dontKnow'
 }
 
 export type PanelObj = {
@@ -28,7 +30,10 @@ export type QuestionObj = {
   choices?: Choice[],
   title?: string,
   questionTemplateName?: string,
-  visibleIf?: string
+  visibleIf?: string,
+  otherText?: string,
+  otherPlaceholder?: string,
+  isRequired?: boolean
 }
 
 export type Choice = {
@@ -100,8 +105,13 @@ export function getValueForChoice(choiceText: string) {
  */
 export function questionToJson(questionObj: QuestionObj, indentLevel= 0): string {
   const leadingIndent = ' '.repeat(indentLevel)
+  const visibleIfString = questionObj.visibleIf ? `\n${leadingIndent}  "visibleIf": "${questionObj.visibleIf}",` : ''
+  const isRequiredString = questionObj.isRequired ? `\n${leadingIndent}  "isRequired": true,` : ''
   if (questionObj.choices) {
     const numChoices = questionObj.choices.length
+    const otherBlock = !questionObj.otherText ? '' : `\n${leadingIndent}  "showOtherItem": true,
+${leadingIndent}  "otherText": "${questionObj.otherText}",
+${leadingIndent}  "otherPlaceholder": "${questionObj.otherPlaceholder}",`
     const choicesAsJson = questionObj.choices.map((c, index) => {
       const trailingChar = index === numChoices - 1 ? '' : ','
       return `${leadingIndent}    {"text": "${c.text}", "value": "${c.value}"}${trailingChar}`
@@ -109,7 +119,7 @@ export function questionToJson(questionObj: QuestionObj, indentLevel= 0): string
     return `${leadingIndent}{
 ${leadingIndent}  "name": "${questionObj.namePrefix}${questionObj.nameSuffix}", 
 ${leadingIndent}  "type": "${questionObj.type}",
-${leadingIndent}  "title": "${questionObj.title}",
+${leadingIndent}  "title": "${questionObj.title}",${visibleIfString}${otherBlock}${isRequiredString}
 ${leadingIndent}  "choices": [
 ${choicesAsJson}
 ${leadingIndent}  ]
@@ -117,7 +127,7 @@ ${leadingIndent}}`
   }
   return `${leadingIndent}{
 ${leadingIndent}  "name": "${questionObj.namePrefix}${questionObj.nameSuffix}", 
-${leadingIndent}  "type": "${questionObj.type}",
+${leadingIndent}  "type": "${questionObj.type}",${visibleIfString}${isRequiredString}
 ${leadingIndent}  "questionTemplateName": "${questionObj.questionTemplateName}"
 }`
 }
@@ -164,7 +174,10 @@ export function questionFromRawText(rawText: string): QuestionObj {
     choices,
     type: choices.length > 0 ? 'radiogroup' : 'text',
     nameSuffix: '',
-    namePrefix: 'oh_medHx_'
+    namePrefix: '',
+    otherText: '',
+    otherPlaceholder: 'Please specify',
+    isRequired: false
   }
   return newQuestionObj
 }

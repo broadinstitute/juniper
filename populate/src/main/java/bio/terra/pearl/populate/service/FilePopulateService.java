@@ -40,6 +40,9 @@ public class FilePopulateService {
     }
 
     public InputStream getInputStream(String relativePath, FilePopulateConfig popSpec) throws IOException {
+        if (relativePath.contains("..") || popSpec.getBasePath().contains("..")) {
+            throw new IllegalArgumentException("'..' is not permitted in paths to be read");
+        }
         if (isPopulateFromClasspath) {
             ClassPathResource cpr = new ClassPathResource(SEED_ROOT + popSpec.getBasePath() + "/" + relativePath);
             return cpr.getInputStream();

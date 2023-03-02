@@ -13,6 +13,7 @@ import PreEnrollView from './surveys/PreEnrollView'
 import StudyContent from './StudyContent'
 import ParticipantsRouter from './participants/ParticipantsRouter'
 import NotificationConfigView from './notifications/NotificationConfigView'
+import QuestionScratchbox from './surveys/editor/QuestionScratchbox'
 
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
@@ -52,6 +53,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
         <Route path=":surveyStableId">
           <Route index element={<SurveyView studyEnvContext={studyEnvContext}/>}/>
         </Route>
+        <Route path="scratch" element={<QuestionScratchbox/>}/>
         <Route path="*" element={<div>Unknown survey page</div>}/>
       </Route>
       <Route path="consentForms">
