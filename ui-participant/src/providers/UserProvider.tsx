@@ -90,8 +90,6 @@ export default function UserProvider({ children }: { children: React.ReactNode }
           loginUser(loginResult)
           setIsLoading(false)
         })
-      } else {
-        // TODO: handle unexpected user parameter
       }
     })
 
