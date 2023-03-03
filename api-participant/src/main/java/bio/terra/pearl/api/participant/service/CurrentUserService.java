@@ -8,6 +8,8 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +47,18 @@ public class CurrentUserService {
     return Optional.empty();
   }
 
+  public Optional<UserWithEnrollees> tokenLogin(
+      String token, String portalShortcode, EnvironmentName environmentName) {
+    var decodedJWT = JWT.decode(token);
+    var email = decodedJWT.getClaim("email").asString();
+    var userOpt = participantUserDao.findOne(email, environmentName);
+    if (userOpt.isPresent()) {
+      var user = userOpt.get();
+      return Optional.of(loadFromUser(user, portalShortcode));
+    }
+    return Optional.empty();
+  }
+
   @Transactional
   public Optional<UserWithEnrollees> refresh(String token, String portalShortcode) {
     Optional<ParticipantUser> userOpt = participantUserDao.findByToken(token);
@@ -57,10 +71,18 @@ public class CurrentUserService {
   }
 
   protected ParticipantUser updateUserToken(ParticipantUser user) {
-    UUID newToken = UUID.randomUUID();
-    user.setToken(newToken.toString());
+    var newToken = generateFakeJwtToken(user.getUsername());
+    user.setToken(newToken);
     user.setLastLogin(Instant.now());
     return participantUserDao.update(user);
+  }
+
+  String generateFakeJwtToken(String username) {
+    var token = UUID.randomUUID();
+    return JWT.create()
+        .withClaim("token", token.toString())
+        .withClaim("email", username)
+        .sign(Algorithm.none());
   }
 
   public UserWithEnrollees loadFromUser(ParticipantUser user, String portalShortcode) {
@@ -93,5 +115,10 @@ public class CurrentUserService {
       return Optional.empty();
     }
     return participantUserDao.findByToken(token);
+  }
+
+  public Optional<ParticipantUser> findByUsername(String username) {
+    // TODO: paramaterize environment
+    return participantUserDao.findOne(username, EnvironmentName.sandbox);
   }
 }

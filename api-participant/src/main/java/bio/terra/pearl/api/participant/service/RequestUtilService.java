@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.portal.PortalWithPortalUser;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import com.auth0.jwt.JWT;
 import java.util.Optional;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -33,7 +34,10 @@ public class RequestUtilService {
 
   /** gets the user from the request, throwing an exception if not present */
   public ParticipantUser userFromRequest(HttpServletRequest request) {
-    Optional<ParticipantUser> userOpt = userOptFromRequest(request);
+    var token = tokenFromRequest(request);
+    var decodedJWT = JWT.decode(token);
+    var email = decodedJWT.getClaim("email").asString();
+    Optional<ParticipantUser> userOpt = currentUserService.findByUsername(email);
     if (userOpt.isEmpty()) {
       throw new UnauthorizedException("User not found");
     }

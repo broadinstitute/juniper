@@ -9,22 +9,19 @@ const aadB2cName = process.env.REACT_APP_B2C_TENANT_NAME ? process.env.REACT_APP
 const aadb2cClientId = process.env.REACT_APP_B2C_CLIENT_ID ? process.env.REACT_APP_B2C_CLIENT_ID : 'ID_NEEDED'
 
 // TODO: This is a modified copy of code from Terra UI. It could use some clean-up.
-export const getOidcConfig = () => {
+/* eslint-disable camelcase, max-len */
+export const getOidcConfig = (b2cTenantName: string = aadB2cName, b2cClientId: string = aadb2cClientId) => {
   const metadata = {
-    // eslint-disable-next-line camelcase
     authorization_endpoint:
-      `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev/oauth2/v2.0/authorize`,
-    // eslint-disable-next-line camelcase
+      `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/B2C_1A_ddp_participant_signup_signin_dev/oauth2/v2.0/authorize`,
     token_endpoint:
-      `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev/oauth2/v2.0/token`
+      `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/B2C_1A_ddp_participant_signup_signin_dev/oauth2/v2.0/token`
   }
   return {
-    authority: `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev`,
-    // eslint-disable-next-line camelcase
-    client_id: aadb2cClientId,
-    // eslint-disable-next-line camelcase
+    authority:
+      `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/B2C_1A_ddp_participant_signup_signin_dev`,
+    client_id: b2cClientId,
     popup_redirect_uri: `${window.origin}/redirect-from-oauth`,
-    // eslint-disable-next-line camelcase
     silent_redirect_uri: `${window.origin}/redirect-from-oauth-silent`,
     metadata,
     prompt: 'consent login',
@@ -37,23 +34,8 @@ export const getOidcConfig = () => {
     // token won't expire between 2 setCookie api calls
     accessTokenExpiringNotificationTimeInSeconds: 330,
     includeIdTokenInSilentRenew: true,
-    // eslint-disable-next-line camelcase
     extraQueryParams: { access_type: 'offline' },
-    // eslint-disable-next-line camelcase
     redirect_uri: ''
   }
 }
-
-export const b2cPolicies = {
-  names: {
-    signUpSignIn: 'b2c_1_susi',
-    forgotPassword: 'b2c_1_reset',
-    editProfile: 'b2c_1_edit_profile'
-  },
-  authorities: {
-    signUpSignIn: {
-      authority: `https://${aadB2cName}.b2clogin.com/${aadB2cName}.onmicrosoft.com/B2C_1A_signup_signin_dev`
-    }
-  },
-  authorityDomain: `https://${aadB2cName}.b2clogin.com`
-}
+/* eslint-enable camelcase, max-len */
