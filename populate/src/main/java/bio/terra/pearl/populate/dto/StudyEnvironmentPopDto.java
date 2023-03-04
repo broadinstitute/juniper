@@ -3,6 +3,7 @@ package bio.terra.pearl.populate.dto;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.populate.dto.consent.StudyEnvironmentConsentPopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationConfigPopDto;
+import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
 import java.util.ArrayList;
@@ -24,6 +25,8 @@ public class StudyEnvironmentPopDto extends StudyEnvironment {
     private List<StudyEnvironmentConsentPopDto> configuredConsentDtos = new ArrayList<>();
     @Builder.Default
     private List<NotificationConfigPopDto> notificationConfigDtos = new ArrayList();
+    @Builder.Default
+    private List<PreEnrollmentResponsePopDto> preEnrollmentResponseDtos = new ArrayList<>();
 
     @Builder.Default
     private List<String> enrolleeFiles = new ArrayList<>();

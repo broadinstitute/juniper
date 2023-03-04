@@ -5,22 +5,7 @@
     "qualified": true,
     "surveyStableId": "oh_oh_preenroll",
     "surveyVersion": 1,
-    "fullDataJson": {
-      "items": [
-        {
-          "stableId": "oh_oh_preenroll_ancestry",
-          "simpleValue": "yes"
-        },
-        {
-          "stableId": "oh_oh_preenroll_age",
-          "simpleValue": "24"
-        },
-        {
-          "stableId": "oh_oh_preenroll_liveInUs",
-          "simpleValue": "yes"
-        }
-      ]
-    }
+    "fullDataJson": {"items":[{"stableId":"descriptionText","displayValue":"","node":false},{"stableId":"oh_oh_preenroll_checklist","value":["southAsianAncestry","english","isAdult","livesInUS"],"displayValue":"Identifies as having South Asian ancestry from one of these countries: Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, or Sri Lanka, Understands English, Is 18 years or older, Lives in the United States","node":false},{"stableId":"qualified","value":true,"node":false}]}
   },
   "surveyResponseDtos": [{
     "surveyStableId": "oh_oh_medHx",

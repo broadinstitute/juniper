@@ -5,6 +5,7 @@
   "jsonContent": {
   "title": "OurHealth pre-registration",
   "logoPosition": "right",
+  "completeText": "Continue",
   "pages": [
     {
       "name": "page1",
@@ -12,46 +13,29 @@
         {
           "type": "html",
           "name": "descriptionText",
-          "html": "<h3 class=\"text-center fw-bold\">Thank you for your interest in joining the Our Health Project!</h3>\n<p class=\"mt-5\">\nComplete the form below to tell us about yourself. Our goal is to learn more about genetic and other risk factors that increase the risk of cardiovascular diseases among South Asian populations. With this effort we plan to collect health information from you and your medical records as well as collect, process, and store a sample of your saliva for research purposes.</p>\n<p>\nWe will record your answers but will only keep detailed contact information if you qualify for the study and want to participate. We will not keep or store your contact information if you do not qualify for the study.</p>"
+          "html": "<b>Thank you for your interest in participating in the study.</b><br/><br/> To get started, please answer these questions to make sure you’re eligible to participate (check all that apply)."
         },
         {
-          "type": "radiogroup",
-          "name": "oh_oh_preenroll_ancestry",
-          "title": "Are you of South Asian ancestry?",
+          "type": "checkbox",
+          "name": "oh_oh_preenroll_checklist",
+          "title": "I am someone who",
           "isRequired": true,
           "choices": [
             {
-              "value": "yes",
-              "text": "Yes"
+              "value": "southAsianAncestry",
+              "text": "Identifies as having South Asian ancestry from one of these countries: Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, or Sri Lanka"
             },
             {
-              "value": "no",
-              "text": "No"
-            }
-          ]
-        },
-        {
-          "type": "text",
-          "name": "oh_oh_preenroll_age",
-          "title": "How old are you?",
-          "isRequired": true,
-          "inputType": "number",
-          "min": 0,
-          "max": 130
-        },
-        {
-          "type": "radiogroup",
-          "name": "oh_oh_preenroll_liveInUs",
-          "title": "Do you live in the United States?",
-          "isRequired": true,
-          "choices": [
-            {
-              "value": "yes",
-              "text": "Yes"
+              "value": "english",
+              "text": "Understands English"
             },
             {
-              "value": "no",
-              "text": "No"
+              "value": "isAdult",
+              "text": "Is 18 years or older"
+            },
+            {
+              "value": "livesInUS",
+              "text": "Lives in the United States"
             }
           ]
         }
@@ -61,7 +45,7 @@
   "calculatedValues": [
     {
       "name": "qualified",
-      "expression": "{oh_oh_preenroll_liveInUs} = 'yes' && {oh_oh_preenroll_age} > 17 && {oh_oh_preenroll_ancestry} = 'yes'",
+      "expression": "{oh_oh_preenroll_checklist} contains 'southAsianAncestry' && {oh_oh_preenroll_checklist} contains 'english' && {oh_oh_preenroll_checklist} contains 'isAdult' && {oh_oh_preenroll_checklist} contains 'livesInUS'",
       "includeIntoResult": true
     }
   ]

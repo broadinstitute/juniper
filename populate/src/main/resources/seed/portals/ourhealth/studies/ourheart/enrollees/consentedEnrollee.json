@@ -2,6 +2,12 @@
   "linkedUsername": "consented@test.com",
   "shortcode": "OHSENT",
   "consented": true,
+  "preEnrollmentResponseDto": {
+    "qualified": true,
+    "surveyStableId": "oh_oh_preenroll",
+    "surveyVersion": 1,
+    "fullDataJson": {"items":[{"stableId":"descriptionText","displayValue":"","node":false},{"stableId":"oh_oh_preenroll_checklist","value":["southAsianAncestry","english","isAdult","livesInUS"],"displayValue":"Identifies as having South Asian ancestry from one of these countries: Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, or Sri Lanka, Understands English, Is 18 years or older, Lives in the United States","node":false},{"stableId":"qualified","value":true,"node":false}]}
+  },
   "consentResponseDtos": [{
     "consentStableId": "oh_oh_consent",
     "consentVersion": 1,

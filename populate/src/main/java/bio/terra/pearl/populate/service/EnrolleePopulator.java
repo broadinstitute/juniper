@@ -144,6 +144,7 @@ public class EnrolleePopulator extends Populator<Enrollee> {
                 .surveyId(survey.getId())
                 .creatingParticipantUserId(enrolleeDto.getParticipantUserId())
                 .studyEnvironmentId(savedEnrolle.getStudyEnvironmentId())
+                .qualified(responsePopDto.isQualified())
                 .fullData(responsePopDto.getFullDataJson().toString())
                 .build();
 

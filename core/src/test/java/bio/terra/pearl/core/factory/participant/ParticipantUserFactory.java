@@ -3,7 +3,10 @@ package bio.terra.pearl.core.factory.participant;
 import bio.terra.pearl.core.factory.EnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
+import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,6 +17,8 @@ public class ParticipantUserFactory {
     private EnvironmentFactory environmentFactory;
     @Autowired
     private ParticipantUserService participantUserService;
+    @Autowired
+    private PortalParticipantUserService portalParticipantUserService;
 
     public ParticipantUser.ParticipantUserBuilder builder(String testName) {
         return ParticipantUser.builder()
@@ -37,8 +42,21 @@ public class ParticipantUserFactory {
     }
 
     public ParticipantUser buildPersisted(EnvironmentName envName, String testName) {
-        ParticipantUser.ParticipantUserBuilder userBuilder = builder("testEnroll")
+        ParticipantUser.ParticipantUserBuilder userBuilder = builder(testName)
                 .environmentName(envName);
-        return buildPersisted(userBuilder, "testEnroll");
+        return buildPersisted(userBuilder, testName);
     }
+
+    public ParticipantUserAndPortalUser buildPersisted(PortalEnvironment portalEnv, String testName) {
+        ParticipantUser user = buildPersisted(portalEnv.getEnvironmentName(), testName);
+        PortalParticipantUser ppUser = PortalParticipantUser.builder()
+                .participantUserId(user.getId())
+                .portalEnvironmentId(portalEnv.getId()).build();
+
+        // enrollment requires an already-existing portalParticipantUser
+        ppUser = portalParticipantUserService.create(ppUser);
+        return new ParticipantUserAndPortalUser(user, ppUser);
+    }
+
+    public record ParticipantUserAndPortalUser(ParticipantUser user, PortalParticipantUser ppUser) {}
 }
