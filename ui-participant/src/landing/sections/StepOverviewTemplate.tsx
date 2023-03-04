@@ -21,15 +21,16 @@ type StepOverviewTemplateProps = {
  * Template for rendering a step overview
  */
 function StepOverviewTemplate({
+  anchorRef,
   config: {
     background,
     buttons,
     steps,
     title
   }
-}: { config: StepOverviewTemplateProps }) {
+}: { anchorRef: string, config: StepOverviewTemplateProps }) {
   // TODO: improve layout code for better flexing, especially with <> 4 steps
-  return <div style={{ background }} className="py-5">
+  return <div id={anchorRef} style={{ background }} className="py-5">
     <h1 className="fs-1 fw-normal lh-sm mb-3 text-center">
       <ReactMarkdown>{title ? title : ''}</ReactMarkdown>
     </h1>

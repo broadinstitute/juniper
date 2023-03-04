@@ -16,7 +16,9 @@ public class NavbarItem extends BaseEntity {
     private int itemOrder;
 
     private UUID htmlPageId; // for NavbarItemType INTERNAL
-    private HtmlPage htmlPage;
+    private HtmlPage htmlPage; // for NavBarItemType INTERNAL
 
-    private String externalLinkUrl; // for NavBaryItemType EXTERNAL
+    private String externalLinkUrl; // for NavBarItemType EXTERNAL
+
+    private String anchorLinkPath; // for NavBarItemType INTERNAL_ANCHOR
 }

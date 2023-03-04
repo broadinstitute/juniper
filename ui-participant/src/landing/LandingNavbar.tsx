@@ -1,5 +1,6 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
+import { NavHashLink } from 'react-router-hash-link'
 import Api, { getImageUrl, NavbarItem } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from '../providers/UserProvider'
@@ -32,7 +33,7 @@ export default function LandingNavbar() {
         data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
         type="button"
       >
-        <span className="navbar-toggler-icon" />
+        <span className="navbar-toggler-icon"/>
       </button>
       <div className="collapse navbar-collapse" id="navbarNavDropdown">
         <ul className="navbar-nav">
@@ -71,6 +72,8 @@ export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
   if (navLink.itemType === 'INTERNAL') {
     // we require navbar links to be absolute rather than relative links
     return <NavLink to={`/${navLink.htmlPage.path}`} className="nav-link ms-3">{navLink.label}</NavLink>
+  } else if (navLink.itemType === 'INTERNAL_ANCHOR') {
+    return <NavHashLink to={`/${navLink.anchorLinkPath}`} className="nav-link ms-3">{navLink.label}</NavHashLink>
   } else if (navLink.itemType === 'MAILING_LIST') {
     return <a role="button" className="nav-link ms-3" onClick={() => mailingList(navLink)}>{navLink.label}</a>
   } else if (navLink.itemType === 'EXTERNAL') {

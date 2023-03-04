@@ -66,6 +66,7 @@ export type HtmlPage = {
 export type NavbarItem = {
   label: string,
   externalLink: string,
+  anchorLinkPath: string,
   itemType: string
   htmlPage: HtmlPage
 }
@@ -73,6 +74,7 @@ export type NavbarItem = {
 export type HtmlSection = {
   id: string,
   sectionType: string,
+  anchorRef: string,
   rawContent: string | null,
   sectionConfig: string | null
 }

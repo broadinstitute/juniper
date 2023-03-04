@@ -22,18 +22,19 @@ const blurbAlignAllowed = ['center', 'right', 'left']
  * Template for rendering a hero with centered content.
  */
 function HeroCenteredTemplate({
+  anchorRef,
   config: {
     background, backgroundColor, color,
     blurb, blurbAlign, buttons, title, image
   }
 }:
-                                { config: HeroCenteredTemplateProps }) {
+                                { anchorRef: string, config: HeroCenteredTemplateProps }) {
   const blurbAlignIndex = blurbAlignAllowed.indexOf(blurbAlign ?? 'center')
   const cleanBlurbAlign: string = blurbAlignAllowed[blurbAlignIndex === -1 ? 0 : blurbAlignIndex] ?? 'center'
   const blurbStyle = {
     textAlign: cleanBlurbAlign as CanvasTextAlign
   }
-  return <div className="py-5 text-center" style={{ background, backgroundColor, color }}>
+  return <div id={anchorRef} className="py-5 text-center" style={{ background, backgroundColor, color }}>
     <div className="col-lg-6 mx-auto">
       <h1 className="fs-1 fw-normal lh-sm mb-4">
         <ReactMarkdown>{title ? title : ''}</ReactMarkdown>

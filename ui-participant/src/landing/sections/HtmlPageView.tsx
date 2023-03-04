@@ -11,7 +11,8 @@ import RawHtmlTemplate from './RawHtmlTemplate'
 import PhotoBlurbGrid from './PhotoBlurbGrid'
 import ParticipationDetailTemplate from './ParticipationDetailTemplate'
 
-type TemplateComponent = ({ config, rawContent }: { config: SectionConfig, rawContent: string | null }) => JSX.Element
+type TemplateComponent = ({ anchorRef, config, rawContent }:
+                            { anchorRef: string, config: SectionConfig, rawContent: string | null }) => JSX.Element
 
 const templateComponents: { [index: string]: TemplateComponent } = {
   'FAQ': FrequentlyAskedQuestionsTemplate,
@@ -33,7 +34,7 @@ export default function HtmlPageView({ page }: { page: HtmlPage }) {
         const Template = templateComponents[section.sectionType]
 
         const parsedConfig: SectionConfig = section.sectionConfig ? JSON.parse(section.sectionConfig) : {}
-        return <Template key={key} config={parsedConfig} rawContent={section.rawContent}/>
+        return <Template key={key} config={parsedConfig} anchorRef={section.anchorRef} rawContent={section.rawContent}/>
       })
     }
   </>

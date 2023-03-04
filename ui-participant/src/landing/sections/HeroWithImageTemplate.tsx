@@ -21,6 +21,7 @@ type HeroLeftWithImageTemplateProps = {
  * Template for a hero with text content on the left and an image on the right.
  */
 function HeroWithImageTemplate({
+  anchorRef,
   config: {
     background,
     blurb,
@@ -31,13 +32,13 @@ function HeroWithImageTemplate({
     logos,
     title
   }
-}: { config: HeroLeftWithImageTemplateProps }) {
+}: { anchorRef: string, config: HeroLeftWithImageTemplateProps }) {
   const styleProps: CSSProperties = { background }
   if (backgroundImage) {
     styleProps.backgroundImage = `url('${getImageUrl(backgroundImage.cleanFileName, backgroundImage.version)}')`
   }
   const isLeftImage = imagePosition === 'left' // default is right, so left has to be explicitly specified
-  return <div className="row" style={styleProps}>
+  return <div id={anchorRef} className="row" style={styleProps}>
     <div className={`col-12 d-flex ${isLeftImage ? 'flex-row' : 'flex-row-reverse'}`}>
       <div>
         <PearlImage image={image} className="img-fluid"/>

@@ -6,6 +6,6 @@ import React from 'react'
  * @param content
  * @constructor
  */
-export default function RawHtmlTemplate({ rawContent }: {rawContent: string | null}) {
-  return <div dangerouslySetInnerHTML={{ __html: rawContent ? rawContent : '' }}></div>
+export default function RawHtmlTemplate({ anchorRef, rawContent }: { anchorRef: string, rawContent: string | null }) {
+  return <div id={anchorRef} dangerouslySetInnerHTML={{ __html: rawContent ? rawContent : '' }}></div>
 }

@@ -62,9 +62,9 @@ public class SiteContentPopulator extends Populator<SiteContent> {
                     section.setSectionConfig(section.getSectionConfigJson().toString());
                 }
             }
+            page.getSections().clear();
+            page.getSections().addAll(page.getSectionDtos());
         }
-        page.getSections().clear();
-        page.getSections().addAll(page.getSectionDtos());
         return page;
     }
 
