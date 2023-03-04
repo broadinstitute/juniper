@@ -124,6 +124,8 @@
       "populateFileName": "participation.json"
     },{
       "populateFileName": "scientificBackground.json"
+    },{
+      "populateFileName": "faq.json"
     }]
   }]
 }

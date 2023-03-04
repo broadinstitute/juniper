@@ -1,0 +1,34 @@
+{
+  "itemType": "INTERNAL",
+  "label": "FAQ",
+  "htmlPageDto": {
+    "title": "Frequently Asked Questions",
+    "path": "faq",
+    "sectionDtos": [
+      {
+        "sectionType": "FAQ",
+        "sectionConfigJson": {
+          "backgroundColor": "#f2f2f2",
+          "blurb": "If your question is not answered below, you can call or email our study staff at **617&#x2011;724&#x2011;1240** or **[info@ourhealthstudy.org](mailto:info@ourhealthstudy.org)**.",
+          "questions": [
+            {
+              "question": "What is OurHealth?",
+              "answer": "OurHealth is a nonprofit research initiative that enables South Asian-identifying individuals to contribute to cardiovascular research by sharing their samples, their clinical information, and their voices."
+            },
+            {
+              "question": "Why is it needed?",
+              "answer": "Individuals of South Asian ancestry are disproportionately affected by cardiometabolic diseases, including heart disease, stroke, and diabetes. However, they have historically been under-represented in genetic studies. In the United States, South Asian ancestry is now considered a risk-enhancing factor for cardiovascular disease, highlighting an awareness but distinct knowledge gap. OurHealth aims to address this gap by creating a cohort of South Asian individuals, from whom survey and genomic data will be analyzed to further our understanding of cardiovascular disease risk within this population."
+            },
+            {
+              "question": "How can I participate?",
+              "answer": "If you are over 18 years of age and identify as South Asian, you can sign up by clicking “Join” in the top right corner of this page."
+            },
+            {
+              "question": "What does OurHealth do with the data?",
+              "answer": "Only data and/or specimens necessary for study conduct will be collected. The electronic data collected will be maintained in a secure location with appropriate protections including password protection, encryption, and/or physical security measures (locked files/areas). The specimens collected will be maintained in a secure location with appropriate protections (e.g. locked storage spaces, laboratory areas). Data and specimens will only be shared with individuals who are members of the IRB-approved research team or approved for sharing as described in the IRB protocol. Identifiers will be coded and access to files linking identifiers with coded data or specimens will be limited to the minimal necessary members of the research team. All staff are trained on and will follow the Mass General Brigham policies and procedures for maintaining appropriate confidentiality of research data and specimens. All electronic communication with participants will comply with Mass General Brigham secure communication policies."
+            }]
+        }
+      }
+    ]
+  }
+}
