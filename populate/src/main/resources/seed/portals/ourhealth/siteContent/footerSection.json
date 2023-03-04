@@ -1,0 +1,15 @@
+{
+  "sectionType": "NAV_AND_CONTACTS_FOOTER",
+  "sectionConfigJson": {
+    "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
+    "includeNavbar": true,
+    "contactInfo": {
+      "title": "Contact",
+      "phoneNumber": "617-724-1270",
+      "email": "info@ourhealthstudy.org"
+    },
+    "otherLinks": [{
+      "title": 
+    }]
+  }
+}
