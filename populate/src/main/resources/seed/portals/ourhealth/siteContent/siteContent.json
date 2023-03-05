@@ -6,7 +6,7 @@
     "language": "en",
     "navLogoCleanFileName": "ourhealth-logo.png",
     "navLogoVersion": 1,
-    "footerSectionFile": "siteContent/footerSection.json",
+    "footerSectionFile": "footerSection.json",
     "landingPage": {
       "title": "OurHealth portal home",
       "sectionDtos": [{

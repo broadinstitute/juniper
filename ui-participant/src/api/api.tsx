@@ -54,7 +54,8 @@ export type LocalSiteContent = {
   navbarItems: NavbarItem[],
   landingPage: HtmlPage,
   navLogoCleanFileName: string,
-  navLogoVersion: number
+  navLogoVersion: number,
+  footerSection: HtmlSection
 }
 
 export type HtmlPage = {

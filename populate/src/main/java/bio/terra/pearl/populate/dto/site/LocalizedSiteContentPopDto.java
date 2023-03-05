@@ -13,4 +13,5 @@ import java.util.List;
 public class LocalizedSiteContentPopDto extends LocalizedSiteContent {
     private HtmlPagePopDto landingPage;
     private List<NavbarItemPopDto> navbarItemDtos = new ArrayList<>();
+    private String footerSectionFile;
 }
