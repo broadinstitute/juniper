@@ -94,7 +94,7 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
         Survey medHistorySurvey = surveyService.findByStableId("oh_oh_medHx", 1).get();
 
         List<SurveyResponse> jonasResponses = surveyResponseService.findByEnrolleeId(jonas.getId());
-        Assertions.assertEquals(1, jonasResponses.size());
+        Assertions.assertEquals(2, jonasResponses.size());
         SurveyResponse medHistoryResp = jonasResponses.stream()
                 .filter(response -> medHistorySurvey.getId().equals(response.getSurveyId()))
                 .findFirst().get();

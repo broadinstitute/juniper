@@ -52,7 +52,7 @@ public class SnapshotProcessingServiceTests extends BaseSpringBootTest {
         );
 
 
-        ObjectWithChangeLog<Profile> objChange = snapshotProcessingService.mapValuesToType(snapshot, mappings, profile,
+        ObjectWithChangeLog<Profile> objChange = snapshotProcessingService.mapValuesToType(snapshot.getParsedData(), mappings, profile,
                 AnswerMappingTargetType.PROFILE);
         assertThat(objChange.obj().getGivenName(), equalTo("myFirstName"));
         assertThat(objChange.obj().getMailingAddress().getStreet1(), equalTo("addressPart1"));
@@ -65,8 +65,8 @@ public class SnapshotProcessingServiceTests extends BaseSpringBootTest {
                 "testSurvey_q1", "myFirstName",
                 "testSurvey_q2", "addressPart1"
         ));
-        List<DataChangeRecord> changeRecords = snapshotProcessingService.processAllAnswerMappings(snapshot,
-                new ArrayList<>(), null, UUID.randomUUID());
+        List<DataChangeRecord> changeRecords = snapshotProcessingService.processAllAnswerMappings(snapshot.getParsedData(),
+                new ArrayList<>(), null, UUID.randomUUID(), null, null);
         assertThat(changeRecords, hasSize(0));
     }
 

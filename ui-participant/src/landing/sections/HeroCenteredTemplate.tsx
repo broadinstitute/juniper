@@ -33,25 +33,31 @@ function HeroCenteredTemplate({
   const blurbStyle = {
     textAlign: cleanBlurbAlign as CanvasTextAlign
   }
-  return <div className="py-5 text-center" style={{ background, backgroundColor, color }}>
-    <div className="col-lg-6 mx-auto">
-      <h1 className="fs-1 fw-normal lh-sm mb-4">
-        <ReactMarkdown>{title ? title : ''}</ReactMarkdown>
-      </h1>
-      <div className="fs-5 " style={blurbStyle}>
-        <ReactMarkdown>{blurb ? blurb : ''}</ReactMarkdown>
-      </div>
-    </div>
-    <div className="col-lg-6 mx-auto">
-      <PearlImage image={image} className="img-fluid"/>
-    </div>
-    <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
-      {
-        _.map(buttons, (button, i) => {
-          // TODO: allow customization of button styling
-          return <ConfiguredButton key={i} config={button} className='btn btn-light btn-lg px-4 me-md-2'/>
-        })
-      }
+  return <div className="row mx-0" style={{ background, backgroundColor, color }}>
+    <div className="col-12 col-sm-10 col-lg-6 mx-auto py-5 text-center">
+      {!!title && (
+        <h1 className="fs-1 fw-normal lh-sm mb-4">
+          <ReactMarkdown>{title}</ReactMarkdown>
+        </h1>
+      )}
+      {!!blurb && (
+        <div className="fs-5 " style={blurbStyle}>
+          <ReactMarkdown>{blurb}</ReactMarkdown>
+        </div>
+      )}
+      {!!image && (
+        <PearlImage image={image} className="img-fluid mb-4"/>
+      )}
+      {(buttons ?? []).length > 0 && (
+        <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
+          {
+            _.map(buttons, (button, i) => {
+              // TODO: allow customization of button styling
+              return <ConfiguredButton key={i} config={button} className='btn btn-light btn-lg px-4 me-md-2'/>
+            })
+          }
+        </div>
+      )}
     </div>
   </div>
 }

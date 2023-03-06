@@ -3,15 +3,13 @@
   "version": 1,
   "name": "The Basics",
   "answerMappings": [{
-    "questionStableId": "oh_oh_basic_firstName",
-    "targetType": "PROFILE",
-    "targetField": "givenName",
-    "mapType": "TEXT_NODE_TO_STRING"
+    "questionStableId": "oh_oh_basic_firstName", "targetType": "PROFILE", "targetField": "givenName", "mapType": "TEXT_NODE_TO_STRING"
   },{
-    "questionStableId": "oh_oh_basic_lastName",
-    "targetType": "PROFILE",
-    "targetField": "familyName",
-    "mapType": "TEXT_NODE_TO_STRING"
+    "questionStableId": "oh_oh_basic_lastName", "targetType": "PROFILE", "targetField": "familyName", "mapType": "TEXT_NODE_TO_STRING"
+  },{
+    "questionStableId": "oh_oh_basic_streetAddress", "targetType": "PROFILE", "targetField": "mailingAddress.street1", "mapType": "TEXT_NODE_TO_STRING"
+  },{
+    "questionStableId": "oh_oh_basic_lastName", "targetType": "PROFILE", "targetField": "familyName", "mapType": "TEXT_NODE_TO_STRING"
   }],
   "jsonContent": {
     "title": "The Basics",

@@ -141,11 +141,27 @@ public class PortalService extends CrudService<Portal, PortalDao> {
             throw new NotFoundException("Portal not found: %s".formatted(portalShortcode));
         }
         Portal portal = portalOpt.get();
-        if (user.getSuperuser() || portalAdminUserDao.isUserInPortal(user.getId(), portal.getId())) {
+        if (checkAdminIsInPortal(user, portal.getId())) {
             return portal;
         }
         throw new PermissionDeniedException("User %s does not have permissions on portal %s"
                 .formatted(user.getUsername(), portalShortcode));
+    }
+
+    public boolean checkAdminIsInPortal(AdminUser user, UUID portalId) {
+        return user.getSuperuser() || portalAdminUserDao.isUserInPortal(user.getId(), portalId);
+    }
+
+    /**
+     * checks if the adminUser is authorized for at least one of the given portals,
+     * */
+    public boolean checkAdminInAtLeastOnePortal(AdminUser user, List<UUID> portalIds) {
+        for (UUID portalId : portalIds) {
+            if (checkAdminIsInPortal(user, portalId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public PortalWithPortalUser authParticipantToPortal(UUID participantUserId, String portalShortcode,

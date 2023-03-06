@@ -26,6 +26,21 @@ public class PortalStudyDao extends BaseJdbiDao<PortalStudy> {
         return findAllByProperty("portal_id", portalId);
     }
 
+    /** gets a list of PortalStudies corresponding to an Enrollee.  Enrollees are specific to a single Study,
+     * so this will only return multiple results if that Study is in multiple Portals
+     */
+    public List<PortalStudy> findByEnrollee(String enrolleeShortcode) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select " + prefixedGetQueryColumns("a") + " from " + tableName
+                                + " a join study on a.study_id = study.id"
+                                + " join study_environment on study.id = study_environment.study_id"
+                                + " join enrollee on study_environment.id = enrollee.study_environment_id"
+                                + " where enrollee.shortcode = :enrolleeShortcode")
+                        .bind("enrolleeShortcode", enrolleeShortcode)
+                        .mapTo(clazz)
+                        .list());
+    }
+
     public Optional<PortalStudy> findStudyInPortal(String studyShortcode, UUID portalId) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select " + prefixedGetQueryColumns("a") + " from " + tableName
