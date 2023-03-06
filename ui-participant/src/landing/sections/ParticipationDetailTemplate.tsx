@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import React, { CSSProperties } from 'react'
 import { ButtonConfig } from 'api/api'
-import PearlImage, { PearlImageProps } from '../../util/PearlImage'
+import PearlImage, { PearlImageConfig } from '../../util/PearlImage'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClock } from '@fortawesome/free-regular-svg-icons'
 import ConfiguredButton from './ConfiguredButton'
@@ -11,7 +11,7 @@ type ParticipationDetailTemplateProps = {
   blurb?: string, //  text below the title
   actionButton?: ButtonConfig, // array of objects containing `text` and `href` attributes
   title?: string, // large heading text
-  image?: PearlImageProps, // image
+  image?: PearlImageConfig, // image
   stepNumberText?: string, // e.g. STEP 1
   timeIndication?: string, // e.g. 45+ minutes
   imagePosition?: string // left or right.  Default is right

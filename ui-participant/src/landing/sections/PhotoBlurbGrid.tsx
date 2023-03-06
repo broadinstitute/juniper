@@ -1,5 +1,5 @@
 import React from 'react'
-import PearlImage, { PearlImageProps } from '../../util/PearlImage'
+import PearlImage, { PearlImageConfig } from '../../util/PearlImage'
 import ReactMarkdown from 'react-markdown'
 
 type PhotoBlurbGridProps = {
@@ -16,7 +16,7 @@ type SubGrid = {
 }
 
 type PhotoBio = {
-  image: PearlImageProps,
+  image: PearlImageConfig,
   name: string,
   title: string,
   blurb: string
