@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: "footer_section_config"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: localized_site_content
+            columns:
+              - column: { name: footer_section_id, type: uuid, constraints:
+                { foreignKeyName: fk_lsc_footer_section_id, references: html_section(id) }
+              }
+        - dropNotNullConstraint: # drop the constraint since html sections are also used for footers that aren't tied to a page
+            tableName: html_section
+            columnName: html_page_id

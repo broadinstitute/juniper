@@ -45,7 +45,7 @@ function App() {
       <PortalPasswordGate portal={portal}>
         <ConfigProvider>
           <ConfigConsumer>
-            { config =>
+            {config =>
               <AuthProvider {...getOidcConfig(config.b2cTenantName, config.b2cClientId)}>
                 <UserProvider>
                   <div className="App d-flex flex-column min-vh-100 bg-white">
@@ -57,7 +57,7 @@ function App() {
                           <Route index element={<div>study specific page -- TBD</div>}/>
                           <Route path="*" element={<div>unmatched study route</div>}/>
                         </Route>
-                        <Route path="/" element={<LandingPage/>}>
+                        <Route path="/" element={<LandingPage localContent={localContent}/>}>
                           {landingRoutes}
                           <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
                         </Route>

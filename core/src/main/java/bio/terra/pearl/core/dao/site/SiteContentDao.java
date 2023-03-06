@@ -67,6 +67,9 @@ public class SiteContentDao extends BaseJdbiDao<SiteContent> {
                         .filter(page -> page.getId().equals(localSite.getLandingPageId()))
                         .findFirst().orElse(null));
                 localSite.getNavbarItems().addAll(navbarItems);
+                if (localSite.getFooterSectionId() != null) {
+                    localSite.setFooterSection(htmlSectionDao.find(localSite.getFooterSectionId()).get());
+                }
             });
         });
         return siteContentOpt;

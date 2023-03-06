@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.site.HtmlSection;
 import bio.terra.pearl.core.model.site.HtmlSectionType;
+import bio.terra.pearl.core.model.site.LocalizedSiteContent;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.*;
@@ -108,10 +109,12 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
         PortalEnvironment portalEnv = portalEnvironmentService
                 .loadWithParticipantSiteContent("ourhealth", EnvironmentName.sandbox, "en").get();
         Assertions.assertEquals(portalId, portalEnv.getPortalId());
-        HtmlSection firstLandingSection = portalEnv.getSiteContent().getLocalizedSiteContents()
-                .stream().findFirst().get().getLandingPage()
+        LocalizedSiteContent lsc = portalEnv.getSiteContent().getLocalizedSiteContents()
+                .stream().findFirst().get();
+        HtmlSection firstLandingSection = lsc.getLandingPage()
                 .getSections().stream().findFirst().get();
         Assertions.assertEquals(HtmlSectionType.HERO_WITH_IMAGE, firstLandingSection.getSectionType());
+        Assertions.assertNotNull(lsc.getFooterSection());
     }
 
     @Test
