@@ -192,6 +192,17 @@ export type Notification = {
   notificationConfig?: NotificationConfig
 }
 
+export type DataChangeRecord = {
+  id: string,
+  createdAt: number,
+  modelName: string,
+  fieldName: string,
+  oldValue: string,
+  newValue: string,
+  responsibleUserId: string,
+  responsibleAdminUserId: string
+}
+
 export type Config = {
   b2cTenantName: string,
   b2cClientId: string
@@ -349,6 +360,14 @@ export default {
     enrolleeShortcode: string): Promise<Notification[]> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
       }/enrollees/${enrolleeShortcode}/notifications`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchEnrolleeChangeRecords(portalShortcode: string, studyShortcode: string, envName: string,
+    enrolleeShortcode: string): Promise<DataChangeRecord[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
+    }/enrollees/${enrolleeShortcode}/changeRecords`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },

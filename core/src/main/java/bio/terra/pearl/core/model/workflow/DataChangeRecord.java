@@ -23,6 +23,8 @@ public class DataChangeRecord extends BaseEntity {
     private UUID responsibleAdminUserId; // id of the user making the change, if it was an admin
     private UUID enrolleeId; // id of impacted enrollee (may be null)
     private UUID portalParticipantUserId; // id of the impacted portal participant user
+    private UUID operationId; // unique id to group operations
+    private UUID surveyId; // survey id of the form source of the change
     private String modelName;
     private String fieldName;
     private String oldValue;
