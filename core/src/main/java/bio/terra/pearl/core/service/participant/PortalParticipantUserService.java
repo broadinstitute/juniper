@@ -7,25 +7,29 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PortalParticipantUserService extends CrudService<PortalParticipantUser, PortalParticipantUserDao> {
     private ProfileService profileService;
     private PreregistrationResponseDao preregistrationResponseDao;
+    private DataChangeRecordService dataChangeRecordService;
 
     public PortalParticipantUserService(PortalParticipantUserDao dao,
                                         ProfileService profileService,
-                                        PreregistrationResponseDao preregistrationResponseDao) {
+                                        PreregistrationResponseDao preregistrationResponseDao,
+                                        @Lazy DataChangeRecordService dataChangeRecordService) {
         super(dao);
         this.profileService = profileService;
         this.preregistrationResponseDao = preregistrationResponseDao;
+        this.dataChangeRecordService = dataChangeRecordService;
     }
 
     @Transactional
@@ -63,6 +67,7 @@ public class PortalParticipantUserService extends CrudService<PortalParticipantU
     public void delete(UUID portalParticipantUserId, Set<CascadeProperty> cascades) {
         PortalParticipantUser ppUser = dao.find(portalParticipantUserId).get();
         preregistrationResponseDao.deleteByPortalParticipantUserId(portalParticipantUserId);
+        dataChangeRecordService.deleteByPortalParticipantUserId(portalParticipantUserId);
         dao.delete(portalParticipantUserId);
 
         if (ppUser.getProfileId() != null) {

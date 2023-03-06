@@ -132,8 +132,8 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         SurveyResponse response = createSnapshot(snapDto, task, enrollee, participantUserId);
 
         // process any answers that need to be propagated elsewhere to the data model
-        snapshotProcessingService.processAllAnswerMappings(snapDto,
-                survey.getAnswerMappings(), ppUser, participantUserId);
+        snapshotProcessingService.processAllAnswerMappings(snapDto.getParsedData(),
+                survey.getAnswerMappings(), ppUser, participantUserId, enrollee.getId(), survey.getId());
 
         // now update the task status and response id
         task.setStatus(snapDto.isComplete() ? TaskStatus.COMPLETE : TaskStatus.IN_PROGRESS);

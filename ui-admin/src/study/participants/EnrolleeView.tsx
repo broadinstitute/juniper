@@ -14,6 +14,7 @@ import EnrolleeSurveyView from './survey/EnrolleeSurveyView'
 import EnrolleeConsentView from './consent/EnrolleeConsentView'
 import PreEnrollmentView from './survey/PreEnrollmentView'
 import EnrolleeNotifications from './EnrolleeNotifications'
+import DataChangeRecords from './DataChangeRecords'
 
 export type SurveyWithResponsesT = {
   survey: StudyEnvironmentSurvey,
@@ -126,6 +127,9 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
               <li className="list-group-item subgroup">
                 <NavLink to="notifications" className={getLinkCssClasses}>Notifications</NavLink>
               </li>
+              <li className="list-group-item subgroup">
+                <NavLink to="changeRecords" className={getLinkCssClasses}>Audit history</NavLink>
+              </li>
             </ul>
           </div>
           <div className="participantTabContent flex-grow-1 bg-white p-3">
@@ -148,6 +152,9 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
               </Route>
               <Route path="notifications" element={
                 <EnrolleeNotifications enrollee={enrollee} studyEnvContext={studyEnvContext}/>
+              }/>
+              <Route path="changeRecords" element={
+                <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext}/>
               }/>
               <Route index element={<div>Enrollee page</div>}/>
               <Route path="*" element={<div>unknown enrollee route</div>}/>
