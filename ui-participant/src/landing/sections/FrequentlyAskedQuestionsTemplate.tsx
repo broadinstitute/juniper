@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import _ from 'lodash'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
@@ -36,31 +37,37 @@ function FrequentlyAskedQuestionsTemplate({
     title = 'Frequently Asked Questions'
   }
 }: { anchorRef: string, config: FrequentlyAskedQuestionsProps }) {
-  return <div className="d-flex justify-content-center py-5 foobar" style={{ backgroundColor, color }}
-    id={anchorRef}>
-    <div className="col-lg-6">
+  return <div id={anchorRef} className="row mx-0 justify-content-center" style={{ backgroundColor, color }}>
+    <div className="col-12 col-sm-8 col-lg-6">
       <h1 className="fs-1 fw-normal lh-sm mt-5 mb-4 text-center">{title}</h1>
       <div className='fs-5 fw-normal mb-4 text-center'>
         {blurb && <ReactMarkdown>{blurb}</ReactMarkdown>}
       </div>
-      <div className="border-bottom"></div>
-      <div className="fs-5 fw-normal">
+      <ul className="mx-0 px-0 border-top" style={{ listStyle: 'none' }}>
         {
           _.map(questions, ({ question, answer }, i) => {
-            return <div key={i} className="border-bottom p-3">
-              <button type="button" className="btn btn-lg btn-link text-black fw-bold text-decoration-none"
+            return <li key={i} className="border-bottom">
+              <button
+                type="button"
+                className={classNames(
+                  'btn btn-link btn-lg',
+                  'w-100 py-3 px-0 px-sm-2',
+                  'd-flex',
+                  'text-black fw-bold text-start text-decoration-none'
+                )}
                 data-bs-toggle="collapse" data-bs-target={targetFor(question)}>
-                + {question}
+                <span aria-hidden="true" className="me-2">+ </span>
+                {question}
               </button>
               <div className="collapse" id={idFor(question)}>
                 <p>
                   {answer}
                 </p>
               </div>
-            </div>
+            </li>
           })
         }
-      </div>
+      </ul>
     </div>
   </div>
 }

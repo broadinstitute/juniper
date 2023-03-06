@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import _ from 'lodash'
 import React, { CSSProperties } from 'react'
 import { ButtonConfig, getImageUrl } from 'api/api'
@@ -38,12 +39,18 @@ function HeroWithImageTemplate({
     styleProps.backgroundImage = `url('${getImageUrl(backgroundImage.cleanFileName, backgroundImage.version)}')`
   }
   const isLeftImage = imagePosition === 'left' // default is right, so left has to be explicitly specified
-  return <div id={anchorRef} className="row" style={styleProps}>
-    <div className={`col-12 d-flex ${isLeftImage ? 'flex-row' : 'flex-row-reverse'}`}>
-      <div>
-        <PearlImage image={image} className="img-fluid"/>
-      </div>
-      <div className="p-5 d-flex flex-column flex-grow-1 justify-content-around" style={{ minWidth: '50%' }}>
+  return (
+    <div id={anchorRef} className={classNames('row', 'mx-0', isLeftImage ? 'flex-row' : 'flex-row-reverse')}
+      style={styleProps}>
+      {!!image && (
+        <div className="col-12 col-lg-6 p-0">
+          <PearlImage image={image} className="img-fluid"/>
+        </div>
+      )}
+      <div
+        className="col-12 col-lg-6 py-3 p-sm-3 p-lg-5 d-flex flex-column flex-grow-1 justify-content-around"
+        style={{ minWidth: '50%' }}
+      >
         <h1 className="fs-1 fw-normal lh-sm">
           <ReactMarkdown>{title ? title : ''}</ReactMarkdown>
         </h1>
@@ -64,7 +71,7 @@ function HeroWithImageTemplate({
         </div>
       </div>
     </div>
-  </div>
+  )
 }
 
 export default HeroWithImageTemplate
