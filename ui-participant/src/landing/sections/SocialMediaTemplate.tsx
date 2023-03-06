@@ -17,6 +17,7 @@ type SocialMediaTemplateProps = {
  * TODO -- implement images
  */
 function SocialMediaTemplate({
+  anchorRef,
   config: {
     blurb,
     buttons,
@@ -25,8 +26,8 @@ function SocialMediaTemplate({
     title,
     twitterHref
   }
-}: { config: SocialMediaTemplateProps }) {
-  return <div className="container py-5">
+}: { anchorRef?: string, config: SocialMediaTemplateProps }) {
+  return <div id={anchorRef} className="container py-5">
     <div className="d-flex justify-content-center mt-5 mb-4">
       {twitterHref &&
         <PearlImage image={{ cleanFileName: 'twitter.png', version: 1, alt: 'Twitter' }}

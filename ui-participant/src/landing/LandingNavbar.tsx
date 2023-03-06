@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
-import Api, { getImageUrl, NavbarItem } from 'api/api'
+import Api, { getImageUrl, isInternalLink, NavbarItem } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from '../providers/UserProvider'
 
@@ -69,7 +69,7 @@ export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
     alert(`mailing list ${navLinkObj.label}`)
   }
 
-  if (navLink.itemType === 'INTERNAL') {
+  if (isInternalLink(navLink)) {
     // we require navbar links to be absolute rather than relative links
     return <NavLink to={`/${navLink.htmlPage.path}`} className="nav-link ms-3">{navLink.label}</NavLink>
   } else if (navLink.itemType === 'INTERNAL_ANCHOR') {

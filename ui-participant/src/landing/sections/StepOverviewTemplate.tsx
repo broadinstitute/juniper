@@ -28,7 +28,7 @@ function StepOverviewTemplate({
     steps,
     title
   }
-}: { anchorRef: string, config: StepOverviewTemplateProps }) {
+}: { anchorRef?: string, config: StepOverviewTemplateProps }) {
   // TODO: improve layout code for better flexing, especially with <> 4 steps
   return <div id={anchorRef} style={{ background }} className="py-5">
     <h1 className="fs-1 fw-normal lh-sm mb-3 text-center">

@@ -28,7 +28,7 @@ function HeroCenteredTemplate({
     blurb, blurbAlign, buttons, title, image
   }
 }:
-                                { anchorRef: string, config: HeroCenteredTemplateProps }) {
+                                { anchorRef?: string, config: HeroCenteredTemplateProps }) {
   const blurbAlignIndex = blurbAlignAllowed.indexOf(blurbAlign ?? 'center')
   const cleanBlurbAlign: string = blurbAlignAllowed[blurbAlignIndex === -1 ? 0 : blurbAlignIndex] ?? 'center'
   const blurbStyle = {

@@ -31,7 +31,7 @@ function ParticipationDetailTemplate({
     imagePosition,
     title
   }
-}: { anchorRef: string, config: ParticipationDetailTemplateProps }) {
+}: { anchorRef?: string, config: ParticipationDetailTemplateProps }) {
   const styleProps: CSSProperties = { background }
   const isLeftImage = imagePosition === 'left' // default is right, so left has to be explicitly specified
   return <div id={anchorRef} className="row justify-content-center" style={styleProps}>

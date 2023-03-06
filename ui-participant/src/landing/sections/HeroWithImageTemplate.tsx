@@ -33,7 +33,7 @@ function HeroWithImageTemplate({
     logos,
     title
   }
-}: { anchorRef: string, config: HeroLeftWithImageTemplateProps }) {
+}: { anchorRef?: string, config: HeroLeftWithImageTemplateProps }) {
   const styleProps: CSSProperties = { background }
   if (backgroundImage) {
     styleProps.backgroundImage = `url('${getImageUrl(backgroundImage.cleanFileName, backgroundImage.version)}')`

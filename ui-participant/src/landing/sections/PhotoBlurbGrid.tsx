@@ -26,7 +26,7 @@ type PhotoBio = {
  * Template for rendering a hero with centered content.
  */
 function PhotoBlurbGrid({ anchorRef, config: { background, backgroundColor, color, subGrids, title } }:
-                          { anchorRef: string, config: PhotoBlurbGridProps }) {
+                          { anchorRef?: string, config: PhotoBlurbGridProps }) {
   return <div id={anchorRef} style={{ background, backgroundColor, color }}>
     {title && <h1 className="fs-1 fw-normal lh-sm text-center">
       {title}

@@ -12,7 +12,7 @@ import PhotoBlurbGrid from './PhotoBlurbGrid'
 import ParticipationDetailTemplate from './ParticipationDetailTemplate'
 
 type TemplateComponent = ({ anchorRef, config, rawContent }:
-                            { anchorRef: string, config: SectionConfig, rawContent: string | null }) => JSX.Element
+                            { anchorRef?: string, config: SectionConfig, rawContent: string | null }) => JSX.Element
 
 const templateComponents: { [index: string]: TemplateComponent } = {
   'FAQ': FrequentlyAskedQuestionsTemplate,
