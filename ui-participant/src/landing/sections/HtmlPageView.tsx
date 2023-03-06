@@ -30,16 +30,14 @@ const templateComponents: { [index: string]: TemplateComponent } = {
 export default function HtmlPageView({ page }: { page: HtmlPage }) {
   return <>
     {
-      _.map(page.sections, (section: HtmlSection) => <HtmlSectionView section={section}/>)
+      _.map(page.sections, (section: HtmlSection) => <HtmlSectionView section={section} key={section.id}/>)
     }
   </>
 }
 
 /** renders a single section by delegating to the appropriate component based on sectionType */
 export function HtmlSectionView({ section }: { section: HtmlSection }) {
-  const key = section.id
   const Template = templateComponents[section.sectionType]
-
   const parsedConfig: SectionConfig = section.sectionConfig ? JSON.parse(section.sectionConfig) : {}
-  return <Template key={key} config={parsedConfig} rawContent={section.rawContent}/>
+  return <Template config={parsedConfig} rawContent={section.rawContent}/>
 }
