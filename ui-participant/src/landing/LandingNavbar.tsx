@@ -1,8 +1,11 @@
+import classNames from 'classnames'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import Api, { getImageUrl, NavbarItem } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from '../providers/UserProvider'
+
+const navLinkClasses = 'nav-link ms-lg-3'
 
 /** renders the navbar for participant landing page (for not-logged-in participants) */
 export default function LandingNavbar() {
@@ -34,7 +37,7 @@ export default function LandingNavbar() {
       >
         <span className="navbar-toggler-icon" />
       </button>
-      <div className="collapse navbar-collapse" id="navbarNavDropdown">
+      <div className="collapse navbar-collapse mt-2 mt-lg-0" id="navbarNavDropdown">
         <ul className="navbar-nav">
           {navLinks.map((navLink: NavbarItem, index: number) => <li key={index} className="nav-item">
             <CustomNavLink navLink={navLink}/>
@@ -42,10 +45,10 @@ export default function LandingNavbar() {
         </ul>
         <ul className="navbar-nav ms-auto">
           {user.isAnonymous && <li className="nav-item">
-            <NavLink className="nav-link ms-3" to="/hub">Login</NavLink>
+            <NavLink className={navLinkClasses} to="/hub">Login</NavLink>
           </li>}
           {!user.isAnonymous && <li className="nav-item dropdown">
-            <a className="nav-link ms-3 dropdown-toggle" href="#"
+            <a className={classNames(navLinkClasses, 'dropdown-toggle')} href="#"
               role="button" data-bs-toggle="dropdown" aria-expanded="false">
               {user.username}
             </a>
@@ -70,11 +73,11 @@ export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
 
   if (navLink.itemType === 'INTERNAL') {
     // we require navbar links to be absolute rather than relative links
-    return <NavLink to={`/${navLink.htmlPage.path}`} className="nav-link ms-3">{navLink.label}</NavLink>
+    return <NavLink to={`/${navLink.htmlPage.path}`} className={navLinkClasses}>{navLink.label}</NavLink>
   } else if (navLink.itemType === 'MAILING_LIST') {
-    return <a role="button" className="nav-link ms-3" onClick={() => mailingList(navLink)}>{navLink.label}</a>
+    return <a role="button" className={navLinkClasses} onClick={() => mailingList(navLink)}>{navLink.label}</a>
   } else if (navLink.itemType === 'EXTERNAL') {
-    return <a href={navLink.externalLink} className="nav-link ms-3" target="_blank">{navLink.label}</a>
+    return <a href={navLink.externalLink} className={navLinkClasses} target="_blank">{navLink.label}</a>
   }
   return <></>
 }
