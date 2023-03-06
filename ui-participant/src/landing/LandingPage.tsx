@@ -14,9 +14,9 @@ function LandingPageView({ localContent }: { localContent: LocalSiteContent }) {
       <div className="flex-grow-1">
         <Outlet/>
       </div>
-      {localContent.footerSection && <div>
+      {localContent.footerSection && <footer>
         <HtmlSectionView section={localContent.footerSection}/>
-      </div>}
+      </footer>}
     </div>
   </div>
 }

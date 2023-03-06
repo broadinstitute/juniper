@@ -55,7 +55,7 @@ export type LocalSiteContent = {
   landingPage: HtmlPage,
   navLogoCleanFileName: string,
   navLogoVersion: number,
-  footerSection: HtmlSection
+  footerSection?: HtmlSection
 }
 
 export type HtmlPage = {

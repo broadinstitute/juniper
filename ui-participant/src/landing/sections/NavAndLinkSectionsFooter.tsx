@@ -54,5 +54,5 @@ function FooterItem({ item }: { item: FooterItem }) {
   } else if (item.itemType === 'EXTERNAL') {
     return <a href={item.externalLink} className=" me-3" target="_blank">{item.label}</a>
   }
-  return <></>
+  return null
 }
