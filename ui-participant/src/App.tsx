@@ -1,4 +1,5 @@
-import React from 'react'
+import { cssVar, parseToRgb, tint } from 'polished'
+import React, { CSSProperties } from 'react'
 
 import LandingPage from 'landing/LandingPage'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
@@ -17,6 +18,32 @@ import PortalPasswordGate from 'landing/PortalPasswordGate'
 import EnvironmentAlert from 'EnvironmentAlert'
 import ConfigProvider, { ConfigConsumer } from 'providers/ConfigProvider'
 
+
+type BrandConfiguration = {
+  brandColor?: string;
+}
+
+const brandStyles = (config: BrandConfiguration = {}): CSSProperties => {
+  const {
+    brandColor = cssVar('--bs-blue') as string
+  } = config
+
+  const brandColorRgb = parseToRgb(brandColor)
+
+  return {
+    // Custom properties used in index.css.
+    '--brand-color': brandColor,
+    '--brand-color-rgb': `${brandColorRgb.red}, ${brandColorRgb.green}, ${brandColorRgb.blue}`,
+    '--brand-color-contrast': '#fff',
+    '--brand-color-shift-10': tint(0.10, brandColor),
+    '--brand-color-shift-15': tint(0.15, brandColor),
+    '--brand-color-shift-20': tint(0.20, brandColor),
+    '--brand-link-color': brandColor,
+    // Override Bootstrap properties.
+    '--bs-link-color': brandColor,
+    '--bs-link-hover-color': tint(0.20, brandColor)
+  } as CSSProperties
+}
 
 /**
  * root app -- handles dynamically creating all the routes based on the siteContent
@@ -48,7 +75,12 @@ function App() {
             { config =>
               <AuthProvider {...getOidcConfig(config.b2cTenantName, config.b2cClientId)}>
                 <UserProvider>
-                  <div className="App d-flex flex-column min-vh-100 bg-white">
+                  <div
+                    className="App d-flex flex-column min-vh-100 bg-white"
+                    style={brandStyles({
+                      brandColor: 'rgb(155, 36, 133)' // TODO: Get brand color from localContent
+                    })}
+                  >
                     <BrowserRouter>
                       <Routes>
                         <Route path="/hub/*" element={<ProtectedRoute><HubRouter/></ProtectedRoute>}/>

@@ -52,7 +52,7 @@ function StepOverviewTemplate({
     <div className="d-grid gap-2 d-md-flex pt-4 justify-content-center">
       {
         _.map(buttons, ({ text, href }, i) => {
-          return <a key={i} href={href} role={'button'} className="btn btn-primary btn-lg px-4 me-md-2">{text}</a>
+          return <a key={i} href={href} className="btn btn-outline-primary btn-lg px-4 me-md-2">{text}</a>
         })
       }
     </div>
