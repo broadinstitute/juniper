@@ -12,9 +12,12 @@ const navLinkClasses = 'nav-link ms-lg-3'
 export default function LandingNavbar() {
   const portalEnv = usePortalEnv()
   const { localContent } = portalEnv
-  const defaultStudy = portalEnv.portal.portalStudies[0].study
   const { user, logoutUser } = useUser()
   const navLinks = localContent.navbarItems
+
+  const joinPath = portalEnv.portal.portalStudies.length === 1
+    ? `/studies/${portalEnv.portal.portalStudies[0].study.shortcode}/join`
+    : '/join'
 
   /** send a logout to the api then logout */
   function doLogout() {
@@ -68,7 +71,7 @@ export default function LandingNavbar() {
                     'd-flex justify-content-center',
                     'mb-3 mb-lg-0 ms-lg-3'
                   )}
-                  to={`/studies/${defaultStudy.shortcode}/join`}
+                  to={joinPath}
                 >
                   Join
                 </NavLink>
