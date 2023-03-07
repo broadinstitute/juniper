@@ -4,6 +4,11 @@ import { generateFormResponseDto, PreEnrollResponseDto, SourceType, useSurveyJSM
 import { useNavigate } from 'react-router-dom'
 import { StudyEnrollContext } from './StudyEnrollRouter'
 
+/**
+ * pre-enrollment surveys are expected to have a calculated value that indicates
+ * whether the participant meets the criteria.
+ * */
+const ENROLLMENT_QUALIFIED_VARIABLE = 'qualified'
 
 /** Renders a pre-enrollment form, and handles submitting the user-inputted response */
 export default function PreEnrollView({ enrollContext }: { enrollContext: StudyEnrollContext }) {
@@ -23,7 +28,7 @@ export default function PreEnrollView({ enrollContext }: { enrollContext: StudyE
     const responseDto = generateFormResponseDto({
       surveyJSModel: surveyModel, enrolleeId: null, sourceType: SourceType.ANON
     })
-    const qualified = surveyModel.getCalculatedValueByName('qualified').value
+    const qualified = surveyModel.getCalculatedValueByName(ENROLLMENT_QUALIFIED_VARIABLE).value
     const preEnrollResponse = {
       ...responseDto,
       qualified,

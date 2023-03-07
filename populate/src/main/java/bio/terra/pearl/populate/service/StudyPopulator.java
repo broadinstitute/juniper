@@ -1,15 +1,20 @@
 package bio.terra.pearl.populate.service;
 
+import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.study.Study;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.study.StudyService;
+import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dto.StudyEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.StudyPopDto;
 import bio.terra.pearl.populate.dto.consent.StudyEnvironmentConsentPopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationConfigPopDto;
+import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
 import java.io.IOException;
 import java.util.HashSet;
@@ -22,18 +27,24 @@ public class StudyPopulator extends Populator<Study> {
     private StudyService studyService;
     private EnrolleePopulator enrolleePopulator;
     private SurveyPopulator surveyPopulator;
+    private SurveyService surveyService;
     private ConsentFormPopulator consentFormPopulator;
     private EmailTemplatePopulator emailTemplatePopulator;
+    private PreEnrollmentResponseDao preEnrollmentResponseDao;
 
     public StudyPopulator(StudyService studyService,
                           EnrolleePopulator enrolleePopulator,
-                          SurveyPopulator surveyPopulator, ConsentFormPopulator consentFormPopulator,
-                          EmailTemplatePopulator emailTemplatePopulator) {
+                          SurveyPopulator surveyPopulator, SurveyService surveyService,
+                          ConsentFormPopulator consentFormPopulator,
+                          EmailTemplatePopulator emailTemplatePopulator,
+                          PreEnrollmentResponseDao preEnrollmentResponseDao) {
         this.studyService = studyService;
         this.enrolleePopulator = enrolleePopulator;
         this.surveyPopulator = surveyPopulator;
+        this.surveyService = surveyService;
         this.consentFormPopulator = consentFormPopulator;
         this.emailTemplatePopulator = emailTemplatePopulator;
+        this.preEnrollmentResponseDao = preEnrollmentResponseDao;
     }
 
     @Transactional
@@ -73,12 +84,8 @@ public class StudyPopulator extends Populator<Study> {
 
         Study newStudy = studyService.create(studyDto);
 
-        for (StudyEnvironmentPopDto studyEnv : studyDto.getStudyEnvironmentDtos()) {
-            for (String enrolleeFile : studyEnv.getEnrolleeFiles()) {
-                enrolleePopulator.populate(
-                        config.newForStudy(enrolleeFile, newStudy.getShortcode(), studyEnv.getEnvironmentName())
-                );
-            }
+        for (StudyEnvironmentPopDto studyPopEnv : studyDto.getStudyEnvironmentDtos()) {
+            postProcessStudyEnv(newStudy, studyPopEnv, config);
         }
         return newStudy;
     }
@@ -102,6 +109,31 @@ public class StudyPopulator extends Populator<Study> {
         for (NotificationConfigPopDto configPopDto : studyEnv.getNotificationConfigDtos()) {
             NotificationConfig notificationConfig = emailTemplatePopulator.convertNotificationConfig(configPopDto, config);
             studyEnv.getNotificationConfigs().add(notificationConfig);
+        }
+    }
+
+    /** populates any objects that require an already-persisted study environment to save */
+    private void postProcessStudyEnv(Study savedStudy, StudyEnvironmentPopDto studyPopEnv, FilePopulateConfig config)
+    throws IOException {
+        StudyEnvironment savedEnv = savedStudy.getStudyEnvironments().stream().filter(env ->
+                env.getEnvironmentName().equals(studyPopEnv.getEnvironmentName())).findFirst().get();
+        // save any of the pre-enrollment responses that aren't associated with an enrollee
+        for (PreEnrollmentResponsePopDto responsePopDto : studyPopEnv.getPreEnrollmentResponseDtos()) {
+            Survey survey = surveyService.findByStableId(responsePopDto.getSurveyStableId(),
+                    responsePopDto.getSurveyVersion()).get();
+            PreEnrollmentResponse response = PreEnrollmentResponse.builder()
+                    .surveyId(survey.getId())
+                    .studyEnvironmentId(savedEnv.getId())
+                    .qualified(responsePopDto.isQualified())
+                    .fullData(responsePopDto.getFullDataJson().toString())
+                    .build();
+            preEnrollmentResponseDao.create(response);
+        }
+        // now populate enrollees
+        for (String enrolleeFile : studyPopEnv.getEnrolleeFiles()) {
+            enrolleePopulator.populate(
+                    config.newForStudy(enrolleeFile, savedStudy.getShortcode(), studyPopEnv.getEnvironmentName())
+            );
         }
     }
 

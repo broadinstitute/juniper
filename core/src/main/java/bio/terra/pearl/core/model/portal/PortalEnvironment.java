@@ -7,13 +7,12 @@ import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.survey.Survey;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-
-import java.util.UUID;
 
 @Getter
 @Setter

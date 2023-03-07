@@ -47,6 +47,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
 
   /** Sign in to the UI based on the result of signing in to the API. */
   const loginUser = (loginResult: LoginResult) => {
+    Api.setBearerToken(loginResult.user.token as string)
     setLoginState(loginResult)
     localStorage.setItem(STORAGE_TOKEN_PROP, loginResult.user.token)
   }

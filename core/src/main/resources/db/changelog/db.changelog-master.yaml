@@ -33,6 +33,9 @@ databaseChangeLog:
       file: changesets/2023_03_02_data_change_record_upgrade.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2023_03_03_footer_configs.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2023_03_04_nav_anchor_tags.yaml
       relativeToChangelogFile: true
 

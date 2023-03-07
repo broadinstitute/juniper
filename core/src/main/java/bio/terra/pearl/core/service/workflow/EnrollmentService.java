@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.ParsedPreEnrollResponse;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.HubResponse;
@@ -14,6 +15,8 @@ import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -25,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EnrollmentService {
+    private static final String QUALIFIED_STABLE_ID = "qualified";
     private static final Logger logger = LoggerFactory.getLogger(EnrollmentService.class);
     private SurveyService surveyService;
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
@@ -32,18 +36,20 @@ public class EnrollmentService {
     private PortalParticipantUserService portalParticipantUserService;
     private EnrolleeService enrolleeService;
     private EventService eventService;
+    private ObjectMapper objectMapper;
 
     public EnrollmentService(SurveyService surveyService, PreEnrollmentResponseDao preEnrollmentResponseDao,
                              StudyEnvironmentService studyEnvironmentService,
                              PortalParticipantUserService portalParticipantUserService,
                              EnrolleeRuleService enrolleeRuleService,
-                             EnrolleeService enrolleeService, EventService eventService) {
+                             EnrolleeService enrolleeService, EventService eventService, ObjectMapper objectMapper) {
         this.surveyService = surveyService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.studyEnvironmentService = studyEnvironmentService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.eventService = eventService;
         this.enrolleeService = enrolleeService;
+        this.objectMapper = objectMapper;
     }
 
     /** confirms that the preEnrollmentResponse exists and had not yet already been used to create an enrollee */
@@ -60,12 +66,14 @@ public class EnrollmentService {
             UUID studyEnvironmentId,
             String surveyStableId,
             Integer surveyVersion,
-            String fullData) {
+            ParsedPreEnrollResponse parsedResponse) throws JsonProcessingException {
         Survey survey = surveyService.findByStableId(surveyStableId, surveyVersion).get();
+
         PreEnrollmentResponse response = PreEnrollmentResponse.builder()
-                        .surveyId(survey.getId())
-                        .fullData(fullData)
-                        .studyEnvironmentId(studyEnvironmentId).build();
+                .surveyId(survey.getId())
+                .qualified(parsedResponse.isQualified())
+                .fullData(objectMapper.writeValueAsString(parsedResponse.getParsedData()))
+                .studyEnvironmentId(studyEnvironmentId).build();
         return preEnrollmentResponseDao.create(response);
     }
 
@@ -74,6 +82,9 @@ public class EnrollmentService {
                                             String studyShortcode, UUID preEnrollResponseId) {
         logger.info("creating enrollee for user {}, study {}", user.getId(), studyShortcode);
         StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
+
+        PreEnrollmentResponse preEnrollResponse = validatePreEnrollResponse(studyEnv, preEnrollResponseId, user.getId());
+
         Enrollee enrollee = Enrollee.builder()
                 .studyEnvironmentId(studyEnv.getId())
                 .participantUserId(user.getId())
@@ -81,15 +92,10 @@ public class EnrollmentService {
                 .preEnrollmentResponseId(preEnrollResponseId)
                 .build();
         enrollee = enrolleeService.create(enrollee);
-        if (preEnrollResponseId != null) {
-            PreEnrollmentResponse response = preEnrollmentResponseDao.find(preEnrollResponseId).get();
-            if (response.getCreatingParticipantUserId() != null &&
-                    response.getCreatingParticipantUserId() != user.getId()) {
-                throw new IllegalArgumentException("user does not match preEnrollment response user");
-            }
-            response.setCreatingParticipantUserId(user.getId());
-            response.setPortalParticipantUserId(ppUser.getId());
-            preEnrollmentResponseDao.update(response);
+        if (preEnrollResponse != null) {
+            preEnrollResponse.setCreatingParticipantUserId(user.getId());
+            preEnrollResponse.setPortalParticipantUserId(ppUser.getId());
+            preEnrollmentResponseDao.update(preEnrollResponse);
         }
         eventService.publishEnrolleeCreationEvent(enrollee, ppUser);
         logger.info("Enrollee created: user {}, study {}, shortcode {}, {} tasks added",
@@ -100,6 +106,26 @@ public class EnrollmentService {
                 .tasks(enrollee.getParticipantTasks().stream().toList())
                 .build();
         return hubResponse;
+    }
+
+    private PreEnrollmentResponse validatePreEnrollResponse(StudyEnvironment studyEnv,
+                                                            UUID preEnrollResponseId, UUID participantUserId) {
+        if (studyEnv.getPreEnrollSurveyId() == null) {
+            // no pre-enroll required
+            return null;
+        }
+        if (preEnrollResponseId == null) {
+            throw new IllegalArgumentException("pre-enrollment survey is required to enroll in this study");
+        }
+        PreEnrollmentResponse response = preEnrollmentResponseDao.find(preEnrollResponseId).get();
+        if (!response.isQualified()) {
+            throw new IllegalArgumentException("pre-enrollment survey did not meet criteria");
+        }
+        if (response.getCreatingParticipantUserId() != null &&
+                response.getCreatingParticipantUserId() != participantUserId) {
+            throw new IllegalArgumentException("user does not match preEnrollment response user");
+        }
+        return response;
     }
 
 

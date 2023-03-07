@@ -41,10 +41,9 @@ public class PreEnrollmentController implements PreEnrollmentApi {
     ParsedPreEnrollResponse response =
         objectMapper.convertValue(body, ParsedPreEnrollResponse.class);
     try {
-      String responseData = objectMapper.writeValueAsString(response.getParsedData());
       PreEnrollmentResponse createdResponse =
           enrollmentService.createAnonymousPreEnroll(
-              response.getStudyEnvironmentId(), surveyStableId, surveyVersion, responseData);
+              response.getStudyEnvironmentId(), surveyStableId, surveyVersion, response);
       return ResponseEntity.ok(createdResponse);
     } catch (JsonProcessingException e) {
       throw new IllegalArgumentException("malformatted response data", e);

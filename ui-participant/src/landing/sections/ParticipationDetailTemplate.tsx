@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import React, { CSSProperties } from 'react'
 import { ButtonConfig } from 'api/api'
 import PearlImage, { PearlImageProps } from '../../util/PearlImage'
@@ -34,12 +35,18 @@ function ParticipationDetailTemplate({
 }: { anchorRef?: string, config: ParticipationDetailTemplateProps }) {
   const styleProps: CSSProperties = { background }
   const isLeftImage = imagePosition === 'left' // default is right, so left has to be explicitly specified
-  return <div id={anchorRef} className="row justify-content-center" style={styleProps}>
-    <div className={`col-md-8 d-flex py-5 ${isLeftImage ? 'flex-row' : 'flex-row-reverse'}`}>
-      <div className={`${isLeftImage ? 'pe-5' : 'ps-5'}`}>
-        <PearlImage image={image} className="img-fluid"/>
+  return <div id={anchorRef} className="row mx-0 py-5" style={styleProps}>
+    <div
+      className={classNames(
+        'col-md-10 col-lg-8', 'mx-auto', 'row',
+        'justify-content-between',
+        isLeftImage ? 'flex-row' : 'flex-row-reverse'
+      )}
+    >
+      <div className="col-6 col-md-3 mx-auto mx-md-0 text-center">
+        <PearlImage image={image} className="img-fluid mb-4 mb-md-0"/>
       </div>
-      <div className="flex-grow-1">
+      <div className="col-md-8">
         <h4>
           {stepNumberText}
         </h4>

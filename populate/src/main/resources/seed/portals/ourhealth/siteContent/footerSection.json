@@ -1,0 +1,43 @@
+{
+  "sectionType": "NAV_AND_LINK_SECTIONS_FOOTER",
+  "sectionConfigJson": {
+    "includeNavbar": true,
+    "itemSections": [{
+      "title": "Contact",
+      "items": [{
+        "itemType": "EXTERNAL",
+        "label": "617-724-1270",
+        "externalLink": "tel:617-724-1270"
+      },{
+        "itemType": "EXTERNAL",
+        "label": "info@ourhealthstudy.org",
+        "externalLink": "mailto:info@ourhealthstudy.org"
+      }]
+    },{
+      "title": "Stay Informed",
+      "items": [{
+        "itemType": "MAILING_LIST",
+        "label": "Mailing List"
+      },{
+        "itemType": "EXTERNAL",
+        "label": "Twitter",
+        "externalLink": "https://twitter.com/ourhealthstudy"
+      },{
+        "itemType": "EXTERNAL",
+        "label": "Instagram",
+        "externalLink": "https://instagram.com/ourhealthstudy"
+      },{
+        "itemType": "EXTERNAL",
+        "label": "Facebook",
+        "externalLink": "https://facebook.com/ourhealthstudy"
+      }]
+    },{
+      "title": "Donate",
+      "items": [{
+        "itemType": "EXTERNAL",
+        "label": "Contribute funds",
+        "externalLink": "mailto:info@ourhealthstudy.org"
+      }]
+    }]
+  }
+}

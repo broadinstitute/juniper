@@ -46,7 +46,9 @@ public class SiteContentPopulator extends Populator<SiteContent> {
             }
             lsc.getNavbarItems().clear();
             lsc.getNavbarItems().addAll(lsc.getNavbarItemDtos());
+            initializeFooterConfig(lsc, config);
         }
+
         siteContentDto.getLocalizedSiteContents().clear();
         siteContentDto.getLocalizedSiteContents().addAll(siteContentDto.getLocalizedSiteContentDtos());
         SiteContent savedContent = siteContentService.create(siteContentDto);
@@ -58,14 +60,18 @@ public class SiteContentPopulator extends Populator<SiteContent> {
     private HtmlPage parseHtmlPageDto(HtmlPagePopDto page) {
         if (page != null) {
             for (HtmlSectionPopDto section : page.getSectionDtos()) {
-                if (section.getSectionConfigJson() != null)  {
-                    section.setSectionConfig(section.getSectionConfigJson().toString());
-                }
+                initializeHtmlSectionDto(section);
             }
             page.getSections().clear();
             page.getSections().addAll(page.getSectionDtos());
         }
         return page;
+    }
+
+    private void initializeHtmlSectionDto(HtmlSectionPopDto sectionPopDto) {
+        if (sectionPopDto.getSectionConfigJson() != null)  {
+            sectionPopDto.setSectionConfig(sectionPopDto.getSectionConfigJson().toString());
+        }
     }
 
     public void populateImages(List<SiteImagePopDto> siteImages, FilePopulateConfig config)
@@ -95,6 +101,15 @@ public class SiteContentPopulator extends Populator<SiteContent> {
             BeanUtils.copyProperties(popItem, navItem);
         }
         navItem.setHtmlPage(parseHtmlPageDto(navItem.getHtmlPageDto()));
+    }
+
+    private void initializeFooterConfig(LocalizedSiteContentPopDto lscPopDto, FilePopulateConfig config) throws IOException {
+        if (lscPopDto.getFooterSectionFile() != null) {
+            String footerPopString = filePopulateService.readFile(lscPopDto.getFooterSectionFile(), config);
+            HtmlSectionPopDto sectionPopDto = objectMapper.readValue(footerPopString, HtmlSectionPopDto.class);
+            initializeHtmlSectionDto(sectionPopDto);
+            lscPopDto.setFooterSection(sectionPopDto);
+        }
     }
 
 }

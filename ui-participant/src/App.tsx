@@ -57,7 +57,7 @@ function App() {
                           <Route index element={<div>study specific page -- TBD</div>}/>
                           <Route path="*" element={<div>unmatched study route</div>}/>
                         </Route>
-                        <Route path="/" element={<LandingPage/>}>
+                        <Route path="/" element={<LandingPage localContent={localContent}/>}>
                           {landingRoutes}
                           <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
                         </Route>
