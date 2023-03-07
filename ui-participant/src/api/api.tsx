@@ -66,14 +66,35 @@ export type HtmlPage = {
 
 export type NavbarItem = {
   label: string,
-  externalLink: string,
+  externalLink?: string,
+  anchorLinkPath?: string,
   itemType: string
+  htmlPage?: HtmlPage
+}
+
+export type NavbarItemInternal = NavbarItem & {
   htmlPage: HtmlPage
 }
+
+export type NavbarItemInternalAnchor = NavbarItem & {
+  anchorLinkPath: string
+}
+
+/** type predicate for handling internal links */
+export function isInternalLink(navItem: NavbarItem): navItem is NavbarItemInternal {
+  return navItem.itemType === 'INTERNAL'
+}
+
+/** type predicate for handling internal anchor links */
+export function isInternalAnchorLink(navItem: NavbarItem): navItem is NavbarItemInternalAnchor {
+  return navItem.itemType === 'INTERNAL_ANCHOR'
+}
+
 
 export type HtmlSection = {
   id: string,
   sectionType: string,
+  anchorRef?: string,
   rawContent: string | null,
   sectionConfig: string | null
 }

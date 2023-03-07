@@ -1,7 +1,8 @@
 import classNames from 'classnames'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import Api, { getImageUrl, NavbarItem } from 'api/api'
+import { HashLink } from 'react-router-hash-link'
+import Api, { getImageUrl, isInternalAnchorLink, isInternalLink, NavbarItem } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from '../providers/UserProvider'
 
@@ -35,7 +36,7 @@ export default function LandingNavbar() {
         data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
         type="button"
       >
-        <span className="navbar-toggler-icon" />
+        <span className="navbar-toggler-icon"/>
       </button>
       <div className="collapse navbar-collapse mt-2 mt-lg-0" id="navbarNavDropdown">
         <ul className="navbar-nav">
@@ -71,9 +72,11 @@ export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
     alert(`mailing list ${navLinkObj.label}`)
   }
 
-  if (navLink.itemType === 'INTERNAL') {
+  if (isInternalLink(navLink)) {
     // we require navbar links to be absolute rather than relative links
-    return <NavLink to={`/${navLink.htmlPage.path}`} className={navLinkClasses}>{navLink.label}</NavLink>
+    return <NavLink to={`/${navLink.htmlPage.path}`} className="nav-link ms-3">{navLink.label}</NavLink>
+  } else if (isInternalAnchorLink(navLink)) {
+    return <HashLink to={`/${navLink.anchorLinkPath}`} className="nav-link ms-3">{navLink.label}</HashLink>
   } else if (navLink.itemType === 'MAILING_LIST') {
     return <a role="button" className={navLinkClasses} onClick={() => mailingList(navLink)}>{navLink.label}</a>
   } else if (navLink.itemType === 'EXTERNAL') {

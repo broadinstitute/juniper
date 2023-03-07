@@ -13,6 +13,7 @@ public class HtmlSection extends BaseEntity {
     private HtmlSectionType sectionType;
     private String rawContent;
     private String sectionConfig;
+    private String anchorRef;
     private int sectionOrder;
     private UUID htmlPageId;
 }

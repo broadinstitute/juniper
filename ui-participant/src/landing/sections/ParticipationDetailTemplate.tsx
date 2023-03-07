@@ -21,6 +21,7 @@ type ParticipationDetailTemplateProps = {
  * Template for a participation step description
  */
 function ParticipationDetailTemplate({
+  anchorRef,
   config: {
     background,
     blurb,
@@ -31,10 +32,10 @@ function ParticipationDetailTemplate({
     imagePosition,
     title
   }
-}: { config: ParticipationDetailTemplateProps }) {
+}: { anchorRef?: string, config: ParticipationDetailTemplateProps }) {
   const styleProps: CSSProperties = { background }
   const isLeftImage = imagePosition === 'left' // default is right, so left has to be explicitly specified
-  return <div className="row mx-0 py-5" style={styleProps}>
+  return <div id={anchorRef} className="row mx-0 py-5" style={styleProps}>
     <div
       className={classNames(
         'col-md-10 col-lg-8', 'mx-auto', 'row',
@@ -43,7 +44,7 @@ function ParticipationDetailTemplate({
       )}
     >
       <div className="col-6 col-md-3 mx-auto mx-md-0 text-center">
-        <PearlImage image={image} className="img-fluid mb-4 mb-md-0" />
+        <PearlImage image={image} className="img-fluid mb-4 mb-md-0"/>
       </div>
       <div className="col-md-8">
         <h4>

@@ -18,6 +18,7 @@ test('handles landing page with one section', () => {
   const simplePage: HtmlPage = {
     sections: [{
       sectionType: 'RAW_HTML',
+      anchorRef: 'foo',
       rawContent: '<div>Hellllo</div>',
       id: 'fakeId',
       sectionConfig: null
