@@ -3,7 +3,7 @@ import React from 'react'
 import { ButtonConfig } from 'api/api'
 import ReactMarkdown from 'react-markdown'
 import ConfiguredButton from './ConfiguredButton'
-import PearlImage, { PearlImageProps } from '../../util/PearlImage'
+import PearlImage, { PearlImageConfig } from '../../util/PearlImage'
 
 type HeroCenteredTemplateProps = {
   background?: string, // background CSS style (e.g. `linear-gradient(...)`)
@@ -13,7 +13,7 @@ type HeroCenteredTemplateProps = {
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   title?: string, // large heading text
   color?: string, // foreground text color
-  image?: PearlImageProps   // image to display under blurb
+  image?: PearlImageConfig   // image to display under blurb
 }
 
 const blurbAlignAllowed = ['center', 'right', 'left']

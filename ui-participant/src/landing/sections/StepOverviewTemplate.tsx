@@ -1,11 +1,11 @@
 import _ from 'lodash'
 import React from 'react'
 import { ButtonConfig } from 'api/api'
-import PearlImage, { PearlImageProps } from 'util/PearlImage'
+import PearlImage, { PearlImageConfig } from 'util/PearlImage'
 import ReactMarkdown from 'react-markdown'
 
 type StepProps = {
-  image: PearlImageProps,
+  image: PearlImageConfig,
   duration: string,
   blurb: string
 }

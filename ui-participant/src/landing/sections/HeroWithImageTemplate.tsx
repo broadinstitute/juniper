@@ -2,20 +2,20 @@ import classNames from 'classnames'
 import _ from 'lodash'
 import React, { CSSProperties } from 'react'
 import { ButtonConfig, getImageUrl } from 'api/api'
-import PearlImage, { PearlImageProps } from '../../util/PearlImage'
+import PearlImage, { PearlImageConfig } from '../../util/PearlImage'
 import ConfiguredButton from './ConfiguredButton'
 import ReactMarkdown from 'react-markdown'
 
 type HeroLeftWithImageTemplateProps = {
   background?: string, // background CSS style (e.g. `linear-gradient(...)`)
   backgroundColor?: string, // background color for the block
-  backgroundImage?: PearlImageProps, // background image
+  backgroundImage?: PearlImageConfig, // background image
   blurb?: string, //  text below the title
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   title?: string, // large heading text
-  image?: PearlImageProps, // image
+  image?: PearlImageConfig, // image
   imagePosition?: string, // left or right.  Default is right
-  logos?: PearlImageProps[]
+  logos?: PearlImageConfig[]
 }
 
 /**
