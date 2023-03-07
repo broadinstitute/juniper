@@ -55,7 +55,7 @@ function ParticipationDetailTemplate({
         <p className="fs-4">
           {blurb}
         </p>
-        {actionButton && <ConfiguredButton config={actionButton} className="btn btn-secondary"/>}
+        {actionButton && <ConfiguredButton config={actionButton} />}
       </div>
     </div>
   </div>

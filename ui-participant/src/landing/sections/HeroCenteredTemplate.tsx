@@ -54,7 +54,7 @@ function HeroCenteredTemplate({
           {
             _.map(buttons, (button, i) => {
               // TODO: allow customization of button styling
-              return <ConfiguredButton key={i} config={button} className='btn btn-light btn-lg px-4 me-md-2'/>
+              return <ConfiguredButton key={i} config={button} className='btn-lg px-4 me-md-2'/>
             })
           }
         </div>

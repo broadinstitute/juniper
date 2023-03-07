@@ -60,7 +60,7 @@ function HeroWithImageTemplate({
         <div className="d-grid gap-2 d-md-flex justify-content-md-start">
           {
             _.map(buttons, (buttonConfig, i) =>
-              <ConfiguredButton key={i} config={buttonConfig} className="btn btn-primary btn-lg px-4 me-md-2"/>
+              <ConfiguredButton key={i} config={buttonConfig} className="btn-lg px-4 me-md-2"/>
             )
           }
         </div>
