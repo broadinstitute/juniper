@@ -6,6 +6,7 @@
   "title": "OurHealth pre-registration",
   "logoPosition": "right",
   "completeText": "Continue",
+  "showQuestionNumbers": "off",
   "pages": [
     {
       "name": "page1",

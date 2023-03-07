@@ -1,0 +1,216 @@
+{
+  "stableId": "oh_oh_mental",
+  "version": 1,
+  "name": "Mental Health",
+  "jsonContent": {
+    "showQuestionNumbers": "off",
+    "pages": [
+      {
+        "elements": [
+          {
+            "name": "oh_oh_mental_phq9Description",
+            "type": "html",
+            "html": "The next set of questions asks about your experiences in the past two weeks. Please answer to the best of your ability.<br/><br/>Over the last <u>2 weeks</u>, how often have you been bothered by any of the following problems?  Please choose the answer that best applies. \n"
+          },
+          {
+            "name": "oh_oh_mental_phq9LostInterest",
+            "type": "radiogroup",
+            "title": "Little interest or pleasure in doing things.",
+            "choices": [
+              {"text": "Not at all", "value": "0"},
+              {"text": "Several days", "value": "1"},
+              {"text": "More than half the days", "value": "2"},
+              {"text": "Nearly every day", "value": "3"}
+            ]
+          },
+          {
+            "name": "oh_oh_mental_phq9Depressed",
+            "type": "radiogroup",
+            "title": "Feeling down, depressed, or hopeless.",
+            "choices": [
+              {"text": "Not at all", "value": "0"},
+              {"text": "Several days", "value": "1"},
+              {"text": "More than half the days", "value": "2"},
+              {"text": "Nearly every day", "value": "3"}
+            ]
+          },
+          {
+            "name": "oh_oh_mental_phq9Sleeping",
+            "type": "radiogroup",
+            "title": "Trouble falling or staying asleep, or sleeping too much.",
+            "choices": [
+              {"text": "Not at all", "value": "0"},
+              {"text": "Several days", "value": "1"},
+              {"text": "More than half the days", "value": "2"},
+              {"text": "Nearly every day", "value": "3"}
+            ]
+          },
+          {
+            "name": "oh_oh_mental_phq9Tired",
+            "type": "radiogroup",
+            "title": "Feeling tired or having little energy. ",
+            "choices": [
+              {"text": "Not at all", "value": "0"},
+              {"text": "Several days", "value": "1"},
+              {"text": "More than half the days", "value": "2"},
+              {"text": "Nearly every day", "value": "3"}
+            ]
+          },
+          {
+            "name": "oh_oh_mental_phq9Appetite",
+            "type": "radiogroup",
+            "title": "Poor appetite or overeating.",
+            "choices": [
+              {"text": "Not at all", "value": "0"},
+              {"text": "Several days", "value": "1"},
+              {"text": "More than half the days", "value": "2"},
+              {"text": "Nearly every day", "value": "3"}
+            ]
+          },
+          {
+            "name": "oh_oh_mental_phq9FeelFailure",
+            "type": "radiogroup",
+            "title": "Feeling bad about yourself –  or that you are a failure or have let yourself or your family down.",
+            "choices": [
+              {"text": "Not at all", "value": "0"},
+              {"text": "Several days", "value": "1"},
+              {"text": "More than half the days", "value": "2"},
+              {"text": "Nearly every day", "value": "3"}
+            ]
+          },
+          {
+            "name": "oh_oh_mental_phq9TroubleConcentrating",
+            "type": "radiogroup",
+            "title": "Trouble concentrating on things, such as reading the newspaper or watching television.",
+            "choices": [
+              {"text": "Not at all", "value": "0"},
+              {"text": "Several days", "value": "1"},
+              {"text": "More than half the days", "value": "2"},
+              {"text": "Nearly every day", "value": "3"}
+            ]
+          },
+          {
+            "name": "oh_oh_mental_phq9MovingSpeed",
+            "type": "radiogroup",
+            "title": "Moving or speaking so slowly that other people could have noticed. Or the opposite –  being so fidgety or restless that you have been moving around a lot more than usual. ",
+            "choices": [
+              {"text": "Not at all", "value": "0"},
+              {"text": "Several days", "value": "1"},
+              {"text": "More than half the days", "value": "2"},
+              {"text": "Nearly every day", "value": "3"}
+            ]
+          },
+          {
+            "name": "oh_oh_mental_phq9HowDifficult",
+            "type": "radiogroup",
+            "title": "How difficult have these made it for you to do your work, take care of things at home, or get along with other people? Please choose one. ",
+            "visibleIf": "{oh_oh_mental_phq9LostInterest} != '0' || {oh_oh_mental_phq9Depressed} != '0' || {oh_oh_mental_phq9Sleeping} != '0' || {oh_oh_mental_phq9Tired} != '0' || {oh_oh_mental_phq9Appetite} != '0' || {oh_oh_mental_phq9FeelFailure} != '0' || {oh_oh_mental_phq9TroubleConcentrating} != '0' || {oh_oh_mental_phq9MovingSpeed} != '0'",
+            "choices": [
+              {"text": "Not difficult at all", "value": "notDifficultAtAll"},
+              {"text": "Somewhat difficult", "value": "somewhatDifficult"},
+              {"text": "Very difficult", "value": "veryDifficult"},
+              {"text": "Extremely difficult", "value": "extremelyDifficult"}
+            ]
+          }
+        ]
+      },{
+        "elements": [
+          {
+            "name": "oh_oh_mental_phq9Description",
+            "type": "html",
+            "html": "The next set of questions asks about your experiences in the past two weeks. Please answer to the best of your ability.<br/><br/>Over the last <u>2 weeks</u>, how often have you been bothered by any of the following problems?  Please choose the answer that best applies. \n"
+          },
+          {
+            "name": "oh_oh_mental_gad7nervousAnxious",
+            "type": "radiogroup",
+            "title": "Feeling nervous, anxious, or on edge. ",
+            "choices": [
+              {"text": "Not at all", "value": "0"},
+              {"text": "Several days", "value": "1"},
+              {"text": "More than half the days", "value": "2"},
+              {"text": "Nearly every day", "value": "3"}
+            ]
+          },
+          {
+            "name": "oh_oh_mental_gad7CantStopWorrying",
+            "type": "radiogroup",
+            "title": "Not being able to stop or control worrying.",
+            "choices": [
+              {"text": "Not at all", "value": "0"},
+              {"text": "Several days", "value": "1"},
+              {"text": "More than half the days", "value": "2"},
+              {"text": "Nearly every day", "value": "3"}
+            ]
+          },
+          {
+            "name": "oh_oh_mental_gad7WorryTooMuch",
+            "type": "radiogroup",
+            "title": "Worrying too much about different things.",
+            "choices": [
+              {"text": "Not at all", "value": "0"},
+              {"text": "Several days", "value": "1"},
+              {"text": "More than half the days", "value": "2"},
+              {"text": "Nearly every day", "value": "3"}
+            ]
+          },
+          {
+            "name": "oh_oh_mental_gad7TroubleRelaxing",
+            "type": "radiogroup",
+            "title": "Trouble relaxing. ",
+            "choices": [
+              {"text": "Not at all", "value": "0"},
+              {"text": "Several days", "value": "1"},
+              {"text": "More than half the days", "value": "2"},
+              {"text": "Nearly every day", "value": "3"}
+            ]
+          },
+          {
+            "name": "oh_oh_mental_gad7Restless",
+            "type": "radiogroup",
+            "title": "Being so restless that it’s hard to sit still.",
+            "choices": [
+              {"text": "Not at all", "value": "0"},
+              {"text": "Several days", "value": "1"},
+              {"text": "More than half the days", "value": "2"},
+              {"text": "Nearly every day", "value": "3"}
+            ]
+          },
+          {
+            "name": "oh_oh_mental_gad7EasilyAnnoyed",
+            "type": "radiogroup",
+            "title": "Becoming easily annoyed or irritable. ",
+            "choices": [
+              {"text": "Not at all", "value": "0"},
+              {"text": "Several days", "value": "1"},
+              {"text": "More than half the days", "value": "2"},
+              {"text": "Nearly every day", "value": "3"}
+            ]
+          },
+          {
+            "name": "oh_oh_mental_gad7FeelingAfraid",
+            "type": "radiogroup",
+            "title": "Feeling afraid as if something awful might happen.",
+            "choices": [
+              {"text": "Not at all", "value": "0"},
+              {"text": "Several days", "value": "1"},
+              {"text": "More than half the days", "value": "2"},
+              {"text": "Nearly every day", "value": "3"}
+            ]
+          },
+          {
+            "name": "oh_oh_mental_gad7HowDifficult",
+            "type": "radiogroup",
+            "title": "How difficult have these made it for you to do your work, take care of things at home, or get along with other people? Please choose one. ",
+            "visibleIf": "{oh_oh_mental_gad7nervousAnxious} != '0' || {oh_oh_mental_gad7CantStopWorrying} != '0' || {oh_oh_mental_gad7WorryTooMuch} != '0' || {oh_oh_mental_gad7TroubleRelaxing} != '0' || {oh_oh_mental_gad7Restless} != '0' || {oh_oh_mental_gad7EasilyAnnoyed} != '0' || {oh_oh_mental_gad7FeelingAfraid} != '0'",
+            "choices": [
+              {"text": "Not difficult at all", "value": "notDifficultAtAll"},
+              {"text": "Somewhat difficult", "value": "somewhatDifficult"},
+              {"text": "Very difficult", "value": "veryDifficult"},
+              {"text": "Extremely difficult", "value": "extremelyDifficult"}
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
