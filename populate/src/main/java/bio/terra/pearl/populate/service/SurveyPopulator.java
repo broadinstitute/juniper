@@ -1,6 +1,7 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
+import bio.terra.pearl.core.model.Versioned;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -68,7 +69,7 @@ public class SurveyPopulator extends Populator<Survey> {
         return configuredSurvey;
     }
 
-    public Optional<Survey> fetchFromPopDto(SurveyPopDto surveyPopDto) {
-        return surveyService.findByStableId(surveyPopDto.getStableId(), surveyPopDto.getVersion());
+    public Optional<Survey> fetchFromPopDto(Versioned popDto) {
+        return surveyService.findByStableId(popDto.getStableId(), popDto.getVersion());
     }
 }

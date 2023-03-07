@@ -88,6 +88,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         studyEnvironmentSurveyDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         studyEnvironmentConsentDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         notificationConfigService.deleteByStudyEnvironmentId(studyEnvironmentId);
+        preEnrollmentResponseDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         dao.delete(studyEnvironmentId);
         if (studyEnv.getStudyEnvironmentConfigId() != null) {
             studyEnvironmentConfigService.delete(studyEnv.getStudyEnvironmentConfigId());
