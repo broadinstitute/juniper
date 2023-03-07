@@ -16,6 +16,14 @@ import lombok.Setter;
 @Getter @Setter @NoArgsConstructor
 public class EnrolleePopDto extends Enrollee {
     private String linkedUsername;
+    /**
+     * if true, the data for this enrollee will be processed through service calls as if they were submitted
+     * via the API, so all side effects, including tasks and events, will be created.
+     * If false, the data for the enrollee will just be stored as-is using CRUD service calls.  the latter is more
+     * useful for fine-grained control of tasks and status, the former more useful for quick and accurate synthetic
+     * participant creation.
+     * */
+    private boolean simulateSubmissions = false;
     private PreEnrollmentResponsePopDto preEnrollmentResponseDto;
 
     private Set<SurveyResponsePopDto> surveyResponseDtos = new HashSet<>();

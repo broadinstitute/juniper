@@ -340,13 +340,26 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /api/internal/v1/populate/{populateType}:
+  /api/internal/v1/populate/baseSeed:
     post:
       summary: Populates
       tags: [ populate ]
-      operationId: populate
+      operationId: populateBaseSeed
+      responses:
+        '201':
+          description: stats object
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/internal/v1/populate/portal:
+    post:
+      summary: Populates
+      tags: [ populate ]
+      operationId: populatePortal
       parameters:
-        - { name: populateType, in: path, required: true, schema: { type: string } }
         - { name: filePathName, in: query, required: true, schema: { type: string } }
       responses:
         '201':
@@ -368,6 +381,25 @@ paths:
       responses:
         '201':
           description: survey object
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/internal/v1/populate/enrollee/{portalShortcode}/env/{envName}/study/{studyShortcode}:
+    post:
+      summary: Populates an Enrollee to a given portal/study/env.
+      tags: [ populate ]
+      operationId: populateEnrollee
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: filePathName, in: query, required: true, schema: { type: string } }
+      responses:
+        '201':
+          description: enrollee object
           content:
             application/json:
               schema:

@@ -56,4 +56,8 @@ public class NotificationConfigDao extends BaseMutableJdbiDao<NotificationConfig
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
         deleteByProperty("study_environment_id", studyEnvironmentId);
     }
+
+    public void deleteByPortalEnvironmentId(UUID studyEnvironmentId) {
+        deleteByProperty("portal_environment_id", studyEnvironmentId);
+    }
 }

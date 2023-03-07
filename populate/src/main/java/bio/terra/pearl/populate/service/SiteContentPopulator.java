@@ -8,6 +8,8 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.site.SiteImageService;
 import bio.terra.pearl.populate.dto.site.*;
+import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
+import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SiteContentPopulator extends Populator<SiteContent> {
+public class SiteContentPopulator extends Populator<SiteContent, PortalPopulateContext> {
     private SiteContentService siteContentService;
     private SiteImageService siteImageService;
     private PortalService portalService;
@@ -29,7 +31,7 @@ public class SiteContentPopulator extends Populator<SiteContent> {
     }
 
     @Override
-    public SiteContent populateFromString(String fileString, FilePopulateConfig config) throws IOException {
+    public SiteContent populateFromString(String fileString, PortalPopulateContext context) throws IOException {
         SiteContentPopDto siteContentDto = objectMapper.readValue(fileString, SiteContentPopDto.class);
         Optional<SiteContent> existingContent = siteContentService
                 .findOne(siteContentDto.getStableId(), siteContentDto.getVersion());
@@ -37,16 +39,16 @@ public class SiteContentPopulator extends Populator<SiteContent> {
             // for now, assume that if it exists, it has already been refreshed via populating another environment.
             return existingContent.get();
         };
-        Portal attachedPortal = portalService.findOneByShortcode(config.getPortalShortcode()).get();
+        Portal attachedPortal = portalService.findOneByShortcode(context.getPortalShortcode()).get();
         siteContentDto.setPortalId(attachedPortal.getId());
         for (LocalizedSiteContentPopDto lsc : siteContentDto.getLocalizedSiteContentDtos()) {
             lsc.setLandingPage(parseHtmlPageDto(lsc.getLandingPage()));
             for (NavbarItemPopDto navItem : lsc.getNavbarItemDtos()) {
-                initializeNavItem(navItem, config);
+                initializeNavItem(navItem, context);
             }
             lsc.getNavbarItems().clear();
             lsc.getNavbarItems().addAll(lsc.getNavbarItemDtos());
-            initializeFooterConfig(lsc, config);
+            initializeFooterConfig(lsc, context);
         }
 
         siteContentDto.getLocalizedSiteContents().clear();
@@ -74,18 +76,18 @@ public class SiteContentPopulator extends Populator<SiteContent> {
         }
     }
 
-    public void populateImages(List<SiteImagePopDto> siteImages, FilePopulateConfig config)
+    public void populateImages(List<SiteImagePopDto> siteImages, PortalPopulateContext context)
             throws IOException {
         for (SiteImagePopDto imageDto : siteImages) {
             String popFileName = imageDto.getPopulateFileName();
-            byte[] imageContent = filePopulateService.readBinaryFile(popFileName, config);
+            byte[] imageContent = filePopulateService.readBinaryFile(popFileName, context);
             String uploadFileName = imageDto.getUploadFileName();
             if (uploadFileName == null) {
                 uploadFileName = popFileName.substring(popFileName.lastIndexOf("/") + 1);
             }
             SiteImage image = SiteImage.builder()
                     .data(imageContent)
-                    .portalShortcode(config.getPortalShortcode())
+                    .portalShortcode(context.getPortalShortcode())
                     .version(imageDto.getVersion() == 0 ? 1 : imageDto.getVersion())
                     .uploadFileName(uploadFileName)
                     .build();
@@ -93,7 +95,7 @@ public class SiteContentPopulator extends Populator<SiteContent> {
         }
     }
 
-    private void initializeNavItem(NavbarItemPopDto navItem, FilePopulateConfig config) throws IOException {
+    private void initializeNavItem(NavbarItemPopDto navItem, FilePopulateContext config) throws IOException {
         if (navItem.getPopulateFileName() != null) {
             // this is populated from its own file, so read it from there.
             String navPopulateString = filePopulateService.readFile(navItem.getPopulateFileName(), config);
@@ -103,9 +105,9 @@ public class SiteContentPopulator extends Populator<SiteContent> {
         navItem.setHtmlPage(parseHtmlPageDto(navItem.getHtmlPageDto()));
     }
 
-    private void initializeFooterConfig(LocalizedSiteContentPopDto lscPopDto, FilePopulateConfig config) throws IOException {
+    private void initializeFooterConfig(LocalizedSiteContentPopDto lscPopDto, FilePopulateContext context) throws IOException {
         if (lscPopDto.getFooterSectionFile() != null) {
-            String footerPopString = filePopulateService.readFile(lscPopDto.getFooterSectionFile(), config);
+            String footerPopString = filePopulateService.readFile(lscPopDto.getFooterSectionFile(), context);
             HtmlSectionPopDto sectionPopDto = objectMapper.readValue(footerPopString, HtmlSectionPopDto.class);
             initializeHtmlSectionDto(sectionPopDto);
             lscPopDto.setFooterSection(sectionPopDto);

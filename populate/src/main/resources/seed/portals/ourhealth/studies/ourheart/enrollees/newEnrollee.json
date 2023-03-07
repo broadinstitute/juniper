@@ -7,36 +7,5 @@
     "surveyVersion": 1,
     "fullDataJson": {"items":[{"stableId":"descriptionText","displayValue":"","node":false},{"stableId":"oh_oh_preenroll_checklist","value":["southAsianAncestry","english","isAdult","livesInUS"],"displayValue":"Identifies as having South Asian ancestry from one of these countries: Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, or Sri Lanka, Understands English, Is 18 years or older, Lives in the United States","node":false},{"stableId":"qualified","value":true,"node":false}]}
   },
-  "participantTaskDtos": [{
-    "status": "NEW",
-    "taskType": "CONSENT",
-    "targetStableId": "oh_oh_consent",
-    "targetAssignedVersion": 1,
-    "taskOrder": 1,
-    "blocksHub": true
-  },{
-    "status": "NEW",
-    "taskType": "SURVEY",
-    "targetName": "Medical History",
-    "targetStableId": "oh_oh_medHx",
-    "targetAssignedVersion": 1,
-    "taskOrder": 1,
-    "blocksHub": false
-  },{
-    "status": "NEW",
-    "taskType": "SURVEY",
-    "targetName": "Placeholder survey 1",
-    "targetStableId": "oh_oh_placeholder1",
-    "targetAssignedVersion": 1,
-    "taskOrder": 1,
-    "blocksHub": false
-  },{
-    "status": "NEW",
-    "taskType": "SURVEY",
-    "targetName": "Placeholder survey 2",
-    "targetStableId": "oh_oh_placeholder2",
-    "targetAssignedVersion": 1,
-    "taskOrder": 1,
-    "blocksHub": false
-  }]
+  "simulateSubmissions": true
 }

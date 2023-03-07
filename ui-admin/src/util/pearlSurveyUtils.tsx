@@ -103,10 +103,11 @@ export function getValueForChoice(choiceText: string) {
  * choice objects are rendered on a single line.  This reduces the overall file length of many surveys by a factor
  * of 3x or more.
  */
-export function questionToJson(questionObj: QuestionObj, indentLevel= 0): string {
+export function questionToJson(questionObj: QuestionObj, indentLevel= 0, excludeType: boolean): string {
   const leadingIndent = ' '.repeat(indentLevel)
   const visibleIfString = questionObj.visibleIf ? `\n${leadingIndent}  "visibleIf": "${questionObj.visibleIf}",` : ''
   const isRequiredString = questionObj.isRequired ? `\n${leadingIndent}  "isRequired": true,` : ''
+  const typeString = excludeType ? '' : `\n${leadingIndent}  "type": "${questionObj.type}",`
   if (questionObj.choices) {
     const numChoices = questionObj.choices.length
     const otherBlock = !questionObj.otherText ? '' : `\n${leadingIndent}  "showOtherItem": true,
@@ -117,8 +118,7 @@ ${leadingIndent}  "otherPlaceholder": "${questionObj.otherPlaceholder}",`
       return `${leadingIndent}    {"text": "${c.text}", "value": "${c.value}"}${trailingChar}`
     }).join('\n')
     return `${leadingIndent}{
-${leadingIndent}  "name": "${questionObj.namePrefix}${questionObj.nameSuffix}", 
-${leadingIndent}  "type": "${questionObj.type}",
+${leadingIndent}  "name": "${questionObj.namePrefix}${questionObj.nameSuffix}",${typeString}
 ${leadingIndent}  "title": "${questionObj.title}",${visibleIfString}${otherBlock}${isRequiredString}
 ${leadingIndent}  "choices": [
 ${choicesAsJson}
@@ -135,7 +135,7 @@ ${leadingIndent}  "questionTemplateName": "${questionObj.questionTemplateName}"
 /** Renders a panel to JSON, converting the contained questions using questionToJson */
 export function panelObjToJson(panelObj: PanelObj): string {
   const elementsJson = panelObj.elements.map(element => {
-    return questionToJson(element, 4)
+    return questionToJson(element, 4, true)
   }).join(',\n')
   return `{
   "type": "${panelObj.type}",

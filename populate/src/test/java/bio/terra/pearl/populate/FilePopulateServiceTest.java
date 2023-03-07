@@ -1,7 +1,7 @@
 package bio.terra.pearl.populate;
 
 
-import bio.terra.pearl.populate.service.FilePopulateConfig;
+import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.FilePopulateService;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -15,7 +15,7 @@ public class FilePopulateServiceTest extends BaseSpringBootTest {
 
     @Test
     public void testPopulateRestrictedToSeedDirectory() throws IOException {
-        FilePopulateConfig config = new FilePopulateConfig("/etc/passwd");
+        FilePopulateContext config = new FilePopulateContext("/etc/passwd");
         Exception e = assertThrows(FileNotFoundException.class, () -> {
             filePopulateService.readFile("", config);
         });
@@ -23,7 +23,7 @@ public class FilePopulateServiceTest extends BaseSpringBootTest {
 
     @Test
     public void testPopulateDisallowsBackNavigationInBasePath() throws IOException {
-        FilePopulateConfig config = new FilePopulateConfig("../../../etc/passwd");
+        FilePopulateContext config = new FilePopulateContext("../../../etc/passwd");
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
             filePopulateService.readFile("", config);
         });
@@ -31,7 +31,7 @@ public class FilePopulateServiceTest extends BaseSpringBootTest {
 
     @Test
     public void testPopulateDisallowsBackNavigationInRelativePath() throws IOException {
-        FilePopulateConfig config = new FilePopulateConfig("portals/ourhealth");
+        FilePopulateContext config = new FilePopulateContext("portals/ourhealth");
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
             filePopulateService.readFile("../../../../../etc/passwd", config);
         });

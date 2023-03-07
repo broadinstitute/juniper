@@ -1,5 +1,6 @@
 package bio.terra.pearl.populate.service;
 
+import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -28,31 +29,32 @@ public class FilePopulateService {
                 .getProperty("env.populate.populate-from-classpath", Boolean.class, true);
     }
 
-    public String readFile(String relativePath, FilePopulateConfig popSpec) throws IOException {
-        InputStream ios = getInputStream(relativePath, popSpec);
+    public String readFile(String relativePath, FilePopulateContext context) throws IOException {
+        InputStream ios = getInputStream(relativePath, context);
         String fileString = new String(ios.readAllBytes(), StandardCharsets.UTF_8);
         return fileString;
     }
 
-    public byte[] readBinaryFile(String relativePath, FilePopulateConfig popSpec) throws IOException {
-        InputStream ios = getInputStream(relativePath, popSpec);
+    public byte[] readBinaryFile(String relativePath, FilePopulateContext context) throws IOException {
+        InputStream ios = getInputStream(relativePath, context);
         return ios.readAllBytes();
     }
 
-    public InputStream getInputStream(String relativePath, FilePopulateConfig popSpec) throws IOException {
-        if (relativePath.contains("..") || popSpec.getBasePath().contains("..")) {
+    public InputStream getInputStream(String relativePath, FilePopulateContext context) throws IOException {
+        if (relativePath.contains("..") || context.getBasePath().contains("..")) {
             throw new IllegalArgumentException("'..' is not permitted in paths to be read");
         }
         if (isPopulateFromClasspath) {
-            ClassPathResource cpr = new ClassPathResource(SEED_ROOT + popSpec.getBasePath() + "/" + relativePath);
+            ClassPathResource cpr = new ClassPathResource(SEED_ROOT + context.getBasePath() + "/" + relativePath);
             return cpr.getInputStream();
         }
         /**
          * depending on whether you are running gradle or spring boot, the root directory could either be
-         * the root folder or api-admin.  So strip out api-admin if it's there
+         * the root folder or api-admin, or populate.  So strip out api-admin or populate if it's there
          */
-        String projectDir = System.getProperty("user.dir").replace("/api-admin", "");
-        String pathName = projectDir + "/" + ABSOLUTE_SEED_ROOT + popSpec.getBasePath() + "/" + relativePath;
+        String projectDir = System.getProperty("user.dir").replace("/api-admin", "")
+                .replace("/populate", "");
+        String pathName = projectDir + "/" + ABSOLUTE_SEED_ROOT + context.getBasePath() + "/" + relativePath;
         Path filePath = Path.of(pathName);
         return Files.newInputStream(filePath);
     }

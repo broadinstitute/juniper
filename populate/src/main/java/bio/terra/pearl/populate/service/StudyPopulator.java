@@ -16,14 +16,15 @@ import bio.terra.pearl.populate.dto.consent.StudyEnvironmentConsentPopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationConfigPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
+import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
+import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class StudyPopulator extends Populator<Study> {
+public class StudyPopulator extends Populator<Study, PortalPopulateContext> {
     private StudyService studyService;
     private EnrolleePopulator enrolleePopulator;
     private SurveyPopulator surveyPopulator;
@@ -47,19 +48,7 @@ public class StudyPopulator extends Populator<Study> {
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
     }
 
-    @Transactional
-    @Override
-    public Study populate(String filePathName) throws IOException {
-        FilePopulateConfig config = new FilePopulateConfig(filePathName);
-        return populate(config.getRootFileName(), config);
-    }
-
-    public Study populate(String studyFileName, FilePopulateConfig config) throws IOException {
-        String portalFileString = filePopulateService.readFile(studyFileName, config);
-        return populateFromString(portalFileString, config);
-    }
-
-    public Study populateFromString(String studyContent, FilePopulateConfig config)  throws IOException {
+    public Study populateFromString(String studyContent, PortalPopulateContext context)  throws IOException {
         StudyPopDto studyDto = objectMapper.readValue(studyContent, StudyPopDto.class);
 
         // delete the existing survey
@@ -70,28 +59,28 @@ public class StudyPopulator extends Populator<Study> {
 
         // first, populate the surveys and consent forms themselves
         for (String surveyFile : studyDto.getSurveyFiles()) {
-            surveyPopulator.populate(config.newFrom(surveyFile));
+            surveyPopulator.populate(context.newFrom(surveyFile));
         }
         for (String consentFile : studyDto.getConsentFormFiles()) {
-            consentFormPopulator.populate(config.newFrom(consentFile));
+            consentFormPopulator.populate(context.newFrom(consentFile));
         }
         for (String template : studyDto.getEmailTemplateFiles()) {
-            emailTemplatePopulator.populate(config.newFrom(template));
+            emailTemplatePopulator.populate(context.newFrom(template));
         }
         for (StudyEnvironmentPopDto studyEnv : studyDto.getStudyEnvironmentDtos()) {
-            initializeStudyEnvironmentDto(studyEnv, config.newForEnv(studyEnv.getEnvironmentName()));
+            initializeStudyEnvironmentDto(studyEnv, context.newFrom(studyEnv.getEnvironmentName()));
         }
 
         Study newStudy = studyService.create(studyDto);
-
+        StudyPopulateContext studyEnvContext = new StudyPopulateContext(context, newStudy.getShortcode());
         for (StudyEnvironmentPopDto studyPopEnv : studyDto.getStudyEnvironmentDtos()) {
-            postProcessStudyEnv(newStudy, studyPopEnv, config);
+            postProcessStudyEnv(newStudy, studyPopEnv, studyEnvContext.newFrom(studyPopEnv.getEnvironmentName()));
         }
         return newStudy;
     }
 
     /** takes a dto and hydrates it with already-populated objects (surveys, consents, etc...) */
-    private void initializeStudyEnvironmentDto(StudyEnvironmentPopDto studyEnv, FilePopulateConfig config) {
+    private void initializeStudyEnvironmentDto(StudyEnvironmentPopDto studyEnv, PortalPopulateContext context) {
         for (int i = 0; i < studyEnv.getConfiguredSurveyDtos().size(); i++) {
             StudyEnvironmentSurveyPopDto configSurveyDto = studyEnv.getConfiguredSurveyDtos().get(i);
             StudyEnvironmentSurvey configSurvey = surveyPopulator.convertConfiguredSurvey(configSurveyDto, i);
@@ -107,13 +96,13 @@ public class StudyPopulator extends Populator<Study> {
             studyEnv.getConfiguredConsents().add(configConsent);
         }
         for (NotificationConfigPopDto configPopDto : studyEnv.getNotificationConfigDtos()) {
-            NotificationConfig notificationConfig = emailTemplatePopulator.convertNotificationConfig(configPopDto, config);
+            NotificationConfig notificationConfig = emailTemplatePopulator.convertNotificationConfig(configPopDto, context);
             studyEnv.getNotificationConfigs().add(notificationConfig);
         }
     }
 
     /** populates any objects that require an already-persisted study environment to save */
-    private void postProcessStudyEnv(Study savedStudy, StudyEnvironmentPopDto studyPopEnv, FilePopulateConfig config)
+    private void postProcessStudyEnv(Study savedStudy, StudyEnvironmentPopDto studyPopEnv, StudyPopulateContext context)
     throws IOException {
         StudyEnvironment savedEnv = savedStudy.getStudyEnvironments().stream().filter(env ->
                 env.getEnvironmentName().equals(studyPopEnv.getEnvironmentName())).findFirst().get();
@@ -131,9 +120,7 @@ public class StudyPopulator extends Populator<Study> {
         }
         // now populate enrollees
         for (String enrolleeFile : studyPopEnv.getEnrolleeFiles()) {
-            enrolleePopulator.populate(
-                    config.newForStudy(enrolleeFile, savedStudy.getShortcode(), studyPopEnv.getEnvironmentName())
-            );
+            enrolleePopulator.populate(context.newFrom(enrolleeFile));
         }
     }
 
