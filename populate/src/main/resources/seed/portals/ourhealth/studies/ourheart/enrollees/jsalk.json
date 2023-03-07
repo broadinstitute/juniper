@@ -43,6 +43,15 @@
               {"stableId": "oh_oh_basic_streetAddress", "value": "123 Walnut Street"},
               {"stableId": "oh_oh_basic_mghPatient", "value": "yes"}
             ]
+          },
+          "resumeDataJson": {
+            "data": {
+              "oh_oh_basic_streetAddress": "123 Walnut Street",
+              "oh_oh_basic_mghPatient": "yes",
+              "oh_oh_basic_firstName": "Jonas",
+              "oh_oh_basic_lastName": "Salk"
+            },
+            "currentPageNo": 2
           }
         }
       ]

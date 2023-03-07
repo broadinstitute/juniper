@@ -103,7 +103,7 @@ export function getValueForChoice(choiceText: string) {
  * choice objects are rendered on a single line.  This reduces the overall file length of many surveys by a factor
  * of 3x or more.
  */
-export function questionToJson(questionObj: QuestionObj, indentLevel= 0, excludeType: boolean): string {
+export function questionToJson(questionObj: QuestionObj, indentLevel= 0, excludeType=false): string {
   const leadingIndent = ' '.repeat(indentLevel)
   const visibleIfString = questionObj.visibleIf ? `\n${leadingIndent}  "visibleIf": "${questionObj.visibleIf}",` : ''
   const isRequiredString = questionObj.isRequired ? `\n${leadingIndent}  "isRequired": true,` : ''
