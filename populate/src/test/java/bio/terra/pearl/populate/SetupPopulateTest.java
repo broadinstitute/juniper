@@ -1,6 +1,5 @@
 package bio.terra.pearl.populate;
 
-import bio.terra.pearl.populate.service.PopulateDispatcher;
 import bio.terra.pearl.populate.service.BaseSeedPopulator;
 import java.io.IOException;
 import java.util.Arrays;
@@ -20,10 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SetupPopulateTest extends BaseSpringBootTest {
     @Autowired
-    private PopulateDispatcher populateDispatcher;
-
-    @Autowired
     private Jdbi jdbi;
+    @Autowired
+    BaseSeedPopulator baseSeedPopulator;
     private List<String> tablesToTruncate = Arrays.asList("admin_user", "environment");
 
     @BeforeAll
@@ -36,10 +34,8 @@ public class SetupPopulateTest extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testSetup() throws IOException {
-        BaseSeedPopulator baseSeedPopulator = (BaseSeedPopulator) populateDispatcher.getPopulator("base_seed");
         BaseSeedPopulator.SetupStats setupStats = baseSeedPopulator.populate("");
-
-        Assertions.assertEquals(8, setupStats.getNumAdminUsers());
-        Assertions.assertEquals(3, setupStats.getNumEnvironments());
+        Assertions.assertEquals(BaseSeedPopulator.ADMIN_USERS_TO_POPULATE.size(), setupStats.getNumAdminUsers());
+        Assertions.assertEquals(BaseSeedPopulator.ENVIRONMENTS_TO_POPULATE.size(), setupStats.getNumEnvironments());
     }
 }

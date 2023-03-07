@@ -3,13 +3,14 @@ package bio.terra.pearl.populate.service;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.populate.dto.AdminUserDto;
+import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.HashSet;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AdminUserPopulator extends Populator<AdminUser> {
+public class AdminUserPopulator extends Populator<AdminUser, FilePopulateContext> {
     private AdminUserService adminUserService;
 
     public AdminUserPopulator(AdminUserService adminUserService) {
@@ -17,7 +18,7 @@ public class AdminUserPopulator extends Populator<AdminUser> {
     }
 
     @Override
-    public AdminUser populateFromString(String content, FilePopulateConfig config) throws JsonProcessingException {
+    public AdminUser populateFromString(String content, FilePopulateContext context) throws JsonProcessingException {
         AdminUserDto adminUserDto = objectMapper.readValue(content, AdminUserDto.class);
         Optional<AdminUser> existingUserOpt = adminUserService.findByUsername(adminUserDto.getUsername());
         existingUserOpt.ifPresent(existingUser -> {

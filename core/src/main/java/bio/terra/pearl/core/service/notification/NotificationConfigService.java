@@ -24,4 +24,8 @@ public class NotificationConfigService extends CrudService<NotificationConfig, N
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
         dao.deleteByStudyEnvironmentId(studyEnvironmentId);
     }
+
+    public void deleteByPortalEnvironmentId(UUID portalEnvironmentId) {
+        dao.deleteByPortalEnvironmentId(portalEnvironmentId);
+    }
 }

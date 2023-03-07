@@ -8,7 +8,7 @@ import { questionFromRawText, QuestionObj, panelObjsToJson, questionToJson, Pane
 export default function QuestionScratchbox() {
   const [rawText, setRawText] = useState(' ')
   const [questionObj, setQuestionObj] = useState<QuestionObj>({
-    namePrefix: 'oh_oh_basic_', nameSuffix: '', type: 'radiogroup', isRequired: true,
+    namePrefix: 'oh_oh_medHx_', nameSuffix: '', type: 'radiogroup', isRequired: true,
     title: '', choices: [], otherText: '', otherPlaceholder: 'Please specify'
   })
   const [showSubPanels, setShowSubPanels] = useState(false)
@@ -141,13 +141,13 @@ function subPanelsForQuestion(questionObj: QuestionObj): PanelObj[] {
           namePrefix: questionObj.namePrefix,
           nameSuffix: `${choice.value}InTreatment`,
           type: 'template',
-          questionTemplateName: 'stillSeeingProvider'
+          questionTemplateName: 'oh_oh_medHx_stillSeeingProvider'
         },
         {
           namePrefix: questionObj.namePrefix,
           nameSuffix: `${choice.value}AgeAtDx`,
           type: 'template',
-          questionTemplateName: 'ageAboutAtDiagnosis'
+          questionTemplateName: 'oh_oh_medHx_ageAboutAtDiagnosis'
         }
       ]
     }

@@ -3,12 +3,15 @@ package bio.terra.pearl.populate.service;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
+import bio.terra.pearl.core.model.consent.ConsentResponseDto;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.model.workflow.HubResponse;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
@@ -23,6 +26,7 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SnapshotProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import bio.terra.pearl.populate.dto.EnrolleePopDto;
 import bio.terra.pearl.populate.dto.ParticipantTaskPopDto;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
@@ -31,14 +35,16 @@ import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.ResponseSnapshotPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EnrolleePopulator extends Populator<Enrollee> {
+public class EnrolleePopulator extends Populator<Enrollee, StudyPopulateContext> {
     private EnrolleeService enrolleeService;
     private StudyEnvironmentService studyEnvironmentService;
     private ParticipantUserService participantUserService;
@@ -52,6 +58,7 @@ public class EnrolleePopulator extends Populator<Enrollee> {
     private NotificationConfigService notificationConfigService;
     private NotificationService notificationService;
     private SnapshotProcessingService snapshotProcessingService;
+    private EnrollmentService enrollmentService;
 
     public EnrolleePopulator(EnrolleeService enrolleeService,
                              StudyEnvironmentService studyEnvironmentService,
@@ -62,7 +69,8 @@ public class EnrolleePopulator extends Populator<Enrollee> {
                              ConsentResponseService consentResponseService,
                              ParticipantTaskService participantTaskService,
                              NotificationConfigService notificationConfigService,
-                             NotificationService notificationService, SnapshotProcessingService snapshotProcessingService) {
+                             NotificationService notificationService, SnapshotProcessingService snapshotProcessingService,
+                             EnrollmentService enrollmentService) {
         this.portalParticipantUserService = portalParticipantUserService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.surveyService = surveyService;
@@ -76,32 +84,49 @@ public class EnrolleePopulator extends Populator<Enrollee> {
         this.studyEnvironmentService = studyEnvironmentService;
         this.participantUserService = participantUserService;
         this.snapshotProcessingService = snapshotProcessingService;
+        this.enrollmentService = enrollmentService;
     }
 
     @Override
-    public Enrollee populateFromString(String fileString, FilePopulateConfig config) throws IOException, JsonProcessingException {
+    public Enrollee populateFromString(String fileString, StudyPopulateContext context) throws IOException {
         EnrolleePopDto enrolleeDto = objectMapper.readValue(fileString, EnrolleePopDto.class);
         Optional<Enrollee> existingEnrollee = enrolleeService.findOneByShortcode(enrolleeDto.getShortcode());
         existingEnrollee.ifPresent(exEnrollee ->
                 enrolleeService.delete(exEnrollee.getId(), CascadeProperty.EMPTY_SET)
         );
         StudyEnvironment attachedEnv = studyEnvironmentService
-                .findByStudy(config.getStudyShortcode(), config.getEnvironmentName()).get();
+                .findByStudy(context.getStudyShortcode(), context.getEnvironmentName()).get();
         enrolleeDto.setStudyEnvironmentId(attachedEnv.getId());
         ParticipantUser attachedUser = participantUserService
-                .findOne(enrolleeDto.getLinkedUsername(), config.getEnvironmentName()).get();
+                .findOne(enrolleeDto.getLinkedUsername(), context.getEnvironmentName()).get();
         PortalParticipantUser ppUser = portalParticipantUserService
-                .findOne(attachedUser.getId(), config.getPortalShortcode()).get();
+                .findOne(attachedUser.getId(), context.getPortalShortcode()).get();
         enrolleeDto.setParticipantUserId(attachedUser.getId());
         enrolleeDto.setProfileId(ppUser.getProfileId());
 
-        Enrollee enrollee = enrolleeService.create(enrolleeDto);
-        populatePreEnrollResponse(enrollee, enrolleeDto);
+        PreEnrollmentResponse preEnrollmentResponse = populatePreEnrollResponse(enrolleeDto, attachedEnv);
+        enrolleeDto.setPreEnrollmentResponseId(preEnrollmentResponse != null ? preEnrollmentResponse.getId() : null);
+        Enrollee enrollee;
+        List<ParticipantTask> tasks;
+        if (enrolleeDto.isSimulateSubmissions()) {
+            HubResponse<Enrollee>  hubResponse = enrollmentService.enroll(attachedUser, ppUser,
+                    attachedEnv.getEnvironmentName(), context.getStudyShortcode(), enrolleeDto.getPreEnrollmentResponseId());
+            enrollee = hubResponse.getEnrollee();
+            tasks = hubResponse.getTasks();
+            // we want the shortcode to not be random so that test enrollee urls are consistent, so set it manually
+            enrollee.setShortcode(enrolleeDto.getShortcode());
+            enrolleeService.update(enrollee);
+
+        } else {
+            enrollee = enrolleeService.create(enrolleeDto);
+            tasks = new ArrayList<>();
+        }
+
         for (SurveyResponsePopDto responsePopDto : enrolleeDto.getSurveyResponseDtos()) {
             populateResponse(enrollee, responsePopDto, ppUser);
         }
         for (ConsentResponsePopDto consentPopDto : enrolleeDto.getConsentResponseDtos()) {
-            populateConsent(enrollee, consentPopDto);
+            populateConsent(enrollee, ppUser, consentPopDto, tasks, enrolleeDto.isSimulateSubmissions());
         }
         for (ParticipantTaskPopDto taskDto : enrolleeDto.getParticipantTaskDtos()) {
             populateTask(enrollee, ppUser, taskDto);
@@ -138,16 +163,14 @@ public class EnrolleePopulator extends Populator<Enrollee> {
             }
         }
         SurveyResponse savedResponse = surveyResponseService.create(response);
-
-
         enrollee.getSurveyResponses().add(savedResponse);
     }
 
     /** persists any preEnrollmentResponse, and then attaches it to the enrollee */
-    private void populatePreEnrollResponse(Enrollee savedEnrolle, EnrolleePopDto enrolleeDto) {
+    private PreEnrollmentResponse populatePreEnrollResponse(EnrolleePopDto enrolleeDto, StudyEnvironment studyEnv) {
         PreEnrollmentResponsePopDto responsePopDto = enrolleeDto.getPreEnrollmentResponseDto();
         if (responsePopDto == null) {
-            return;
+            return null;
         }
         Survey survey = surveyService.findByStableId(responsePopDto.getSurveyStableId(),
                 responsePopDto.getSurveyVersion()).get();
@@ -155,32 +178,46 @@ public class EnrolleePopulator extends Populator<Enrollee> {
         PreEnrollmentResponse response = PreEnrollmentResponse.builder()
                 .surveyId(survey.getId())
                 .creatingParticipantUserId(enrolleeDto.getParticipantUserId())
-                .studyEnvironmentId(savedEnrolle.getStudyEnvironmentId())
+                .studyEnvironmentId(studyEnv.getId())
                 .qualified(responsePopDto.isQualified())
                 .fullData(responsePopDto.getFullDataJson().toString())
                 .build();
 
-        PreEnrollmentResponse savedResponse = preEnrollmentResponseDao.create(response);
-        savedEnrolle.setPreEnrollmentResponse(savedResponse);
-        savedEnrolle.setPreEnrollmentResponse(savedResponse);
-        savedEnrolle.setPreEnrollmentResponseId(savedResponse.getId());
-        enrolleeService.update(savedEnrolle);
+        return preEnrollmentResponseDao.create(response);
     }
 
-    private void populateConsent(Enrollee enrollee, ConsentResponsePopDto responsePopDto) {
+    private void populateConsent(Enrollee enrollee, PortalParticipantUser ppUser, ConsentResponsePopDto responsePopDto,
+                                 List<ParticipantTask> tasks, boolean simulateSubmissions) {
         ConsentForm consentForm = consentFormService.findByStableId(responsePopDto.getConsentStableId(),
                 responsePopDto.getConsentVersion()).get();
 
-        ConsentResponse response = ConsentResponse.builder()
-                .consentFormId(consentForm.getId())
-                .enrolleeId(enrollee.getId())
-                .creatingParticipantUserId(enrollee.getParticipantUserId())
-                .consented(responsePopDto.isConsented())
-                .fullData(responsePopDto.getFullDataJson().toString())
-                .resumeData(responsePopDto.getResumeDataJson().toString())
-                .build();
+        ConsentResponse savedResponse;
+        if (simulateSubmissions) {
+            ConsentResponseDto responseDto = ConsentResponseDto.builder()
+                    .consentFormId(consentForm.getId())
+                    .enrolleeId(enrollee.getId())
+                    .creatingParticipantUserId(enrollee.getParticipantUserId())
+                    .consented(responsePopDto.isConsented())
+                    .parsedData(objectMapper.convertValue(responsePopDto.getFullDataJson(), ResponseData.class))
+                    .resumeData(responsePopDto.getResumeDataJson().toString())
+                    .build();
+            ParticipantTask matchingTask = tasks.stream().filter(task ->
+                    task.getTargetStableId().equals(consentForm.getStableId())).findFirst().orElse(null);
 
-        ConsentResponse savedResponse = consentResponseService.create(response);
+            HubResponse<ConsentResponse> hubResponse = consentResponseService.submitResponse(enrollee.getParticipantUserId(),
+                    ppUser, enrollee.getShortcode(), matchingTask.getId(), responseDto);
+            savedResponse = hubResponse.getResponse();
+        } else {
+            ConsentResponse response = ConsentResponse.builder()
+                    .consentFormId(consentForm.getId())
+                    .enrolleeId(enrollee.getId())
+                    .creatingParticipantUserId(enrollee.getParticipantUserId())
+                    .consented(responsePopDto.isConsented())
+                    .fullData(responsePopDto.getFullDataJson().toString())
+                    .resumeData(responsePopDto.getResumeDataJson().toString())
+                    .build();
+            savedResponse = consentResponseService.create(response);
+        }
         enrollee.getConsentResponses().add(savedResponse);
     }
 

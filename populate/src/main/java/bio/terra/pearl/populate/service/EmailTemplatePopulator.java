@@ -9,6 +9,7 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.populate.dao.EmailTemplatePopulateDao;
 import bio.terra.pearl.populate.dto.notifications.EmailTemplatePopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationConfigPopDto;
+import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,7 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmailTemplatePopulator extends Populator<EmailTemplate> {
+public class EmailTemplatePopulator extends Populator<EmailTemplate, PortalPopulateContext> {
     private EmailTemplateService emailTemplateService;
     private PortalService portalService;
     private EmailTemplatePopulateDao emailTemplatePopulateDao;
@@ -33,11 +34,11 @@ public class EmailTemplatePopulator extends Populator<EmailTemplate> {
     }
 
     @Override
-    public EmailTemplate populateFromString(String fileString, FilePopulateConfig config) throws IOException {
+    public EmailTemplate populateFromString(String fileString, PortalPopulateContext context) throws IOException {
         EmailTemplatePopDto templatePopDto = objectMapper.readValue(fileString, EmailTemplatePopDto.class);
-        String newContent = filePopulateService.readFile(templatePopDto.getBodyPopulateFile(), config);
+        String newContent = filePopulateService.readFile(templatePopDto.getBodyPopulateFile(), context);
         templatePopDto.setBody(newContent);
-        UUID portalId = portalService.findOneByShortcode(config.getPortalShortcode()).get().getId();
+        UUID portalId = portalService.findOneByShortcode(context.getPortalShortcode()).get().getId();
         templatePopDto.setPortalId(portalId);
         Optional<EmailTemplate> existingOpt = fetchFromPopDto(templatePopDto);
 
@@ -53,11 +54,11 @@ public class EmailTemplatePopulator extends Populator<EmailTemplate> {
         return emailTemplateService.create(templatePopDto);
     }
 
-    public NotificationConfig convertNotificationConfig(NotificationConfigPopDto configPopDto, FilePopulateConfig fileConfg) {
+    public NotificationConfig convertNotificationConfig(NotificationConfigPopDto configPopDto, PortalPopulateContext context) {
         NotificationConfig config = new NotificationConfig();
         BeanUtils.copyProperties(configPopDto, config);
         PortalEnvironment portalEnv = portalEnvironmentService
-                .findOne(fileConfg.getPortalShortcode(), fileConfg.getEnvironmentName()).get();
+                .findOne(context.getPortalShortcode(), context.getEnvironmentName()).get();
         config.setPortalEnvironmentId(portalEnv.getId());
         EmailTemplate template = emailTemplateService.findByStableId(configPopDto.getEmailTemplateStableId(),
                 configPopDto.getEmailTemplateVersion()).get();

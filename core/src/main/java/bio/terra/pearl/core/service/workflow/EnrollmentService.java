@@ -92,6 +92,7 @@ public class EnrollmentService {
                 .preEnrollmentResponseId(preEnrollResponseId)
                 .build();
         enrollee = enrolleeService.create(enrollee);
+
         if (preEnrollResponse != null) {
             preEnrollResponse.setCreatingParticipantUserId(user.getId());
             preEnrollResponse.setPortalParticipantUserId(ppUser.getId());
@@ -122,7 +123,7 @@ public class EnrollmentService {
             throw new IllegalArgumentException("pre-enrollment survey did not meet criteria");
         }
         if (response.getCreatingParticipantUserId() != null &&
-                response.getCreatingParticipantUserId() != participantUserId) {
+                !response.getCreatingParticipantUserId().equals(participantUserId)) {
             throw new IllegalArgumentException("user does not match preEnrollment response user");
         }
         return response;

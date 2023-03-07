@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import java.util.List;
@@ -23,17 +24,20 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
     private PortalParticipantUserService portalParticipantUserService;
     private ParticipantUserService participantUserService;
     private PreregistrationResponseDao preregistrationResponseDao;
+    private NotificationConfigService notificationConfigService;
 
     public PortalEnvironmentService(PortalEnvironmentDao portalEnvironmentDao,
                                     PortalEnvironmentConfigService portalEnvironmentConfigService,
                                     PortalParticipantUserService portalParticipantUserService,
                                     ParticipantUserService participantUserService,
-                                    PreregistrationResponseDao preregistrationResponseDao) {
+                                    PreregistrationResponseDao preregistrationResponseDao,
+                                    NotificationConfigService notificationConfigService) {
         super(portalEnvironmentDao);
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.participantUserService = participantUserService;
         this.preregistrationResponseDao = preregistrationResponseDao;
+        this.notificationConfigService = notificationConfigService;
     }
 
     public List<PortalEnvironment> findByPortal(UUID portalId) {
@@ -87,6 +91,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         if (cascades.contains(PortalService.AllowedCascades.PARTICIPANT_USER)) {
             participantUserService.deleteOrphans(participantUserIds, cascades);
         }
+        notificationConfigService.deleteByPortalEnvironmentId(id);
         dao.delete(id);
         portalEnvironmentConfigService.delete(envConfigId, cascades);
     }

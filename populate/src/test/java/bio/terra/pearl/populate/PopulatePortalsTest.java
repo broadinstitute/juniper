@@ -19,6 +19,7 @@ import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.service.EnvironmentPopulator;
 import bio.terra.pearl.populate.service.PortalPopulator;
+import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -72,7 +73,7 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
     @Transactional
     public void testPopulateOurHealth() throws IOException {
         setUpEnvironments();
-        Portal portal = portalPopulator.populate("portals/ourhealth/portal.json");
+        Portal portal = portalPopulator.populate(new FilePopulateContext("portals/ourhealth/portal.json"));
         Assertions.assertEquals("ourhealth", portal.getShortcode());
 
         Study mainStudy = portal.getPortalStudies().stream().findFirst().get().getStudy();
@@ -91,12 +92,12 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
     }
 
     private void checkOurhealthSurveys(Enrollee jonas) throws IOException {
-        Survey medHistorySurvey = surveyService.findByStableId("oh_oh_medHx", 1).get();
+        Survey cardioHistorySurvey = surveyService.findByStableId("oh_oh_cardioHx", 1).get();
 
         List<SurveyResponse> jonasResponses = surveyResponseService.findByEnrolleeId(jonas.getId());
         Assertions.assertEquals(2, jonasResponses.size());
         SurveyResponse medHistoryResp = jonasResponses.stream()
-                .filter(response -> medHistorySurvey.getId().equals(response.getSurveyId()))
+                .filter(response -> cardioHistorySurvey.getId().equals(response.getSurveyId()))
                 .findFirst().get();
         ResponseSnapshot medHistorySnapshot = surveyResponseService.findOneWithLastSnapshot(medHistoryResp.getId())
                 .get().getLastSnapshot();
@@ -121,7 +122,7 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
     @Transactional
     public void testPopulateHeartHive() throws IOException {
         setUpEnvironments();
-        Portal portal = portalPopulator.populate("portals/hearthive/portal.json");
+        Portal portal = portalPopulator.populate(new FilePopulateContext("portals/hearthive/portal.json"));
         Assertions.assertEquals("hearthive", portal.getShortcode());
         assertThat(portal.getPortalStudies(), hasSize(2));
         Study myopathyStudy = portal.getPortalStudies().stream()

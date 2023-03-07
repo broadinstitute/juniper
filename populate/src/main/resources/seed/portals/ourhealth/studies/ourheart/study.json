@@ -3,6 +3,7 @@
   "shortcode": "ourheart",
   "surveyFiles": [
     "surveys/preEnroll.json",
+    "surveys/cardioHistory.json",
     "surveys/medicalHistory.json",
     "surveys/placeholder1.json",
     "surveys/placeholder2.json",
@@ -28,23 +29,11 @@
         "version": 1
       },
       "configuredSurveyDtos": [
-        {
-          "surveyStableId": "oh_oh_medHx",
-          "surveyVersion": 1
-        },
-        {
-          "surveyStableId": "oh_oh_placeholder1",
-          "surveyVersion": 1
-        },
-        {
-          "surveyStableId": "oh_oh_placeholder2",
-          "surveyVersion": 1
-        },
-        {
-          "surveyStableId": "oh_oh_basicInfo",
-          "surveyVersion": 1,
-          "required": true
-        }
+        {"surveyStableId": "oh_oh_basicInfo", "surveyVersion": 1, "required": true},
+        {"surveyStableId": "oh_oh_cardioHx", "surveyVersion": 1, "required": true},
+        {"surveyStableId": "oh_oh_medHx", "surveyVersion": 1},
+        {"surveyStableId": "oh_oh_placeholder1", "surveyVersion": 1},
+        {"surveyStableId": "oh_oh_placeholder2", "surveyVersion": 1}
       ],
       "configuredConsentDtos": [
         {

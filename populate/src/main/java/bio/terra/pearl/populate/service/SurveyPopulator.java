@@ -10,6 +10,7 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dao.SurveyPopulateDao;
 import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
+import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 /** populator for surveys and consent forms */
 @Service
-public class SurveyPopulator extends Populator<Survey> {
+public class SurveyPopulator extends Populator<Survey, PortalPopulateContext> {
     private SurveyService surveyService;
     private PortalService portalService;
     private SurveyPopulateDao surveyPopulateDao;
@@ -34,11 +35,11 @@ public class SurveyPopulator extends Populator<Survey> {
     }
 
     @Override
-    public Survey populateFromString(String fileString, FilePopulateConfig config) throws IOException {
+    public Survey populateFromString(String fileString, PortalPopulateContext context) throws IOException {
         SurveyPopDto surveyPopDto = objectMapper.readValue(fileString, SurveyPopDto.class);
         String newContent = surveyPopDto.getJsonContent().toString();
         surveyPopDto.setContent(newContent);
-        UUID portalId = portalService.findOneByShortcode(config.getPortalShortcode()).get().getId();
+        UUID portalId = portalService.findOneByShortcode(context.getPortalShortcode()).get().getId();
         surveyPopDto.setPortalId(portalId);
         Optional<Survey> existingSurveyOpt = fetchFromPopDto(surveyPopDto);
 

@@ -7,6 +7,7 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.populate.dao.ConsentFormPopulateDao;
 import bio.terra.pearl.populate.dto.consent.ConsentFormPopDto;
 import bio.terra.pearl.populate.dto.consent.StudyEnvironmentConsentPopDto;
+import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 /** populates ConsentForms.  this currently has a lot in common with SurveyPopulator */
 @Service
-public class ConsentFormPopulator extends Populator<ConsentForm> {
+public class ConsentFormPopulator extends Populator<ConsentForm, PortalPopulateContext> {
     private ConsentFormService consentFormService;
     private PortalService portalService;
     private ConsentFormPopulateDao consentFormPopulateDao;
@@ -28,11 +29,11 @@ public class ConsentFormPopulator extends Populator<ConsentForm> {
     }
 
     @Override
-    public ConsentForm populateFromString(String fileString, FilePopulateConfig config) throws IOException {
+    public ConsentForm populateFromString(String fileString, PortalPopulateContext context) throws IOException {
         ConsentFormPopDto consentPopDto = objectMapper.readValue(fileString, ConsentFormPopDto.class);
         String newContent = consentPopDto.getJsonContent().toString();
         consentPopDto.setContent(newContent);
-        UUID portalId = portalService.findOneByShortcode(config.getPortalShortcode()).get().getId();
+        UUID portalId = portalService.findOneByShortcode(context.getPortalShortcode()).get().getId();
         consentPopDto.setPortalId(portalId);
         Optional<ConsentForm> existingOpt = fetchFromPopDto(consentPopDto);
 

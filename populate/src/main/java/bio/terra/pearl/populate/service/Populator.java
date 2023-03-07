@@ -1,13 +1,15 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 
-public abstract class Populator<T extends BaseEntity> {
+public abstract class Populator<T extends BaseEntity, P extends FilePopulateContext> {
     // in general, we use constructor injection, but for widely-used and inherited beans with no complex dependencies
     // annotation injection saves a lot of lines of code
     @Autowired
@@ -15,15 +17,11 @@ public abstract class Populator<T extends BaseEntity> {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    public T populate(String filePathName) throws IOException {
-        FilePopulateConfig config = new FilePopulateConfig(filePathName);
-        return populate(config);
+    @Transactional
+    public T populate(P context) throws IOException {
+        String fileString = filePopulateService.readFile(context.getRootFileName(), context);
+        return populateFromString(fileString, context);
     }
 
-    public T populate(FilePopulateConfig config) throws IOException {
-        String fileString = filePopulateService.readFile(config.getRootFileName(), config);
-        return populateFromString(fileString, config);
-    }
-
-    public abstract T populateFromString(String fileString, FilePopulateConfig config) throws IOException;
+    public abstract T populateFromString(String fileString, P context) throws IOException;
 }
