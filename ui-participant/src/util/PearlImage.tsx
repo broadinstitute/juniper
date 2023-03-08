@@ -23,5 +23,5 @@ export default function PearlImage(props: PearlImageProps) {
     return <></>
   }
   return <img src={getImageUrl(image.cleanFileName, image.version)} alt={image.alt} loading="lazy"
-    className={combinedClassNames} style={style}/>
+    className={combinedClassNames} style={{ ...image.style, ...style }}/>
 }
