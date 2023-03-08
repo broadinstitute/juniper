@@ -60,9 +60,9 @@ function FrequentlyAskedQuestionsTemplate({
                 {question}
               </button>
               <div className="collapse" id={idFor(question)}>
-                <p>
+                <ReactMarkdown>
                   {answer}
-                </p>
+                </ReactMarkdown>
               </div>
             </li>
           })
