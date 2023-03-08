@@ -8,8 +8,9 @@
       "sectionType": "HERO_CENTERED",
       "sectionConfigJson": {
         "title": "Scientific Background",
+        "background": "#F2F2F2",
         "blurbAlign": "left",
-        "blurb": "Individuals of South Asian ancestry represent 23% of the global population – corresponding to 1.8 billion people – and are disproportionately afflicted by cardiometabolic diseases, primarily heart attacks, strokes, and diabetes.\n\nAn estimated 5.4 million individuals of South Asian ancestry live in the United States, one of the fastest growing ethnic subgroups. South Asians are consistently recognized to be at a 2- to 3-fold increased risk for cardiovascular disease and up to 4-fold increased risk of diabetes (especially diabetes that occurs in the absence of obesity). In the United States, South Asian ancestry is now described as a ‘risk-enhancing factor’ for cardiovascular disease in current practice guidelines, highlighting both awareness but glaring knowledge gap."
+        "blurb": "Individuals of South Asian ancestry represent 23% of the global population – corresponding to 1.8 billion people – and are disproportionately afflicted by cardiometabolic diseases, primarily heart attacks, strokes, and diabetes.\n\nAn estimated 5.4 million individuals of South Asian ancestry live in the United States, one of the fastest growing ethnic subgroups. South Asians are consistently recognized to be at a 2- to 3-fold increased risk for cardiovascular disease and up to 4-fold increased risk of diabetes (especially diabetes that occurs in the absence of obesity). In the United States, South Asian ancestry is now described as a ‘risk-enhancing factor’ for cardiovascular disease in current practice guidelines, highlighting awareness of the problem, but a glaring knowledge gap."
     }},{
       "sectionType": "HERO_CENTERED",
       "sectionConfigJson": {
@@ -29,7 +30,7 @@
       "sectionType": "HERO_CENTERED",
       "sectionConfigJson": {
         "blurbAlign": "left",
-        "blurb": "**Risk-enhancing factors for cardiovascular disease:** Family history of early cardiovascular disease (before 55 (men) or 65 (women) years of age, high cholesterol or inflammatory biomarkers (such as Lp(a), apoB), chronic kidney disease, metabolic syndrome, history of early menopause (before 40 years of age), history of preeclampsia, South Asian ancestry."
+        "blurb": "**Risk-enhancing factors for cardiovascular disease:** Family history of early cardiovascular disease (before 55 (men) or 65 (women) years of age), high cholesterol or inflammatory biomarkers (such as Lp(a), apoB), chronic kidney disease, metabolic syndrome, history of early menopause (before 40 years of age), history of preeclampsia, South Asian ancestry."
       }
     },{
       "sectionType": "HERO_CENTERED",
