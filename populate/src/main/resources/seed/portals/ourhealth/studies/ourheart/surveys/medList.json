@@ -1,9 +1,9 @@
 {
   "stableId": "oh_oh_medList",
   "version": 1,
-  "name": "The Basics",
+  "name": "Medications",
   "jsonContent": {
-    "title": "The Basics",
+    "title": "Medications",
     "showQuestionNumbers": "off",
     "pages": [
       {
