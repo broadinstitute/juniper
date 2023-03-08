@@ -15,6 +15,7 @@ import EnrolleeConsentView from './consent/EnrolleeConsentView'
 import PreEnrollmentView from './survey/PreEnrollmentView'
 import EnrolleeNotifications from './EnrolleeNotifications'
 import DataChangeRecords from './DataChangeRecords'
+import EnrolleeProfile from './EnrolleeProfile'
 
 export type SurveyWithResponsesT = {
   survey: StudyEnvironmentSurvey,
@@ -134,7 +135,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
           </div>
           <div className="participantTabContent flex-grow-1 bg-white p-3">
             <Routes>
-              <Route path="profile" element={<div>profile</div>}/>
+              <Route path="profile" element={<EnrolleeProfile enrollee={enrollee}/>}/>
               <Route path="consents" element={<div>consents</div>}/>
               <Route path="preRegistration" element={
                 <PreEnrollmentView preEnrollSurvey={currentEnv.preEnrollSurvey}

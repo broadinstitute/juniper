@@ -110,7 +110,18 @@ export type Enrollee = {
 
 export type Profile = {
   givenName: string,
-  familyName: string
+  familyName: string,
+  contactEmail: string,
+  mailingAddress: MailingAddress
+}
+
+export type MailingAddress = {
+  street1: string,
+  street2: string,
+  city: string,
+  state: string,
+  country: string,
+  zip: string
 }
 
 export type ResumableData = {
