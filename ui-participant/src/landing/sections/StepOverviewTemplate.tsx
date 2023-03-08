@@ -1,11 +1,11 @@
 import _ from 'lodash'
 import React from 'react'
 import { ButtonConfig } from 'api/api'
-import PearlImage, { PearlImageProps } from 'util/PearlImage'
+import PearlImage, { PearlImageConfig } from 'util/PearlImage'
 import ReactMarkdown from 'react-markdown'
 
 type StepProps = {
-  image: PearlImageProps,
+  image: PearlImageConfig,
   duration: string,
   blurb: string
 }
@@ -21,15 +21,16 @@ type StepOverviewTemplateProps = {
  * Template for rendering a step overview
  */
 function StepOverviewTemplate({
+  anchorRef,
   config: {
     background,
     buttons,
     steps,
     title
   }
-}: { config: StepOverviewTemplateProps }) {
+}: { anchorRef?: string, config: StepOverviewTemplateProps }) {
   // TODO: improve layout code for better flexing, especially with <> 4 steps
-  return <div style={{ background }} className="py-5">
+  return <div id={anchorRef} style={{ background }} className="py-5">
     <h1 className="fs-1 fw-normal lh-sm mb-3 text-center">
       <ReactMarkdown>{title ? title : ''}</ReactMarkdown>
     </h1>
@@ -52,7 +53,7 @@ function StepOverviewTemplate({
     <div className="d-grid gap-2 d-md-flex pt-4 justify-content-center">
       {
         _.map(buttons, ({ text, href }, i) => {
-          return <a key={i} href={href} role={'button'} className="btn btn-primary btn-lg px-4 me-md-2">{text}</a>
+          return <a key={i} href={href} className="btn btn-outline-primary btn-lg px-4 me-md-2">{text}</a>
         })
       }
     </div>

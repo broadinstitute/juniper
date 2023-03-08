@@ -21,11 +21,13 @@
     "lodash": "^4.17.21",
     "marked": "^4.1.0",
     "oidc-client-ts": "^2.2.0",
+    "polished": "^4.2.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-markdown": "^8.0.3",
     "react-oidc-context": "^2.2.0",
     "react-router-dom": "^6.4.0",
+    "react-router-hash-link": "^2.4.3",
     "react-scripts": "5.0.1",
     "survey-core": "1.9.75",
     "survey-react-ui": "1.9.75",
@@ -54,6 +56,7 @@
   "devDependencies": {
     "@types/lodash": "^4.14.184",
     "@types/marked": "^4.0.7",
+    "@types/react-router-hash-link": "^2.4.5",
     "eslint": "^8.23.0"
   },
   "jest": {

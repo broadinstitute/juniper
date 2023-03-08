@@ -13,7 +13,7 @@
         "sectionType": "HERO_WITH_IMAGE",
         "sectionConfigJson": {
           "title": "Help us understand and improve cardiovascular disease risk among South Asian populations.",
-          "blurb": "The OurHealth study aims to build a coalition of researchers and participants to better understand – and ultimately overcome – the persistently high rates of cardiovascular diseases among South Asian populations through the creation and study of a new cohort.",
+          "blurb": "We're looking for participants to help us better understand - and ultimately overcome - the persistently high rates of cardiovascular diseases among South Asian populations.",
           "image": { "cleanFileName": "banner-40238bbb.png", "version": 1},
           "imagePosition": "right",
           "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
@@ -21,6 +21,10 @@
             {"text": "Join OurHealth",
               "type": "join",
               "studyShortcode": "ourheart"
+            }, {
+              "text": "Learn More About Us",
+              "type": "internalLink",
+              "href": "/aboutUs"
             }
           ]
         }
@@ -29,7 +33,7 @@
         "sectionConfigJson": {
           "background": "#F2F2F2",
           "title": "Why is this needed?",
-          "blurb": "Although South Asians represent 23% of the global population and have twice the risk of cardiovascular disease compared to Europeans, they are significantly underrepresented in genetic studies and research. Available datasets are limited in size, cultural diversity, and diaspora representation.",          ",image": { "cleanFileName": "banner-40238bbb.png", "version": 1},
+          "blurb": "Although South Asians represent 23% of the global population and have twice the risk of cardiovascular disease compared to Europeans, they are **significantly underrepresented in genetic studies and research**. Available datasets are limited in size, cultural diversity, and diasporic representation.",
           "buttons": [
             {"text": "Scientific background",
               "type": "internalLink",
@@ -50,7 +54,7 @@
               "studyShortcode": "ourheart"
             }
           ],
-          "image": {"cleanFileName": "people_on_ipad.png", "version": 1},
+          "image": {"cleanFileName": "people_laughing.png", "version": 1},
           "imagePosition": "left"
         }
       },{
@@ -76,7 +80,7 @@
             "blurb": "Provide your mailing address so we can send a sample kit."
           }],
           "buttons": [
-            {"text": "Learn more about Participation",
+            {"text": "Learn More About Participation",
               "type": "internalLink",
               "href": "/participation"
             }
@@ -84,16 +88,17 @@
         }
       },{
         "sectionType": "FAQ",
+        "anchorRef": "faq",
         "sectionConfigJson": {
           "backgroundColor": "#f2f2f2",
-          "blurb": "If your question is not answered below, you can call or email our study staff at **617&#x2011;724&#x2011;1240** or **[info@ourhealthstudy.org](mailto:info@ourhealthstudy.org)**.",
+          "blurb": "If your question is not answered below, you can call or email our study staff at **[617&#x2011;724&#x2011;1240](tel:+16177241240)** or **[info@ourhealthstudy.org](mailto:info@ourhealthstudy.org)**.",
         "questions": [
           {
             "question": "What is OurHealth?",
             "answer": "OurHealth is a nonprofit research initiative that enables South Asian-identifying individuals to contribute to cardiovascular research by sharing their samples, their clinical information, and their voices."
           },
           {
-            "question": "Why is it needed?",
+            "question": "Why is this needed?",
             "answer": "Individuals of South Asian ancestry are disproportionately affected by cardiometabolic diseases, including heart disease, stroke, and diabetes. However, they have historically been under-represented in genetic studies. In the United States, South Asian ancestry is now considered a risk-enhancing factor for cardiovascular disease, highlighting an awareness but distinct knowledge gap. OurHealth aims to address this gap by creating a cohort of South Asian individuals, from whom survey and genomic data will be analyzed to further our understanding of cardiovascular disease risk within this population."
           },
           {
@@ -125,6 +130,10 @@
       "populateFileName": "participation.json"
     },{
       "populateFileName": "scientificBackground.json"
+    },{
+      "itemType": "INTERNAL_ANCHOR",
+      "anchorLinkPath": "#faq",
+      "label": "FAQ"
     }]
   }]
 }

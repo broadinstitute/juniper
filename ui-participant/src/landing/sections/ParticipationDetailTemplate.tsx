@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import React, { CSSProperties } from 'react'
 import { ButtonConfig } from 'api/api'
-import PearlImage, { PearlImageProps } from '../../util/PearlImage'
+import PearlImage, { PearlImageConfig } from '../../util/PearlImage'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClock } from '@fortawesome/free-regular-svg-icons'
 import ConfiguredButton from './ConfiguredButton'
@@ -11,7 +11,7 @@ type ParticipationDetailTemplateProps = {
   blurb?: string, //  text below the title
   actionButton?: ButtonConfig, // array of objects containing `text` and `href` attributes
   title?: string, // large heading text
-  image?: PearlImageProps, // image
+  image?: PearlImageConfig, // image
   stepNumberText?: string, // e.g. STEP 1
   timeIndication?: string, // e.g. 45+ minutes
   imagePosition?: string // left or right.  Default is right
@@ -21,6 +21,7 @@ type ParticipationDetailTemplateProps = {
  * Template for a participation step description
  */
 function ParticipationDetailTemplate({
+  anchorRef,
   config: {
     background,
     blurb,
@@ -31,10 +32,10 @@ function ParticipationDetailTemplate({
     imagePosition,
     title
   }
-}: { config: ParticipationDetailTemplateProps }) {
+}: { anchorRef?: string, config: ParticipationDetailTemplateProps }) {
   const styleProps: CSSProperties = { background }
   const isLeftImage = imagePosition === 'left' // default is right, so left has to be explicitly specified
-  return <div className="row mx-0 py-5" style={styleProps}>
+  return <div id={anchorRef} className="row mx-0 py-5" style={styleProps}>
     <div
       className={classNames(
         'col-md-10 col-lg-8', 'mx-auto', 'row',
@@ -43,7 +44,7 @@ function ParticipationDetailTemplate({
       )}
     >
       <div className="col-6 col-md-3 mx-auto mx-md-0 text-center">
-        <PearlImage image={image} className="img-fluid mb-4 mb-md-0" />
+        <PearlImage image={image} className="img-fluid mb-4 mb-md-0"/>
       </div>
       <div className="col-md-8">
         <h4>
@@ -54,7 +55,7 @@ function ParticipationDetailTemplate({
         <p className="fs-4">
           {blurb}
         </p>
-        {actionButton && <ConfiguredButton config={actionButton} className="btn btn-secondary"/>}
+        {actionButton && <ConfiguredButton config={actionButton} />}
       </div>
     </div>
   </div>

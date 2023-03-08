@@ -2,26 +2,27 @@ import classNames from 'classnames'
 import _ from 'lodash'
 import React, { CSSProperties } from 'react'
 import { ButtonConfig, getImageUrl } from 'api/api'
-import PearlImage, { PearlImageProps } from '../../util/PearlImage'
+import PearlImage, { PearlImageConfig } from '../../util/PearlImage'
 import ConfiguredButton from './ConfiguredButton'
 import ReactMarkdown from 'react-markdown'
 
 type HeroLeftWithImageTemplateProps = {
   background?: string, // background CSS style (e.g. `linear-gradient(...)`)
   backgroundColor?: string, // background color for the block
-  backgroundImage?: PearlImageProps, // background image
+  backgroundImage?: PearlImageConfig, // background image
   blurb?: string, //  text below the title
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   title?: string, // large heading text
-  image?: PearlImageProps, // image
+  image?: PearlImageConfig, // image
   imagePosition?: string, // left or right.  Default is right
-  logos?: PearlImageProps[]
+  logos?: PearlImageConfig[]
 }
 
 /**
  * Template for a hero with text content on the left and an image on the right.
  */
 function HeroWithImageTemplate({
+  anchorRef,
   config: {
     background,
     blurb,
@@ -32,15 +33,15 @@ function HeroWithImageTemplate({
     logos,
     title
   }
-}: { config: HeroLeftWithImageTemplateProps }) {
+}: { anchorRef?: string, config: HeroLeftWithImageTemplateProps }) {
   const styleProps: CSSProperties = { background }
   if (backgroundImage) {
     styleProps.backgroundImage = `url('${getImageUrl(backgroundImage.cleanFileName, backgroundImage.version)}')`
   }
   const isLeftImage = imagePosition === 'left' // default is right, so left has to be explicitly specified
-
   return (
-    <div className={classNames('row', 'mx-0', isLeftImage ? 'flex-row' : 'flex-row-reverse')} style={styleProps}>
+    <div id={anchorRef} className={classNames('row', 'mx-0', isLeftImage ? 'flex-row' : 'flex-row-reverse')}
+      style={styleProps}>
       {!!image && (
         <div className="col-12 col-lg-6 p-0">
           <PearlImage image={image} className="img-fluid"/>
@@ -59,7 +60,7 @@ function HeroWithImageTemplate({
         <div className="d-grid gap-2 d-md-flex justify-content-md-start">
           {
             _.map(buttons, (buttonConfig, i) =>
-              <ConfiguredButton key={i} config={buttonConfig} className="btn btn-primary btn-lg px-4 me-md-2"/>
+              <ConfiguredButton key={i} config={buttonConfig} className="btn-lg px-4 me-md-2"/>
             )
           }
         </div>

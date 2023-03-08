@@ -64,9 +64,9 @@ public class SiteContentPopulator extends Populator<SiteContent, PortalPopulateC
             for (HtmlSectionPopDto section : page.getSectionDtos()) {
                 initializeHtmlSectionDto(section);
             }
+            page.getSections().clear();
+            page.getSections().addAll(page.getSectionDtos());
         }
-        page.getSections().clear();
-        page.getSections().addAll(page.getSectionDtos());
         return page;
     }
 

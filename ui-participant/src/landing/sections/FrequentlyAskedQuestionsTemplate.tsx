@@ -28,6 +28,7 @@ type FrequentlyAskedQuestionsProps = {
  * Template for rendering a Frequently Asked Questions block.
  */
 function FrequentlyAskedQuestionsTemplate({
+  anchorRef,
   config: {
     backgroundColor,
     blurb,
@@ -35,8 +36,8 @@ function FrequentlyAskedQuestionsTemplate({
     questions,
     title = 'Frequently Asked Questions'
   }
-}: { config: FrequentlyAskedQuestionsProps }) {
-  return <div className="row mx-0 justify-content-center" style={{ backgroundColor, color }}>
+}: { anchorRef?: string, config: FrequentlyAskedQuestionsProps }) {
+  return <div id={anchorRef} className="row mx-0 justify-content-center" style={{ backgroundColor, color }}>
     <div className="col-12 col-sm-8 col-lg-6">
       <h1 className="fs-1 fw-normal lh-sm mt-5 mb-4 text-center">{title}</h1>
       <div className='fs-5 fw-normal mb-4 text-center'>

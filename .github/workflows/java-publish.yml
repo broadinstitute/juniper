@@ -1,5 +1,8 @@
 name: Publish and deploy
-on: create
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
 
 env:
   SERVICE_NAME: ${{ github.event.repository.name }}

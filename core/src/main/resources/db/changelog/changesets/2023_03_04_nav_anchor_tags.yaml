@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: "nav_anchor_tags"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: navbar_item
+            columns:
+              - column: { name: anchor_link_path, type: text }
+        - addColumn:
+            tableName: html_section
+            columns:
+              - column: { name: anchor_ref, type: text }
+

@@ -33,7 +33,7 @@ function AdminNavbar({ breadCrumbs, sidebarContent, showSidebar, setShowSidebar 
 
   return <>
     <nav className="Navbar navbar navbar-expand-lg navbar-light" style={{
-      backgroundColor: 'rgb(51, 136, 0)',
+      backgroundColor: '#333F52',
       color: '#f6f6f6'
     }}>
       <div className="container-fluid">
