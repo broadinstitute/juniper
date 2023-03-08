@@ -3,9 +3,11 @@ package bio.terra.pearl.api.participant.controller;
 import bio.terra.pearl.api.participant.api.SiteImageApi;
 import bio.terra.pearl.core.model.site.SiteImage;
 import bio.terra.pearl.core.service.site.SiteImageService;
+import java.net.URLConnection;
 import java.util.Optional;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -27,10 +29,16 @@ public class SiteImageController implements SiteImageApi {
   }
 
   private ResponseEntity<Resource> convertToResourceResponse(Optional<SiteImage> imageOpt) {
-    Optional<Resource> imageResourceOpt = Optional.empty();
     if (imageOpt.isPresent()) {
-      imageResourceOpt = Optional.of(new ByteArrayResource(imageOpt.get().getData()));
+      SiteImage image = imageOpt.get();
+      MediaType contentType =
+          MediaType.parseMediaType(
+              URLConnection.guessContentTypeFromName(image.getCleanFileName()));
+      return ResponseEntity.ok()
+          .contentType(contentType)
+          .body(new ByteArrayResource(image.getData()));
+    } else {
+      return ResponseEntity.notFound().build();
     }
-    return ResponseEntity.of(imageResourceOpt);
   }
 }
