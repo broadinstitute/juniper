@@ -4,6 +4,7 @@
 # e.g. populate_survey.sh ourhealth portals/ourhealth/studies/ourheart/surveys/preEnroll.json
 SERVER_NAME="localhost:8080"
 set -x
+set -u
 
 curl -X POST "$SERVER_NAME/api/internal/v1/populate/survey/$1?filePathName=$2"
 

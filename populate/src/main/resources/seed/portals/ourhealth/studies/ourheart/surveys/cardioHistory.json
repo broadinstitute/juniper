@@ -4,6 +4,7 @@
   "name": "Heart Health History",
   "jsonContent": {
     "title": "OurHealth Medical History",
+    "showQuestionNumbers": "off",
     "questionTemplates": [
       {
         "name": "oh_oh_cardioHx_stillSeeingProvider",
