@@ -6,7 +6,7 @@ import HeroCenteredTemplate from './HeroCenteredTemplate'
 import HeroWithImageTemplate from './HeroWithImageTemplate'
 import StepOverviewTemplate from './StepOverviewTemplate'
 import SocialMediaTemplate from './SocialMediaTemplate'
-import { HtmlPage, HtmlSection, SectionConfig } from 'api/api'
+import { HtmlPage, HtmlSection, SectionConfig, SectionType } from 'api/api'
 import RawHtmlTemplate from './RawHtmlTemplate'
 import PhotoBlurbGrid from './PhotoBlurbGrid'
 import ParticipationDetailTemplate from './ParticipationDetailTemplate'
@@ -15,7 +15,7 @@ import NavAndLinkSectionsFooter from './NavAndLinkSectionsFooter'
 type TemplateComponent = ({ anchorRef, config, rawContent }:
                             { anchorRef?: string, config: SectionConfig, rawContent: string | null }) => JSX.Element
 
-const templateComponents: { [index: string]: TemplateComponent } = {
+const templateComponents: Record<SectionType, TemplateComponent> = {
   'FAQ': FrequentlyAskedQuestionsTemplate,
   'HERO_CENTERED': HeroCenteredTemplate,
   'HERO_WITH_IMAGE': HeroWithImageTemplate,
