@@ -1,0 +1,596 @@
+{
+  "stableId": "oh_oh_medList",
+  "version": 1,
+  "name": "The Basics",
+  "jsonContent": {
+    "title": "The Basics",
+    "showQuestionNumbers": "off",
+    "pages": [
+      {
+        "elements": [
+          {
+            "name": "oh_oh_medList_intro",
+            "type": "html",
+            "html": "The following section will ask you to select if you take commonly prescribed cardiac or metabolic medications. You may want to have your pill bottles or prescription list readily available. If you do not see your medication listed, you will be able to select it from a larger list on the following page. \n"
+          },
+          {
+            "name": "oh_oh_medList_intro2",
+            "type": "html",
+            "html": "<b>We will first ask you questions about heart medications:</b>\n\nThe following section will ask you to select if you take commonly prescribed cardiac or metabolic medications. You may want to have your pill bottles or prescription list readily available. If you do not see your medication listed, you will be able to select it from a larger list on the following page. \n"
+          },
+          {
+            "name": "oh_oh_medList_statins",
+            "type": "checkbox",
+            "title": "Category 1: Cholesterol Medications - Statins: ",
+            "choices": [
+              {
+                "text": "Atorvastatin",
+                "value": "atorvastatin"
+              },
+              {
+                "text": "Rosuvastatin",
+                "value": "rosuvastatin"
+              },
+              {
+                "text": "Simvastatin",
+                "value": "simvastatin"
+              },
+              {
+                "text": "Pravastatin",
+                "value": "pravastatin"
+              },
+              {
+                "text": "Fluvastatin",
+                "value": "fluvastatin"
+              },
+              {
+                "text": "Pitavastatin",
+                "value": "pitavastatin"
+              },
+              {
+                "text": "Other statin",
+                "value": "other"
+              },
+              {
+                "text": "None, I was prescribed a statin but cannot tolerate it",
+                "value": "none"
+              }
+            ]
+          },
+          {
+            "name": "oh_oh_medList_atorvastatin",
+            "type": "radiogroup",
+            "title": "Atorvastatin dosage",
+            "visibleIf": "{oh_oh_medList_statins} contains 'atorvastatin'",
+            "choices": [
+              {
+                "text": "Atorvastatin 10mg daily",
+                "value": "atorvastatin10MgDaily"
+              },
+              {
+                "text": "Atorvastatin 20mg daily",
+                "value": "atorvastatin20MgDaily"
+              },
+              {
+                "text": "Atorvastatin 40mg daily",
+                "value": "atorvastatin40MgDaily"
+              },
+              {
+                "text": "Atorvastatin 80mg daily",
+                "value": "atorvastatin80MgDaily"
+              },
+              {
+                "text": "Atorvastatin other dose",
+                "value": "atorvastatinOtherDose"
+              }
+            ]
+          },
+          {
+            "name": "oh_oh_medList_rosuvastatin",
+            "type": "radiogroup",
+            "title": "Rosuvastatin dosage",
+            "visibleIf": "{oh_oh_medList_statins} contains 'rosuvastatin'",
+            "choices": [
+              {
+                "text": "Rosuvastatin 2.5mg daily",
+                "value": "rosuvastatin25MgDaily"
+              },
+              {
+                "text": "Rosuvastatin 5mg daily",
+                "value": "rosuvastatin5MgDaily"
+              },
+              {
+                "text": "Rosuvastatin 10mg daily",
+                "value": "rosuvastatin10MgDaily"
+              },
+              {
+                "text": "Rosuvastatin 20mg daily",
+                "value": "rosuvastatin20MgDaily"
+              },
+              {
+                "text": "Rosuvastatin 40mg daily",
+                "value": "rosuvastatin40MgDaily"
+              },
+              {
+                "text": "Rosuvastatin other dose",
+                "value": "rosuvastatinOtherDose"
+              }
+            ]
+          },
+          {
+            "name": "oh_oh_medList_simvastatin",
+            "type": "radiogroup",
+            "title": "Simvastatin dosage",
+            "visibleIf": "{oh_oh_medList_statins} contains 'simvastatin'",
+            "choices": [
+              {
+                "text": "Simvastatin 5mg daily",
+                "value": "simvastatin5MgDaily"
+              },
+              {
+                "text": "Simvastatin 10mg daily",
+                "value": "simvastatin10MgDaily"
+              },
+              {
+                "text": "Simvastatin 20mg daily",
+                "value": "simvastatin20MgDaily"
+              },
+              {
+                "text": "Simvastatin 40mg daily",
+                "value": "simvastatin40MgDaily"
+              },
+              {
+                "text": "Simvastatin 80mg daily",
+                "value": "simvastatin80MgDaily"
+              },
+              {
+                "text": "Simvastatin other dose",
+                "value": "simvastatinOtherDose"
+              }
+            ]
+          },
+          {
+            "name": "oh_oh_medList_pravastatin",
+            "type": "radiogroup",
+            "title": "Pravastatin dosage",
+            "visibleIf": "{oh_oh_medList_statins} contains 'pravastatin'",
+            "choices": [
+              {
+                "text": "Pravastatin 10mg daily",
+                "value": "pravastatin10MgDaily"
+              },
+              {
+                "text": "Pravastatin 20mg daily",
+                "value": "pravastatin20MgDaily"
+              },
+              {
+                "text": "Pravastatin 40mg daily",
+                "value": "pravastatin40MgDaily"
+              },
+              {
+                "text": "Pravastatin 80mg daily",
+                "value": "pravastatin80MgDaily"
+              },
+              {
+                "text": "Pravastatin other dose",
+                "value": "pravastatinOtherDose"
+              }
+            ]
+          },
+          {
+            "name": "oh_oh_medList_fluvastatin",
+            "type": "radiogroup",
+            "title": "Fluvastatin dosage",
+            "visibleIf": "{oh_oh_medList_statins} contains 'fluvastatin'",
+            "choices": [
+              {
+                "text": "Fluvastatin 20mg daily",
+                "value": "fluvastatin20MgDaily"
+              },
+              {
+                "text": "Fluvastatin 40mg daily",
+                "value": "fluvastatin40MgDaily"
+              },
+              {
+                "text": "Fluvastatin 80mg daily",
+                "value": "fluvastatin80MgDaily"
+              },
+              {
+                "text": "Fluvastatin other dose",
+                "value": "fluvastatinOtherDose"
+              }
+            ]
+          },
+          {
+            "name": "oh_oh_medList_pitavastatin",
+            "type": "radiogroup",
+            "title": "Pitavastatin dosage",
+            "visibleIf": "{oh_oh_medList_statins} contains 'pitavastatin'",
+            "choices": [
+              {
+                "text": "Pitavastatin 1mg daily",
+                "value": "pitavastatin1MgDaily"
+              },
+              {
+                "text": "Pitavastatin 2mg daily",
+                "value": "pitavastatin2MgDaily"
+              },
+              {
+                "text": "Pitavastatin 4mg daily",
+                "value": "pitavastatin4MgDaily"
+              },
+              {
+                "text": "Other Pitavastatin dose",
+                "value": "otherPitavastatinDose"
+              }
+            ]
+          },
+          {
+            "name": "oh_oh_medList_otherCholesterolMeds",
+            "type": "checkbox",
+            "title": "Other cholesterol medications",
+            "choices": [
+              {
+                "text": "Ezetimibe",
+                "value": "ezetimibe"
+              },
+              {
+                "text": "Evolocumab (Repatha)",
+                "value": "evolocumab"
+              },
+              {
+                "text": "Alirocumab (Praluent)",
+                "value": "alirocumab"
+              },
+              {
+                "text": "Inclisiran (Leqvio)",
+                "value": "inclisiran"
+              },
+              {
+                "text": "Bempedoic Acid",
+                "value": "bempedoicAcid"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "name": "oh_oh_medList_cat2desc",
+            "type": "html",
+            "html": "<b>Category 2: Antiplatelet and Blood Thinning Medications</b>\n\nI am currently taking… [Select all that apply]\n"
+          },
+          {
+            "name": "oh_oh_medList_antiPlatelet",
+            "type": "checkbox",
+            "title": "Antiplatelet medications",
+            "choices": [
+              {
+                "text": "Aspirin",
+                "value": "aspirin"
+              },
+              {
+                "text": "Clopidogrel (Plavix)",
+                "value": "clopidogrel"
+              },
+              {
+                "text": "Ticagrelor (Brillinta)",
+                "value": "ticagrelor"
+              },
+              {
+                "text": "Prasugrel (Effient)",
+                "value": "prasugrel"
+              },
+              {
+                "text": "Other",
+                "value": "other"
+              }
+            ]
+          },
+          {
+            "name": "oh_oh_medList_bloodThinners",
+            "type": "radiogroup",
+            "title": "Blood Thinners (Anticoagulants)",
+            "choices": [
+              {
+                "text": "Coumadin (Warfarin)",
+                "value": "coumadin"
+              },
+              {
+                "text": "Apixaban (Eliquis)",
+                "value": "apixaban"
+              },
+              {
+                "text": "Rivaroxaban (Xarelto)",
+                "value": "rivaroxaban"
+              },
+              {
+                "text": "Dabigatran (Pradaxa)",
+                "value": "dabigatran"
+              },
+              {
+                "text": "Edoxaban (Savaysa)",
+                "value": "edoxaban"
+              },
+              {
+                "text": "Betrixaban (Bevyxxa)",
+                "value": "betrixaban"
+              },
+              {
+                "text": "Enoxaparin (Lovenox)",
+                "value": "enoxaparin"
+              },
+              {
+                "text": "Other",
+                "value": "other"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "name": "oh_oh_medList_cat3desc",
+            "type": "html",
+            "html": "<b>Category 3: Blood Pressure and Other Cardiac Medications</b>"
+          },
+          {
+            "name": "oh_oh_medList_bloodPressureMeds",
+            "type": "checkbox",
+            "title": "Are you currently taking (please mark all that apply)",
+            "description": "Of note: if you are taking a combination pill, please select both elements below",
+            "choices": [
+              {
+                "text": "Metoprolol",
+                "value": "metoprolol"
+              },
+              {
+                "text": "Carvedilol",
+                "value": "carvedilol"
+              },
+              {
+                "text": "Atenolol",
+                "value": "atenolol"
+              },
+              {
+                "text": "Labetalol",
+                "value": "labetalol"
+              },
+              {
+                "text": "Bisoprolol",
+                "value": "bisoprolol"
+              },
+              {
+                "text": "Propranolol",
+                "value": "propranolol"
+              },
+              {
+                "text": "Sotalol",
+                "value": "sotalol"
+              },
+              {
+                "text": "Other beta blocker",
+                "value": "otherBetaBlocker"
+              },
+              {
+                "text": "Lisinopril",
+                "value": "lisinopril"
+              },
+              {
+                "text": "Enalapril",
+                "value": "enalapril"
+              },
+              {
+                "text": "Benazepril",
+                "value": "benazepril"
+              },
+              {
+                "text": "Ramipril",
+                "value": "ramipril"
+              },
+              {
+                "text": "Quinapril",
+                "value": "quinapril"
+              },
+              {
+                "text": "Fosinopril",
+                "value": "fosinopril"
+              },
+              {
+                "text": "Captopril",
+                "value": "captopril"
+              },
+              {
+                "text": "Losartan",
+                "value": "losartan"
+              },
+              {
+                "text": "Irbesartan",
+                "value": "irbesartan"
+              },
+              {
+                "text": "Olmesartan",
+                "value": "olmesartan"
+              },
+              {
+                "text": "Valsartan",
+                "value": "valsartan"
+              },
+              {
+                "text": "Telmisartan",
+                "value": "telmisartan"
+              },
+              {
+                "text": "Candesartan",
+                "value": "candesartan"
+              },
+              {
+                "text": "Sacubitril/Valsartan (Entresto)",
+                "value": "sacubitrilValsartanEntresto"
+              },
+              {
+                "text": "Amlodipine",
+                "value": "amlodipine"
+              },
+              {
+                "text": "Diltiazem",
+                "value": "diltiazem"
+              },
+              {
+                "text": "Nicardipine",
+                "value": "nicardipine"
+              },
+              {
+                "text": "Nifedipine",
+                "value": "nifedipine"
+              },
+              {
+                "text": "Verapamil",
+                "value": "verapamil"
+              },
+              {
+                "text": "Hydrochlorothiazide",
+                "value": "hydrochlorothiazide"
+              },
+              {
+                "text": "Chlorthalidone",
+                "value": "chlorthalidone"
+              },
+              {
+                "text": "Metolazone",
+                "value": "metolazone"
+              },
+              {
+                "text": "Furosemide (Lasix)",
+                "value": "furosemideLasix"
+              },
+              {
+                "text": "Bumetanide (Bumex)",
+                "value": "bumetanideBumex"
+              },
+              {
+                "text": "Torsemide",
+                "value": "torsemide"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "name": "oh_oh_medList_cardioMetabolic",
+            "type": "checkbox",
+            "title": "Category 4: Diabetes and Cardiometabolic Medications",
+            "choices": [
+              {
+                "text": "Insulin (Daily Use)",
+                "value": "insulinDailyUse"
+              },
+              {
+                "text": "Metformin",
+                "value": "metformin"
+              },
+              {
+                "text": "Acarbose",
+                "value": "acarbose"
+              },
+              {
+                "text": "Glipizide",
+                "value": "glipizide"
+              },
+              {
+                "text": "Glyburide",
+                "value": "glyburide"
+              },
+              {
+                "text": "Glimeperide",
+                "value": "glimeperide"
+              },
+              {
+                "text": "Rosiglitazone",
+                "value": "rosiglitazone"
+              },
+              {
+                "text": "Pioglitazone",
+                "value": "pioglitazone"
+              },
+              {
+                "text": "Empagliflozin (Jardiance)",
+                "value": "empagliflozin"
+              },
+              {
+                "text": "Dapagliflozin (Farxiga)",
+                "value": "dapagliflozin"
+              },
+              {
+                "text": "Canagliflozin (Invokana)",
+                "value": "canagliflozin"
+              },
+              {
+                "text": "Ertugliflozin (Steglaro)",
+                "value": "ertugliflozin"
+              },
+              {
+                "text": "Sitagliptin (Januvia)",
+                "value": "sitagliptin"
+              },
+              {
+                "text": "Linagliptin (Tradjenta)",
+                "value": "linagliptin"
+              },
+              {
+                "text": "Saxagliptin (Onglyza)",
+                "value": "saxagliptin"
+              },
+              {
+                "text": "Alogliptin (Nesina)",
+                "value": "alogliptin"
+              },
+              {
+                "text": "Semaglutide (Ozempic, Wegovy, Rybelsus)",
+                "value": "semaglutide"
+              },
+              {
+                "text": "Liraglutide (Victoza, Saxenda)",
+                "value": "liraglutide"
+              },
+              {
+                "text": "Dulaglutide (Trulicity)",
+                "value": "dulaglutide"
+              },
+              {
+                "text": "Exenatide (Byetta)",
+                "value": "exenatide"
+              },
+              {
+                "text": "Tirzepatide (Mounjaro)",
+                "value": "tirzepatide"
+              }
+            ]
+          }
+        ]
+      }, {
+        "elements": [
+          {
+            "name": "oh_oh_medList_otherMeds",
+            "type": "matrixdynamic",
+            "title": "List any additional medications below",
+            "rowCount": 1,
+            "addRowText": "Add medication",
+            "columns": [
+              {
+                "name": "medName",
+                "cellType": "text",
+                "title": "Medication name",
+                "isRequired": true
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
