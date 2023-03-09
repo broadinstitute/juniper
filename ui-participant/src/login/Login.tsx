@@ -12,8 +12,7 @@ function Login() {
   const auth = useAuth()
 
   const signIn = async () => {
-    const user = await auth.signinPopup()
-    return user
+    auth.signinRedirect()
   }
 
   /** log in with just an email, ignoring auth */

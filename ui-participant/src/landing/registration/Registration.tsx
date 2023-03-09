@@ -4,8 +4,11 @@ import { generateFormResponseDto, SourceType, useSurveyJSModel } from 'util/surv
 import Api, { Survey } from 'api/api'
 import { RegistrationContextT } from './PortalRegistrationRouter'
 import { useUser } from '../../providers/UserProvider'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context'
+import { useReturnToPortal, useReturnToStudy } from 'state'
+import { usePortalEnv } from 'providers/PortalProvider'
+import microsoftLogo from "../../images/microsoft_logo.png";
 
 /** This registration survey is a hardcoded temporary survey until we have MS B2C integration. */
 const registrationSurvey = {
@@ -63,30 +66,29 @@ export default function Registration({ registrationContext, returnTo }: {
   registrationContext: RegistrationContextT,
   returnTo: string | null
 }) {
-  const { preRegResponseId, updatePreRegResponseId } = registrationContext
   const auth = useAuth()
-  const { loginUser } = useUser()
+  const { portalEnv } = usePortalEnv()
+  const studyShortcode = useParams().studyShortcode || null
+  const [, setReturnToPortal] = useReturnToPortal()
+  const [, setReturnToStudy] = useReturnToStudy()
 
-  useEffect(() => {
-    const signIn = async () => {
-      const user = await auth.signinPopup()
-      Api.setBearerToken(user.id_token as string)
-      const loginResult = await Api.register({
-        preRegResponseId: preRegResponseId as string,
-        email: user.profile.email as string
-      })
-      updatePreRegResponseId(null)
-      loginUser(loginResult)
-    }
-
-    signIn()
-  }, [])
+  const register = () => {
+    // Remember portal and study for when we come back from B2C,
+    // at which point RedirectFromOAuth will complete the registration
+    setReturnToPortal(portalEnv.portalShortcode)
+    setReturnToStudy(studyShortcode)
+    auth.signinRedirect()
+  }
 
   // TODO: remove legacy internal registration
   return <>
     <p>
-      Please complete B2C registration in pop-up window.
-      For now, the internal registration form remains below if needed.
+      <button type="button" className="btn btn-secondary" onClick={() => register()}>
+        <img src={microsoftLogo}/> Register with B2C
+      </button>
+    </p>
+    <p>
+      For now, the internal registration form also remains below if needed.
     </p>
     <InternalRegistration registrationContext={registrationContext} returnTo={returnTo}/>
   </>

@@ -249,6 +249,10 @@ export type SectionConfig = { [index: string]: any }
 let bearerToken: string | null = null
 const API_ROOT = `${process.env.REACT_APP_API_ROOT}`
 
+function setBearerToken(token: string | null) {
+  bearerToken = token
+}
+
 export default {
   getInitHeaders() {
     const headers: HeadersInit = {
@@ -344,7 +348,10 @@ export default {
     }
   },
 
-  async register({ preRegResponseId, email }: { preRegResponseId: string, email: string }): Promise<LoginResult> {
+  async register({ preRegResponseId, email, accessToken }: {
+    preRegResponseId: string | null, email: string, accessToken: string
+  }): Promise<LoginResult> {
+    setBearerToken(accessToken)
     let url = `${baseEnvUrl(false)}/register`
     if (preRegResponseId) {
       url += `?preRegResponseId=${preRegResponseId}`
@@ -455,11 +462,15 @@ export default {
       method: 'POST',
       headers: this.getInitHeaders()
     })
-    return await this.processJsonResponse(response)
+    const loginResult = await this.processJsonResponse(response)
+    if (loginResult?.user?.token) {
+      setBearerToken(loginResult.user.token)
+    }
+    return loginResult
   },
 
   async tokenLogin(token: string): Promise<LoginResult> {
-    this.setBearerToken(token)
+    setBearerToken(token)
 
     const url = `${baseEnvUrl(false)}/current-user/login`
     const response = await fetch(url, {
@@ -470,7 +481,7 @@ export default {
   },
 
   async refreshLogin(token: string): Promise<LoginResult> {
-    this.setBearerToken(token)
+    setBearerToken(token)
 
     const url = `${baseEnvUrl(false)}/current-user/refresh`
     const response = await fetch(url, {
@@ -486,10 +497,7 @@ export default {
       method: 'POST',
       headers: this.getInitHeaders()
     })
-  },
-
-  setBearerToken(token: string | null) {
-    bearerToken = token
+    setBearerToken(null)
   }
 }
 
