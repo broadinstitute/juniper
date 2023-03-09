@@ -90,10 +90,20 @@ export function isInternalAnchorLink(navItem: NavbarItem): navItem is NavbarItem
   return navItem.itemType === 'INTERNAL_ANCHOR'
 }
 
+export type SectionType =
+  | 'FAQ'
+  | 'HERO_CENTERED'
+  | 'HERO_WITH_IMAGE'
+  | 'NAV_AND_LINK_SECTIONS_FOOTER'
+  | 'PARTICIPATION_DETAIL'
+  | 'PHOTO_BLURB_GRID'
+  | 'RAW_HTML'
+  | 'SOCIAL_MEDIA'
+  | 'STEP_OVERVIEW'
 
 export type HtmlSection = {
   id: string,
-  sectionType: string,
+  sectionType: SectionType,
   anchorRef?: string,
   rawContent: string | null,
   sectionConfig: string | null
