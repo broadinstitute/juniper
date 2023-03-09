@@ -28,7 +28,7 @@ export default function HubNavbar() {
       <div className="collapse navbar-collapse" id="navbarNavDropdown">
         <ul className="navbar-nav ms-auto">
           {user.isAnonymous && <li className="nav-item">
-            <NavLink className="nav-link" to="/hub">Login</NavLink>
+            <NavLink className="btn btn-primary btn-lg nav-link" to="/hub">Log In</NavLink>
           </li>}
           {!user.isAnonymous && <li className="nav-item dropdown">
             <a className="nav-link dropdown-toggle" href="#"
@@ -36,7 +36,7 @@ export default function HubNavbar() {
               {user.username}
             </a>
             <ul className="dropdown-menu">
-              <li><a className="dropdown-item" onClick={doLogout}>Logout</a></li>
+              <li><a className="dropdown-item" onClick={doLogout}>Log Out</a></li>
             </ul>
           </li>}
         </ul>
