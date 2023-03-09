@@ -119,7 +119,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                     return <li className="list-group-item border-0" key={task.id}>
                       <NavLink to={`tasks/${task.id}`} className={getLinkCssClasses}>
                         { task.taskType }: {task.targetName}
-                        <span className="detail">{task.status}</span>
+                        &nbsp; <span className="detail">{task.status}</span>
                       </NavLink>
                     </li>
                   }) }

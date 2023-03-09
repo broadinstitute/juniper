@@ -83,13 +83,13 @@ public class EmailService implements NotificationSender {
         notificationService.update(notification);
     }
 
-    /** skips processing and logging, and just send the email */
+    /** skips processing, checks, and logging, and just sends the email */
     @Override
     public void sendTestNotification(NotificationConfig config, EnrolleeRuleData ruleData) throws Exception {
         sendNotification(config, ruleData);
     }
 
-    private void sendNotification(NotificationConfig config, EnrolleeRuleData ruleData) throws Exception {
+    protected void sendNotification(NotificationConfig config, EnrolleeRuleData ruleData) throws Exception {
         EmailEnvInfo emailEnv = loadEnvConfigAndTemplate(config);
         Mail mail = buildEmail(emailEnv.template, ruleData,
                 emailEnv.portalEnv, emailEnv.portal.getShortcode());
@@ -104,7 +104,7 @@ public class EmailService implements NotificationSender {
     }
 
     public boolean shouldSendEmail(NotificationConfig config, EnrolleeRuleData ruleData) {
-        if (ruleData.profile().isDoNotEmail()) {
+        if (ruleData.profile() != null && ruleData.profile().isDoNotEmail()) {
             logger.info("skipping email, enrollee {} is doNotEmail: notificationConfig: {}, portalEnv: {}",
                     ruleData.enrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
             return false;

@@ -17,19 +17,19 @@ public class NotificationDispatcherTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testEventTriggersNotificationCreation() {
-        EnrolleeFactory.EnrolleeWithPPUser enrolleeWithPPUser = enrolleeFactory
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory
                 .buildWithPortalUser("notificationTriggers");
-        Enrollee enrollee = enrolleeWithPPUser.enrollee();
+        Enrollee enrollee = enrolleeBundle.enrollee();
         NotificationConfig config = NotificationConfig.builder()
                 .studyEnvironmentId(enrollee.getStudyEnvironmentId())
                 .eventType(NotificationEventType.STUDY_ENROLLMENT)
                 .deliveryType(NotificationDeliveryType.EMAIL)
                 .notificationType(NotificationType.EVENT)
-                .portalEnvironmentId(enrolleeWithPPUser.portalParticipantUser().getPortalEnvironmentId())
+                .portalEnvironmentId(enrolleeBundle.portalParticipantUser().getPortalEnvironmentId())
                 .build();
         config = notificationConfigService.create(config);
 
-        eventService.publishEnrolleeCreationEvent(enrollee, enrolleeWithPPUser.portalParticipantUser());
+        eventService.publishEnrolleeCreationEvent(enrollee, enrolleeBundle.portalParticipantUser());
 
         List<Notification> notifications = notificationService.findByEnrolleeId(enrollee.getId());
         assertThat(notifications, hasSize(1));
@@ -37,8 +37,8 @@ public class NotificationDispatcherTests extends BaseSpringBootTest {
             .notificationConfigId(config.getId())
             .deliveryType(config.getDeliveryType())
             .studyEnvironmentId(config.getStudyEnvironmentId())
-            .portalEnvironmentId(enrolleeWithPPUser.portalParticipantUser().getPortalEnvironmentId())
-            .deliveryStatus(NotificationDeliveryStatus.READY)
+            .portalEnvironmentId(enrolleeBundle.portalParticipantUser().getPortalEnvironmentId())
+            .deliveryStatus(NotificationDeliveryStatus.SKIPPED) // SKIPPED since the config has no email template
             .enrolleeId(enrollee.getId())
             .participantUserId(enrollee.getParticipantUserId())
             .build();
