@@ -30,8 +30,8 @@ export default function HubPage() {
   const hasUnjoinedStudies = unjoinedStudies.length > 0
   return <div>
     <div className="container">
-      {!!hubMessage && <div className="row mb-2">
-        <div className="col-md-12">
+      {!!hubMessage && <div className="row mb-2 justify-content-center">
+        <div className="col-md-6">
           <TaskStatusMessage content={hubMessage.content} messageType={hubMessage.messageType}/>
         </div>
       </div>}

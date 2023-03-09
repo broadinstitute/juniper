@@ -8,7 +8,7 @@ import { questionFromRawText, QuestionObj, panelObjsToJson, questionToJson, Pane
 export default function QuestionScratchbox() {
   const [rawText, setRawText] = useState(' ')
   const [questionObj, setQuestionObj] = useState<QuestionObj>({
-    namePrefix: 'oh_oh_medHx_', nameSuffix: '', type: 'radiogroup', isRequired: true,
+    namePrefix: 'oh_oh_medList_', nameSuffix: '', type: 'radiogroup', isRequired: true,
     title: '', choices: [], otherText: '', otherPlaceholder: 'Please specify'
   })
   const [showSubPanels, setShowSubPanels] = useState(false)

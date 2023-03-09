@@ -12,6 +12,7 @@ import { ResumableData, SurveyJSForm } from 'api/api'
 import { useSearchParams } from 'react-router-dom'
 import { getSurveyElementList } from './pearlSurveyUtils'
 
+
 // See https://surveyjs.io/form-library/examples/control-data-entry-formats-with-input-masks/reactjs#content-code
 widgets.inputmask(SurveyCore)
 

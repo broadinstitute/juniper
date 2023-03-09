@@ -54,7 +54,7 @@ export default function TaskLink({ task, studyShortcode, enrollee }:
     </div>
   }
   return <div className="d-flex flex-row" style={styleProps}>
-    <div>
+    <div className="detail">
       {statusDisplayMap[task.status].icon}
     </div>
     <div className="flex-grow-1 ms-3">
