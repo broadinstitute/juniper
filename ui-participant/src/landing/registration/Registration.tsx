@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import { generateFormResponseDto, SourceType, useSurveyJSModel } from 'util/surveyJsUtils'
 import Api, { Survey } from 'api/api'
@@ -8,7 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context'
 import { useReturnToPortal, useReturnToStudy } from 'state'
 import { usePortalEnv } from 'providers/PortalProvider'
-import microsoftLogo from "../../images/microsoft_logo.png";
+import microsoftLogo from 'images/microsoft_logo.png'
 
 /** This registration survey is a hardcoded temporary survey until we have MS B2C integration. */
 const registrationSurvey = {

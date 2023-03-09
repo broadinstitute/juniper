@@ -249,6 +249,7 @@ export type SectionConfig = { [index: string]: any }
 let bearerToken: string | null = null
 const API_ROOT = `${process.env.REACT_APP_API_ROOT}`
 
+/** Sets the bearer token for API calls */
 function setBearerToken(token: string | null) {
   bearerToken = token
 }

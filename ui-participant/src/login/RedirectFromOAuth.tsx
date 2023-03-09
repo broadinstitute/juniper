@@ -16,14 +16,12 @@ export const RedirectFromOAuth = () => {
 
   useEffect(() => {
     const handleRedirectFromOauth = async () => {
-
       // RedirectFromOAuth may be rendered before react-oidc-context's AuthProvider has finished doing its thing. If so,
       // do nothing and wait until a render after AuthProvider is done.
       // Also, we'll be manipulating state, so we may get rendered more than once before we navigate away, so make sure
       // we only process the return from OAuth once (when the user is still "anonymous")
 
       if (auth.user && user.isAnonymous) {
-
         // react-oidc-context's AuthProvider has done its thing, exchanging the OAuth code for a token.
         // Now we need to:
         //   * handle possible new user registration
