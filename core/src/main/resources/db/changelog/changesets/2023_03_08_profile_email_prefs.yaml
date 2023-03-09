@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: "profile_email_prefs"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: profile
+            columns:
+              - column: { name: do_not_email, type: boolean, defaultValueBoolean: false, constraints: { nullable: false }}
+              - column: { name: do_not_email_solicit, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+

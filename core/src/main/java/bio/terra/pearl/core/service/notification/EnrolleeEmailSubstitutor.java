@@ -46,8 +46,6 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
 
     public String getDashboardLink(PortalEnvironment portalEnv, String portalShortcode) {
         String href = getParticipantHostname(portalEnv, portalShortcode) + ParticipantUiConstants.DASHBOARD_PATH;
-        String dashLink = String.format("<a href=\"%s\">Go to dashboard</a>", href);
-        logger.info("DASHLINK: {}", dashLink);
         return String.format("<a href=\"%s\">Go to dashboard</a>", href);
     }
 

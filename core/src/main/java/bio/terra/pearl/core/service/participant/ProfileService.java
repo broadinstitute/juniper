@@ -43,6 +43,11 @@ public class ProfileService extends CrudService<Profile, ProfileDao> {
     }
 
     @Transactional
+    public Profile update(Profile profile) {
+        return dao.update(profile);
+    }
+
+    @Transactional
     public void delete(UUID profileId, Set<CascadeProperty> cascade) {
         Profile profile = dao.find(profileId).get();
         dao.delete(profileId);

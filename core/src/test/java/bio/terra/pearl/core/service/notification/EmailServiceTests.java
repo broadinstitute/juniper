@@ -11,10 +11,13 @@ import com.sendgrid.Mail;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 
 public class EmailServiceTests {
+    @Autowired
+    private NotificationService notificationService;
     @Test
     public void testEmailBuilding() {
         Profile profile = Profile.builder()
@@ -35,7 +38,7 @@ public class EmailServiceTests {
 
 
         Environment env = new MockEnvironment().withProperty(EmailService.EMAIL_REDIRECT_VAR, "");
-        EmailService emailService = new EmailService(null, null, null, env);
+        EmailService emailService = new EmailService(null, null, null, env, notificationService);
         Mail email = emailService.buildEmail(emailTemplate, ruleData, portalEnv, "testportal");
         assertThat(email.personalization.get(0).getTos().get(0).getEmail(), equalTo("test@test.com"));
         assertThat(email.content.get(0).getValue(), equalTo("family name tester"));
@@ -44,7 +47,7 @@ public class EmailServiceTests {
 
         // now test that the to address is replaced if configured
         Environment devEnv = new MockEnvironment().withProperty(EmailService.EMAIL_REDIRECT_VAR, "developer@broad.org");
-        EmailService devEmailService = new EmailService(null, null, null, devEnv);
+        EmailService devEmailService = new EmailService(null, null, null, devEnv, notificationService);
         Mail devEmail = devEmailService.buildEmail(emailTemplate, ruleData, portalEnv, "testportal");
         assertThat(devEmail.personalization.get(0).getTos().get(0).getEmail(), equalTo("developer@broad.org"));
     }

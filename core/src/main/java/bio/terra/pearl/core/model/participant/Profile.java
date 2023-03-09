@@ -18,6 +18,8 @@ public class Profile extends BaseEntity {
     private UUID mailingAddressId;
 
     private String contactEmail;
+    private boolean doNotEmail; // do not send any emails to this user
+    private boolean doNotEmailSolicit; // do not send any emails not directly related to study participation
 
     public static abstract class ProfileBuilder<C extends Profile, B extends Profile.ProfileBuilder<C, B>>
             extends BaseEntity.BaseEntityBuilder<C, B> {
