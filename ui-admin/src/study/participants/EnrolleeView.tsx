@@ -157,7 +157,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
               <Route path="changeRecords" element={
                 <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext}/>
               }/>
-              <Route index element={<div>Enrollee page</div>}/>
+              <Route index element={<EnrolleeProfile enrollee={enrollee}/>}/>
               <Route path="*" element={<div>unknown enrollee route</div>}/>
             </Routes>
           </div>

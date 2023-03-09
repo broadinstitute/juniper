@@ -140,7 +140,12 @@ public class EnrolleePopulator extends Populator<Enrollee, StudyPopulateContext>
         }
         populateNotifications(enrollee, enrolleeDto, attachedEnv.getId(), ppUser);
 
-        // restore the email status
+        /**
+         * restore the email status
+         * note that the email process is async, and so this may reset the email preference before the email
+         * process actually triggers.  That's ok, though, because the Enrollee information is loaded from the DB as
+         * part of the synchronous submission processes, and that's what's passed to the EmailService.
+         */
         profile = profileService.find(ppUser.getProfileId()).get();
         profile.setDoNotEmail(isDoNotEmail);
         profileService.update(profile);

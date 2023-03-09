@@ -12,7 +12,7 @@ export default function EnrolleeProfile({ enrollee }: {enrollee: Enrollee}) {
         <label className="form-label">
           Given name: <input className="form-control" type="text" readOnly={true} value={enrollee.profile.givenName}/>
         </label>
-        <label className="form-label">
+        <label className="form-label ms-2">
           Family name: <input className="form-control" type="text" readOnly={true} value={enrollee.profile.familyName}/>
         </label>
       </div>
@@ -20,6 +20,13 @@ export default function EnrolleeProfile({ enrollee }: {enrollee: Enrollee}) {
         <label className="form-label">
           Contact email:
           <input className="form-control" type="text" readOnly={true} value={enrollee.profile.contactEmail}/>
+        </label>
+        <label className="form-label ms-2">
+          Do not email: <input type="checkbox" className="mx-1" readOnly={true} checked={enrollee.profile.doNotEmail}/>
+        </label>
+        <label className="form-label ms-2">
+          Do not solicit: <input className="mx-1" type="checkbox"
+            readOnly={true} checked={enrollee.profile.doNotEmailSolicit}/>
         </label>
       </div>
       <h6>Mailing address</h6>
@@ -44,11 +51,11 @@ export function MailingAddressView({ mailingAddress }: {mailingAddress: MailingA
       <label className="form-label">
         City: <input className="form-control" type="text" readOnly={true} value={mailingAddress.city}/>
       </label>
-      <label className="form-label">
+      <label className="form-label ms-2">
         State: <input className="form-control" type="text" readOnly={true} value={mailingAddress.state}/></label>
-      <label className="form-label">
+      <label className="form-label ms-2">
         Country: <input className="form-control" type="text" readOnly={true} value={mailingAddress.country}/></label>
-      <label className="form-label">
+      <label className="form-label ms-2">
         Postal code: <input className="form-control" type="text" readOnly={true} value={mailingAddress.zip}/></label>
     </div>
   </div>

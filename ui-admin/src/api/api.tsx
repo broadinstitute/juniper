@@ -112,7 +112,9 @@ export type Profile = {
   givenName: string,
   familyName: string,
   contactEmail: string,
-  mailingAddress: MailingAddress
+  mailingAddress: MailingAddress,
+  doNotEmail: boolean,
+  doNotEmailSolicit: boolean
 }
 
 export type MailingAddress = {
