@@ -1,4 +1,4 @@
 rootProject.name = 'pearl'
 include('core', 'populate', 'ui-admin', 'api-admin', 'api-participant', 'ui-participant')
 
-gradle.ext.releaseVersion = '0.0.55'
+gradle.ext.releaseVersion = '0.0.56'
