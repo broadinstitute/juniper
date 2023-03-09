@@ -290,7 +290,7 @@
           },
           {
             "name": "oh_oh_medList_bloodThinners",
-            "type": "radiogroup",
+            "type": "checkbox",
             "title": "Blood Thinners (Anticoagulants)",
             "choices": [
               {
