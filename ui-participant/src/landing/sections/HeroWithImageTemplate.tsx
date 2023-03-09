@@ -43,7 +43,7 @@ function HeroWithImageTemplate({
     <div id={anchorRef} className={classNames('row', 'mx-0', isLeftImage ? 'flex-row' : 'flex-row-reverse')}
       style={styleProps}>
       {!!image && (
-        <div className="col-12 col-lg-6 p-0">
+        <div className="col-12 col-lg-6 d-flex justify-content-center align-items-center p-0">
           <PearlImage image={image} className="img-fluid"/>
         </div>
       )}
@@ -51,24 +51,32 @@ function HeroWithImageTemplate({
         className="col-12 col-lg-6 py-3 p-sm-3 p-lg-5 d-flex flex-column flex-grow-1 justify-content-around"
         style={{ minWidth: '50%' }}
       >
-        <h1 className="fs-1 fw-normal lh-sm">
-          <ReactMarkdown>{title ? title : ''}</ReactMarkdown>
-        </h1>
-        <div className="fs-5">
-          <ReactMarkdown>{blurb ? blurb : ''}</ReactMarkdown>
-        </div>
-        <div className="d-grid gap-2 d-md-flex justify-content-md-start">
-          {
-            _.map(buttons, (buttonConfig, i) =>
-              <ConfiguredButton key={i} config={buttonConfig} className="btn-lg px-4 me-md-2"/>
-            )
-          }
-        </div>
-        <div className="d-flex flex-wrap align-items-center justify-content-between">
-          {_.map(logos, logo => {
-            return <PearlImage key={logo.cleanFileName} image={logo} className={'m-1'}/>
-          })}
-        </div>
+        {!!title && (
+          <h1 className="fs-1 fw-normal lh-sm">
+            <ReactMarkdown>{title}</ReactMarkdown>
+          </h1>
+        )}
+        {!!blurb && (
+          <div className="fs-5">
+            <ReactMarkdown>{blurb}</ReactMarkdown>
+          </div>
+        )}
+        {(buttons || []).length > 0 && (
+          <div className="d-grid gap-2 d-md-flex justify-content-md-start">
+            {
+              _.map(buttons, (buttonConfig, i) =>
+                <ConfiguredButton key={i} config={buttonConfig} className="btn-lg px-4 me-md-2"/>
+              )
+            }
+          </div>
+        )}
+        {(logos || []).length > 0 && (
+          <div className="d-flex flex-wrap align-items-center justify-content-between">
+            {_.map(logos, logo => {
+              return <PearlImage key={logo.cleanFileName} image={logo} className={'m-1'}/>
+            })}
+          </div>
+        )}
       </div>
     </div>
   )
