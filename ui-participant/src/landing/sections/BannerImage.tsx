@@ -10,7 +10,7 @@ type BannerImageProps = {
 }
 
 /**
- * Template for a hero with text content on the left and an image on the right.
+ * Template for a full width banner image.
  */
 function BannerImage(props: BannerImageProps) {
   const {
