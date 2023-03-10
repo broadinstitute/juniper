@@ -40,7 +40,8 @@ export default function HtmlPageView({ page }: { page: HtmlPage }) {
 export function HtmlSectionView({ section }: { section: HtmlSection }) {
   const Template = templateComponents[section.sectionType]
   if (!Template) {
-    throw new Error(`Page configuration error: Unknown section type "${section.sectionType}"`)
+    console.warn(`Page configuration error: Unknown section type "${section.sectionType}"`)
+    return null
   }
   const parsedConfig: SectionConfig = section.sectionConfig ? JSON.parse(section.sectionConfig) : {}
   return <Template config={parsedConfig} anchorRef={section.anchorRef} rawContent={section.rawContent}/>
