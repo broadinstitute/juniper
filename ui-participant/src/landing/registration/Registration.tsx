@@ -6,7 +6,7 @@ import { RegistrationContextT } from './PortalRegistrationRouter'
 import { useUser } from '../../providers/UserProvider'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context'
-import { useReturnToStudy } from 'state'
+import { useReturnToStudy } from 'browserPersistentState'
 
 /** This registration survey is a hardcoded temporary survey until we have MS B2C integration. */
 const registrationSurvey = {

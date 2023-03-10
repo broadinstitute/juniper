@@ -9,7 +9,7 @@ import PreEnrollView from './PreEnroll'
 import StudyIneligible from './StudyIneligible'
 import PortalRegistrationRouter from '../../landing/registration/PortalRegistrationRouter'
 import LoadingSpinner from '../../util/LoadingSpinner'
-import { usePreEnrollResponseId } from 'state'
+import { usePreEnrollResponseId } from 'browserPersistentState'
 
 export type StudyEnrollContext = {
   user: ParticipantUser,

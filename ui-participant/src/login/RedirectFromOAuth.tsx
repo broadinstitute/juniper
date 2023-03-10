@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context'
 import { useUser } from 'providers/UserProvider'
 import Api from 'api/api'
-import { usePreEnrollResponseId, usePreRegResponseId, useReturnToStudy } from 'state'
+import { usePreEnrollResponseId, usePreRegResponseId, useReturnToStudy } from 'browserPersistentState'
 
 export const RedirectFromOAuth = () => {
   const auth = useAuth()

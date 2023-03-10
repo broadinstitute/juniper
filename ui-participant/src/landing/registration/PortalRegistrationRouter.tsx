@@ -5,7 +5,7 @@ import { useUser } from 'providers/UserProvider'
 import Ineligible from './Ineligible'
 import PreRegistration from './Preregistration'
 import Registration from './Registration'
-import { usePreRegResponseId } from 'state'
+import { usePreRegResponseId } from 'browserPersistentState'
 
 export type RegistrationContextT = {
   preRegSurvey: Survey | null,
