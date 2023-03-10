@@ -6,7 +6,7 @@ import PearlImage, { PearlImageConfig } from '../../util/PearlImage'
 import ConfiguredButton from './ConfiguredButton'
 import ReactMarkdown from 'react-markdown'
 
-type HeroLeftWithImageTemplateProps = {
+type HeroLeftWithImageTemplateConfig = {
   background?: string, // background CSS style (e.g. `linear-gradient(...)`)
   backgroundColor?: string, // background color for the block
   backgroundImage?: PearlImageConfig, // background image
@@ -18,22 +18,29 @@ type HeroLeftWithImageTemplateProps = {
   logos?: PearlImageConfig[]
 }
 
+type HeroLeftWithImageTemplateProps = {
+  anchorRef?: string
+  config: HeroLeftWithImageTemplateConfig
+}
+
 /**
  * Template for a hero with text content on the left and an image on the right.
  */
-function HeroWithImageTemplate({
-  anchorRef,
-  config: {
-    background,
-    blurb,
-    buttons,
-    image,
-    imagePosition,
-    backgroundImage,
-    logos,
-    title
-  }
-}: { anchorRef?: string, config: HeroLeftWithImageTemplateProps }) {
+function HeroWithImageTemplate(props: HeroLeftWithImageTemplateProps) {
+  const {
+    anchorRef,
+    config: {
+      background,
+      blurb,
+      buttons,
+      image,
+      imagePosition,
+      backgroundImage,
+      logos,
+      title
+    }
+  } = props
+
   const styleProps: CSSProperties = { background }
   if (backgroundImage) {
     styleProps.backgroundImage = `url('${getImageUrl(backgroundImage.cleanFileName, backgroundImage.version)}')`

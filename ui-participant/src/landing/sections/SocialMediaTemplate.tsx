@@ -3,7 +3,7 @@ import React from 'react'
 import { ButtonConfig } from 'api/api'
 import PearlImage from '../../util/PearlImage'
 
-type SocialMediaTemplateProps = {
+type SocialMediaTemplateConfig = {
   blurb?: string, //  text below the title
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   title?: string, // large heading text
@@ -12,21 +12,28 @@ type SocialMediaTemplateProps = {
   twitterHref?: string, // URL of Twitter page
 }
 
+type SocialMediaTemplateProps = {
+  anchorRef?: string
+  config: SocialMediaTemplateConfig
+}
+
 /**
  * Template for a hero with social media links.
  * TODO -- implement images
  */
-function SocialMediaTemplate({
-  anchorRef,
-  config: {
-    blurb,
-    buttons,
-    facebookHref,
-    instagramHref,
-    title,
-    twitterHref
-  }
-}: { anchorRef?: string, config: SocialMediaTemplateProps }) {
+function SocialMediaTemplate(props: SocialMediaTemplateProps) {
+  const {
+    anchorRef,
+    config: {
+      blurb,
+      buttons,
+      facebookHref,
+      instagramHref,
+      title,
+      twitterHref
+    }
+  } = props
+
   return <div id={anchorRef} className="container py-5">
     <div className="d-flex justify-content-center mt-5 mb-4">
       {twitterHref &&
