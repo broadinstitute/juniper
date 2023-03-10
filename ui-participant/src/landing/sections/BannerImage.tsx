@@ -1,10 +1,5 @@
-import classNames from 'classnames'
-import _ from 'lodash'
-import React, { CSSProperties } from 'react'
-import { ButtonConfig, getImageUrl } from 'api/api'
+import React from 'react'
 import PearlImage, { PearlImageConfig } from '../../util/PearlImage'
-import ConfiguredButton from './ConfiguredButton'
-import ReactMarkdown from 'react-markdown'
 
 type BannerImageConfig = {
   image?: PearlImageConfig
