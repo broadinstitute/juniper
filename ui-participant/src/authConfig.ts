@@ -24,7 +24,7 @@ export const getOidcConfig = (b2cTenantName: string = aadB2cName, b2cClientId: s
     redirect_uri: `${window.origin}/redirect-from-oauth`,
     popup_redirect_uri: `${window.origin}/redirect-from-oauth`,
     silent_redirect_uri: `${window.origin}/redirect-from-oauth-silent`,
-    prompt: 'consent login',
+    prompt: 'login',
     scope: 'openid',
     loadUserInfo: false,
     stateStore: new WebStorageStateStore({ store: window.localStorage }),

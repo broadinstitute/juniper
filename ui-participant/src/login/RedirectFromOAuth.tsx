@@ -20,6 +20,10 @@ export const RedirectFromOAuth = () => {
       // Also, we'll be manipulating state, so we may get rendered more than once before we navigate away, so make sure
       // we only process the return from OAuth once (when the user is still "anonymous")
 
+      if (auth.error) {
+        navigate('/')
+      }
+
       if (auth.user && user.isAnonymous) {
         // react-oidc-context's AuthProvider has done its thing, exchanging the OAuth code for a token.
         // Now we need to:

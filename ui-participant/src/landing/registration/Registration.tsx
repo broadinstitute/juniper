@@ -72,7 +72,7 @@ export default function Registration({ registrationContext, returnTo }: {
     // Remember study for when we come back from B2C,
     // at which point RedirectFromOAuth will complete the registration
     setReturnToStudy(studyShortcode)
-    auth.signinRedirect()
+    auth.signinRedirect({ extraQueryParams: { option: 'signup' } })
   }
 
   // TODO: remove legacy internal registration
