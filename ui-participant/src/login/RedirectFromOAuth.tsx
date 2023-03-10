@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context'
 import { useUser } from 'providers/UserProvider'
 import Api from 'api/api'
-import { usePreEnrollResponseId, usePreRegResponseId, useReturnToPortal, useReturnToStudy } from 'state'
+import { usePreEnrollResponseId, usePreRegResponseId, useReturnToStudy } from 'state'
 
 export const RedirectFromOAuth = () => {
   const auth = useAuth()
@@ -11,7 +11,6 @@ export const RedirectFromOAuth = () => {
   const navigate = useNavigate()
   const [preRegResponseId, setPreRegResponseId] = usePreRegResponseId()
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
-  const [, setReturnToPortal] = useReturnToPortal()
   const [returnToStudy, setReturnToStudy] = useReturnToStudy()
 
   useEffect(() => {
@@ -55,7 +54,6 @@ export const RedirectFromOAuth = () => {
           }
 
           setPreEnrollResponseId(null)
-          setReturnToPortal(null)
           setReturnToStudy(null)
         }
 

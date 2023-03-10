@@ -6,9 +6,7 @@ import { RegistrationContextT } from './PortalRegistrationRouter'
 import { useUser } from '../../providers/UserProvider'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context'
-import { useReturnToPortal, useReturnToStudy } from 'state'
-import { usePortalEnv } from 'providers/PortalProvider'
-import microsoftLogo from 'images/microsoft_logo.png'
+import { useReturnToStudy } from 'state'
 
 /** This registration survey is a hardcoded temporary survey until we have MS B2C integration. */
 const registrationSurvey = {
@@ -67,15 +65,12 @@ export default function Registration({ registrationContext, returnTo }: {
   returnTo: string | null
 }) {
   const auth = useAuth()
-  const { portalEnv } = usePortalEnv()
   const studyShortcode = useParams().studyShortcode || null
-  const [, setReturnToPortal] = useReturnToPortal()
   const [, setReturnToStudy] = useReturnToStudy()
 
   const register = () => {
-    // Remember portal and study for when we come back from B2C,
+    // Remember study for when we come back from B2C,
     // at which point RedirectFromOAuth will complete the registration
-    setReturnToPortal(portalEnv.portalShortcode)
     setReturnToStudy(studyShortcode)
     auth.signinRedirect()
   }
@@ -83,9 +78,7 @@ export default function Registration({ registrationContext, returnTo }: {
   // TODO: remove legacy internal registration
   return <>
     <p>
-      <button type="button" className="btn btn-secondary" onClick={() => register()}>
-        <img src={microsoftLogo}/> Register with B2C
-      </button>
+      <button type="button" className="btn btn-secondary" onClick={() => register()}>Register</button>
     </p>
     <p>
       For now, the internal registration form also remains below if needed.
