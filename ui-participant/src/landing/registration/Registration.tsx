@@ -96,7 +96,7 @@ export function InternalRegistration({ registrationContext, returnTo }: {
   // for now, assume registration surveys are a single page
   const pager = { pageNumber: 0, updatePageNumber: () => 0 }
   const { surveyModel, refreshSurvey } = useSurveyJSModel(registrationSurveyModel, null, onComplete, pager)
-  const { loginUser } = useUser()
+  const { loginUserInternal } = useUser()
   const navigate = useNavigate()
 
   /** submit the response */
@@ -114,7 +114,7 @@ export function InternalRegistration({ registrationContext, returnTo }: {
     })
       .then(response => {
         updatePreRegResponseId(null)
-        loginUser({ user: response.participantUser, enrollees: [] })
+        loginUserInternal({ user: response.participantUser, enrollees: [] })
         if (returnTo) {
           navigate(returnTo)
         }

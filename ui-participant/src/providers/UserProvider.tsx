@@ -15,7 +15,8 @@ const anonymousUser: User = {
 export type UserContextT = {
   user: User,
   enrollees: Enrollee[],  // this data is included to speed initial hub rendering.  it is NOT kept current
-  loginUser: (result: LoginResult, accessToken?: string | null) => void,
+  loginUser: (result: LoginResult, accessToken: string) => void,
+  loginUserInternal: (result: LoginResult) => void,
   logoutUser: () => void,
   updateEnrollee: (enrollee: Enrollee) => void
 }
@@ -25,6 +26,9 @@ const UserContext = React.createContext<UserContextT>({
   user: anonymousUser,
   enrollees: [],
   loginUser: () => {
+    throw new Error('context not yet initialized')
+  },
+  loginUserInternal: () => {
     throw new Error('context not yet initialized')
   },
   logoutUser: () => {
@@ -51,16 +55,14 @@ export default function UserProvider({ children }: { children: React.ReactNode }
    * unauthedLogin API call. Therefore, unless unauthedLogin has a post-condition that the API token will be set, we
    * need to set it now.
    */
-  const loginUser = (loginResult: LoginResult, accessToken: string | null = null) => {
+  const loginUser = (loginResult: LoginResult, accessToken: string) => {
     setLoginState(loginResult)
-    // internal login
-    if (loginResult.user.token) {
-      localStorage.setItem(INTERNAL_LOGIN_TOKEN_KEY, loginResult.user.token)
-    }
-    // oauth login
-    if (accessToken) {
-      localStorage.setItem(OAUTH_ACCRESS_TOKEN_KEY, accessToken)
-    }
+    localStorage.setItem(OAUTH_ACCRESS_TOKEN_KEY, accessToken)
+  }
+
+  const loginUserInternal = (loginResult: LoginResult) => {
+    setLoginState(loginResult)
+    localStorage.setItem(INTERNAL_LOGIN_TOKEN_KEY, loginResult.user.token)
   }
 
   /** Sign out of the UI. Does not invalidate any tokens, but maybe it should... */
@@ -90,6 +92,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     user: loginState ? { ...loginState.user, isAnonymous: false } : anonymousUser,
     enrollees: loginState ? loginState.enrollees : [],
     loginUser,
+    loginUserInternal,
     logoutUser,
     updateEnrollee
   }
@@ -105,7 +108,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
       setIsLoading(false)
     } else if (internalLogintoken) {
       Api.refreshLogin(internalLogintoken).then(loginResult => {
-        loginUser(loginResult)
+        loginUserInternal(loginResult)
         setIsLoading(false)
       }).catch(() => {
         setIsLoading(false)
