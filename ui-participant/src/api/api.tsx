@@ -372,7 +372,11 @@ export default {
       headers: this.getInitHeaders(),
       body: JSON.stringify(fullData)
     })
-    return await this.processJsonResponse(response)
+    const registrationResponse = await this.processJsonResponse(response) as RegistrationResponse
+    if (registrationResponse?.participantUser?.token) {
+      bearerToken = registrationResponse?.participantUser?.token
+    }
+    return registrationResponse
   },
 
   /** creates an enrollee for the signed-in user and study.  */
@@ -451,9 +455,23 @@ export default {
   },
 
   async unauthedLogin(username: string): Promise<LoginResult> {
-    const url = `${baseEnvUrl(true)}/current-user/unauthed-login?${new URLSearchParams({
+    const url = `${baseEnvUrl(true)}/current-user/unauthed/login?${new URLSearchParams({
       username
     })}`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
+    const loginResult = await this.processJsonResponse(response)
+    if (loginResult?.user?.token) {
+      bearerToken = loginResult.user.token
+    }
+    return loginResult
+  },
+
+  async unauthedRefreshLogin(token: string): Promise<LoginResult> {
+    bearerToken = token
+    const url = `${baseEnvUrl(true)}/current-user/unauthed/refresh`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()
@@ -478,7 +496,6 @@ export default {
 
   async refreshLogin(token: string): Promise<LoginResult> {
     bearerToken = token
-
     const url = `${baseEnvUrl(false)}/current-user/refresh`
     const response = await fetch(url, {
       method: 'POST',

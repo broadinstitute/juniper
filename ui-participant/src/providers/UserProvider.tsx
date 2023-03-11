@@ -46,7 +46,12 @@ export const useUser = () => useContext(UserContext)
 /** Provider for the current logged-in user. */
 export default function UserProvider({ children }: { children: React.ReactNode }) {
   const [loginState, setLoginState] = useState<LoginResult | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoadingX] = useState(true)
+
+  const setIsLoading = (load: boolean) => {
+    console.log('YOYOYOYOYO')
+    setIsLoadingX((load))
+  }
 
   /**
    * Sign in to the UI based on the result of signing in to the API.
@@ -102,13 +107,16 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     const oauthAccessToken = localStorage.getItem(OAUTH_ACCRESS_TOKEN_KEY)
     const internalLogintoken = localStorage.getItem(INTERNAL_LOGIN_TOKEN_KEY)
     if (oauthAccessToken) {
-      // Not technically a login, just a refresh, so we really just need to fetch some user state from the server
-      // TODO: insert some code here to deal with page refresh
-      // For now, just stop "loading" and let rendering fall through
-      setIsLoading(false)
+      Api.refreshLogin(oauthAccessToken).then(loginResult => {
+        loginUser(loginResult, loginResult.user.token)
+        setIsLoading(false)
+      }).catch(() => {
+        setIsLoading(false)
+        localStorage.removeItem(OAUTH_ACCRESS_TOKEN_KEY)
+      })
     } else if (internalLogintoken) {
-      Api.refreshLogin(internalLogintoken).then(loginResult => {
-        loginUserInternal(loginResult)
+      Api.unauthedRefreshLogin(internalLogintoken).then(loginResult => {
+        loginUser(loginResult, loginResult.user.token)
         setIsLoading(false)
       }).catch(() => {
         setIsLoading(false)
