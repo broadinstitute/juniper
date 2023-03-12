@@ -24,11 +24,11 @@ export default function EnrolleeProfile({ enrollee }: {enrollee: Enrollee}) {
         </label>
         <label className="form-label ms-3">
           Do not email:
-          <input type="checkbox" className="ms-1" readOnly={true} checked={enrollee.profile.doNotEmail}/>
+          <input type="checkbox" className="ms-1" disabled={true} checked={enrollee.profile.doNotEmail}/>
         </label>
         <label className="form-label ms-3">
           Do not solicit:
-          <input type="checkbox" className="ms-1" readOnly={true} checked={enrollee.profile.doNotSolicit}/>
+          <input type="checkbox" className="ms-1" disabled={true} checked={enrollee.profile.doNotSolicit}/>
         </label>
       </div>
       <div className="mb-3">
