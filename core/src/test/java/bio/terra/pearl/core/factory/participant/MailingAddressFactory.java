@@ -12,6 +12,6 @@ public class MailingAddressFactory {
                 .city(testName + " city")
                 .state("MA")
                 .country("US")
-                .zip(RandomStringUtils.randomNumeric(5));
+                .postalCode(RandomStringUtils.randomNumeric(5));
     }
 }

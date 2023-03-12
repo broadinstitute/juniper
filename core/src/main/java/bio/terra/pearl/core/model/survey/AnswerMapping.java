@@ -2,6 +2,7 @@ package bio.terra.pearl.core.model.survey;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import java.util.UUID;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,4 +24,7 @@ public class AnswerMapping extends BaseEntity {
     private AnswerMappingTargetType targetType;
     private String targetField;
     private AnswerMappingMapType mapType;
+    private String formatString; // format of the source (e.g. mm/dd/yyyy for a mm/dd/yyyy field in a survey
+    @Builder.Default
+    private boolean errorOnFail = false; // whether to throw an error on parse failures, or just log it and continue
 }

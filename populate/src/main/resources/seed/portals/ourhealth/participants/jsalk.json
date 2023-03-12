@@ -11,7 +11,7 @@
       "city": "New York",
       "state": "NY",
       "country": "US",
-      "zip": "10005"
+      "postalCode": "10005"
     }
   }
 }

@@ -5,6 +5,7 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
@@ -43,7 +44,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
 
     protected boolean isSimpleFieldType(Class fieldType) {
         return Enum.class.isAssignableFrom(fieldType) ||
-                Arrays.asList(String.class, Instant.class, Boolean.class, boolean.class,
+                Arrays.asList(String.class, Instant.class, LocalDate.class, Boolean.class, boolean.class,
                                 Integer.class, int.class, UUID.class, byte[].class)
                         .contains(fieldType);
     }

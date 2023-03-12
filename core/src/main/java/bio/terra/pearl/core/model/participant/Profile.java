@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.participant;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +19,8 @@ public class Profile extends BaseEntity {
     private UUID mailingAddressId;
 
     private String contactEmail;
+    private LocalDate birthDate;
+    private String phoneNumber;
 
     public static abstract class ProfileBuilder<C extends Profile, B extends Profile.ProfileBuilder<C, B>>
             extends BaseEntity.BaseEntityBuilder<C, B> {

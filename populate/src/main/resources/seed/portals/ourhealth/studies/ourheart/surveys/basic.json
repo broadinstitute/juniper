@@ -9,7 +9,18 @@
   },{
     "questionStableId": "oh_oh_basic_streetAddress", "targetType": "PROFILE", "targetField": "mailingAddress.street1", "mapType": "TEXT_NODE_TO_STRING"
   },{
-    "questionStableId": "oh_oh_basic_lastName", "targetType": "PROFILE", "targetField": "familyName", "mapType": "TEXT_NODE_TO_STRING"
+    "questionStableId": "oh_oh_basic_city", "targetType": "PROFILE", "targetField": "mailingAddress.city", "mapType": "TEXT_NODE_TO_STRING"
+  },{
+    "questionStableId": "oh_oh_basic_state", "targetType": "PROFILE", "targetField": "mailingAddress.state", "mapType": "TEXT_NODE_TO_STRING"
+  },{
+    "questionStableId": "oh_oh_basic_zip", "targetType": "PROFILE", "targetField": "mailingAddress.postalCode", "mapType": "TEXT_NODE_TO_STRING"
+  },{
+    "questionStableId": "oh_oh_basic_email", "targetType": "PROFILE", "targetField": "contactEmail", "mapType": "TEXT_NODE_TO_STRING"
+  },{
+    "questionStableId": "oh_oh_basic_phoneNumber", "targetType": "PROFILE", "targetField": "phoneNumber", "mapType": "TEXT_NODE_TO_STRING"
+  },{
+    "questionStableId": "oh_oh_basic_dateOfBirth", "targetType": "PROFILE", "targetField": "birthDate", "mapType": "TEXT_NODE_TO_LOCAL_DATE",
+    "formatString": "MM/dd/yyyy"
   }],
   "jsonContent": {
     "title": "The Basics",
