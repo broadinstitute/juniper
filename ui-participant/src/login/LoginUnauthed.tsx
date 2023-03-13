@@ -11,6 +11,7 @@ export default function LoginUnauthed() {
   /** log in with just an email, ignoring auth */
   function unauthedLogin(event: SyntheticEvent) {
     event.preventDefault()
+    setIsError(false)
     Api.unauthedLogin(emailAddress).then((result: LoginResult) => {
       loginUser(result, result.user.token)
     }).catch(() => {

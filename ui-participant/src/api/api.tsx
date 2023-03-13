@@ -384,7 +384,7 @@ export default {
     })
     const registrationResponse = await this.processJsonResponse(response) as RegistrationResponse
     if (registrationResponse?.participantUser?.token) {
-      bearerToken = registrationResponse?.participantUser?.token
+      bearerToken = registrationResponse.participantUser.token
     }
     return registrationResponse
   },
