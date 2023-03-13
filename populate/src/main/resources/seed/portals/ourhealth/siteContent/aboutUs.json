@@ -5,6 +5,14 @@
     "title": "About Us",
     "path": "aboutUs",
     "sectionDtos": [{
+      "sectionType": "BANNER_IMAGE",
+      "sectionConfigJson": {
+        "image": {
+          "cleanFileName": "hands_banner.png",
+          "version": 1
+        }
+      }
+    },{
       "sectionType": "HERO_CENTERED",
       "sectionConfigJson": {
         "backgroundColor": "#F2F2F2",

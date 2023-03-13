@@ -91,6 +91,7 @@ export function isInternalAnchorLink(navItem: NavbarItem): navItem is NavbarItem
 }
 
 export type SectionType =
+  | 'BANNER_IMAGE'
   | 'FAQ'
   | 'HERO_CENTERED'
   | 'HERO_WITH_IMAGE'
