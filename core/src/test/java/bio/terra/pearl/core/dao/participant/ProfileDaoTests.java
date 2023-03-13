@@ -19,6 +19,6 @@ public class ProfileDaoTests extends BaseSpringBootTest {
                .birthDate(LocalDate.of(1987,4,7)).build();
        Profile savedProfile = profileDao.create(profile);
        DaoTestUtils.assertGeneratedProperties(savedProfile);
-       assertThat(savedProfile, samePropertyValuesAs(profile, "id", "createdAt", "lastUpdated"));
+       assertThat(savedProfile, samePropertyValuesAs(profile, "id", "createdAt", "lastUpdatedAt"));
     }
 }
