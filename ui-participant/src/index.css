@@ -58,6 +58,14 @@ a {
   --bs-nav-link-hover-color: var(--brand-color-shift-20);
 }
 
+[aria-expanded="false"] .hidden-when-collapsed {
+  display: none;
+}
+
+[aria-expanded="true"] .hidden-when-expanded {
+  display: none;
+}
+
 .gene-load-spinner {
   animation-name: gene-load-spin;
   animation-timing-function: linear;

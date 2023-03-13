@@ -46,12 +46,7 @@ export const useUser = () => useContext(UserContext)
 /** Provider for the current logged-in user. */
 export default function UserProvider({ children }: { children: React.ReactNode }) {
   const [loginState, setLoginState] = useState<LoginResult | null>(null)
-  const [isLoading, setIsLoadingX] = useState(true)
-
-  const setIsLoading = (load: boolean) => {
-    console.log('YOYOYOYOYO')
-    setIsLoadingX((load))
-  }
+  const [isLoading, setIsLoading] = useState(true)
 
   /**
    * Sign in to the UI based on the result of signing in to the API.
@@ -116,7 +111,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
       })
     } else if (internalLogintoken) {
       Api.unauthedRefreshLogin(internalLogintoken).then(loginResult => {
-        loginUser(loginResult, loginResult.user.token)
+        loginUserInternal(loginResult)
         setIsLoading(false)
       }).catch(() => {
         setIsLoading(false)

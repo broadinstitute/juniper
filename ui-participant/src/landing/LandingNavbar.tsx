@@ -10,9 +10,14 @@ const navLinkClasses = 'nav-link ms-lg-3'
 
 /** renders the navbar for participant landing page (for not-logged-in participants) */
 export default function LandingNavbar() {
-  const { localContent } = usePortalEnv()
+  const portalEnv = usePortalEnv()
+  const { localContent } = portalEnv
   const { user, logoutUser } = useUser()
   const navLinks = localContent.navbarItems
+
+  const joinPath = portalEnv.portal.portalStudies.length === 1
+    ? `/studies/${portalEnv.portal.portalStudies[0].study.shortcode}/join`
+    : '/join'
 
   /** send a logout to the api then logout */
   function doLogout() {
@@ -45,16 +50,41 @@ export default function LandingNavbar() {
           </li>)}
         </ul>
         <ul className="navbar-nav ms-auto">
-          {user.isAnonymous && <li className="nav-item">
-            <NavLink className={navLinkClasses} to="/hub">Login</NavLink>
-          </li>}
+          {user.isAnonymous && (
+            <>
+              <li className="nav-item">
+                <NavLink
+                  className={classNames(
+                    'btn btn-lg btn-outline-primary',
+                    'd-flex justify-content-center',
+                    'mb-3 mb-lg-0 ms-lg-3'
+                  )}
+                  to="/hub"
+                >
+                  Log In
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink
+                  className={classNames(
+                    'btn btn-lg btn-primary',
+                    'd-flex justify-content-center',
+                    'mb-3 mb-lg-0 ms-lg-3'
+                  )}
+                  to={joinPath}
+                >
+                  Join
+                </NavLink>
+              </li>
+            </>
+          )}
           {!user.isAnonymous && <li className="nav-item dropdown">
             <a className={classNames(navLinkClasses, 'dropdown-toggle')} href="#"
               role="button" data-bs-toggle="dropdown" aria-expanded="false">
               {user.username}
             </a>
             <ul className="dropdown-menu">
-              <li><a className="dropdown-item" onClick={doLogout}>Logout</a></li>
+              <li><a className="dropdown-item" onClick={doLogout}>Log Out</a></li>
             </ul>
           </li>}
         </ul>
@@ -74,9 +104,9 @@ export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
 
   if (isInternalLink(navLink)) {
     // we require navbar links to be absolute rather than relative links
-    return <NavLink to={`/${navLink.htmlPage.path}`} className="nav-link ms-3">{navLink.label}</NavLink>
+    return <NavLink to={`/${navLink.htmlPage.path}`} className={navLinkClasses}>{navLink.label}</NavLink>
   } else if (isInternalAnchorLink(navLink)) {
-    return <HashLink to={`/${navLink.anchorLinkPath}`} className="nav-link ms-3">{navLink.label}</HashLink>
+    return <HashLink to={`/${navLink.anchorLinkPath}`} className={navLinkClasses}>{navLink.label}</HashLink>
   } else if (navLink.itemType === 'MAILING_LIST') {
     return <a role="button" className={navLinkClasses} onClick={() => mailingList(navLink)}>{navLink.label}</a>
   } else if (navLink.itemType === 'EXTERNAL') {

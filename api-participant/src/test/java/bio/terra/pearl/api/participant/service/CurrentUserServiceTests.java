@@ -15,6 +15,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 public class CurrentUserServiceTests extends BaseSpringBootTest {
   @Autowired CurrentUserService currentUserService;
@@ -23,6 +24,7 @@ public class CurrentUserServiceTests extends BaseSpringBootTest {
   @Autowired PortalService portalService;
 
   @Test
+  @Transactional
   public void testUserLoginEmptyIfNoUser() {
     String username = "test" + RandomStringUtils.randomAlphabetic(5) + "@test.com";
     String token = generateFakeJwtToken(username);
@@ -31,6 +33,7 @@ public class CurrentUserServiceTests extends BaseSpringBootTest {
   }
 
   @Test
+  @Transactional
   public void testUserLoginIfPresent() {
     var portalEnv = portalEnvironmentFactory.buildPersisted("testUserLogin");
     var userBundle = participantUserFactory.buildPersisted(portalEnv, "testUserLogin");

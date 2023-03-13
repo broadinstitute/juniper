@@ -27,8 +27,8 @@ type PhotoBio = {
  */
 function PhotoBlurbGrid({ anchorRef, config: { background, backgroundColor, color, subGrids, title } }:
                           { anchorRef?: string, config: PhotoBlurbGridProps }) {
-  return <div id={anchorRef} style={{ background, backgroundColor, color }}>
-    {title && <h1 className="fs-1 fw-normal lh-sm text-center">
+  return <div id={anchorRef} className="py-5" style={{ background, backgroundColor, color }}>
+    {title && <h1 className="fs-1 fw-normal lh-sm text-center mb-4">
       {title}
     </h1>}
     {(subGrids ?? []).map((subGrid, index) => <SubGridView key={index} subGrid={subGrid}/>)}
@@ -39,7 +39,7 @@ function PhotoBlurbGrid({ anchorRef, config: { background, backgroundColor, colo
 function SubGridView({ subGrid }: { subGrid: SubGrid }) {
   return <div className="row mx-0">
     <div className="col-12 col-sm-10 col-lg-8 mx-auto">
-      {subGrid.title && <h3 className="text-center mt-3">{subGrid.title}</h3>}
+      {subGrid.title && <h3 className="text-center mb-4">{subGrid.title}</h3>}
       <div className="row mx-0">
         {subGrid.photoBios.map((bio, index) => <PhotoBioView key={index} photoBio={bio}/>)}
       </div>

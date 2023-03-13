@@ -10,7 +10,6 @@ export default function Registration() {
   const studyShortcode = useParams().studyShortcode || null
   const [, setReturnToStudy] = useReturnToStudy()
 
-
   const register = () => {
     // Remember study for when we come back from B2C,
     // at which point RedirectFromOAuth will complete the registration

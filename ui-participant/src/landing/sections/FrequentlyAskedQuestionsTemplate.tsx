@@ -1,3 +1,6 @@
+import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
+import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classNames from 'classnames'
 import _ from 'lodash'
 import React from 'react'
@@ -55,14 +58,21 @@ function FrequentlyAskedQuestionsTemplate({
                   'd-flex',
                   'text-black fw-bold text-start text-decoration-none'
                 )}
-                data-bs-toggle="collapse" data-bs-target={targetFor(question)}>
-                <span aria-hidden="true" className="me-2">+ </span>
+                data-bs-toggle="collapse" data-bs-target={targetFor(question)}
+                aria-expanded="false" aria-controls={targetFor(question)}
+              >
+                <span className="me-2 text-center" style={{ width: 20 }}>
+                  <FontAwesomeIcon className="hidden-when-expanded" icon={faPlus} />
+                  <FontAwesomeIcon className="hidden-when-collapsed" icon={faXmark} />
+                </span>
                 {question}
               </button>
-              <div className="collapse" id={idFor(question)}>
-                <p>
-                  {answer}
-                </p>
+              <div className="collapse px-0 px-sm-2 ms-2" id={idFor(question)}>
+                <div style={{ marginLeft: 20 }}>
+                  <ReactMarkdown>
+                    {answer}
+                  </ReactMarkdown>
+                </div>
               </div>
             </li>
           })

@@ -1,8 +1,7 @@
 import { useState } from 'react'
 
 const useStorage = (storage: Storage) => (key: string) => {
-  const initialValue = storage.getItem(key)
-  const [value, setValue] = useState<string | null>(initialValue)
+  const [value, setValue] = useState<string | null>(() => storage.getItem(key))
 
   const setValueAndStorage = (newValue: string | null) => {
     if (newValue === null || newValue === undefined) {

@@ -25,9 +25,13 @@
   "siteImageDtos": [{
     "populateFileName": "images/Banner-image.png"
   }, {
-    "populateFileName": "images/Banner-40238bbb.png"
+    "populateFileName": "images/family.png"
   }, {
     "populateFileName": "images/ourhealth-logo.png"
+  }, {
+    "populateFileName": "images/discover.svg"
+  }, {
+    "populateFileName": "images/engage.svg"
   }, {
     "populateFileName": "images/amit_khera.jpg"
   }, {
