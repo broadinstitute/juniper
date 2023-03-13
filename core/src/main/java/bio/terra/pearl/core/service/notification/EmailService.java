@@ -15,6 +15,8 @@ import org.apache.commons.text.StringSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
+import org.springframework.retry.backoff.FixedBackOffPolicy;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -59,7 +61,7 @@ public class EmailService implements NotificationSender {
                 emailTemplateService.find(config.getEmailTemplateId()).get()
         );
     }
-
+    
     @Async
     @Override
     public void processNotificationAsync(Notification notification, NotificationConfig config, EnrolleeRuleData ruleData) {
@@ -80,7 +82,14 @@ public class EmailService implements NotificationSender {
                         ruleData.enrollee().getShortcode());
             }
         }
-        notificationService.update(notification);
+        // do the status update in a retry loop -- it may fail if the sendgrid API is very fast,
+        // and so the transaction creating the notification isn't closed prior to this running.  (this can also happen
+        // if the update is part of a large populate transaction)
+        RetryTemplate retryTemplate = RetryTemplate.defaultInstance();
+        FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
+        backOffPolicy.setBackOffPeriod(1000);  // this will retry once a second for 3 seconds
+        retryTemplate.setBackOffPolicy(backOffPolicy);
+        retryTemplate.execute(arg -> notificationService.update(notification));
     }
 
     /** skips processing, checks, and logging, and just sends the email */

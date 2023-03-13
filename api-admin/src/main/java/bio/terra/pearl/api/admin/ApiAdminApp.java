@@ -15,6 +15,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -37,6 +38,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ConfigurationPropertiesScan("bio.terra.pearl.api.admin")
 @EnableRetry
 @EnableTransactionManagement
+@EnableAsync(proxyTargetClass = true)
 @EnableConfigurationProperties
 public class ApiAdminApp {
   public static void main(String[] args) {
