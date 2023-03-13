@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import { generateFormResponseDto, SourceType, useSurveyJSModel } from 'util/surveyJsUtils'
 import Api, { Survey } from 'api/api'
 import { RegistrationContextT } from './PortalRegistrationRouter'
 import { useUser } from '../../providers/UserProvider'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context'
+import { useReturnToStudy } from 'browserPersistentState'
 
 /** This registration survey is a hardcoded temporary survey until we have MS B2C integration. */
 const registrationSurvey = {
@@ -63,30 +64,24 @@ export default function Registration({ registrationContext, returnTo }: {
   registrationContext: RegistrationContextT,
   returnTo: string | null
 }) {
-  const { preRegResponseId, updatePreRegResponseId } = registrationContext
   const auth = useAuth()
-  const { loginUser } = useUser()
+  const studyShortcode = useParams().studyShortcode || null
+  const [, setReturnToStudy] = useReturnToStudy()
 
-  useEffect(() => {
-    const signIn = async () => {
-      const user = await auth.signinPopup()
-      Api.setBearerToken(user.id_token as string)
-      const loginResult = await Api.register({
-        preRegResponseId: preRegResponseId as string,
-        email: user.profile.email as string
-      })
-      updatePreRegResponseId(null)
-      loginUser(loginResult)
-    }
-
-    signIn()
-  }, [])
+  const register = () => {
+    // Remember study for when we come back from B2C,
+    // at which point RedirectFromOAuth will complete the registration
+    setReturnToStudy(studyShortcode)
+    auth.signinRedirect({ extraQueryParams: { option: 'signup' } })
+  }
 
   // TODO: remove legacy internal registration
   return <>
     <p>
-      Please complete B2C registration in pop-up window.
-      For now, the internal registration form remains below if needed.
+      <button type="button" className="btn btn-secondary" onClick={() => register()}>Register</button>
+    </p>
+    <p>
+      For now, the internal registration form also remains below if needed.
     </p>
     <InternalRegistration registrationContext={registrationContext} returnTo={returnTo}/>
   </>
@@ -101,7 +96,7 @@ export function InternalRegistration({ registrationContext, returnTo }: {
   // for now, assume registration surveys are a single page
   const pager = { pageNumber: 0, updatePageNumber: () => 0 }
   const { surveyModel, refreshSurvey } = useSurveyJSModel(registrationSurveyModel, null, onComplete, pager)
-  const { loginUser } = useUser()
+  const { loginUserInternal } = useUser()
   const navigate = useNavigate()
 
   /** submit the response */
@@ -119,7 +114,7 @@ export function InternalRegistration({ registrationContext, returnTo }: {
     })
       .then(response => {
         updatePreRegResponseId(null)
-        loginUser({ user: response.participantUser, enrollees: [] })
+        loginUserInternal({ user: response.participantUser, enrollees: [] })
         if (returnTo) {
           navigate(returnTo)
         }

@@ -9,11 +9,7 @@ import PreEnrollView from './PreEnroll'
 import StudyIneligible from './StudyIneligible'
 import PortalRegistrationRouter from '../../landing/registration/PortalRegistrationRouter'
 import LoadingSpinner from '../../util/LoadingSpinner'
-
-/** store the preregistration response id in local storage so a page refresh does not lose their progress.
- * The user might not be signed in yet (since they don't have an account),
- * so local storage is the best way to keep this. */
-const PRE_ENROLL_ID_KEY = 'preEnrollResponseId'
+import { usePreEnrollResponseId } from 'browserPersistentState'
 
 export type StudyEnrollContext = {
   user: ParticipantUser,
@@ -40,19 +36,13 @@ function StudyEnrollOutletMatched({ portal, studyEnv, studyShortcode }:
                                     { portal: Portal, studyEnv: StudyEnvironment, studyShortcode: string }) {
   const { user, enrollees, updateEnrollee } = useUser()
   const navigate = useNavigate()
-  const [preEnrollResponseId, setPreEnrollResponseId] = useState<string | null>(localStorage.getItem(PRE_ENROLL_ID_KEY))
+  const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
   const [preEnrollSatisfied, setPreEnrollSatisfied] = useState(!studyEnv.preEnrollSurvey)
 
   /** updates the state and localStorage */
   function updatePreEnrollResponseId(preEnrollId: string | null) {
-    if (!preEnrollId) {
-      localStorage.removeItem(PRE_ENROLL_ID_KEY)
-      setPreEnrollSatisfied(false)
-    } else {
-      localStorage.setItem(PRE_ENROLL_ID_KEY, preEnrollId)
-      setPreEnrollSatisfied(true)
-    }
     setPreEnrollResponseId(preEnrollId)
+    setPreEnrollSatisfied(!!preEnrollId)
   }
 
   useEffect(() => {
@@ -63,12 +53,11 @@ function StudyEnrollOutletMatched({ portal, studyEnv, studyShortcode }:
         setPreEnrollSatisfied(true)
       }).catch(() => {
         updatePreEnrollResponseId(null)
-        setPreEnrollSatisfied(false)
       })
     }
     // when this component is unmounted, clear the localstorage
     return () => {
-      localStorage.removeItem(PRE_ENROLL_ID_KEY)
+      setPreEnrollResponseId(null)
     }
   }, [])
 

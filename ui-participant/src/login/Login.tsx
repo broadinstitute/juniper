@@ -8,19 +8,18 @@ import { useAuth } from 'react-oidc-context'
 function Login() {
   const [emailAddress, setEmailAddress] = useState('')
   const [isError, setIsError] = useState(false)
-  const { loginUser } = useUser()
+  const { loginUserInternal } = useUser()
   const auth = useAuth()
 
   const signIn = async () => {
-    const user = await auth.signinPopup()
-    return user
+    auth.signinRedirect()
   }
 
   /** log in with just an email, ignoring auth */
   function unauthedLogin(event: SyntheticEvent) {
     event.preventDefault()
     Api.unauthedLogin(emailAddress).then((result: LoginResult) => {
-      loginUser(result)
+      loginUserInternal(result)
     }).catch(() => {
       setIsError(true)
     })
