@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.participant.ParticipantUserDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.CrudService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,24 +14,13 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-public class ParticipantUserService {
-    private ParticipantUserDao participantUserDao;
+public class ParticipantUserService extends CrudService<ParticipantUser, ParticipantUserDao> {
     private PortalParticipantUserService portalParticipantUserService;
 
     public ParticipantUserService(ParticipantUserDao participantUserDao,
                                   PortalParticipantUserService portalParticipantUserService) {
-        this.participantUserDao = participantUserDao;
+        super(participantUserDao);
         this.portalParticipantUserService = portalParticipantUserService;
-    }
-
-    @Transactional
-    public ParticipantUser create(ParticipantUser participantUser) {
-        return participantUserDao.create(participantUser);
-    }
-
-    @Transactional
-    public void delete(UUID id, Set<CascadeProperty> cascades) {
-        participantUserDao.delete(id);
     }
 
     @Transactional
@@ -43,6 +33,6 @@ public class ParticipantUserService {
     }
 
     public Optional<ParticipantUser> findOne(String username, EnvironmentName environmentName) {
-        return participantUserDao.findOne(username, environmentName);
+        return dao.findOne(username, environmentName);
     }
 }

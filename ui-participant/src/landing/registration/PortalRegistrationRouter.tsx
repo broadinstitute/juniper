@@ -6,6 +6,8 @@ import Ineligible from './Ineligible'
 import PreRegistration from './Preregistration'
 import Registration from './Registration'
 import { usePreRegResponseId } from 'browserPersistentState'
+import RegistrationUnauthed from './RegistrationUnauthed'
+
 
 export type RegistrationContextT = {
   preRegSurvey: Survey | null,
@@ -73,10 +75,14 @@ export default function PortalRegistrationRouter({
     updatePreRegResponseId
   }
 
+  const registrationComponent = process.env.REACT_APP_UNAUTHED_LOGIN ?
+    <RegistrationUnauthed registrationContext={registrationContext} returnTo={returnTo}/> :
+    <Registration/>
+
   return <Routes>
     <Route path="ineligible" element={<Ineligible/>}/>
     <Route path="preReg" element={<PreRegistration registrationContext={registrationContext}/>}/>
-    <Route path="register" element={<Registration registrationContext={registrationContext} returnTo={returnTo}/>}/>
+    <Route path="register" element={registrationComponent}/>
   </Routes>
 }
 

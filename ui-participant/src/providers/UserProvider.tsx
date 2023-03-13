@@ -102,12 +102,15 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     const oauthAccessToken = localStorage.getItem(OAUTH_ACCRESS_TOKEN_KEY)
     const internalLogintoken = localStorage.getItem(INTERNAL_LOGIN_TOKEN_KEY)
     if (oauthAccessToken) {
-      // Not technically a login, just a refresh, so we really just need to fetch some user state from the server
-      // TODO: insert some code here to deal with page refresh
-      // For now, just stop "loading" and let rendering fall through
-      setIsLoading(false)
+      Api.refreshLogin(oauthAccessToken).then(loginResult => {
+        loginUser(loginResult, loginResult.user.token)
+        setIsLoading(false)
+      }).catch(() => {
+        setIsLoading(false)
+        localStorage.removeItem(OAUTH_ACCRESS_TOKEN_KEY)
+      })
     } else if (internalLogintoken) {
-      Api.refreshLogin(internalLogintoken).then(loginResult => {
+      Api.unauthedRefreshLogin(internalLogintoken).then(loginResult => {
         loginUserInternal(loginResult)
         setIsLoading(false)
       }).catch(() => {

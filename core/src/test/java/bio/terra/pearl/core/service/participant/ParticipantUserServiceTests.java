@@ -5,7 +5,6 @@ import bio.terra.pearl.core.factory.participant.MailingAddressFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.factory.ProfileFactory;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
