@@ -34,7 +34,7 @@ public class NotificationConfig extends BaseEntity {
     private NotificationEventType eventType; // for notificationTypes of ON_EVENT
     /**
      * notificationTypes of ON_TASK, if specified, will limit to one type of task.  if null,
-     * will apply to all tasks of that type.
+     * will apply to all tasks.
      */
     private TaskType taskType;
     private String taskTargetStableId; // for notificationTypes of ON_TASK
@@ -43,4 +43,5 @@ public class NotificationConfig extends BaseEntity {
         this will delay sending until the specified number of minutes have passed while the task is in an incomplete state
      */
     private int afterMinutesIncomplete;
+    private int maxNumReminders;
 }
