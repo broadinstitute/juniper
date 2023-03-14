@@ -58,6 +58,10 @@ public class EnrolleeFactory {
     public EnrolleeBundle buildWithPortalUser(String testName) {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(testName);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, testName);
+        return buildWithPortalUser(testName, portalEnv, studyEnv);
+    }
+
+    public EnrolleeBundle buildWithPortalUser(String testName, PortalEnvironment portalEnv, StudyEnvironment studyEnv) {
         ParticipantUser user = participantUserFactory.buildPersisted(studyEnv.getEnvironmentName(), testName);
         PortalParticipantUser ppUser = PortalParticipantUser.builder()
                 .participantUserId(user.getId())

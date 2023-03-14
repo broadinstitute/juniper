@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "notification_config_reminders"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: notification_config
+            columns:
+              - column: { name: max_num_reminders, type: integer }
