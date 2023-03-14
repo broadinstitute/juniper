@@ -42,20 +42,25 @@ public class NotificationDispatcher {
             Class configClass = config.getEventType().eventClass;
             if (configClass.isInstance(event)) {
                 if (RuleEvaluator.evaluateEnrolleeRule(config.getRule(), event.getEnrolleeRuleData())) {
-                    // TODO: this should use the async call
-                    createNotification(config, event.getEnrollee(), event.getPortalParticipantUser(), event.getEnrolleeRuleData());
-                    sendNotification(config, event.getEnrolleeRuleData());
+                    Notification notification = createNotification(config, event.getEnrollee(),
+                            event.getPortalParticipantUser(), event.getEnrolleeRuleData());
+                    dispatchNotification(notification, config, event.getEnrolleeRuleData());
                 }
             }
         }
     }
 
-    public void sendNotification(NotificationConfig config, EnrolleeRuleData enrolleeRuleData) {
+    protected void dispatchNotification(Notification notification, NotificationConfig config, EnrolleeRuleData enrolleeRuleData) {
         senderMap.get(config.getDeliveryType())
-                .sendNotification(config, enrolleeRuleData);
+                .processNotificationAsync(notification, config, enrolleeRuleData);
     }
 
-    public void createNotification(NotificationConfig config, Enrollee enrollee, PortalParticipantUser ppUser,
+    public void dispatchTestNotification(NotificationConfig config, EnrolleeRuleData enrolleeRuleData) throws Exception {
+        senderMap.get(config.getDeliveryType())
+                .sendTestNotification(config, enrolleeRuleData);
+    }
+
+    public Notification createNotification(NotificationConfig config, Enrollee enrollee, PortalParticipantUser ppUser,
                                      EnrolleeRuleData ruleData) {
         Notification notification = Notification.builder()
                 .enrolleeId(enrollee.getId())
@@ -67,8 +72,6 @@ public class NotificationDispatcher {
                 .portalEnvironmentId(ppUser.getPortalEnvironmentId())
                 .retries(0)
                 .build();
-        notificationService.create(notification);
-        logger.info("Created notification: config: {}, enrollee {}, deliveryType: {}",
-                config.getId(), enrollee.getShortcode(), config.getDeliveryType());
+        return notificationService.create(notification);
     }
 }

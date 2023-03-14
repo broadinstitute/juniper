@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.HubResponse;
@@ -18,10 +19,7 @@ import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.notification.NotificationService;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.participant.ParticipantTaskService;
-import bio.terra.pearl.core.service.participant.ParticipantUserService;
-import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.service.participant.*;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SnapshotProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
@@ -34,8 +32,8 @@ import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.ResponseSnapshotPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +57,7 @@ public class EnrolleePopulator extends Populator<Enrollee, StudyPopulateContext>
     private NotificationService notificationService;
     private SnapshotProcessingService snapshotProcessingService;
     private EnrollmentService enrollmentService;
+    private ProfileService profileService;
 
     public EnrolleePopulator(EnrolleeService enrolleeService,
                              StudyEnvironmentService studyEnvironmentService,
@@ -70,7 +69,7 @@ public class EnrolleePopulator extends Populator<Enrollee, StudyPopulateContext>
                              ParticipantTaskService participantTaskService,
                              NotificationConfigService notificationConfigService,
                              NotificationService notificationService, SnapshotProcessingService snapshotProcessingService,
-                             EnrollmentService enrollmentService) {
+                             EnrollmentService enrollmentService, ProfileService profileService) {
         this.portalParticipantUserService = portalParticipantUserService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.surveyService = surveyService;
@@ -85,6 +84,7 @@ public class EnrolleePopulator extends Populator<Enrollee, StudyPopulateContext>
         this.participantUserService = participantUserService;
         this.snapshotProcessingService = snapshotProcessingService;
         this.enrollmentService = enrollmentService;
+        this.profileService = profileService;
     }
 
     @Override
@@ -108,6 +108,13 @@ public class EnrolleePopulator extends Populator<Enrollee, StudyPopulateContext>
         enrolleeDto.setPreEnrollmentResponseId(preEnrollmentResponse != null ? preEnrollmentResponse.getId() : null);
         Enrollee enrollee;
         List<ParticipantTask> tasks;
+
+        // temporarily set the enrollee to doNotEmail so that we don't spam emails during population
+        Profile profile = profileService.find(ppUser.getProfileId()).get();
+        boolean isDoNotEmail = profile.isDoNotEmail();
+        profile.setDoNotEmail(true);
+        profileService.update(profile);
+
         if (enrolleeDto.isSimulateSubmissions()) {
             HubResponse<Enrollee>  hubResponse = enrollmentService.enroll(attachedUser, ppUser,
                     attachedEnv.getEnvironmentName(), context.getStudyShortcode(), enrolleeDto.getPreEnrollmentResponseId());
@@ -132,6 +139,17 @@ public class EnrolleePopulator extends Populator<Enrollee, StudyPopulateContext>
             populateTask(enrollee, ppUser, taskDto);
         }
         populateNotifications(enrollee, enrolleeDto, attachedEnv.getId(), ppUser);
+
+        /**
+         * restore the email status
+         * note that the email process is async, and so this may reset the email preference before the email
+         * process actually triggers.  That's ok, though, because the Enrollee information is loaded from the DB as
+         * part of the synchronous submission processes, and that's what's passed to the EmailService.
+         */
+        profile = profileService.find(ppUser.getProfileId()).get();
+        profile.setDoNotEmail(isDoNotEmail);
+        profileService.update(profile);
+
         return enrollee;
     }
 
