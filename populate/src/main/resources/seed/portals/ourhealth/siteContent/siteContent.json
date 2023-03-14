@@ -14,7 +14,7 @@
         "sectionConfigJson": {
           "title": "Help us understand and improve cardiovascular disease risk among South Asian populations.",
           "blurb": "We're looking for participants to help us better understand - and ultimately overcome - the persistently high rates of cardiovascular diseases among South Asian populations.",
-          "image": { "cleanFileName": "banner-40238bbb.png", "version": 1},
+          "image": { "cleanFileName": "family.png", "version": 1},
           "imagePosition": "right",
           "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
           "buttons": [

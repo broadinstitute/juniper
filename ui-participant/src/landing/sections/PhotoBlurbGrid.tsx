@@ -2,7 +2,7 @@ import React from 'react'
 import PearlImage, { PearlImageConfig } from '../../util/PearlImage'
 import ReactMarkdown from 'react-markdown'
 
-type PhotoBlurbGridProps = {
+type PhotoBlurbGridConfig = {
   background?: string, // background CSS style (e.g. `linear-gradient(...)`)
   backgroundColor?: string, // background color for the block
   color?: string,
@@ -22,11 +22,20 @@ type PhotoBio = {
   blurb: string
 }
 
+type PhotoBlurbGridProps = {
+  anchorRef?: string
+  config: PhotoBlurbGridConfig
+}
+
 /**
  * Template for rendering a hero with centered content.
  */
-function PhotoBlurbGrid({ anchorRef, config: { background, backgroundColor, color, subGrids, title } }:
-                          { anchorRef?: string, config: PhotoBlurbGridProps }) {
+function PhotoBlurbGrid(props: PhotoBlurbGridProps) {
+  const {
+    anchorRef,
+    config: { background, backgroundColor, color, subGrids, title }
+  } = props
+
   return <div id={anchorRef} className="py-5" style={{ background, backgroundColor, color }}>
     {title && <h1 className="fs-1 fw-normal lh-sm text-center mb-4">
       {title}

@@ -3,7 +3,7 @@ import _ from 'lodash'
 import LandingNavbar from '../LandingNavbar'
 
 
-type NavAndLinkSectionsFooterProps = {
+type NavAndLinkSectionsFooterConfig = {
   background?: string, // background CSS style (e.g. `linear-gradient(...)`)
   includeNavbar?: boolean,
   itemSections?: ItemSection[]
@@ -20,8 +20,14 @@ type FooterItem = {
   externalLink: string
 }
 
+type NavAndLinkSectionsFooterProps = {
+  config: NavAndLinkSectionsFooterConfig
+}
+
 /** renders a footer-style section */
-export default function NavAndLinkSectionsFooter({ config }: { config: NavAndLinkSectionsFooterProps }) {
+export default function NavAndLinkSectionsFooter(props: NavAndLinkSectionsFooterProps) {
+  const { config } = props
+
   return <>
     {config.includeNavbar && <LandingNavbar/>}
     <div className="d-flex justify-content-center py-3">

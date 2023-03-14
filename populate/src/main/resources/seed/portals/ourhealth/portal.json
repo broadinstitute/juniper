@@ -25,7 +25,7 @@
   "siteImageDtos": [{
     "populateFileName": "images/Banner-image.png"
   }, {
-    "populateFileName": "images/Banner-40238bbb.png"
+    "populateFileName": "images/family.png"
   }, {
     "populateFileName": "images/ourhealth-logo.png"
   }, {
@@ -94,5 +94,9 @@
     "populateFileName": "images/step_3.png"
   }, {
     "populateFileName": "images/step_4.png"
+  }, {
+    "populateFileName": "images/hands_banner.png"
+  }, {
+    "populateFileName": "images/scientists_banner.png"
   }]
 }

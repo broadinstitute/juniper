@@ -2,6 +2,7 @@ plugins {
     id "io.freefair.lombok" version "6.5.1"
     id 'java'
     id 'org.liquibase.gradle' version '2.1.0'
+    id "java-test-fixtures"
 }
 
 group = 'bio.terra.pearl.core'
@@ -27,6 +28,7 @@ dependencies {
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
     implementation 'com.sendgrid:sendgrid-java:4.0.1'
+    implementation 'com.auth0:java-jwt:4.2.2'
 
     liquibaseRuntime 'org.liquibase:liquibase-core'
     liquibaseRuntime 'info.picocli:picocli:4.6.1'
@@ -35,6 +37,10 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.7.5'
+
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-test:2.7.5'
+    testFixturesImplementation 'org.apache.commons:commons-text:1.10.0'
+    testFixturesImplementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
 }
 
 test {

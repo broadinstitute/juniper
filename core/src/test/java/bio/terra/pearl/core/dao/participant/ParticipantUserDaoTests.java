@@ -1,8 +1,6 @@
 package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.dao.participant.ParticipantUserDao;
-import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.factory.ProfileFactory;
 import bio.terra.pearl.core.model.Environment;

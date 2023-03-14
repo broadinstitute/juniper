@@ -5,10 +5,9 @@ import { useUser } from 'providers/UserProvider'
 import Ineligible from './Ineligible'
 import PreRegistration from './Preregistration'
 import Registration from './Registration'
+import { usePreRegResponseId } from 'browserPersistentState'
+import RegistrationUnauthed from './RegistrationUnauthed'
 
-/** store the preregistration response id in local storage so a page refresh does not lose their progress.
- * The user isn't signed in yet (since they don't have an account), so local storage is the best way to keep this. */
-const PREREG_ID_STORAGE_KEY = 'preRegResponseId'
 
 export type RegistrationContextT = {
   preRegSurvey: Survey | null,
@@ -24,7 +23,7 @@ export default function PortalRegistrationRouter({
   portal,
   returnTo = '/hub'
 }: { portal: Portal, returnTo: string | null }) {
-  const [preRegResponseId, setPreRegResponseId] = useState<string | null>(localStorage.getItem(PREREG_ID_STORAGE_KEY))
+  const [preRegResponseId, setPreRegResponseId] = usePreRegResponseId()
   const portalEnv = portal.portalEnvironments[0]
   const preRegSurvey = portalEnv.preRegSurvey
   const [preRegSatisfied, setPreRegSatisfied] = useState(!portalEnv.preRegSurvey)
@@ -33,12 +32,7 @@ export default function PortalRegistrationRouter({
 
   /** updates the state and localStorage */
   function updatePreRegResponseId(preRegId: string | null) {
-    if (!preRegId) {
-      localStorage.removeItem(PREREG_ID_STORAGE_KEY)
-    } else {
-      localStorage.setItem(PREREG_ID_STORAGE_KEY, preRegId)
-      setPreRegSatisfied(true)
-    }
+    setPreRegSatisfied(!!preRegId)
     setPreRegResponseId(preRegId)
   }
 
@@ -51,12 +45,11 @@ export default function PortalRegistrationRouter({
         setPreRegSatisfied(true)
       }).catch(() => {
         updatePreRegResponseId(null)
-        setPreRegSatisfied(false)
       })
     }
     // when this component is unmounted, clear the localstorage
     return () => {
-      localStorage.removeItem(PREREG_ID_STORAGE_KEY)
+      updatePreRegResponseId(null)
     }
   }, [])
 
@@ -82,10 +75,14 @@ export default function PortalRegistrationRouter({
     updatePreRegResponseId
   }
 
+  const registrationComponent = process.env.REACT_APP_UNAUTHED_LOGIN ?
+    <RegistrationUnauthed registrationContext={registrationContext} returnTo={returnTo}/> :
+    <Registration/>
+
   return <Routes>
     <Route path="ineligible" element={<Ineligible/>}/>
     <Route path="preReg" element={<PreRegistration registrationContext={registrationContext}/>}/>
-    <Route path="register" element={<Registration registrationContext={registrationContext} returnTo={returnTo}/>}/>
+    <Route path="register" element={registrationComponent}/>
   </Routes>
 }
 

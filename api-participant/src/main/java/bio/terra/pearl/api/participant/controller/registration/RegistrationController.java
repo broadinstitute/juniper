@@ -2,6 +2,7 @@ package bio.terra.pearl.api.participant.controller.registration;
 
 import bio.terra.pearl.api.participant.api.RegistrationApi;
 import bio.terra.pearl.api.participant.model.RegistrationInfo;
+import bio.terra.pearl.api.participant.service.CurrentUnauthedUserService;
 import bio.terra.pearl.api.participant.service.CurrentUserService;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class RegistrationController implements RegistrationApi {
   private CurrentUserService currentUserService;
+  private CurrentUnauthedUserService currentUnauthedUserService;
   private HttpServletRequest request;
   private ObjectMapper objectMapper;
   private RegistrationService registrationService;
@@ -24,11 +26,13 @@ public class RegistrationController implements RegistrationApi {
 
   public RegistrationController(
       CurrentUserService currentUserService,
+      CurrentUnauthedUserService currentUnauthedUserService,
       HttpServletRequest request,
       ObjectMapper objectMapper,
       RegistrationService registrationService,
       RequestUtilService requestUtilService) {
     this.currentUserService = currentUserService;
+    this.currentUnauthedUserService = currentUnauthedUserService;
     this.request = request;
     this.objectMapper = objectMapper;
     this.registrationService = registrationService;
@@ -57,7 +61,7 @@ public class RegistrationController implements RegistrationApi {
     // log in the user if not already
     if (registrationResult.participantUser().getToken() == null) {
       CurrentUserService.UserWithEnrollees loggedInUser =
-          currentUserService
+          currentUnauthedUserService
               .unauthedLogin(
                   registrationResult.participantUser().getUsername(),
                   portalShortcode,

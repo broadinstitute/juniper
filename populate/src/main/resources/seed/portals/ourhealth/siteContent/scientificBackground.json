@@ -5,6 +5,14 @@
     "title": "Scientific Background",
     "path": "background",
     "sectionDtos": [{
+      "sectionType": "BANNER_IMAGE",
+      "sectionConfigJson": {
+        "image": {
+          "cleanFileName": "scientists_banner.png",
+          "version": 1
+        }
+      }
+    }, {
       "sectionType": "HERO_CENTERED",
       "sectionConfigJson": {
         "title": "Scientific Background",

@@ -4,31 +4,38 @@ import { ButtonConfig } from 'api/api'
 import PearlImage, { PearlImageConfig } from 'util/PearlImage'
 import ReactMarkdown from 'react-markdown'
 
-type StepProps = {
+type StepConfig = {
   image: PearlImageConfig,
   duration: string,
   blurb: string
 }
 
-type StepOverviewTemplateProps = {
+type StepOverviewTemplateConfig = {
   background?: string, // background CSS style (e.g. `linear-gradient(...)`)
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   title?: string, // large heading text
-  steps?: StepProps[]
+  steps?: StepConfig[]
+}
+
+type StepOverviewTemplateProps = {
+  anchorRef?: string
+  config: StepOverviewTemplateConfig
 }
 
 /**
  * Template for rendering a step overview
  */
-function StepOverviewTemplate({
-  anchorRef,
-  config: {
-    background,
-    buttons,
-    steps,
-    title
-  }
-}: { anchorRef?: string, config: StepOverviewTemplateProps }) {
+function StepOverviewTemplate(props: StepOverviewTemplateProps) {
+  const {
+    anchorRef,
+    config: {
+      background,
+      buttons,
+      steps,
+      title
+    }
+  } = props
+
   // TODO: improve layout code for better flexing, especially with <> 4 steps
   return <div id={anchorRef} style={{ background }} className="py-5">
     <h1 className="fs-1 fw-normal lh-sm mb-3 text-center">
@@ -36,7 +43,7 @@ function StepOverviewTemplate({
     </h1>
     <div className="row mx-0">
       {
-        _.map(steps, ({ image, duration, blurb }: StepProps, i: number) => {
+        _.map(steps, ({ image, duration, blurb }: StepConfig, i: number) => {
           return <div key={i} className="col-12 col-lg-3 d-flex flex-column align-items-center">
             <div className="w-75 d-flex flex-column align-items-center align-items-lg-start">
               <PearlImage image={image} className="img-fluid p-3" style={{ maxWidth: '200px' }}/>
