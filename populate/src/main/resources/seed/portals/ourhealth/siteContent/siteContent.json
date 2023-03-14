@@ -41,7 +41,7 @@
             }
           ],
           "imagePosition": "left",
-          "image": {"cleanFileName": "idea_bulb.png", "version": 1, "className": "p-5"}
+          "image": {"cleanFileName": "idea_bulb.png", "version": 1, "className": "p-3 p-lg-5"}
         }
       },{
         "sectionType": "HERO_WITH_IMAGE",
