@@ -48,7 +48,7 @@ function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
         </h1>
       )}
       {!!blurb && (
-        <div className="fs-5 " style={blurbStyle}>
+        <div className="fs-4" style={blurbStyle}>
           <ReactMarkdown>{blurb}</ReactMarkdown>
         </div>
       )}
