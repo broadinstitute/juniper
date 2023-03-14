@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import LoadingSpinner from '../util/LoadingSpinner'
 import Api, { Enrollee, LoginResult, ParticipantUser } from 'api/api'
-import { useAuth } from 'react-oidc-context'
 
 export type User = ParticipantUser & {
   isAnonymous: boolean
@@ -16,7 +15,8 @@ const anonymousUser: User = {
 export type UserContextT = {
   user: User,
   enrollees: Enrollee[],  // this data is included to speed initial hub rendering.  it is NOT kept current
-  loginUser: (result: LoginResult) => void,
+  loginUser: (result: LoginResult, accessToken: string) => void,
+  loginUserInternal: (result: LoginResult) => void,
   logoutUser: () => void,
   updateEnrollee: (enrollee: Enrollee) => void
 }
@@ -28,6 +28,9 @@ const UserContext = React.createContext<UserContextT>({
   loginUser: () => {
     throw new Error('context not yet initialized')
   },
+  loginUserInternal: () => {
+    throw new Error('context not yet initialized')
+  },
   logoutUser: () => {
     throw new Error('context not yet initialized')
   },
@@ -35,7 +38,8 @@ const UserContext = React.createContext<UserContextT>({
     throw new Error('context not yet initialized')
   }
 })
-const STORAGE_TOKEN_PROP = 'loginToken'
+const INTERNAL_LOGIN_TOKEN_KEY = 'internalLoginToken'
+const OAUTH_ACCRESS_TOKEN_KEY = 'oauthAccessToken'
 
 export const useUser = () => useContext(UserContext)
 
@@ -43,20 +47,30 @@ export const useUser = () => useContext(UserContext)
 export default function UserProvider({ children }: { children: React.ReactNode }) {
   const [loginState, setLoginState] = useState<LoginResult | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const auth = useAuth()
 
-  /** Sign in to the UI based on the result of signing in to the API. */
-  const loginUser = (loginResult: LoginResult) => {
-    Api.setBearerToken(loginResult.user.token as string)
+  /**
+   * Sign in to the UI based on the result of signing in to the API.
+   * Internal and OAuth sign-in are a little different. With OAuth sign-in, we get the token from B2C and use that for
+   * an API call, so the API token must already be set. However, with internal sign-in, we get the token back from the
+   * unauthedLogin API call. Therefore, unless unauthedLogin has a post-condition that the API token will be set, we
+   * need to set it now.
+   */
+  const loginUser = (loginResult: LoginResult, accessToken: string) => {
     setLoginState(loginResult)
-    localStorage.setItem(STORAGE_TOKEN_PROP, loginResult.user.token)
+    localStorage.setItem(OAUTH_ACCRESS_TOKEN_KEY, accessToken)
+  }
+
+  const loginUserInternal = (loginResult: LoginResult) => {
+    setLoginState(loginResult)
+    localStorage.setItem(INTERNAL_LOGIN_TOKEN_KEY, loginResult.user.token)
   }
 
   /** Sign out of the UI. Does not invalidate any tokens, but maybe it should... */
   const logoutUser = () => {
     setLoginState(null)
-    Api.setBearerToken(null)
-    localStorage.removeItem(STORAGE_TOKEN_PROP)
+    Api.logout()
+    localStorage.removeItem(INTERNAL_LOGIN_TOKEN_KEY)
+    localStorage.removeItem(OAUTH_ACCRESS_TOKEN_KEY)
   }
 
   /** updates a single enrollee in the list of enrollees -- the enrollee object should contain an updated task list */
@@ -78,31 +92,30 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     user: loginState ? { ...loginState.user, isAnonymous: false } : anonymousUser,
     enrollees: loginState ? loginState.enrollees : [],
     loginUser,
+    loginUserInternal,
     logoutUser,
     updateEnrollee
   }
 
   useEffect(() => {
-    // Add listener to auth context to process return from B2C sign-in
-    // TODO: consider only doing this for redirect-from-oauth
-    auth.events.addUserLoaded(user => {
-      if (user?.id_token && !user.profile.newUser) {
-        Api.tokenLogin(user.id_token).then(loginResult => {
-          loginUser(loginResult)
-          setIsLoading(false)
-        })
-      }
-    })
-
-    // Recover state for a signed-in user that we might have lost due to a full page load
-    const token = localStorage.getItem(STORAGE_TOKEN_PROP)
-    if (token) {
-      Api.refreshLogin(token).then(loginResult => {
-        loginUser(loginResult)
+    // Recover state for a signed-in user (internal) that we might have lost due to a full page load
+    const oauthAccessToken = localStorage.getItem(OAUTH_ACCRESS_TOKEN_KEY)
+    const internalLogintoken = localStorage.getItem(INTERNAL_LOGIN_TOKEN_KEY)
+    if (oauthAccessToken) {
+      Api.refreshLogin(oauthAccessToken).then(loginResult => {
+        loginUser(loginResult, loginResult.user.token)
         setIsLoading(false)
       }).catch(() => {
         setIsLoading(false)
-        localStorage.removeItem(STORAGE_TOKEN_PROP)
+        localStorage.removeItem(OAUTH_ACCRESS_TOKEN_KEY)
+      })
+    } else if (internalLogintoken) {
+      Api.unauthedRefreshLogin(internalLogintoken).then(loginResult => {
+        loginUserInternal(loginResult)
+        setIsLoading(false)
+      }).catch(() => {
+        setIsLoading(false)
+        localStorage.removeItem(INTERNAL_LOGIN_TOKEN_KEY)
       })
     } else {
       setIsLoading(false)

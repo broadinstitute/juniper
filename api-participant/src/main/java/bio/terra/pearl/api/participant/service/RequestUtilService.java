@@ -11,6 +11,8 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import com.auth0.jwt.JWT;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,8 @@ public class RequestUtilService {
   private CurrentUserService currentUserService;
   private StudyEnvironmentService studyEnvironmentService;
   private PortalService portalService;
+
+  public static final Pattern ENVIRONMENT_NAME_PATTERN = Pattern.compile("\\/env\\/([a-zA-Z]+)\\/");
 
   public RequestUtilService(
       BearerTokenFactory bearerTokenFactory,
@@ -35,18 +39,20 @@ public class RequestUtilService {
   /** gets the user from the request, throwing an exception if not present */
   public ParticipantUser userFromRequest(HttpServletRequest request) {
     var token = tokenFromRequest(request);
+    var envName = environmentNameFromRequest(request);
     var decodedJWT = JWT.decode(token);
     var email = decodedJWT.getClaim("email").asString();
-    Optional<ParticipantUser> userOpt = currentUserService.findByUsername(email);
+    Optional<ParticipantUser> userOpt = currentUserService.findByUsername(email, envName);
     if (userOpt.isEmpty()) {
       throw new UnauthorizedException("User not found");
     }
     return userOpt.get();
   }
 
-  public Optional<ParticipantUser> userOptFromRequest(HttpServletRequest request) {
-    String token = tokenFromRequest(request);
-    return currentUserService.findByToken(token);
+  public EnvironmentName environmentNameFromRequest(HttpServletRequest request) {
+    Matcher matcher = ENVIRONMENT_NAME_PATTERN.matcher(request.getRequestURI());
+    matcher.find();
+    return EnvironmentName.valueOfCaseInsensitive(matcher.group(1));
   }
 
   public PortalWithPortalUser authParticipantToPortal(

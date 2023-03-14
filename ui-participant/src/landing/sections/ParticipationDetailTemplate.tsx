@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClock } from '@fortawesome/free-regular-svg-icons'
 import ConfiguredButton from './ConfiguredButton'
 
-type ParticipationDetailTemplateProps = {
+type ParticipationDetailTemplateConfig = {
   background?: string, // background CSS style (e.g. `linear-gradient(...)`)
   blurb?: string, //  text below the title
   actionButton?: ButtonConfig, // array of objects containing `text` and `href` attributes
@@ -17,22 +17,29 @@ type ParticipationDetailTemplateProps = {
   imagePosition?: string // left or right.  Default is right
 }
 
+type ParticipationDetailTemplateProps = {
+  anchorRef?: string
+  config: ParticipationDetailTemplateConfig
+}
+
 /**
  * Template for a participation step description
  */
-function ParticipationDetailTemplate({
-  anchorRef,
-  config: {
-    background,
-    blurb,
-    actionButton,
-    stepNumberText,
-    timeIndication,
-    image,
-    imagePosition,
-    title
-  }
-}: { anchorRef?: string, config: ParticipationDetailTemplateProps }) {
+function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
+  const {
+    anchorRef,
+    config: {
+      background,
+      blurb,
+      actionButton,
+      stepNumberText,
+      timeIndication,
+      image,
+      imagePosition,
+      title
+    }
+  } = props
+
   const styleProps: CSSProperties = { background }
   const isLeftImage = imagePosition === 'left' // default is right, so left has to be explicitly specified
   return <div id={anchorRef} className="row mx-0 py-5" style={styleProps}>

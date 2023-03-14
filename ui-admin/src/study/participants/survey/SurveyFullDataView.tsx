@@ -13,8 +13,8 @@ export default function SurveyFullDataView({ fullData, survey }: {fullData: stri
       }
       if (typeof displayValue === 'object') {
         displayValue = JSON.stringify(dataItem.displayValue, null, 2)
-      } else if (dataItem.stableId === 'signature') {
-        displayValue = <img src={dataItem.simpleValue}/>
+      } else if (dataItem.stableId.endsWith('signature')) {
+        displayValue = <img src={dataItem.value}/>
       }
       return <div key={index}>
         <label>{dataItem.questionText} <span className="detail">({dataItem.stableId})</span></label>
@@ -46,4 +46,5 @@ export type DenormalizedResponseItem = {
   questionType: string,
   simpleValue: string,
   displayValue: string,
+  value: string
 }

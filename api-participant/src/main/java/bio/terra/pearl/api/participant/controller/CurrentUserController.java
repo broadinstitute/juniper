@@ -26,20 +26,6 @@ public class CurrentUserController implements CurrentUserApi {
   }
 
   @Override
-  public ResponseEntity<Object> unauthedLogin(
-      String portalShortcode, String envName, String username) {
-    /**
-     * this currently does a global login. That may change as we determine how portals interact with
-     * each other and how we whitelabel.
-     */
-    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    // for now, log them in as long as the username exists
-    Optional<CurrentUserService.UserWithEnrollees> userOpt =
-        currentUserService.unauthedLogin(username, portalShortcode, environmentName);
-    return ResponseEntity.of(userOpt.map(adminUser -> adminUser));
-  }
-
-  @Override
   public ResponseEntity<Object> tokenLogin(String portalShortcode, String envName) {
     var token = requestUtilService.tokenFromRequest(request);
     var environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
@@ -50,8 +36,9 @@ public class CurrentUserController implements CurrentUserApi {
   @Override
   public ResponseEntity<Object> refresh(String portalShortcode, String envName) {
     String token = requestUtilService.tokenFromRequest(request);
+    var environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     Optional<CurrentUserService.UserWithEnrollees> userOpt =
-        currentUserService.refresh(token, portalShortcode);
+        currentUserService.refresh(token, portalShortcode, environmentName);
     return ResponseEntity.of(userOpt.map(user -> user));
   }
 

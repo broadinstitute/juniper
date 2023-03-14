@@ -119,7 +119,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                     return <li className="list-group-item border-0" key={task.id}>
                       <NavLink to={`tasks/${task.id}`} className={getLinkCssClasses}>
                         { task.taskType }: {task.targetName}
-                        <span className="detail">{task.status}</span>
+                        &nbsp; <span className="detail">{task.status}</span>
                       </NavLink>
                     </li>
                   }) }
@@ -157,7 +157,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
               <Route path="changeRecords" element={
                 <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext}/>
               }/>
-              <Route index element={<div>Enrollee page</div>}/>
+              <Route index element={<EnrolleeProfile enrollee={enrollee}/>}/>
               <Route path="*" element={<div>unknown enrollee route</div>}/>
             </Routes>
           </div>

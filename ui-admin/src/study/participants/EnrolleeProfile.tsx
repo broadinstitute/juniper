@@ -13,7 +13,7 @@ export default function EnrolleeProfile({ enrollee }: {enrollee: Enrollee}) {
         <label className="form-label">
           Given name: <input className="form-control" type="text" readOnly={true} value={enrollee.profile.givenName}/>
         </label>
-        <label className="form-label">
+        <label className="form-label ms-2">
           Family name: <input className="form-control" type="text" readOnly={true} value={enrollee.profile.familyName}/>
         </label>
       </div>
@@ -28,7 +28,7 @@ export default function EnrolleeProfile({ enrollee }: {enrollee: Enrollee}) {
         </label>
         <label className="form-label ms-3">
           Do not solicit:
-          <input type="checkbox" className="ms-1" disabled={true} checked={enrollee.profile.doNotSolicit}/>
+          <input type="checkbox" className="ms-1" disabled={true} checked={enrollee.profile.doNotEmailSolicit}/>
         </label>
       </div>
       <div className="mb-3">
@@ -66,9 +66,9 @@ export function MailingAddressView({ mailingAddress }: {mailingAddress: MailingA
       <label className="form-label">
         City: <input className="form-control" type="text" readOnly={true} value={mailingAddress.city}/>
       </label>
-      <label className="form-label">
+      <label className="form-label ms-2">
         State: <input className="form-control" type="text" readOnly={true} value={mailingAddress.state}/></label>
-      <label className="form-label">
+      <label className="form-label ms-2">
         Country: <input className="form-control" type="text" readOnly={true} value={mailingAddress.country}/></label>
       <label className="form-label">
         Postal code: <input className="form-control" type="text" readOnly={true} value={mailingAddress.postalCode}/>

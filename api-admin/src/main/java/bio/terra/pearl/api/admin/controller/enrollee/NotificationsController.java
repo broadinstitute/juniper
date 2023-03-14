@@ -62,8 +62,11 @@ public class NotificationsController implements NotificationsApi {
     requestUtilService.authUserToPortal(adminUser, portalShortcode);
     EnrolleeRuleData enrolleeRuleData = objectMapper.convertValue(body, EnrolleeRuleData.class);
     NotificationConfig config = notificationConfigService.find(configId).get();
-
-    notificationDispatcher.sendNotification(config, enrolleeRuleData);
-    return ResponseEntity.ok(config);
+    try {
+      notificationDispatcher.dispatchTestNotification(config, enrolleeRuleData);
+      return ResponseEntity.ok(config);
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError().body(e);
+    }
   }
 }

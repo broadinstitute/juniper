@@ -15,6 +15,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -23,19 +24,19 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
       // Scan for logging-related components & configs
       "bio.terra.common.logging",
       "bio.terra.common.iam",
-      // Scan for Liquibase migration components & configs
+      // ScanE for Liquibase migration components & configs
       "bio.terra.common.migrate",
       // Transaction management and DB retry configuration
       "bio.terra.common.retry.transaction",
       // Scan for tracing-related components & configs
       "bio.terra.common.tracing",
       "bio.terra.pearl.core",
-      "bio.terra.pearl.populate",
       // Scan all service-specific packages beneath the current package
       "bio.terra.pearl.api.participant",
     })
 @ConfigurationPropertiesScan("bio.terra.pearl.api.participant")
 @EnableRetry
+@EnableAsync(proxyTargetClass = true)
 @EnableTransactionManagement
 @EnableConfigurationProperties
 public class ApiParticipantApp {

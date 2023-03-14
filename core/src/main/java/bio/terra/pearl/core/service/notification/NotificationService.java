@@ -19,4 +19,8 @@ public class NotificationService extends CrudService<Notification, NotificationD
     public void deleteByEnrolleeId(UUID enrolleeId) {
         dao.deleteByEnrolleeId(enrolleeId);
     }
+
+    public Notification update(Notification notification) {
+        return dao.update(notification);
+    }
 }

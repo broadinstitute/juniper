@@ -91,6 +91,7 @@ export function isInternalAnchorLink(navItem: NavbarItem): navItem is NavbarItem
 }
 
 export type SectionType =
+  | 'BANNER_IMAGE'
   | 'FAQ'
   | 'HERO_CENTERED'
   | 'HERO_WITH_IMAGE'
@@ -354,7 +355,10 @@ export default {
     }
   },
 
-  async register({ preRegResponseId, email }: { preRegResponseId: string, email: string }): Promise<LoginResult> {
+  async register({ preRegResponseId, email, accessToken }: {
+    preRegResponseId: string | null, email: string, accessToken: string
+  }): Promise<LoginResult> {
+    bearerToken = accessToken
     let url = `${baseEnvUrl(false)}/register`
     if (preRegResponseId) {
       url += `?preRegResponseId=${preRegResponseId}`
@@ -379,7 +383,11 @@ export default {
       headers: this.getInitHeaders(),
       body: JSON.stringify(fullData)
     })
-    return await this.processJsonResponse(response)
+    const registrationResponse = await this.processJsonResponse(response) as RegistrationResponse
+    if (registrationResponse?.participantUser?.token) {
+      bearerToken = registrationResponse.participantUser.token
+    }
+    return registrationResponse
   },
 
   /** creates an enrollee for the signed-in user and study.  */
@@ -458,19 +466,36 @@ export default {
   },
 
   async unauthedLogin(username: string): Promise<LoginResult> {
-    const url = `${baseEnvUrl(true)}/current-user/unauthed-login?${new URLSearchParams({
+    const url = `${baseEnvUrl(true)}/current-user/unauthed/login?${new URLSearchParams({
       username
     })}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()
     })
-    return await this.processJsonResponse(response)
+    const loginResult = await this.processJsonResponse(response)
+    if (loginResult?.user?.token) {
+      bearerToken = loginResult.user.token
+    }
+    return loginResult
+  },
+
+  async unauthedRefreshLogin(token: string): Promise<LoginResult> {
+    bearerToken = token
+    const url = `${baseEnvUrl(true)}/current-user/unauthed/refresh`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
+    const loginResult = await this.processJsonResponse(response)
+    if (loginResult?.user?.token) {
+      bearerToken = loginResult.user.token
+    }
+    return loginResult
   },
 
   async tokenLogin(token: string): Promise<LoginResult> {
-    this.setBearerToken(token)
-
+    bearerToken = token
     const url = `${baseEnvUrl(false)}/current-user/login`
     const response = await fetch(url, {
       method: 'POST',
@@ -480,8 +505,7 @@ export default {
   },
 
   async refreshLogin(token: string): Promise<LoginResult> {
-    this.setBearerToken(token)
-
+    bearerToken = token
     const url = `${baseEnvUrl(false)}/current-user/refresh`
     const response = await fetch(url, {
       method: 'POST',
@@ -496,10 +520,7 @@ export default {
       method: 'POST',
       headers: this.getInitHeaders()
     })
-  },
-
-  setBearerToken(token: string | null) {
-    bearerToken = token
+    bearerToken = null
   }
 }
 

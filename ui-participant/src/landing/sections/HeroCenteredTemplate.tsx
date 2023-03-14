@@ -5,7 +5,7 @@ import ReactMarkdown from 'react-markdown'
 import ConfiguredButton from './ConfiguredButton'
 import PearlImage, { PearlImageConfig } from '../../util/PearlImage'
 
-type HeroCenteredTemplateProps = {
+type HeroCenteredTemplateConfig = {
   background?: string, // background CSS style (e.g. `linear-gradient(...)`)
   backgroundColor?: string, // background color for the block
   blurb?: string, //  text below the title
@@ -16,19 +16,25 @@ type HeroCenteredTemplateProps = {
   image?: PearlImageConfig   // image to display under blurb
 }
 
+type HeroCenteredTemplateProps = {
+  anchorRef?: string
+  config: HeroCenteredTemplateConfig
+}
+
 const blurbAlignAllowed = ['center', 'right', 'left']
 
 /**
  * Template for rendering a hero with centered content.
  */
-function HeroCenteredTemplate({
-  anchorRef,
-  config: {
-    background, backgroundColor, color,
-    blurb, blurbAlign, buttons, title, image
-  }
-}:
-                                { anchorRef?: string, config: HeroCenteredTemplateProps }) {
+function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
+  const {
+    anchorRef,
+    config: {
+      background, backgroundColor, color,
+      blurb, blurbAlign, buttons, title, image
+    }
+  } = props
+
   const blurbAlignIndex = blurbAlignAllowed.indexOf(blurbAlign ?? 'center')
   const cleanBlurbAlign: string = blurbAlignAllowed[blurbAlignIndex === -1 ? 0 : blurbAlignIndex] ?? 'center'
   const blurbStyle = {

@@ -112,10 +112,10 @@ export type Profile = {
   givenName: string,
   familyName: string,
   contactEmail: string,
+  doNotEmail: boolean,
+  doNotEmailSolicit: boolean,
   mailingAddress: MailingAddress,
   phoneNumber: string,
-  doNotEmail: boolean,
-  doNotSolicit: boolean,
   birthDate: number
 }
 

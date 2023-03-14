@@ -55,7 +55,7 @@ public class EnrolleeFactory {
         return enrolleeService.create(enrollee);
     }
 
-    public EnrolleeWithPPUser buildWithPortalUser(String testName) {
+    public EnrolleeBundle buildWithPortalUser(String testName) {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(testName);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, testName);
         ParticipantUser user = participantUserFactory.buildPersisted(studyEnv.getEnvironmentName(), testName);
@@ -64,9 +64,9 @@ public class EnrolleeFactory {
                 .portalEnvironmentId(portalEnv.getId()).build();
         ppUser = portalParticipantUserService.create(ppUser);
         Enrollee enrollee = buildPersisted(testName, studyEnv.getId(), user.getId());
-        return new EnrolleeWithPPUser(enrollee, ppUser);
+        return new EnrolleeBundle(enrollee, ppUser, portalEnv.getPortalId());
     }
 
 
-    public record EnrolleeWithPPUser(Enrollee enrollee, PortalParticipantUser portalParticipantUser) {}
+    public record EnrolleeBundle(Enrollee enrollee, PortalParticipantUser portalParticipantUser, UUID portalId) {}
 }

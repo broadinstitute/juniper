@@ -288,10 +288,10 @@ paths:
                 format: binary
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/public/portals/v1/{portalShortcode}/env/{envName}/current-user/unauthed-login:
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/current-user/unauthed/login:
     post:
       summary: Development endpoint for logging in a user just on email address
-      tags: [ currentUser ]
+      tags: [ currentUnauthedUser ]
       operationId: unauthedLogin
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
@@ -303,6 +303,22 @@ paths:
           content:
             application/json:
               schema: {type: object}
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/current-user/unauthed/refresh:
+    post:
+      summary: Development endpoint for logging in a user just on email address
+      tags: [ currentUnauthedUser ]
+      operationId: unauthedRefresh
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: current user object with token
+          content:
+            application/json:
+              schema: { type: object }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/current-user/login:

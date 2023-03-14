@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import React from 'react'
 
+import BannerImage from './BannerImage'
 import FrequentlyAskedQuestionsTemplate from './FrequentlyAskedQuestionsTemplate'
 import HeroCenteredTemplate from './HeroCenteredTemplate'
 import HeroWithImageTemplate from './HeroWithImageTemplate'
@@ -24,7 +25,8 @@ const templateComponents: Record<SectionType, TemplateComponent> = {
   'PHOTO_BLURB_GRID': PhotoBlurbGrid,
   'PARTICIPATION_DETAIL': ParticipationDetailTemplate,
   'RAW_HTML': RawHtmlTemplate,
-  'NAV_AND_LINK_SECTIONS_FOOTER': NavAndLinkSectionsFooter
+  'NAV_AND_LINK_SECTIONS_FOOTER': NavAndLinkSectionsFooter,
+  'BANNER_IMAGE': BannerImage
 }
 
 /** renders a configured HtmlPage */
@@ -39,6 +41,10 @@ export default function HtmlPageView({ page }: { page: HtmlPage }) {
 /** renders a single section by delegating to the appropriate component based on sectionType */
 export function HtmlSectionView({ section }: { section: HtmlSection }) {
   const Template = templateComponents[section.sectionType]
+  if (!Template) {
+    console.warn(`Page configuration error: Unknown section type "${section.sectionType}"`)
+    return null
+  }
   const parsedConfig: SectionConfig = section.sectionConfig ? JSON.parse(section.sectionConfig) : {}
   return <Template config={parsedConfig} anchorRef={section.anchorRef} rawContent={section.rawContent}/>
 }
