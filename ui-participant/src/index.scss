@@ -92,3 +92,9 @@ a {
   color: #777;
   font-style: italic;
 }
+
+@include media-breakpoint-down(lg) {
+  .pearl-image {
+    max-height: max(33vh, 212px);
+  }
+}
