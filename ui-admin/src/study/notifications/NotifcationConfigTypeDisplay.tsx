@@ -12,7 +12,6 @@ export const eventTypeDisplayMap: Record<string, string> = {
   STUDY_CONSENT: 'Consent form submission'
 }
 
-
 /** shows a summary of the notification config */
 export default function NotificationConfigTypeDisplay({ config }: {config?: NotificationConfig}) {
   if (!config) {
@@ -20,9 +19,10 @@ export default function NotificationConfigTypeDisplay({ config }: {config?: Noti
   }
   if (config.notificationType === 'EVENT') {
     return <span>{eventTypeDisplayMap[config.eventType]}</span>
-  } else {
+  } else if (config.notificationType === 'TASK_INCOMPLETE') {
     return <span>
-      {config.taskType} - {config.taskTargetStableId}
+      Reminder: {config.taskType} {config.taskTargetStableId}
     </span>
   }
+  return <span>{config.taskType}</span>
 }

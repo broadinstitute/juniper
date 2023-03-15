@@ -8,7 +8,11 @@ import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 public interface NotificationSender {
     void processNotificationAsync(Notification notification, NotificationConfig config, EnrolleeRuleData ruleData);
 
-    void processNotification(Notification notification, NotificationConfig config, EnrolleeRuleData ruleData);
+    void processNotification(Notification notification, NotificationConfig config, EnrolleeRuleData ruleData,
+                             NotificationContextInfo notificationContextInfo);
 
     void sendTestNotification(NotificationConfig config, EnrolleeRuleData ruleData) throws Exception;
+
+    NotificationContextInfo loadContextInfo(NotificationConfig config);
+
 }

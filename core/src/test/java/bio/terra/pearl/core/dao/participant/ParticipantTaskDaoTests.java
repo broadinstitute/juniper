@@ -22,8 +22,7 @@ import java.time.Duration;
 import java.util.List;
 import org.apache.commons.lang3.RandomStringUtils;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,35 +37,35 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
         ParticipantTask newTask1 = participantTaskService.create(taskForUser(enrolleeBundle, TaskStatus.NEW).build());
 
         // check status filtering
-        var tasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), Duration.ofSeconds(0),
-                Duration.ofSeconds(1), List.of(TaskStatus.NEW));
+        var tasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
+                Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(1), List.of(TaskStatus.NEW));
         assertThat(tasks, hasSize(1));
 
-        var inProgressTasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), Duration.ofSeconds(0),
-                Duration.ofSeconds(1), List.of(TaskStatus.IN_PROGRESS));
+        var inProgressTasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
+                Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(1), List.of(TaskStatus.IN_PROGRESS));
         assertThat(inProgressTasks, hasSize(0));
 
-        var inProgressAndNewTasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), Duration.ofSeconds(0),
-                Duration.ofSeconds(1), List.of(TaskStatus.NEW, TaskStatus.IN_PROGRESS));
+        var inProgressAndNewTasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
+                Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(1), List.of(TaskStatus.NEW, TaskStatus.IN_PROGRESS));
         assertThat(inProgressAndNewTasks, hasSize(1));
 
-        var minsAgoTasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), Duration.ofMinutes(5),
-                Duration.ofSeconds(1), List.of(TaskStatus.NEW));
+        var minsAgoTasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
+                Duration.ofMinutes(5), Duration.ofHours(1), Duration.ofSeconds(1), List.of(TaskStatus.NEW));
         assertThat(minsAgoTasks, hasSize(0));
 
 
         // Now check that it filters out tasks if there is a recent notification
         var notificationConfig = notificationConfigFactory.buildPersisted(NotificationConfig.builder()
                 .deliveryType(NotificationDeliveryType.EMAIL)
-                        .notificationType(NotificationType.TASK),
+                        .notificationType(NotificationType.TASK_REMINDER),
                                 studyEnv.getId(), portalEnv.getId());
         notificationFactory.buildPersisted(enrolleeBundle, notificationConfig);
 
-        var tasksRecentNotification = participantTaskDao.findByStatusAndTime(studyEnv.getId(), Duration.ofSeconds(0),
-                Duration.ofSeconds(1000), List.of(TaskStatus.NEW));
+        var tasksRecentNotification = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
+                Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(1000), List.of(TaskStatus.NEW));
         assertThat(tasksRecentNotification, hasSize(0));
-        var tasksAfterStaleNotification = participantTaskDao.findByStatusAndTime(studyEnv.getId(), Duration.ofSeconds(0),
-                Duration.ofSeconds(-10), List.of(TaskStatus.NEW));
+        var tasksAfterStaleNotification = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
+                Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(-10), List.of(TaskStatus.NEW));
         assertThat(tasksAfterStaleNotification, hasSize(1));
     }
 
@@ -78,15 +77,31 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
         var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
         var enrolleeBundle2 = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
 
-        ParticipantTask newTask1 = participantTaskService.create(taskForUser(enrolleeBundle, TaskStatus.NEW).build());
-        ParticipantTask newTask2 = participantTaskService.create(taskForUser(enrolleeBundle, TaskStatus.COMPLETE).build());
-        ParticipantTask newTask3 = participantTaskService.create(taskForUser(enrolleeBundle2, TaskStatus.NEW).build());
+        ParticipantTask task1_1 = participantTaskService.create(taskForUser(enrolleeBundle, TaskStatus.NEW).build());
+        ParticipantTask task1_2 = participantTaskService.create(taskForUser(enrolleeBundle, TaskStatus.NEW).build());
+        ParticipantTask task1_3 = participantTaskService.create(taskForUser(enrolleeBundle, TaskStatus.COMPLETE).build());
+        ParticipantTask task2_1 = participantTaskService.create(taskForUser(enrolleeBundle2, TaskStatus.NEW).build());
 
-        // should
-        List<ParticipantTask> tasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), Duration.ofSeconds(0),
-                Duration.ofSeconds(1), List.of(TaskStatus.NEW));
-        assertThat(tasks, hasSize(2));
-        assertThat(tasks, contains(newTask1, newTask3));
+        var enrolleeTasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), task1_1.getTaskType(),
+                Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(1), List.of(TaskStatus.NEW));
+        // should contain both enrollees
+        assertThat(enrolleeTasks, hasSize(2));
+        var enrollee1tasks = enrolleeTasks.stream().filter(et ->
+                et.getEnrolleeId().equals(enrolleeBundle.enrollee().getId())).findFirst().get();
+        assertThat(enrollee1tasks.getTaskTargetNames(), hasSize(2));
+        assertThat(enrollee1tasks.getTaskTargetNames(), contains(task1_1.getTargetName(), task1_2.getTargetName()));
+
+        // Now check that it filters out tasks if there is a recent notification
+        var notificationConfig = notificationConfigFactory.buildPersisted(NotificationConfig.builder()
+                        .deliveryType(NotificationDeliveryType.EMAIL)
+                        .notificationType(NotificationType.TASK_REMINDER),
+                studyEnv.getId(), portalEnv.getId());
+        notificationFactory.buildPersisted(enrolleeBundle, notificationConfig);
+
+        var tasksRecentNotification = participantTaskDao.findByStatusAndTime(studyEnv.getId(), task1_1.getTaskType(),
+                Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(1000), List.of(TaskStatus.NEW));
+        assertThat(tasksRecentNotification, hasSize(1));
+        assertThat(tasksRecentNotification.get(0).getEnrolleeId(), equalTo(enrolleeBundle2.enrollee().getId())); // only the second enrollee's task should appear
     }
 
     private ParticipantTask.ParticipantTaskBuilder taskForUser(EnrolleeFactory.EnrolleeBundle enrolleeBundle, TaskStatus status) {

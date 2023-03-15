@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
 import bio.terra.pearl.core.model.BaseEntity;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -28,6 +29,9 @@ public abstract class CrudService<M extends BaseEntity, D extends BaseJdbiDao<M>
     }
 
     public int count() { return dao.count(); }
+
+    public List<M> findAll() { return dao.findAll(); }
+    public List<M> findAll(List<UUID> uuids) { return dao.findAll(uuids); }
 
     @Transactional
     public void delete(UUID id, Set<CascadeProperty> cascade) {

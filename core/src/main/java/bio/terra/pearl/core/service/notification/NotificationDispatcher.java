@@ -1,17 +1,13 @@
 package bio.terra.pearl.core.service.notification;
 
-import bio.terra.pearl.core.model.notification.Notification;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
-import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
-import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.notification.*;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.RuleEvaluator;
 import bio.terra.pearl.core.service.workflow.DispatcherOrder;
 import bio.terra.pearl.core.service.workflow.EnrolleeEvent;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -37,22 +33,33 @@ public class NotificationDispatcher {
     @Order(DispatcherOrder.NOTIFICATION)
     public void handleEvent(EnrolleeEvent event) {
         List<NotificationConfig> configs = notificationConfigService
-                .findByStudyEnvironmentId(event.getEnrollee().getStudyEnvironmentId(), true);
+                .findByStudyEnvironmentId(event.getEnrollee().getStudyEnvironmentId(), true)
+                .stream().filter(config  -> config.getNotificationType().equals(NotificationType.EVENT))
+                .toList();
         for (NotificationConfig config: configs) {
             Class configClass = config.getEventType().eventClass;
             if (configClass.isInstance(event)) {
                 if (RuleEvaluator.evaluateEnrolleeRule(config.getRule(), event.getEnrolleeRuleData())) {
-                    Notification notification = createNotification(config, event.getEnrollee(),
-                            event.getPortalParticipantUser(), event.getEnrolleeRuleData());
-                    dispatchNotification(notification, config, event.getEnrolleeRuleData());
+                    dispatchNotificationAsync(config, event.getEnrolleeRuleData(),
+                            event.getPortalParticipantUser().getPortalEnvironmentId());
                 }
             }
         }
     }
 
-    protected void dispatchNotification(Notification notification, NotificationConfig config, EnrolleeRuleData enrolleeRuleData) {
+    protected void dispatchNotificationAsync(NotificationConfig config, EnrolleeRuleData enrolleeRuleData, UUID portalEnvId) {
+        Notification notification = initializeNotification(config, enrolleeRuleData, portalEnvId);
+        notification = notificationService.create(notification);
         senderMap.get(config.getDeliveryType())
                 .processNotificationAsync(notification, config, enrolleeRuleData);
+    }
+
+    public void dispatchNotification(NotificationConfig config, EnrolleeRuleData enrolleeRuleData,
+                                     NotificationContextInfo notificationContextInfo) {
+        Notification notification = initializeNotification(config, enrolleeRuleData,
+                notificationContextInfo.portalEnv().getId());
+        senderMap.get(config.getDeliveryType())
+                .processNotification(notification, config, enrolleeRuleData, notificationContextInfo);
     }
 
     public void dispatchTestNotification(NotificationConfig config, EnrolleeRuleData enrolleeRuleData) throws Exception {
@@ -60,18 +67,22 @@ public class NotificationDispatcher {
                 .sendTestNotification(config, enrolleeRuleData);
     }
 
-    public Notification createNotification(NotificationConfig config, Enrollee enrollee, PortalParticipantUser ppUser,
-                                     EnrolleeRuleData ruleData) {
-        Notification notification = Notification.builder()
-                .enrolleeId(enrollee.getId())
-                .participantUserId(enrollee.getParticipantUserId())
+    public Notification initializeNotification(NotificationConfig config, EnrolleeRuleData ruleData, UUID portalEnvId) {
+        return Notification.builder()
+                .enrolleeId(ruleData.enrollee().getId())
+                .participantUserId(ruleData.enrollee().getParticipantUserId())
                 .notificationConfigId(config.getId())
                 .deliveryStatus(NotificationDeliveryStatus.READY)
                 .deliveryType(config.getDeliveryType())
-                .studyEnvironmentId(enrollee.getStudyEnvironmentId())
-                .portalEnvironmentId(ppUser.getPortalEnvironmentId())
+                .studyEnvironmentId(ruleData.enrollee().getStudyEnvironmentId())
+                .portalEnvironmentId(portalEnvId)
                 .retries(0)
                 .build();
-        return notificationService.create(notification);
     }
+
+    public NotificationContextInfo loadContextInfo(NotificationConfig config) {
+        return senderMap.get(config.getDeliveryType()).loadContextInfo(config);
+    }
+
+
 }

@@ -21,8 +21,6 @@ import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,7 +75,6 @@ public class EnrollmentService {
         return preEnrollmentResponseDao.create(response);
     }
 
-    @Transactional
     public HubResponse<Enrollee> enroll(ParticipantUser user, PortalParticipantUser ppUser, EnvironmentName envName,
                                             String studyShortcode, UUID preEnrollResponseId) {
         logger.info("creating enrollee for user {}, study {}", user.getId(), studyShortcode);
@@ -128,8 +125,4 @@ public class EnrollmentService {
         }
         return response;
     }
-
-
-    @Autowired
-    private ApplicationEventPublisher applicationEventPublisher;
 }

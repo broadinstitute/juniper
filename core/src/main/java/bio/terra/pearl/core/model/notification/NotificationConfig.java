@@ -2,6 +2,7 @@ package bio.terra.pearl.core.model.notification;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.workflow.TaskType;
+import java.time.Duration;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,6 +43,10 @@ public class NotificationConfig extends BaseEntity {
      * for notificationTypes of ON_TASK -- if specified
         this will delay sending until the specified number of minutes have passed while the task is in an incomplete state
      */
-    private int afterMinutesIncomplete;
-    private int maxNumReminders;
+    @Builder.Default
+    private int afterMinutesIncomplete = (int) Duration.ofHours(72).toMinutes();
+    @Builder.Default
+    private int reminderIntervalMinutes = (int) Duration.ofHours(72).toMinutes();
+    @Builder.Default
+    private int maxNumReminders = -1; // -1 means to keep reminding indefinitely
 }

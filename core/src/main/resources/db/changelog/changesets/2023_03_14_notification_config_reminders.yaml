@@ -7,3 +7,11 @@ databaseChangeLog:
             tableName: notification_config
             columns:
               - column: { name: max_num_reminders, type: integer }
+              - column: { name: reminder_interval_minutes, type: integer }
+        - createTable: # see https://www.baeldung.com/shedlock-spring
+            tableName: shedlock
+            columns:
+              - column: { name: name, type: text, constraints: { nullable: false, primaryKey: true } }
+              - column: { name: lock_until, type: timestamp }
+              - column: { name: locked_at, type: timestamp }
+              - column: { name: locked_by, type: text }

@@ -2,8 +2,8 @@ package bio.terra.pearl.core.service.notification;
 
 import bio.terra.pearl.core.dao.notification.NotificationDao;
 import bio.terra.pearl.core.dao.participant.ParticipantTaskDao;
-import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
+import bio.terra.pearl.core.model.workflow.TaskType;
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
@@ -19,18 +19,22 @@ public class ParticipantTaskQueryService {
         this.notificationDao = notificationDao;
     }
 
-    public List<ParticipantTask> findByStatusAndTime(UUID studyEnvironmentId,
-                                                 Duration timeSinceCreation,
-                                                 Duration timeSinceLastNotification,
-                                                 List<TaskStatus> statuses) {
-        return participantTaskDao.findByStatusAndTime(studyEnvironmentId, timeSinceCreation,
+    public List<ParticipantTaskDao.EnrolleeWithTasks> findByStatusAndTime(UUID studyEnvironmentId,
+                                                                          TaskType taskType,
+                                                                          Duration timeSinceCreation,
+                                                                          Duration timeSinceLastNotification,
+                                                                          Duration maxTimeSinceCreation,
+                                                                          List<TaskStatus> statuses) {
+        return participantTaskDao.findByStatusAndTime(studyEnvironmentId, taskType, timeSinceCreation, maxTimeSinceCreation,
                 timeSinceLastNotification, statuses);
     }
 
-    public List<ParticipantTask> findIncompleteByTime(UUID studyEnvironmentId,
-                                                 Duration timeSinceCreation,
-                                                 Duration timeSinceLastNotification) {
-        return findByStatusAndTime(studyEnvironmentId, timeSinceCreation, timeSinceLastNotification,
+    public List<ParticipantTaskDao.EnrolleeWithTasks> findIncompleteByTime(UUID studyEnvironmentId,
+                                                                           TaskType taskType,
+                                                                           Duration timeSinceCreation,
+                                                                           Duration maxTimeSinceCreation,
+                                                                           Duration timeSinceLastNotification) {
+        return findByStatusAndTime(studyEnvironmentId, taskType, timeSinceCreation, maxTimeSinceCreation, timeSinceLastNotification,
                 List.of(TaskStatus.NEW, TaskStatus.IN_PROGRESS));
     }
 }

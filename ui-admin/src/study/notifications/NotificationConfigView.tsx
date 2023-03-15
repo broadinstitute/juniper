@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import Select from 'react-select'
 import TestEmailSender from './TestEmailSender'
 
-const configTypeOptions = [{ label: 'Event', value: 'EVENT' }, { label: 'Task', value: 'TASK' }]
+const configTypeOptions = [{ label: 'Event', value: 'EVENT' }, { label: 'Task reminder', value: 'TASK_REMINDER' }]
 const deliveryTypeOptions = [{ label: 'Email', value: 'EMAIL' }]
 const eventTypeOptions = [{ label: 'Study Enrollment', value: 'STUDY_ENROLLMENT' },
   { label: 'Study Consent', value: 'STUDY_CONSENT' }]
