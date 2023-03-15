@@ -1,0 +1,781 @@
+{
+  "stableId": "oh_oh_socialDeterminantsOfHealth",
+  "version": 1,
+  "name": "Social Determinants of Health",
+  "jsonContent": {
+    "pages": [
+      {
+        "elements": [
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_neighborhoodIntro",
+            "type": "html",
+            "html": "The neighborhood where you live may play a role in a variety of health outcomes. Sharing details about your neighborhood may help researchers better understand the relationship between a person’s neighborhood and their overall well-being.\n\nThe following statements describe what your neighborhood might be like. Tell us how much you agree or disagree."
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_peopleInMyNeighborhoodGenerallyGetAlongWithEachOther",
+            "type": "radiogroup",
+            "title": "People in my neighborhood generally get along with each other.",
+            "choices": [
+              {"text": "Strongly agree", "value": "stronglyAgree"},
+              {"text": "Agree", "value": "agree"},
+              {"text": "Neutral (neither agree nor disagree)", "value": "neutralNeitherAgreeNorDisagree"},
+              {"text": "Disagree", "value": "disagree"},
+              {"text": "Strongly disagree", "value": "stronglyDisagree"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_peopleInMyNeighborhoodShareTheSameValues",
+            "type": "radiogroup",
+            "title": "People in my neighborhood share the same values.",
+            "choices": [
+              {"text": "Strongly agree", "value": "stronglyAgree"},
+              {"text": "Agree", "value": "agree"},
+              {"text": "Neutral (neither agree nor disagree)", "value": "neutralNeitherAgreeNorDisagree"},
+              {"text": "Disagree", "value": "disagree"},
+              {"text": "Strongly disagree", "value": "stronglyDisagree"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_myNeighborhoodIsNoisy",
+            "type": "radiogroup",
+            "title": "My neighborhood is noisy.",
+            "choices": [
+              {"text": "Strongly disagree", "value": "stronglyDisagree"},
+              {"text": "Disagree", "value": "disagree"},
+              {"text": "Agree", "value": "agree"},
+              {"text": "Strongly agree", "value": "stronglyAgree"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_vandalismIsCommonInMyNeighborhood",
+            "type": "radiogroup",
+            "title": "Vandalism is common in my neighborhood.",
+            "choices": [
+              {"text": "Strongly disagree", "value": "stronglyDisagree"},
+              {"text": "Disagree", "value": "disagree"},
+              {"text": "Agree", "value": "agree"},
+              {"text": "Strongly agree", "value": "stronglyAgree"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_myNeighborhoodIsClean",
+            "type": "radiogroup",
+            "title": "My neighborhood is clean.",
+            "choices": [
+              {"text": "Strongly disagree", "value": "stronglyDisagree"},
+              {"text": "Disagree", "value": "disagree"},
+              {"text": "Agree", "value": "agree"},
+              {"text": "Strongly agree", "value": "stronglyAgree"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_thereIsALotOfCrimeInMyNeighborhood",
+            "type": "radiogroup",
+            "title": "There is a lot of crime in my neighborhood.",
+            "choices": [
+              {"text": "Strongly disagree", "value": "stronglyDisagree"},
+              {"text": "Disagree", "value": "disagree"},
+              {"text": "Agree", "value": "agree"},
+              {"text": "Strongly agree", "value": "stronglyAgree"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_thereIsTooMuchDrugUseInMyNeighborhood",
+            "type": "radiogroup",
+            "title": "There is too much drug use in my neighborhood.",
+            "choices": [
+              {"text": "Strongly disagree", "value": "stronglyDisagree"},
+              {"text": "Disagree", "value": "disagree"},
+              {"text": "Agree", "value": "agree"},
+              {"text": "Strongly agree", "value": "stronglyAgree"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_imAlwaysHavingTroubleWithMyNeighbors",
+            "type": "radiogroup",
+            "title": "I’m always having trouble with my neighbors.",
+            "choices": [
+              {"text": "Strongly disagree", "value": "stronglyDisagree"},
+              {"text": "Disagree", "value": "disagree"},
+              {"text": "Agree", "value": "agree"},
+              {"text": "Strongly agree", "value": "stronglyAgree"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_myNeighborhoodIsSafe",
+            "type": "radiogroup",
+            "title": "My neighborhood is safe.",
+            "choices": [
+              {"text": "Strongly disagree", "value": "stronglyDisagree"},
+              {"text": "Disagree", "value": "disagree"},
+              {"text": "Agree", "value": "agree"},
+              {"text": "Strongly agree", "value": "stronglyAgree"}
+            ]
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_whatIsInYourNeighborhood",
+            "type": "html",
+            "html": "The next questions ask about what is in your neighborhood. Think about the area around your home that you can walk to in 10-15 minutes."
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_whatIsTheMainTypeOfHousingInYourNeighborhood",
+            "type": "radiogroup",
+            "title": "What is the main type of housing in your neighborhood?",
+            "choices": [
+              {"text": "Detached single-family housing", "value": "detachedSingleFamilyHousing"},
+              {"text": "Townhouses, row house, apartments, or condos of 2-3 stories", "value": "townhousesRowHouseApartmentsOrCondosOf23Stories"},
+              {"text": "Mix of single-family residences and townhouses, row houses, apartments, or condos", "value": "mixOfSingleFamilyResidencesAndTownhousesRowHousesApartmentsOrCondos"},
+              {"text": "Apartments or condos of 4-12 stories", "value": "apartmentsOrCondosOf412Stories"},
+              {"text": "Apartments or condos of more than 12 stories", "value": "apartmentsOrCondosOfMoreThan12Stories"},
+              {"text": "Don’t know/not sure", "value": "dontKnowNotSure"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_manyShopsStoresMarketsOrOtherPlacesToBuyThingsINeedAreWithinEasyWalkingDistanceOfMyHomeWouldYouSayThatYou",
+            "type": "radiogroup",
+            "title": "Many shops, stores, markets, or other places to buy things I need are within easy walking distance of my home. Would you say that you…",
+            "choices": [
+              {"text": "Strongly disagree", "value": "stronglyDisagree"},
+              {"text": "Somewhat disagree", "value": "somewhatDisagree"},
+              {"text": "Somewhat agree", "value": "somewhatAgree"},
+              {"text": "Strongly agree", "value": "stronglyAgree"},
+              {"text": "Don’t know/Not sure", "value": "dontKnowNotSure"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_myNeighborhoodHasSeveralFreeOrLowCostRecreationFacilitiesSuchAsParksWalkingTrailsBikePathsRecreationCentersPlaygroundsPublicSwimmingPoolsEtcWouldYouSayThatYou",
+            "type": "radiogroup",
+            "title": "My neighborhood has several free or low-cost recreation facilities, such as parks, walking trails, bike paths, recreation centers, playgrounds, public swimming pools, etc. Would you say that you…",
+            "choices": [
+              {"text": "Strongly disagree", "value": "stronglyDisagree"},
+              {"text": "Somewhat disagree", "value": "somewhatDisagree"},
+              {"text": "Somewhat agree", "value": "somewhatAgree"},
+              {"text": "Strongly agree", "value": "stronglyAgree"},
+              {"text": "Don’t know/Not sure", "value": "dontKnowNotSure"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_theCrimeRateInMyNeighborhoodMakesItUnsafeToGoOnWalksAtNightWouldYouSayThatYou",
+            "type": "radiogroup",
+            "title": "The crime rate in my neighborhood makes it unsafe to go on walks at night. Would you say that you…",
+            "choices": [
+              {"text": "Strongly disagree", "value": "stronglyDisagree"},
+              {"text": "Somewhat disagree", "value": "somewhatDisagree"},
+              {"text": "Somewhat agree", "value": "somewhatAgree"},
+              {"text": "Strongly agree", "value": "stronglyAgree"},
+              {"text": "Don’t know/Not sure", "value": "dontKnowNotSure"}
+            ]
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_supportiveRelationshipsIntro",
+            "type": "html",
+            "html": "Supportive relationships may play a key role in helping people live healthy lives. Answering the following questions may help researchers learn more about the potential health benefits of supportive relationships.\n\nPeople sometimes look to others for friendship, help, or other types of support. Choose the answer that best describes how often you can find support if you need it."
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_someoneToHelpYouIfYouWereConfinedToBed",
+            "type": "radiogroup",
+            "title": "Someone to help you if you were confined to bed",
+            "choices": [
+              {"text": "None of the time", "value": "noneOfTheTime"},
+              {"text": "A little of the time", "value": "aLittleOfTheTime"},
+              {"text": "Some of the time", "value": "someOfTheTime"},
+              {"text": "Most of the time", "value": "mostOfTheTime"},
+              {"text": "All of the time", "value": "allOfTheTime"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_someoneToTakeYouToTheDoctorIfYouNeedIt",
+            "type": "radiogroup",
+            "title": "Someone to take you to the doctor if you need it",
+            "choices": [
+              {"text": "None of the time", "value": "noneOfTheTime"},
+              {"text": "A little of the time", "value": "aLittleOfTheTime"},
+              {"text": "Some of the time", "value": "someOfTheTime"},
+              {"text": "Most of the time", "value": "mostOfTheTime"},
+              {"text": "All of the time", "value": "allOfTheTime"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_someoneToHaveAGoodTimeWith",
+            "type": "radiogroup",
+            "title": "Someone to have a good time with",
+            "choices": [
+              {"text": "None of the time", "value": "noneOfTheTime"},
+              {"text": "A little of the time", "value": "aLittleOfTheTime"},
+              {"text": "Some of the time", "value": "someOfTheTime"},
+              {"text": "Most of the time", "value": "mostOfTheTime"},
+              {"text": "All of the time", "value": "allOfTheTime"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_someoneToTurnToForSuggestionsAboutHowToDealWithAPersonalProblem",
+            "type": "radiogroup",
+            "title": "Someone to turn to for suggestions about how to deal with a personal problem",
+            "choices": [
+              {"text": "None of the time", "value": "noneOfTheTime"},
+              {"text": "A little of the time", "value": "aLittleOfTheTime"},
+              {"text": "Some of the time", "value": "someOfTheTime"},
+              {"text": "Most of the time", "value": "mostOfTheTime"},
+              {"text": "All of the time", "value": "allOfTheTime"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_someoneToLoveAndMakeYouFeelWanted",
+            "type": "radiogroup",
+            "title": "Someone to love and make you feel wanted",
+            "choices": [
+              {"text": "None of the time", "value": "noneOfTheTime"},
+              {"text": "A little of the time", "value": "aLittleOfTheTime"},
+              {"text": "Some of the time", "value": "someOfTheTime"},
+              {"text": "Most of the time", "value": "mostOfTheTime"},
+              {"text": "All of the time", "value": "allOfTheTime"}
+            ]
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_relationshipsWithOthersIntro",
+            "type": "html",
+            "html": "We would like to ask you some questions about your relationships with others. Choose the answer that is true for you."
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_iAmAnOutgoingPerson",
+            "type": "radiogroup",
+            "title": "I am an outgoing person.",
+            "choices": [
+              {"text": "Never", "value": "never"},
+              {"text": "Rarely", "value": "rarely"},
+              {"text": "Sometimes", "value": "sometimes"},
+              {"text": "Often", "value": "often"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_iFeelIsolatedFromOthers",
+            "type": "radiogroup",
+            "title": "I feel isolated from others.",
+            "choices": [
+              {"text": "Never", "value": "never"},
+              {"text": "Rarely", "value": "rarely"},
+              {"text": "Sometimes", "value": "sometimes"},
+              {"text": "Often", "value": "often"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_iCanFindCompanionshipWhenIWantIt",
+            "type": "radiogroup",
+            "title": "I can find companionship when I want it.",
+            "choices": [
+              {"text": "Never", "value": "never"},
+              {"text": "Rarely", "value": "rarely"},
+              {"text": "Sometimes", "value": "sometimes"},
+              {"text": "Often", "value": "often"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_iAmUnhappyBeingSoWithdrawn",
+            "type": "radiogroup",
+            "title": "I am unhappy being so withdrawn.",
+            "choices": [
+              {"text": "Never", "value": "never"},
+              {"text": "Rarely", "value": "rarely"},
+              {"text": "Sometimes", "value": "sometimes"},
+              {"text": "Often", "value": "often"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_peopleAreAroundMeButNotWithMe",
+            "type": "radiogroup",
+            "title": "People are around me but not with me.",
+            "choices": [
+              {"text": "Never", "value": "never"},
+              {"text": "Rarely", "value": "rarely"},
+              {"text": "Sometimes", "value": "sometimes"},
+              {"text": "Often", "value": "often"}
+            ]
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_discriminationIntro",
+            "type": "html",
+            "html": "People who experience discrimination may be at higher risk of negative health outcomes. Sharing your experiences with discrimination in everyday life and in healthcare settings may help researchers learn how to reduce negative health outcomes associated with discrimination.\n\nThe next statements describe how others may treat you. In your day-to-day life, how often do any of these happen to you?"
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_youAreTreatedWithLessCourtesyThanOtherPeopleAre",
+            "type": "radiogroup",
+            "title": "You are treated with less courtesy than other people are.",
+            "choices": [
+              {"text": "Almost every day", "value": "almostEveryDay"},
+              {"text": "At least once a week", "value": "atLeastOnceAWeek"},
+              {"text": "A few times a month", "value": "aFewTimesAMonth"},
+              {"text": "A few times a year", "value": "aFewTimesAYear"},
+              {"text": "Less than once a year", "value": "lessThanOnceAYear"},
+              {"text": "Never", "value": "never"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_youAreTreatedWithLessRespectThanOtherPeopleAre",
+            "type": "radiogroup",
+            "title": "You are treated with less respect than other people are.",
+            "choices": [
+              {"text": "Almost every day", "value": "almostEveryDay"},
+              {"text": "At least once a week", "value": "atLeastOnceAWeek"},
+              {"text": "A few times a month", "value": "aFewTimesAMonth"},
+              {"text": "A few times a year", "value": "aFewTimesAYear"},
+              {"text": "Less than once a year", "value": "lessThanOnceAYear"},
+              {"text": "Never", "value": "never"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_youReceivePoorerServiceThanOtherPeopleAtRestaurantsOrStores",
+            "type": "radiogroup",
+            "title": "You receive poorer service than other people at restaurants or stores.",
+            "choices": [
+              {"text": "Almost every day", "value": "almostEveryDay"},
+              {"text": "At least once a week", "value": "atLeastOnceAWeek"},
+              {"text": "A few times a month", "value": "aFewTimesAMonth"},
+              {"text": "A few times a year", "value": "aFewTimesAYear"},
+              {"text": "Less than once a year", "value": "lessThanOnceAYear"},
+              {"text": "Never", "value": "never"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_peopleActAsIfTheyThinkYouAreNotSmart",
+            "type": "radiogroup",
+            "title": "People act as if they think you are not smart.",
+            "choices": [
+              {"text": "Almost every day", "value": "almostEveryDay"},
+              {"text": "At least once a week", "value": "atLeastOnceAWeek"},
+              {"text": "A few times a month", "value": "aFewTimesAMonth"},
+              {"text": "A few times a year", "value": "aFewTimesAYear"},
+              {"text": "Less than once a year", "value": "lessThanOnceAYear"},
+              {"text": "Never", "value": "never"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_peopleActAsIfTheyAreAfraidOfYou",
+            "type": "radiogroup",
+            "title": "People act as if they are afraid of you.",
+            "choices": [
+              {"text": "Almost every day", "value": "almostEveryDay"},
+              {"text": "At least once a week", "value": "atLeastOnceAWeek"},
+              {"text": "A few times a month", "value": "aFewTimesAMonth"},
+              {"text": "A few times a year", "value": "aFewTimesAYear"},
+              {"text": "Less than once a year", "value": "lessThanOnceAYear"},
+              {"text": "Never", "value": "never"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_peopleActAsIfTheyThinkYouAreDishonest",
+            "type": "radiogroup",
+            "title": "People act as if they think you are dishonest.",
+            "choices": [
+              {"text": "Almost every day", "value": "almostEveryDay"},
+              {"text": "At least once a week", "value": "atLeastOnceAWeek"},
+              {"text": "A few times a month", "value": "aFewTimesAMonth"},
+              {"text": "A few times a year", "value": "aFewTimesAYear"},
+              {"text": "Less than once a year", "value": "lessThanOnceAYear"},
+              {"text": "Never", "value": "never"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_peopleActAsIfTheyreBetterThanYouAre",
+            "type": "radiogroup",
+            "title": "People act as if they’re better than you are.",
+            "choices": [
+              {"text": "Almost every day", "value": "almostEveryDay"},
+              {"text": "At least once a week", "value": "atLeastOnceAWeek"},
+              {"text": "A few times a month", "value": "aFewTimesAMonth"},
+              {"text": "A few times a year", "value": "aFewTimesAYear"},
+              {"text": "Less than once a year", "value": "lessThanOnceAYear"},
+              {"text": "Never", "value": "never"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_youAreCalledNamesOrInsulted",
+            "type": "radiogroup",
+            "title": "You are called names or insulted.",
+            "choices": [
+              {"text": "Almost every day", "value": "almostEveryDay"},
+              {"text": "At least once a week", "value": "atLeastOnceAWeek"},
+              {"text": "A few times a month", "value": "aFewTimesAMonth"},
+              {"text": "A few times a year", "value": "aFewTimesAYear"},
+              {"text": "Less than once a year", "value": "lessThanOnceAYear"},
+              {"text": "Never", "value": "never"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_youAreThreatenedOrHarassed",
+            "type": "radiogroup",
+            "title": "You are threatened or harassed.",
+            "choices": [
+              {"text": "Almost every day", "value": "almostEveryDay"},
+              {"text": "At least once a week", "value": "atLeastOnceAWeek"},
+              {"text": "A few times a month", "value": "aFewTimesAMonth"},
+              {"text": "A few times a year", "value": "aFewTimesAYear"},
+              {"text": "Less than once a year", "value": "lessThanOnceAYear"},
+              {"text": "Never", "value": "never"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_whatDoYouThinkIsTheMainReasonForTheseExperiences",
+            "type": "radiogroup",
+            "title": "What do you think is the main reason for these experiences?",
+            "showOtherItem": true,
+            "otherText": "Other (specify)",
+            "otherPlaceholder": "Please specify",
+            "choices": [
+              {"text": "Your ancestry or national origins", "value": "yourAncestryOrNationalOrigins"},
+              {"text": "Your gender", "value": "yourGender"},
+              {"text": "Your race", "value": "yourRace"},
+              {"text": "Your age", "value": "yourAge"},
+              {"text": "Your religion", "value": "yourReligion"},
+              {"text": "Your height", "value": "yourHeight"},
+              {"text": "Your weight", "value": "yourWeight"},
+              {"text": "Some other aspect of your physical appearance", "value": "someOtherAspectOfYourPhysicalAppearance"},
+              {"text": "Your sexual orientation", "value": "yourSexualOrientation"},
+              {"text": "Your education or income level", "value": "yourEducationOrIncomeLevel"}
+            ]
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_howOthersTreatYouAtHealthcareProviderIntro",
+            "type": "html",
+            "html": "The next statements describe how others may treat you. How often do any of these happen to you when you go to a doctor’s office or other health care provider?"
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_youAreTreatedWithLessCourtesyThanOtherPeople",
+            "type": "radiogroup",
+            "title": "You are treated with less courtesy than other people.",
+            "choices": [
+              {"text": "Never", "value": "never"},
+              {"text": "Rarely", "value": "rarely"},
+              {"text": "Sometimes", "value": "sometimes"},
+              {"text": "Most of the time", "value": "mostOfTheTime"},
+              {"text": "Always", "value": "always"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_youAreTreatedWithLessRespectThanOtherPeople",
+            "type": "radiogroup",
+            "title": "You are treated with less respect than other people.",
+            "choices": [
+              {"text": "Never", "value": "never"},
+              {"text": "Rarely", "value": "rarely"},
+              {"text": "Sometimes", "value": "sometimes"},
+              {"text": "Most of the time", "value": "mostOfTheTime"},
+              {"text": "Always", "value": "always"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_youReceivePoorerServiceThanOthers",
+            "type": "radiogroup",
+            "title": "You receive poorer service than others.",
+            "choices": [
+              {"text": "Never", "value": "never"},
+              {"text": "Rarely", "value": "rarely"},
+              {"text": "Sometimes", "value": "sometimes"},
+              {"text": "Most of the time", "value": "mostOfTheTime"},
+              {"text": "Always", "value": "always"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_aDoctorOrNurseActsAsIfHeOrSheThinksYouAreNotSmart",
+            "type": "radiogroup",
+            "title": "A doctor or nurse acts as if he or she thinks you are not smart.",
+            "choices": [
+              {"text": "Never", "value": "never"},
+              {"text": "Rarely", "value": "rarely"},
+              {"text": "Sometimes", "value": "sometimes"},
+              {"text": "Most of the time", "value": "mostOfTheTime"},
+              {"text": "Always", "value": "always"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_aDoctorOrNurseActsAsIfHeOrSheIsBetterThanYou",
+            "type": "radiogroup",
+            "title": "A doctor or nurse acts as if he or she is better than you.",
+            "choices": [
+              {"text": "Never", "value": "never"},
+              {"text": "Rarely", "value": "rarely"},
+              {"text": "Sometimes", "value": "sometimes"},
+              {"text": "Most of the time", "value": "mostOfTheTime"},
+              {"text": "Always", "value": "always"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_youFeelLikeADoctorOrNurseIsNotListeningToWhatYouWereSaying",
+            "type": "radiogroup",
+            "title": "You feel like a doctor or nurse is not listening to what you were saying.",
+            "choices": [
+              {"text": "Never", "value": "never"},
+              {"text": "Rarely", "value": "rarely"},
+              {"text": "Sometimes", "value": "sometimes"},
+              {"text": "Most of the time", "value": "mostOfTheTime"},
+              {"text": "Always", "value": "always"}
+            ]
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_foodAndHousingIntro",
+            "type": "html",
+            "html": "The next set of questions asks about food and housing.\n\nLower food and housing security may increase the risk of negative health outcomes. Sharing your experiences about you or your family on this topic may help researchers learn how food and housing security influence health and well-being."
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_withinThePast12MonthsWeWorriedWhetherOurFoodWouldRunOutBeforeWeGotMoneyToBuyMore",
+            "type": "radiogroup",
+            "title": "Within the past 12 months, we worried whether our food would run out before we got money to buy more.",
+            "choices": [
+              {"text": "Often true", "value": "oftenTrue"},
+              {"text": "Sometimes true", "value": "sometimesTrue"},
+              {"text": "Never true", "value": "neverTrue"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_inTheLast12MonthsHowManyTimesHaveYouOrYourFamilyMovedFromOneHomeToAnother",
+            "type": "text",
+            "title": "In the last 12 months, how many times have you or your family moved from one home to another?"
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_thinkAboutThePlaceYouLiveDoYouHaveProblemsWithAnyOfTheFollowingCheckAllThatApply",
+            "type": "radiogroup",
+            "title": "Think about the place you live. Do you have problems with any of the following (check all that apply)?",
+            "choices": [
+              {"text": "Bug infestation", "value": "bugInfestation"},
+              {"text": "Mold", "value": "mold"},
+              {"text": "Lead paint or pipes", "value": "leadPaintOrPipes"},
+              {"text": "Inadequate heat", "value": "inadequateHeat"},
+              {"text": "Oven or stove not working", "value": "ovenOrStoveNotWorking"},
+              {"text": "No or not working smoke detector", "value": "noOrNotWorkingSmokeDetector"},
+              {"text": "Water leaks", "value": "waterLeaks"},
+              {"text": "None of the above", "value": "noneOfTheAbove"}
+            ]
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_stressIntro",
+            "type": "html",
+            "html": "The amount of stress you feel can lead to negative health outcomes. Sharing your experiences may help researchers identify common triggers that induce stress in individuals and ways to provide support for individuals and communities.\n\nThe next questions ask you about your feelings and thoughts during the last month. Please choose how often you felt or thought a certain way."
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_inTheLastMonthHowOftenHaveYouBeenUpsetBecauseOfSomethingThatHappenedUnexpectedly",
+            "type": "radiogroup",
+            "title": "In the last month, how often have you been upset because of something that happened unexpectedly?",
+            "choices": [
+              {"text": "Never", "value": "never"},
+              {"text": "Almost never", "value": "almostNever"},
+              {"text": "Sometimes", "value": "sometimes"},
+              {"text": "Fairly often", "value": "fairlyOften"},
+              {"text": "Very often", "value": "veryOften"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_inTheLastMonthHowOftenHaveYouFeltNervousAndStressed",
+            "type": "radiogroup",
+            "title": "In the last month, how often have you felt nervous and “stressed”?",
+            "choices": [
+              {"text": "Never", "value": "never"},
+              {"text": "Almost never", "value": "almostNever"},
+              {"text": "Sometimes", "value": "sometimes"},
+              {"text": "Fairly often", "value": "fairlyOften"},
+              {"text": "Very often", "value": "veryOften"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_inTheLastMonthHowOftenHaveYouFeltConfidentAboutYourAbilityToHandleYourPersonalProblems",
+            "type": "radiogroup",
+            "title": "In the last month, how often have you felt confident about your ability to handle your personal problems?",
+            "choices": [
+              {"text": "Never", "value": "never"},
+              {"text": "Almost never", "value": "almostNever"},
+              {"text": "Sometimes", "value": "sometimes"},
+              {"text": "Fairly often", "value": "fairlyOften"},
+              {"text": "Very often", "value": "veryOften"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_inTheLastMonthHowOftenHaveYouFeltThatThingsWereGoingYourWay",
+            "type": "radiogroup",
+            "title": "In the last month, how often have you felt that things were going your way?",
+            "choices": [
+              {"text": "Never", "value": "never"},
+              {"text": "Almost never", "value": "almostNever"},
+              {"text": "Sometimes", "value": "sometimes"},
+              {"text": "Fairly often", "value": "fairlyOften"},
+              {"text": "Very often", "value": "veryOften"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_inTheLastMonthHowOftenHaveYouFoundThatYouCouldNotCopeWithAllTheThingsThatYouHadToDo",
+            "type": "radiogroup",
+            "title": "In the last month, how often have you found that you could not cope with all the things that you had to do?",
+            "choices": [
+              {"text": "Never", "value": "never"},
+              {"text": "Almost never", "value": "almostNever"},
+              {"text": "Sometimes", "value": "sometimes"},
+              {"text": "Fairly often", "value": "fairlyOften"},
+              {"text": "Very often", "value": "veryOften"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_inTheLastMonthHowOftenHaveYouBeenAngeredBecauseOfThingsThatWereOutsideOfYourControl",
+            "type": "radiogroup",
+            "title": "In the last month, how often have you been angered because of things that were outside of your control?",
+            "choices": [
+              {"text": "Never", "value": "never"},
+              {"text": "Almost never", "value": "almostNever"},
+              {"text": "Sometimes", "value": "sometimes"},
+              {"text": "Fairly often", "value": "fairlyOften"},
+              {"text": "Very often", "value": "veryOften"}
+            ]
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_religionIntro",
+            "type": "html",
+            "html": "Elements of religion and spirituality can affect health outcomes. Sharing your beliefs and experiences may help researchers better understand the effects of religion and spirituality on health and well-being.\n\nThe next questions ask about your spiritual life. Some questions use the word \"God.\" If it makes you more comfortable, you can replace that word with whatever you believe is spiritual, holy, or divine when answering.\n\nHow often do you experience the following:"
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_iFeelGodsOrAHigherPowersPresence",
+            "type": "radiogroup",
+            "title": "I feel God’s (or a higher power’s) presence",
+            "choices": [
+              {"text": "Many times a day", "value": "manyTimesADay"},
+              {"text": "Every day", "value": "everyDay"},
+              {"text": "Most days", "value": "mostDays"},
+              {"text": "Some days", "value": "someDays"},
+              {"text": "Once in a while", "value": "onceInAWhile"},
+              {"text": "Never or almost never", "value": "neverOrAlmostNever"},
+              {"text": "I do not believe in God (or a higher power)", "value": "iDoNotBelieveInGodOrAHigherPower"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_iFindStrengthAndComfortInMyReligion",
+            "type": "radiogroup",
+            "title": "I find strength and comfort in my religion",
+            "choices": [
+              {"text": "Many times a day", "value": "manyTimesADay"},
+              {"text": "Every day", "value": "everyDay"},
+              {"text": "Most days", "value": "mostDays"},
+              {"text": "Some days", "value": "someDays"},
+              {"text": "Once in a while", "value": "onceInAWhile"},
+              {"text": "Never or almost never", "value": "neverOrAlmostNever"},
+              {"text": "I am not religious", "value": "iAmNotReligious"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_iFeelDeepInnerPeaceOrHarmony",
+            "type": "radiogroup",
+            "title": "I feel deep inner peace or harmony",
+            "choices": [
+              {"text": "Many times a day", "value": "manyTimesADay"},
+              {"text": "Every day", "value": "everyDay"},
+              {"text": "Most days", "value": "mostDays"},
+              {"text": "Some days", "value": "someDays"},
+              {"text": "Once in a while", "value": "onceInAWhile"},
+              {"text": "Never or almost never", "value": "neverOrAlmostNever"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_iDesireToBeCloserToOrInUnionWithGodOrAHigherPower",
+            "type": "radiogroup",
+            "title": "I desire to be closer to or in union with God (or a higher power)",
+            "choices": [
+              {"text": "Many times a day", "value": "manyTimesADay"},
+              {"text": "Every day", "value": "everyDay"},
+              {"text": "Most days", "value": "mostDays"},
+              {"text": "Some days", "value": "someDays"},
+              {"text": "Once in a while", "value": "onceInAWhile"},
+              {"text": "Never or almost never", "value": "neverOrAlmostNever"},
+              {"text": "I do not believe in God (or a higher power)", "value": "iDoNotBelieveInGodOrAHigherPower"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_iFeelGodsOrAHigherPowersLoveForMeDirectlyOrThroughOthers",
+            "type": "radiogroup",
+            "title": "I feel God’s (or a higher power’s) love for me, directly or through others",
+            "choices": [
+              {"text": "Many times a day", "value": "manyTimesADay"},
+              {"text": "Every day", "value": "everyDay"},
+              {"text": "Most days", "value": "mostDays"},
+              {"text": "Some days", "value": "someDays"},
+              {"text": "Once in a while", "value": "onceInAWhile"},
+              {"text": "Never or almost never", "value": "neverOrAlmostNever"},
+              {"text": "I do not believe in God (or a higher power)", "value": "iDoNotBelieveInGodOrAHigherPower"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_howOftenDoYouGoToReligiousMeetingsOrServices",
+            "type": "radiogroup",
+            "title": "How often do you go to religious meetings or services?",
+            "choices": [
+              {"text": "More than once a week", "value": "moreThanOnceAWeek"},
+              {"text": "Once a week", "value": "onceAWeek"},
+              {"text": "1 to 3 times per month", "value": "1To3TimesPerMonth"},
+              {"text": "Less than once per month", "value": "lessThanOncePerMonth"},
+              {"text": "Never (or almost never)", "value": "neverOrAlmostNever"},
+              {"text": "I am not religious", "value": "iAmNotReligious"}
+            ]
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_languageIntro",
+            "type": "html",
+            "html": "Elements of religion and spirituality can affect health outcomes. Sharing your beliefs and experiences may help researchers better understand the effects of religion and spirituality on health and well-being.\n\nThe next questions ask about your spiritual life. Some questions use the word \"God.\" If it makes you more comfortable, you can replace that word with whatever you believe is spiritual, holy, or divine when answering.\n\nHow often do you experience the following:"
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_doYouSpeakALanguageOtherThanEnglishAtHome",
+            "type": "radiogroup",
+            "title": "Do you speak a language other than English at home?",
+            "choices": [
+              {"text": "Yes", "value": "yes"},
+              {"text": "No", "value": "no"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },
+          {
+            "name": "oh_oh_socialDeterminantsOfHealth_sinceYouSpeakALanguageOtherThanEnglishAtHomeWeAreInterestedInYourOwnThoughtsAboutHowWellYouSpeakEnglishWouldYouSayYouSpeakEnglish14",
+            "type": "radiogroup",
+            "title": "Since you speak a language other than English at home, we are interested in your own thoughts about how well you speak English. Would you say you speak English…14",
+            "visibleIf": "{oh_oh_socialDeterminantsOfHealth_doYouSpeakALanguageOtherThanEnglishAtHome} = 'yes'",
+            "choices": [
+              {"text": "Very well", "value": "veryWell"},
+              {"text": "Well", "value": "well"},
+              {"text": "Not well", "value": "notWell"},
+              {"text": "Not at all", "value": "notAtAll"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"},
+              {"text": "Don’t know", "value": "dontKnow"}
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

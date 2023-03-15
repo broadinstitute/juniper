@@ -7,7 +7,8 @@
     "surveys/medicalHistory.json",
     "surveys/phq9gad7.json",
     "surveys/medList.json",
-    "surveys/basic.json"
+    "surveys/basic.json",
+    "surveys/socialDeterminantsOfHealth.json"
   ],
   "consentFormFiles": [
     "surveys/ourHealthConsent.json"
@@ -33,7 +34,8 @@
         {"surveyStableId": "oh_oh_cardioHx", "surveyVersion": 1, "required": true},
         {"surveyStableId": "oh_oh_medHx", "surveyVersion": 1},
         {"surveyStableId": "oh_oh_mental", "surveyVersion": 1},
-        {"surveyStableId": "oh_oh_medList", "surveyVersion": 1}
+        {"surveyStableId": "oh_oh_medList", "surveyVersion": 1},
+        {"surveyStableId": "oh_oh_socialDeterminantsOfHealth", "surveyVersion": 1}
       ],
       "configuredConsentDtos": [
         {
