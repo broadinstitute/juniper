@@ -57,7 +57,8 @@
     "@types/lodash": "^4.14.184",
     "@types/marked": "^4.0.7",
     "@types/react-router-hash-link": "^2.4.5",
-    "eslint": "^8.23.0"
+    "eslint": "^8.23.0",
+    "sass": "^1.59.2"
   },
   "jest": {
     "moduleNameMapper": {

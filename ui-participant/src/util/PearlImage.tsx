@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import React, { CSSProperties } from 'react'
 import { getImageUrl } from 'api/api'
 
@@ -18,10 +19,18 @@ type PearlImageProps = {
 /** renders an image that is part of a SiteContent spec */
 export default function PearlImage(props: PearlImageProps) {
   const { image, className, style } = props
-  const combinedClassNames = `${className ?? ''} ${image?.className ?? ''}`
+
   if (!image) {
     return <></>
   }
-  return <img src={getImageUrl(image.cleanFileName, image.version)} alt={image.alt} loading="lazy"
-    className={combinedClassNames} style={{ ...image.style, ...style }}/>
+
+  return (
+    <img
+      src={getImageUrl(image.cleanFileName, image.version)}
+      alt={image.alt}
+      className={classNames('pearl-image', className, image.className)}
+      loading="lazy"
+      style={{ ...style, ...image.style }}
+    />
+  )
 }
