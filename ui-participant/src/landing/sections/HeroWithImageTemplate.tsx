@@ -59,7 +59,6 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
       )}
       <div
         className="col-12 col-lg-6 py-3 p-sm-3 p-lg-5 d-flex flex-column flex-grow-1 justify-content-around"
-        style={{ minWidth: '50%' }}
       >
         {!!title && (
           <h1 className="fs-1 fw-normal lh-sm">
