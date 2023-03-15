@@ -64,7 +64,7 @@ function HeroWithImageTemplate(props: HeroLeftWithImageTemplateProps) {
           </h1>
         )}
         {!!blurb && (
-          <div className="fs-5">
+          <div className="fs-4">
             <ReactMarkdown>{blurb}</ReactMarkdown>
           </div>
         )}

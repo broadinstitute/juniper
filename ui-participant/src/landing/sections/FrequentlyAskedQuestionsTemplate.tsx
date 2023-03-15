@@ -50,7 +50,7 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
   return <div id={anchorRef} className="row mx-0 justify-content-center" style={{ backgroundColor, color }}>
     <div className="col-12 col-sm-8 col-lg-6">
       <h1 className="fs-1 fw-normal lh-sm mt-5 mb-4 text-center">{title}</h1>
-      <div className='fs-5 fw-normal mb-4 text-center'>
+      <div className="fs-4 mb-4 text-center">
         {blurb && <ReactMarkdown>{blurb}</ReactMarkdown>}
       </div>
       <ul className="mx-0 px-0 border-top" style={{ listStyle: 'none' }}>
@@ -75,7 +75,7 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
                 {question}
               </button>
               <div className="collapse px-0 px-sm-2 ms-2" id={idFor(question)}>
-                <div style={{ marginLeft: 20 }}>
+                <div className="fs-5" style={{ marginLeft: 20 }}>
                   <ReactMarkdown>
                     {answer}
                   </ReactMarkdown>
