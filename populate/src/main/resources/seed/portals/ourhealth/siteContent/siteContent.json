@@ -14,6 +14,7 @@
         "sectionConfigJson": {
           "title": "Help us understand and improve cardiovascular disease risk among South Asian populations.",
           "blurb": "We're looking for participants to help us better understand - and ultimately overcome - the persistently high rates of cardiovascular diseases among South Asian populations.",
+          "fullWidth": true,
           "image": { "cleanFileName": "family.png", "version": 1},
           "imagePosition": "right",
           "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
@@ -34,6 +35,7 @@
           "background": "#F2F2F2",
           "title": "Why is this needed?",
           "blurb": "Although South Asians represent 23% of the global population and have twice the risk of cardiovascular disease compared to Europeans, they are **significantly underrepresented in genetic studies and research**. Available datasets are limited in size, cultural diversity, and diasporic representation.",
+          "fullWidth": true,
           "buttons": [
             {"text": "Scientific background",
               "type": "internalLink",
@@ -41,6 +43,7 @@
             }
           ],
           "imagePosition": "left",
+          "imageSize": 0.34,
           "image": {"cleanFileName": "idea_bulb.png", "version": 1, "className": "p-3 p-lg-5"}
         }
       },{
@@ -48,6 +51,7 @@
         "sectionConfigJson": {
           "title": "**Who can join?** Anyone who is:",
           "blurb": "* Living in the United States\n * Older than 18 years old\n * Comfortable filling out surveys in English\n * Of South Asian Ancestry*\n\n&nbsp;\n\n*Self-identified ancestry from one of the South Asian countries defined by the American Heart Association as Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, and Sri Lanka.",
+          "fullWidth": true,
           "buttons": [
             {"text": "Get Started",
               "type": "join",
