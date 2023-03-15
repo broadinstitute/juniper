@@ -86,12 +86,8 @@
             "type": "text",
             "title": "Zip code",
             "maxLength": 5,
-            "max": 99999,
             "size": "5",
-            "inputType": "number",
-            "maxWidth": "2em",
-            "inputMask": "phone",
-            "inputFormat": "99999",
+            "inputType": "text",
             "isRequired": true
           }, {
             "name": "oh_oh_basic_email",

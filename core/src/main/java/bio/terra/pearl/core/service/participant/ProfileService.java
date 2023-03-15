@@ -23,11 +23,9 @@ public class ProfileService extends CrudService<Profile, ProfileDao> {
 
     @Transactional
     public Profile create(Profile profile) {
-        MailingAddress newAddress = null;
-        if (profile.getMailingAddress() != null) {
-            newAddress = mailingAddressDao.create(profile.getMailingAddress());
-            profile.setMailingAddressId(newAddress.getId());
-        }
+        MailingAddress newAddress = profile.getMailingAddress() != null ? profile.getMailingAddress() : new MailingAddress();
+        newAddress = mailingAddressDao.create(newAddress);
+        profile.setMailingAddressId(newAddress.getId());
         Profile newProfile = dao.create(profile);
         newProfile.setMailingAddress(newAddress);
         return newProfile;
