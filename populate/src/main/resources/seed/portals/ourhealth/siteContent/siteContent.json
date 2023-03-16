@@ -43,7 +43,7 @@
             }
           ],
           "imagePosition": "left",
-          "imageSize": 0.34,
+          "imageWidthPercentage": 34,
           "image": {"cleanFileName": "idea_bulb.png", "version": 1, "className": "p-3 p-lg-5"}
         }
       },{

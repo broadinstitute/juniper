@@ -15,7 +15,7 @@ type HeroWithImageTemplateConfig = {
   fullWidth?: boolean, // span the full page width or not
   image?: PearlImageConfig, // image
   imagePosition?: string, // left or right.  Default is right
-  imageSize?: number, // number between 0 and 1. Amount of space given to image.
+  imageWidthPercentage?: number, // number between 0 and 100. Percentage of row width given to image.
   logos?: PearlImageConfig[],
   title?: string // large heading text
 }
@@ -39,7 +39,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
       fullWidth = false,
       image,
       imagePosition,
-      imageSize: configuredImageSize,
+      imageWidthPercentage: configuredImageWidthPercentage,
       logos,
       title
     }
@@ -51,8 +51,10 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
   }
 
   const isLeftImage = imagePosition === 'left' // default is right, so left has to be explicitly specified
-  const imageSize = _.isNumber(configuredImageSize) ? _.clamp(configuredImageSize, 0, 1) : (fullWidth ? 0.5 : 0.34)
-  const imageCols = Math.max(Math.floor(imageSize * 12), 1)
+  const imageWidthPercentage = _.isNumber(configuredImageWidthPercentage)
+    ? _.clamp(configuredImageWidthPercentage, 0, 100)
+    : (fullWidth ? 50 : 33)
+  const imageCols = Math.max(Math.floor(imageWidthPercentage / 100 * 12), 1)
 
   return (
     <div
