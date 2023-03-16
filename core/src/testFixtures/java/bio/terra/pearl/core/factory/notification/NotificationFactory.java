@@ -31,4 +31,8 @@ public class NotificationFactory {
                                        NotificationConfig config) {
         return notificationService.create(builder(enrolleeBundle, config).build());
     }
+
+    public Notification buildPersisted(Notification.NotificationBuilder builder) {
+        return notificationService.create(builder.build());
+    }
 }

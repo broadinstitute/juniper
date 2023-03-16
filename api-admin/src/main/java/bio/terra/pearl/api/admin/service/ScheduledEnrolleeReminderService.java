@@ -16,11 +16,13 @@ public class ScheduledEnrolleeReminderService {
     this.enrolleeReminderService = enrolleeReminderService;
   }
 
-  @Scheduled(fixedDelay = 60000, initialDelay = 5000) // wait 15mins between executions
+  @Scheduled(
+      fixedDelay = 10 * 60 * 1000,
+      initialDelay = 5 * 1000) // wait 10mins between executions, start after 5 seconds
   @SchedulerLock(
       name = "EnrolleeReminderService.sendTaskReminders",
-      lockAtMostFor = "15s",
-      lockAtLeastFor = "15s")
+      lockAtMostFor = "100s",
+      lockAtLeastFor = "100s")
   public void sendReminderEmails() {
     logger.info("Beginning enrollee reminder processing");
     enrolleeReminderService.sendTaskReminders();

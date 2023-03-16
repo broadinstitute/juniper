@@ -49,8 +49,6 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
         return update(task);
     }
 
-
-
     public List<EnrolleeWithTasks> findByStatusAndTime(UUID studyEnvironmentId,
                                                        TaskType taskType,
                                                        Duration minTimeSinceCreation,
@@ -63,7 +61,7 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
         return jdbi.withHandle(handle ->
                 handle.createQuery("""
                         with enrollee_times as (select enrollee_id as notification_enrollee_id, MAX(created_at) as last_notification_time
-                          from notification where study_environment_id = :studyEnvironmentId group by enrollee_id)
+                          from notification where study_environment_id = :studyEnvironmentId and delivery_status = 'SENT' group by enrollee_id)
                         select enrollee_id as enrolleeId, array_agg(target_name) as taskTargetNames, array_agg(id) as taskIds 
                         from participant_task
                         left join enrollee_times on enrollee_id = notification_enrollee_id

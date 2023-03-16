@@ -8,6 +8,7 @@ import bio.terra.pearl.core.factory.notification.NotificationFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
 import bio.terra.pearl.core.model.notification.NotificationType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -57,9 +58,11 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
         // Now check that it filters out tasks if there is a recent notification
         var notificationConfig = notificationConfigFactory.buildPersisted(NotificationConfig.builder()
                 .deliveryType(NotificationDeliveryType.EMAIL)
-                        .notificationType(NotificationType.TASK_REMINDER),
+                .notificationType(NotificationType.TASK_REMINDER),
                                 studyEnv.getId(), portalEnv.getId());
-        notificationFactory.buildPersisted(enrolleeBundle, notificationConfig);
+        notificationFactory.buildPersisted(
+                notificationFactory.builder(enrolleeBundle, notificationConfig).deliveryStatus(NotificationDeliveryStatus.SENT)
+        );
 
         var tasksRecentNotification = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
                 Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(1000), List.of(TaskStatus.NEW));
@@ -96,7 +99,9 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
                         .deliveryType(NotificationDeliveryType.EMAIL)
                         .notificationType(NotificationType.TASK_REMINDER),
                 studyEnv.getId(), portalEnv.getId());
-        notificationFactory.buildPersisted(enrolleeBundle, notificationConfig);
+        notificationFactory.buildPersisted(
+                notificationFactory.builder(enrolleeBundle, notificationConfig).deliveryStatus(NotificationDeliveryStatus.SENT)
+        );
 
         var tasksRecentNotification = participantTaskDao.findByStatusAndTime(studyEnv.getId(), task1_1.getTaskType(),
                 Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(1000), List.of(TaskStatus.NEW));

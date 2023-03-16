@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.notification;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.notification.NotificationType;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
@@ -77,7 +78,10 @@ public class EnrolleeReminderService {
             // config will likely be < 100
             EnrolleeRuleData ruleData = enrolleeData.stream()
                     .filter(erd -> erd.enrollee().getId().equals(enrolleeWithTask.getEnrolleeId())).findFirst().get();
-            notificationDispatcher.dispatchNotification(notificationConfig, ruleData, envContext);
+            // don't send non-consent task reminders to enrollees who haven't consented
+            if (notificationConfig.getTaskType().equals(TaskType.CONSENT) || ruleData.enrollee().isConsented()) {
+                notificationDispatcher.dispatchNotification(notificationConfig, ruleData, envContext);
+            }
         }
     }
 }
