@@ -1,6 +1,5 @@
 import _flatten from 'lodash/flatten'
 import _camelCase from 'lodash/camelCase'
-import _trim from 'lodash/trim'
 import { IPage, Question } from 'survey-core'
 
 /**
@@ -170,8 +169,9 @@ export function questionFromRawText(rawText: string): QuestionObj {
     }
   })
 
+  const title = textLines[0].trim()
   const newQuestionObj: QuestionObj = {
-    title: _trim(textLines[0]),
+    title,
     choices,
     type: choices.length > 0 ? 'radiogroup' : 'text',
     nameSuffix: '',
