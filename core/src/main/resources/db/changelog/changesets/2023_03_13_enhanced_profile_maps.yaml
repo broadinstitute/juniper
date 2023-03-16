@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: "enhanced_profile_maps"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: profile
+            columns:
+              - column: { name: birth_date, type: date }
+              - column: { name: phone_number, type: text }
+        - renameColumn:
+            tableName: mailing_address
+            newColumnName: postal_code
+            oldColumnName: zip
+        - addColumn:
+            tableName: answer_mapping
+            columns:
+              - column: { name: format_string, type: text }
+              - column: { name: error_on_fail, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+

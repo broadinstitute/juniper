@@ -50,7 +50,7 @@ jobs:
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
-          arguments: build  # if you need to see test failure full stacktraces, change this to `build ---info`
+          arguments: build # if you need to see test failure full stacktraces, change this to `build ---info`
 
   # Need to uncomment these in follow up PR, The new Trivy and Tag workflows need to exist on the development branch
   # before the following steps will work

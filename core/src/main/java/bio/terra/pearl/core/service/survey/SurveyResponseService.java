@@ -141,7 +141,7 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
         participantTaskService.update(task);
 
         EnrolleeSurveyEvent event = eventService.publishEnrolleeSurveyEvent(enrollee, response, ppUser);
-        logger.info("SurveyReponse received -- enrollee: {}, surveyStabledId: {}");
+        logger.info("SurveyReponse received -- enrollee: {}, surveyStabledId: {}", enrollee.getShortcode(), survey.getStableId());
         HubResponse hubResponse = HubResponse.builder()
                 .response(event.getSurveyResponse())
                 .tasks(event.getEnrollee().getParticipantTasks().stream().toList())

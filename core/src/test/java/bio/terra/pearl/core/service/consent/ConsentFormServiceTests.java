@@ -19,6 +19,7 @@ public class ConsentFormServiceTests extends BaseSpringBootTest {
     @Autowired
     private ConsentFormService consentFormService;
     @Test
+    @Transactional
     public void testConsentCreate() {
         ConsentForm consentForm = consentFormFactory.builder("testConsentCreate").build();
         ConsentForm savedForm = consentFormService.create(consentForm);

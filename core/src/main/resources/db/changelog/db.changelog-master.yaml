@@ -42,6 +42,9 @@ databaseChangeLog:
       file: changesets/2023_03_08_profile_email_prefs.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2023_03_13_enhanced_profile_maps.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2023_03_14_notification_config_reminders.yaml
       relativeToChangelogFile: true
 

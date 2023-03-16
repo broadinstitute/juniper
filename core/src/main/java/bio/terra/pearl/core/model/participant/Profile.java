@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.participant;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,6 +21,9 @@ public class Profile extends BaseEntity {
     private String contactEmail;
     private boolean doNotEmail; // do not send any emails to this user
     private boolean doNotEmailSolicit; // do not send any emails not directly related to study participation
+
+    private LocalDate birthDate;
+    private String phoneNumber;
 
     public static abstract class ProfileBuilder<C extends Profile, B extends Profile.ProfileBuilder<C, B>>
             extends BaseEntity.BaseEntityBuilder<C, B> {
