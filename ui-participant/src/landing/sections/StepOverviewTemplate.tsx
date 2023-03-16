@@ -49,7 +49,7 @@ function StepOverviewTemplate(props: StepOverviewTemplateProps) {
               <PearlImage image={image} className="img-fluid p-3" style={{ maxWidth: '200px' }}/>
               <p className="text-uppercase fs-5 fw-semibold mb-0">Step {i + 1}</p>
               <p className="text-uppercase fs-6">{duration}</p>
-              <p className="fs-5 fw-normal">
+              <p className="fs-4">
                 {blurb}
               </p>
             </div>

@@ -6,7 +6,7 @@ import Api, { getImageUrl, isInternalAnchorLink, isInternalLink, NavbarItem } fr
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from '../providers/UserProvider'
 
-const navLinkClasses = 'nav-link ms-lg-3'
+const navLinkClasses = 'nav-link fs-5 ms-lg-3'
 
 /** renders the navbar for participant landing page (for not-logged-in participants) */
 export default function LandingNavbar() {
