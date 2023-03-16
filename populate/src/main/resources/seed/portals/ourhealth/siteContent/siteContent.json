@@ -35,7 +35,7 @@
           "title": "Why is this needed?",
           "blurb": "Although South Asians represent 23% of the global population and have twice the risk of cardiovascular disease compared to Europeans, they are **significantly underrepresented in genetic studies and research**. Available datasets are limited in size, cultural diversity, and diasporic representation.",
           "buttons": [
-            {"text": "Scientific background",
+            {"text": "Scientific Background",
               "type": "internalLink",
               "href": "/background"
             }
