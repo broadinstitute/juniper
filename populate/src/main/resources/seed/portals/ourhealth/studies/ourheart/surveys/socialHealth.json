@@ -12,7 +12,7 @@
             "html": "The neighborhood where you live may play a role in a variety of health outcomes. Sharing details about your neighborhood may help researchers better understand the relationship between a person’s neighborhood and their overall well-being.\n\nThe following statements describe what your neighborhood might be like. Tell us how much you agree or disagree."
           },
           {
-            "name": "oh_oh_socialHealth_peopleInMyNeighborhoodGenerallyGetAlongWithEachOther",
+            "name": "oh_oh_socialHealth_neighborhoodGetsAlong",
             "type": "radiogroup",
             "title": "People in my neighborhood generally get along with each other.",
             "choices": [
@@ -24,7 +24,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_peopleInMyNeighborhoodShareTheSameValues",
+            "name": "oh_oh_socialHealth_neighborhoodSharesValues",
             "type": "radiogroup",
             "title": "People in my neighborhood share the same values.",
             "choices": [
@@ -36,7 +36,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_myNeighborhoodIsNoisy",
+            "name": "oh_oh_socialHealth_neighborhoodIsNoisy",
             "type": "radiogroup",
             "title": "My neighborhood is noisy.",
             "choices": [
@@ -47,7 +47,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_vandalismIsCommonInMyNeighborhood",
+            "name": "oh_oh_socialHealth_vandalismIsCommonInNeighborhood",
             "type": "radiogroup",
             "title": "Vandalism is common in my neighborhood.",
             "choices": [
@@ -58,7 +58,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_myNeighborhoodIsClean",
+            "name": "oh_oh_socialHealth_neighborhoodIsClean",
             "type": "radiogroup",
             "title": "My neighborhood is clean.",
             "choices": [
@@ -69,7 +69,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_thereIsALotOfCrimeInMyNeighborhood",
+            "name": "oh_oh_socialHealth_crimeInNeighborhood",
             "type": "radiogroup",
             "title": "There is a lot of crime in my neighborhood.",
             "choices": [
@@ -80,7 +80,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_thereIsTooMuchDrugUseInMyNeighborhood",
+            "name": "oh_oh_socialHealth_drugUseInNeighborhood",
             "type": "radiogroup",
             "title": "There is too much drug use in my neighborhood.",
             "choices": [
@@ -91,7 +91,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_imAlwaysHavingTroubleWithMyNeighbors",
+            "name": "oh_oh_socialHealth_troubleWithNeighbors",
             "type": "radiogroup",
             "title": "I’m always having trouble with my neighbors.",
             "choices": [
@@ -102,7 +102,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_myNeighborhoodIsSafe",
+            "name": "oh_oh_socialHealth_neighborhoodIsSafe",
             "type": "radiogroup",
             "title": "My neighborhood is safe.",
             "choices": [
@@ -117,12 +117,12 @@
       {
         "elements": [
           {
-            "name": "oh_oh_socialHealth_whatIsInYourNeighborhood",
+            "name": "oh_oh_socialHealth_whatIsInYourNeighborhoodIntro",
             "type": "html",
             "html": "The next questions ask about what is in your neighborhood. Think about the area around your home that you can walk to in 10-15 minutes."
           },
           {
-            "name": "oh_oh_socialHealth_whatIsTheMainTypeOfHousingInYourNeighborhood",
+            "name": "oh_oh_socialHealth_neighborhoodHousing",
             "type": "radiogroup",
             "title": "What is the main type of housing in your neighborhood?",
             "choices": [
@@ -135,7 +135,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_manyShopsStoresMarketsOrOtherPlacesToBuyThingsINeedAreWithinEasyWalkingDistanceOfMyHomeWouldYouSayThatYou",
+            "name": "oh_oh_socialHealth_nearbyShops",
             "type": "radiogroup",
             "title": "Many shops, stores, markets, or other places to buy things I need are within easy walking distance of my home. Would you say that you…",
             "choices": [
@@ -147,7 +147,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_myNeighborhoodHasSeveralFreeOrLowCostRecreationFacilitiesSuchAsParksWalkingTrailsBikePathsRecreationCentersPlaygroundsPublicSwimmingPoolsEtcWouldYouSayThatYou",
+            "name": "oh_oh_socialHealth_nearbyRecreation",
             "type": "radiogroup",
             "title": "My neighborhood has several free or low-cost recreation facilities, such as parks, walking trails, bike paths, recreation centers, playgrounds, public swimming pools, etc. Would you say that you…",
             "choices": [
@@ -159,7 +159,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_theCrimeRateInMyNeighborhoodMakesItUnsafeToGoOnWalksAtNightWouldYouSayThatYou",
+            "name": "oh_oh_socialHealth_neighborhoodUnsafeAtNight",
             "type": "radiogroup",
             "title": "The crime rate in my neighborhood makes it unsafe to go on walks at night. Would you say that you…",
             "choices": [
@@ -180,7 +180,7 @@
             "html": "Supportive relationships may play a key role in helping people live healthy lives. Answering the following questions may help researchers learn more about the potential health benefits of supportive relationships.\n\nPeople sometimes look to others for friendship, help, or other types of support. Choose the answer that best describes how often you can find support if you need it."
           },
           {
-            "name": "oh_oh_socialHealth_someoneToHelpYouIfYouWereConfinedToBed",
+            "name": "oh_oh_socialHealth_someoneToHelpIfConfinedToBed",
             "type": "radiogroup",
             "title": "Someone to help you if you were confined to bed",
             "choices": [
@@ -192,7 +192,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_someoneToTakeYouToTheDoctorIfYouNeedIt",
+            "name": "oh_oh_socialHealth_someoneToTakeToTheDoctor",
             "type": "radiogroup",
             "title": "Someone to take you to the doctor if you need it",
             "choices": [
@@ -216,7 +216,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_someoneToTurnToForSuggestionsAboutHowToDealWithAPersonalProblem",
+            "name": "oh_oh_socialHealth_someoneToAskForAdvice",
             "type": "radiogroup",
             "title": "Someone to turn to for suggestions about how to deal with a personal problem",
             "choices": [
@@ -228,7 +228,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_someoneToLoveAndMakeYouFeelWanted",
+            "name": "oh_oh_socialHealth_someoneToLove",
             "type": "radiogroup",
             "title": "Someone to love and make you feel wanted",
             "choices": [
@@ -249,7 +249,7 @@
             "html": "We would like to ask you some questions about your relationships with others. Choose the answer that is true for you."
           },
           {
-            "name": "oh_oh_socialHealth_iAmAnOutgoingPerson",
+            "name": "oh_oh_socialHealth_iAmOutgoing",
             "type": "radiogroup",
             "title": "I am an outgoing person.",
             "choices": [
@@ -260,7 +260,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_iFeelIsolatedFromOthers",
+            "name": "oh_oh_socialHealth_iFeelIsolated",
             "type": "radiogroup",
             "title": "I feel isolated from others.",
             "choices": [
@@ -271,7 +271,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_iCanFindCompanionshipWhenIWantIt",
+            "name": "oh_oh_socialHealth_iCanFindCompanionship",
             "type": "radiogroup",
             "title": "I can find companionship when I want it.",
             "choices": [
@@ -282,7 +282,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_iAmUnhappyBeingSoWithdrawn",
+            "name": "oh_oh_socialHealth_iAmWithdrawnAndUnhappy",
             "type": "radiogroup",
             "title": "I am unhappy being so withdrawn.",
             "choices": [
@@ -313,7 +313,7 @@
             "html": "People who experience discrimination may be at higher risk of negative health outcomes. Sharing your experiences with discrimination in everyday life and in healthcare settings may help researchers learn how to reduce negative health outcomes associated with discrimination.\n\nThe next statements describe how others may treat you. In your day-to-day life, how often do any of these happen to you?"
           },
           {
-            "name": "oh_oh_socialHealth_youAreTreatedWithLessCourtesyThanOtherPeopleAre",
+            "name": "oh_oh_socialHealth_youReceiveLessCourtesy",
             "type": "radiogroup",
             "title": "You are treated with less courtesy than other people are.",
             "choices": [
@@ -326,7 +326,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_youAreTreatedWithLessRespectThanOtherPeopleAre",
+            "name": "oh_oh_socialHealth_youReceiveLessRespect",
             "type": "radiogroup",
             "title": "You are treated with less respect than other people are.",
             "choices": [
@@ -339,7 +339,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_youReceivePoorerServiceThanOtherPeopleAtRestaurantsOrStores",
+            "name": "oh_oh_socialHealth_youReceivePoorerService",
             "type": "radiogroup",
             "title": "You receive poorer service than other people at restaurants or stores.",
             "choices": [
@@ -352,7 +352,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_peopleActAsIfTheyThinkYouAreNotSmart",
+            "name": "oh_oh_socialHealth_peopleActAsIfYouAreNotSmart",
             "type": "radiogroup",
             "title": "People act as if they think you are not smart.",
             "choices": [
@@ -365,7 +365,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_peopleActAsIfTheyAreAfraidOfYou",
+            "name": "oh_oh_socialHealth_peopleActAsIfAfraidOfYou",
             "type": "radiogroup",
             "title": "People act as if they are afraid of you.",
             "choices": [
@@ -378,7 +378,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_peopleActAsIfTheyThinkYouAreDishonest",
+            "name": "oh_oh_socialHealth_peopleActAsIfYouAreDishonest",
             "type": "radiogroup",
             "title": "People act as if they think you are dishonest.",
             "choices": [
@@ -391,7 +391,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_peopleActAsIfTheyreBetterThanYouAre",
+            "name": "oh_oh_socialHealth_peopleActAsIfTheyreBetterThanYou",
             "type": "radiogroup",
             "title": "People act as if they’re better than you are.",
             "choices": [
@@ -404,7 +404,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_youAreCalledNamesOrInsulted",
+            "name": "oh_oh_socialHealth_youAreInsulted",
             "type": "radiogroup",
             "title": "You are called names or insulted.",
             "choices": [
@@ -430,7 +430,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_whatDoYouThinkIsTheMainReasonForTheseExperiences",
+            "name": "oh_oh_socialHealth_supposedReasonForTheseExperiences",
             "type": "radiogroup",
             "title": "What do you think is the main reason for these experiences?",
             "showOtherItem": true,
@@ -459,7 +459,7 @@
             "html": "The next statements describe how others may treat you. How often do any of these happen to you when you go to a doctor’s office or other health care provider?"
           },
           {
-            "name": "oh_oh_socialHealth_youAreTreatedWithLessCourtesyThanOtherPeople",
+            "name": "oh_oh_socialHealth_youReceiveLessCourtesyAtHealthcareProvider",
             "type": "radiogroup",
             "title": "You are treated with less courtesy than other people.",
             "choices": [
@@ -471,7 +471,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_youAreTreatedWithLessRespectThanOtherPeople",
+            "name": "oh_oh_socialHealth_youReceiveLessRespectAtHealthcareProvider",
             "type": "radiogroup",
             "title": "You are treated with less respect than other people.",
             "choices": [
@@ -483,7 +483,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_youReceivePoorerServiceThanOthers",
+            "name": "oh_oh_socialHealth_youReceivePoorerServiceAtHealthcareProvider",
             "type": "radiogroup",
             "title": "You receive poorer service than others.",
             "choices": [
@@ -495,7 +495,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_aDoctorOrNurseActsAsIfHeOrSheThinksYouAreNotSmart",
+            "name": "oh_oh_socialHealth_healthcareProviderActsAsIfYouAreNotSmart",
             "type": "radiogroup",
             "title": "A doctor or nurse acts as if he or she thinks you are not smart.",
             "choices": [
@@ -507,7 +507,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_aDoctorOrNurseActsAsIfHeOrSheIsBetterThanYou",
+            "name": "oh_oh_socialHealth_healthCareProviderActsAsIfBetterThanYou",
             "type": "radiogroup",
             "title": "A doctor or nurse acts as if he or she is better than you.",
             "choices": [
@@ -519,7 +519,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_youFeelLikeADoctorOrNurseIsNotListeningToWhatYouWereSaying",
+            "name": "oh_oh_socialHealth_healthcareProviderNotListeningToYou",
             "type": "radiogroup",
             "title": "You feel like a doctor or nurse is not listening to what you were saying.",
             "choices": [
@@ -540,7 +540,7 @@
             "html": "The next set of questions asks about food and housing.\n\nLower food and housing security may increase the risk of negative health outcomes. Sharing your experiences about you or your family on this topic may help researchers learn how food and housing security influence health and well-being."
           },
           {
-            "name": "oh_oh_socialHealth_withinThePast12MonthsWeWorriedWhetherOurFoodWouldRunOutBeforeWeGotMoneyToBuyMore",
+            "name": "oh_oh_socialHealth_worriedAboutBuyingFoodInLastYear",
             "type": "radiogroup",
             "title": "Within the past 12 months, we worried whether our food would run out before we got money to buy more.",
             "choices": [
@@ -550,12 +550,12 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_inTheLast12MonthsHowManyTimesHaveYouOrYourFamilyMovedFromOneHomeToAnother",
+            "name": "oh_oh_socialHealth_timesMovedBetweenHomesInLastYear",
             "type": "text",
             "title": "In the last 12 months, how many times have you or your family moved from one home to another?"
           },
           {
-            "name": "oh_oh_socialHealth_thinkAboutThePlaceYouLiveDoYouHaveProblemsWithAnyOfTheFollowingCheckAllThatApply",
+            "name": "oh_oh_socialHealth_problemsInLivingSpace",
             "type": "radiogroup",
             "title": "Think about the place you live. Do you have problems with any of the following (check all that apply)?",
             "choices": [
@@ -579,7 +579,7 @@
             "html": "The amount of stress you feel can lead to negative health outcomes. Sharing your experiences may help researchers identify common triggers that induce stress in individuals and ways to provide support for individuals and communities.\n\nThe next questions ask you about your feelings and thoughts during the last month. Please choose how often you felt or thought a certain way."
           },
           {
-            "name": "oh_oh_socialHealth_inTheLastMonthHowOftenHaveYouBeenUpsetBecauseOfSomethingThatHappenedUnexpectedly",
+            "name": "oh_oh_socialHealth_howOftenUpsetByUnexpectedEventInLastMonth",
             "type": "radiogroup",
             "title": "In the last month, how often have you been upset because of something that happened unexpectedly?",
             "choices": [
@@ -591,7 +591,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_inTheLastMonthHowOftenHaveYouFeltNervousAndStressed",
+            "name": "oh_oh_socialHealth_howOftenStressedInTheLastMonth",
             "type": "radiogroup",
             "title": "In the last month, how often have you felt nervous and “stressed”?",
             "choices": [
@@ -603,7 +603,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_inTheLastMonthHowOftenHaveYouFeltConfidentAboutYourAbilityToHandleYourPersonalProblems",
+            "name": "oh_oh_socialHealth_howOftenConfidentToHandleProblemsInTheLastMonth",
             "type": "radiogroup",
             "title": "In the last month, how often have you felt confident about your ability to handle your personal problems?",
             "choices": [
@@ -615,7 +615,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_inTheLastMonthHowOftenHaveYouFeltThatThingsWereGoingYourWay",
+            "name": "oh_oh_socialHealth_howOftenThingsGoingYourWayInTheLastMonth",
             "type": "radiogroup",
             "title": "In the last month, how often have you felt that things were going your way?",
             "choices": [
@@ -627,7 +627,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_inTheLastMonthHowOftenHaveYouFoundThatYouCouldNotCopeWithAllTheThingsThatYouHadToDo",
+            "name": "oh_oh_socialHealth_howOftenUnableToCopeWithTasksInLastMonth",
             "type": "radiogroup",
             "title": "In the last month, how often have you found that you could not cope with all the things that you had to do?",
             "choices": [
@@ -639,7 +639,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_inTheLastMonthHowOftenHaveYouBeenAngeredBecauseOfThingsThatWereOutsideOfYourControl",
+            "name": "oh_oh_socialHealth_howOftenAngeredByThingsOutOfYourControlInLastMonth",
             "type": "radiogroup",
             "title": "In the last month, how often have you been angered because of things that were outside of your control?",
             "choices": [
@@ -660,7 +660,7 @@
             "html": "Elements of religion and spirituality can affect health outcomes. Sharing your beliefs and experiences may help researchers better understand the effects of religion and spirituality on health and well-being.\n\nThe next questions ask about your spiritual life. Some questions use the word \"God.\" If it makes you more comfortable, you can replace that word with whatever you believe is spiritual, holy, or divine when answering.\n\nHow often do you experience the following:"
           },
           {
-            "name": "oh_oh_socialHealth_iFeelGodsOrAHigherPowersPresence",
+            "name": "oh_oh_socialHealth_feelHigherPowersPresence",
             "type": "radiogroup",
             "title": "I feel God’s (or a higher power’s) presence",
             "choices": [
@@ -674,7 +674,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_iFindStrengthAndComfortInMyReligion",
+            "name": "oh_oh_socialHealth_findComfortInReligion",
             "type": "radiogroup",
             "title": "I find strength and comfort in my religion",
             "choices": [
@@ -688,7 +688,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_iFeelDeepInnerPeaceOrHarmony",
+            "name": "oh_oh_socialHealth_feelInnerPeace",
             "type": "radiogroup",
             "title": "I feel deep inner peace or harmony",
             "choices": [
@@ -701,7 +701,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_iDesireToBeCloserToOrInUnionWithGodOrAHigherPower",
+            "name": "oh_oh_socialHealth_wantToBeCloserToHigherPower",
             "type": "radiogroup",
             "title": "I desire to be closer to or in union with God (or a higher power)",
             "choices": [
@@ -715,7 +715,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_iFeelGodsOrAHigherPowersLoveForMeDirectlyOrThroughOthers",
+            "name": "oh_oh_socialHealth_feelHigherPowersLove",
             "type": "radiogroup",
             "title": "I feel God’s (or a higher power’s) love for me, directly or through others",
             "choices": [
@@ -729,7 +729,7 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_howOftenDoYouGoToReligiousMeetingsOrServices",
+            "name": "oh_oh_socialHealth_howOftenAttendReligiousServices",
             "type": "radiogroup",
             "title": "How often do you go to religious meetings or services?",
             "choices": [
@@ -751,7 +751,7 @@
             "html": "Elements of religion and spirituality can affect health outcomes. Sharing your beliefs and experiences may help researchers better understand the effects of religion and spirituality on health and well-being.\n\nThe next questions ask about your spiritual life. Some questions use the word \"God.\" If it makes you more comfortable, you can replace that word with whatever you believe is spiritual, holy, or divine when answering.\n\nHow often do you experience the following:"
           },
           {
-            "name": "oh_oh_socialHealth_doYouSpeakALanguageOtherThanEnglishAtHome",
+            "name": "oh_oh_socialHealth_speakALanguageOtherThanEnglishAtHome",
             "type": "radiogroup",
             "title": "Do you speak a language other than English at home?",
             "choices": [
@@ -761,9 +761,9 @@
             ]
           },
           {
-            "name": "oh_oh_socialHealth_sinceYouSpeakALanguageOtherThanEnglishAtHomeWeAreInterestedInYourOwnThoughtsAboutHowWellYouSpeakEnglishWouldYouSayYouSpeakEnglish14",
+            "name": "oh_oh_socialHealth_spokenEnglishProficiency",
             "type": "radiogroup",
-            "title": "Since you speak a language other than English at home, we are interested in your own thoughts about how well you speak English. Would you say you speak English…14",
+            "title": "Since you speak a language other than English at home, we are interested in your own thoughts about how well you speak English. Would you say you speak English…",
             "visibleIf": "{oh_oh_socialHealth_doYouSpeakALanguageOtherThanEnglishAtHome} = 'yes'",
             "choices": [
               {"text": "Very well", "value": "veryWell"},
