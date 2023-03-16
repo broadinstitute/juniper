@@ -1,6 +1,8 @@
 package bio.terra.pearl.core.service.notification;
 
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.shared.ParticipantUiConstants;
 import java.util.Map;
@@ -15,21 +17,25 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
     private static final Logger logger = LoggerFactory.getLogger(StringLookup.class);
     private Map<String, Object> valueMap;
     private EnrolleeRuleData enrolleeRuleData;
-    private PortalEnvironment portalEnvironment;
+    private NotificationContextInfo contextInfo;
 
-    protected EnrolleeEmailSubstitutor(EnrolleeRuleData ruleData, PortalEnvironment portalEnv, String portalShortcode) {
+    protected EnrolleeEmailSubstitutor(EnrolleeRuleData ruleData, NotificationContextInfo contextInfo) {
         this.enrolleeRuleData = ruleData;
-        this.portalEnvironment = portalEnv;
+        this.contextInfo = contextInfo;
         valueMap = Map.of("profile", enrolleeRuleData.profile(),
-                "portalEnv", portalEnv,
-                "envConfig", portalEnv.getPortalEnvironmentConfig(),
-                "dashboardLink", getDashboardLink(portalEnv, portalShortcode));
+                "portalEnv", contextInfo.portalEnv(),
+                "envConfig", contextInfo.portalEnv().getPortalEnvironmentConfig(),
+                "dashboardLink", getDashboardLink(contextInfo.portalEnv(),
+                        contextInfo.portal(), contextInfo.study()),
+                // providing a study isn't required, since emails might come from the portal, rather than a study
+                // but immutable map doesn't allow nulls
+                "study", contextInfo.study() != null ? contextInfo.study() : "");
     }
 
     /** create a new substitutor.  the portalEnv must have the envConfig attached */
     public static StringSubstitutor newSubstitutor(EnrolleeRuleData ruleData,
-                                                   PortalEnvironment portalEnv, String portalShortcode) {
-        return new StringSubstitutor(new EnrolleeEmailSubstitutor(ruleData, portalEnv, portalShortcode));
+                                                   NotificationContextInfo contextInfo) {
+        return new StringSubstitutor(new EnrolleeEmailSubstitutor(ruleData, contextInfo));
     }
 
 
@@ -39,14 +45,15 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
             return PropertyUtils.getNestedProperty(valueMap, key).toString();
         } catch (Exception e) {
             logger.error("Could not resolve template value {}, environment: {}, enrollee: {}",
-                    key, portalEnvironment.getId(), enrolleeRuleData.enrollee().getShortcode());
+                    key, contextInfo.portal().getShortcode(), enrolleeRuleData.enrollee().getShortcode());
         }
         return "";
     }
 
-    public String getDashboardLink(PortalEnvironment portalEnv, String portalShortcode) {
-        String href = getParticipantHostname(portalEnv, portalShortcode) + ParticipantUiConstants.DASHBOARD_PATH;
-        return String.format("<a href=\"%s\">Go to dashboard</a>", href);
+    public String getDashboardLink(PortalEnvironment portalEnv, Portal portal,  Study study) {
+        String href = getParticipantHostname(portalEnv, portal.getShortcode()) + ParticipantUiConstants.DASHBOARD_PATH;
+        String linkNameText = study != null ? study.getName() : portal.getName();
+        return String.format("<a href=\"%s\">Return to %s</a>", href, linkNameText);
     }
 
     public static String getParticipantHostname(PortalEnvironment portalEnv, String portalShortcode) {
@@ -59,11 +66,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         if (!portalEnv.getEnvironmentName().isLive()) {
             participantHostname = portalEnv.getEnvironmentName() + "." + participantHostname;
         }
-        if (!participantHostname.contains("localhost")) {
-            participantHostname = "https://" + participantHostname;
-        } else {
-            participantHostname = "http://" + participantHostname;
-        }
+        participantHostname = "https://" + participantHostname;
         return participantHostname;
     }
 }

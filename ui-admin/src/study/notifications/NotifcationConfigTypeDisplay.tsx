@@ -19,7 +19,7 @@ export default function NotificationConfigTypeDisplay({ config }: {config?: Noti
   }
   if (config.notificationType === 'EVENT') {
     return <span>{eventTypeDisplayMap[config.eventType]}</span>
-  } else if (config.notificationType === 'TASK_INCOMPLETE') {
+  } else if (config.notificationType === 'TASK_REMINDER') {
     return <span>
       Reminder: {config.taskType} {config.taskTargetStableId}
     </span>

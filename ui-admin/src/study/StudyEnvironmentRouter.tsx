@@ -1,5 +1,5 @@
 import React, { useEffect, useContext } from 'react'
-import { Portal, Study, StudyEnvironment } from 'api/api'
+import { NotificationConfig, Portal, Study, StudyEnvironment } from 'api/api'
 import { StudyParams } from 'study/StudyRouter'
 
 import { Link, Route, Routes, useParams } from 'react-router-dom'
@@ -76,3 +76,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
 }
 
 export default StudyEnvironmentRouter
+
+export const notificationConfigPath = (config: NotificationConfig, currentEnvPath: string) => {
+  return `${currentEnvPath}/notificationConfigs/${config.id}`
+}

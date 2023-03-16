@@ -28,6 +28,17 @@ public class StudyDao  extends BaseJdbiDao<Study> {
         return findByProperty("shortcode", shortcode);
     }
 
+    public Optional<Study> findByStudyEnvironmentId(UUID studyEnvId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select " + prefixedGetQueryColumns("a") + " from " + tableName
+                                + " a join study_environment on a.id = study_environment.study_id "
+                                + " where study_environment.id = :studyEnvId")
+                        .bind("studyEnvId", studyEnvId)
+                        .mapTo(clazz)
+                        .stream().findFirst()
+        );
+    }
+
     public List<Study> findByPortal(String portalShortcode) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select " + prefixedGetQueryColumns("a") + " from " + tableName

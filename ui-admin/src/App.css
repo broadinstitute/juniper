@@ -50,7 +50,7 @@ a {
 
 .App {
   background-color: #ededed;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 .App-study-list {

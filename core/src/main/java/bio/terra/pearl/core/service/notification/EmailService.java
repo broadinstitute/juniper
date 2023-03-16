@@ -1,14 +1,15 @@
 package bio.terra.pearl.core.service.notification;
 
-import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.Notification;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.service.study.StudyService;
 import com.sendgrid.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
@@ -30,16 +31,18 @@ public class EmailService implements NotificationSender {
     private NotificationService notificationService;
     private PortalEnvironmentService portalEnvService;
     private PortalService portalService;
+    private StudyService studyService;
     private EmailTemplateService emailTemplateService;
 
     public EmailService(Environment env, NotificationService notificationService,
                         PortalEnvironmentService portalEnvService, PortalService portalService,
-                        EmailTemplateService emailTemplateService) {
+                        StudyService studyService, EmailTemplateService emailTemplateService) {
         this.emailRedirectAddress = env.getProperty(EMAIL_REDIRECT_VAR, "");
         this.sendGridApiKey = env.getProperty(SENDGRID_API_KEY_VAR, "");
         this.notificationService = notificationService;
         this.portalEnvService = portalEnvService;
         this.portalService = portalService;
+        this.studyService = studyService;
         this.emailTemplateService = emailTemplateService;
     }
     
@@ -92,7 +95,7 @@ public class EmailService implements NotificationSender {
     }
 
     protected void buildAndSendEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData) throws Exception {
-        Mail mail = buildEmail(contextInfo.template(), ruleData, contextInfo.portalEnv(), contextInfo.portal().getShortcode());
+        Mail mail = buildEmail(contextInfo, ruleData);
         sendEmail(mail);
     }
 
@@ -133,14 +136,14 @@ public class EmailService implements NotificationSender {
         return true;
     }
 
-    public Mail buildEmail(EmailTemplate template, EnrolleeRuleData ruleData, PortalEnvironment portalEnv,
-                           String portalShortcode) {
-        Email from = new Email(portalEnv.getPortalEnvironmentConfig().getEmailSourceAddress());
+    public Mail buildEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData) {
+        Email from = new Email(contextInfo.portalEnv().getPortalEnvironmentConfig().getEmailSourceAddress());
         Email to = new Email(ruleData.profile().getContactEmail());
 
-        StringSubstitutor stringSubstitutor = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, portalEnv, portalShortcode);
-        String subject = stringSubstitutor.replace(template.getSubject());
-        String contentString = stringSubstitutor.replace(template.getBody());
+        StringSubstitutor stringSubstitutor = EnrolleeEmailSubstitutor
+                .newSubstitutor(ruleData, contextInfo);
+        String subject = stringSubstitutor.replace(contextInfo.template().getSubject());
+        String contentString = stringSubstitutor.replace(contextInfo.template().getBody());
 
         if (!StringUtils.isEmpty(emailRedirectAddress)) {
             to =  new Email(emailRedirectAddress);
@@ -165,10 +168,14 @@ public class EmailService implements NotificationSender {
         if (portalEnvironment == null) {
             return null;
         }
+
+        Study study = studyService.findByStudyEnvironmentId(config.getStudyEnvironmentId()).get();
+
         Portal portal = portalService.find(portalEnvironment.getPortalId()).get();
         return new NotificationContextInfo(
                 portal,
                 portalEnvironment,
+                study,
                 emailTemplateService.find(config.getEmailTemplateId()).orElse(null)
         );
     }

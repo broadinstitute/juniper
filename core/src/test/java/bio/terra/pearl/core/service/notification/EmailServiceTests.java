@@ -9,11 +9,13 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.notification.*;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.service.study.StudyService;
 import com.sendgrid.Mail;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -27,6 +29,8 @@ public class EmailServiceTests extends BaseSpringBootTest {
     private NotificationService notificationService;
     @Autowired
     private EnrolleeFactory enrolleeFactory;
+    @Autowired
+    private StudyService studyService;
     @Autowired
     private NotificationFactory notificationFactory;
     @Autowired
@@ -47,15 +51,16 @@ public class EmailServiceTests extends BaseSpringBootTest {
                 .emailSourceAddress("info@portal.org").build();
         PortalEnvironment portalEnv = PortalEnvironment.builder()
                 .environmentName(EnvironmentName.irb).portalEnvironmentConfig(portalEnvConfig).build();
-
+        Portal portal = Portal.builder().shortcode("portal1").build();
         EmailTemplate emailTemplate = EmailTemplate.builder()
                     .body("family name ${profile.familyName}")
                     .subject("Welcome ${profile.givenName}").build();
 
 
         Environment env = new MockEnvironment().withProperty(EmailService.EMAIL_REDIRECT_VAR, "");
-        EmailService emailService = new EmailService(env, notificationService, null, null, null);
-        Mail email = emailService.buildEmail(emailTemplate, ruleData, portalEnv, "testportal");
+        EmailService emailService = new EmailService(env, notificationService, null, null, studyService, null);
+        var contextInfo = new NotificationContextInfo(portal, portalEnv, null, emailTemplate);
+        Mail email = emailService.buildEmail(contextInfo, ruleData);
         assertThat(email.personalization.get(0).getTos().get(0).getEmail(), equalTo("test@test.com"));
         assertThat(email.content.get(0).getValue(), equalTo("family name tester"));
         assertThat(email.from.getEmail(), equalTo("info@portal.org"));
@@ -63,8 +68,8 @@ public class EmailServiceTests extends BaseSpringBootTest {
 
         // now test that the to address is replaced if configured
         Environment devEnv = new MockEnvironment().withProperty(EmailService.EMAIL_REDIRECT_VAR, "developer@broad.org");
-        EmailService devEmailService = new EmailService(devEnv, notificationService, null, null, null);
-        Mail devEmail = devEmailService.buildEmail(emailTemplate, ruleData, portalEnv, "testportal");
+        EmailService devEmailService = new EmailService(devEnv, notificationService, null, null, studyService, null);
+        Mail devEmail = devEmailService.buildEmail(contextInfo, ruleData);
         assertThat(devEmail.personalization.get(0).getTos().get(0).getEmail(), equalTo("developer@broad.org"));
     }
 
@@ -72,7 +77,7 @@ public class EmailServiceTests extends BaseSpringBootTest {
     public void testEmailSendOrSkip() {
         // set up an enrollee and valid notification config
         Environment env = new MockEnvironment().withProperty(EmailService.SENDGRID_API_KEY_VAR, "fake");
-        EmailService emailService = new FakeEmailService(env, notificationService, null, null, null);
+        EmailService emailService = new FakeEmailService(env, notificationService, null, null, null, null);
         EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser("testShouldNotSendEmail");
         EmailTemplate emailTemplate = emailTemplateFactory.buildPersisted("testShouldNotSendEmail", enrolleeBundle.portalId());
         NotificationConfig config = notificationConfigFactory.buildPersisted(NotificationConfig.builder()
@@ -88,7 +93,8 @@ public class EmailServiceTests extends BaseSpringBootTest {
     private void testSendProfile(EmailService emailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, NotificationConfig config) {
         var notification = notificationFactory.buildPersisted(enrolleeBundle, config);
         var ruleData = new EnrolleeRuleData(enrolleeBundle.enrollee(), Profile.builder().build());
-        emailService.processNotification(notification, config, ruleData, null);
+        var contextInfo = new NotificationContextInfo(null, null, null, null);
+        emailService.processNotification(notification, config, ruleData, contextInfo);
         Notification updatedNotification = notificationService.find(notification.getId()).get();
         assertThat(updatedNotification.getDeliveryStatus(), equalTo(NotificationDeliveryStatus.SENT));
     }
@@ -96,7 +102,8 @@ public class EmailServiceTests extends BaseSpringBootTest {
     private void testDoNotSendProfile(EmailService emailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, NotificationConfig config) {
         Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
         EnrolleeRuleData ruleData = new EnrolleeRuleData(enrolleeBundle.enrollee(), Profile.builder().doNotEmail(true).build());
-        emailService.processNotification(notification, config, ruleData, null);
+        var contextInfo = new NotificationContextInfo(null, null, null, null);
+        emailService.processNotification(notification, config, ruleData, contextInfo);
         Notification updatedNotification = notificationService.find(notification.getId()).get();
         assertThat(updatedNotification.getDeliveryStatus(), equalTo(NotificationDeliveryStatus.SKIPPED));
     }
@@ -106,8 +113,8 @@ public class EmailServiceTests extends BaseSpringBootTest {
     protected class FakeEmailService extends EmailService {
         public FakeEmailService(Environment env, NotificationService notificationService,
                                 PortalEnvironmentService portalEnvService, PortalService portalService,
-                                EmailTemplateService emailTemplateService) {
-            super(env, notificationService, portalEnvService, portalService, emailTemplateService);
+                                StudyService studyService, EmailTemplateService emailTemplateService) {
+            super(env, notificationService, portalEnvService, portalService, studyService, emailTemplateService);
         }
         @Override
         protected void sendEmail(Mail mail) {
@@ -116,6 +123,10 @@ public class EmailServiceTests extends BaseSpringBootTest {
         @Override
         protected void buildAndSendEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData) {
             // do nothing
+        }
+        @Override
+        public Mail buildEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData) {
+            return null;
         }
     }
 
