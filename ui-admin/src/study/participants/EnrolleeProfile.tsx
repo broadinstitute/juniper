@@ -1,5 +1,6 @@
 import React from 'react'
 import { Enrollee, MailingAddress } from 'api/api'
+import { dateToDefaultString } from '../../util/timeUtils'
 
 /**
  * shows the enrollee profile.  Designed for read-only.  When we implement admin-profile editing capability,
@@ -21,12 +22,26 @@ export default function EnrolleeProfile({ enrollee }: {enrollee: Enrollee}) {
           Contact email:
           <input className="form-control" type="text" readOnly={true} value={enrollee.profile.contactEmail}/>
         </label>
-        <label className="form-label ms-2">
-          Do not email: <input type="checkbox" className="mx-1" readOnly={true} checked={enrollee.profile.doNotEmail}/>
+        <label className="form-label ms-3">
+          Do not email:
+          <input type="checkbox" className="ms-1" disabled={true} checked={enrollee.profile.doNotEmail}/>
         </label>
-        <label className="form-label ms-2">
-          Do not solicit: <input className="mx-1" type="checkbox"
-            readOnly={true} checked={enrollee.profile.doNotEmailSolicit}/>
+        <label className="form-label ms-3">
+          Do not solicit:
+          <input type="checkbox" className="ms-1" disabled={true} checked={enrollee.profile.doNotEmailSolicit}/>
+        </label>
+      </div>
+      <div className="mb-3">
+        <label className="form-label">
+          Birthdate:
+          <input className="form-control" type="text"
+            readOnly={true} value={dateToDefaultString(enrollee.profile.birthDate)}/>
+        </label>
+      </div>
+      <div className="mb-3">
+        <label className="form-label">
+          Phone:
+          <input className="form-control" type="text" readOnly={true} value={enrollee.profile.phoneNumber}/>
         </label>
       </div>
       <h6>Mailing address</h6>
@@ -55,8 +70,9 @@ export function MailingAddressView({ mailingAddress }: {mailingAddress: MailingA
         State: <input className="form-control" type="text" readOnly={true} value={mailingAddress.state}/></label>
       <label className="form-label ms-2">
         Country: <input className="form-control" type="text" readOnly={true} value={mailingAddress.country}/></label>
-      <label className="form-label ms-2">
-        Postal code: <input className="form-control" type="text" readOnly={true} value={mailingAddress.zip}/></label>
+      <label className="form-label">
+        Postal code: <input className="form-control" type="text" readOnly={true} value={mailingAddress.postalCode}/>
+      </label>
     </div>
   </div>
 }

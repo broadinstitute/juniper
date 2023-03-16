@@ -9,9 +9,12 @@ import bio.terra.pearl.core.model.workflow.ObjectWithChangeLog;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -93,8 +96,8 @@ public class SnapshotProcessingService {
                 try {
                     AnswerMapping mapping = fieldTargetMap.get(stableId);
                     String oldValue = Objects.toString(PropertyUtils.getNestedProperty(targetObj, mapping.getTargetField()), "");
-                    Function<JsonNode, Object> mapFunc = JSON_MAPPERS.get(mapping.getMapType());
-                    Object newValue = mapFunc.apply(item.getValue());
+                    BiFunction<JsonNode, AnswerMapping, Object> mapFunc = JSON_MAPPERS.get(mapping.getMapType());
+                    Object newValue = mapFunc.apply(item.getValue(), mapping);
                     PropertyUtils.setNestedProperty(targetObj, mapping.getTargetField(), newValue);
                     DataChangeRecord changeRecord = DataChangeRecord.builder()
                             .modelName(targetType.name())
@@ -114,6 +117,29 @@ public class SnapshotProcessingService {
         return new ObjectWithChangeLog<T>(targetObj, changeRecords);
     }
 
+    public static final Map<AnswerMappingMapType, BiFunction<JsonNode, AnswerMapping, Object>> JSON_MAPPERS = Map.of(
+            AnswerMappingMapType.TEXT_NODE_TO_STRING, (JsonNode jsonNode, AnswerMapping mapping) -> jsonNode.asText(),
+            AnswerMappingMapType.TEXT_NODE_TO_LOCAL_DATE, (JsonNode jsonNode, AnswerMapping mapping) ->
+                    mapToDate(jsonNode, mapping)
+    );
+
+    public static LocalDate mapToDate(JsonNode jsonNode, AnswerMapping mapping) {
+        String dateText = jsonNode.asText();
+        if (StringUtils.isBlank(dateText)) {
+            return null;
+        }
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(mapping.getFormatString());
+            return LocalDate.parse(dateText, formatter);
+        } catch (Exception e) {
+            if (mapping.isErrorOnFail()) {
+                throw new IllegalArgumentException("Could not parse date " + dateText + " to format " + mapping.getFormatString());
+            }
+        }
+        return null;
+    }
+
+
     /** legacy value extract method for hardcoded surveys with hardcoded mappings, like REGISTRATION_FIELD_MAP
      * in RegistrationService */
     public <T> T extractValues(ParsedSnapshot snapshot, Map<String, String> stableIdMap, Class<T> clazz) {
@@ -128,7 +154,4 @@ public class SnapshotProcessingService {
         return objectMapper.convertValue(fieldValues, clazz);
     }
 
-    public static final Map<AnswerMappingMapType, Function<JsonNode, Object>> JSON_MAPPERS = Map.of(
-            AnswerMappingMapType.TEXT_NODE_TO_STRING, (JsonNode jsonNode) -> jsonNode.asText()
-    );
 }

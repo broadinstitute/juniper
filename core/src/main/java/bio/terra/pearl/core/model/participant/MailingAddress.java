@@ -18,5 +18,5 @@ public class MailingAddress extends BaseEntity {
 
     private String city;
 
-    private String zip;
+    private String postalCode;
 }

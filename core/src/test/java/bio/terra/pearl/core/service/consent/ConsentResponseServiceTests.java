@@ -1,10 +1,10 @@
 package bio.terra.pearl.core.service.consent;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.model.consent.ConsentWithResponses;
 import bio.terra.pearl.core.factory.consent.ConsentResponseFactory;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
+import bio.terra.pearl.core.model.consent.ConsentWithResponses;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -14,6 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 public class ConsentResponseServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -28,6 +29,7 @@ public class ConsentResponseServiceTests extends BaseSpringBootTest {
     private StudyEnvironmentConsentService configConsentService;
 
     @Test
+    @Transactional
     public void testResponseCreate() {
         ConsentResponse consentResponse = consentResponseFactory.builderWithDependencies("testResponseCreate")
                 .build();

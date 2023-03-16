@@ -112,9 +112,11 @@ export type Profile = {
   givenName: string,
   familyName: string,
   contactEmail: string,
-  mailingAddress: MailingAddress,
   doNotEmail: boolean,
-  doNotEmailSolicit: boolean
+  doNotEmailSolicit: boolean,
+  mailingAddress: MailingAddress,
+  phoneNumber: string,
+  birthDate: number
 }
 
 export type MailingAddress = {
@@ -123,7 +125,7 @@ export type MailingAddress = {
   city: string,
   state: string,
   country: string,
-  zip: string
+  postalCode: string
 }
 
 export type ResumableData = {
