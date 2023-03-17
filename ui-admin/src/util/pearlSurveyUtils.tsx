@@ -169,8 +169,9 @@ export function questionFromRawText(rawText: string): QuestionObj {
     }
   })
 
+  const title = textLines[0].trim()
   const newQuestionObj: QuestionObj = {
-    title: textLines[0],
+    title,
     choices,
     type: choices.length > 0 ? 'radiogroup' : 'text',
     nameSuffix: '',
