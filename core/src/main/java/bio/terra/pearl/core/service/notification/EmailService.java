@@ -10,6 +10,7 @@ import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.study.StudyService;
+import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.sendgrid.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
@@ -33,10 +34,12 @@ public class EmailService implements NotificationSender {
     private PortalService portalService;
     private StudyService studyService;
     private EmailTemplateService emailTemplateService;
+    private ApplicationRoutingPaths routingPaths;
 
     public EmailService(Environment env, NotificationService notificationService,
                         PortalEnvironmentService portalEnvService, PortalService portalService,
-                        StudyService studyService, EmailTemplateService emailTemplateService) {
+                        StudyService studyService, EmailTemplateService emailTemplateService,
+                        ApplicationRoutingPaths routingPaths) {
         this.emailRedirectAddress = env.getProperty(EMAIL_REDIRECT_VAR, "");
         this.sendGridApiKey = env.getProperty(SENDGRID_API_KEY_VAR, "");
         this.notificationService = notificationService;
@@ -44,6 +47,7 @@ public class EmailService implements NotificationSender {
         this.portalService = portalService;
         this.studyService = studyService;
         this.emailTemplateService = emailTemplateService;
+        this.routingPaths = routingPaths;
     }
     
     @Async
@@ -141,7 +145,7 @@ public class EmailService implements NotificationSender {
         Email to = new Email(ruleData.profile().getContactEmail());
 
         StringSubstitutor stringSubstitutor = EnrolleeEmailSubstitutor
-                .newSubstitutor(ruleData, contextInfo);
+                .newSubstitutor(ruleData, contextInfo, routingPaths);
         String subject = stringSubstitutor.replace(contextInfo.template().getSubject());
         String contentString = stringSubstitutor.replace(contextInfo.template().getBody());
 

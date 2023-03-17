@@ -19,6 +19,12 @@ env:
     clientId: ${B2C_CLIENT_ID:missing_client_id}
   email:
     sendgridApiKey: ${SENDGRID_API_KEY:}
+  hostnames:
+    participantUi: ${PARTICIPANT_UI_HOSTNAME:localhost:3001}
+    participantApi: ${PARTICIPANT_API_HOSTNAME:localhost:8081}
+    adminUi: ${ADMIN_UI_HOSTNAME:localhost:3000}
+    adminApi: ${ADMIN_API_HOSTNAME:localhost:8080}
+
 
 # Below here is non-deployment-specific
 
