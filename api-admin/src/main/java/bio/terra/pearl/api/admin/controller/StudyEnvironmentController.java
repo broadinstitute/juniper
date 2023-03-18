@@ -29,6 +29,7 @@ public class StudyEnvironmentController implements StudyEnvironmentApi {
     this.studyEnvService = studyEnvService;
   }
 
+  /** currently only supports updating the preEnroll survey id */
   @Override
   public ResponseEntity<StudyEnvironmentDto> patch(
       String portalShortcode, String studyShortcode, String envName, StudyEnvironmentDto body) {
