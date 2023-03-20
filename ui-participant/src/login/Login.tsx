@@ -1,12 +1,15 @@
 import React, { useEffect } from 'react'
 import { useAuth } from 'react-oidc-context'
+import { getEnvSpec } from 'api/api'
 
 /** component for showing a login dialog that hides other content on the page */
 function Login() {
   const auth = useAuth()
+  const envSpec = getEnvSpec()
 
-  const signIn = async () => {
-    auth.signinRedirect()
+  const signIn = () => {
+    auth.signinRedirect(
+      { extraQueryParams: { portalShortcode: envSpec.shortcode, portalHomeLink: window.location.origin } })
   }
 
   useEffect(() => {
