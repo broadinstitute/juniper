@@ -58,7 +58,7 @@ function SubGridView({ subGrid }: { subGrid: SubGrid }) {
 
 /** renders a single bio with pic */
 function PhotoBioView({ photoBio }: { photoBio: PhotoBio }) {
-  return <div className="col-sm-6 col-md-4 gx-5 gy-3">
+  return <div className="col-sm-6 col-md-4 gx-5 gy-3 text-center text-sm-start">
     <PearlImage image={photoBio.image} className="img-fluid"/>
     <div className="my-2">{photoBio.name} <span className="detail">{photoBio.title}</span></div>
     {!!photoBio.blurb && (
