@@ -49,10 +49,14 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
 
   return <div id={anchorRef} className="row mx-0 justify-content-center" style={{ backgroundColor, color }}>
     <div className="col-12 col-sm-8 col-lg-6">
-      <h1 className="fs-1 fw-normal lh-sm mt-5 mb-4 text-center">{title}</h1>
-      <div className="fs-4 mb-4 text-center">
-        {blurb && <ReactMarkdown>{blurb}</ReactMarkdown>}
-      </div>
+      {!!title && (
+        <h1 className="fs-1 fw-normal lh-sm mt-5 mb-4 text-center">{title}</h1>
+      )}
+      {!!blurb && (
+        <div className="fs-4 mb-4 text-center">
+          {blurb && <ReactMarkdown>{blurb}</ReactMarkdown>}
+        </div>
+      )}
       <ul className="mx-0 px-0 border-top" style={{ listStyle: 'none' }}>
         {
           _.map(questions, ({ question, answer }, i) => {
