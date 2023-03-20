@@ -61,6 +61,12 @@ a {
   --bs-nav-link-hover-color: var(--brand-color-shift-20);
 }
 
+.App .navbar-nav .nav-link.active {
+  color: var(--brand-color);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
 [aria-expanded="false"] .hidden-when-collapsed {
   display: none;
 }
