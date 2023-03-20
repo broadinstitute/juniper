@@ -127,7 +127,9 @@ export const applyMarkdown = (survey: object, options: { text: string, html: str
   const markdownText = micromark(options.text)
   // chop off <p> tags.
   // See https://surveyjs.io/form-library/examples/edit-survey-questions-markdown/reactjs#content-code
-  options.html = markdownText.substring(3, markdownText.length - 4)
+  if (markdownText.startsWith('<p>') && markdownText.endsWith('</p>') {
+    options.html = markdownText.substring(3, markdownText.length - 4)
+  }
 }
 
 export enum SourceType {
