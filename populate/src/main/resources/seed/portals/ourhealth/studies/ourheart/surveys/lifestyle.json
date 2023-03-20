@@ -428,7 +428,7 @@
         {
           "name": "oh_oh_lifestyle_substanceUse",
           "type": "checkbox",
-          "title": "* Thank you for your answers. Now we’d like to ask you about your experiences with medicines and other kinds of drugs. Some of the substances we’ll talk about are prescribed by a doctor (like pain medications). We only want to know if you have taken them for reasons or in doses other than prescribed. We understand that these are sensitive questions. You may choose not to answer them. However, by providing answers, you are helping researchers better understand how these substances affect health.* \n\nIn your LIFETIME, which of the following substances have you ever used?",
+          "title": "*Thank you for your answers. Now we’d like to ask you about your experiences with medicines and other kinds of drugs. Some of the substances we’ll talk about are prescribed by a doctor (like pain medications). We only want to know if you have taken them for reasons or in doses other than prescribed. We understand that these are sensitive questions. You may choose not to answer them. However, by providing answers, you are helping researchers better understand how these substances affect health.* \n\nIn your LIFETIME, which of the following substances have you ever used?",
           "showOtherItem": true,
           "otherText": "Other",
           "otherPlaceholder": "Please specify",
