@@ -552,7 +552,9 @@
           {
             "name": "oh_oh_socialHealth_timesMovedBetweenHomesInLastYear",
             "type": "text",
-            "title": "In the last 12 months, how many times have you or your family moved from one home to another?"
+            "title": "In the last 12 months, how many times have you or your family moved from one home to another?",
+            "inputType": "number",
+            "min": 0
           },
           {
             "name": "oh_oh_socialHealth_problemsInLivingSpace",
