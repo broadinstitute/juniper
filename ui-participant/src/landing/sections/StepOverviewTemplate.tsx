@@ -1,8 +1,10 @@
 import _ from 'lodash'
 import React from 'react'
+import ReactMarkdown from 'react-markdown'
+
 import { ButtonConfig } from 'api/api'
 import PearlImage, { PearlImageConfig } from 'util/PearlImage'
-import ReactMarkdown from 'react-markdown'
+import { getSectionStyle } from 'util/styleUtils'
 
 type StepConfig = {
   image: PearlImageConfig,
@@ -11,7 +13,6 @@ type StepConfig = {
 }
 
 type StepOverviewTemplateConfig = {
-  background?: string, // background CSS style (e.g. `linear-gradient(...)`)
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   title?: string, // large heading text
   steps?: StepConfig[]
@@ -26,18 +27,11 @@ type StepOverviewTemplateProps = {
  * Template for rendering a step overview
  */
 function StepOverviewTemplate(props: StepOverviewTemplateProps) {
-  const {
-    anchorRef,
-    config: {
-      background,
-      buttons,
-      steps,
-      title
-    }
-  } = props
+  const { anchorRef, config } = props
+  const { buttons, steps, title } = config
 
   // TODO: improve layout code for better flexing, especially with <> 4 steps
-  return <div id={anchorRef} style={{ background }} className="py-5">
+  return <div id={anchorRef} className="py-5" style={getSectionStyle(config)}>
     <h1 className="fs-1 fw-normal lh-sm mb-3 text-center">
       <ReactMarkdown>{title ? title : ''}</ReactMarkdown>
     </h1>

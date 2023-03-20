@@ -1,13 +1,15 @@
 import classNames from 'classnames'
-import React, { CSSProperties } from 'react'
-import { ButtonConfig } from 'api/api'
-import PearlImage, { PearlImageConfig } from '../../util/PearlImage'
+import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClock } from '@fortawesome/free-regular-svg-icons'
+
+import { ButtonConfig } from 'api/api'
+import PearlImage, { PearlImageConfig } from 'util/PearlImage'
+import { getSectionStyle } from 'util/styleUtils'
+
 import ConfiguredButton from './ConfiguredButton'
 
 type ParticipationDetailTemplateConfig = {
-  background?: string, // background CSS style (e.g. `linear-gradient(...)`)
   blurb?: string, //  text below the title
   actionButton?: ButtonConfig, // array of objects containing `text` and `href` attributes
   title?: string, // large heading text
@@ -26,23 +28,19 @@ type ParticipationDetailTemplateProps = {
  * Template for a participation step description
  */
 function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
+  const { anchorRef, config } = props
   const {
-    anchorRef,
-    config: {
-      background,
-      blurb,
-      actionButton,
-      stepNumberText,
-      timeIndication,
-      image,
-      imagePosition,
-      title
-    }
-  } = props
+    blurb,
+    actionButton,
+    stepNumberText,
+    timeIndication,
+    image,
+    imagePosition,
+    title
+  } = config
 
-  const styleProps: CSSProperties = { background }
   const isLeftImage = imagePosition === 'left' // default is right, so left has to be explicitly specified
-  return <div id={anchorRef} className="row mx-0 py-5" style={styleProps}>
+  return <div id={anchorRef} className="row mx-0 py-5" style={getSectionStyle(config)}>
     <div
       className={classNames(
         'col-md-10 col-lg-8', 'mx-auto', 'row',

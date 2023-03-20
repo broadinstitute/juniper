@@ -1,15 +1,15 @@
 import classNames from 'classnames'
 import _ from 'lodash'
-import React, { CSSProperties } from 'react'
-import { ButtonConfig, getImageUrl } from 'api/api'
-import PearlImage, { PearlImageConfig } from '../../util/PearlImage'
-import ConfiguredButton from './ConfiguredButton'
+import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
+import { ButtonConfig } from 'api/api'
+import PearlImage, { PearlImageConfig } from 'util/PearlImage'
+import { getSectionStyle } from 'util/styleUtils'
+
+import ConfiguredButton from './ConfiguredButton'
+
 type HeroWithImageTemplateConfig = {
-  background?: string, // background CSS style (e.g. `linear-gradient(...)`)
-  backgroundColor?: string, // background color for the block
-  backgroundImage?: PearlImageConfig, // background image
   blurb?: string, //  text below the title
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   fullWidth?: boolean, // span the full page width or not
@@ -29,26 +29,17 @@ type HeroWithImageTemplateProps = {
  * Template for a hero with text content on the left and an image on the right.
  */
 function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
+  const { anchorRef, config } = props
   const {
-    anchorRef,
-    config: {
-      background,
-      backgroundImage,
-      blurb,
-      buttons,
-      fullWidth = false,
-      image,
-      imagePosition,
-      imageWidthPercentage: configuredImageWidthPercentage,
-      logos,
-      title
-    }
-  } = props
-
-  const styleProps: CSSProperties = { background }
-  if (backgroundImage) {
-    styleProps.backgroundImage = `url('${getImageUrl(backgroundImage.cleanFileName, backgroundImage.version)}')`
-  }
+    blurb,
+    buttons,
+    fullWidth = false,
+    image,
+    imagePosition,
+    imageWidthPercentage: configuredImageWidthPercentage,
+    logos,
+    title
+  } = config
 
   const isLeftImage = imagePosition === 'left' // default is right, so left has to be explicitly specified
   const imageWidthPercentage = _.isNumber(configuredImageWidthPercentage)
@@ -60,7 +51,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
     <div
       className={classNames('row', 'mx-0', isLeftImage ? 'flex-row' : 'flex-row-reverse')}
       id={anchorRef}
-      style={styleProps}
+      style={getSectionStyle(config)}
     >
       <div
         className={classNames(
