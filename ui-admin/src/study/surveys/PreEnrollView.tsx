@@ -31,10 +31,10 @@ function RawPreRegView({ portalShortcode, currentEnv, survey, studyShortcode }:
     try {
       const updatedSurvey = await Api.createNewSurveyVersion(portalShortcode, currentSurvey)
       setCurrentSurvey(updatedSurvey)
-      const updatedEnv = { id: currentEnv.id, preRegSurveyId: updatedSurvey.id }
+      const updatedEnv = { ...currentEnv, preEnrollSurveyId: updatedSurvey.id }
       const updatedStudyEnv = await Api.updateStudyEnvironment(portalShortcode, studyShortcode,
         currentEnv.environmentName, updatedEnv)
-      currentEnv.preEnrollSurveyId = updatedStudyEnv.preRegSurveyId
+      currentEnv.preEnrollSurveyId = updatedStudyEnv.preEnrollSurveyId
       currentEnv.preEnrollSurvey = updatedSurvey
       Store.addNotification(successNotification(`Saved successfully`))
     } catch (e) {

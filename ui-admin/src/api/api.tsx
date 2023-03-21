@@ -11,7 +11,7 @@ export type Study = {
 
 export type StudyEnvironmentUpdate = {
   id: string,
-  preRegSurveyId: string
+  preEnrollSurveyId: string
 }
 
 export type StudyEnvironment = {
