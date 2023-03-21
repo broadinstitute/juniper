@@ -6,9 +6,17 @@
     "path": "faq",
     "sectionDtos": [
       {
+        "sectionType": "HERO_CENTERED",
+        "sectionConfigJson": {
+          "title": "Frequently Asked Questions",
+          "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
+        }
+      },
+      {
         "sectionType": "FAQ",
         "anchorRef": "faq",
         "sectionConfigJson": {
+          "title": null,
           "questions": [
             {
               "question": "What is the OurHealth study?",
