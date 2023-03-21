@@ -4,6 +4,7 @@
   "name": "Social Determinants of Health",
   "jsonContent": {
     "showProgressBar": "bottom",
+    "showQuestionNumbers": "off",
     "pages": [
       {
         "elements": [
