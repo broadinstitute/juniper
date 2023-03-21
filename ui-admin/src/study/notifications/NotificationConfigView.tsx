@@ -3,6 +3,7 @@ import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { useParams } from 'react-router-dom'
 import Select from 'react-select'
 import TestEmailSender from './TestEmailSender'
+import { cloneDeep } from 'lodash'
 
 const configTypeOptions = [{ label: 'Event', value: 'EVENT' }, { label: 'Task reminder', value: 'TASK_REMINDER' }]
 const deliveryTypeOptions = [{ label: 'Email', value: 'EMAIL' }]
@@ -15,15 +16,23 @@ const taskTypeOptions = [{ label: 'Survey', value: 'SURVEY' }, { label: 'Consent
 export default function NotificationConfigView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { currentEnv, portal } = studyEnvContext
   const [showSendModal, setShowSendModal] = useState(false)
+
   const configId = useParams().configId
 
-  const config  = currentEnv.notificationConfigs.find(cfig => cfig.id === configId)
+  const matchedConfig  = currentEnv.notificationConfigs.find(cfig => cfig.id === configId)
+  const [config, setConfig] = useState(matchedConfig)
   if (!config) {
     return <div>no config with that id exists</div>
   }
   const hasTemplate = !!config.emailTemplate
   const isTaskReminder = config.notificationType === 'TASK_REMINDER'
   const isEventConfig = config.notificationType === 'EVENT'
+
+  const updateEmailBody = (newBody: string) => {
+    const newConfig = cloneDeep(config)
+    newConfig.emailTemplate.body = newBody
+    setConfig(newConfig)
+  }
 
   return <div className="row justify-content-center">
     <div className="col-md-8 p-2">
@@ -78,7 +87,8 @@ export default function NotificationConfigView({ studyEnvContext }: {studyEnvCon
               <input className="form-control" type="text" size={100} value={config.emailTemplate.subject}/>
             </label>
           </div>
-          <textarea rows={20} cols={100} value={config.emailTemplate.body}/>
+          <textarea rows={20} cols={100} value={config.emailTemplate.body}
+            onChange={e => updateEmailBody(e.target.value)}/>
         </div>}
 
         <div className="d-flex justify-content-center">

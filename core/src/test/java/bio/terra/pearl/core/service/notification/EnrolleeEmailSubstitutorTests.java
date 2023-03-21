@@ -10,6 +10,7 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import org.apache.commons.text.StringSubstitutor;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -20,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
     @Autowired
     private PortalEnvironmentFactory portalEnvironmentFactory;
+    @Autowired
+    private ApplicationRoutingPaths routingPaths;
 
     @Test
     public void profileVariablesAreReplaced() {
@@ -32,7 +35,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
                 .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
         Portal portal = Portal.builder().build();
         var contextInfo = new NotificationContextInfo(portal, portalEnv, null, null);
-        StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo);
+        StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
         assertThat(replacer.replace("name is ${profile.givenName}"), equalTo("name is tester"));
     }
 
@@ -48,7 +51,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
                 .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
         Portal portal = Portal.builder().build();
         var contextInfo = new NotificationContextInfo(portal, portalEnv, null, null);
-        StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo);
+        StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
         assertThat(replacer.replace("host is ${envConfig.participantHostname}"),
                 equalTo("host is testHostName"));
     }
@@ -66,7 +69,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
         Study study = Study.builder().name("testStudyName").build();
         Portal portal = Portal.builder().build();
         var contextInfo = new NotificationContextInfo(portal, portalEnv, study, null);
-        StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo);
+        StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
         assertThat(replacer.replace("welcome to ${study.name}"),
                 equalTo("welcome to testStudyName"));
     }
@@ -84,41 +87,15 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
         Portal portal = Portal.builder().name("PortalA").build();
 
         var contextInfo = new NotificationContextInfo(portal, portalEnv, null, null);
-        StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo);
+        StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
         assertThat(replacer.replace("here's a dashboard link: ${dashboardLink}"),
                 equalTo("here's a dashboard link: <a href=\"https://irb.newstudy.org/hub\">Return to PortalA</a>"));
-    }
 
-    @Test
-    public void testDashLinkHostnamesLive() {
-        PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
-                .participantHostname("newstudy.org")
-                .build();
-        PortalEnvironment portalEnv = portalEnvironmentFactory.builder("testDashLinkHostnamesLive")
-                .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.live).build();
-        String result = EnrolleeEmailSubstitutor.getParticipantHostname(portalEnv, "snazzportal");
-        assertThat(result, equalTo("https://newstudy.org"));
-    }
 
-    @Test
-    public void testDashLinkHostnamesIrb() {
-        PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
-                .participantHostname("newstudy.org")
-                .build();
-        PortalEnvironment portalEnv = portalEnvironmentFactory.builder("testDashLinkHostnamesIrb")
-                .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
-        String result = EnrolleeEmailSubstitutor.getParticipantHostname(portalEnv, "snazzportal");
-        assertThat(result, equalTo("https://irb.newstudy.org"));
-    }
+        portalEnv.setEnvironmentName(EnvironmentName.live);
+        StringSubstitutor replacerLive = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
+        assertThat(replacerLive.replace("here's a dashboard link: ${dashboardLink}"),
+                equalTo("here's a dashboard link: <a href=\"https://newstudy.org/hub\">Return to PortalA</a>"));
 
-    @Test
-    public void testDashLinkHostnamesLocalhost() {
-        PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
-                .participantHostname(null)
-                .build();
-        PortalEnvironment portalEnv = portalEnvironmentFactory.builder("testDashLinkHostnamesLocalhost")
-                .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.sandbox).build();
-        String result = EnrolleeEmailSubstitutor.getParticipantHostname(portalEnv, "snazzportal");
-        assertThat(result, equalTo("https://sandbox.snazzportal.localhost:3001"));
     }
 }

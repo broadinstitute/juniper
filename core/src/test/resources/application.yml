@@ -11,6 +11,11 @@ env:
   tracing:
     exportEnabled: ${CLOUD_TRACE_ENABLED:false}
     samplingRate: ${SAMPLING_PROBABILITY:0}
+  hostnames:
+    participantUi: ${PARTICIPANT_UI_HOSTNAME:localhost:3001}
+    participantApi: ${PARTICIPANT_API_HOSTNAME:localhost:8081}
+    adminUi: ${ADMIN_UI_HOSTNAME:localhost:3000}
+    adminApi: ${ADMIN_API_HOSTNAME:localhost:8080}
 
 # Below here is non-deployment-specific
 
