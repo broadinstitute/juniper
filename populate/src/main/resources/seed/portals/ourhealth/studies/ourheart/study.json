@@ -6,6 +6,7 @@
     "surveys/cardioHistory.json",
     "surveys/medicalHistory.json",
     "surveys/lifestyle.json",
+    "surveys/familyHistory.json",
     "surveys/phq9gad7.json",
     "surveys/medList.json",
     "surveys/basic.json",
@@ -37,6 +38,7 @@
         {"surveyStableId": "oh_oh_cardioHx", "surveyVersion": 1, "required": true},
         {"surveyStableId": "oh_oh_medHx", "surveyVersion": 1},
         {"surveyStableId": "oh_oh_mental", "surveyVersion": 1},
+        {"surveyStableId": "oh_oh_famHx", "surveyVersion": 1},
         {"surveyStableId": "oh_oh_lifestyle", "surveyVersion": 1},
         {"surveyStableId": "oh_oh_medList", "surveyVersion": 1},
         {"surveyStableId": "oh_oh_socialHealth", "surveyVersion": 1}
