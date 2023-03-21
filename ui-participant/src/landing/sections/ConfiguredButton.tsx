@@ -10,6 +10,11 @@ type JoinButtonConfig = {
   text: string
 }
 
+type MailingListButtonConfig = {
+  type: 'mailingList'
+  text: string
+}
+
 type InternalLinkButtonConfig = {
   type: 'internalLink'
   href: string
@@ -22,7 +27,11 @@ type ExternalLinkButtonConfig = {
   text: string
 }
 
-export type ButtonConfig = JoinButtonConfig | InternalLinkButtonConfig | ExternalLinkButtonConfig
+export type ButtonConfig =
+  | JoinButtonConfig
+  | MailingListButtonConfig
+  | InternalLinkButtonConfig
+  | ExternalLinkButtonConfig
 
 export const validateButtonConfig = (buttonConfig: unknown): ButtonConfig => {
   const message = 'Invalid button config'
@@ -30,13 +39,15 @@ export const validateButtonConfig = (buttonConfig: unknown): ButtonConfig => {
   const type = requireOptionalString(config, 'type', message)
   const text = requireString(config, 'text', message)
 
-  if (!(type === 'join' || type === 'internalLink' || type === undefined)) {
+  if (!(type === 'join' || type === 'mailingList' || type === 'internalLink' || type === undefined)) {
     throw new Error(`Invalid button type: "${type}"`)
   }
 
   if (type === 'join') {
     const studyShortcode = requireString(config, 'studyShortcode', 'Invalid join button config')
     return { type, studyShortcode, text }
+  } else if (type === 'mailingList') {
+    return { type, text }
   } else {
     const href = requireString(config, 'href', 'Invalid link button config')
     return { type, href, text }
@@ -53,6 +64,8 @@ export default function ConfiguredButton({ config, className }: ConfiguredButton
   if (config.type === 'join') {
     const to = config.studyShortcode ? `/studies/${config.studyShortcode}/join` : '/join'
     return <Link to={to} className={classNames(className, 'btn', 'btn-primary')}>{config.text}</Link>
+  } else if (config.type === 'mailingList') {
+    return <button className={classNames(className, 'btn', 'btn-outline-primary')}>{config.text}</button>
   } else if (config.type === 'internalLink') {
     return <Link to={config.href} className={classNames(className, 'btn', 'btn-outline-primary')}>{config.text}</Link>
   }

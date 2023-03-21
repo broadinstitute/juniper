@@ -60,6 +60,10 @@
         "timeIndication": "Ongoing",
         "stepNumberText": "STEP 4",
         "blurb": "Over time, we will provide you with regular updates about the status of the research and share any discoveries that you have enabled us to make. We may also ask you additional questions about your experience to aid with future studies – we want to hear what’s important to you.",
+        "actionButton": {
+          "type": "mailingList",
+          "text": "Join Email List"
+        },
         "image": { "cleanFileName": "engagement_step.png", "version": 1},
         "imagePosition": "left",
         "background": "#F2F2F2"
