@@ -6,6 +6,7 @@
     "language": "en",
     "navLogoCleanFileName": "ourhealth-logo.png",
     "navLogoVersion": 1,
+    "primaryBrandColor": "rgb(155, 36, 133)",
     "footerSectionFile": "footerSection.json",
     "landingPage": {
       "title": "OurHealth portal home",

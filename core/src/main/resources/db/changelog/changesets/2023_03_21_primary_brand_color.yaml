@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "primary_brand_color"
+      author: nwatts
+      changes:
+        - addColumn:
+            tableName: localized_site_content
+            columns:
+              - column: { name: primary_brand_color , type: text }

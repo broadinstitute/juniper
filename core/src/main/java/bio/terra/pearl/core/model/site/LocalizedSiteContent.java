@@ -27,4 +27,5 @@ public class LocalizedSiteContent extends BaseEntity {
     private int navLogoVersion;
     private UUID footerSectionId;
     private HtmlSection footerSection;
+    private String primaryBrandColor;
 }
