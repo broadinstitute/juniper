@@ -16,7 +16,7 @@
         "sectionType": "FAQ",
         "anchorRef": "faq",
         "sectionConfigJson": {
-          "title": null,
+          "title": "",
           "questions": [
             {
               "question": "What is the OurHealth study?",

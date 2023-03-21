@@ -3,18 +3,42 @@ import classNames from 'classnames'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
-import { ButtonConfig } from 'api/api'
-import PearlImage, { PearlImageConfig } from 'util/PearlImage'
+import { SectionConfig } from 'api/api'
+import PearlImage, { PearlImageConfig, validatePearlImageConfig } from 'util/PearlImage'
 import { getSectionStyle } from 'util/styleUtils'
+import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
+import { requireOptionalArray, requireOptionalString } from 'util/validationUtils'
 
-import ConfiguredButton from './ConfiguredButton'
+import ConfiguredButton, { ButtonConfig, validateButtonConfig } from './ConfiguredButton'
 
 type HeroCenteredTemplateConfig = {
   blurb?: string, //  text below the title
-  blurbAlign?: string // left|right|center  where to align the blurb text.  default is 'center'
+  blurbAlign?: 'left' | 'right' | 'center' // left|right|center  where to align the blurb text.  default is 'center'
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   title?: string, // large heading text
   image?: PearlImageConfig   // image to display under blurb
+}
+
+/** Validate that a section configuration object conforms to HeroCenteredTemplateConfig */
+const validateHeroCenteredTemplateConfig = (config: SectionConfig): HeroCenteredTemplateConfig => {
+  const message = 'Invalid HeroCenteredTemplate config'
+  const blurb = requireOptionalString(config, 'blurb', message)
+  const blurbAlign = requireOptionalString(config, 'blurbAlign', message)
+  if (!(blurbAlign === undefined || blurbAlign === 'left' || blurbAlign === 'right' || blurbAlign === 'center')) {
+    throw new Error(`${message}: if provided, blurbAlign must be one of "left", "right", or "center"`)
+  }
+
+  const buttons = requireOptionalArray(config, 'buttons', validateButtonConfig)
+  const title = requireOptionalString(config, 'title', message)
+  const image = config.image ? validatePearlImageConfig(config.image) : undefined
+
+  return {
+    blurb,
+    blurbAlign,
+    buttons,
+    title,
+    image
+  }
 }
 
 type HeroCenteredTemplateProps = {
@@ -22,20 +46,12 @@ type HeroCenteredTemplateProps = {
   config: HeroCenteredTemplateConfig
 }
 
-const blurbAlignAllowed = ['center', 'right', 'left']
-
 /**
  * Template for rendering a hero with centered content.
  */
 function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
   const { anchorRef, config } = props
   const { blurb, blurbAlign, buttons, title, image } = config
-
-  const blurbAlignIndex = blurbAlignAllowed.indexOf(blurbAlign ?? 'center')
-  const cleanBlurbAlign: string = blurbAlignAllowed[blurbAlignIndex === -1 ? 0 : blurbAlignIndex] ?? 'center'
-  const blurbStyle = {
-    textAlign: cleanBlurbAlign as CanvasTextAlign
-  }
 
   const hasTitle = !!title
   const hasBlurb = !!blurb
@@ -53,7 +69,7 @@ function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
         </h1>
       )}
       {hasBlurb && (
-        <div className="fs-4" style={blurbStyle}>
+        <div className="fs-4" style={{ textAlign: blurbAlign || 'center' }}>
           <ReactMarkdown>{blurb}</ReactMarkdown>
         </div>
       )}
@@ -74,4 +90,4 @@ function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
   </div>
 }
 
-export default HeroCenteredTemplate
+export default withValidatedSectionConfig(validateHeroCenteredTemplateConfig, HeroCenteredTemplate)

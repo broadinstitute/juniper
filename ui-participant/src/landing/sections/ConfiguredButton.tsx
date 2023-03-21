@@ -1,7 +1,47 @@
 import classNames from 'classnames'
 import React from 'react'
-import { ButtonConfig } from 'api/api'
 import { Link } from 'react-router-dom'
+
+import { requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
+
+type JoinButtonConfig = {
+  type: 'join'
+  studyShortcode: string
+  text: string
+}
+
+type InternalLinkButtonConfig = {
+  type: 'internalLink'
+  href: string
+  text: string
+}
+
+type ExternalLinkButtonConfig = {
+  type: undefined
+  href: string
+  text: string
+}
+
+export type ButtonConfig = JoinButtonConfig | InternalLinkButtonConfig | ExternalLinkButtonConfig
+
+export const validateButtonConfig = (buttonConfig: unknown): ButtonConfig => {
+  const message = 'Invalid button config'
+  const config = requirePlainObject(buttonConfig, message)
+  const type = requireOptionalString(config, 'type', message)
+  const text = requireString(config, 'text', message)
+
+  if (!(type === 'join' || type === 'internalLink' || type === undefined)) {
+    throw new Error(`Invalid button type: "${type}"`)
+  }
+
+  if (type === 'join') {
+    const studyShortcode = requireString(config, 'studyShortcode', 'Invalid join button config')
+    return { type, studyShortcode, text }
+  } else {
+    const href = requireString(config, 'href', 'Invalid link button config')
+    return { type, href, text }
+  }
+}
 
 type ConfiguredButtonProps = {
   config: ButtonConfig;

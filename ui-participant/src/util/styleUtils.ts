@@ -9,6 +9,8 @@ const allowedStyles = [
   'color'
 ] as const
 
+export const sectionStyleConfigKeys = [...allowedStyles, 'backgroundImage'] as const
+
 /** From section configuration, get styles to apply to the section's container */
 export const getSectionStyle = (config: SectionConfig): CSSProperties => {
   const style: CSSProperties = allowedStyles.reduce(

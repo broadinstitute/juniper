@@ -1,12 +1,28 @@
 import React from 'react'
 
+import { SectionConfig } from 'api/api'
 import PearlImage from 'util/PearlImage'
 import { getSectionStyle } from 'util/styleUtils'
+import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
+import { requireOptionalString } from 'util/validationUtils'
 
 type SocialMediaTemplateConfig = {
   facebookHref?: string, // URL of Facebook page
   instagramHref?: string, // URL of Instagram page
   twitterHref?: string, // URL of Twitter page
+}
+
+/** Validate that a section configuration object conforms to SocialMediaTemplateConfig */
+const validateSocialMediaTemplateConfig = (config: SectionConfig): SocialMediaTemplateConfig => {
+  const message = 'Invalid SocialMediaTemplateConfig'
+  const facebookHref = requireOptionalString(config, 'facebookHref', message)
+  const instagramHref = requireOptionalString(config, 'instagramHref', message)
+  const twitterHref = requireOptionalString(config, 'twitterHref', message)
+  return {
+    facebookHref,
+    instagramHref,
+    twitterHref
+  }
 }
 
 type SocialMediaTemplateProps = {
@@ -44,4 +60,4 @@ function SocialMediaTemplate(props: SocialMediaTemplateProps) {
   </div>
 }
 
-export default SocialMediaTemplate
+export default withValidatedSectionConfig(validateSocialMediaTemplateConfig, SocialMediaTemplate)

@@ -1,12 +1,15 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
-import PearlImage, { PearlImageConfig } from 'util/PearlImage'
+import { SectionConfig } from 'api/api'
+import PearlImage, { PearlImageConfig, validatePearlImageConfig } from 'util/PearlImage'
 import { getSectionStyle } from 'util/styleUtils'
+import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
+import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 
 type PhotoBlurbGridConfig = {
   title?: string,
-  subGrids?: SubGrid[]
+  subGrids: SubGrid[]
 }
 
 type SubGrid = {
@@ -17,8 +20,34 @@ type SubGrid = {
 type PhotoBio = {
   image: PearlImageConfig,
   name: string,
-  title: string,
-  blurb: string
+  title?: string,
+  blurb?: string
+}
+
+const validatePhotoBio = (config: unknown): PhotoBio => {
+  const message = 'Invalid Invalid PhotoBlurbGridConfig: invalid photoBio'
+  const configObj = requirePlainObject(config, message)
+  const image = validatePearlImageConfig(configObj.image)
+  const name = requireString(configObj, 'name', message)
+  const title = requireOptionalString(configObj, 'title', message)
+  const blurb = requireOptionalString(configObj, 'blurb', message)
+  return { image, name, title, blurb }
+}
+
+const validateSubGrid = (config: unknown): SubGrid => {
+  const message = 'Invalid PhotoBlurbGridConfig: Invalid subGrid'
+  const configObj = requirePlainObject(config, message)
+  const photoBios = requireOptionalArray(configObj, 'photoBios', validatePhotoBio, message)
+  const title = requireOptionalString(configObj, 'title', message)
+  return { photoBios, title }
+}
+
+/** Validate that a section configuration object conforms to PhotoBlurbGridConfig */
+const validatePhotoBlurbGridConfig = (config: SectionConfig): PhotoBlurbGridConfig => {
+  const message = 'Invalid PhotoBlurbGridConfig'
+  const subGrids = requireOptionalArray(config, 'subGrids', validateSubGrid, message)
+  const title = requireOptionalString(config, 'title', message)
+  return { subGrids, title }
 }
 
 type PhotoBlurbGridProps = {
@@ -57,7 +86,12 @@ function SubGridView({ subGrid }: { subGrid: SubGrid }) {
 function PhotoBioView({ photoBio }: { photoBio: PhotoBio }) {
   return <div className="col-sm-6 col-md-4 gx-5 gy-3">
     <PearlImage image={photoBio.image} className="img-fluid"/>
-    <div className="my-2">{photoBio.name} <span className="detail">{photoBio.title}</span></div>
+    <div className="my-2">
+      {photoBio.name}
+      {!!photoBio.title && (
+        <span className="detail" style={{ marginLeft: '0.5ch' }}>{photoBio.title}</span>
+      )}
+    </div>
     {!!photoBio.blurb && (
       <div className="detail" style={{ lineHeight: 1 }}>
         <ReactMarkdown>{photoBio.blurb}</ReactMarkdown>
@@ -67,4 +101,4 @@ function PhotoBioView({ photoBio }: { photoBio: PhotoBio }) {
 }
 
 
-export default PhotoBlurbGrid
+export default withValidatedSectionConfig(validatePhotoBlurbGridConfig, PhotoBlurbGrid)
