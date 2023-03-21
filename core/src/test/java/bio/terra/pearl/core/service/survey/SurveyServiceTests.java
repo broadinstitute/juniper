@@ -10,9 +10,9 @@ import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
 import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.util.SurveyUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -87,9 +87,8 @@ public class SurveyServiceTests extends BaseSpringBootTest {
 //
 //    }
 
-    @SneakyThrows
     @Test
-    public void testUnmarshalQuestionChoices() {
+    public void testUnmarshalQuestionChoices() throws JsonProcessingException {
         String questionWithChoices = """
                 {
                   "name": "oh_oh_cardioHx_coronaryDiseaseProcedure",
@@ -121,9 +120,8 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         Assertions.assertEquals(expected, actual);
     }
 
-    @SneakyThrows
     @Test
-    public void testGetChildElements() {
+    public void testGetChildElements() throws JsonProcessingException {
         String questionWithChildren = """
                 {
                     "type": "panel",
@@ -169,9 +167,8 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         Assertions.assertEquals(2, actual.size());
     }
 
-    @SneakyThrows
     @Test
-    public void testResolvingQuestionTemplate() {
+    public void testResolvingQuestionTemplate() throws JsonProcessingException {
         String questionWithChoices = """
                 {
                   "name": "oh_oh_cardioHx_coronaryDiseaseProcedure",
@@ -203,11 +200,4 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         Assertions.assertEquals(expected, actual);
     }
 
-
-
-
-
-
-    //test resolving template
-    //test
 }
