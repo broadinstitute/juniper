@@ -1,14 +1,9 @@
-import _ from 'lodash'
 import React from 'react'
 
-import { ButtonConfig } from 'api/api'
 import PearlImage from 'util/PearlImage'
 import { getSectionStyle } from 'util/styleUtils'
 
 type SocialMediaTemplateConfig = {
-  blurb?: string, //  text below the title
-  buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
-  title?: string, // large heading text
   facebookHref?: string, // URL of Facebook page
   instagramHref?: string, // URL of Instagram page
   twitterHref?: string, // URL of Twitter page
@@ -26,11 +21,8 @@ type SocialMediaTemplateProps = {
 function SocialMediaTemplate(props: SocialMediaTemplateProps) {
   const { anchorRef, config } = props
   const {
-    blurb,
-    buttons,
     facebookHref,
     instagramHref,
-    title,
     twitterHref
   } = config
 
@@ -47,19 +39,6 @@ function SocialMediaTemplate(props: SocialMediaTemplateProps) {
       {instagramHref &&
         <PearlImage image={{ cleanFileName: 'instagram.png', version: 1, alt: 'Instagram' }}
           className="m-3" style={{ width: '49px' }}/>
-      }
-    </div>
-    <h1 className="fs-1 fw-normal lh-sm text-center">
-      {title}
-    </h1>
-    <p className="fs-5 fw-normal text-center">
-      {blurb}
-    </p>
-    <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
-      {
-        _.map(buttons, ({ text, href }) => {
-          return <a href={href} role={'button'} className="btn btn-primary btn-lg px-4 me-md-2">{text}</a>
-        })
       }
     </div>
   </div>
