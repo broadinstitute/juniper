@@ -1,5 +1,5 @@
 {
-  "name": "Longitudinal heart health study",
+  "name": "OurHealth",
   "shortcode": "ourheart",
   "surveyFiles": [
     "surveys/preEnroll.json",
@@ -14,7 +14,9 @@
     "surveys/ourHealthConsent.json"
   ],
   "emailTemplateFiles": [
-    "emails/studyEnroll.json"
+    "emails/studyEnroll.json",
+    "emails/consentReminder.json",
+    "emails/surveyReminder.json"
   ],
   "studyEnvironmentDtos": [
     {
@@ -47,6 +49,18 @@
         "notificationType": "EVENT",
         "eventType": "STUDY_ENROLLMENT",
         "emailTemplateStableId": "oh_oh_studyEnroll",
+        "emailTemplateVersion": 1
+      },{
+        "notificationType": "TASK_REMINDER",
+        "taskType": "SURVEY",
+        "emailTemplateStableId": "oh_oh_reminderSurvey",
+        "emailTemplateVersion": 1
+      },{
+        "notificationType": "TASK_REMINDER",
+        "taskType": "CONSENT",
+        "reminderIntervalMinutes": 10080,
+        "maxNumReminders": 2,
+        "emailTemplateStableId": "oh_oh_reminderConsent",
         "emailTemplateVersion": 1
       }],
       "enrolleeFiles": [

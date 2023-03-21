@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import Api, { Enrollee, Notification } from '../../api/api'
-import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import LoadingSpinner from '../../util/LoadingSpinner'
-import { instantToDefaultString } from '../../util/timeUtils'
+import Api, { Enrollee, Notification } from 'api/api'
+import { StudyEnvContextT, notificationConfigPath } from '../StudyEnvironmentRouter'
+import LoadingSpinner from 'util/LoadingSpinner'
+import { instantToDefaultString } from 'util/timeUtils'
 import NotificationConfigTypeDisplay from '../notifications/NotifcationConfigTypeDisplay'
+import { Link } from 'react-router-dom'
 
 /** loads the list of notifications for a given enrollee and displays them in the UI */
 export default function EnrolleeNotifications({ enrollee, studyEnvContext }:
 {enrollee: Enrollee, studyEnvContext: StudyEnvContextT }) {
-  const { currentEnv, study, portal } = studyEnvContext
+  const { currentEnv, study, portal, currentEnvPath } = studyEnvContext
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -38,23 +39,31 @@ export default function EnrolleeNotifications({ enrollee, studyEnvContext }:
             <th>method</th>
             <th>status</th>
             <th>time</th>
+            <th>config</th>
           </tr>
         </thead>
         <tbody>
-          {notifications.map(notification => <tr key={notification.id}>
-            <td>
-              <NotificationConfigTypeDisplay config={notification.notificationConfig}/>
-            </td>
-            <td>
-              {notification.deliveryType}
-            </td>
-            <td>
-              {notification.deliveryStatus}
-            </td>
-            <td>
-              {instantToDefaultString(notification.createdAt)}
-            </td>
-          </tr>)}
+          {notifications.map(notification => {
+            const matchedConfig = currentEnv.notificationConfigs
+              .find(cfg => cfg.id === notification.notificationConfigId)
+            return <tr key={notification.id}>
+              <td>
+                <NotificationConfigTypeDisplay config={notification.notificationConfig}/>
+              </td>
+              <td>
+                {notification.deliveryType}
+              </td>
+              <td>
+                {notification.deliveryStatus}
+              </td>
+              <td>
+                {instantToDefaultString(notification.createdAt)}
+              </td>
+              <td>
+                {matchedConfig && <Link to={notificationConfigPath(matchedConfig, currentEnvPath)}>config</Link> }
+              </td>
+            </tr>
+          })}
         </tbody>
       </table>
 

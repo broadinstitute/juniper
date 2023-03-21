@@ -186,6 +186,8 @@ export type NotificationConfig = {
   taskType: string,
   taskTargetStableId: string,
   afterMinutesIncomplete: number,
+  reminderIntervalMinutes: number,
+  maxNumReminders: number,
   emailTemplateId: string,
   emailTemplate: EmailTemplate
 }

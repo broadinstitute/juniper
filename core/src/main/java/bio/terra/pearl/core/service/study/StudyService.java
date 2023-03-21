@@ -32,6 +32,9 @@ public class StudyService extends CrudService<Study, StudyDao> {
     public Optional<Study> findByShortcode(String shortcode) {
         return dao.findOneByShortcode(shortcode);
     }
+    public Optional<Study> findByStudyEnvironmentId(UUID studyEnvId) {
+        return dao.findByStudyEnvironmentId(studyEnvId);
+    }
 
     @Transactional
     public Study create(Study study) {
