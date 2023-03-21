@@ -65,7 +65,7 @@ public class SurveyService extends CrudService<Survey, SurveyDao> {
     public void createSurveyDataDictionary(Survey survey) {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode surveyContent;
-
+        
         try {
             surveyContent = objectMapper.readTree(survey.getContent());
         } catch (JsonProcessingException e) {
