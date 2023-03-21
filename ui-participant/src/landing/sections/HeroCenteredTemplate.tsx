@@ -1,8 +1,9 @@
 import _ from 'lodash'
+import classNames from 'classnames'
 import React from 'react'
-import { ButtonConfig } from 'api/api'
 import ReactMarkdown from 'react-markdown'
 
+import { ButtonConfig } from 'api/api'
 import PearlImage, { PearlImageConfig } from 'util/PearlImage'
 import { getSectionStyle } from 'util/styleUtils'
 
@@ -35,22 +36,28 @@ function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
   const blurbStyle = {
     textAlign: cleanBlurbAlign as CanvasTextAlign
   }
+
+  const hasTitle = !!title
+  const hasBlurb = !!blurb
+  const hasImage = !!image
+  const hasButtons = (buttons || []).length > 0
+
   return <div id={anchorRef} className="row mx-0" style={getSectionStyle(config)}>
     <div className="col-12 col-sm-10 col-lg-6 mx-auto py-5 text-center">
-      {!!title && (
-        <h1 className="fs-1 fw-normal lh-sm mb-4">
-          <ReactMarkdown>{title}</ReactMarkdown>
+      {hasTitle && (
+        <h1 className={classNames('fs-1 fw-normal lh-sm', hasBlurb || hasImage || hasButtons ? 'mb-4' : 'mb-0')}>
+          <ReactMarkdown disallowedElements={['p']} unwrapDisallowed>{title}</ReactMarkdown>
         </h1>
       )}
-      {!!blurb && (
+      {hasBlurb && (
         <div className="fs-4" style={blurbStyle}>
           <ReactMarkdown>{blurb}</ReactMarkdown>
         </div>
       )}
-      {!!image && (
-        <PearlImage image={image} className="img-fluid mb-4"/>
+      {hasImage && (
+        <PearlImage image={image} className={classNames('img-fluid', { 'mb-4': hasButtons })} />
       )}
-      {(buttons ?? []).length > 0 && (
+      {hasButtons && (
         <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
           {
             _.map(buttons, (button, i) => {
