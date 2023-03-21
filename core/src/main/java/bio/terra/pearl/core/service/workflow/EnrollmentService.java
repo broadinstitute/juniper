@@ -75,6 +75,7 @@ public class EnrollmentService {
         return preEnrollmentResponseDao.create(response);
     }
 
+    @Transactional
     public HubResponse<Enrollee> enroll(ParticipantUser user, PortalParticipantUser ppUser, EnvironmentName envName,
                                             String studyShortcode, UUID preEnrollResponseId) {
         logger.info("creating enrollee for user {}, study {}", user.getId(), studyShortcode);

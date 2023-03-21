@@ -47,6 +47,13 @@ public class NotificationDispatcher {
         }
     }
 
+    /**
+     * if we invoke the EmailService async, then we save the notification first so that we have a record of it.
+     * If we invoke it synchronously, then we don't save it. Because if it's a synchronous call and the process gets killed,
+     * the surrounding transaction will roll back (e.g. undoing the enrollee creation) and so we don't want a saved notification.
+     * Where this will help is for bulk operations -- if we want to send out 2000 emails to all the ourHealth participants
+     * because of a new survey, it lets us have just 1 database operation per notification instead of 2
+     * */
     protected void dispatchNotificationAsync(NotificationConfig config, EnrolleeRuleData enrolleeRuleData, UUID portalEnvId) {
         Notification notification = initializeNotification(config, enrolleeRuleData, portalEnvId);
         notification = notificationService.create(notification);

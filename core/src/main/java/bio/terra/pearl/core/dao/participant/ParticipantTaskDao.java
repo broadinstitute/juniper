@@ -55,8 +55,8 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
                                                        Duration maxTimeSinceCreation,
                                                        Duration minTimeSinceLastNotification,
                                                        List<TaskStatus> statuses) {
-        Instant taskCreationCutoff = Instant.now().minus(minTimeSinceCreation);
-        Instant maxTaskCreationCutoff = Instant.now().minus(maxTimeSinceCreation);
+        Instant minTimeSinceCreationInstant = Instant.now().minus(minTimeSinceCreation);
+        Instant maxTimeSinceCreationInstant = Instant.now().minus(maxTimeSinceCreation);
         Instant lastNotificationCutoff = Instant.now().minus(minTimeSinceLastNotification);
         return jdbi.withHandle(handle ->
                 handle.createQuery("""
@@ -66,10 +66,9 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
                         from participant_task
                         left join enrollee_times on enrollee_id = notification_enrollee_id
                         where study_environment_id = :studyEnvironmentId 
-                        and created_at < :taskCreationCutoff
                         and task_type = :taskType
-                        and created_at < :taskCreationCutoff 
-                        and created_at > :maxTaskCreationCutoff 
+                        and created_at < :minTimeSinceCreationInstant 
+                        and created_at > :maxTimeSinceCreationInstant 
                         and status in (<statuses>)
                         and (:lastNotificationCutoff > last_notification_time OR last_notification_time IS NULL)
                         group by enrollee_id order by enrollee_id;
@@ -77,8 +76,8 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
                         .bind("studyEnvironmentId", studyEnvironmentId)
                         .bindList("statuses", statuses)
                         .bind("lastNotificationCutoff", lastNotificationCutoff)
-                        .bind("taskCreationCutoff", taskCreationCutoff)
-                        .bind("maxTaskCreationCutoff", maxTaskCreationCutoff)
+                        .bind("minTimeSinceCreationInstant", minTimeSinceCreationInstant)
+                        .bind("maxTimeSinceCreationInstant", maxTimeSinceCreationInstant)
                         .bind("taskType", taskType)
                         .map(enrolleeTasksMapper)
                         .list()

@@ -21,8 +21,8 @@ public class ScheduledEnrolleeReminderService {
       initialDelay = 5 * 1000) // wait 10mins between executions, start after 5 seconds
   @SchedulerLock(
       name = "EnrolleeReminderService.sendTaskReminders",
-      lockAtMostFor = "100s",
-      lockAtLeastFor = "100s")
+      lockAtMostFor = "500s",
+      lockAtLeastFor = "10s")
   public void sendReminderEmails() {
     logger.info("Beginning enrollee reminder processing");
     enrolleeReminderService.sendTaskReminders();
