@@ -9,6 +9,10 @@ import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
 import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.util.SurveyUtils;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,6 +20,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 public class SurveyServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -75,4 +81,133 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         Survey fetchedOriginal = surveyService.find(survey.getId()).get();
         Assertions.assertEquals(oldContent, fetchedOriginal.getContent());
     }
+
+//    @Test
+//    public void testCreateSurveyDataDictionary() {
+//
+//    }
+
+    @SneakyThrows
+    @Test
+    public void testUnmarshalQuestionChoices() {
+        String questionWithChoices = """
+                {
+                  "name": "oh_oh_cardioHx_coronaryDiseaseProcedure",
+                  "type": "radiogroup",
+                  "title": "Have you had any of the following treatments?",
+                  "choices": [
+                    {
+                      "text": "Cardiac stent placement",
+                      "value": "cardiacStentPlacement"
+                    },
+                    {
+                      "text": "Cardiac bypass surgery",
+                      "value": "cardiacBypassSurgery"
+                    },
+                    {
+                      "text": "None of these",
+                      "value": "noneOfThese"
+                    }
+                  ]
+                }""";
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode questionNode = mapper.readTree(questionWithChoices);
+
+        String actual = SurveyUtils.unmarshalSurveyQuestionChoices(questionNode);
+        String expected = """
+                {"noneOfThese":"None of these","cardiacBypassSurgery":"Cardiac bypass surgery","cardiacStentPlacement":"Cardiac stent placement"}""";
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @SneakyThrows
+    @Test
+    public void testGetChildElements() {
+        String questionWithChildren = """
+                {
+                    "type": "panel",
+                    "title": "Heart valve disease",
+                    "visibleIf": "{oh_oh_cardioHx_diagnosedHeartConditions} contains 'heartValveDisease'",
+                    "elements": [
+                      {
+                        "name": "oh_oh_cardioHx_otherHeartCondition",
+                        "type": "text",
+                        "title": "What is the other heart or blood condition?"
+                      },
+                      {
+                        "name": "oh_oh_cardioHx_heartValveProcedure",
+                        "type": "radiogroup",
+                        "title": "Have you ever had any of the following:",
+                        "choices": [
+                          {
+                            "text": "Open heart surgery for heart valve",
+                            "value": "openHeartSurgeryValve"
+                          },
+                          {
+                            "text": "Valve replacement by a catheter (TAVR, TAVI)",
+                            "value": "valveReplacement"
+                          },
+                          {
+                            "text": "Mitral valve repair by a catheter (Mitraclip)",
+                            "value": "mitralValveRepair"
+                          },
+                          {
+                            "text": "None of these",
+                            "value": "none"
+                          }
+                        ]
+                      }
+                    ]
+                  }""";
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode questionNode = mapper.readTree(questionWithChildren);
+
+        List<JsonNode> actual = SurveyUtils.getAllQuestions(questionNode);
+
+        Assertions.assertEquals(2, actual.size());
+    }
+
+    @SneakyThrows
+    @Test
+    public void testResolvingQuestionTemplate() {
+        String questionWithChoices = """
+                {
+                  "name": "oh_oh_cardioHx_coronaryDiseaseProcedure",
+                  "type": "radiogroup",
+                  "title": "Have you had any of the following treatments?",
+                  "choices": [
+                    {
+                      "text": "Cardiac stent placement",
+                      "value": "cardiacStentPlacement"
+                    },
+                    {
+                      "text": "Cardiac bypass surgery",
+                      "value": "cardiacBypassSurgery"
+                    },
+                    {
+                      "text": "None of these",
+                      "value": "noneOfThese"
+                    }
+                  ]
+                }""";
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode questionNode = mapper.readTree(questionWithChoices);
+
+        String actual = SurveyUtils.unmarshalSurveyQuestionChoices(questionNode);
+        String expected = """
+                {"noneOfThese":"None of these","cardiacBypassSurgery":"Cardiac bypass surgery","cardiacStentPlacement":"Cardiac stent placement"}""";
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+
+
+
+
+
+    //test resolving template
+    //test
 }
