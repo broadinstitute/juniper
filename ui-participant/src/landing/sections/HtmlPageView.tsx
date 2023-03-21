@@ -12,9 +12,15 @@ import RawHtmlTemplate from './RawHtmlTemplate'
 import PhotoBlurbGrid from './PhotoBlurbGrid'
 import ParticipationDetailTemplate from './ParticipationDetailTemplate'
 import NavAndLinkSectionsFooter from './NavAndLinkSectionsFooter'
+import { isPlainObject } from 'util/validationUtils'
 
-type TemplateComponent = ({ anchorRef, config, rawContent }:
-                            { anchorRef?: string, config: SectionConfig, rawContent: string | null }) => JSX.Element
+type TemplateComponentProps = {
+  anchorRef?: string
+  config: SectionConfig
+  rawContent: string | null
+}
+
+type TemplateComponent = (props: TemplateComponentProps) => JSX.Element | null
 
 const templateComponents: Record<SectionType, TemplateComponent> = {
   'FAQ': FrequentlyAskedQuestionsTemplate,
@@ -38,13 +44,49 @@ export default function HtmlPageView({ page }: { page: HtmlPage }) {
   </>
 }
 
-/** renders a single section by delegating to the appropriate component based on sectionType */
-export function HtmlSectionView({ section }: { section: HtmlSection }) {
+/** Get the template component for rendering a section */
+const getSectionTemplateComponent = (section: HtmlSection): TemplateComponent => {
   const Template = templateComponents[section.sectionType]
   if (!Template) {
-    console.warn(`Page configuration error: Unknown section type "${section.sectionType}"`)
+    throw new Error(`Unknown section type "${section.sectionType}"`)
+  }
+  return Template
+}
+
+/** Parse JSON encoded section configuration */
+const getSectionTemplateConfig = (section: HtmlSection): SectionConfig => {
+  if (!section.sectionConfig) {
+    return {}
+  }
+
+  let parsedConfig: unknown
+  try {
+    parsedConfig = JSON.parse(section.sectionConfig)
+  } catch {
+    throw new Error(`Unable to parse sectionConfig for "${section.sectionType}" section`)
+  }
+
+  if (!isPlainObject(parsedConfig)) {
+    throw new Error(`Invalid sectionConfig for "${section.sectionType}" section, expected an object`)
+  }
+
+  return parsedConfig
+}
+
+/** renders a single section by delegating to the appropriate component based on sectionType */
+export function HtmlSectionView({ section }: { section: HtmlSection }) {
+  try {
+    const Template = getSectionTemplateComponent(section)
+    const config = getSectionTemplateConfig(section)
+    return (
+      <Template
+        anchorRef={section.anchorRef}
+        config={config}
+        rawContent={section.rawContent || null}
+      />
+    )
+  } catch (err: unknown) {
+    console.warn(`Page configuration error: ${err instanceof Error ? err.message : err}`)
     return null
   }
-  const parsedConfig: SectionConfig = section.sectionConfig ? JSON.parse(section.sectionConfig) : {}
-  return <Template config={parsedConfig} anchorRef={section.anchorRef} rawContent={section.rawContent}/>
 }

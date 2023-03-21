@@ -106,8 +106,8 @@ export type HtmlSection = {
   id: string,
   sectionType: SectionType,
   anchorRef?: string,
-  rawContent: string | null,
-  sectionConfig: string | null
+  rawContent?: string | null,
+  sectionConfig?: string | null
 }
 
 export type SurveyJSForm = {
@@ -254,8 +254,7 @@ export type Config = {
   b2cClientId: string
 }
 
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
-export type SectionConfig = { [index: string]: any }
+export type SectionConfig = Record<string, unknown>
 
 let bearerToken: string | null = null
 const API_ROOT = `${process.env.REACT_APP_API_ROOT}`
@@ -572,4 +571,3 @@ const ALLOWED_ENV_NAMES: Record<string, string> = {
   'irb': 'IRB',
   'live': 'LIVE'
 }
-
