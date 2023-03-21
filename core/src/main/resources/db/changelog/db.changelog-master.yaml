@@ -46,6 +46,7 @@ databaseChangeLog:
       relativeToChangelogFile: true
   - include:
       file: changesets/2023_03_14_notification_config_reminders.yaml
+      relativeToChangelogFile: true
   - include:
       file: changesets/2023_03_16_question_definition.yaml
       relativeToChangelogFile: true
