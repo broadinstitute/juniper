@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import * as SurveyCore from 'survey-core'
 import { Model, Question, Serializer, StylesManager, SurveyModel } from 'survey-core'
-
+import { micromark } from 'micromark'
 import 'inputmask/dist/inputmask/phone-codes/phone'
 // eslint-disable-next-line
 // @ts-ignore
@@ -116,12 +116,21 @@ export function useSurveyJSModel(form: SurveyJSForm, resumeData: ResumableData |
     if (surveyModel) {
       surveyModel.onComplete.add(onComplete)
       surveyModel.onCurrentPageChanged.add(handlePageChanged)
-      //surveyModel.onTextMarkdown.add(applyMarkedMarkdown)
+      surveyModel.onTextMarkdown.add(applyMarkdown)
     }
   }, [surveyModel])
   const pageNumber = surveyModel ? surveyModel.currentPageNo + 1 : 1
   const SurveyComponent = surveyModel ? <SurveyJSComponent model={surveyModel}/> : <></>
   return { surveyModel, refreshSurvey, pageNumber, SurveyComponent }
+}
+
+export const applyMarkdown = (survey: object, options: { text: string, html: string }) => {
+  const markdownText = micromark(options.text)
+  // chop off <p> tags.
+  // See https://surveyjs.io/form-library/examples/edit-survey-questions-markdown/reactjs#content-code
+  if (markdownText.startsWith('<p>') && markdownText.endsWith('</p>')) {
+    options.html = markdownText.substring(3, markdownText.length - 4)
+  }
 }
 
 export enum SourceType {
