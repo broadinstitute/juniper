@@ -68,7 +68,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         Survey survey = surveyFactory.buildPersisted("testPublishSurvey");
         AdminUser user = adminUserFactory.buildPersisted("testPublishSurvey");
         String oldContent = survey.getContent();
-        String newContent = "totally new " + RandomStringUtils.randomAlphabetic(6);
+        String newContent = String.format("{\"pages\":[],\"title\":\"%s\"}", RandomStringUtils.randomAlphabetic(6));
         survey.setContent(newContent);
         Survey newSurvey = surveyService.createNewVersion(user, survey.getPortalId(), survey);
 
