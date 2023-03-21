@@ -42,10 +42,13 @@ function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
   const hasImage = !!image
   const hasButtons = (buttons || []).length > 0
 
+  const hasContentFollowingTitle = hasBlurb || hasImage || hasButtons
+  const hasContentFollowingImage = hasButtons
+
   return <div id={anchorRef} className="row mx-0" style={getSectionStyle(config)}>
     <div className="col-12 col-sm-10 col-lg-6 mx-auto py-5 text-center">
       {hasTitle && (
-        <h1 className={classNames('fs-1 fw-normal lh-sm', hasBlurb || hasImage || hasButtons ? 'mb-4' : 'mb-0')}>
+        <h1 className={classNames('fs-1 fw-normal lh-sm', hasContentFollowingTitle ? 'mb-4' : 'mb-0')}>
           <ReactMarkdown disallowedElements={['p']} unwrapDisallowed>{title}</ReactMarkdown>
         </h1>
       )}
@@ -55,7 +58,7 @@ function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
         </div>
       )}
       {hasImage && (
-        <PearlImage image={image} className={classNames('img-fluid', { 'mb-4': hasButtons })} />
+        <PearlImage image={image} className={classNames('img-fluid', { 'mb-4': hasContentFollowingImage })} />
       )}
       {hasButtons && (
         <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
