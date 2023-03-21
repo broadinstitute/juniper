@@ -4,6 +4,7 @@
   "name": "Mental Health",
   "jsonContent": {
     "showQuestionNumbers": "off",
+    "showProgressBar": "bottom",
     "pages": [
       {
         "elements": [

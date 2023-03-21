@@ -4,6 +4,7 @@
   "name": "Family History",
   "jsonContent": {
     "showQuestionNumbers": "off",
+    "showProgressBar": "bottom",
     "triggers": [
       {
         "type": "complete",

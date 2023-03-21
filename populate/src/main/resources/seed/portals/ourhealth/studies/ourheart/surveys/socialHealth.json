@@ -3,6 +3,7 @@
   "version": 1,
   "name": "Social Determinants of Health",
   "jsonContent": {
+    "showProgressBar": "bottom",
     "pages": [
       {
         "elements": [
