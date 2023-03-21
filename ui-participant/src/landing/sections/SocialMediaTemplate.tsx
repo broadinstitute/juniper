@@ -1,7 +1,9 @@
 import _ from 'lodash'
 import React from 'react'
+
 import { ButtonConfig } from 'api/api'
-import PearlImage from '../../util/PearlImage'
+import PearlImage from 'util/PearlImage'
+import { getSectionStyle } from 'util/styleUtils'
 
 type SocialMediaTemplateConfig = {
   blurb?: string, //  text below the title
@@ -22,19 +24,17 @@ type SocialMediaTemplateProps = {
  * TODO -- implement images
  */
 function SocialMediaTemplate(props: SocialMediaTemplateProps) {
+  const { anchorRef, config } = props
   const {
-    anchorRef,
-    config: {
-      blurb,
-      buttons,
-      facebookHref,
-      instagramHref,
-      title,
-      twitterHref
-    }
-  } = props
+    blurb,
+    buttons,
+    facebookHref,
+    instagramHref,
+    title,
+    twitterHref
+  } = config
 
-  return <div id={anchorRef} className="container py-5">
+  return <div id={anchorRef} className="container py-5" style={getSectionStyle(config)}>
     <div className="d-flex justify-content-center mt-5 mb-4">
       {twitterHref &&
         <PearlImage image={{ cleanFileName: 'twitter.png', version: 1, alt: 'Twitter' }}

@@ -1,11 +1,10 @@
 import React from 'react'
-import PearlImage, { PearlImageConfig } from '../../util/PearlImage'
 import ReactMarkdown from 'react-markdown'
 
+import PearlImage, { PearlImageConfig } from 'util/PearlImage'
+import { getSectionStyle } from 'util/styleUtils'
+
 type PhotoBlurbGridConfig = {
-  background?: string, // background CSS style (e.g. `linear-gradient(...)`)
-  backgroundColor?: string, // background color for the block
-  color?: string,
   title?: string,
   subGrids?: SubGrid[]
 }
@@ -31,12 +30,10 @@ type PhotoBlurbGridProps = {
  * Template for rendering a hero with centered content.
  */
 function PhotoBlurbGrid(props: PhotoBlurbGridProps) {
-  const {
-    anchorRef,
-    config: { background, backgroundColor, color, subGrids, title }
-  } = props
+  const { anchorRef, config } = props
+  const { subGrids, title } = config
 
-  return <div id={anchorRef} className="py-5" style={{ background, backgroundColor, color }}>
+  return <div id={anchorRef} className="py-5" style={getSectionStyle(config)}>
     {title && <h1 className="fs-1 fw-normal lh-sm text-center mb-4">
       {title}
     </h1>}
