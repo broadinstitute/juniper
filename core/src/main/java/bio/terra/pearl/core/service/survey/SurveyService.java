@@ -56,13 +56,14 @@ public class SurveyService extends CrudService<Survey, SurveyDao> {
             savedSurvey.getAnswerMappings().add(savedMapping);
         }
 
-        createSurveyDataDictionary(savedSurvey);
+        for(SurveyQuestionDefinition questionDefinition : getSurveyQuestionDefinitions(savedSurvey)) {
+            surveyQuestionDefinitionDao.create(questionDefinition);
+        }
 
         return savedSurvey;
     }
 
-    @Transactional
-    public void createSurveyDataDictionary(Survey survey) {
+    public List<SurveyQuestionDefinition> getSurveyQuestionDefinitions(Survey survey) {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode surveyContent;
 
@@ -97,10 +98,7 @@ public class SurveyService extends CrudService<Survey, SurveyDao> {
             questionDefinitions.add(SurveyUtils.unmarshalSurveyQuestion(survey, question, questionTemplates));
         }
 
-        //Store the question definitions in the DB.
-        for(SurveyQuestionDefinition def : questionDefinitions) {
-            surveyQuestionDefinitionDao.create(def);
-        }
+        return questionDefinitions;
     }
 
     @Transactional

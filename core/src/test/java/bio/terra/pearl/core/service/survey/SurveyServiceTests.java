@@ -5,10 +5,7 @@ import bio.terra.pearl.core.dao.DaoTestUtils;
 import bio.terra.pearl.core.factory.AdminUserFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.survey.AnswerMapping;
-import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
-import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
-import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.util.SurveyUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -82,10 +79,54 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         Assertions.assertEquals(oldContent, fetchedOriginal.getContent());
     }
 
-//    @Test
-//    public void testCreateSurveyDataDictionary() {
-//
-//    }
+    @Test
+    public void testGetSurveyQuestionDefinitions() {
+        Survey survey = surveyFactory.buildPersisted("testPublishSurvey");
+        String surveyContent = """
+                {
+                	"title": "The Basics",
+                	"showQuestionNumbers": "off",
+                	"pages": [{
+                		"elements": [{
+                			"name": "oh_oh_basic_firstName",
+                			"type": "text",
+                			"title": "First name",
+                			"isRequired": true
+                		}, {
+                			"name": "oh_oh_basic_mghPatient",
+                			"type": "radiogroup",
+                			"title": "Are you a patient, current or former, of MGH?",
+                			"isRequired": true,
+                			"choices": [{
+                				"text": "Yes",
+                				"value": "yes"
+                			}, {
+                				"text": "No",
+                				"value": "no"
+                			}]
+                		}]
+                	}, {
+                		"elements": [{
+                			"name": "oh_oh_basic_streetAddress",
+                			"type": "text",
+                			"title": "Address",
+                			"isRequired": true
+                		}, {
+                			"name": "oh_oh_basic_city",
+                			"type": "text",
+                			"title": "City",
+                			"isRequired": true
+                		}]
+                	}]
+                }""";
+
+        survey.setContent(surveyContent);
+
+        List<SurveyQuestionDefinition> expected =
+
+        List<SurveyQuestionDefinition> actual = surveyService.getSurveyQuestionDefinitions(survey);
+        Assertions.assertEquals(4, actual.size());
+    }
 
     @Test
     public void testUnmarshalQuestionChoices() throws JsonProcessingException {
