@@ -12,12 +12,8 @@ set -o pipefail
 # DEBUG = 2
 declare -i desired_log_level=2
 
-## TODO delete
-# ./sql_connect d2p-dev-psqlflexibleserver 385ed569-ca04-4b97-97b4-677c8479585e ddp-aks-dev ddp-aks-dev
-
 # General use vars
 declare -a required_tools=( az kubectl vault sleep jq )
-#TODO set default or pull from somewhere
 declare -r proj_name="d2p"
 
 # k8s vars
@@ -41,8 +37,7 @@ declare database_pw=""
 
 # Vault setup
 declare -r vault_addr="https://clotho.broadinstitute.org:8200"
-#TODO infer
-declare vault_path="secret/dsp/ddp/d2p/dev/postgres/admin-credential"
+declare -r vault_path="secret/dsp/ddp/d2p/dev/postgres/admin-credential"
 
 # Default Vars - used if other values are not given on the command line
 declare -r subscription_default="385ed569-ca04-4b97-97b4-677c8479585e"
