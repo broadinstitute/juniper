@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Start up a postgres container with initial user/database setup.
-POSTGRES_VERSION=14.5
+POSTGRES_VERSION=14.6
 POSTGRES_PASSWORD=ddp4eva
 
 start() {
