@@ -2,6 +2,8 @@
 
 # This script is an intermediary solution that will eventually be replaced with "thelma sql connect"
 # It allows devs working on Azure web apps to connect to managed database instances with private networking enabled
+# Team needs to make sure database is set up with the correct virtual network links from the cluster with the database to the cluster used in this script
+# Dev will need to be on vpn for this script to work
 
 set -o pipefail
 
@@ -10,23 +12,28 @@ set -o pipefail
 # DEBUG = 2
 declare -i desired_log_level=2
 
+## TODO delete
+# ./sql_connect -s 385ed569-ca04-4b97-97b4-677c8479585e -r ddp-aks-dev -c ddp-aks-dev -d d2p-dev-psqlflexibleserver -v secret/dsp/ddp/d2p/dev/postgres/admin-credential
+
 # General use vars
 declare -a required_tools=( az kubectl vault sleep jq )
+#TODO set default or pull from somewhere
 declare -r proj_name="d2p"
 
 # k8s vars
 declare -r k8s_namespace="${proj_name}-postgres-dev"
 declare -r k8s_pod_name="postgres"
 declare -r docker_image="postgres:12"
+# password is required but not important. can be anything
 declare -r postgres_password="pw1234"
 
 # azure vars
 declare subscription="385ed569-ca04-4b97-97b4-677c8479585e"
 declare rg="ddp-aks-dev"
-declare cluster=""
+declare cluster="ddp-aks-dev"
 
 # database vars
-declare database_name=""
+declare database_name="d2p-dev-psqlflexibleserver"
 declare database_user=""
 declare database_pw=""
 
@@ -37,7 +44,7 @@ declare vault_path="secret/dsp/ddp/d2p/dev/postgres/admin-credential"
 # Basic logging lib
 function log_debug() { _log_execute 'DEBUG' "$1"; }
 function log_info() { _log_execute 'INFO' "$1"; }
-function log_err() { _log_execute 'ERROR' "$1"; }
+function log_err() { _log_execute 'ERROR' "$1"; } 
 
 function _log_execute() {
     local -r log_message=$2
@@ -63,6 +70,7 @@ function _log_msg() {
 }
 
 function usage() {
+    #TODO update
     local -r usage="
     $0: connect to an Azure managed database instance with private networking through AKS cluster
 
@@ -74,20 +82,52 @@ function usage() {
     echo "$usage"
 }
 
-# Parse positional and flag arguments to determine which database it should connect to and which AKS cluster should host the jump pod.
+# Parse positional and flag args. Defaults are set for ...
+#TODO fix
 function parse_args() {
-    #TODO what is specific to this project and can be hardcoded
-    if [ $# -ne 2 ]; then
-        log_err "Illegal number of parameters"
-        usage
-        exit 1
-    fi
+    # subscription
+    # rg
+    # database_name
+    # cluster
 
-    database_name=$1
-    cluster=$2
+    VALID_ARGS=$(getopt -o s:r:d:c:v: --long subscription:,resource_group:,database:,cluster:,vault_path: -- "$@")
+
+    ## TODO none are required since they all have defaults?
+    #if [ $# -ne 2 ]; then
+     #   log_err "Illegal number of parameters"
+      #  usage
+       # exit 1
+    #fi
+
+    eval set -- "$VALID_ARGS"
+    while [ : ]; do
+        case "$1" in
+            -s | --subscription)
+                subscription=$2
+                shift 2
+                ;;
+            -r | resource_group)
+                rg=$2
+                shift 2
+                ;;
+            -d | database)
+                database_name=$2
+                shift 2
+                ;;
+            -c | cluster)
+                cluster=$2
+                shift 2
+                ;;
+            -v | vault_path)
+                vault_path=$2
+                shift 2
+                ;;
+        esac
+    done
+    
 }
 
-# Used to validate that all external tools used in this script are on user's PATH
+# Validate that all external tools used in this script are on user's PATH
 function check_required_tools() {
     for tool in "${required_tools[@]}"
     do
@@ -98,7 +138,6 @@ function check_required_tools() {
 }
 
 function fetch_database_creds() {
-    # The database access credentials should be fetched from vault by the script at runtime. It should determine which credentials to fetch based on arguments / flags, calling user should not provide db username and password directly.     
     local -r -a vault_read_username_cmd=(vault read -field=username -address="${vault_addr}" "${vault_path}" )
     local -r -a vault_read_password_cmd=(vault read -field=password -address="${vault_addr}" "${vault_path}" )
 
@@ -121,8 +160,8 @@ function fetch_database_creds() {
     log_info "successfully read password from vault"
 }
 
+
 function set_subscription() {
-    # Ensure the calling user has the correct entry for the cluster in their kube config and switch the current kube context to point to that cluster (az aks get credentials ...) Don’t want an oops I did this in the wrong cluster situation.
     local -r -a set_account_cmd=(az account set --subscription "${subscription}")
     log_info "setting azure account subscription: ${subscription}"
     if ! "${set_account_cmd[@]}" ;
@@ -133,7 +172,9 @@ function set_subscription() {
     log_info "successfully set account subcription"
 }
 
+# Ensure the calling user has the correct entry for the cluster in their kube config and/or switch the current kube context to point to that cluster
 function set_cluster() {
+    # If already set to the correct cluster, will overwrite
     local -r -a set_cluster_cmd=(az aks get-credentials --resource-group "${rg}" --name "${cluster}" --overwrite-existing)
     log_info "setting azure cluster to resorce group ${rg} and cluster: ${cluster}"
     if ! "${set_cluster_cmd[@]}" ;
@@ -144,20 +185,28 @@ function set_cluster() {
     log_info "successfully set resource group and cluster"
 }
 
-# Sets up a temporary kubernetes namespace to deploy ES into in order to test restore
+function change_namespace(){
+    local -r -a change_namespace_cmd=(kubectl config set-context --current --namespace="${k8s_namespace}")
+    if ! "${change_namespace_cmd[@]}" ;
+    then
+        log_err "unable to change namespace...exiting"
+        exit 1
+    fi
+}
+
 function create_namespace() {
     local -r -a create_cmd=(kubectl create namespace "${k8s_namespace}")
     log_info "creating kubernetes namespace: ${k8s_namespace}"
     if ! "${create_cmd[@]}" ;
     then
         log_err "unable to create kubernetes namespace to deploy postgres pod into...exiting"
+        log_debug "Are you connected to VPN?"
         exit 1
     fi
     log_info "successfully created_namespace"
     change_namespace
 }
 
-# Used to cleanup temporary namespace after completing restore functionality
 function cleanup_namespace() {
     local -r -a delete_cmd=(kubectl delete namespace "${k8s_namespace}")
     log_info "deleting kubernetes namespace: ${k8s_namespace}"
@@ -168,7 +217,6 @@ function cleanup_namespace() {
     fi
     log_info "successfully deleted_namespace"
 }
-
 
 function deploy_postgres_pod() {
     local -r -a deploy_cmd=(kubectl run "${k8s_pod_name}" --image "${docker_image}" -n "${k8s_namespace}" --env="POSTGRES_PASSWORD=${postgres_password}")
@@ -195,7 +243,7 @@ function delete_postgres_pod() {
 function setup_k8s_enviornment() {
     set_subscription
     set_cluster
-    # Create a new namespace with kubectl to spin up the postgres jump pod in
+    # Create a temporary namespace with kubectl to spin up the postgres jump pod in
     create_namespace
     # spin up a pod running the postgres docker image in the newly created namespace and wait for it to be ready
     deploy_postgres_pod
@@ -224,7 +272,7 @@ function exec_into_pod() {
 }
 
 function init() {
-    parse_args "$@"
+    #parse_args "$@"
     check_required_tools || exit 1
     fetch_database_creds
 }
