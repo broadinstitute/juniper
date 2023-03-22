@@ -4,6 +4,7 @@
   "name": "Heart Health History",
   "jsonContent": {
     "title": "OurHealth Medical History",
+    "showProgressBar": "bottom",
     "showQuestionNumbers": "off",
     "questionTemplates": [
       {

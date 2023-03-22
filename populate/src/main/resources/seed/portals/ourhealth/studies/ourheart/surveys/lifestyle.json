@@ -4,6 +4,7 @@
   "name": "Lifestyle",
   "jsonContent": {
     "showQuestionNumbers": "off",
+    "showProgressBar": "bottom",
     "pages": [{
       "elements": [{
         "type": "html",

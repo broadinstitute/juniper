@@ -117,6 +117,7 @@ export function useSurveyJSModel(form: SurveyJSForm, resumeData: ResumableData |
       surveyModel.onComplete.add(onComplete)
       surveyModel.onCurrentPageChanged.add(handlePageChanged)
       surveyModel.onTextMarkdown.add(applyMarkdown)
+      surveyModel.completedHtml = '<div></div>'  // the application UX will handle showing any needed messages
     }
   }, [surveyModel])
   const pageNumber = surveyModel ? surveyModel.currentPageNo + 1 : 1

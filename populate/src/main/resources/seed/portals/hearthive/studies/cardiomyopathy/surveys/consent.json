@@ -5,6 +5,8 @@
   "jsonContent":
   {
     "logoPosition": "right",
+    "showQuestionNumbers": "off",
+    "showProgressBar": "bottom",
     "pages": [
       {
         "name": "page1",

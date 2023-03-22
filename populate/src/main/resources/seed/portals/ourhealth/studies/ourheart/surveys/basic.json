@@ -25,6 +25,7 @@
   "jsonContent": {
     "title": "The Basics",
     "showQuestionNumbers": "off",
+    "showProgressBar": "bottom",
     "pages": [
       {
         "elements": [
