@@ -34,7 +34,7 @@ export const validatePearlImageConfig = (imageConfig: unknown): PearlImageConfig
 }
 
 type PearlImageProps = {
-  image?: PearlImageConfig
+  image: PearlImageConfig
   className?: string
   style?: CSSProperties
 }
@@ -42,10 +42,6 @@ type PearlImageProps = {
 /** renders an image that is part of a SiteContent spec */
 export default function PearlImage(props: PearlImageProps) {
   const { image, className, style } = props
-
-  if (!image) {
-    return <></>
-  }
 
   return (
     <img
