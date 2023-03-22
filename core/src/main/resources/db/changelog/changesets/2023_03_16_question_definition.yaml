@@ -14,7 +14,7 @@ databaseChangeLog:
               - column: { name: survey_version, type: integer, constraints: { nullable: false } }
               - column: { name: question_stable_id, type: text, constraints: { nullable: false } }
               - column: { name: question_type, type: text, constraints: { nullable: false } }
-              - column: { name: choices, type: text, constraints: { nullable: true } }
+              - column: { name: choices, type: text }
               - column: { name: required, type: boolean, constraints: { nullable: false } }
               - column: { name: created_at, type: datetime, constraints: { nullable: false } }
               - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
