@@ -15,6 +15,6 @@ databaseChangeLog:
               - column: { name: question_stable_id, type: text, constraints: { nullable: false } }
               - column: { name: question_type, type: text, constraints: { nullable: false } }
               - column: { name: choices, type: text }
-              - column: { name: required, type: boolean, constraints: { nullable: false } }
+              - column: { name: required, type: boolean, defaultBooleanValue: false, constraints: { nullable: false } }
               - column: { name: created_at, type: datetime, constraints: { nullable: false } }
               - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
