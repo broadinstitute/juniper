@@ -1,10 +1,13 @@
 import React from 'react'
 import _ from 'lodash'
+
+import { SectionConfig } from 'api/api'
+import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
+import { requireOptionalArray, requirePlainObject, requireString } from 'util/validationUtils'
+
 import LandingNavbar from '../LandingNavbar'
 
-
 type NavAndLinkSectionsFooterConfig = {
-  background?: string, // background CSS style (e.g. `linear-gradient(...)`)
   includeNavbar?: boolean,
   itemSections?: ItemSection[]
 }
@@ -14,10 +17,50 @@ type ItemSection = {
   items: FooterItem[]
 }
 
-type FooterItem = {
-  label: string,
-  itemType: string,
+type ExternalLinkFooterItem = {
+  label: string
+  itemType: 'EXTERNAL'
   externalLink: string
+}
+
+type MailingListFooterItem = {
+  label: string
+  itemType: 'MAILING_LIST'
+}
+
+type FooterItem = ExternalLinkFooterItem | MailingListFooterItem
+
+const validateFooterItem = (config: unknown): FooterItem => {
+  const message = 'Invalid NavAndLinkSectionsFooterConfig: Invalid item'
+  const configObj = requirePlainObject(config, message)
+  const label = requireString(configObj, 'label', message)
+  const itemType = requireString(configObj, 'itemType', message)
+  if (!(itemType === 'EXTERNAL' || itemType === 'MAILING_LIST')) {
+    throw new Error(`${message}: itemType must be one of "EXTERNAL" or "MAILING_LIST"`)
+  }
+
+  if (itemType === 'EXTERNAL') {
+    const externalLink = requireString(configObj, 'externalLink', message)
+    return { label, itemType, externalLink }
+  } else {
+    return { label, itemType }
+  }
+}
+
+const validateItemSection = (config: unknown): ItemSection => {
+  const message = 'Invalid NavAndLinkSectionsFooterConfig: Invalid itemSection'
+  const configObj = requirePlainObject(config, message)
+  const items = requireOptionalArray(configObj, 'items', validateFooterItem, message)
+  const title = requireString(configObj, 'title', message)
+  return { items, title }
+}
+
+/** Validate that a section configuration object conforms to NavAndLinkSectionsFooterConfig */
+const validateNavAndLinkSectionsFooterConfig = (config: SectionConfig): NavAndLinkSectionsFooterConfig => {
+  const message = 'Invalid NavAndLinkSectionsFooterConfig'
+  const includeNavbar = !!config.includeNavbar
+  const itemSections = requireOptionalArray(config, 'itemSections', validateItemSection, message)
+  return { includeNavbar, itemSections }
 }
 
 type NavAndLinkSectionsFooterProps = {
@@ -25,7 +68,7 @@ type NavAndLinkSectionsFooterProps = {
 }
 
 /** renders a footer-style section */
-export default function NavAndLinkSectionsFooter(props: NavAndLinkSectionsFooterProps) {
+export function NavAndLinkSectionsFooter(props: NavAndLinkSectionsFooterProps) {
   const { config } = props
 
   return <>
@@ -44,6 +87,8 @@ export default function NavAndLinkSectionsFooter(props: NavAndLinkSectionsFooter
     </div>
   </>
 }
+
+export default withValidatedSectionConfig(validateNavAndLinkSectionsFooterConfig, NavAndLinkSectionsFooter)
 
 /**
  * renders an individual item (e.g. a link) for the footer.  this shares a bit of functionality with CustomNavLink in

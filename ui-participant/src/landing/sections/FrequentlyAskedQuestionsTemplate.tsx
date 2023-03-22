@@ -6,7 +6,10 @@ import _ from 'lodash'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
+import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
+import { requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
+import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 
 const idFor = (question: string): string => {
   return _.kebabCase(question)
@@ -23,8 +26,34 @@ type FaqQuestion = {
 
 type FrequentlyAskedQuestionsConfig = {
   blurb?: string, //  text below the title
-  questions?: FaqQuestion[], // the questions
+  questions: FaqQuestion[], // the questions
   title?: string, // large heading text
+}
+
+const validateFaqQuestion = (questionConfig: unknown): FaqQuestion => {
+  const message = 'Invalid FrequentlyAskedQuestionsConfig: Invalid question'
+  const config = requirePlainObject(questionConfig, message)
+  const question = requireString(config, 'question', message)
+  const answer = requireString(config, 'answer', message)
+  return { question, answer }
+}
+
+/** Validate that a section configuration object conforms to FrequentlyAskedQuestionsConfig */
+const validateFrequentlyAskedQuestionsConfig = (config: SectionConfig): FrequentlyAskedQuestionsConfig => {
+  const message = 'Invalid FrequentlyAskedQuestionsConfig'
+  const title = requireOptionalString(config, 'title', message)
+  const blurb = requireOptionalString(config, 'title', message)
+
+  const questions = config.questions
+  if (!Array.isArray(questions)) {
+    throw new Error(`${message}: a list of questions is required`)
+  }
+
+  return {
+    blurb,
+    questions: questions.map(validateFaqQuestion),
+    title
+  }
 }
 
 type FrequentlyAskedQuestionsProps = {
@@ -55,7 +84,7 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
       )}
       <ul className="mx-0 px-0 border-top" style={{ listStyle: 'none' }}>
         {
-          _.map(questions, ({ question, answer }, i) => {
+          questions.map(({ question, answer }, i) => {
             return <li key={i} className="border-bottom">
               <button
                 type="button"
@@ -89,4 +118,4 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
   </div>
 }
 
-export default FrequentlyAskedQuestionsTemplate
+export default withValidatedSectionConfig(validateFrequentlyAskedQuestionsConfig, FrequentlyAskedQuestionsTemplate)

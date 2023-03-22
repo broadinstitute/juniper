@@ -3,20 +3,47 @@ import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClock } from '@fortawesome/free-regular-svg-icons'
 
-import { ButtonConfig } from 'api/api'
-import PearlImage, { PearlImageConfig } from 'util/PearlImage'
+import { SectionConfig } from 'api/api'
+import PearlImage, { PearlImageConfig, validatePearlImageConfig } from 'util/PearlImage'
 import { getSectionStyle } from 'util/styleUtils'
+import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
+import { requireOptionalString } from 'util/validationUtils'
 
-import ConfiguredButton from './ConfiguredButton'
+import ConfiguredButton, { ButtonConfig, validateButtonConfig } from './ConfiguredButton'
 
 type ParticipationDetailTemplateConfig = {
+  actionButton?: ButtonConfig, // button
   blurb?: string, //  text below the title
-  actionButton?: ButtonConfig, // array of objects containing `text` and `href` attributes
-  title?: string, // large heading text
   image?: PearlImageConfig, // image
+  imagePosition?: 'left' | 'right' // left or right.  Default is right
   stepNumberText?: string, // e.g. STEP 1
   timeIndication?: string, // e.g. 45+ minutes
-  imagePosition?: string // left or right.  Default is right
+  title?: string, // large heading text
+}
+
+/** Validate that a section configuration object conforms to ParticipationDetailTemplateConfig */
+const validateParticipationDetailTemplateConfig = (config: SectionConfig): ParticipationDetailTemplateConfig => {
+  const message = 'Invalid ParticipationDetailTemplateConfig'
+  const actionButton = config.actionButton ? validateButtonConfig(config.actionButton) : undefined
+  const blurb = requireOptionalString(config, 'blurb', message)
+  const image = config.image ? validatePearlImageConfig(config.image) : undefined
+  const imagePosition = requireOptionalString(config, 'imagePosition', message)
+  if (!(imagePosition === undefined || imagePosition === 'left' || imagePosition === 'right')) {
+    throw new Error(`${message}: if provided, imagePosition must be one of "left", "right"`)
+  }
+  const stepNumberText = requireOptionalString(config, 'stepNumberText', message)
+  const timeIndication = requireOptionalString(config, 'timeIndication', message)
+  const title = requireOptionalString(config, 'title', message)
+
+  return {
+    actionButton,
+    blurb,
+    image,
+    imagePosition,
+    stepNumberText,
+    timeIndication,
+    title
+  }
 }
 
 type ParticipationDetailTemplateProps = {
@@ -66,4 +93,4 @@ function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
   </div>
 }
 
-export default ParticipationDetailTemplate
+export default withValidatedSectionConfig(validateParticipationDetailTemplateConfig, ParticipationDetailTemplate)

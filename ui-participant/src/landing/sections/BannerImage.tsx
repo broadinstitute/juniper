@@ -1,8 +1,16 @@
 import React from 'react'
-import PearlImage, { PearlImageConfig } from '../../util/PearlImage'
+
+import { SectionConfig } from 'api/api'
+import PearlImage, { PearlImageConfig, validatePearlImageConfig } from 'util/PearlImage'
+import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 
 type BannerImageConfig = {
-  image?: PearlImageConfig
+  image: PearlImageConfig
+}
+
+const validateBannerImageConfig = (config: SectionConfig): BannerImageConfig => {
+  const image = validatePearlImageConfig(config.image)
+  return { image }
 }
 
 type BannerImageProps = {
@@ -30,4 +38,4 @@ function BannerImage(props: BannerImageProps) {
   )
 }
 
-export default BannerImage
+export default withValidatedSectionConfig(validateBannerImageConfig, BannerImage)

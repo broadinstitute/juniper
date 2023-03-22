@@ -243,13 +243,6 @@ export type PortalParticipantUser = {
   profile: object
 }
 
-export type ButtonConfig = {
-  text: string,
-  href: string,
-  type: string, // for buttons that aren't just hrefs, a 'type' can be specified.  Currently "join" is the only type
-  studyShortcode: string
-}
-
 export type Config = {
   b2cTenantName: string,
   b2cClientId: string

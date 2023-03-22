@@ -2,9 +2,13 @@ import _ from 'lodash'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
-import { ButtonConfig } from 'api/api'
-import PearlImage, { PearlImageConfig } from 'util/PearlImage'
+import { SectionConfig } from 'api/api'
+import PearlImage, { PearlImageConfig, validatePearlImageConfig } from 'util/PearlImage'
 import { getSectionStyle } from 'util/styleUtils'
+import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
+import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
+
+import ConfiguredButton, { ButtonConfig, validateButtonConfig } from './ConfiguredButton'
 
 type StepConfig = {
   image: PearlImageConfig,
@@ -14,8 +18,26 @@ type StepConfig = {
 
 type StepOverviewTemplateConfig = {
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
+  steps: StepConfig[]
   title?: string, // large heading text
-  steps?: StepConfig[]
+}
+
+const validateStepConfig = (config: unknown): StepConfig => {
+  const message = 'Invalid StepOverviewTemplateConfig: Invalid step'
+  const configObj = requirePlainObject(config, message)
+  const image = validatePearlImageConfig(configObj.image)
+  const duration = requireString(configObj, 'duration', message)
+  const blurb = requireString(configObj, 'blurb', message)
+  return { image, duration, blurb }
+}
+
+/** Validate that a section configuration object conforms to StepOverviewTemplateConfig */
+const validateStepOverviewTemplateConfig = (config: SectionConfig): StepOverviewTemplateConfig => {
+  const message = 'Invalid StepOverviewTemplateConfig'
+  const buttons = requireOptionalArray(config, 'buttons', validateButtonConfig, message)
+  const title = requireOptionalString(config, 'title', message)
+  const steps = requireOptionalArray(config, 'steps', validateStepConfig, message)
+  return { buttons, steps, title }
 }
 
 type StepOverviewTemplateProps = {
@@ -53,12 +75,12 @@ function StepOverviewTemplate(props: StepOverviewTemplateProps) {
     </div>
     <div className="d-grid gap-2 d-md-flex pt-4 justify-content-center">
       {
-        _.map(buttons, ({ text, href }, i) => {
-          return <a key={i} href={href} className="btn btn-outline-primary btn-lg px-4 me-md-2">{text}</a>
+        _.map(buttons, (button, i) => {
+          return <ConfiguredButton key={i} config={button} className="px-4 me-md-2" />
         })
       }
     </div>
   </div>
 }
 
-export default StepOverviewTemplate
+export default withValidatedSectionConfig(validateStepOverviewTemplateConfig, StepOverviewTemplate)
