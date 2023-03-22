@@ -164,36 +164,28 @@
                 "value": "anemia"
               },
               {
-                "text": "Atrial fibrillation (Afib) or Atrial flutter",
-                "value": "afibOrAtrialFlutter"
-              },
-              {
                 "text": "Another abnormal heart rhythm",
                 "value": "otherAbnormalHeartRhythm"
+              },
+              {
+                "text": "Atrial fibrillation (Afib) or Atrial flutter",
+                "value": "afibOrAtrialFlutter"
               },
               {
                 "text": "Bleeding disorder",
                 "value": "bleedingDisorder"
               },
               {
-                "text": "Heart failure",
-                "value": "heartFailure"
-              },
-              {
                 "text": "Coronary artery/coronary heart disease",
                 "value": "coronaryDisease"
               },
               {
-                "text": "Cardiac stent",
-                "value": "cardiacStent"
-              },
-              {
-                "text": "Coronary artery bypass surgery",
-                "value": "bypassSurgery"
-              },
-              {
                 "text": "Heart attack",
                 "value": "heartAttack"
+              },
+              {
+                "text": "Heart failure",
+                "value": "heartFailure"
               },
               {
                 "text": "Heart valve disease",
@@ -983,90 +975,120 @@
                     "value": "8OrMore"
                   }
                 ]
+              },{
+                "name": "oh_oh_lifestyle_pregnancyConditions",
+                "type": "checkbox",
+                "title": "With any of these pregnancies, did a doctor or health care provider tell you that you had…?",
+                "choices": [
+                  {"text": "Gestational diabetes", "value": "gestationalDiabetes"},
+                  {"text": "Gestational hypertension", "value": "gestationalHypertension"},
+                  {"text": "Preeclampsia", "value": "preeclampsia"},
+                  {"text": "Eclampsia", "value": "eclampsia"},
+                  {"text": "Endometriosis", "value": "endometriosis"},
+                  {"text": "HELLP syndrome", "value": "hellpSyndrome"},
+                  {"text": "Peripartum cardiomyopathy", "value": "peripartumCardiomyopathy"},
+                  {"text": "Peripartum depression", "value": "peripartumDepression"},
+                  {"text": "Preterm labor", "value": "pretermLabor"}
+                ]
               }
             ]
           },
           {
-            "name": "oh_oh_cardioHx_menopausalSymptoms",
+            "name": "oh_oh_lifestyle_menopauseEver",
             "type": "radiogroup",
-            "title": "Have you ever had menopausal symptoms, such as hot flashes or night sweats? (Your best guess.)",
+            "title": "Have you gone through or are you currently going through menopause? (Both natural and/or medical)",
             "choices": [
-              {
-                "text": "Yes",
-                "value": "yes"
-              },
-              {
-                "text": "No",
-                "value": "no"
-              },
-              {
-                "text": "Sometimes regular, sometimes irregular",
-                "value": "sometimesRegularSometimesIrregular"
-              }
+              {"text": "Yes", "value": "yes"},
+              {"text": "No", "value": "no"}
             ]
           },
           {
-            "name": "oh_oh_cardioHx_mensesStopped",
-            "type": "radiogroup",
-            "title": "Have your menstrual periods stopped permanently? ",
-            "choices": [
+            "type": "panel",
+            "visibleIf": "{oh_oh_lifestyle_menopauseEver} = 'yes'",
+            "elements": [
               {
-                "text": "No",
-                "value": "no"
+                "name": "oh_oh_cardioHx_menopausalSymptoms",
+                "type": "radiogroup",
+                "title": "Have you ever had menopausal symptoms, such as hot flashes or night sweats? (Your best guess.)",
+                "choices": [
+                  {
+                    "text": "Yes",
+                    "value": "yes"
+                  },
+                  {
+                    "text": "No",
+                    "value": "no"
+                  },
+                  {
+                    "text": "Sometimes regular, sometimes irregular",
+                    "value": "sometimesRegularSometimesIrregular"
+                  }
+                ]
               },
               {
-                "text": "Yes, I have no menstrual periods",
-                "value": "yes"
+                "name": "oh_oh_cardioHx_mensesStopped",
+                "type": "radiogroup",
+                "title": "Have your menstrual periods stopped permanently? ",
+                "choices": [
+                  {
+                    "text": "No",
+                    "value": "no"
+                  },
+                  {
+                    "text": "Yes, I have no menstrual periods",
+                    "value": "yes"
+                  },
+                  {
+                    "text": "Yes, but I have periods induced by hormones",
+                    "value": "yesButInducedByHormones"
+                  },
+                  {
+                    "text": "Not sure",
+                    "value": "unsure"
+                  }
+                ]
               },
               {
-                "text": "Yes, but I have periods induced by hormones",
-                "value": "yesButInducedByHormones"
+                "name": "oh_oh_cardioHx_ageLastMenses",
+                "type": "text",
+                "visibleIf": "{oh_oh_cardioHx_mensesStopped} = 'yes'",
+                "title": "How old were you when you last had regular menstrual bleeding (a period)? (Your best guess)"
               },
               {
-                "text": "Not sure",
-                "value": "unsure"
-              }
-            ]
-          },
-          {
-            "name": "oh_oh_cardioHx_ageLastMenses",
-            "type": "text",
-            "visibleIf": "{oh_oh_cardioHx_mensesStopped} = 'yes'",
-            "title": "How old were you when you last had regular menstrual bleeding (a period)? (Your best guess)"
-          },
-          {
-            "name": "oh_oh_cardioHx_mensesStopReason",
-            "type": "radiogroup",
-            "title": "Why did your periods stop? (CTS)",
-            "visibleIf": "{oh_oh_cardioHx_mensesStopped} = 'yes'",
-            "choices": [
-              {
-                "text": "Natural menopause (change of life)",
-                "value": "naturalMenopause"
-              },
-              {
-                "text": "Surgery (a hysterectomy to remove your uterus and/or oophorectomy to remove your ovaries)",
-                "value": "surgery"
-              },
-              {
-                "text": "Endometrial ablation (removal of the lining of the uterus)",
-                "value": "endometrialAblation"
-              },
-              {
-                "text": "Medication, chemotherapy, or radiation",
-                "value": "medicationChemotherapyOrRadiation"
-              },
-              {
-                "text": "Other",
-                "value": "other"
-              },
-              {
-                "text": "Not sure",
-                "value": "unsure"
-              },
-              {
-                "text": "Prefer not to answer",
-                "value": "preferNoAnswer"
+                "name": "oh_oh_cardioHx_mensesStopReason",
+                "type": "radiogroup",
+                "title": "Why did your periods stop? (CTS)",
+                "visibleIf": "{oh_oh_cardioHx_mensesStopped} = 'yes'",
+                "choices": [
+                  {
+                    "text": "Natural menopause (change of life)",
+                    "value": "naturalMenopause"
+                  },
+                  {
+                    "text": "Surgery (a hysterectomy to remove your uterus and/or oophorectomy to remove your ovaries)",
+                    "value": "surgery"
+                  },
+                  {
+                    "text": "Endometrial ablation (removal of the lining of the uterus)",
+                    "value": "endometrialAblation"
+                  },
+                  {
+                    "text": "Medication, chemotherapy, or radiation",
+                    "value": "medicationChemotherapyOrRadiation"
+                  },
+                  {
+                    "text": "Other",
+                    "value": "other"
+                  },
+                  {
+                    "text": "Not sure",
+                    "value": "unsure"
+                  },
+                  {
+                    "text": "Prefer not to answer",
+                    "value": "preferNoAnswer"
+                  }
+                ]
               }
             ]
           }
