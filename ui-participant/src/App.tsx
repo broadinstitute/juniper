@@ -51,6 +51,11 @@ const brandStyles = (config: BrandConfiguration = {}): CSSProperties => {
 function App() {
   const { localContent, portal } = usePortalEnv()
 
+  const brandConfig: BrandConfiguration = {}
+  if (localContent.primaryBrandColor) {
+    brandConfig.brandColor = localContent.primaryBrandColor
+  }
+
   let landingRoutes: JSX.Element[] = []
   if (localContent.navbarItems) {
     landingRoutes = localContent.navbarItems
@@ -77,9 +82,7 @@ function App() {
                 <UserProvider>
                   <div
                     className="App d-flex flex-column min-vh-100 bg-white"
-                    style={brandStyles({
-                      brandColor: 'rgb(155, 36, 133)' // TODO: Get brand color from localContent
-                    })}
+                    style={brandStyles(brandConfig)}
                   >
                     <BrowserRouter>
                       <Routes>
