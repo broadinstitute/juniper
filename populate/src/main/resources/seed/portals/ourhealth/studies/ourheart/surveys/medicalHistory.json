@@ -1,9 +1,9 @@
 {
   "stableId": "oh_oh_medHx",
   "version": 1,
-  "name": "Medical History",
+  "name": "Other Medical History",
   "jsonContent": {
-  "title": "OurHealth Medical History",
+  "title": "Other Medical History",
   "showQuestionNumbers": "off",
   "questionTemplates": [
     {
@@ -51,8 +51,12 @@
   ],
   "pages": [
     {
-      "name": "page4",
       "elements": [
+        {
+          "type": "html",
+          "name": "oh_oh_medHx_overallDescription",
+          "html": "This survey asks questions about Other Medical History. This is to better understand how it may affect health. <br/>It will take about 10-15 minutes to answer these questions. Please answer each question as honestly as possible. Some of the questions may be sensitive. You can choose not to answer. There are no right or wrong answers to any of the questions. It is important that you answer as many questions as you can. We are looking for your own answers, not what you think your doctors, family, or friends want you to say.  <br/>Do not feel like you have to spend a long time on each question. The first answer that comes to you is usually the best one. If you are not sure how to answer a question, choose the best answer from the options given.  \n"
+        },
         {
           "type": "html",
           "name": "oh_oh_medHx_cancerHealthDescription",
@@ -1001,6 +1005,11 @@
     {
       "elements": [
         {
+          "type": "html",
+          "name": "oh_oh_medHx_mentalHealthDescription",
+          "html": "<h6>Mental health and substance use conditions</h6><br/>The next question is about mental health and substance use conditions. Mental health and substance use conditions are very important when considering your overall health. Answering this and any follow up questions will help us get a more complete picture of your total health.\n"
+        },
+        {
           "name": "oh_oh_medHx_mentalHealthDxConditions",
           "type": "checkbox",
           "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply) ",
@@ -1495,6 +1504,11 @@
     {
       "elements": [
         {
+          "type": "html",
+          "name": "oh_oh_medHx_infectiousDiagnosedDescription",
+          "html": "<h6>Infectious diseases</h6><br/>The next question is about infectious diseases. Infectious diseases are very important when considering your overall health. Answering this and any follow up questions will help us get a more complete picture of your total health."
+        },
+        {
           "name": "oh_oh_medHx_infectiousDiseasedDiagnosed",
           "type": "checkbox",
           "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply) ",
@@ -1832,6 +1846,11 @@
     },{
       "elements": [
         {
+          "type": "html",
+          "name": "oh_oh_medHx_nervousDiagnosedDescription",
+          "html": "<h6>Brain and nervous system conditions</h6><br/>The next question is about brain and nervous system conditions. Brain and nervous system conditions are very important when considering your overall health. Answering this and any follow up questions will help us get a more complete picture of your total health."
+        },
+        {
           "name": "oh_oh_medHx_nervousSystemDx",
           "type": "checkbox",
           "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply) ",
@@ -1992,7 +2011,7 @@
             {
               "name": "oh_oh_medHx_otherNervousSystemDx",
               "type": "text",
-              "title": "What is the other cancer?"
+              "title": "What is the other brain or nervous system condition?"
             },
             {
               "name": "oh_oh_medHx_otherNervousInTreatment",
@@ -2007,6 +2026,11 @@
       ]
     },{
       "elements": [
+        {
+          "type": "html",
+          "name": "oh_oh_medHx_hearingEyeDiagnosedDescription",
+          "html": "<h6>Hearing and eye conditions</h6><br/>The next question is about hearing and eye conditions. Hearing and eye conditions are very important when considering your overall health. Answering this and any follow up questions will help us get a more complete picture of your total health."
+        },
         {
           "name": "oh_oh_medHx_hearingEyeDiagnosed",
           "type": "checkbox",
