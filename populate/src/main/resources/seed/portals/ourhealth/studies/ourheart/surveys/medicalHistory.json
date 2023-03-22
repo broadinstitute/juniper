@@ -55,12 +55,12 @@
         {
           "type": "html",
           "name": "oh_oh_medHx_overallDescription",
-          "html": "This survey asks questions about Other Medical History. This is to better understand how it may affect health. <br/>It will take about 10-15 minutes to answer these questions. Please answer each question as honestly as possible. Some of the questions may be sensitive. You can choose not to answer. There are no right or wrong answers to any of the questions. It is important that you answer as many questions as you can. We are looking for your own answers, not what you think your doctors, family, or friends want you to say.  <br/>Do not feel like you have to spend a long time on each question. The first answer that comes to you is usually the best one. If you are not sure how to answer a question, choose the best answer from the options given.  \n"
+          "html": "This survey asks questions about Other Medical History. This is to better understand how it may affect health. <br/><br/>It will take about 10-15 minutes to answer these questions. Please answer each question as honestly as possible. Some of the questions may be sensitive. You can choose not to answer. There are no right or wrong answers to any of the questions. It is important that you answer as many questions as you can. We are looking for your own answers, not what you think your doctors, family, or friends want you to say.  <br/><br/>Do not feel like you have to spend a long time on each question. The first answer that comes to you is usually the best one. If you are not sure how to answer a question, choose the best answer from the options given.  \n"
         },
         {
           "type": "html",
           "name": "oh_oh_medHx_cancerHealthDescription",
-          "html": "<h6>Cancer Conditions</h6><p>The next few questions are about cancer. Cancer is very important when considering your overall health. Answering these questions will help us get a more complete picture of your total health.</p>"
+          "html": "<h5>Cancer Conditions</h5><p>The next few questions are about cancer. Cancer is very important when considering your overall health. Answering these questions will help us get a more complete picture of your total health.</p>"
         },
         {
           "name": "oh_oh_medHx_cancerTypes",
