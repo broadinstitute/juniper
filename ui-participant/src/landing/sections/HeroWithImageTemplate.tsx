@@ -98,9 +98,15 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
             </div>
           )}
           {(logos || []).length > 0 && (
-            <div className="d-flex flex-wrap align-items-center justify-content-between">
+            <div
+              className={classNames(
+                'd-flex',
+                'flex-column align-items-center',
+                'flex-sm-row align-items-sm-start flex-sm-wrap'
+              )}
+            >
               {_.map(logos, logo => {
-                return <PearlImage key={logo.cleanFileName} image={logo} className={'m-1'}/>
+                return <PearlImage key={logo.cleanFileName} image={logo} className="mt-4 me-sm-4" />
               })}
             </div>
           )}

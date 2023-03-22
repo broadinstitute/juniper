@@ -98,5 +98,9 @@
     "populateFileName": "images/hands_banner.jpg"
   }, {
     "populateFileName": "images/scientists_banner.jpg"
+  }, {
+    "populateFileName": "images/logos/broad_logo.png"
+  }, {
+    "populateFileName": "images/logos/mgh_logo.png"
   }]
 }

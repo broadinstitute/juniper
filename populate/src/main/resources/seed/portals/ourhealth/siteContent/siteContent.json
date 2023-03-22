@@ -28,6 +28,20 @@
               "type": "internalLink",
               "href": "/aboutUs"
             }
+          ],
+          "logos": [
+            {
+              "cleanFileName": "broad_logo.png",
+              "version": 1,
+              "alt": "Broad Institute logo",
+              "style": { "height": "40px" }
+            },
+            {
+              "cleanFileName": "mgh_logo.png",
+              "version": 1,
+              "alt": "Massachusetts General Hospital logo",
+              "style": { "height": "40px" }
+            }
           ]
         }
       },{
