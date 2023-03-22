@@ -1,8 +1,9 @@
 import React from 'react'
 
 import { SectionConfig } from 'api/api'
-import PearlImage, { PearlImageConfig, validatePearlImageConfig } from 'util/PearlImage'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
+
+import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
 type BannerImageConfig = {
   image: PearlImageConfig
