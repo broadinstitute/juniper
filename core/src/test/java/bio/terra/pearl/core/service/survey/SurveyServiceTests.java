@@ -122,8 +122,6 @@ public class SurveyServiceTests extends BaseSpringBootTest {
 
         survey.setContent(surveyContent);
 
-        List<SurveyQuestionDefinition> expected =
-
         List<SurveyQuestionDefinition> actual = surveyService.getSurveyQuestionDefinitions(survey);
         Assertions.assertEquals(4, actual.size());
     }
