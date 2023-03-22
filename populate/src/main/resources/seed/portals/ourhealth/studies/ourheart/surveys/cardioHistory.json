@@ -578,9 +578,146 @@
             ]
           }
         ]
+      },{
+        "elements": [
+          {
+            "type": "html",
+            "name": "oh_oh_cardioHx_metabolicHeader",
+            "html": "<h6>Metabolic health conditions:</h6> \n\nThe next question is about metabolic health issues. Metabolic health is very important when considering your overall health. Answering this and any follow up questions will help us get a more complete picture of your total health. \n"
+          },
+          {
+            "name": "oh_oh_cardioHx_metabolicDiagnosis",
+            "type": "checkbox",
+            "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply)",
+            "choices": [
+              {"text": "Type 1 Diabetes", "value": "type1Diabetes"},
+              {"text": "Type 2 Diabetes", "value": "type2Diabetes"},
+              {"text": "Other/Unknown diabetes", "value": "otherUnknownDiabetes"},
+              {"text": "Non-alcoholic Fatty Liver Disease (NAFLD/NASH)", "value": "nonAlcoholicFattyLiverDisease"},
+              {"text": "Obesity", "value": "obesity"},
+              {"text": "Polycystic Ovarian Syndrome (PCOS)", "value": "polycysticOvarianSyndrome"},
+              {"text": "Prediabetes", "value": "prediabetes"}
+            ]
+          },
+          {
+            "type": "panel",
+            "title": "Type 1 Diabetes",
+            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'type1Diabetes'",
+            "elements": [
+              {
+                "name": "oh_oh_cardioHx_type1DiabetesInTreatment",
+                "questionTemplateName": "oh_oh_cardioHx_stillSeeingProvider"
+              },
+              {
+                "name": "oh_oh_cardioHx_type1DiabetesAgeAtDx",
+                "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "title": "Type 2 Diabetes",
+            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'type2Diabetes'",
+            "elements": [
+              {
+                "name": "oh_oh_cardioHx_type2DiabetesInTreatment",
+                "questionTemplateName": "oh_oh_cardioHx_stillSeeingProvider"
+              },
+              {
+                "name": "oh_oh_cardioHx_type2DiabetesAgeAtDx",
+                "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "title": "Other/Unknown diabetes",
+            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'otherUnknownDiabetes'",
+            "elements": [
+              {
+                "name": "oh_oh_cardioHx_otherUnknownDiabetesInTreatment",
+                "questionTemplateName": "oh_oh_cardioHx_stillSeeingProvider"
+              },
+              {
+                "name": "oh_oh_cardioHx_otherUnknownDiabetesAgeAtDx",
+                "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "title": "Non-alcoholic Fatty Liver Disease (NAFLD/NASH)",
+            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'nonAlcoholicFattyLiverDisease'",
+            "elements": [
+              {
+                "name": "oh_oh_cardioHx_nonAlcoholicFattyLiverDiseaseInTreatment",
+                "questionTemplateName": "oh_oh_cardioHx_stillSeeingProvider"
+              },
+              {
+                "name": "oh_oh_cardioHx_nonAlcoholicFattyLiverDiseaseAgeAtDx",
+                "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "title": "Obesity",
+            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'obesity'",
+            "elements": [
+              {
+                "name": "oh_oh_cardioHx_obesityInTreatment",
+                "questionTemplateName": "oh_oh_cardioHx_stillSeeingProvider"
+              },
+              {
+                "name": "oh_oh_cardioHx_obesityAgeAtDx",
+                "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
+              },
+              {
+                "name": "oh_oh_lifestyle_obesityBodyFatStore",
+                "type": "radiogroup",
+                "title": "In which of the following areas do you tend to store body fat?",
+                "choices": [
+                  {"text": "Abdomen/Stomach", "value": "abdomenStomach"},
+                  {"text": "Backside and thighs", "value": "backsideAndThighs"},
+                  {"text": "Arms and legs", "value": "armsAndLegs"},
+                  {"text": "Not sure", "value": "unsure"}
+                ]
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "title": "Polycystic Ovarian Syndrome (PCOS)",
+            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'polycysticOvarianSyndrome'",
+            "elements": [
+              {
+                "name": "oh_oh_cardioHx_polycysticOvarianSyndromeInTreatment",
+                "questionTemplateName": "oh_oh_cardioHx_stillSeeingProvider"
+              },
+              {
+                "name": "oh_oh_cardioHx_polycysticOvarianSyndromeAgeAtDx",
+                "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "title": "Prediabetes",
+            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'prediabetes'",
+            "elements": [
+              {
+                "name": "oh_oh_cardioHx_prediabetesInTreatment",
+                "questionTemplateName": "oh_oh_cardioHx_stillSeeingProvider"
+              },
+              {
+                "name": "oh_oh_cardioHx_prediabetesAgeAtDx",
+                "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
+              }
+            ]
+          }
+        ]
       },
       {
-        "name": "page3",
         "elements": [
           {
             "type": "html",
@@ -846,90 +983,90 @@
                     "value": "8OrMore"
                   }
                 ]
+              }
+            ]
+          },
+          {
+            "name": "oh_oh_cardioHx_menopausalSymptoms",
+            "type": "radiogroup",
+            "title": "Have you ever had menopausal symptoms, such as hot flashes or night sweats? (Your best guess.)",
+            "choices": [
+              {
+                "text": "Yes",
+                "value": "yes"
               },
               {
-                "name": "oh_oh_cardioHx_menopausalSymptoms",
-                "type": "radiogroup",
-                "title": "Have you ever had menopausal symptoms, such as hot flashes or night sweats? (Your best guess.)",
-                "choices": [
-                  {
-                    "text": "Yes",
-                    "value": "yes"
-                  },
-                  {
-                    "text": "No",
-                    "value": "no"
-                  },
-                  {
-                    "text": "Sometimes regular, sometimes irregular",
-                    "value": "sometimesRegularSometimesIrregular"
-                  }
-                ]
+                "text": "No",
+                "value": "no"
               },
               {
-                "name": "oh_oh_cardioHx_mensesStopped",
-                "type": "radiogroup",
-                "title": "Have your menstrual periods stopped permanently? ",
-                "choices": [
-                  {
-                    "text": "No",
-                    "value": "no"
-                  },
-                  {
-                    "text": "Yes, I have no menstrual periods",
-                    "value": "yes"
-                  },
-                  {
-                    "text": "Yes, but I have periods induced by hormones",
-                    "value": "yesButInducedByHormones"
-                  },
-                  {
-                    "text": "Not sure",
-                    "value": "unsure"
-                  }
-                ]
+                "text": "Sometimes regular, sometimes irregular",
+                "value": "sometimesRegularSometimesIrregular"
+              }
+            ]
+          },
+          {
+            "name": "oh_oh_cardioHx_mensesStopped",
+            "type": "radiogroup",
+            "title": "Have your menstrual periods stopped permanently? ",
+            "choices": [
+              {
+                "text": "No",
+                "value": "no"
               },
               {
-                "name": "oh_oh_cardioHx_ageLastMenses",
-                "type": "text",
-                "visibleIf": "{oh_medHx_mensesStopped} = 'yes'",
-                "title": "How old were you when you last had regular menstrual bleeding (a period)? (Your best guess)"
+                "text": "Yes, I have no menstrual periods",
+                "value": "yes"
               },
               {
-                "name": "oh_oh_cardioHx_mensesStopReason",
-                "type": "radiogroup",
-                "title": "Why did your periods stop? (CTS)",
-                "visibleIf": "{oh_medHx_mensesStopped} = 'yes'",
-                "choices": [
-                  {
-                    "text": "Natural menopause (change of life)",
-                    "value": "naturalMenopause"
-                  },
-                  {
-                    "text": "Surgery (a hysterectomy to remove your uterus and/or oophorectomy to remove your ovaries)",
-                    "value": "surgery"
-                  },
-                  {
-                    "text": "Endometrial ablation (removal of the lining of the uterus)",
-                    "value": "endometrialAblation"
-                  },
-                  {
-                    "text": "Medication, chemotherapy, or radiation",
-                    "value": "medicationChemotherapyOrRadiation"
-                  },
-                  {
-                    "text": "Other",
-                    "value": "other"
-                  },
-                  {
-                    "text": "Not sure",
-                    "value": "unsure"
-                  },
-                  {
-                    "text": "Prefer not to answer",
-                    "value": "preferNoAnswer"
-                  }
-                ]
+                "text": "Yes, but I have periods induced by hormones",
+                "value": "yesButInducedByHormones"
+              },
+              {
+                "text": "Not sure",
+                "value": "unsure"
+              }
+            ]
+          },
+          {
+            "name": "oh_oh_cardioHx_ageLastMenses",
+            "type": "text",
+            "visibleIf": "{oh_oh_cardioHx_mensesStopped} = 'yes'",
+            "title": "How old were you when you last had regular menstrual bleeding (a period)? (Your best guess)"
+          },
+          {
+            "name": "oh_oh_cardioHx_mensesStopReason",
+            "type": "radiogroup",
+            "title": "Why did your periods stop? (CTS)",
+            "visibleIf": "{oh_oh_cardioHx_mensesStopped} = 'yes'",
+            "choices": [
+              {
+                "text": "Natural menopause (change of life)",
+                "value": "naturalMenopause"
+              },
+              {
+                "text": "Surgery (a hysterectomy to remove your uterus and/or oophorectomy to remove your ovaries)",
+                "value": "surgery"
+              },
+              {
+                "text": "Endometrial ablation (removal of the lining of the uterus)",
+                "value": "endometrialAblation"
+              },
+              {
+                "text": "Medication, chemotherapy, or radiation",
+                "value": "medicationChemotherapyOrRadiation"
+              },
+              {
+                "text": "Other",
+                "value": "other"
+              },
+              {
+                "text": "Not sure",
+                "value": "unsure"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
               }
             ]
           }
