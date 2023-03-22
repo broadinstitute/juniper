@@ -11,7 +11,6 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import java.util.*;
 
-import bio.terra.pearl.core.util.SurveyUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -88,14 +87,14 @@ public class SurveyService extends CrudService<Survey, SurveyDao> {
         //For each page in the survey, iterate through the JsonNode tree and unroll any panels
         List<JsonNode> questions = new ArrayList<>();
         for (JsonNode page : pages) {
-            questions.addAll(SurveyUtils.getAllQuestions(page));
+            questions.addAll(SurveyParseUtils.getAllQuestions(page));
         }
 
         //Unmarshal the questions into actual definitions that we can store in the DB.
         //If the question uses a template, resolve that.
         List<SurveyQuestionDefinition> questionDefinitions = new ArrayList<>();
         for (JsonNode question : questions) {
-            questionDefinitions.add(SurveyUtils.unmarshalSurveyQuestion(survey, question, questionTemplates));
+            questionDefinitions.add(SurveyParseUtils.unmarshalSurveyQuestion(survey, question, questionTemplates));
         }
 
         return questionDefinitions;

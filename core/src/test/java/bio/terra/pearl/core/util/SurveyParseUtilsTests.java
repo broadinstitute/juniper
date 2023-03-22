@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.util;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.service.survey.SurveyParseUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class SurveyUtilsTests extends BaseSpringBootTest {
+public class SurveyParseUtilsTests extends BaseSpringBootTest {
 
     @Test
     public void testUnmarshalQuestionChoices() throws JsonProcessingException {
@@ -37,7 +38,7 @@ public class SurveyUtilsTests extends BaseSpringBootTest {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode questionNode = mapper.readTree(questionWithChoices);
 
-        String actual = SurveyUtils.unmarshalSurveyQuestionChoices(questionNode);
+        String actual = SurveyParseUtils.unmarshalSurveyQuestionChoices(questionNode);
         String expected = """
                 {"noneOfThese":"None of these","cardiacBypassSurgery":"Cardiac bypass surgery","cardiacStentPlacement":"Cardiac stent placement"}""";
 
@@ -86,7 +87,7 @@ public class SurveyUtilsTests extends BaseSpringBootTest {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode questionNode = mapper.readTree(questionWithChildren);
 
-        List<JsonNode> actual = SurveyUtils.getAllQuestions(questionNode);
+        List<JsonNode> actual = SurveyParseUtils.getAllQuestions(questionNode);
 
         Assertions.assertEquals(2, actual.size());
     }
@@ -117,7 +118,7 @@ public class SurveyUtilsTests extends BaseSpringBootTest {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode questionNode = mapper.readTree(questionWithChoices);
 
-        String actual = SurveyUtils.unmarshalSurveyQuestionChoices(questionNode);
+        String actual = SurveyParseUtils.unmarshalSurveyQuestionChoices(questionNode);
         String expected = """
                 {"noneOfThese":"None of these","cardiacBypassSurgery":"Cardiac bypass surgery","cardiacStentPlacement":"Cardiac stent placement"}""";
 

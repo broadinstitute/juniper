@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.util;
+package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SurveyUtils {
+public class SurveyParseUtils {
 
     public static List<JsonNode> getAllQuestions(JsonNode containerElement) {
         List<JsonNode> elements = new ArrayList<>();
