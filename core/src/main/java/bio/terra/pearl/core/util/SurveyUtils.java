@@ -26,12 +26,13 @@ public class SurveyUtils {
     }
 
     public static SurveyQuestionDefinition unmarshalSurveyQuestion(Survey survey, JsonNode question, Map<String, JsonNode> questionTemplates) {
-        SurveyQuestionDefinition definition = new SurveyQuestionDefinition();
 
-        definition.setSurveyId(survey.getId());
-        definition.setSurveyStableId(survey.getStableId());
-        definition.setSurveyVersion(survey.getVersion());
-        definition.setQuestionStableId(question.get("name").asText());
+        SurveyQuestionDefinition definition = SurveyQuestionDefinition.builder()
+                .surveyId(survey.getId())
+                .surveyStableId(survey.getStableId())
+                .surveyVersion(survey.getVersion())
+                .questionStableId(question.get("name").asText())
+                .build();
 
         //The following fields may either be specified in the question itself,
         //or as part of a question template. Resolve the remaining fields against
@@ -44,7 +45,7 @@ public class SurveyUtils {
 
         if(templatedQuestion.has("isRequired")){
             definition.setRequired(templatedQuestion.get("isRequired").asBoolean());
-        } else definition.setRequired(false);
+        }
 
         if(templatedQuestion.has("choices")){
             definition.setChoices(unmarshalSurveyQuestionChoices(templatedQuestion));
