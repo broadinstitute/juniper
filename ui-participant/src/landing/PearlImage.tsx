@@ -22,7 +22,7 @@ export const validatePearlImageConfig = (imageConfig: unknown): PearlImageConfig
   const className = requireOptionalString(config, 'className', message)
 
   // Only validate that style is an object. React will handle invalid keys.
-  const style = config.style ? requirePlainObject(config, 'style') : undefined
+  const style = config.style ? requirePlainObject(config.style, `${message}: Invalid style`) : undefined
 
   return {
     cleanFileName,
