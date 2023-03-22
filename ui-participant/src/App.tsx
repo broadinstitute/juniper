@@ -75,16 +75,16 @@ function App() {
     <>
       <EnvironmentAlert portalEnvironment={portal.portalEnvironments[0]}/>
       <PortalPasswordGate portal={portal}>
-        <ConfigProvider>
-          <ConfigConsumer>
-            {config =>
-              <AuthProvider {...getOidcConfig(config.b2cTenantName, config.b2cClientId)}>
-                <UserProvider>
-                  <div
-                    className="App d-flex flex-column min-vh-100 bg-white"
-                    style={brandStyles(brandConfig)}
-                  >
-                    <BrowserRouter>
+        <div
+          className="App d-flex flex-column min-vh-100 bg-white"
+          style={brandStyles(brandConfig)}
+        >
+          <BrowserRouter>
+            <ConfigProvider>
+              <ConfigConsumer>
+                {config =>
+                  <AuthProvider {...getOidcConfig(config.b2cTenantName, config.b2cClientId)}>
+                    <UserProvider>
                       <Routes>
                         <Route path="/hub/*" element={<ProtectedRoute><HubRouter/></ProtectedRoute>}/>
                         <Route path="/studies/:studyShortcode">
@@ -98,13 +98,13 @@ function App() {
                         </Route>
                         <Route path="*" element={<div>unmatched route</div>}/>
                       </Routes>
-                    </BrowserRouter>
-                  </div>
-                </UserProvider>
-              </AuthProvider>
-            }
-          </ConfigConsumer>
-        </ConfigProvider>
+                    </UserProvider>
+                  </AuthProvider>
+                }
+              </ConfigConsumer>
+            </ConfigProvider>
+          </BrowserRouter>
+        </div>
       </PortalPasswordGate>
     </>
 

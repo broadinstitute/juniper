@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import Api, { getImageUrl } from 'api/api'
+import { getImageUrl } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from '../providers/UserProvider'
 
@@ -11,12 +11,11 @@ export default function HubNavbar() {
 
   /** send a logout to the api then logout */
   function doLogout() {
-    Api.logout().then(() => {
+    try {
       logoutUser()
-      window.location.href = '/'
-    }).catch(e => {
+    } catch (e) {
       alert(`an error occurred during logout ${e}`)
-    })
+    }
   }
 
   return <nav className="LandingNavbar navbar navbar-expand-lg navbar-light">
