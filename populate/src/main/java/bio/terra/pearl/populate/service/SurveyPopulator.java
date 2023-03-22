@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.Versioned;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dao.SurveyPopulateDao;
@@ -61,7 +62,9 @@ public class SurveyPopulator extends Populator<Survey, PortalPopulateContext> {
                 existingSurvey.getAnswerMappings().add(answerMappingDao.create(answerMapping));
             }
             surveyQuestionDefinitionDao.deleteBySurveyId(existingSurvey.getId());
-            surveyService.createSurveyDataDictionary(surveyPopDto);
+            for (SurveyQuestionDefinition questionDefinition : surveyService.getSurveyQuestionDefinitions(surveyPopDto)) {
+                surveyQuestionDefinitionDao.create(questionDefinition);
+            }
 
             return existingSurvey;
         }
