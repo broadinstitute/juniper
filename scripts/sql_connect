@@ -25,21 +25,29 @@ declare -r k8s_namespace="${proj_name}-postgres-dev"
 declare -r k8s_pod_name="postgres"
 declare -r docker_image="postgres:12"
 # password is required but not important. can be anything
-declare -r postgres_password="pw1234"
+declare postgres_password=$(openssl rand -base64 12)
 
 # azure vars
-declare subscription="385ed569-ca04-4b97-97b4-677c8479585e"
-declare rg="ddp-aks-dev"
-declare cluster="ddp-aks-dev"
+declare subscription=""
+declare rg=""
+declare cluster=""
 
 # database vars
-declare database_name="d2p-dev-psqlflexibleserver"
+#default value. can be overwritten with command line flags
+declare database_name=""
 declare database_user=""
 declare database_pw=""
 
 # Vault setup
 declare -r vault_addr="https://clotho.broadinstitute.org:8200"
+#TODO infer
 declare vault_path="secret/dsp/ddp/d2p/dev/postgres/admin-credential"
+
+# Default Vars - used if other values are not given on the command line
+declare -r subscription_default="385ed569-ca04-4b97-97b4-677c8479585e"
+declare -r rg_default="ddp-aks-dev"
+declare -r cluster_default="ddp-aks-dev"
+declare -r database_name_default="d2p-dev-psqlflexibleserver"
 
 # Basic logging lib
 function log_debug() { _log_execute 'DEBUG' "$1"; }
@@ -74,57 +82,22 @@ function usage() {
     local -r usage="
     $0: connect to an Azure managed database instance with private networking through AKS cluster
 
-    Usage: $0 <database> <AKS Cluster>
-    Where:  <database> is an exisiting Azure managed database instance
+    Usage: $0 <Database> <Subscription> <AKS Cluster> <Resource Group>
+    Where:  <Database> is an exisiting Azure managed database instance
+            <Subscription> is the Azure subscription which contains the AKS Cluster where the pod will be spun up
             <AKS Cluster> is an exisitng AKS cluster with the correct virtual network peering links set up to the VNet and DNS Zone containing the database
                 -- see terraform-ap-deployment postgres terraform module for set up
+            <Resource Group> is an exisiting Azure Resource group which contains the AKS Cluster in which the pod will be spun up
     "
     echo "$usage"
 }
 
-# Parse positional and flag args. Defaults are set for ...
-#TODO fix
+# All arguments are positional. See Usage(). Will use defaults if values are not given
 function parse_args() {
-    # subscription
-    # rg
-    # database_name
-    # cluster
-
-    VALID_ARGS=$(getopt -o s:r:d:c:v: --long subscription:,resource_group:,database:,cluster:,vault_path: -- "$@")
-
-    ## TODO none are required since they all have defaults?
-    #if [ $# -ne 2 ]; then
-     #   log_err "Illegal number of parameters"
-      #  usage
-       # exit 1
-    #fi
-
-    eval set -- "$VALID_ARGS"
-    while [ : ]; do
-        case "$1" in
-            -s | --subscription)
-                subscription=$2
-                shift 2
-                ;;
-            -r | resource_group)
-                rg=$2
-                shift 2
-                ;;
-            -d | database)
-                database_name=$2
-                shift 2
-                ;;
-            -c | cluster)
-                cluster=$2
-                shift 2
-                ;;
-            -v | vault_path)
-                vault_path=$2
-                shift 2
-                ;;
-        esac
-    done
-    
+    database_name="${1:-$database_name_default}"
+    subscription="${2:-$subscription_default}"
+    cluster="${3:-$cluster_default}"
+    rg="${4:-$rg_default}"
 }
 
 # Validate that all external tools used in this script are on user's PATH
@@ -143,18 +116,20 @@ function fetch_database_creds() {
 
     log_info "reading database username from vault "
     database_user=$( "${vault_read_username_cmd[@]}" )
-    if ! (echo $? >/dev/null &) ;
+    if ! "${vault_read_username_cmd[@]}" > /dev/null 2>&1 ;
     then
         log_err "unable to read username from vault...exiting"
+        log_debug "Are you logged into Vault?"
         exit 1
     fi
     log_info "successfully read username from vault"
 
     log_info "reading database password from vault "
     database_pw=$( "${vault_read_password_cmd[@]}" )
-    if ! (echo $? >/dev/null &) ;
+    if ! "${vault_read_password_cmd[@]}" > /dev/null 2>&1 ;
     then
         log_err "unable to read password from vault...exiting"
+        log_debug "Are you logged into Vault?"
         exit 1
     fi
     log_info "successfully read password from vault"
@@ -272,7 +247,7 @@ function exec_into_pod() {
 }
 
 function init() {
-    #parse_args "$@"
+    parse_args "$@"
     check_required_tools || exit 1
     fetch_database_creds
 }
