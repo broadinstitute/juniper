@@ -13,7 +13,7 @@ set -o pipefail
 declare -i desired_log_level=2
 
 ## TODO delete
-# ./sql_connect -s 385ed569-ca04-4b97-97b4-677c8479585e -r ddp-aks-dev -c ddp-aks-dev -d d2p-dev-psqlflexibleserver -v secret/dsp/ddp/d2p/dev/postgres/admin-credential
+# ./sql_connect d2p-dev-psqlflexibleserver 385ed569-ca04-4b97-97b4-677c8479585e ddp-aks-dev ddp-aks-dev
 
 # General use vars
 declare -a required_tools=( az kubectl vault sleep jq )
@@ -31,6 +31,7 @@ declare postgres_password=$(openssl rand -base64 12)
 declare subscription=""
 declare rg=""
 declare cluster=""
+declare user=""
 
 # database vars
 #default value. can be overwritten with command line flags
@@ -78,7 +79,6 @@ function _log_msg() {
 }
 
 function usage() {
-    #TODO update
     local -r usage="
     $0: connect to an Azure managed database instance with private networking through AKS cluster
 
@@ -231,10 +231,22 @@ function cleanup_k8s_enviornment() {
     cleanup_namespace
 }
 
+function read_user() {
+    local -r -a read_user_cmd=(az ad signed-in-user show)
+    local -r -a jq_cmd=(jq .displayName -r)
+    user=$( "${read_user_cmd[@]}" | "${jq_cmd[@]}" )
+    if ! ("${read_user_cmd[@]}" | "${jq_cmd[@]}") > /dev/null 2>&1 ;
+    then
+        log_err "unable to read azure username...exiting"
+        exit 1
+    fi
+}
+
 # use kubectl exec on behalf of the calling user to run a psql command to open a connection to the database allowing them to have a shell session into the database 
 function exec_into_pod() {
     #let pod spin up
     sleep 5
+    log_info "$user connected to database $database_name"
     local -r -a connect_cmd=(kubectl exec -it -n "${k8s_namespace}" postgres -- psql "host=$database_name.postgres.database.azure.com port=5432 dbname=postgres user=$database_user password=$database_pw sslmode=require")
  
     log_info "running kubernetes pod ${k8s_pod_name} in ${k8s_namespace} namespace"
@@ -257,6 +269,7 @@ function main() {
     setup_k8s_enviornment || exit 1
     # ( If any thing from this point forward fails script must cleanup )
     trap cleanup_k8s_enviornment SIGHUP SIGINT SIGQUIT
+    read_user
     exec_into_pod
     cleanup_k8s_enviornment
 }
