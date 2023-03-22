@@ -460,7 +460,7 @@
         {
           "type": "panel",
           "title": "Other cancer",
-          "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'otherCancer'",
+          "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'other'",
           "elements": [
             {
               "name": "oh_oh_medHx_otherCancerDescription",
@@ -497,7 +497,7 @@
             {"text": "Colon polyps", "value": "colonPolyps"},
             {"text": "Crohn’s disease", "value": "crohnsDisease"},
             {"text": "Diverticulosis/diverticulitis", "value": "diverticulosisDiverticulitis"},
-            {"text": "Gall stones", "value": "gallStones"},
+            {"text": "Gallstones", "value": "gallStones"},
             {"text": "Hemorrhoids", "value": "hemorrhoids"},
             {"text": "Hernia", "value": "hernia"},
             {"text": "Irritable bowel syndrome (IBS)", "value": "irritableBowelSyndrome"},
@@ -601,7 +601,7 @@
         },
         {
           "type": "panel",
-          "title": "Gall stones",
+          "title": "Gallstones",
           "visibleIf": "{oh_oh_medHx_digestiveConditionsDiagnoses} contains 'gallStones'",
           "elements": [
             {
@@ -863,18 +863,6 @@
             {
               "text": "Hypothyroidism",
               "value": "hypothyroidism"
-            },
-            {
-              "text": "Type 1 Diabetes",
-              "value": "type1Diabetes"
-            },
-            {
-              "text": "Type 2 Diabetes",
-              "value": "type2Diabetes"
-            },
-            {
-              "text": "Other/Unknown diabetes",
-              "value": "otherUnknownDiabetes"
             },
             {
               "text": "Other/Unknown thyroid condition",
@@ -1309,7 +1297,7 @@
             {"text": "Rheumatoid arthritis", "value": "rheumatoidArthritis"},
             {"text": "Spine, muscle, or bone disorders (non-cancer)", "value": "spineMuscleOrBoneDisordersNonCancer"},
             {"text": "Systemic lupus", "value": "systemicLupus"},
-            {"text": "Other arthritis", "value": "otherArthritis"},
+            {"text": "Other arthritis, such as psoriatic arthritis and/or ankylosing spondylitis", "value": "otherArthritis"},
             {"text": "Other bone, joint, or muscle condition", "value": "otherBoneJointOrMuscleCondition"},
             {"text": "I have no bone, joint, or muscle condition", "value": "none"}
           ]
