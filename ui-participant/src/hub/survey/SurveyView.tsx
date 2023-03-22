@@ -34,7 +34,7 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
                            form: ConsentForm, enrollee: Enrollee, taskId: string
                            resumableData: ResumableData | null, pager: PageNumberControl, studyShortcode: string
                          }) {
-  const { surveyModel, pageNumber, refreshSurvey } = useSurveyJSModel(form, resumableData, onComplete, pager)
+  const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData, onComplete, pager)
   const navigate = useNavigate()
 
   const { updateEnrollee } = useUser()
@@ -69,10 +69,7 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
 
   return <div>
     <h4 className="text-center mt-2">{form.name}</h4>
-    {surveyModel && <div className="d-flex align-items-center flex-column">
-      <span className="detail">page {pageNumber} of {surveyModel.pages.length}</span>
-      <SurveyComponent model={surveyModel}/>
-    </div>}
+    {surveyModel && <SurveyComponent model={surveyModel}/>}
   </div>
 }
 

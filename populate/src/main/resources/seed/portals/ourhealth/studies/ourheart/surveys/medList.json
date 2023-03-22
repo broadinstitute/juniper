@@ -5,6 +5,7 @@
   "jsonContent": {
     "title": "Medications",
     "showQuestionNumbers": "off",
+    "showProgressBar": "bottom",
     "pages": [
       {
         "elements": [

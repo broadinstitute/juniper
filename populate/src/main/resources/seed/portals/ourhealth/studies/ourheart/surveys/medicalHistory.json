@@ -5,6 +5,7 @@
   "jsonContent": {
   "title": "OurHealth Medical History",
   "showQuestionNumbers": "off",
+  "showProgressBar": "bottom",
   "questionTemplates": [
     {
       "name": "oh_oh_medHx_stillSeeingProvider",

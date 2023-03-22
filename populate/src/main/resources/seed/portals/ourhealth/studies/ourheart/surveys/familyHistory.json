@@ -1,0 +1,1467 @@
+{
+  "stableId": "oh_oh_famHx",
+  "version": 1,
+  "name": "Family History",
+  "jsonContent": {
+    "showQuestionNumbers": "off",
+    "showProgressBar": "bottom",
+    "triggers": [
+      {
+        "type": "complete",
+        "expression": "{oh_oh_famHx_famKnowledge} = 'none'"
+      }
+    ],
+    "pages": [
+      {
+        "elements": [
+          {
+            "type": "html",
+            "name": "oh_oh_famHx_intro",
+            "html": "Please answer each question as honestly as possible. There are no right or wrong answers to any of the questions. It is important that you answer as many questions as you can. We are looking for your own answers, and not what you think your doctors, family, or friends want you to say.<br/>Don’t feel like you have to spend a long time on each question. The first answer that comes to you is usually the best one. If you aren’t sure how to answer a question, choose the best answer from the available choices. Some questions also let you say if you don’t know an answer, or would rather not answer.<br/>This module asks you about your family’s medical history. You will be shown a list of conditions and asked to select those that certain family members have or had. Understanding your family’s experiences with medical issues can tell us a lot about what kinds of medical issues might be related to your genetics. Genetics has to do with traits that are passed down from generation to generation in a family.\n"
+          },
+          {
+            "name": "oh_oh_famHx_famKnowledge",
+            "type": "radiogroup",
+            "title": "*You will be asked questions about your family. Think only of people you are related to by blood including those living or deceased. Before asking a comprehensive family history, we will ask you about some of the most serious cardiac conditions that can run in families.*\n\n How much do you know about illnesses or health problems of your parents, grandparents, brothers, sisters, and/or children?",
+            "choices": [
+              {
+                "text": "A lot",
+                "value": "aLot"
+              },
+              {
+                "text": "Some",
+                "value": "some"
+              },
+              {
+                "text": "None at all",
+                "value": "none"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "html",
+            "name": "oh_oh_famHx_conditionIntro",
+            "html": "Please indicate if ANY of your parents, grandparents, brothers, sisters, and/or children have had any of the following. Think only of the people you are related to by blood. (please select all that apply) \n"
+          },
+          {
+            "name": "oh_oh_famHx_suddenDeathUnexplained",
+            "type": "checkbox",
+            "title": "Sudden, unexplained death, before the age of 50",
+            "showOtherItem": true,
+            "otherText": "Other",
+            "otherPlaceholder": "Please specify",
+            "choices": [
+              {
+                "text": "Mother",
+                "value": "mother"
+              },
+              {
+                "text": "Father",
+                "value": "father"
+              },
+              {
+                "text": "Sibling",
+                "value": "sibling"
+              },
+              {
+                "text": "Grandparent",
+                "value": "grandparent"
+              },
+              {
+                "text": "Child",
+                "value": "child"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_suddenDeathUnexplained} contains 'mother'",
+            "title": "What was your mother's age at death?"
+          },
+          {
+            "type": "text",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_suddenDeathUnexplained} contains 'father'",
+            "title": "What was your father's age at death?"
+          },
+          {
+            "type": "text",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_suddenDeathUnexplained} contains 'sibling'",
+            "title": "What was your sibling's age at death?"
+          },
+          {
+            "type": "text",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_suddenDeathUnexplained} contains 'grandparent'",
+            "title": "What was your grandparent's age at death?"
+          },
+          {
+            "type": "text",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_suddenDeathUnexplained} contains 'child'",
+            "title": "What was your child's age at death?"
+          },
+          {
+            "type": "text",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_suddenDeathUnexplained} contains 'other'",
+            "title": "What was your other relative's age at death?"
+          },
+          {
+            "name": "oh_oh_famHx_suddenDeathHeart",
+            "type": "checkbox",
+            "title": "Sudden death due to heart disease, before the age of 50",
+            "showOtherItem": true,
+            "otherText": "Other",
+            "otherPlaceholder": "Please specify",
+            "choices": [
+              {
+                "text": "Mother",
+                "value": "mother"
+              },
+              {
+                "text": "Father",
+                "value": "father"
+              },
+              {
+                "text": "Sibling",
+                "value": "sibling"
+              },
+              {
+                "text": "Grandparent",
+                "value": "grandparent"
+              },
+              {
+                "text": "Child",
+                "value": "child"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "inputType": "number",
+            "name": "oh_oh_famHx_suddenDeathHeartMotherAge",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_suddenDeathHeart} contains 'mother'",
+            "title": "What was your mother's age at death?"
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_famHx_suddenDeathHeartFatherAge",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_suddenDeathHeart} contains 'father'",
+            "title": "What was your father's age at death?"
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_famHx_suddenDeathHeartSiblingAge",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_suddenDeathHeart} contains 'sibling'",
+            "title": "What was your sibling's age at death?"
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_famHx_suddenDeathHeartGrandparentAge",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_suddenDeathHeart} contains 'grandparent'",
+            "title": "What was your grandparent's age at death?"
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_famHx_suddenDeathHeartChildAge",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_suddenDeathHeart} contains 'child'",
+            "title": "What was your child's age at death?"
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_famHx_suddenDeathHeartOtherAge",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_suddenDeathHeart} contains 'other'",
+            "title": "What was your other relative's age at death?"
+          },
+          {
+            "name": "oh_oh_famHx_heartAttackStroke",
+            "type": "checkbox",
+            "title": "Heart attack or stroke before the age of 50",
+            "showOtherItem": true,
+            "otherText": "Other",
+            "otherPlaceholder": "Please specify",
+            "choices": [
+              {
+                "text": "Mother",
+                "value": "mother"
+              },
+              {
+                "text": "Father",
+                "value": "father"
+              },
+              {
+                "text": "Sibling",
+                "value": "sibling"
+              },
+              {
+                "text": "Grandparent",
+                "value": "grandparent"
+              },
+              {
+                "text": "Child",
+                "value": "child"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "inputType": "number",
+            "name": "oh_oh_famHx_heartAttackStrokeMotherAge",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_heartAttackStroke} contains 'mother'",
+            "title": "What was your mother's age at death?"
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_famHx_heartAttackStrokeFatherAge",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_heartAttackStroke} contains 'father'",
+            "title": "What was your father's age at death?"
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_famHx_heartAttackStrokeSiblingAge",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_heartAttackStroke} contains 'sibling'",
+            "title": "What was your sibling's age at death?"
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_famHx_heartAttackStrokeGrandparentAge",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_heartAttackStroke} contains 'grandparent'",
+            "title": "What was your grandparent's age at death?"
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_famHx_heartAttackStrokeChildAge",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_heartAttackStroke} contains 'child'",
+            "title": "What was your child's age at death?"
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_famHx_heartAttackStrokeOtherAge",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_heartAttackStroke} contains 'other'",
+            "title": "What was your other relative's age at death?"
+          },
+          {
+            "name": "oh_oh_famHx_stentOrBypass",
+            "type": "checkbox",
+            "title": "Stent or bypass surgery before the age of 50",
+            "showOtherItem": true,
+            "otherText": "Other",
+            "otherPlaceholder": "Please specify",
+            "choices": [
+              {
+                "text": "Mother",
+                "value": "mother"
+              },
+              {
+                "text": "Father",
+                "value": "father"
+              },
+              {
+                "text": "Sibling",
+                "value": "sibling"
+              },
+              {
+                "text": "Grandparent",
+                "value": "grandparent"
+              },
+              {
+                "text": "Child",
+                "value": "child"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "inputType": "number",
+            "name": "oh_oh_famHx_stentOrBypassMotherAge",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_stentOrBypass} contains 'mother'",
+            "title": "What was your mother's age at death?"
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_famHx_stentOrBypassFatherAge",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_stentOrBypass} contains 'father'",
+            "title": "What was your father's age at death?"
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_famHx_stentOrBypassSiblingAge",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_stentOrBypass} contains 'sibling'",
+            "title": "What was your sibling's age at death?"
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_famHx_stentOrBypassGrandparentAge",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_stentOrBypass} contains 'grandparent'",
+            "title": "What was your grandparent's age at death?"
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_famHx_stentOrBypassChildAge",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_stentOrBypass} contains 'child'",
+            "title": "What was your child's age at death?"
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_famHx_stentOrBypassOtherAge",
+            "inputType": "number",
+            "size": "2",
+            "max": 50,
+            "min": 1,
+            "visibleIf": "{oh_oh_famHx_stentOrBypass} contains 'other'",
+            "title": "What was your other relative's age at death?"
+          }
+        ]
+      },{
+        "elements": [{
+          "type": "html",
+          "name": "motherConditionsDescription",
+          "html": "Please indicate if your mother has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (please select all that apply)"
+        },{
+          "name": "oh_oh_famHx_motherCancer",
+          "type": "checkbox",
+          "title": "Cancer",
+          "showOtherItem": true,
+          "otherText": "Other cancer",
+          "otherPlaceholder": "Please specify",
+          "choices": [
+            {"text": "Bladder cancer", "value": "bladderCancer"},
+            {"text": "Blood or soft tissue cancer", "value": "bloodOrSoftTissueCancer"},
+            {"text": "Bone cancer", "value": "boneCancer"},
+            {"text": "Brain cancer", "value": "brainCancer"},
+            {"text": "Breast cancer", "value": "breastCancer"},
+            {"text": "Cervical cancer", "value": "cervicalCancer"},
+            {"text": "Colon cancer/Rectal cancer", "value": "colonCancerRectalCancer"},
+            {"text": "Endocrine cancer", "value": "endocrineCancer"},
+            {"text": "Endometrial cancer", "value": "endometrialCancer"},
+            {"text": "Esophageal cancer", "value": "esophagealCancer"},
+            {"text": "Eye cancer", "value": "eyeCancer"},
+            {"text": "Head and neck cancer", "value": "headAndNeckCancer"},
+            {"text": "Kidney cancer", "value": "kidneyCancer"},
+            {"text": "Lung cancer", "value": "lungCancer"},
+            {"text": "Ovarian cancer", "value": "ovarianCancer"},
+            {"text": "Pancreatic cancer", "value": "pancreaticCancer"},
+            {"text": "Prostate cancer", "value": "prostateCancer"},
+            {"text": "Skin cancer", "value": "skinCancer"},
+            {"text": "Stomach cancer", "value": "stomachCancer"},
+            {"text": "Thyroid cancer", "value": "thyroidCancer"}
+          ]
+        },{
+          "name": "oh_oh_famHx_motherHeartBlood",
+          "type": "checkbox",
+          "title": "Heart and blood conditions",
+          "choices": [
+            {"text": "Anemia", "value": "anemia"},
+            {"text": "Another abnormal heart rhythm", "value": "anotherAbnormalHeartRhythm"},
+            {"text": "Atrial fibrillation (Afib) or Atrial flutter", "value": "atrialFibrillation"},
+            {"text": "Bleeding disorder", "value": "bleedingDisorder"},
+            {"text": "Heart failure", "value": "heartFailure"},
+            {"text": "Coronary artery/coronary heart disease", "value": "coronaryDisease"},
+            {"text": "Cardiac stent", "value": "cardiacStent"},
+            {"text": "Coronary artery bypass surgery", "value": "coronaryArteryBypassSurgery"},
+            {"text": "Heart attack", "value": "heartAttack"},
+            {"text": "Heart failure", "value": "heartFailure"},
+            {"text": "Heart valve disease", "value": "heartValveDisease"},
+            {"text": "High cholesterol", "value": "highCholesterol"},
+            {"text": "Hypertension (high blood pressure)", "value": "hypertension"},
+            {"text": "Peripheral vascular disease", "value": "peripheralVascularDisease"},
+            {"text": "Pulmonary embolism or deep vein thrombosis", "value": "pulmonaryEmbolismOrDVT"},
+            {"text": "Sickle cell disease", "value": "sickleCellDisease"},
+            {"text": "Stroke", "value": "stroke"},
+            {"text": "Transient ischemic attacks (TIAs or mini-strokes)", "value": "transientIschemicAttacks"},
+            {"text": "Sudden death/Cardiac arrest", "value": "suddenDeathCardiacArrest"}
+          ]
+        },{
+          "name": "oh_oh_famHx_motherDisgestive",
+          "type": "checkbox",
+          "title": "Digestive conditions:",
+          "choices": [
+            {"text": "Acid reflux", "value": "acidReflux"},
+            {"text": "Celiac disease", "value": "celiacDisease"},
+            {"text": "Colon polyps", "value": "colonPolyps"},
+            {"text": "Crohn’s disease", "value": "crohnsDisease"},
+            {"text": "Diverticulitis/Diverticulosis", "value": "diverticulitisDiverticulosis"},
+            {"text": "Gall stones", "value": "gallStones"},
+            {"text": "Irritable bowel syndrome (IBS)", "value": "irritableBowelSyndrome"},
+            {"text": "Liver condition (e.g., cirrhosis)", "value": "liverCondition"},
+            {"text": "Pancreatitis", "value": "pancreatitis"},
+            {"text": "Peptic (stomach) ulcers", "value": "pepticStomachUlcers"},
+            {"text": "Ulcerative colitis", "value": "ulcerativeColitis"}
+          ]
+        },{
+          "name": "oh_oh_famHx_motherHormone",
+          "type": "checkbox",
+          "title": "Hormone/endocrine conditions:",
+          "choices": [
+            {"text": "Hyperthyroidism", "value": "hyperthyroidism"},
+            {"text": "Hypothyroidism", "value": "hypothyroidism"},
+            {"text": "Type 1 diabetes", "value": "type1Diabetes"},
+            {"text": "Type 2 diabetes", "value": "type2Diabetes"},
+            {"text": "Other/unknown diabetes", "value": "otherUnknownDiabetes"}
+          ]
+        },{
+          "name": "oh_oh_famHx_motherKidneys",
+          "type": "checkbox",
+          "title": "Kidney conditions:",
+          "choices": [
+            {"text": "Kidney disease", "value": "kidneyDisease"},
+            {"text": "Kidney stones", "value": "kidneyStones"}
+          ]
+        },{
+          "name": "oh_oh_famHx_motherLung",
+          "type": "checkbox",
+          "title": "Lung conditions:",
+          "choices": [
+            {"text": "Asthma", "value": "asthma"},
+            {"text": "Chronic lung disease (COPD, emphysema, or bronchitis)", "value": "chronicLungDisease"},
+            {"text": "Sleep apnea", "value": "sleepApnea"}
+          ]
+        },{
+          "name": "oh_oh_famHx_motherNervousSystem",
+          "type": "checkbox",
+          "title": "Brain and nervous system conditions:",
+          "choices": [
+            {"text": "Cerebral palsy", "value": "cerebralPalsy"},
+            {"text": "Dementia (includes Alzheimer’s, vascular, etc.)", "value": "dementia"},
+            {"text": "Epilepsy or seizure", "value": "epilepsyOrSeizure"},
+            {"text": "Insomnia", "value": "insomnia"},
+            {"text": "Migraine headaches", "value": "migraineHeadaches"},
+            {"text": "Multiple sclerosis", "value": "multipleSclerosis"},
+            {"text": "Muscular dystrophy (MD)", "value": "muscularDystrophyMd"},
+            {"text": "Neuropathy", "value": "neuropathy"},
+            {"text": "Parkinson’s disease", "value": "parkinsonsDisease"}
+          ]
+        },{
+          "name": "oh_oh_famHx_motherMentalHealth",
+          "type": "checkbox",
+          "title": "Mental health or substance use conditions:",
+          "choices": [
+            {"text": "Alcohol use disorder", "value": "alcoholUseDisorder"},
+            {"text": "Anxiety reaction/panic disorder", "value": "anxietyReactionPanicDisorder"},
+            {"text": "Attention-deficit/hyperactivity disorder (ADHD)", "value": "attentionDeficitHyperactivityDisorder"},
+            {"text": "Autism spectrum disorder", "value": "autismSpectrumDisorder"},
+            {"text": "Bipolar disorder", "value": "bipolarDisorder"},
+            {"text": "Depression", "value": "depression"},
+            {"text": "Drug use disorder", "value": "drugUseDisorder"},
+            {"text": "Eating disorder", "value": "eatingDisorder"},
+            {"text": "Post-traumatic stress disorder (PTSD)", "value": "postTraumaticStressDisorder"},
+            {"text": "Schizophrenia", "value": "schizophrenia"}
+          ]
+        },{
+          "name": "oh_oh_famHx_motherBoneJointMuscle",
+          "type": "checkbox",
+          "title": "Bone, joint, and muscle conditions:",
+          "choices": [
+            {"text": "Carpal tunnel syndrome", "value": "carpalTunnelSyndrome"},
+            {"text": "Fibromyalgia", "value": "fibromyalgia"},
+            {"text": "Gout", "value": "gout"},
+            {"text": "Osteoarthritis", "value": "osteoarthritis"},
+            {"text": "Osteoporosis", "value": "osteoporosis"},
+            {"text": "Pseudogout (CPPD)", "value": "pseudogoutCppd"},
+            {"text": "Rheumatoid arthritis", "value": "rheumatoidArthritis"},
+            {"text": "Spine, muscle, or bone disorders (non-cancer)", "value": "spineMuscleOrBoneDisorders"},
+            {"text": "Systemic lupus", "value": "systemicLupus"},
+            {"text": "Other arthritis, such as psoriatic arthritis and/or ankylosing spondylitis", "value": "otherArthritis"}
+          ]
+        },{
+          "name": "oh_oh_famHx_motherHearingEye",
+          "type": "radiogroup",
+          "title": "Hearing and eye conditions:",
+          "choices": [
+            {"text": "Cataracts", "value": "cataracts"},
+            {"text": "Glaucoma", "value": "glaucoma"},
+            {"text": "Macular degeneration", "value": "macularDegeneration"},
+            {"text": "Severe hearing loss or partial deafness in one or both ears", "value": "severeHearingLoss"}
+          ]
+        },{
+          "name": "oh_oh_famHx_motherOtherConditions",
+          "type": "checkbox",
+          "title": "Other conditions:",
+          "choices": [
+            {"text": "Allergies", "value": "allergies"},
+            {"text": "Endometriosis", "value": "endometriosis"},
+            {"text": "Fibroids", "value": "fibroids"},
+            {"text": "Liver condition (e.g., cirrhosis)", "value": "liverCondition"},
+            {"text": "Obesity", "value": "obesity"},
+            {"text": "Polycystic ovarian syndrome", "value": "polycysticOvarianSyndrome"},
+            {"text": "Reactions to anesthesia (such as hyperthermia)", "value": "reactionsToAnesthesia"},
+            {"text": "Skin condition (e.g., eczema, psoriasis)", "value": "skinCondition"}
+          ]
+        }]
+      },{
+        "elements": [{
+          "type": "html",
+          "name": "fatherConditionsDescription",
+          "html": "Please indicate if your father has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (please select all that apply)"
+        },{
+          "name": "oh_oh_famHx_fatherCancer",
+          "type": "checkbox",
+          "title": "Cancer",
+          "showOtherItem": true,
+          "otherText": "Other cancer",
+          "otherPlaceholder": "Please specify",
+          "choices": [
+            {"text": "Bladder cancer", "value": "bladderCancer"},
+            {"text": "Blood or soft tissue cancer", "value": "bloodOrSoftTissueCancer"},
+            {"text": "Bone cancer", "value": "boneCancer"},
+            {"text": "Brain cancer", "value": "brainCancer"},
+            {"text": "Breast cancer", "value": "breastCancer"},
+            {"text": "Cervical cancer", "value": "cervicalCancer"},
+            {"text": "Colon cancer/Rectal cancer", "value": "colonCancerRectalCancer"},
+            {"text": "Endocrine cancer", "value": "endocrineCancer"},
+            {"text": "Endometrial cancer", "value": "endometrialCancer"},
+            {"text": "Esophageal cancer", "value": "esophagealCancer"},
+            {"text": "Eye cancer", "value": "eyeCancer"},
+            {"text": "Head and neck cancer", "value": "headAndNeckCancer"},
+            {"text": "Kidney cancer", "value": "kidneyCancer"},
+            {"text": "Lung cancer", "value": "lungCancer"},
+            {"text": "Ovarian cancer", "value": "ovarianCancer"},
+            {"text": "Pancreatic cancer", "value": "pancreaticCancer"},
+            {"text": "Prostate cancer", "value": "prostateCancer"},
+            {"text": "Skin cancer", "value": "skinCancer"},
+            {"text": "Stomach cancer", "value": "stomachCancer"},
+            {"text": "Thyroid cancer", "value": "thyroidCancer"}
+          ]
+        },{
+          "name": "oh_oh_famHx_fatherHeartBlood",
+          "type": "checkbox",
+          "title": "Heart and blood conditions",
+          "choices": [
+            {"text": "Anemia", "value": "anemia"},
+            {"text": "Another abnormal heart rhythm", "value": "anotherAbnormalHeartRhythm"},
+            {"text": "Atrial fibrillation (Afib) or Atrial flutter", "value": "atrialFibrillation"},
+            {"text": "Bleeding disorder", "value": "bleedingDisorder"},
+            {"text": "Heart failure", "value": "heartFailure"},
+            {"text": "Coronary artery/coronary heart disease", "value": "coronaryDisease"},
+            {"text": "Cardiac stent", "value": "cardiacStent"},
+            {"text": "Coronary artery bypass surgery", "value": "coronaryArteryBypassSurgery"},
+            {"text": "Heart attack", "value": "heartAttack"},
+            {"text": "Heart failure", "value": "heartFailure"},
+            {"text": "Heart valve disease", "value": "heartValveDisease"},
+            {"text": "High cholesterol", "value": "highCholesterol"},
+            {"text": "Hypertension (high blood pressure)", "value": "hypertension"},
+            {"text": "Peripheral vascular disease", "value": "peripheralVascularDisease"},
+            {"text": "Pulmonary embolism or deep vein thrombosis", "value": "pulmonaryEmbolismOrDVT"},
+            {"text": "Sickle cell disease", "value": "sickleCellDisease"},
+            {"text": "Stroke", "value": "stroke"},
+            {"text": "Transient ischemic attacks (TIAs or mini-strokes)", "value": "transientIschemicAttacks"},
+            {"text": "Sudden death/Cardiac arrest", "value": "suddenDeathCardiacArrest"}
+          ]
+        },{
+          "name": "oh_oh_famHx_fatherDisgestive",
+          "type": "checkbox",
+          "title": "Digestive conditions:",
+          "choices": [
+            {"text": "Acid reflux", "value": "acidReflux"},
+            {"text": "Celiac disease", "value": "celiacDisease"},
+            {"text": "Colon polyps", "value": "colonPolyps"},
+            {"text": "Crohn’s disease", "value": "crohnsDisease"},
+            {"text": "Diverticulitis/Diverticulosis", "value": "diverticulitisDiverticulosis"},
+            {"text": "Gall stones", "value": "gallStones"},
+            {"text": "Irritable bowel syndrome (IBS)", "value": "irritableBowelSyndrome"},
+            {"text": "Liver condition (e.g., cirrhosis)", "value": "liverCondition"},
+            {"text": "Pancreatitis", "value": "pancreatitis"},
+            {"text": "Peptic (stomach) ulcers", "value": "pepticStomachUlcers"},
+            {"text": "Ulcerative colitis", "value": "ulcerativeColitis"}
+          ]
+        },{
+          "name": "oh_oh_famHx_fatherHormone",
+          "type": "checkbox",
+          "title": "Hormone/endocrine conditions:",
+          "choices": [
+            {"text": "Hyperthyroidism", "value": "hyperthyroidism"},
+            {"text": "Hypothyroidism", "value": "hypothyroidism"},
+            {"text": "Type 1 diabetes", "value": "type1Diabetes"},
+            {"text": "Type 2 diabetes", "value": "type2Diabetes"},
+            {"text": "Other/unknown diabetes", "value": "otherUnknownDiabetes"}
+          ]
+        },{
+          "name": "oh_oh_famHx_fatherKidneys",
+          "type": "checkbox",
+          "title": "Kidney conditions:",
+          "choices": [
+            {"text": "Kidney disease", "value": "kidneyDisease"},
+            {"text": "Kidney stones", "value": "kidneyStones"}
+          ]
+        },{
+          "name": "oh_oh_famHx_fatherLung",
+          "type": "checkbox",
+          "title": "Lung conditions:",
+          "choices": [
+            {"text": "Asthma", "value": "asthma"},
+            {"text": "Chronic lung disease (COPD, emphysema, or bronchitis)", "value": "chronicLungDisease"},
+            {"text": "Sleep apnea", "value": "sleepApnea"}
+          ]
+        },{
+          "name": "oh_oh_famHx_fatherNervousSystem",
+          "type": "checkbox",
+          "title": "Brain and nervous system conditions:",
+          "choices": [
+            {"text": "Cerebral palsy", "value": "cerebralPalsy"},
+            {"text": "Dementia (includes Alzheimer’s, vascular, etc.)", "value": "dementia"},
+            {"text": "Epilepsy or seizure", "value": "epilepsyOrSeizure"},
+            {"text": "Insomnia", "value": "insomnia"},
+            {"text": "Migraine headaches", "value": "migraineHeadaches"},
+            {"text": "Multiple sclerosis", "value": "multipleSclerosis"},
+            {"text": "Muscular dystrophy (MD)", "value": "muscularDystrophyMd"},
+            {"text": "Neuropathy", "value": "neuropathy"},
+            {"text": "Parkinson’s disease", "value": "parkinsonsDisease"}
+          ]
+        },{
+          "name": "oh_oh_famHx_fatherMentalHealth",
+          "type": "checkbox",
+          "title": "Mental health or substance use conditions:",
+          "choices": [
+            {"text": "Alcohol use disorder", "value": "alcoholUseDisorder"},
+            {"text": "Anxiety reaction/panic disorder", "value": "anxietyReactionPanicDisorder"},
+            {"text": "Attention-deficit/hyperactivity disorder (ADHD)", "value": "attentionDeficitHyperactivityDisorder"},
+            {"text": "Autism spectrum disorder", "value": "autismSpectrumDisorder"},
+            {"text": "Bipolar disorder", "value": "bipolarDisorder"},
+            {"text": "Depression", "value": "depression"},
+            {"text": "Drug use disorder", "value": "drugUseDisorder"},
+            {"text": "Eating disorder", "value": "eatingDisorder"},
+            {"text": "Post-traumatic stress disorder (PTSD)", "value": "postTraumaticStressDisorder"},
+            {"text": "Schizophrenia", "value": "schizophrenia"}
+          ]
+        },{
+          "name": "oh_oh_famHx_fatherBoneJointMuscle",
+          "type": "checkbox",
+          "title": "Bone, joint, and muscle conditions:",
+          "choices": [
+            {"text": "Carpal tunnel syndrome", "value": "carpalTunnelSyndrome"},
+            {"text": "Fibromyalgia", "value": "fibromyalgia"},
+            {"text": "Gout", "value": "gout"},
+            {"text": "Osteoarthritis", "value": "osteoarthritis"},
+            {"text": "Osteoporosis", "value": "osteoporosis"},
+            {"text": "Pseudogout (CPPD)", "value": "pseudogoutCppd"},
+            {"text": "Rheumatoid arthritis", "value": "rheumatoidArthritis"},
+            {"text": "Spine, muscle, or bone disorders (non-cancer)", "value": "spineMuscleOrBoneDisorders"},
+            {"text": "Systemic lupus", "value": "systemicLupus"},
+            {"text": "Other arthritis, such as psoriatic arthritis and/or ankylosing spondylitis", "value": "otherArthritis"}
+          ]
+        },{
+          "name": "oh_oh_famHx_fatherHearingEye",
+          "type": "radiogroup",
+          "title": "Hearing and eye conditions:",
+          "choices": [
+            {"text": "Cataracts", "value": "cataracts"},
+            {"text": "Glaucoma", "value": "glaucoma"},
+            {"text": "Macular degeneration", "value": "macularDegeneration"},
+            {"text": "Severe hearing loss or partial deafness in one or both ears", "value": "severeHearingLoss"}
+          ]
+        },{
+          "name": "oh_oh_famHx_fatherOtherConditions",
+          "type": "checkbox",
+          "title": "Other conditions:",
+          "choices": [
+            {"text": "Allergies", "value": "allergies"},
+            {"text": "Endometriosis", "value": "endometriosis"},
+            {"text": "Fibroids", "value": "fibroids"},
+            {"text": "Liver condition (e.g., cirrhosis)", "value": "liverCondition"},
+            {"text": "Obesity", "value": "obesity"},
+            {"text": "Polycystic ovarian syndrome", "value": "polycysticOvarianSyndrome"},
+            {"text": "Reactions to anesthesia (such as hyperthermia)", "value": "reactionsToAnesthesia"},
+            {"text": "Skin condition (e.g., eczema, psoriasis)", "value": "skinCondition"}
+          ]
+        }]
+      },{
+        "elements": [{
+          "type": "html",
+          "name": "siblingConditionsDescription",
+          "html": "Please indicate if your brothers and/or sisters [people with the same mother and/or sibling as you] has ever been diagnosed with the following health conditions and/or health events. Think only of those people you are related to by blood. If you have more than one brother or sister, check the box if any of your brothers or sisters have the condition (select all that apply)"
+        },{
+          "name": "oh_oh_famHx_siblingCancer",
+          "type": "checkbox",
+          "title": "Cancer",
+          "showOtherItem": true,
+          "otherText": "Other cancer",
+          "otherPlaceholder": "Please specify",
+          "choices": [
+            {"text": "Bladder cancer", "value": "bladderCancer"},
+            {"text": "Blood or soft tissue cancer", "value": "bloodOrSoftTissueCancer"},
+            {"text": "Bone cancer", "value": "boneCancer"},
+            {"text": "Brain cancer", "value": "brainCancer"},
+            {"text": "Breast cancer", "value": "breastCancer"},
+            {"text": "Cervical cancer", "value": "cervicalCancer"},
+            {"text": "Colon cancer/Rectal cancer", "value": "colonCancerRectalCancer"},
+            {"text": "Endocrine cancer", "value": "endocrineCancer"},
+            {"text": "Endometrial cancer", "value": "endometrialCancer"},
+            {"text": "Esophageal cancer", "value": "esophagealCancer"},
+            {"text": "Eye cancer", "value": "eyeCancer"},
+            {"text": "Head and neck cancer", "value": "headAndNeckCancer"},
+            {"text": "Kidney cancer", "value": "kidneyCancer"},
+            {"text": "Lung cancer", "value": "lungCancer"},
+            {"text": "Ovarian cancer", "value": "ovarianCancer"},
+            {"text": "Pancreatic cancer", "value": "pancreaticCancer"},
+            {"text": "Prostate cancer", "value": "prostateCancer"},
+            {"text": "Skin cancer", "value": "skinCancer"},
+            {"text": "Stomach cancer", "value": "stomachCancer"},
+            {"text": "Thyroid cancer", "value": "thyroidCancer"}
+          ]
+        },{
+          "name": "oh_oh_famHx_siblingHeartBlood",
+          "type": "checkbox",
+          "title": "Heart and blood conditions",
+          "choices": [
+            {"text": "Anemia", "value": "anemia"},
+            {"text": "Another abnormal heart rhythm", "value": "anotherAbnormalHeartRhythm"},
+            {"text": "Atrial fibrillation (Afib) or Atrial flutter", "value": "atrialFibrillation"},
+            {"text": "Bleeding disorder", "value": "bleedingDisorder"},
+            {"text": "Heart failure", "value": "heartFailure"},
+            {"text": "Coronary artery/coronary heart disease", "value": "coronaryDisease"},
+            {"text": "Cardiac stent", "value": "cardiacStent"},
+            {"text": "Coronary artery bypass surgery", "value": "coronaryArteryBypassSurgery"},
+            {"text": "Heart attack", "value": "heartAttack"},
+            {"text": "Heart failure", "value": "heartFailure"},
+            {"text": "Heart valve disease", "value": "heartValveDisease"},
+            {"text": "High cholesterol", "value": "highCholesterol"},
+            {"text": "Hypertension (high blood pressure)", "value": "hypertension"},
+            {"text": "Peripheral vascular disease", "value": "peripheralVascularDisease"},
+            {"text": "Pulmonary embolism or deep vein thrombosis", "value": "pulmonaryEmbolismOrDVT"},
+            {"text": "Sickle cell disease", "value": "sickleCellDisease"},
+            {"text": "Stroke", "value": "stroke"},
+            {"text": "Transient ischemic attacks (TIAs or mini-strokes)", "value": "transientIschemicAttacks"},
+            {"text": "Sudden death/Cardiac arrest", "value": "suddenDeathCardiacArrest"}
+          ]
+        },{
+          "name": "oh_oh_famHx_siblingDisgestive",
+          "type": "checkbox",
+          "title": "Digestive conditions:",
+          "choices": [
+            {"text": "Acid reflux", "value": "acidReflux"},
+            {"text": "Celiac disease", "value": "celiacDisease"},
+            {"text": "Colon polyps", "value": "colonPolyps"},
+            {"text": "Crohn’s disease", "value": "crohnsDisease"},
+            {"text": "Diverticulitis/Diverticulosis", "value": "diverticulitisDiverticulosis"},
+            {"text": "Gall stones", "value": "gallStones"},
+            {"text": "Irritable bowel syndrome (IBS)", "value": "irritableBowelSyndrome"},
+            {"text": "Liver condition (e.g., cirrhosis)", "value": "liverCondition"},
+            {"text": "Pancreatitis", "value": "pancreatitis"},
+            {"text": "Peptic (stomach) ulcers", "value": "pepticStomachUlcers"},
+            {"text": "Ulcerative colitis", "value": "ulcerativeColitis"}
+          ]
+        },{
+          "name": "oh_oh_famHx_siblingHormone",
+          "type": "checkbox",
+          "title": "Hormone/endocrine conditions:",
+          "choices": [
+            {"text": "Hyperthyroidism", "value": "hyperthyroidism"},
+            {"text": "Hypothyroidism", "value": "hypothyroidism"},
+            {"text": "Type 1 diabetes", "value": "type1Diabetes"},
+            {"text": "Type 2 diabetes", "value": "type2Diabetes"},
+            {"text": "Other/unknown diabetes", "value": "otherUnknownDiabetes"}
+          ]
+        },{
+          "name": "oh_oh_famHx_siblingKidneys",
+          "type": "checkbox",
+          "title": "Kidney conditions:",
+          "choices": [
+            {"text": "Kidney disease", "value": "kidneyDisease"},
+            {"text": "Kidney stones", "value": "kidneyStones"}
+          ]
+        },{
+          "name": "oh_oh_famHx_siblingLung",
+          "type": "checkbox",
+          "title": "Lung conditions:",
+          "choices": [
+            {"text": "Asthma", "value": "asthma"},
+            {"text": "Chronic lung disease (COPD, emphysema, or bronchitis)", "value": "chronicLungDisease"},
+            {"text": "Sleep apnea", "value": "sleepApnea"}
+          ]
+        },{
+          "name": "oh_oh_famHx_siblingNervousSystem",
+          "type": "checkbox",
+          "title": "Brain and nervous system conditions:",
+          "choices": [
+            {"text": "Cerebral palsy", "value": "cerebralPalsy"},
+            {"text": "Dementia (includes Alzheimer’s, vascular, etc.)", "value": "dementia"},
+            {"text": "Epilepsy or seizure", "value": "epilepsyOrSeizure"},
+            {"text": "Insomnia", "value": "insomnia"},
+            {"text": "Migraine headaches", "value": "migraineHeadaches"},
+            {"text": "Multiple sclerosis", "value": "multipleSclerosis"},
+            {"text": "Muscular dystrophy (MD)", "value": "muscularDystrophyMd"},
+            {"text": "Neuropathy", "value": "neuropathy"},
+            {"text": "Parkinson’s disease", "value": "parkinsonsDisease"}
+          ]
+        },{
+          "name": "oh_oh_famHx_siblingMentalHealth",
+          "type": "checkbox",
+          "title": "Mental health or substance use conditions:",
+          "choices": [
+            {"text": "Alcohol use disorder", "value": "alcoholUseDisorder"},
+            {"text": "Anxiety reaction/panic disorder", "value": "anxietyReactionPanicDisorder"},
+            {"text": "Attention-deficit/hyperactivity disorder (ADHD)", "value": "attentionDeficitHyperactivityDisorder"},
+            {"text": "Autism spectrum disorder", "value": "autismSpectrumDisorder"},
+            {"text": "Bipolar disorder", "value": "bipolarDisorder"},
+            {"text": "Depression", "value": "depression"},
+            {"text": "Drug use disorder", "value": "drugUseDisorder"},
+            {"text": "Eating disorder", "value": "eatingDisorder"},
+            {"text": "Post-traumatic stress disorder (PTSD)", "value": "postTraumaticStressDisorder"},
+            {"text": "Schizophrenia", "value": "schizophrenia"}
+          ]
+        },{
+          "name": "oh_oh_famHx_siblingBoneJointMuscle",
+          "type": "checkbox",
+          "title": "Bone, joint, and muscle conditions:",
+          "choices": [
+            {"text": "Carpal tunnel syndrome", "value": "carpalTunnelSyndrome"},
+            {"text": "Fibromyalgia", "value": "fibromyalgia"},
+            {"text": "Gout", "value": "gout"},
+            {"text": "Osteoarthritis", "value": "osteoarthritis"},
+            {"text": "Osteoporosis", "value": "osteoporosis"},
+            {"text": "Pseudogout (CPPD)", "value": "pseudogoutCppd"},
+            {"text": "Rheumatoid arthritis", "value": "rheumatoidArthritis"},
+            {"text": "Spine, muscle, or bone disorders (non-cancer)", "value": "spineMuscleOrBoneDisorders"},
+            {"text": "Systemic lupus", "value": "systemicLupus"},
+            {"text": "Other arthritis, such as psoriatic arthritis and/or ankylosing spondylitis", "value": "otherArthritis"}
+          ]
+        },{
+          "name": "oh_oh_famHx_siblingHearingEye",
+          "type": "radiogroup",
+          "title": "Hearing and eye conditions:",
+          "choices": [
+            {"text": "Cataracts", "value": "cataracts"},
+            {"text": "Glaucoma", "value": "glaucoma"},
+            {"text": "Macular degeneration", "value": "macularDegeneration"},
+            {"text": "Severe hearing loss or partial deafness in one or both ears", "value": "severeHearingLoss"}
+          ]
+        },{
+          "name": "oh_oh_famHx_siblingOtherConditions",
+          "type": "checkbox",
+          "title": "Other conditions:",
+          "choices": [
+            {"text": "Allergies", "value": "allergies"},
+            {"text": "Endometriosis", "value": "endometriosis"},
+            {"text": "Fibroids", "value": "fibroids"},
+            {"text": "Liver condition (e.g., cirrhosis)", "value": "liverCondition"},
+            {"text": "Obesity", "value": "obesity"},
+            {"text": "Polycystic ovarian syndrome", "value": "polycysticOvarianSyndrome"},
+            {"text": "Reactions to anesthesia (such as hyperthermia)", "value": "reactionsToAnesthesia"},
+            {"text": "Skin condition (e.g., eczema, psoriasis)", "value": "skinCondition"}
+          ]
+        }]
+      },{
+        "elements": [{
+          "type": "html",
+          "name": "daughterConditionsDescription",
+          "html": "Please indicate if your daughter(s) has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (select all that apply) "
+        },{
+          "name": "oh_oh_famHx_daughterCancer",
+          "type": "checkbox",
+          "title": "Cancer",
+          "showOtherItem": true,
+          "otherText": "Other cancer",
+          "otherPlaceholder": "Please specify",
+          "choices": [
+            {"text": "Bladder cancer", "value": "bladderCancer"},
+            {"text": "Blood or soft tissue cancer", "value": "bloodOrSoftTissueCancer"},
+            {"text": "Bone cancer", "value": "boneCancer"},
+            {"text": "Brain cancer", "value": "brainCancer"},
+            {"text": "Breast cancer", "value": "breastCancer"},
+            {"text": "Cervical cancer", "value": "cervicalCancer"},
+            {"text": "Colon cancer/Rectal cancer", "value": "colonCancerRectalCancer"},
+            {"text": "Endocrine cancer", "value": "endocrineCancer"},
+            {"text": "Endometrial cancer", "value": "endometrialCancer"},
+            {"text": "Esophageal cancer", "value": "esophagealCancer"},
+            {"text": "Eye cancer", "value": "eyeCancer"},
+            {"text": "Head and neck cancer", "value": "headAndNeckCancer"},
+            {"text": "Kidney cancer", "value": "kidneyCancer"},
+            {"text": "Lung cancer", "value": "lungCancer"},
+            {"text": "Ovarian cancer", "value": "ovarianCancer"},
+            {"text": "Pancreatic cancer", "value": "pancreaticCancer"},
+            {"text": "Prostate cancer", "value": "prostateCancer"},
+            {"text": "Skin cancer", "value": "skinCancer"},
+            {"text": "Stomach cancer", "value": "stomachCancer"},
+            {"text": "Thyroid cancer", "value": "thyroidCancer"}
+          ]
+        },{
+          "name": "oh_oh_famHx_daughterHeartBlood",
+          "type": "checkbox",
+          "title": "Heart and blood conditions",
+          "choices": [
+            {"text": "Anemia", "value": "anemia"},
+            {"text": "Another abnormal heart rhythm", "value": "anotherAbnormalHeartRhythm"},
+            {"text": "Atrial fibrillation (Afib) or Atrial flutter", "value": "atrialFibrillation"},
+            {"text": "Bleeding disorder", "value": "bleedingDisorder"},
+            {"text": "Heart failure", "value": "heartFailure"},
+            {"text": "Coronary artery/coronary heart disease", "value": "coronaryDisease"},
+            {"text": "Cardiac stent", "value": "cardiacStent"},
+            {"text": "Coronary artery bypass surgery", "value": "coronaryArteryBypassSurgery"},
+            {"text": "Heart attack", "value": "heartAttack"},
+            {"text": "Heart failure", "value": "heartFailure"},
+            {"text": "Heart valve disease", "value": "heartValveDisease"},
+            {"text": "High cholesterol", "value": "highCholesterol"},
+            {"text": "Hypertension (high blood pressure)", "value": "hypertension"},
+            {"text": "Peripheral vascular disease", "value": "peripheralVascularDisease"},
+            {"text": "Pulmonary embolism or deep vein thrombosis", "value": "pulmonaryEmbolismOrDVT"},
+            {"text": "Sickle cell disease", "value": "sickleCellDisease"},
+            {"text": "Stroke", "value": "stroke"},
+            {"text": "Transient ischemic attacks (TIAs or mini-strokes)", "value": "transientIschemicAttacks"},
+            {"text": "Sudden death/Cardiac arrest", "value": "suddenDeathCardiacArrest"}
+          ]
+        },{
+          "name": "oh_oh_famHx_daughterDisgestive",
+          "type": "checkbox",
+          "title": "Digestive conditions:",
+          "choices": [
+            {"text": "Acid reflux", "value": "acidReflux"},
+            {"text": "Celiac disease", "value": "celiacDisease"},
+            {"text": "Colon polyps", "value": "colonPolyps"},
+            {"text": "Crohn’s disease", "value": "crohnsDisease"},
+            {"text": "Diverticulitis/Diverticulosis", "value": "diverticulitisDiverticulosis"},
+            {"text": "Gall stones", "value": "gallStones"},
+            {"text": "Irritable bowel syndrome (IBS)", "value": "irritableBowelSyndrome"},
+            {"text": "Liver condition (e.g., cirrhosis)", "value": "liverCondition"},
+            {"text": "Pancreatitis", "value": "pancreatitis"},
+            {"text": "Peptic (stomach) ulcers", "value": "pepticStomachUlcers"},
+            {"text": "Ulcerative colitis", "value": "ulcerativeColitis"}
+          ]
+        },{
+          "name": "oh_oh_famHx_daughterHormone",
+          "type": "checkbox",
+          "title": "Hormone/endocrine conditions:",
+          "choices": [
+            {"text": "Hyperthyroidism", "value": "hyperthyroidism"},
+            {"text": "Hypothyroidism", "value": "hypothyroidism"},
+            {"text": "Type 1 diabetes", "value": "type1Diabetes"},
+            {"text": "Type 2 diabetes", "value": "type2Diabetes"},
+            {"text": "Other/unknown diabetes", "value": "otherUnknownDiabetes"}
+          ]
+        },{
+          "name": "oh_oh_famHx_daughterKidneys",
+          "type": "checkbox",
+          "title": "Kidney conditions:",
+          "choices": [
+            {"text": "Kidney disease", "value": "kidneyDisease"},
+            {"text": "Kidney stones", "value": "kidneyStones"}
+          ]
+        },{
+          "name": "oh_oh_famHx_daughterLung",
+          "type": "checkbox",
+          "title": "Lung conditions:",
+          "choices": [
+            {"text": "Asthma", "value": "asthma"},
+            {"text": "Chronic lung disease (COPD, emphysema, or bronchitis)", "value": "chronicLungDisease"},
+            {"text": "Sleep apnea", "value": "sleepApnea"}
+          ]
+        },{
+          "name": "oh_oh_famHx_daughterNervousSystem",
+          "type": "checkbox",
+          "title": "Brain and nervous system conditions:",
+          "choices": [
+            {"text": "Cerebral palsy", "value": "cerebralPalsy"},
+            {"text": "Dementia (includes Alzheimer’s, vascular, etc.)", "value": "dementia"},
+            {"text": "Epilepsy or seizure", "value": "epilepsyOrSeizure"},
+            {"text": "Insomnia", "value": "insomnia"},
+            {"text": "Migraine headaches", "value": "migraineHeadaches"},
+            {"text": "Multiple sclerosis", "value": "multipleSclerosis"},
+            {"text": "Muscular dystrophy (MD)", "value": "muscularDystrophyMd"},
+            {"text": "Neuropathy", "value": "neuropathy"},
+            {"text": "Parkinson’s disease", "value": "parkinsonsDisease"}
+          ]
+        },{
+          "name": "oh_oh_famHx_daughterMentalHealth",
+          "type": "checkbox",
+          "title": "Mental health or substance use conditions:",
+          "choices": [
+            {"text": "Alcohol use disorder", "value": "alcoholUseDisorder"},
+            {"text": "Anxiety reaction/panic disorder", "value": "anxietyReactionPanicDisorder"},
+            {"text": "Attention-deficit/hyperactivity disorder (ADHD)", "value": "attentionDeficitHyperactivityDisorder"},
+            {"text": "Autism spectrum disorder", "value": "autismSpectrumDisorder"},
+            {"text": "Bipolar disorder", "value": "bipolarDisorder"},
+            {"text": "Depression", "value": "depression"},
+            {"text": "Drug use disorder", "value": "drugUseDisorder"},
+            {"text": "Eating disorder", "value": "eatingDisorder"},
+            {"text": "Post-traumatic stress disorder (PTSD)", "value": "postTraumaticStressDisorder"},
+            {"text": "Schizophrenia", "value": "schizophrenia"}
+          ]
+        },{
+          "name": "oh_oh_famHx_daughterBoneJointMuscle",
+          "type": "checkbox",
+          "title": "Bone, joint, and muscle conditions:",
+          "choices": [
+            {"text": "Carpal tunnel syndrome", "value": "carpalTunnelSyndrome"},
+            {"text": "Fibromyalgia", "value": "fibromyalgia"},
+            {"text": "Gout", "value": "gout"},
+            {"text": "Osteoarthritis", "value": "osteoarthritis"},
+            {"text": "Osteoporosis", "value": "osteoporosis"},
+            {"text": "Pseudogout (CPPD)", "value": "pseudogoutCppd"},
+            {"text": "Rheumatoid arthritis", "value": "rheumatoidArthritis"},
+            {"text": "Spine, muscle, or bone disorders (non-cancer)", "value": "spineMuscleOrBoneDisorders"},
+            {"text": "Systemic lupus", "value": "systemicLupus"},
+            {"text": "Other arthritis, such as psoriatic arthritis and/or ankylosing spondylitis", "value": "otherArthritis"}
+          ]
+        },{
+          "name": "oh_oh_famHx_daughterHearingEye",
+          "type": "radiogroup",
+          "title": "Hearing and eye conditions:",
+          "choices": [
+            {"text": "Cataracts", "value": "cataracts"},
+            {"text": "Glaucoma", "value": "glaucoma"},
+            {"text": "Macular degeneration", "value": "macularDegeneration"},
+            {"text": "Severe hearing loss or partial deafness in one or both ears", "value": "severeHearingLoss"}
+          ]
+        },{
+          "name": "oh_oh_famHx_daughterOtherConditions",
+          "type": "checkbox",
+          "title": "Other conditions:",
+          "choices": [
+            {"text": "Allergies", "value": "allergies"},
+            {"text": "Endometriosis", "value": "endometriosis"},
+            {"text": "Fibroids", "value": "fibroids"},
+            {"text": "Liver condition (e.g., cirrhosis)", "value": "liverCondition"},
+            {"text": "Obesity", "value": "obesity"},
+            {"text": "Polycystic ovarian syndrome", "value": "polycysticOvarianSyndrome"},
+            {"text": "Reactions to anesthesia (such as hyperthermia)", "value": "reactionsToAnesthesia"},
+            {"text": "Skin condition (e.g., eczema, psoriasis)", "value": "skinCondition"}
+          ]
+        }]
+      },{
+        "elements": [{
+          "type": "html",
+          "name": "sonConditionsDescription",
+          "html": "Please indicate if your son(s) has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (select all that apply) "
+        },{
+          "name": "oh_oh_famHx_sonCancer",
+          "type": "checkbox",
+          "title": "Cancer",
+          "showOtherItem": true,
+          "otherText": "Other cancer",
+          "otherPlaceholder": "Please specify",
+          "choices": [
+            {"text": "Bladder cancer", "value": "bladderCancer"},
+            {"text": "Blood or soft tissue cancer", "value": "bloodOrSoftTissueCancer"},
+            {"text": "Bone cancer", "value": "boneCancer"},
+            {"text": "Brain cancer", "value": "brainCancer"},
+            {"text": "Breast cancer", "value": "breastCancer"},
+            {"text": "Cervical cancer", "value": "cervicalCancer"},
+            {"text": "Colon cancer/Rectal cancer", "value": "colonCancerRectalCancer"},
+            {"text": "Endocrine cancer", "value": "endocrineCancer"},
+            {"text": "Endometrial cancer", "value": "endometrialCancer"},
+            {"text": "Esophageal cancer", "value": "esophagealCancer"},
+            {"text": "Eye cancer", "value": "eyeCancer"},
+            {"text": "Head and neck cancer", "value": "headAndNeckCancer"},
+            {"text": "Kidney cancer", "value": "kidneyCancer"},
+            {"text": "Lung cancer", "value": "lungCancer"},
+            {"text": "Ovarian cancer", "value": "ovarianCancer"},
+            {"text": "Pancreatic cancer", "value": "pancreaticCancer"},
+            {"text": "Prostate cancer", "value": "prostateCancer"},
+            {"text": "Skin cancer", "value": "skinCancer"},
+            {"text": "Stomach cancer", "value": "stomachCancer"},
+            {"text": "Thyroid cancer", "value": "thyroidCancer"}
+          ]
+        },{
+          "name": "oh_oh_famHx_sonHeartBlood",
+          "type": "checkbox",
+          "title": "Heart and blood conditions",
+          "choices": [
+            {"text": "Anemia", "value": "anemia"},
+            {"text": "Another abnormal heart rhythm", "value": "anotherAbnormalHeartRhythm"},
+            {"text": "Atrial fibrillation (Afib) or Atrial flutter", "value": "atrialFibrillation"},
+            {"text": "Bleeding disorder", "value": "bleedingDisorder"},
+            {"text": "Heart failure", "value": "heartFailure"},
+            {"text": "Coronary artery/coronary heart disease", "value": "coronaryDisease"},
+            {"text": "Cardiac stent", "value": "cardiacStent"},
+            {"text": "Coronary artery bypass surgery", "value": "coronaryArteryBypassSurgery"},
+            {"text": "Heart attack", "value": "heartAttack"},
+            {"text": "Heart failure", "value": "heartFailure"},
+            {"text": "Heart valve disease", "value": "heartValveDisease"},
+            {"text": "High cholesterol", "value": "highCholesterol"},
+            {"text": "Hypertension (high blood pressure)", "value": "hypertension"},
+            {"text": "Peripheral vascular disease", "value": "peripheralVascularDisease"},
+            {"text": "Pulmonary embolism or deep vein thrombosis", "value": "pulmonaryEmbolismOrDVT"},
+            {"text": "Sickle cell disease", "value": "sickleCellDisease"},
+            {"text": "Stroke", "value": "stroke"},
+            {"text": "Transient ischemic attacks (TIAs or mini-strokes)", "value": "transientIschemicAttacks"},
+            {"text": "Sudden death/Cardiac arrest", "value": "suddenDeathCardiacArrest"}
+          ]
+        },{
+          "name": "oh_oh_famHx_sonDisgestive",
+          "type": "checkbox",
+          "title": "Digestive conditions:",
+          "choices": [
+            {"text": "Acid reflux", "value": "acidReflux"},
+            {"text": "Celiac disease", "value": "celiacDisease"},
+            {"text": "Colon polyps", "value": "colonPolyps"},
+            {"text": "Crohn’s disease", "value": "crohnsDisease"},
+            {"text": "Diverticulitis/Diverticulosis", "value": "diverticulitisDiverticulosis"},
+            {"text": "Gall stones", "value": "gallStones"},
+            {"text": "Irritable bowel syndrome (IBS)", "value": "irritableBowelSyndrome"},
+            {"text": "Liver condition (e.g., cirrhosis)", "value": "liverCondition"},
+            {"text": "Pancreatitis", "value": "pancreatitis"},
+            {"text": "Peptic (stomach) ulcers", "value": "pepticStomachUlcers"},
+            {"text": "Ulcerative colitis", "value": "ulcerativeColitis"}
+          ]
+        },{
+          "name": "oh_oh_famHx_sonHormone",
+          "type": "checkbox",
+          "title": "Hormone/endocrine conditions:",
+          "choices": [
+            {"text": "Hyperthyroidism", "value": "hyperthyroidism"},
+            {"text": "Hypothyroidism", "value": "hypothyroidism"},
+            {"text": "Type 1 diabetes", "value": "type1Diabetes"},
+            {"text": "Type 2 diabetes", "value": "type2Diabetes"},
+            {"text": "Other/unknown diabetes", "value": "otherUnknownDiabetes"}
+          ]
+        },{
+          "name": "oh_oh_famHx_sonKidneys",
+          "type": "checkbox",
+          "title": "Kidney conditions:",
+          "choices": [
+            {"text": "Kidney disease", "value": "kidneyDisease"},
+            {"text": "Kidney stones", "value": "kidneyStones"}
+          ]
+        },{
+          "name": "oh_oh_famHx_sonLung",
+          "type": "checkbox",
+          "title": "Lung conditions:",
+          "choices": [
+            {"text": "Asthma", "value": "asthma"},
+            {"text": "Chronic lung disease (COPD, emphysema, or bronchitis)", "value": "chronicLungDisease"},
+            {"text": "Sleep apnea", "value": "sleepApnea"}
+          ]
+        },{
+          "name": "oh_oh_famHx_sonNervousSystem",
+          "type": "checkbox",
+          "title": "Brain and nervous system conditions:",
+          "choices": [
+            {"text": "Cerebral palsy", "value": "cerebralPalsy"},
+            {"text": "Dementia (includes Alzheimer’s, vascular, etc.)", "value": "dementia"},
+            {"text": "Epilepsy or seizure", "value": "epilepsyOrSeizure"},
+            {"text": "Insomnia", "value": "insomnia"},
+            {"text": "Migraine headaches", "value": "migraineHeadaches"},
+            {"text": "Multiple sclerosis", "value": "multipleSclerosis"},
+            {"text": "Muscular dystrophy (MD)", "value": "muscularDystrophyMd"},
+            {"text": "Neuropathy", "value": "neuropathy"},
+            {"text": "Parkinson’s disease", "value": "parkinsonsDisease"}
+          ]
+        },{
+          "name": "oh_oh_famHx_sonMentalHealth",
+          "type": "checkbox",
+          "title": "Mental health or substance use conditions:",
+          "choices": [
+            {"text": "Alcohol use disorder", "value": "alcoholUseDisorder"},
+            {"text": "Anxiety reaction/panic disorder", "value": "anxietyReactionPanicDisorder"},
+            {"text": "Attention-deficit/hyperactivity disorder (ADHD)", "value": "attentionDeficitHyperactivityDisorder"},
+            {"text": "Autism spectrum disorder", "value": "autismSpectrumDisorder"},
+            {"text": "Bipolar disorder", "value": "bipolarDisorder"},
+            {"text": "Depression", "value": "depression"},
+            {"text": "Drug use disorder", "value": "drugUseDisorder"},
+            {"text": "Eating disorder", "value": "eatingDisorder"},
+            {"text": "Post-traumatic stress disorder (PTSD)", "value": "postTraumaticStressDisorder"},
+            {"text": "Schizophrenia", "value": "schizophrenia"}
+          ]
+        },{
+          "name": "oh_oh_famHx_sonBoneJointMuscle",
+          "type": "checkbox",
+          "title": "Bone, joint, and muscle conditions:",
+          "choices": [
+            {"text": "Carpal tunnel syndrome", "value": "carpalTunnelSyndrome"},
+            {"text": "Fibromyalgia", "value": "fibromyalgia"},
+            {"text": "Gout", "value": "gout"},
+            {"text": "Osteoarthritis", "value": "osteoarthritis"},
+            {"text": "Osteoporosis", "value": "osteoporosis"},
+            {"text": "Pseudogout (CPPD)", "value": "pseudogoutCppd"},
+            {"text": "Rheumatoid arthritis", "value": "rheumatoidArthritis"},
+            {"text": "Spine, muscle, or bone disorders (non-cancer)", "value": "spineMuscleOrBoneDisorders"},
+            {"text": "Systemic lupus", "value": "systemicLupus"},
+            {"text": "Other arthritis, such as psoriatic arthritis and/or ankylosing spondylitis", "value": "otherArthritis"}
+          ]
+        },{
+          "name": "oh_oh_famHx_sonHearingEye",
+          "type": "radiogroup",
+          "title": "Hearing and eye conditions:",
+          "choices": [
+            {"text": "Cataracts", "value": "cataracts"},
+            {"text": "Glaucoma", "value": "glaucoma"},
+            {"text": "Macular degeneration", "value": "macularDegeneration"},
+            {"text": "Severe hearing loss or partial deafness in one or both ears", "value": "severeHearingLoss"}
+          ]
+        },{
+          "name": "oh_oh_famHx_sonOtherConditions",
+          "type": "checkbox",
+          "title": "Other conditions:",
+          "choices": [
+            {"text": "Allergies", "value": "allergies"},
+            {"text": "Endometriosis", "value": "endometriosis"},
+            {"text": "Fibroids", "value": "fibroids"},
+            {"text": "Liver condition (e.g., cirrhosis)", "value": "liverCondition"},
+            {"text": "Obesity", "value": "obesity"},
+            {"text": "Polycystic ovarian syndrome", "value": "polycysticOvarianSyndrome"},
+            {"text": "Reactions to anesthesia (such as hyperthermia)", "value": "reactionsToAnesthesia"},
+            {"text": "Skin condition (e.g., eczema, psoriasis)", "value": "skinCondition"}
+          ]
+        }]
+      },{
+        "elements": [{
+          "type": "html",
+          "name": "grandparentConditionsDescription",
+          "html": "Please indicate if your grandparent(s) has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (select all that apply) "
+        },{
+          "name": "oh_oh_famHx_grandparentCancer",
+          "type": "checkbox",
+          "title": "Cancer",
+          "showOtherItem": true,
+          "otherText": "Other cancer",
+          "otherPlaceholder": "Please specify",
+          "choices": [
+            {"text": "Bladder cancer", "value": "bladderCancer"},
+            {"text": "Blood or soft tissue cancer", "value": "bloodOrSoftTissueCancer"},
+            {"text": "Bone cancer", "value": "boneCancer"},
+            {"text": "Brain cancer", "value": "brainCancer"},
+            {"text": "Breast cancer", "value": "breastCancer"},
+            {"text": "Cervical cancer", "value": "cervicalCancer"},
+            {"text": "Colon cancer/Rectal cancer", "value": "colonCancerRectalCancer"},
+            {"text": "Endocrine cancer", "value": "endocrineCancer"},
+            {"text": "Endometrial cancer", "value": "endometrialCancer"},
+            {"text": "Esophageal cancer", "value": "esophagealCancer"},
+            {"text": "Eye cancer", "value": "eyeCancer"},
+            {"text": "Head and neck cancer", "value": "headAndNeckCancer"},
+            {"text": "Kidney cancer", "value": "kidneyCancer"},
+            {"text": "Lung cancer", "value": "lungCancer"},
+            {"text": "Ovarian cancer", "value": "ovarianCancer"},
+            {"text": "Pancreatic cancer", "value": "pancreaticCancer"},
+            {"text": "Prostate cancer", "value": "prostateCancer"},
+            {"text": "Skin cancer", "value": "skinCancer"},
+            {"text": "Stomach cancer", "value": "stomachCancer"},
+            {"text": "Thyroid cancer", "value": "thyroidCancer"}
+          ]
+        },{
+          "name": "oh_oh_famHx_grandparentHeartBlood",
+          "type": "checkbox",
+          "title": "Heart and blood conditions",
+          "choices": [
+            {"text": "Anemia", "value": "anemia"},
+            {"text": "Another abnormal heart rhythm", "value": "anotherAbnormalHeartRhythm"},
+            {"text": "Atrial fibrillation (Afib) or Atrial flutter", "value": "atrialFibrillation"},
+            {"text": "Bleeding disorder", "value": "bleedingDisorder"},
+            {"text": "Heart failure", "value": "heartFailure"},
+            {"text": "Coronary artery/coronary heart disease", "value": "coronaryDisease"},
+            {"text": "Cardiac stent", "value": "cardiacStent"},
+            {"text": "Coronary artery bypass surgery", "value": "coronaryArteryBypassSurgery"},
+            {"text": "Heart attack", "value": "heartAttack"},
+            {"text": "Heart failure", "value": "heartFailure"},
+            {"text": "Heart valve disease", "value": "heartValveDisease"},
+            {"text": "High cholesterol", "value": "highCholesterol"},
+            {"text": "Hypertension (high blood pressure)", "value": "hypertension"},
+            {"text": "Peripheral vascular disease", "value": "peripheralVascularDisease"},
+            {"text": "Pulmonary embolism or deep vein thrombosis", "value": "pulmonaryEmbolismOrDVT"},
+            {"text": "Sickle cell disease", "value": "sickleCellDisease"},
+            {"text": "Stroke", "value": "stroke"},
+            {"text": "Transient ischemic attacks (TIAs or mini-strokes)", "value": "transientIschemicAttacks"},
+            {"text": "Sudden death/Cardiac arrest", "value": "suddenDeathCardiacArrest"}
+          ]
+        },{
+          "name": "oh_oh_famHx_grandparentDisgestive",
+          "type": "checkbox",
+          "title": "Digestive conditions:",
+          "choices": [
+            {"text": "Acid reflux", "value": "acidReflux"},
+            {"text": "Celiac disease", "value": "celiacDisease"},
+            {"text": "Colon polyps", "value": "colonPolyps"},
+            {"text": "Crohn’s disease", "value": "crohnsDisease"},
+            {"text": "Diverticulitis/Diverticulosis", "value": "diverticulitisDiverticulosis"},
+            {"text": "Gall stones", "value": "gallStones"},
+            {"text": "Irritable bowel syndrome (IBS)", "value": "irritableBowelSyndrome"},
+            {"text": "Liver condition (e.g., cirrhosis)", "value": "liverCondition"},
+            {"text": "Pancreatitis", "value": "pancreatitis"},
+            {"text": "Peptic (stomach) ulcers", "value": "pepticStomachUlcers"},
+            {"text": "Ulcerative colitis", "value": "ulcerativeColitis"}
+          ]
+        },{
+          "name": "oh_oh_famHx_grandparentHormone",
+          "type": "checkbox",
+          "title": "Hormone/endocrine conditions:",
+          "choices": [
+            {"text": "Hyperthyroidism", "value": "hyperthyroidism"},
+            {"text": "Hypothyroidism", "value": "hypothyroidism"},
+            {"text": "Type 1 diabetes", "value": "type1Diabetes"},
+            {"text": "Type 2 diabetes", "value": "type2Diabetes"},
+            {"text": "Other/unknown diabetes", "value": "otherUnknownDiabetes"}
+          ]
+        },{
+          "name": "oh_oh_famHx_grandparentKidneys",
+          "type": "checkbox",
+          "title": "Kidney conditions:",
+          "choices": [
+            {"text": "Kidney disease", "value": "kidneyDisease"},
+            {"text": "Kidney stones", "value": "kidneyStones"}
+          ]
+        },{
+          "name": "oh_oh_famHx_grandparentLung",
+          "type": "checkbox",
+          "title": "Lung conditions:",
+          "choices": [
+            {"text": "Asthma", "value": "asthma"},
+            {"text": "Chronic lung disease (COPD, emphysema, or bronchitis)", "value": "chronicLungDisease"},
+            {"text": "Sleep apnea", "value": "sleepApnea"}
+          ]
+        },{
+          "name": "oh_oh_famHx_grandparentNervousSystem",
+          "type": "checkbox",
+          "title": "Brain and nervous system conditions:",
+          "choices": [
+            {"text": "Cerebral palsy", "value": "cerebralPalsy"},
+            {"text": "Dementia (includes Alzheimer’s, vascular, etc.)", "value": "dementia"},
+            {"text": "Epilepsy or seizure", "value": "epilepsyOrSeizure"},
+            {"text": "Insomnia", "value": "insomnia"},
+            {"text": "Migraine headaches", "value": "migraineHeadaches"},
+            {"text": "Multiple sclerosis", "value": "multipleSclerosis"},
+            {"text": "Muscular dystrophy (MD)", "value": "muscularDystrophyMd"},
+            {"text": "Neuropathy", "value": "neuropathy"},
+            {"text": "Parkinson’s disease", "value": "parkinsonsDisease"}
+          ]
+        },{
+          "name": "oh_oh_famHx_grandparentMentalHealth",
+          "type": "checkbox",
+          "title": "Mental health or substance use conditions:",
+          "choices": [
+            {"text": "Alcohol use disorder", "value": "alcoholUseDisorder"},
+            {"text": "Anxiety reaction/panic disorder", "value": "anxietyReactionPanicDisorder"},
+            {"text": "Attention-deficit/hyperactivity disorder (ADHD)", "value": "attentionDeficitHyperactivityDisorder"},
+            {"text": "Autism spectrum disorder", "value": "autismSpectrumDisorder"},
+            {"text": "Bipolar disorder", "value": "bipolarDisorder"},
+            {"text": "Depression", "value": "depression"},
+            {"text": "Drug use disorder", "value": "drugUseDisorder"},
+            {"text": "Eating disorder", "value": "eatingDisorder"},
+            {"text": "Post-traumatic stress disorder (PTSD)", "value": "postTraumaticStressDisorder"},
+            {"text": "Schizophrenia", "value": "schizophrenia"}
+          ]
+        },{
+          "name": "oh_oh_famHx_grandparentBoneJointMuscle",
+          "type": "checkbox",
+          "title": "Bone, joint, and muscle conditions:",
+          "choices": [
+            {"text": "Carpal tunnel syndrome", "value": "carpalTunnelSyndrome"},
+            {"text": "Fibromyalgia", "value": "fibromyalgia"},
+            {"text": "Gout", "value": "gout"},
+            {"text": "Osteoarthritis", "value": "osteoarthritis"},
+            {"text": "Osteoporosis", "value": "osteoporosis"},
+            {"text": "Pseudogout (CPPD)", "value": "pseudogoutCppd"},
+            {"text": "Rheumatoid arthritis", "value": "rheumatoidArthritis"},
+            {"text": "Spine, muscle, or bone disorders (non-cancer)", "value": "spineMuscleOrBoneDisorders"},
+            {"text": "Systemic lupus", "value": "systemicLupus"},
+            {"text": "Other arthritis, such as psoriatic arthritis and/or ankylosing spondylitis", "value": "otherArthritis"}
+          ]
+        },{
+          "name": "oh_oh_famHx_grandparentHearingEye",
+          "type": "radiogroup",
+          "title": "Hearing and eye conditions:",
+          "choices": [
+            {"text": "Cataracts", "value": "cataracts"},
+            {"text": "Glaucoma", "value": "glaucoma"},
+            {"text": "Macular degeneration", "value": "macularDegeneration"},
+            {"text": "Severe hearing loss or partial deafness in one or both ears", "value": "severeHearingLoss"}
+          ]
+        },{
+          "name": "oh_oh_famHx_grandparentOtherConditions",
+          "type": "checkbox",
+          "title": "Other conditions:",
+          "choices": [
+            {"text": "Allergies", "value": "allergies"},
+            {"text": "Endometriosis", "value": "endometriosis"},
+            {"text": "Fibroids", "value": "fibroids"},
+            {"text": "Liver condition (e.g., cirrhosis)", "value": "liverCondition"},
+            {"text": "Obesity", "value": "obesity"},
+            {"text": "Polycystic ovarian syndrome", "value": "polycysticOvarianSyndrome"},
+            {"text": "Reactions to anesthesia (such as hyperthermia)", "value": "reactionsToAnesthesia"},
+            {"text": "Skin condition (e.g., eczema, psoriasis)", "value": "skinCondition"}
+          ]
+        }]
+      }
+
+
+
+    ]
+  }
+}
