@@ -4,12 +4,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClock } from '@fortawesome/free-regular-svg-icons'
 
 import { SectionConfig } from 'api/api'
-import PearlImage, { PearlImageConfig, validatePearlImageConfig } from 'util/PearlImage'
 import { getSectionStyle } from 'util/styleUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalString } from 'util/validationUtils'
 
-import ConfiguredButton, { ButtonConfig, validateButtonConfig } from './ConfiguredButton'
+import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
+import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
 type ParticipationDetailTemplateConfig = {
   actionButton?: ButtonConfig, // button

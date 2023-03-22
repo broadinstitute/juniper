@@ -2,7 +2,7 @@ import classNames from 'classnames'
 import React, { CSSProperties } from 'react'
 import { getImageUrl } from 'api/api'
 
-import { requireOptionalString, requireNumber, requirePlainObject, requireString } from './validationUtils'
+import { requireOptionalString, requireNumber, requirePlainObject, requireString } from 'util/validationUtils'
 
 export type PearlImageConfig = {
   cleanFileName: string,

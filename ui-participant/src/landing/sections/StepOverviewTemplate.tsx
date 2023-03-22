@@ -3,12 +3,12 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
-import PearlImage, { PearlImageConfig, validatePearlImageConfig } from 'util/PearlImage'
 import { getSectionStyle } from 'util/styleUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 
-import ConfiguredButton, { ButtonConfig, validateButtonConfig } from './ConfiguredButton'
+import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
+import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
 type StepConfig = {
   image: PearlImageConfig,
