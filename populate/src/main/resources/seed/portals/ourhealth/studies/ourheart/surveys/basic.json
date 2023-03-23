@@ -21,6 +21,8 @@
   },{
     "questionStableId": "oh_oh_basic_dateOfBirth", "targetType": "PROFILE", "targetField": "birthDate", "mapType": "TEXT_NODE_TO_LOCAL_DATE",
     "formatString": "MM/dd/yyyy"
+  },{
+    "questionStableId": "oh_oh_basic_birthSex", "targetType": "PROFILE", "targetField": "sexAtBirth", "mapType": "TEXT_NODE_TO_STRING"
   }],
   "jsonContent": {
     "title": "The Basics",

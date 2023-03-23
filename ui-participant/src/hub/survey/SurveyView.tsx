@@ -34,7 +34,7 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
                            form: ConsentForm, enrollee: Enrollee, taskId: string
                            resumableData: ResumableData | null, pager: PageNumberControl, studyShortcode: string
                          }) {
-  const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData, onComplete, pager)
+  const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData, onComplete, pager, enrollee.profile)
   const navigate = useNavigate()
 
   const { updateEnrollee } = useUser()

@@ -96,14 +96,10 @@ public class EnrollmentService {
             preEnrollResponse.setPortalParticipantUserId(ppUser.getId());
             preEnrollmentResponseDao.update(preEnrollResponse);
         }
-        eventService.publishEnrolleeCreationEvent(enrollee, ppUser);
+        EnrolleeEvent event = eventService.publishEnrolleeCreationEvent(enrollee, ppUser);
         logger.info("Enrollee created: user {}, study {}, shortcode {}, {} tasks added",
                 user.getId(), studyShortcode, enrollee.getShortcode(), enrollee.getParticipantTasks().size());
-        HubResponse hubResponse = HubResponse.builder()
-                .enrollee(enrollee)
-                .response(enrollee)
-                .tasks(enrollee.getParticipantTasks().stream().toList())
-                .build();
+        HubResponse hubResponse = eventService.buildHubResponse(event, enrollee);
         return hubResponse;
     }
 

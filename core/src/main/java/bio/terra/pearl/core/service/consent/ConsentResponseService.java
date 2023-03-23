@@ -88,10 +88,7 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
         EnrolleeConsentEvent event = eventService.publishEnrolleeConsentEvent(enrollee, response, ppUser);
         logger.info("ConsentResponse submitted: enrollee: {}, formStableId: {}, formVersion: {}",
                 enrollee.getShortcode(), responseForm.getVersion(), responseForm.getStableId() );
-        HubResponse hubResponse = HubResponse.builder()
-                .response(event.getConsentResponse())
-                .tasks(event.getEnrollee().getParticipantTasks().stream().toList())
-                .enrollee(event.getEnrollee()).build();
+        HubResponse hubResponse = eventService.buildHubResponse(event, response);
         return hubResponse;
     }
 

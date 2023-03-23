@@ -8,7 +8,7 @@ import 'inputmask/dist/inputmask/phone-codes/phone'
 // @ts-ignore
 import * as widgets from 'surveyjs-widgets'
 import { Survey as SurveyJSComponent } from 'survey-react-ui'
-import { ResumableData, SurveyJSForm } from 'api/api'
+import { Profile, ResumableData, SurveyJSForm } from 'api/api'
 import { useSearchParams } from 'react-router-dom'
 import { getSurveyElementList } from './pearlSurveyUtils'
 
@@ -65,7 +65,7 @@ export function useRoutablePageNumber(): PageNumberControl {
  * @param pager the control object for paging the survey
  */
 export function useSurveyJSModel(form: SurveyJSForm, resumeData: ResumableData | null,
-  onComplete: () => void, pager: PageNumberControl) {
+  onComplete: () => void, pager: PageNumberControl, profile?: Profile) {
   const [surveyModel, setSurveyModel] = useState<SurveyModel | null>(null)
 
   /** hand a page change by updating state of both the surveyJS model and our internal state*/
@@ -94,6 +94,7 @@ export function useSurveyJSModel(form: SurveyJSForm, resumeData: ResumableData |
       pageNumber = refreshData.currentPageNo
     }
     newSurveyModel.currentPageNo = pageNumber
+    newSurveyModel.setVariable('profile', profile)
 
     newSurveyModel.showTitle = false
     setSurveyModel(newSurveyModel)
