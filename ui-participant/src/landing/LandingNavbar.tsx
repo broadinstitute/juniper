@@ -1,13 +1,12 @@
 import { Collapse } from 'bootstrap'
 import classNames from 'classnames'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useId, useRef } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
 import Api, { getImageUrl, isInternalAnchorLink, isInternalLink, NavbarItem } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
-import { useUniqueId } from 'util/reactUtils'
 
 const navLinkClasses = 'nav-link fs-5 ms-lg-3'
 
@@ -40,7 +39,7 @@ export default function LandingNavbar() {
     }
   }, [location.pathname])
 
-  const dropdownId = useUniqueId()
+  const dropdownId = useId()
 
   return <nav className="LandingNavbar navbar navbar-expand-lg navbar-light">
     <div className="container-fluid">
@@ -51,7 +50,7 @@ export default function LandingNavbar() {
       <button
         aria-controls={dropdownId} aria-expanded="false" aria-label="Toggle navigation"
         className="navbar-toggler"
-        data-bs-toggle="collapse" data-bs-target={`#${dropdownId}`}
+        data-bs-toggle="collapse" data-bs-target={`#${CSS.escape(dropdownId)}`}
         type="button"
       >
         <span className="navbar-toggler-icon"/>
