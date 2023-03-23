@@ -85,6 +85,8 @@ function SubGridView({ subGrid }: { subGrid: SubGrid }) {
 
 /** renders a single bio with pic */
 function PhotoBioView({ photoBio }: { photoBio: PhotoBio }) {
+  // Default alt text to person's name
+  photoBio.image.alt ||= photoBio.name
   return <div className="col-sm-6 col-md-4 gx-5 gy-3 text-center text-sm-start">
     <PearlImage image={photoBio.image} className="img-fluid"/>
     <div className="my-2">
