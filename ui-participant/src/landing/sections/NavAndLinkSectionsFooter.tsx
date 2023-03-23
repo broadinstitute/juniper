@@ -2,11 +2,12 @@ import React from 'react'
 import _ from 'lodash'
 
 import { SectionConfig } from 'api/api'
-import { TemplateComponentProps } from 'util/templateUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requirePlainObject, requireString } from 'util/validationUtils'
 
 import LandingNavbar from '../LandingNavbar'
+
+import { TemplateComponentProps } from './templateUtils'
 
 type NavAndLinkSectionsFooterConfig = {
   includeNavbar?: boolean,

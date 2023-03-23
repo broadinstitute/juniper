@@ -5,12 +5,13 @@ import { faClock } from '@fortawesome/free-regular-svg-icons'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
-import { TemplateComponentProps } from 'util/templateUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalString } from 'util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
+
+import { TemplateComponentProps } from './templateUtils'
 
 type ParticipationDetailTemplateConfig = {
   actionButton?: ButtonConfig, // button

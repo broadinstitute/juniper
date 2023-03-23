@@ -2,11 +2,12 @@ import React from 'react'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
-import { TemplateComponentProps } from 'util/templateUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalString } from 'util/validationUtils'
 
 import PearlImage from '../PearlImage'
+
+import { TemplateComponentProps } from './templateUtils'
 
 type SocialMediaTemplateConfig = {
   facebookHref?: string, // URL of Facebook page

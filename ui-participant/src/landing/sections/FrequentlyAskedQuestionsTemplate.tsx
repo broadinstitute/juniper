@@ -8,9 +8,10 @@ import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
-import { TemplateComponentProps } from 'util/templateUtils'
 import { requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
+
+import { TemplateComponentProps } from './templateUtils'
 
 const idFor = (question: string): string => {
   return _.kebabCase(question)

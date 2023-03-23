@@ -2,7 +2,6 @@ import _ from 'lodash'
 import React from 'react'
 
 import { HtmlPage, HtmlSection, SectionConfig, SectionType } from 'api/api'
-import { TemplateComponent } from 'util/templateUtils'
 import { isPlainObject } from 'util/validationUtils'
 
 import BannerImage from './BannerImage'
@@ -15,6 +14,7 @@ import RawHtmlTemplate from './RawHtmlTemplate'
 import PhotoBlurbGrid from './PhotoBlurbGrid'
 import ParticipationDetailTemplate from './ParticipationDetailTemplate'
 import NavAndLinkSectionsFooter from './NavAndLinkSectionsFooter'
+import { TemplateComponent } from './templateUtils'
 
 const templateComponents: Record<SectionType, TemplateComponent> = {
   'FAQ': FrequentlyAskedQuestionsTemplate,

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { TemplateComponentProps } from 'util/templateUtils'
+import { TemplateComponentProps } from './templateUtils'
 
 type RawHtmlTemplateProps = TemplateComponentProps
 

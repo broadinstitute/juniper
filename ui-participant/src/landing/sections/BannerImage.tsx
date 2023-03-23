@@ -1,10 +1,11 @@
 import React from 'react'
 
 import { SectionConfig } from 'api/api'
-import { TemplateComponentProps } from 'util/templateUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
+
+import { TemplateComponentProps } from './templateUtils'
 
 type BannerImageConfig = {
   image: PearlImageConfig
