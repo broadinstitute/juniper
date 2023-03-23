@@ -24,7 +24,8 @@ const LoadingSpinner = (props: LoadingSpinnerProps) => {
   )
 }
 
-/** Show an overlay with a loading page over the full page */
+/** Show an overlay with a loading page over the full page.  If the page takes >150ms to load,
+  a. loading spinner will be displayed */
 export const PageLoadingIndicator = () => {
   // Render backdrop then add "show" class for transition on opacity.
   const [showBackdrop, setShowBackdrop] = useState(false)
