@@ -8,6 +8,8 @@ import { requireOptionalArray, requireOptionalString, requirePlainObject, requir
 
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
+import { TemplateComponentProps } from './templateUtils'
+
 type PhotoBlurbGridConfig = {
   title?: string,
   subGrids: SubGrid[]
@@ -51,10 +53,7 @@ const validatePhotoBlurbGridConfig = (config: SectionConfig): PhotoBlurbGridConf
   return { subGrids, title }
 }
 
-type PhotoBlurbGridProps = {
-  anchorRef?: string
-  config: PhotoBlurbGridConfig
-}
+type PhotoBlurbGridProps = TemplateComponentProps<PhotoBlurbGridConfig>
 
 /**
  * Template for rendering a hero with centered content.

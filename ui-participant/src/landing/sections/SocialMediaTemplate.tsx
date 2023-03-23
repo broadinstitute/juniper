@@ -7,6 +7,8 @@ import { requireOptionalString } from 'util/validationUtils'
 
 import PearlImage from '../PearlImage'
 
+import { TemplateComponentProps } from './templateUtils'
+
 type SocialMediaTemplateConfig = {
   facebookHref?: string, // URL of Facebook page
   instagramHref?: string, // URL of Instagram page
@@ -26,10 +28,7 @@ const validateSocialMediaTemplateConfig = (config: SectionConfig): SocialMediaTe
   }
 }
 
-type SocialMediaTemplateProps = {
-  anchorRef?: string
-  config: SocialMediaTemplateConfig
-}
+type SocialMediaTemplateProps = TemplateComponentProps<SocialMediaTemplateConfig>
 
 /**
  * Template for a hero with social media links.

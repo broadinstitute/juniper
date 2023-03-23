@@ -7,6 +7,8 @@ import { requireOptionalArray, requirePlainObject, requireString } from 'util/va
 
 import LandingNavbar from '../LandingNavbar'
 
+import { TemplateComponentProps } from './templateUtils'
+
 type NavAndLinkSectionsFooterConfig = {
   includeNavbar?: boolean,
   itemSections?: ItemSection[]
@@ -63,9 +65,7 @@ const validateNavAndLinkSectionsFooterConfig = (config: SectionConfig): NavAndLi
   return { includeNavbar, itemSections }
 }
 
-type NavAndLinkSectionsFooterProps = {
-  config: NavAndLinkSectionsFooterConfig
-}
+type NavAndLinkSectionsFooterProps = TemplateComponentProps<NavAndLinkSectionsFooterConfig>
 
 /** renders a footer-style section */
 export function NavAndLinkSectionsFooter(props: NavAndLinkSectionsFooterProps) {

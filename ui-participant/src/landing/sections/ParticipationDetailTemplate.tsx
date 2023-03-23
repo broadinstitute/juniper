@@ -11,6 +11,8 @@ import { requireOptionalString } from 'util/validationUtils'
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
+import { TemplateComponentProps } from './templateUtils'
+
 type ParticipationDetailTemplateConfig = {
   actionButton?: ButtonConfig, // button
   blurb?: string, //  text below the title
@@ -46,10 +48,7 @@ const validateParticipationDetailTemplateConfig = (config: SectionConfig): Parti
   }
 }
 
-type ParticipationDetailTemplateProps = {
-  anchorRef?: string
-  config: ParticipationDetailTemplateConfig
-}
+type ParticipationDetailTemplateProps = TemplateComponentProps<ParticipationDetailTemplateConfig>
 
 /**
  * Template for a participation step description

@@ -11,6 +11,8 @@ import { requireOptionalArray, requireOptionalString } from 'util/validationUtil
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
+import { TemplateComponentProps } from './templateUtils'
+
 type HeroCenteredTemplateConfig = {
   blurb?: string, //  text below the title
   blurbAlign?: 'left' | 'right' | 'center' // left|right|center  where to align the blurb text.  default is 'center'
@@ -41,10 +43,7 @@ const validateHeroCenteredTemplateConfig = (config: SectionConfig): HeroCentered
   }
 }
 
-type HeroCenteredTemplateProps = {
-  anchorRef?: string
-  config: HeroCenteredTemplateConfig
-}
+type HeroCenteredTemplateProps = TemplateComponentProps<HeroCenteredTemplateConfig>
 
 /**
  * Template for rendering a hero with centered content.
