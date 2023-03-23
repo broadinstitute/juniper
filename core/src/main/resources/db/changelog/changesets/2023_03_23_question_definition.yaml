@@ -19,3 +19,17 @@ databaseChangeLog:
               - column: { name: required, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
               - column: { name: created_at, type: datetime, constraints: { nullable: false } }
               - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+        - addUniqueConstraint:
+            tableName: survey_question_definition
+            constraintName: uc_survey_question_definition_version
+            columnNames: survey_stable_id, survey_version, question_stable_id
+        - createIndex:
+            tableName: survey_question_definition
+            indexName: idx_survey_question_definition_stable_id_version
+            columns:
+              - column:
+                  descending: true
+                  name: survey_stable_id
+              - column:
+                  descending: true
+                  name: survey_version
