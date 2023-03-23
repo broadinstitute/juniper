@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
+import { TemplateComponentProps } from 'util/templateUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 
@@ -51,10 +52,7 @@ const validatePhotoBlurbGridConfig = (config: SectionConfig): PhotoBlurbGridConf
   return { subGrids, title }
 }
 
-type PhotoBlurbGridProps = {
-  anchorRef?: string
-  config: PhotoBlurbGridConfig
-}
+type PhotoBlurbGridProps = TemplateComponentProps<PhotoBlurbGridConfig>
 
 /**
  * Template for rendering a hero with centered content.

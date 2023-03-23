@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
+import { TemplateComponentProps } from 'util/templateUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 
@@ -40,10 +41,7 @@ const validateStepOverviewTemplateConfig = (config: SectionConfig): StepOverview
   return { buttons, steps, title }
 }
 
-type StepOverviewTemplateProps = {
-  anchorRef?: string
-  config: StepOverviewTemplateConfig
-}
+type StepOverviewTemplateProps = TemplateComponentProps<StepOverviewTemplateConfig>
 
 /**
  * Template for rendering a step overview

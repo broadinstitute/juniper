@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
+import { TemplateComponentProps } from 'util/templateUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalNumber, requireOptionalString } from 'util/validationUtils'
 
@@ -51,10 +52,7 @@ const validateHeroWithImageTemplateConfig = (config: SectionConfig): HeroWithIma
   }
 }
 
-type HeroWithImageTemplateProps = {
-  anchorRef?: string
-  config: HeroWithImageTemplateConfig
-}
+type HeroWithImageTemplateProps = TemplateComponentProps<HeroWithImageTemplateConfig>
 
 /**
  * Template for a hero with text content on the left and an image on the right.

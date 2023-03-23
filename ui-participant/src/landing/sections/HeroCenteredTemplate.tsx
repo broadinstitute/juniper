@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
+import { TemplateComponentProps } from 'util/templateUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalString } from 'util/validationUtils'
 
@@ -41,10 +42,7 @@ const validateHeroCenteredTemplateConfig = (config: SectionConfig): HeroCentered
   }
 }
 
-type HeroCenteredTemplateProps = {
-  anchorRef?: string
-  config: HeroCenteredTemplateConfig
-}
+type HeroCenteredTemplateProps = TemplateComponentProps<HeroCenteredTemplateConfig>
 
 /**
  * Template for rendering a hero with centered content.

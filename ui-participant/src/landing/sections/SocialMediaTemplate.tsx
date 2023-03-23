@@ -2,6 +2,7 @@ import React from 'react'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
+import { TemplateComponentProps } from 'util/templateUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalString } from 'util/validationUtils'
 
@@ -26,10 +27,7 @@ const validateSocialMediaTemplateConfig = (config: SectionConfig): SocialMediaTe
   }
 }
 
-type SocialMediaTemplateProps = {
-  anchorRef?: string
-  config: SocialMediaTemplateConfig
-}
+type SocialMediaTemplateProps = TemplateComponentProps<SocialMediaTemplateConfig>
 
 /**
  * Template for a hero with social media links.

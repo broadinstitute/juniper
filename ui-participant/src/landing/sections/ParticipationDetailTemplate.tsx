@@ -5,6 +5,7 @@ import { faClock } from '@fortawesome/free-regular-svg-icons'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
+import { TemplateComponentProps } from 'util/templateUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalString } from 'util/validationUtils'
 
@@ -46,10 +47,7 @@ const validateParticipationDetailTemplateConfig = (config: SectionConfig): Parti
   }
 }
 
-type ParticipationDetailTemplateProps = {
-  anchorRef?: string
-  config: ParticipationDetailTemplateConfig
-}
+type ParticipationDetailTemplateProps = TemplateComponentProps<ParticipationDetailTemplateConfig>
 
 /**
  * Template for a participation step description

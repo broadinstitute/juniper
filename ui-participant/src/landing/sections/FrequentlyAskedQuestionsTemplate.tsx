@@ -8,6 +8,7 @@ import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
+import { TemplateComponentProps } from 'util/templateUtils'
 import { requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 
@@ -56,10 +57,7 @@ const validateFrequentlyAskedQuestionsConfig = (config: SectionConfig): Frequent
   }
 }
 
-type FrequentlyAskedQuestionsProps = {
-  anchorRef?: string
-  config: FrequentlyAskedQuestionsConfig
-}
+type FrequentlyAskedQuestionsProps = TemplateComponentProps<FrequentlyAskedQuestionsConfig>
 
 /**
  * Template for rendering a Frequently Asked Questions block.

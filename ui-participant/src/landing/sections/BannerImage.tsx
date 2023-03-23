@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { SectionConfig } from 'api/api'
+import { TemplateComponentProps } from 'util/templateUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
@@ -14,9 +15,7 @@ const validateBannerImageConfig = (config: SectionConfig): BannerImageConfig => 
   return { image }
 }
 
-type BannerImageProps = {
-  config: BannerImageConfig
-}
+type BannerImageProps = TemplateComponentProps<BannerImageConfig>
 
 /**
  * Template for a full width banner image.

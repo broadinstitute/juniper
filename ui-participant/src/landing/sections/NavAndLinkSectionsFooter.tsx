@@ -2,6 +2,7 @@ import React from 'react'
 import _ from 'lodash'
 
 import { SectionConfig } from 'api/api'
+import { TemplateComponentProps } from 'util/templateUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requirePlainObject, requireString } from 'util/validationUtils'
 
@@ -63,9 +64,7 @@ const validateNavAndLinkSectionsFooterConfig = (config: SectionConfig): NavAndLi
   return { includeNavbar, itemSections }
 }
 
-type NavAndLinkSectionsFooterProps = {
-  config: NavAndLinkSectionsFooterConfig
-}
+type NavAndLinkSectionsFooterProps = TemplateComponentProps<NavAndLinkSectionsFooterConfig>
 
 /** renders a footer-style section */
 export function NavAndLinkSectionsFooter(props: NavAndLinkSectionsFooterProps) {
