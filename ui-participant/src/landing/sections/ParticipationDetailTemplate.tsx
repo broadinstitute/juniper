@@ -66,19 +66,23 @@ function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
     title
   } = config
 
+  const hasImage = !!image
   const isLeftImage = imagePosition === 'left' // default is right, so left has to be explicitly specified
   return <div id={anchorRef} className="row mx-0 py-5" style={getSectionStyle(config)}>
     <div
       className={classNames(
         'col-md-10 col-lg-8', 'mx-auto', 'row',
-        'justify-content-between',
-        isLeftImage ? 'flex-row' : 'flex-row-reverse'
+        { 'justify-content-between': hasImage },
+        { 'flex-row': hasImage && isLeftImage },
+        { 'flex-row-reverse': hasImage && !isLeftImage }
       )}
     >
-      <div className="col-6 col-md-3 mx-auto mx-md-0 text-center">
-        <PearlImage image={image} className="img-fluid mb-4 mb-md-0"/>
-      </div>
-      <div className="col-md-8">
+      {hasImage && (
+        <div className="col-6 col-md-3 mx-auto mx-md-0 text-center">
+          <PearlImage image={image} className="img-fluid mb-4 mb-md-0"/>
+        </div>
+      )}
+      <div className={classNames({ 'col-md-8': hasImage })}>
         <h4>
           {stepNumberText}
         </h4>
