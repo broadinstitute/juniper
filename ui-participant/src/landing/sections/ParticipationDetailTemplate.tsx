@@ -77,7 +77,7 @@ function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
         { 'flex-row-reverse': hasImage && !isLeftImage }
       )}
     >
-      {!!image && (
+      {hasImage && (
         <div className="col-6 col-md-3 mx-auto mx-md-0 text-center">
           <PearlImage image={image} className="img-fluid mb-4 mb-md-0"/>
         </div>
