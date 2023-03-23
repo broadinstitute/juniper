@@ -3,6 +3,8 @@ import React, { CSSProperties, useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDna } from '@fortawesome/free-solid-svg-icons/faDna'
 
+import { DelayedRender } from './DelayedRender'
+
 type LoadingSpinnerProps = {
   className?: string
   style?: CSSProperties
@@ -33,7 +35,7 @@ export const PageLoadingIndicator = () => {
   }, [])
 
   return (
-    <>
+    <DelayedRender delay={150}>
       <div
         className={classNames('modal-backdrop fade', { show: showBackdrop })}
         style={{ '--bs-backdrop-opacity': 0.15 } as CSSProperties}
@@ -41,6 +43,6 @@ export const PageLoadingIndicator = () => {
       <div className="modal d-flex justify-content-center align-items-center">
         <LoadingSpinner style={{ height: 50 }} />
       </div>
-    </>
+    </DelayedRender>
   )
 }
