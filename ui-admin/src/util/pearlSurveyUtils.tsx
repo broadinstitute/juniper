@@ -126,10 +126,9 @@ ${leadingIndent}  ]
 ${leadingIndent}}`
   }
   return `${leadingIndent}{
-${leadingIndent}  "name": "${questionObj.namePrefix}${questionObj.nameSuffix}", 
-${leadingIndent}  "type": "${questionObj.type}",${visibleIfString}${isRequiredString}
-${leadingIndent}  "questionTemplateName": "${questionObj.questionTemplateName}"
-}`
+${leadingIndent}  "name": "${questionObj.namePrefix}${questionObj.nameSuffix}",${typeString}${visibleIfString}
+${leadingIndent}  "questionTemplateName": "${questionObj.questionTemplateName}"${isRequiredString}
+${leadingIndent}}`
 }
 
 /** Renders a panel to JSON, converting the contained questions using questionToJson */

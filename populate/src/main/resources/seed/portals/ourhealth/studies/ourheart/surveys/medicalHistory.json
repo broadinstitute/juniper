@@ -1,9 +1,9 @@
 {
   "stableId": "oh_oh_medHx",
   "version": 1,
-  "name": "Medical History",
+  "name": "Other Medical History",
   "jsonContent": {
-  "title": "OurHealth Medical History",
+  "title": "Other Medical History",
   "showQuestionNumbers": "off",
   "showProgressBar": "bottom",
   "questionTemplates": [
@@ -52,12 +52,16 @@
   ],
   "pages": [
     {
-      "name": "page4",
       "elements": [
         {
           "type": "html",
+          "name": "oh_oh_medHx_overallDescription",
+          "html": "This survey asks questions about Other Medical History. This is to better understand how it may affect health. <br/><br/>It will take about 10-15 minutes to answer these questions. Please answer each question as honestly as possible. Some of the questions may be sensitive. You can choose not to answer. There are no right or wrong answers to any of the questions. It is important that you answer as many questions as you can. We are looking for your own answers, not what you think your doctors, family, or friends want you to say.  <br/><br/>Do not feel like you have to spend a long time on each question. The first answer that comes to you is usually the best one. If you are not sure how to answer a question, choose the best answer from the options given.  \n"
+        },
+        {
+          "type": "html",
           "name": "oh_oh_medHx_cancerHealthDescription",
-          "html": "<h6>Cancer Conditions</h6><p>The next few questions are about cancer. Cancer is very important when considering your overall health. Answering these questions will help us get a more complete picture of your total health.</p>"
+          "html": "<h5>Cancer Conditions</h5><p>The next few questions are about cancer. Cancer is very important when considering your overall health. Answering these questions will help us get a more complete picture of your total health.</p>"
         },
         {
           "name": "oh_oh_medHx_cancerTypes",
@@ -457,7 +461,7 @@
         {
           "type": "panel",
           "title": "Other cancer",
-          "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'otherCancer'",
+          "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'other'",
           "elements": [
             {
               "name": "oh_oh_medHx_otherCancerDescription",
@@ -494,7 +498,7 @@
             {"text": "Colon polyps", "value": "colonPolyps"},
             {"text": "Crohn’s disease", "value": "crohnsDisease"},
             {"text": "Diverticulosis/diverticulitis", "value": "diverticulosisDiverticulitis"},
-            {"text": "Gall stones", "value": "gallStones"},
+            {"text": "Gallstones", "value": "gallStones"},
             {"text": "Hemorrhoids", "value": "hemorrhoids"},
             {"text": "Hernia", "value": "hernia"},
             {"text": "Irritable bowel syndrome (IBS)", "value": "irritableBowelSyndrome"},
@@ -598,7 +602,7 @@
         },
         {
           "type": "panel",
-          "title": "Gall stones",
+          "title": "Gallstones",
           "visibleIf": "{oh_oh_medHx_digestiveConditionsDiagnoses} contains 'gallStones'",
           "elements": [
             {
@@ -862,18 +866,6 @@
               "value": "hypothyroidism"
             },
             {
-              "text": "Type 1 Diabetes",
-              "value": "type1Diabetes"
-            },
-            {
-              "text": "Type 2 Diabetes",
-              "value": "type2Diabetes"
-            },
-            {
-              "text": "Other/Unknown diabetes",
-              "value": "otherUnknownDiabetes"
-            },
-            {
               "text": "Other/Unknown thyroid condition",
               "value": "otherUnknownThyroidCondition"
             },
@@ -1001,6 +993,11 @@
     },
     {
       "elements": [
+        {
+          "type": "html",
+          "name": "oh_oh_medHx_mentalHealthDescription",
+          "html": "<h6>Mental health and substance use conditions</h6><br/>The next question is about mental health and substance use conditions. Mental health and substance use conditions are very important when considering your overall health. Answering this and any follow up questions will help us get a more complete picture of your total health.\n"
+        },
         {
           "name": "oh_oh_medHx_mentalHealthDxConditions",
           "type": "checkbox",
@@ -1301,7 +1298,7 @@
             {"text": "Rheumatoid arthritis", "value": "rheumatoidArthritis"},
             {"text": "Spine, muscle, or bone disorders (non-cancer)", "value": "spineMuscleOrBoneDisordersNonCancer"},
             {"text": "Systemic lupus", "value": "systemicLupus"},
-            {"text": "Other arthritis", "value": "otherArthritis"},
+            {"text": "Other arthritis, such as psoriatic arthritis and/or ankylosing spondylitis", "value": "otherArthritis"},
             {"text": "Other bone, joint, or muscle condition", "value": "otherBoneJointOrMuscleCondition"},
             {"text": "I have no bone, joint, or muscle condition", "value": "none"}
           ]
@@ -1495,6 +1492,11 @@
     },
     {
       "elements": [
+        {
+          "type": "html",
+          "name": "oh_oh_medHx_infectiousDiagnosedDescription",
+          "html": "<h6>Infectious diseases</h6><br/>The next question is about infectious diseases. Infectious diseases are very important when considering your overall health. Answering this and any follow up questions will help us get a more complete picture of your total health."
+        },
         {
           "name": "oh_oh_medHx_infectiousDiseasedDiagnosed",
           "type": "checkbox",
@@ -1833,6 +1835,11 @@
     },{
       "elements": [
         {
+          "type": "html",
+          "name": "oh_oh_medHx_nervousDiagnosedDescription",
+          "html": "<h6>Brain and nervous system conditions</h6><br/>The next question is about brain and nervous system conditions. Brain and nervous system conditions are very important when considering your overall health. Answering this and any follow up questions will help us get a more complete picture of your total health."
+        },
+        {
           "name": "oh_oh_medHx_nervousSystemDx",
           "type": "checkbox",
           "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply) ",
@@ -1993,7 +2000,7 @@
             {
               "name": "oh_oh_medHx_otherNervousSystemDx",
               "type": "text",
-              "title": "What is the other cancer?"
+              "title": "What is the other brain or nervous system condition?"
             },
             {
               "name": "oh_oh_medHx_otherNervousInTreatment",
@@ -2008,6 +2015,11 @@
       ]
     },{
       "elements": [
+        {
+          "type": "html",
+          "name": "oh_oh_medHx_hearingEyeDiagnosedDescription",
+          "html": "<h6>Hearing and eye conditions</h6><br/>The next question is about hearing and eye conditions. Hearing and eye conditions are very important when considering your overall health. Answering this and any follow up questions will help us get a more complete picture of your total health."
+        },
         {
           "name": "oh_oh_medHx_hearingEyeDiagnosed",
           "type": "checkbox",
