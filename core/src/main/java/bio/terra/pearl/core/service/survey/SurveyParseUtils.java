@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SurveyParseUtils {
-
+/** recursively gets all questions from the given node */
     public static List<JsonNode> getAllQuestions(JsonNode containerElement) {
         List<JsonNode> elements = new ArrayList<>();
 
