@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext, useEffect, useState } from 'react'
 import Api, { Config } from 'api/api'
-import LoadingSpinner from 'util/LoadingSpinner'
+import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
 const uninitializedConfig = {
   b2cTenantName: 'uninitialized',
@@ -31,11 +31,13 @@ export default function ConfigProvider({ children }: PropsWithChildren) {
   }, [])
   if (error) {
     return <p>{error}</p>
+  } else if (!isLoaded) {
+    return <PageLoadingIndicator />
   } else {
-    return <LoadingSpinner isLoading={!isLoaded}>
+    return (
       <ConfigContext.Provider value={config}>
         { children }
       </ConfigContext.Provider>
-    </LoadingSpinner>
+    )
   }
 }

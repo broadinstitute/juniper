@@ -21,7 +21,7 @@ import {
 } from 'util/surveyJsUtils'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
-import LoadingSpinner from 'util/LoadingSpinner'
+import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
 const TASK_ID_PARAM = 'taskId'
 
@@ -127,11 +127,18 @@ export default function ConsentView() {
       })
   }, [])
 
-  return <LoadingSpinner isLoading={!formAndResponses}>
-    {formAndResponses && <PagedConsentView enrollee={enrollee} form={formAndResponses.studyEnvironmentConsent}
+  if (!formAndResponses) {
+    return <PageLoadingIndicator />
+  }
+
+  return (
+    <PagedConsentView
+      enrollee={enrollee}
+      form={formAndResponses.studyEnvironmentConsent}
       responses={formAndResponses.consentResponses}
-      studyShortcode={studyShortcode}/>}
-  </LoadingSpinner>
+      studyShortcode={studyShortcode}
+    />
+  )
 }
 
 /** Gets the enrollee object matching the given study */
@@ -145,4 +152,3 @@ function enrolleeForStudy(enrollees: Enrollee[], studyShortcode: string, portal:
   }
   return enrollee
 }
-

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context'
 import { useReturnToStudy } from 'browserPersistentState'
-import LoadingSpinner from 'util/LoadingSpinner'
+import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
 /** Show the B2C participant registration page */
 export default function Registration() {
@@ -21,7 +21,5 @@ export default function Registration() {
     register()
   }, [])
 
-  return <div>
-    <LoadingSpinner/>
-  </div>
+  return <PageLoadingIndicator />
 }

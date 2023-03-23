@@ -21,7 +21,7 @@ import {
 } from 'util/surveyJsUtils'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
-import LoadingSpinner from 'util/LoadingSpinner'
+import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { withErrorBoundary } from '../../util/ErrorBoundary'
 
 const TASK_ID_PARAM = 'taskId'
@@ -119,11 +119,18 @@ function SurveyView() {
       })
   }, [])
 
-  return <LoadingSpinner isLoading={!formAndResponses}>
-    {formAndResponses && <PagedSurveyView enrollee={enrollee} form={formAndResponses.studyEnvironmentSurvey}
+  if (!formAndResponses) {
+    return <PageLoadingIndicator />
+  }
+
+  return (
+    <PagedSurveyView
+      enrollee={enrollee}
+      form={formAndResponses.studyEnvironmentSurvey}
       activeResponse={formAndResponses.surveyResponse}
-      studyShortcode={studyShortcode}/>}
-  </LoadingSpinner>
+      studyShortcode={studyShortcode}
+    />
+  )
 }
 
 export default withErrorBoundary(SurveyView)
@@ -139,4 +146,3 @@ function enrolleeForStudy(enrollees: Enrollee[], studyShortcode: string, portal:
   }
   return enrollee
 }
-

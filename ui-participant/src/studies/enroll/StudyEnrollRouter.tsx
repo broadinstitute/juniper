@@ -8,7 +8,7 @@ import Api from '../../api/api'
 import PreEnrollView from './PreEnroll'
 import StudyIneligible from './StudyIneligible'
 import PortalRegistrationRouter from '../../landing/registration/PortalRegistrationRouter'
-import LoadingSpinner from '../../util/LoadingSpinner'
+import { PageLoadingIndicator } from '../../util/LoadingSpinner'
 import { usePreEnrollResponseId } from 'browserPersistentState'
 
 export type StudyEnrollContext = {
@@ -98,9 +98,7 @@ function StudyEnrollOutletMatched({ portal, studyEnv, studyShortcode }:
       <Route path="preEnroll" element={<PreEnrollView enrollContext={enrollContext}/>}/>
       <Route path="ineligible" element={<StudyIneligible/>}/>
       <Route path="register/*" element={<PortalRegistrationRouter portal={portal} returnTo={null}/>}/>
-      <Route index element={<LoadingSpinner/>}/>
+      <Route index element={<PageLoadingIndicator />}/>
     </Routes>
   </div>
 }
-
-

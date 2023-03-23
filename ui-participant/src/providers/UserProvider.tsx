@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useAuth } from 'react-oidc-context'
 import { useNavigate } from 'react-router-dom'
 import Api, { Enrollee, LoginResult, ParticipantUser } from 'api/api'
-import LoadingSpinner from 'util/LoadingSpinner'
+import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
 export type User = ParticipantUser & {
   isAnonymous: boolean
@@ -135,9 +135,9 @@ export default function UserProvider({ children }: { children: React.ReactNode }
 
   return (
     <UserContext.Provider value={userContext}>
-      <LoadingSpinner isLoading={isLoading}>
-        {children}
-      </LoadingSpinner>
+      {isLoading
+        ? <PageLoadingIndicator />
+        : children}
     </UserContext.Provider>
   )
 }
