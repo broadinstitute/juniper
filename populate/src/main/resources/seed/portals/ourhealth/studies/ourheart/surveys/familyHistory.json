@@ -80,6 +80,7 @@
           {
             "type": "text",
             "inputType": "number",
+            "name": "oh_oh_famHx_suddenDeathUnexplainedMotherAge",
             "size": "2",
             "max": 50,
             "min": 1,
@@ -89,6 +90,7 @@
           {
             "type": "text",
             "inputType": "number",
+            "name": "oh_oh_famHx_suddenDeathUnexplainedFatherAge",
             "size": "2",
             "max": 50,
             "min": 1,
@@ -98,6 +100,7 @@
           {
             "type": "text",
             "inputType": "number",
+            "name": "oh_oh_famHx_suddenDeathUnexplainedSiblingAge",
             "size": "2",
             "max": 50,
             "min": 1,
@@ -107,6 +110,7 @@
           {
             "type": "text",
             "inputType": "number",
+            "name": "oh_oh_famHx_suddenDeathUnexplainedGrandparentAge",
             "size": "2",
             "max": 50,
             "min": 1,
@@ -116,6 +120,7 @@
           {
             "type": "text",
             "inputType": "number",
+            "name": "oh_oh_famHx_suddenDeathUnexplainedChildAge",
             "size": "2",
             "max": 50,
             "min": 1,
@@ -125,6 +130,7 @@
           {
             "type": "text",
             "inputType": "number",
+            "name": "oh_oh_famHx_suddenDeathUnexplainedOtherAge",
             "size": "2",
             "max": 50,
             "min": 1,
