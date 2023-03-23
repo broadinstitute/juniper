@@ -17,6 +17,7 @@ public class SurveyQuestionDefinition extends BaseEntity {
     private String surveyStableId;
     private int surveyVersion;
     private String questionStableId;
+    private String questionText;
     private String questionType;
     private String choices;
     @Builder.Default

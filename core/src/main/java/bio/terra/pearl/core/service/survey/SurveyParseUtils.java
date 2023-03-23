@@ -43,6 +43,10 @@ public class SurveyParseUtils {
 
         definition.setQuestionType(templatedQuestion.get("type").asText());
 
+        if(templatedQuestion.has("title")) {
+            definition.setQuestionText(templatedQuestion.get("title").asText());
+        }
+
         if(templatedQuestion.has("isRequired")){
             definition.setRequired(templatedQuestion.get("isRequired").asBoolean());
         }
