@@ -9,7 +9,8 @@
       "sectionConfigJson": {
         "image": {
           "cleanFileName": "scientists_banner.jpg",
-          "version": 1
+          "version": 1,
+          "alt": ""
         }
       }
     }, {

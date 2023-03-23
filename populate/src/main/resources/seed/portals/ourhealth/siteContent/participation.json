@@ -21,7 +21,7 @@
           "href": "/docs/view/consent",
           "text": "View Consent"
         },
-        "image": { "cleanFileName": "consent_step.png", "version": 1},
+        "image": { "cleanFileName": "consent_step.png", "version": 1, "alt": "" },
         "imagePosition": "right"
       }
     },{
@@ -36,7 +36,7 @@
           "text": "View Surveys"
         },
         "background": "#F2F2F2",
-        "image": { "cleanFileName": "survey_step.png", "version": 1},
+        "image": { "cleanFileName": "survey_step.png", "version": 1, "alt": "" },
         "imagePosition": "left"
       }
     },{
@@ -50,7 +50,7 @@
           "href": "/docs/view/kitInstructions",
           "text": "View Kit Instructions"
         },
-        "image": { "cleanFileName": "saliva_step.png", "version": 1},
+        "image": { "cleanFileName": "saliva_step.png", "version": 1, "alt": "" },
         "imagePosition": "right"
       }
     },{
@@ -64,7 +64,7 @@
           "type": "mailingList",
           "text": "Join Email List"
         },
-        "image": { "cleanFileName": "engagement_step.png", "version": 1},
+        "image": { "cleanFileName": "engagement_step.png", "version": 1, "alt": "" },
         "imagePosition": "left",
         "background": "#F2F2F2"
       }
