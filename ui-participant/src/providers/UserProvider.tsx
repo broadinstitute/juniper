@@ -79,6 +79,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
         navigate('/')
       })
     } else {
+      // eslint-disable-next-line camelcase
       auth.signoutRedirect({ post_logout_redirect_uri: window.location.origin })
     }
   }
