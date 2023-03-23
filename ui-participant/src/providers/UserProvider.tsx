@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
-import LoadingSpinner from '../util/LoadingSpinner'
+import { useAuth } from 'react-oidc-context'
+import { useNavigate } from 'react-router-dom'
 import Api, { Enrollee, LoginResult, ParticipantUser } from 'api/api'
+import LoadingSpinner from 'util/LoadingSpinner'
 
 export type User = ParticipantUser & {
   isAnonymous: boolean
@@ -47,6 +49,8 @@ export const useUser = () => useContext(UserContext)
 export default function UserProvider({ children }: { children: React.ReactNode }) {
   const [loginState, setLoginState] = useState<LoginResult | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const auth = useAuth()
+  const navigate = useNavigate()
 
   /**
    * Sign in to the UI based on the result of signing in to the API.
@@ -67,10 +71,16 @@ export default function UserProvider({ children }: { children: React.ReactNode }
 
   /** Sign out of the UI. Does not invalidate any tokens, but maybe it should... */
   const logoutUser = () => {
-    setLoginState(null)
-    Api.logout()
     localStorage.removeItem(INTERNAL_LOGIN_TOKEN_KEY)
     localStorage.removeItem(OAUTH_ACCRESS_TOKEN_KEY)
+    if (process.env.REACT_APP_UNAUTHED_LOGIN) {
+      Api.logout().then(() => {
+        setLoginState(null)
+        navigate('/')
+      })
+    } else {
+      auth.signoutRedirect({ post_logout_redirect_uri: window.location.origin })
+    }
   }
 
   /** updates a single enrollee in the list of enrollees -- the enrollee object should contain an updated task list */
