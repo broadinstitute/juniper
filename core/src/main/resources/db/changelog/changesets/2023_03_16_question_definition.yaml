@@ -13,6 +13,7 @@ databaseChangeLog:
               - column: { name: survey_stable_id, type: text, constraints: { nullable: false } }
               - column: { name: survey_version, type: integer, constraints: { nullable: false } }
               - column: { name: question_stable_id, type: text, constraints: { nullable: false } }
+              - column: { name: question_text, type: text }
               - column: { name: question_type, type: text, constraints: { nullable: false } }
               - column: { name: choices, type: text }
               - column: { name: required, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
