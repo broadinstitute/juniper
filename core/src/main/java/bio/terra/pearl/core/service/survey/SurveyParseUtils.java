@@ -43,8 +43,12 @@ public class SurveyParseUtils {
 
         definition.setQuestionType(templatedQuestion.get("type").asText());
 
+        //For normal elements, we'll store the title in the question_text column
+        //For HTML elements which don't have a title, we'll store the HTML instead
         if(templatedQuestion.has("title")) {
             definition.setQuestionText(templatedQuestion.get("title").asText());
+        } else if(templatedQuestion.has("html")) {
+            definition.setQuestionText(templatedQuestion.get("html").asText());
         }
 
         if(templatedQuestion.has("isRequired")){
