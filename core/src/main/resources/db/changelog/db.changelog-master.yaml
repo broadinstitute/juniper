@@ -48,10 +48,10 @@ databaseChangeLog:
       file: changesets/2023_03_14_notification_config_reminders.yaml
       relativeToChangelogFile: true
   - include:
-      file: changesets/2023_03_16_question_definition.yaml
+      file: changesets/2023_03_21_primary_brand_color.yaml
       relativeToChangelogFile: true
   - include:
-      file: changesets/2023_03_21_primary_brand_color.yaml
+      file: changesets/2023_03_23_question_definition.yaml
       relativeToChangelogFile: true
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements
