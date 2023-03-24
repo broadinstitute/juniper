@@ -9,6 +9,7 @@ import { requireOptionalArray, requireOptionalString, requirePlainObject, requir
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
+import { SectionHeading } from '../SectionHeading'
 
 import { TemplateComponentProps } from './templateUtils'
 
@@ -53,9 +54,9 @@ function StepOverviewTemplate(props: StepOverviewTemplateProps) {
 
   // TODO: improve layout code for better flexing, especially with <> 4 steps
   return <div id={anchorRef} className="py-5" style={getSectionStyle(config)}>
-    <h1 className="fs-1 fw-normal lh-sm mb-3 text-center">
+    <SectionHeading className="fs-1 fw-normal lh-sm mb-3 text-center">
       <ReactMarkdown>{title ? title : ''}</ReactMarkdown>
-    </h1>
+    </SectionHeading>
     <div className="row mx-0">
       {
         _.map(steps, ({ image, duration, blurb }: StepConfig, i: number) => {

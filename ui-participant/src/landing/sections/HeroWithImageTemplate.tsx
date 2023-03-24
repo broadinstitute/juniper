@@ -10,6 +10,7 @@ import { requireOptionalArray, requireOptionalNumber, requireOptionalString } fr
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
+import { SectionHeading } from '../SectionHeading'
 
 import { TemplateComponentProps } from './templateUtils'
 
@@ -109,9 +110,9 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
           )}
         >
           {!!title && (
-            <h1 className="fs-1 fw-normal lh-sm">
+            <SectionHeading className="fs-1 fw-normal lh-sm">
               <ReactMarkdown>{title}</ReactMarkdown>
-            </h1>
+            </SectionHeading>
           )}
           {!!blurb && (
             <div className="fs-4">

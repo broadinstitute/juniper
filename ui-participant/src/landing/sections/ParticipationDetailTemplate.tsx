@@ -10,6 +10,7 @@ import { requireOptionalString } from 'util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
+import { SectionHeading } from '../SectionHeading'
 
 import { TemplateComponentProps } from './templateUtils'
 
@@ -82,11 +83,11 @@ function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
         </div>
       )}
       <div className={classNames({ 'col-md-8': hasImage })}>
-        <h4>
-          {stepNumberText}
-        </h4>
+        <SectionHeading className="h2">
+          <div className="h4">{stepNumberText}</div>
+          {title}
+        </SectionHeading>
         <p><FontAwesomeIcon icon={faClock}/> {timeIndication}</p>
-        <h2>{title}</h2>
         <p className="fs-4">
           {blurb}
         </p>

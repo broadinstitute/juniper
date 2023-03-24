@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ComponentType, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
@@ -7,6 +7,7 @@ import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
+import { SectionHeading } from '../SectionHeading'
 
 import { TemplateComponentProps } from './templateUtils'
 
@@ -62,19 +63,45 @@ function PhotoBlurbGrid(props: PhotoBlurbGridProps) {
   const { anchorRef, config } = props
   const { subGrids, title } = config
 
+  const hasTitle = !!title
+  const [subGridHeading, setSubGridHeading] = useState<'h2' | 'h3' | undefined>(
+    hasTitle ? undefined : 'h2'
+  )
+
   return <div id={anchorRef} className="py-5" style={getSectionStyle(config)}>
-    {title && <h1 className="fs-1 fw-normal lh-sm text-center mb-4">
-      {title}
-    </h1>}
-    {(subGrids ?? []).map((subGrid, index) => <SubGridView key={index} subGrid={subGrid}/>)}
+    {!!title && (
+      <SectionHeading
+        className="fs-1 fw-normal lh-sm text-center mb-4"
+        onDetermineLevel={level => {
+          setSubGridHeading(`h${level + 1}` as 'h2' | 'h3')
+        }}
+      >
+        {title}
+      </SectionHeading>
+    )}
+    {subGridHeading !== undefined && subGrids.map((subGrid, index) => {
+      return (
+        <SubGridView
+          key={index}
+          heading={!hasTitle && index === 0 ? SectionHeading : subGridHeading}
+          subGrid={subGrid}
+        />
+      )
+    })}
   </div>
 }
 
+type SubGridViewProps = {
+  heading: ComponentType | keyof JSX.IntrinsicElements
+  subGrid: SubGrid
+}
+
 /** renders a subgrouping of photos (e.g. "Our researchers") */
-function SubGridView({ subGrid }: { subGrid: SubGrid }) {
+function SubGridView(props: SubGridViewProps) {
+  const { heading: Heading, subGrid } = props
   return <div className="row mx-0">
     <div className="col-12 col-sm-10 col-lg-8 mx-auto">
-      {subGrid.title && <h3 className="text-center mb-4">{subGrid.title}</h3>}
+      {subGrid.title && <Heading className="text-center mb-4">{subGrid.title}</Heading>}
       <div className="row mx-0">
         {subGrid.photoBios.map((bio, index) => <PhotoBioView key={index} photoBio={bio}/>)}
       </div>

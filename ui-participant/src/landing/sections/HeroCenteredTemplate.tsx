@@ -10,6 +10,7 @@ import { requireOptionalArray, requireOptionalString } from 'util/validationUtil
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
+import { SectionHeading } from '../SectionHeading'
 
 import { TemplateComponentProps } from './templateUtils'
 
@@ -63,9 +64,14 @@ function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
   return <div id={anchorRef} className="row mx-0" style={getSectionStyle(config)}>
     <div className="col-12 col-sm-10 col-lg-6 mx-auto py-5 text-center">
       {hasTitle && (
-        <h1 className={classNames('fs-1 fw-normal lh-sm', hasContentFollowingTitle ? 'mb-4' : 'mb-0')}>
+        <SectionHeading
+          className={classNames(
+            'fs-1 fw-normal lh-sm',
+            hasContentFollowingTitle ? 'mb-4' : 'mb-0'
+          )}
+        >
           <ReactMarkdown disallowedElements={['p']} unwrapDisallowed>{title}</ReactMarkdown>
-        </h1>
+        </SectionHeading>
       )}
       {hasBlurb && (
         <div className="fs-4" style={{ textAlign: blurbAlign || 'center' }}>
