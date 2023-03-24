@@ -1,6 +1,7 @@
+import { Collapse } from 'bootstrap'
 import classNames from 'classnames'
-import React from 'react'
-import { NavLink } from 'react-router-dom'
+import React, { useEffect, useRef } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 import Api, { getImageUrl, isInternalAnchorLink, isInternalLink, NavbarItem } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
@@ -29,6 +30,14 @@ export default function LandingNavbar() {
     })
   }
 
+  const dropdownRef = useRef<HTMLDivElement | null>(null)
+  const location = useLocation()
+  useEffect(() => {
+    if (dropdownRef.current) {
+      Collapse.getInstance(dropdownRef.current)?.hide()
+    }
+  }, [location.pathname])
+
   return <nav className="LandingNavbar navbar navbar-expand-lg navbar-light">
     <div className="container-fluid">
       <NavLink to="/" className="navbar-brand">
@@ -43,7 +52,7 @@ export default function LandingNavbar() {
       >
         <span className="navbar-toggler-icon"/>
       </button>
-      <div className="collapse navbar-collapse mt-2 mt-lg-0" id="navbarNavDropdown">
+      <div ref={dropdownRef} className="collapse navbar-collapse mt-2 mt-lg-0" id="navbarNavDropdown">
         <ul className="navbar-nav">
           {navLinks.map((navLink: NavbarItem, index: number) => <li key={index} className="nav-item">
             <CustomNavLink navLink={navLink}/>
