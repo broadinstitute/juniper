@@ -34,11 +34,16 @@ public class PortalParticipantUserService extends CrudService<PortalParticipantU
 
     @Transactional
     public PortalParticipantUser create(PortalParticipantUser ppUser) {
-        Profile newProfile = null;
-        if (ppUser.getProfile() != null) {
+        Profile newProfile;
+        if (ppUser.getProfileId() != null) {
+            newProfile = profileService.find(ppUser.getProfileId()).get();
+        } else if (ppUser.getProfile() != null) {
             newProfile = profileService.create(ppUser.getProfile());
-            ppUser.setProfileId(newProfile.getId());
+        } else {
+            // Make sure profile is always non-null
+            newProfile = profileService.create(Profile.builder().build());
         }
+        ppUser.setProfileId(newProfile.getId());
         PortalParticipantUser createdUser = dao.create(ppUser);
         createdUser.setProfile(newProfile);
         return createdUser;

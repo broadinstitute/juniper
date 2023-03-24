@@ -21,7 +21,8 @@ public class EnrolleeRuleService {
     }
 
     public EnrolleeRuleData fetchData(Enrollee enrollee) {
-        return new EnrolleeRuleData(enrollee, profileService.find(enrollee.getProfileId()).orElse(null));
+        return new EnrolleeRuleData(enrollee,
+                profileService.loadWithMailingAddress(enrollee.getProfileId()).orElse(null));
     }
 
     /**

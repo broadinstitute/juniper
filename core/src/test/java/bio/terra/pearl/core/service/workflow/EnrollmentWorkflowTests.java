@@ -91,6 +91,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         HubResponse hubResponse = enrollmentService.enroll(userBundle.user(), userBundle.ppUser(),
                 studyEnv.getEnvironmentName(), studyShortcode, null);
         Enrollee enrollee = hubResponse.getEnrollee();
+        assertThat(hubResponse.getProfile(), notNullValue());
         // Because the study environment had a consent attached, a consent task should be created on enrollment
         assertThat(enrollee.getParticipantTasks(), hasSize(2));
         ParticipantTask consentTask = enrollee.getParticipantTasks().stream()
@@ -129,6 +130,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         assertThat(updatedTasks, hasSize(2));
         assertThat(updateSurveyTasks, hasSize(1));
         assertThat(updateSurveyTasks.get(0).getStatus(), equalTo(TaskStatus.COMPLETE));
+        assertThat(hubResponse.getProfile(), notNullValue());
     }
 
 

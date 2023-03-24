@@ -188,7 +188,12 @@ export type Enrollee = {
   shortcode: string,
   studyEnvironmentId: string,
   participantTasks: ParticipantTask[],
-  consented: boolean
+  consented: boolean,
+  profile: Profile
+}
+
+export type Profile = {
+  sexAtBirth: string
 }
 
 export type ParticipantTask = {

@@ -24,6 +24,11 @@ public class Profile extends BaseEntity {
 
     private LocalDate birthDate;
     private String phoneNumber;
+    /**
+     * should generally use male|female|other|unknown see https://build.fhir.org/valueset-administrative-gender.html
+     * however more specific other values such as "intersex" are permitted as well.
+     */
+    private String sexAtBirth;
 
     public static abstract class ProfileBuilder<C extends Profile, B extends Profile.ProfileBuilder<C, B>>
             extends BaseEntity.BaseEntityBuilder<C, B> {
