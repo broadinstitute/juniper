@@ -101,6 +101,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         siteContentService.deleteByPortalId(portalId);
         emailTemplateService.deleteByPortalId(portalId);
         siteImageService.deleteByPortalShortcode(portal.getShortcode());
+        portalAdminUserDao.deleteByPortalId(portalId);
         dao.delete(portalId);
     }
 
