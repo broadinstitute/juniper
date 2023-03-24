@@ -140,6 +140,22 @@
           }]
         }
       },{
+        "sectionType": "SOCIAL_MEDIA",
+        "sectionConfigJson": {
+          "twitterHandle": "ourhealthstudy",
+          "instagramHandle": "ourhealthstudy"
+        }
+      },{
+        "sectionType": "HERO_CENTERED",
+        "sectionConfigJson": {
+          "title": "Stay informed",
+          "blurb": "Sign up for our mailing list or follow us on social media.",
+          "buttons": [{
+            "type": "mailingList",
+            "text": "Join Mailing LIst"
+          }]
+        }
+      },{
         "sectionType": "HERO_CENTERED",
         "sectionConfigJson": {
           "title": "You can make an impact",
