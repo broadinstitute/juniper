@@ -69,7 +69,7 @@ function PhotoBlurbGrid(props: PhotoBlurbGridProps) {
   )
 
   return <div id={anchorRef} className="py-5" style={getSectionStyle(config)}>
-    {!!title && (
+    {hasTitle && (
       <SectionHeading
         className="fs-1 fw-normal lh-sm text-center mb-4"
         onDetermineLevel={level => {
