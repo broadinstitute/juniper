@@ -17,8 +17,14 @@ export default function PreEnrollView({ enrollContext }: { enrollContext: StudyE
   const navigate = useNavigate()
   // for now, we assume all pre-screeners are a single page
   const pager = { pageNumber: 0, updatePageNumber: () => 0 }
-  const { surveyModel, refreshSurvey, SurveyComponent } =
-    useSurveyJSModel(survey, null, handleComplete, pager)
+  const { surveyModel, refreshSurvey, SurveyComponent } = useSurveyJSModel(
+    survey,
+    null,
+    handleComplete,
+    pager,
+    undefined,
+    { extraCssClasses: { container: 'my-0' } }
+  )
 
   /** submit the form */
   function handleComplete() {
@@ -60,7 +66,5 @@ export default function PreEnrollView({ enrollContext }: { enrollContext: StudyE
     updatePreEnrollResponseId(null)
   }, [])
 
-  return <div>
-    {SurveyComponent}
-  </div>
+  return <div className="d-flex flex-grow-1">{SurveyComponent}</div>
 }

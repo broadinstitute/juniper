@@ -92,7 +92,7 @@ function StudyEnrollOutletMatched({ portal, studyEnv, studyShortcode }:
   const enrollContext: StudyEnrollContext = {
     studyShortcode, studyEnv, user, preEnrollResponseId, updatePreEnrollResponseId
   }
-  return <div>
+  return <>
     <LandingNavbar/>
     <Routes>
       <Route path="preEnroll" element={<PreEnrollView enrollContext={enrollContext}/>}/>
@@ -100,5 +100,5 @@ function StudyEnrollOutletMatched({ portal, studyEnv, studyShortcode }:
       <Route path="register/*" element={<PortalRegistrationRouter portal={portal} returnTo={null}/>}/>
       <Route index element={<PageLoadingIndicator />}/>
     </Routes>
-  </div>
+  </>
 }
