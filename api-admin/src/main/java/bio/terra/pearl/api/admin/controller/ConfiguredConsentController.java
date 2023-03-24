@@ -2,7 +2,7 @@ package bio.terra.pearl.api.admin.controller;
 
 import bio.terra.pearl.api.admin.api.ConfiguredConsentApi;
 import bio.terra.pearl.api.admin.model.ConfiguredConsentDto;
-import bio.terra.pearl.api.admin.service.RequestUtilService;
+import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
@@ -15,13 +15,13 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class ConfiguredConsentController implements ConfiguredConsentApi {
-  private RequestUtilService requestService;
+  private AuthUtilService requestService;
   private HttpServletRequest request;
   private ObjectMapper objectMapper;
   private StudyEnvironmentConsentService studyEnvConsentService;
 
   public ConfiguredConsentController(
-      RequestUtilService requestService,
+      AuthUtilService requestService,
       HttpServletRequest request,
       ObjectMapper objectMapper,
       StudyEnvironmentConsentService studyEnvConsentService) {
@@ -38,7 +38,7 @@ public class ConfiguredConsentController implements ConfiguredConsentApi {
       String envName,
       UUID configuredConsentId,
       ConfiguredConsentDto body) {
-    AdminUser adminUser = requestService.getFromRequest(request);
+    AdminUser adminUser = requestService.requireAdminUser(request);
     requestService.authUserToPortal(adminUser, portalShortcode);
 
     StudyEnvironmentConsent configuredSurvey =

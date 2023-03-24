@@ -2,7 +2,7 @@ package bio.terra.pearl.api.admin.controller;
 
 import bio.terra.pearl.api.admin.api.ConsentFormApi;
 import bio.terra.pearl.api.admin.model.VersionedFormDto;
-import bio.terra.pearl.api.admin.service.RequestUtilService;
+import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.portal.Portal;
@@ -14,13 +14,13 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class ConsentFormController implements ConsentFormApi {
-  private RequestUtilService requestService;
+  private AuthUtilService requestService;
   private HttpServletRequest request;
   private ConsentFormService consentFormService;
   private ObjectMapper objectMapper;
 
   public ConsentFormController(
-      RequestUtilService requestService,
+      AuthUtilService requestService,
       HttpServletRequest request,
       ConsentFormService consentFormService,
       ObjectMapper objectMapper) {
@@ -33,7 +33,7 @@ public class ConsentFormController implements ConsentFormApi {
   @Override
   public ResponseEntity<VersionedFormDto> newVersion(
       String portalShortcode, String stableId, VersionedFormDto body) {
-    AdminUser adminUser = requestService.getFromRequest(request);
+    AdminUser adminUser = requestService.requireAdminUser(request);
     Portal portal = requestService.authUserToPortal(adminUser, portalShortcode);
     if (!stableId.equals(body.getStableId())) {
       throw new IllegalArgumentException("form parameters don't match");

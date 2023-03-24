@@ -108,8 +108,8 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         return dao.findOneByShortcode(shortcode);
     }
 
-    public Optional<Portal> findOneByShortcodeFullLoad(String shortcode, String language) {
-        return dao.findOneByShortcodeFullLoad(shortcode, language);
+    public Portal fullLoad(Portal portal, String language) {
+        return dao.fullLoad(portal, language);
     }
 
     /** loads a portal environment with everything needed to render the participant-facing site */
@@ -149,7 +149,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     }
 
     public boolean checkAdminIsInPortal(AdminUser user, UUID portalId) {
-        return user.getSuperuser() || portalAdminUserDao.isUserInPortal(user.getId(), portalId);
+        return user.isSuperuser() || portalAdminUserDao.isUserInPortal(user.getId(), portalId);
     }
 
     /**
