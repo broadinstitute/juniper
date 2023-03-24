@@ -24,6 +24,6 @@ public class PortalExtService {
   public List<Portal> getAll(AdminUser user) {
     // no additional auth checks needed -- the underlying service filters out portals the user does
     // not have access to
-    return portalService.findByAdminUserId(user.getId());
+    return portalService.findByAdminUser(user);
   }
 }

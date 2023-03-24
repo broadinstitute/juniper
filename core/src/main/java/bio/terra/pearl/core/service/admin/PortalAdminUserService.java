@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.admin;
 import bio.terra.pearl.core.dao.admin.PortalAdminUserDao;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUserRole;
+import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -10,28 +11,18 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class PortalAdminUserService {
-
-    private PortalAdminUserDao portalAdminUserDao;
+public class PortalAdminUserService extends CrudService<PortalAdminUser, PortalAdminUserDao> {
 
     private PortalAdminUserRoleService portalAdminUserRoleService;
 
     public PortalAdminUserService(PortalAdminUserDao portalAdminUserDao,
                                   PortalAdminUserRoleService portalAdminUserRoleService) {
-        this.portalAdminUserDao = portalAdminUserDao;
+        super(portalAdminUserDao);
         this.portalAdminUserRoleService = portalAdminUserRoleService;
     }
 
-    public PortalAdminUser create(PortalAdminUser portalAdminUser) {
-        return portalAdminUserDao.create(portalAdminUser);
-    }
-
-    public Optional<PortalAdminUser> findOne(UUID portalAdminUserId) {
-        return portalAdminUserDao.find(portalAdminUserId);
-    }
-
     public Optional<PortalAdminUser> findOneWithRolesAndPermissions(UUID portalAdminUserId) {
-        var portalAdminUserOpt = portalAdminUserDao.find(portalAdminUserId);
+        var portalAdminUserOpt = dao.find(portalAdminUserId);
         return portalAdminUserOpt.map(portalAdminUser -> {
             var portalAdminUserRoles = portalAdminUserRoleService.findByPortalAdminUserIdWithRolesAndPermissions(portalAdminUser.getId());
             portalAdminUserRoles.forEach((PortalAdminUserRole portalAdminUserRole) -> {
@@ -53,5 +44,9 @@ public class PortalAdminUserService {
                 return permission.getName().equals(permissionName);
             });
         });
+    }
+
+    public void deleteByUserId(UUID adminUserId) {
+        dao.deleteByUserId(adminUserId);
     }
 }

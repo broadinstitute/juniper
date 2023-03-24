@@ -53,7 +53,7 @@ public class PortalAdminUserRoleService {
      */
     @Transactional
     public List<String> setRoles(UUID portalAdminUserId, List<String> roleNames) throws ValidationException {
-        var portalAdminUser = portalAdminUserService.findOne(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
+        var portalAdminUser = portalAdminUserService.find(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
         var roles = roleNames.stream().map(roleName -> roleService.findByName(roleName).orElseThrow(() -> new RoleNotFoundException(roleName))).toList();
 
         portalAdminUserRoleDao.deleteByPortalAdminUserId(portalAdminUser.getId());

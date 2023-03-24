@@ -22,6 +22,9 @@
       ]
     }
   ],
+  "adminUsers": [
+    {"username": "staff@ourhealth.org"}
+  ],
   "siteImageDtos": [{
     "populateFileName": "images/Banner-image.png"
   }, {

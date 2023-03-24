@@ -15,6 +15,7 @@ import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 public class PortalServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -27,6 +28,7 @@ public class PortalServiceTests extends BaseSpringBootTest {
     private PortalAdminUserService portalAdminUserService;
 
     @Test
+    @Transactional
     public void authAdminToPortalRejectsUsersNotInPortal() {
         AdminUser user = adminUserFactory.buildPersisted("authAdminToPortalRejectsUsersNotInPortal");
         Portal portal = portalFactory.buildPersisted("authAdminToPortalRejectsUsersNotInPortal");
@@ -53,6 +55,7 @@ public class PortalServiceTests extends BaseSpringBootTest {
     }
 
     @Test
+    @Transactional
     public void authAdminToPortalRejectsNotFoundPortal() {
         AdminUser user = adminUserFactory.buildPersisted("authAdminToPortalRejectsNotFoundPortal");
         Assertions.assertThrows(NotFoundException.class, () -> {
@@ -61,6 +64,7 @@ public class PortalServiceTests extends BaseSpringBootTest {
     }
 
     @Test
+    @Transactional
     public void authAdminToPortalAllowsSuperUser() {
         AdminUser user = adminUserFactory.buildPersisted(
                 adminUserFactory.builder("authAdminToPortalAllowsSuperUser")
@@ -70,21 +74,28 @@ public class PortalServiceTests extends BaseSpringBootTest {
     }
 
     @Test
+    @Transactional
     public void testGetAll() {
-        AdminUser user = adminUserFactory.buildPersisted("authAdminToPortalRejectsUsersNotInPortal");
-        assertThat(portalService.findByAdminUserId(user.getId()), hasSize(0));
-        Portal portal = portalFactory.buildPersisted("authAdminToPortalRejectsUsersNotInPortal");
-        assertThat(portalService.findByAdminUserId(user.getId()), hasSize(0));
+        AdminUser user = adminUserFactory.buildPersisted("testPortalGetAll");
+        assertThat(portalService.findByAdminUser(user), hasSize(0));
+        Portal portal = portalFactory.buildPersisted("testPortalGetAll");
+        assertThat(portalService.findByAdminUser(user), hasSize(0));
 
         // now add the user to a second portal
-        Portal portal2 = portalFactory.buildPersisted("authAdminToPortalRejectsUsersNotInPortal2");
+        Portal portal2 = portalFactory.buildPersisted("testPortalGetAll");
         portalAdminUserService.create(PortalAdminUser.builder()
                 .adminUserId(user.getId())
                 .portalId(portal2.getId())
                 .build());
         // confirm user can access second portal
-        List<Portal> portals = portalService.findByAdminUserId(user.getId());
+        List<Portal> portals = portalService.findByAdminUser(user);
         assertThat(portals, hasSize(1));
         assertThat(portals.get(0).getId(), equalTo(portal2.getId()));
+
+        //confirm superuser can access both
+        AdminUser superuser = adminUserFactory.buildPersisted(
+                adminUserFactory.builder("testPortalGetAll")
+                        .superuser(true));
+        assertThat(portalService.findByAdminUser(superuser), hasItems(portal, portal2));
     }
 }

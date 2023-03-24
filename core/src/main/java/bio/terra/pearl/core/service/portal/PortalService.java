@@ -131,8 +131,11 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         return portalOpt;
     }
 
-    public List<Portal> findByAdminUserId(UUID userId) {
-        return dao.findByAdminUserId(userId);
+    public List<Portal> findByAdminUser(AdminUser user) {
+        if (user.isSuperuser()) {
+            return dao.findAll();
+        }
+        return dao.findByAdminUserId(user.getId());
     }
 
     public Portal authAdminToPortal(AdminUser user, String portalShortcode) {
