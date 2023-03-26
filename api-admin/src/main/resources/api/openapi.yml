@@ -273,6 +273,21 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
+  /api/portals/v1/{portalShortcode}/env/{envName}/mailingList:
+    get:
+      summary: Gets the mailing list for the environment
+      tags: [ mailingList ]
+      operationId: get
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: List of mailing list contacts
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+
   /api/current-user/v1/unauthed-login:
     post:
       summary: Unauthenticated login (dev only)

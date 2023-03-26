@@ -49,7 +49,7 @@ public class ConsentResponseController implements ConsentResponseApi {
      * Not validating the task also makes it easier to spot-check survey and consent UX without
      * specific test users
      */
-    ParticipantUser user = requestUtilService.userFromRequest(request);
+    ParticipantUser user = requestUtilService.requireUser(request);
     StudyEnvironment studyEnv = requestUtilService.getStudyEnv(studyShortcode, envName);
     ConsentWithResponses result =
         consentResponseService.findWithResponses(
@@ -67,7 +67,7 @@ public class ConsentResponseController implements ConsentResponseApi {
       Integer version,
       UUID taskId,
       Object body) {
-    ParticipantUser user = requestUtilService.userFromRequest(request);
+    ParticipantUser user = requestUtilService.requireUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     PortalWithPortalUser portalWithPortalUser =
         requestUtilService.authParticipantToPortal(user.getId(), portalShortcode, environmentName);

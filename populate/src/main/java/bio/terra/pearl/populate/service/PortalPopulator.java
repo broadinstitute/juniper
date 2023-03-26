@@ -1,5 +1,6 @@
 package bio.terra.pearl.populate.service;
 
+import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.site.SiteContent;
@@ -7,6 +8,7 @@ import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.service.portal.MailingListContactService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
@@ -31,6 +33,7 @@ public class PortalPopulator extends Populator<Portal, FilePopulateContext> {
     private SiteContentPopulator siteContentPopulator;
     private PortalStudyService portalStudyService;
     private PortalParticipantUserPopulator portalParticipantUserPopulator;
+    private MailingListContactService mailingListContactService;
 
 
     public PortalPopulator(PortalService portalService,
@@ -39,7 +42,8 @@ public class PortalPopulator extends Populator<Portal, FilePopulateContext> {
                            SiteContentPopulator siteContentPopulator,
                            PortalParticipantUserPopulator portalParticipantUserPopulator,
                            PortalParticipantUserService ppUserService,
-                           PortalEnvironmentService portalEnvironmentService, SurveyPopulator surveyPopulator) {
+                           PortalEnvironmentService portalEnvironmentService, SurveyPopulator surveyPopulator,
+                           MailingListContactService mailingListContactService) {
         this.siteContentPopulator = siteContentPopulator;
         this.portalParticipantUserPopulator = portalParticipantUserPopulator;
         this.portalEnvironmentService = portalEnvironmentService;
@@ -47,6 +51,7 @@ public class PortalPopulator extends Populator<Portal, FilePopulateContext> {
         this.portalService = portalService;
         this.studyPopulator = studyPopulator;
         this.portalStudyService = portalStudyService;
+        this.mailingListContactService = mailingListContactService;
     }
 
     public Portal populateFromString(String portalContent, FilePopulateContext context) throws IOException {
@@ -57,37 +62,19 @@ public class PortalPopulator extends Populator<Portal, FilePopulateContext> {
         );
 
         Portal portal = portalService.create(portalDto);
-        PortalPopulateContext portalConfig = new PortalPopulateContext(context, portal.getShortcode(), null);
-        siteContentPopulator.populateImages(portalDto.getSiteImageDtos(), portalConfig);
-        // first, populate the surveys
+        PortalPopulateContext portalPopContext = new PortalPopulateContext(context, portal.getShortcode(), null);
+
+        siteContentPopulator.populateImages(portalDto.getSiteImageDtos(), portalPopContext);
+
         for (String surveyFile : portalDto.getSurveyFiles()) {
-            surveyPopulator.populate(portalConfig.newFrom(surveyFile));
+            surveyPopulator.populate(portalPopContext.newFrom(surveyFile));
         }
 
         for (PortalEnvironmentPopDto portalEnvironment : portalDto.getPortalEnvironmentDtos()) {
-            PortalPopulateContext envConfig = portalConfig.newFrom(portalEnvironment.getEnvironmentName());
-            // we're iterating over each population file spec, so now match the current on to the
-            // actual entity that got saved as a result of the portal create call.
-            PortalEnvironment savedEnv = portal.getPortalEnvironments().stream()
-                    .filter(env -> env.getEnvironmentName().equals(portalEnvironment.getEnvironmentName()))
-                    .findFirst().get();
-            if (portalEnvironment.getSiteContentFile() != null) {
-                SiteContent content = siteContentPopulator.populate(envConfig.newFrom(portalEnvironment.getSiteContentFile()));
-                savedEnv.setSiteContent(content);
-                savedEnv.setSiteContentId(content.getId());
-            }
-            if (portalEnvironment.getPreRegSurveyDto() != null) {
-                Survey matchedSurvey = surveyPopulator.fetchFromPopDto(portalEnvironment.getPreRegSurveyDto()).get();
-                savedEnv.setPreRegSurveyId(matchedSurvey.getId());
-            }
-            for (String userFileName : portalEnvironment.getParticipantUserFiles()) {
-                portalParticipantUserPopulator.populate(envConfig.newFrom(userFileName));
-            }
-            // re-save the portal environment to update it with any attached siteContents or preRegSurveys
-            portalEnvironmentService.update(savedEnv);
+            initializePortalEnv(portalEnvironment, portal, portalPopContext);
         }
         for (String studyFileName : portalDto.getPopulateStudyFiles()) {
-            populateStudy(studyFileName, portalConfig, portal);
+            populateStudy(studyFileName, portalPopContext, portal);
         }
         return portal;
     }
@@ -97,5 +84,39 @@ public class PortalPopulator extends Populator<Portal, FilePopulateContext> {
         PortalStudy portalStudy = portalStudyService.create(portal.getId(), newStudy.getId());
         portal.getPortalStudies().add(portalStudy);
         portalStudy.setStudy(newStudy);
+    }
+
+    private void initializePortalEnv(PortalEnvironmentPopDto portalEnvPopDto, Portal savedPortal, PortalPopulateContext portalPopContext) throws IOException {
+        PortalPopulateContext envConfig = portalPopContext.newFrom(portalEnvPopDto.getEnvironmentName());
+        // we're iterating over each population file spec, so now match the current on to the
+        // actual entity that got saved as a result of the portal create call.
+        PortalEnvironment savedEnv = savedPortal.getPortalEnvironments().stream()
+                .filter(env -> env.getEnvironmentName().equals(portalEnvPopDto.getEnvironmentName()))
+                .findFirst().get();
+        if (portalEnvPopDto.getSiteContentFile() != null) {
+            SiteContent content = siteContentPopulator.populate(envConfig.newFrom(portalEnvPopDto.getSiteContentFile()));
+            savedEnv.setSiteContent(content);
+            savedEnv.setSiteContentId(content.getId());
+        }
+        if (portalEnvPopDto.getPreRegSurveyDto() != null) {
+            Survey matchedSurvey = surveyPopulator.fetchFromPopDto(portalEnvPopDto.getPreRegSurveyDto()).get();
+            savedEnv.setPreRegSurveyId(matchedSurvey.getId());
+        }
+        for (String userFileName : portalEnvPopDto.getParticipantUserFiles()) {
+            portalParticipantUserPopulator.populate(envConfig.newFrom(userFileName));
+        }
+        // re-save the portal environment to update it with any attached siteContents or preRegSurveys
+        portalEnvironmentService.update(savedEnv);
+
+        populateMailingList(portalEnvPopDto, savedEnv);
+    }
+
+    private void populateMailingList(PortalEnvironmentPopDto portalEnvPopDto, PortalEnvironment savedEnv) {
+        for (MailingListContact contact : portalEnvPopDto.getMailingListContacts()) {
+            contact.setPortalEnvironmentId(savedEnv.getId());
+            contact.setEmail(contact.getEmail());
+            contact.setName(contact.getName());
+            mailingListContactService.create(contact);
+        }
     }
 }

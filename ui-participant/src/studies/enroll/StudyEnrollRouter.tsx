@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react'
-import { useUser } from 'providers/UserProvider'
-import { Route, Routes, useNavigate, useParams } from 'react-router-dom'
-import { usePortalEnv } from 'providers/PortalProvider'
-import { ParticipantUser, Portal, StudyEnvironment } from 'api/api'
+import React, {useEffect, useState} from 'react'
+import {useUser} from 'providers/UserProvider'
+import {Route, Routes, useNavigate, useParams} from 'react-router-dom'
+import {usePortalEnv} from 'providers/PortalProvider'
+import {ParticipantUser, Portal, StudyEnvironment} from 'api/api'
 import LandingNavbar from '../../landing/LandingNavbar'
 import Api from '../../api/api'
 import PreEnrollView from './PreEnroll'
 import StudyIneligible from './StudyIneligible'
 import PortalRegistrationRouter from '../../landing/registration/PortalRegistrationRouter'
 import LoadingSpinner from '../../util/LoadingSpinner'
-import { usePreEnrollResponseId } from 'browserPersistentState'
+import {usePreEnrollResponseId} from 'browserPersistentState'
 
 export type StudyEnrollContext = {
   user: ParticipantUser,
@@ -22,7 +22,7 @@ export type StudyEnrollContext = {
 /** Handles routing and loading for enrollment in a study */
 export default function StudyEnrollRouter() {
   const studyShortcode = useParams().studyShortcode
-  const { portal } = usePortalEnv()
+  const {portal} = usePortalEnv()
   const matchedStudy = portal.portalStudies.find(pStudy => pStudy.study.shortcode === studyShortcode)?.study
   const studyEnv = matchedStudy?.studyEnvironments[0]
   if (!studyEnv || !studyShortcode) {
@@ -32,9 +32,9 @@ export default function StudyEnrollRouter() {
 }
 
 /** handles the rendering and useEffect logic */
-function StudyEnrollOutletMatched({ portal, studyEnv, studyShortcode }:
+function StudyEnrollOutletMatched({portal, studyEnv, studyShortcode}:
                                     { portal: Portal, studyEnv: StudyEnvironment, studyShortcode: string }) {
-  const { user, enrollees, updateEnrollee } = useUser()
+  const {user, enrollees, updateEnrollee} = useUser()
   const navigate = useNavigate()
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
   const [preEnrollSatisfied, setPreEnrollSatisfied] = useState(!studyEnv.preEnrollSurvey)
@@ -66,26 +66,26 @@ function StudyEnrollOutletMatched({ portal, studyEnv, studyShortcode }:
     const isAlreadyEnrolled = !!enrollees.find(rollee => rollee.studyEnvironmentId === studyEnv.id)
     if (isAlreadyEnrolled) {
       alert('you are already enrolled in this study')
-      navigate('/hub', { replace: true })
+      navigate('/hub', {replace: true})
       return
     }
     if (preEnrollSatisfied) {
       if (user.isAnonymous) {
-        navigate('register', { replace: true })
+        navigate('register', {replace: true})
       } else {
         // when preEnroll is satisfied, and we have a user, we're clear to create an Enrollee
-        Api.createEnrollee({ studyShortcode, preEnrollResponseId }).then(response => {
+        Api.createEnrollee({studyShortcode, preEnrollResponseId}).then(response => {
           updateEnrollee(response.enrollee)
           navigate('/hub', {
             replace: true,
-            state: { message: { content: 'Welcome to the study!', messageType: 'success' } }
+            state: {message: {content: 'Welcome to the study!', messageType: 'success'}}
           })
         }).catch(() => {
           alert('an error occurred, please try again, or contact support')
         })
       }
     } else {
-      navigate('preEnroll', { replace: true })
+      navigate('preEnroll', {replace: true})
     }
   }, [preEnrollSatisfied, user.username])
 
@@ -96,7 +96,7 @@ function StudyEnrollOutletMatched({ portal, studyEnv, studyShortcode }:
     <LandingNavbar/>
     <Routes>
       <Route path="preEnroll" element={<PreEnrollView enrollContext={enrollContext}/>}/>
-      <Route path="ineligible" element={<StudyIneligible/>}/>
+      <Route path="ineligible" element={<StudyIneligible portal={portal}/>}/>
       <Route path="register/*" element={<PortalRegistrationRouter portal={portal} returnTo={null}/>}/>
       <Route index element={<LoadingSpinner/>}/>
     </Routes>

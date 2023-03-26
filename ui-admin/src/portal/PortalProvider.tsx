@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { PropsWithChildren, ReactNode, ReactPropTypes, useEffect, useState } from 'react'
 import { Link, Outlet, useParams } from 'react-router-dom'
 import Api, { Portal } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
@@ -31,20 +31,20 @@ export const PortalContext = React.createContext<PortalContextT>({
 
 
 /** routable component wrapper for PortalProvider */
-export default function PortalProvider() {
+export default function PortalProvider(props: PropsWithChildren) {
   const params = useParams<PortalParams>()
   const portalShortcode: string | undefined = params.portalShortcode
   if (!portalShortcode) {
     return <span>No portal selected</span>
   }
 
-  return <RawPortalProvider shortcode={portalShortcode}/>
+  return <RawPortalProvider shortcode={portalShortcode}>{props.children}</RawPortalProvider>
 }
 
 
 /** context provider for a portal object */
-function RawPortalProvider({ shortcode }:
-                       { shortcode: string}) {
+function RawPortalProvider({ shortcode, children }:
+                       { shortcode: string, children: ReactNode}) {
   const [portalState, setPortalState] = useState<Portal | null>(null)
   const [isError, setIsError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -90,6 +90,6 @@ function RawPortalProvider({ shortcode }:
       <Link className="text-white" to={`/${shortcode}`}>
         {portalState?.name}</Link>
     </NavBreadcrumb>
-    <Outlet/>
+    {children}
   </PortalContext.Provider>
 }

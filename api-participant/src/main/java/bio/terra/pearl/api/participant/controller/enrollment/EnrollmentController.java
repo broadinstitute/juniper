@@ -30,7 +30,7 @@ public class EnrollmentController implements EnrollmentApi {
   @Override
   public ResponseEntity<Object> createEnrollee(
       String portalShortcode, String envName, String studyShortcode, UUID preEnrollResponseId) {
-    ParticipantUser user = requestUtilService.userFromRequest(request);
+    ParticipantUser user = requestUtilService.requireUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     PortalWithPortalUser portalWithPortalUser =
         requestUtilService.authParticipantToPortal(user.getId(), portalShortcode, environmentName);

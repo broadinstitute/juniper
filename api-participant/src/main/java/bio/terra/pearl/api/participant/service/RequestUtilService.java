@@ -37,16 +37,28 @@ public class RequestUtilService {
   }
 
   /** gets the user from the request, throwing an exception if not present */
-  public ParticipantUser userFromRequest(HttpServletRequest request) {
-    var token = tokenFromRequest(request);
-    var envName = environmentNameFromRequest(request);
-    var decodedJWT = JWT.decode(token);
-    var email = decodedJWT.getClaim("email").asString();
-    Optional<ParticipantUser> userOpt = currentUserService.findByUsername(email, envName);
+  public ParticipantUser requireUser(HttpServletRequest request) {
+    var token = requireToken(request);
+    Optional<ParticipantUser> userOpt = getUserFromRequest(request);
     if (userOpt.isEmpty()) {
       throw new UnauthorizedException("User not found");
     }
     return userOpt.get();
+  }
+
+  public Optional<ParticipantUser> getUserFromRequest(HttpServletRequest request) {
+    var token = tokenFromRequest(request);
+    if (token == null) {
+      return Optional.empty();
+    }
+    return getUserFromToken(request, token);
+  }
+
+  protected Optional<ParticipantUser> getUserFromToken(HttpServletRequest request, String token) {
+    var envName = environmentNameFromRequest(request);
+    var decodedJWT = JWT.decode(token);
+    var email = decodedJWT.getClaim("email").asString();
+    return currentUserService.findByUsername(email, envName);
   }
 
   public EnvironmentName environmentNameFromRequest(HttpServletRequest request) {
@@ -60,8 +72,16 @@ public class RequestUtilService {
     return portalService.authParticipantToPortal(participantId, portalShortcode, envName);
   }
 
-  public String tokenFromRequest(HttpServletRequest request) {
+  public String requireToken(HttpServletRequest request) {
     return bearerTokenFactory.from(request).getToken();
+  }
+
+  public String tokenFromRequest(HttpServletRequest request) {
+    try {
+      return bearerTokenFactory.from(request).getToken();
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   public StudyEnvironment getStudyEnv(String studyShortcode, String envName) {

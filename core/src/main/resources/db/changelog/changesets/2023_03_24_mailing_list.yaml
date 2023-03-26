@@ -22,5 +22,5 @@ databaseChangeLog:
               }
         - addUniqueConstraint:
             tableName: mailing_list_contact
-            constraintName: participant_user_username_env_name
+            constraintName: mailing_list_contact_email_envs
             columnNames: email, portal_environment_id, study_environment_id
