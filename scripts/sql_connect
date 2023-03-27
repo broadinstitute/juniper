@@ -11,10 +11,36 @@ set -o pipefail
 # INFO = 1
 # DEBUG = 2
 declare -i desired_log_level=2
+declare -a valid_environment_targets=( dev prod )
+
+
+function usage() {
+    local -r usage="
+    $0: connect to an Azure managed database instance with private networking through AKS cluster
+
+    Usage: $0 <Enviornment> <Database> <Subscription> <AKS Cluster> <Resource Group>
+    Where:  <Environment> is one of: ${valid_environment_targets[*]}
+            <Database> is an exisiting Azure managed database instance
+            <Subscription> is the Azure subscription which contains the AKS Cluster where the pod will be spun up
+            <AKS Cluster> is an exisitng AKS cluster with the correct virtual network peering links set up to the VNet and DNS Zone containing the database
+                -- see terraform-ap-deployment postgres terraform module for set up
+            <Resource Group> is an exisiting Azure Resource group which contains the AKS Cluster in which the pod will be spun up
+    "
+    echo "$usage"
+}
+
+# make sure the arg is a valid target environment
+if [[ ! "${valid_environment_targets[*]}" =~ $1 ]];
+then 
+    usage
+    exit 1
+fi
+
 
 # General use vars
 declare -a required_tools=( az kubectl vault sleep jq )
 declare -r proj_name="d2p"
+declare -r target_environment="${1:?An environment must be specified as first argument}"
 
 # k8s vars
 declare -r k8s_namespace="${proj_name}-postgres-dev"
@@ -37,7 +63,7 @@ declare database_pw=""
 
 # Vault setup
 declare -r vault_addr="https://clotho.broadinstitute.org:8200"
-declare -r vault_path="secret/dsp/ddp/d2p/dev/postgres/admin-credential"
+declare -r vault_path="secret/dsp/ddp/d2p/${target_environment}/postgres/admin-credential"
 
 # Default Vars - used if other values are not given on the command line
 declare -r subscription_default="385ed569-ca04-4b97-97b4-677c8479585e"
@@ -73,26 +99,12 @@ function _log_msg() {
     echo "$timestamp [$2] $1"
 }
 
-function usage() {
-    local -r usage="
-    $0: connect to an Azure managed database instance with private networking through AKS cluster
-
-    Usage: $0 <Database> <Subscription> <AKS Cluster> <Resource Group>
-    Where:  <Database> is an exisiting Azure managed database instance
-            <Subscription> is the Azure subscription which contains the AKS Cluster where the pod will be spun up
-            <AKS Cluster> is an exisitng AKS cluster with the correct virtual network peering links set up to the VNet and DNS Zone containing the database
-                -- see terraform-ap-deployment postgres terraform module for set up
-            <Resource Group> is an exisiting Azure Resource group which contains the AKS Cluster in which the pod will be spun up
-    "
-    echo "$usage"
-}
-
 # All arguments are positional. See Usage(). Will use defaults if values are not given
 function parse_args() {
-    database_name="${1:-$database_name_default}"
-    subscription="${2:-$subscription_default}"
-    cluster="${3:-$cluster_default}"
-    rg="${4:-$rg_default}"
+    database_name="${2:-$database_name_default}"
+    subscription="${3:-$subscription_default}"
+    cluster="${4:-$cluster_default}"
+    rg="${5:-$rg_default}"
 }
 
 # Validate that all external tools used in this script are on user's PATH
