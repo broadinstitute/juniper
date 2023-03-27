@@ -11,6 +11,8 @@ import { getSectionStyle } from 'util/styleUtils'
 import { requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 
+import { TemplateComponentProps } from './templateUtils'
+
 const idFor = (question: string): string => {
   return _.kebabCase(question)
 }
@@ -56,10 +58,7 @@ const validateFrequentlyAskedQuestionsConfig = (config: SectionConfig): Frequent
   }
 }
 
-type FrequentlyAskedQuestionsProps = {
-  anchorRef?: string
-  config: FrequentlyAskedQuestionsConfig
-}
+type FrequentlyAskedQuestionsProps = TemplateComponentProps<FrequentlyAskedQuestionsConfig>
 
 /**
  * Template for rendering a Frequently Asked Questions block.

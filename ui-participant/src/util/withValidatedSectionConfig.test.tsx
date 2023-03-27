@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import React from 'react'
 
 import { SectionConfig } from 'api/api'
@@ -32,7 +32,7 @@ describe('withValidatedSectionConfig', () => {
 
     it('renders wrapped template component', () => {
       // Act
-      const { container } = render(<TestSectionTemplate config={validConfig} />)
+      const { container } = render(<TestSectionTemplate config={validConfig}/>)
 
       // Assert
       expect(container).toHaveTextContent('Hello world')
@@ -49,7 +49,7 @@ describe('withValidatedSectionConfig', () => {
 
     it('renders nothing', () => {
       // Act
-      const { container } = render(<TestSectionTemplate config={invalidConfig} />)
+      const { container } = render(<TestSectionTemplate config={invalidConfig}/>)
 
       // Assert
       expect(container).toBeEmptyDOMElement()
@@ -57,7 +57,7 @@ describe('withValidatedSectionConfig', () => {
 
     it('logs a warning', () => {
       // Act
-      render(<TestSectionTemplate config={invalidConfig} />)
+      render(<TestSectionTemplate config={invalidConfig}/>)
 
       // Assert
       expect(console.warn).toHaveBeenCalled()

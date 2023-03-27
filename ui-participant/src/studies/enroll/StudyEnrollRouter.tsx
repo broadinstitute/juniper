@@ -2,13 +2,12 @@ import React, {useEffect, useState} from 'react'
 import {useUser} from 'providers/UserProvider'
 import {Route, Routes, useNavigate, useParams} from 'react-router-dom'
 import {usePortalEnv} from 'providers/PortalProvider'
-import {ParticipantUser, Portal, StudyEnvironment} from 'api/api'
-import LandingNavbar from '../../landing/LandingNavbar'
-import Api from '../../api/api'
+import Api, {ParticipantUser, Portal, StudyEnvironment} from 'api/api'
+import LandingNavbar from 'landing/LandingNavbar'
 import PreEnrollView from './PreEnroll'
 import StudyIneligible from './StudyIneligible'
-import PortalRegistrationRouter from '../../landing/registration/PortalRegistrationRouter'
-import LoadingSpinner from '../../util/LoadingSpinner'
+import PortalRegistrationRouter from 'landing/registration/PortalRegistrationRouter'
+import {PageLoadingIndicator} from 'util/LoadingSpinner'
 import {usePreEnrollResponseId} from 'browserPersistentState'
 
 export type StudyEnrollContext = {
@@ -92,15 +91,13 @@ function StudyEnrollOutletMatched({portal, studyEnv, studyShortcode}:
   const enrollContext: StudyEnrollContext = {
     studyShortcode, studyEnv, user, preEnrollResponseId, updatePreEnrollResponseId
   }
-  return <div>
+  return <>
     <LandingNavbar/>
     <Routes>
       <Route path="preEnroll" element={<PreEnrollView enrollContext={enrollContext}/>}/>
       <Route path="ineligible" element={<StudyIneligible portal={portal}/>}/>
       <Route path="register/*" element={<PortalRegistrationRouter portal={portal} returnTo={null}/>}/>
-      <Route index element={<LoadingSpinner/>}/>
+      <Route index element={<PageLoadingIndicator/>}/>
     </Routes>
-  </div>
+  </>
 }
-
-

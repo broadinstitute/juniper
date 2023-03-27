@@ -6,6 +6,7 @@
     "givenName": "Jonas",
     "familyName": "Salk",
     "contactEmail": "jsalk@test.com",
+    "sexAtBirth": "male",
     "mailingAddress": {
       "street1": "32 Elm Street",
       "city": "New York",

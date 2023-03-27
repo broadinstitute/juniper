@@ -8,6 +8,8 @@ import { requireOptionalArray, requireOptionalString, requirePlainObject, requir
 
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
+import { TemplateComponentProps } from './templateUtils'
+
 type PhotoBlurbGridConfig = {
   title?: string,
   subGrids: SubGrid[]
@@ -51,10 +53,7 @@ const validatePhotoBlurbGridConfig = (config: SectionConfig): PhotoBlurbGridConf
   return { subGrids, title }
 }
 
-type PhotoBlurbGridProps = {
-  anchorRef?: string
-  config: PhotoBlurbGridConfig
-}
+type PhotoBlurbGridProps = TemplateComponentProps<PhotoBlurbGridConfig>
 
 /**
  * Template for rendering a hero with centered content.
@@ -85,6 +84,8 @@ function SubGridView({ subGrid }: { subGrid: SubGrid }) {
 
 /** renders a single bio with pic */
 function PhotoBioView({ photoBio }: { photoBio: PhotoBio }) {
+  // Default alt text to person's name
+  photoBio.image.alt ||= photoBio.name
   return <div className="col-sm-6 col-md-4 gx-5 gy-3 text-center text-sm-start">
     <PearlImage image={photoBio.image} className="img-fluid"/>
     <div className="my-2">

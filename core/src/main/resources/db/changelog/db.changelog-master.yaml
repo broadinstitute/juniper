@@ -51,6 +51,9 @@ databaseChangeLog:
       file: changesets/2023_03_21_primary_brand_color.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2023_03_22_add_sex_to_profile.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2023_03_24_mailing_list.yaml
       relativeToChangelogFile: true
 

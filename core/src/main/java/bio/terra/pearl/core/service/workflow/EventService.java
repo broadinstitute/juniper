@@ -1,11 +1,13 @@
 package bio.terra.pearl.core.service.workflow;
 
+import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
@@ -93,6 +95,19 @@ public class EventService {
         event.setEnrolleeRuleData(enrolleeRuleService.fetchData(enrollee));
         enrollee.getParticipantTasks().clear();
         enrollee.getParticipantTasks().addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
+    }
+
+    /** Assembles a HubResponse using the objects attached to the event.  this makes sure that the
+     * response reflects the latest task list and profile
+     */
+    public <T extends BaseEntity> HubResponse<T> buildHubResponse(EnrolleeEvent event, T response) {
+        HubResponse hubResponse = HubResponse.builder()
+                .response(response)
+                .tasks(event.getEnrollee().getParticipantTasks().stream().toList())
+                .enrollee(event.getEnrollee())
+                .profile(event.getEnrolleeRuleData().profile())
+                .build();
+        return hubResponse;
     }
 
 
