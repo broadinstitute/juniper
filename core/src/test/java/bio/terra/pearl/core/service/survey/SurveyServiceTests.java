@@ -5,10 +5,7 @@ import bio.terra.pearl.core.dao.DaoTestUtils;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.survey.AnswerMapping;
-import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
-import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
-import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,6 +13,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 public class SurveyServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -62,7 +61,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         Survey survey = surveyFactory.buildPersisted("testPublishSurvey");
         AdminUser user = adminUserFactory.buildPersisted("testPublishSurvey");
         String oldContent = survey.getContent();
-        String newContent = "totally new " + RandomStringUtils.randomAlphabetic(6);
+        String newContent = String.format("{\"pages\":[],\"title\":\"%s\"}", RandomStringUtils.randomAlphabetic(6));
         survey.setContent(newContent);
         Survey newSurvey = surveyService.createNewVersion(user, survey.getPortalId(), survey);
 
@@ -75,4 +74,52 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         Survey fetchedOriginal = surveyService.find(survey.getId()).get();
         Assertions.assertEquals(oldContent, fetchedOriginal.getContent());
     }
+
+    @Test
+    public void testGetSurveyQuestionDefinitions() {
+        Survey survey = surveyFactory.buildPersisted("testPublishSurvey");
+        String surveyContent = """
+                {
+                	"title": "The Basics",
+                	"showQuestionNumbers": "off",
+                	"pages": [{
+                		"elements": [{
+                			"name": "oh_oh_basic_firstName",
+                			"type": "text",
+                			"title": "First name",
+                			"isRequired": true
+                		}, {
+                			"name": "oh_oh_basic_mghPatient",
+                			"type": "radiogroup",
+                			"title": "Are you a patient, current or former, of MGH?",
+                			"isRequired": true,
+                			"choices": [{
+                				"text": "Yes",
+                				"value": "yes"
+                			}, {
+                				"text": "No",
+                				"value": "no"
+                			}]
+                		}]
+                	}, {
+                		"elements": [{
+                			"name": "oh_oh_basic_streetAddress",
+                			"type": "text",
+                			"title": "Address",
+                			"isRequired": true
+                		}, {
+                			"name": "oh_oh_basic_city",
+                			"type": "text",
+                			"title": "City",
+                			"isRequired": true
+                		}]
+                	}]
+                }""";
+
+        survey.setContent(surveyContent);
+
+        List<SurveyQuestionDefinition> actual = surveyService.getSurveyQuestionDefinitions(survey);
+        Assertions.assertEquals(4, actual.size());
+    }
+
 }
