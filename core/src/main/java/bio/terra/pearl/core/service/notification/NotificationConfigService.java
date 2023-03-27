@@ -21,6 +21,15 @@ public class NotificationConfigService extends CrudService<NotificationConfig, N
         return dao.findByStudyEnvironmentId(studyEnvironmentId, active);
     }
 
+    /** gets configs unaffiliated with a study */
+    public List<NotificationConfig> findByPortalEnvironmentId(UUID portalEnvId) {
+        return dao.findByPortalEnvironmentId(portalEnvId);
+    }
+
+    public void attachTemplates(List<NotificationConfig> configs) {
+        dao.attachTemplates(configs);
+    }
+
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
         dao.deleteByStudyEnvironmentId(studyEnvironmentId);
     }

@@ -339,7 +339,39 @@ paths:
                 $ref: '#/components/schemas/RoleList'
         '500':
           $ref: '#/components/responses/ServerError'
-
+  /api/portals/v1/{portalShortcode}/publish/diff:
+    get:
+      summary: Gets the changes between one environment and another
+      tags: [ publish ]
+      operationId: get
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: sourceEnv, in: query, required: true, schema: { type: string } }
+        - { name: targetEnv, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: PortalEnvironmentChangeRecord object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/publish/publish:
+    get:
+      summary: Gets the changes between one environment and another
+      tags: [ publish ]
+      operationId: get
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: sourceEnv, in: query, required: true, schema: { type: string } }
+        - { name: destEnv, in: query, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: PortalEnvironment object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/internal/v1/populate/baseSeed:
     post:
       summary: Populates

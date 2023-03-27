@@ -30,8 +30,20 @@ public class NotificationConfigDao extends BaseMutableJdbiDao<NotificationConfig
         return findAllByTwoProperties("study_environment_id", studyEnvironmentId, "active", active);
     }
 
-    public List<NotificationConfig> findByStudyEnvWithTemplates(UUID studyEnvironmentId, boolean active) {
-        List<NotificationConfig> configs = findByStudyEnvironmentId(studyEnvironmentId, active);
+    /** gets the configs for the portal environment that are unassociated with studies */
+    public List<NotificationConfig> findByPortalEnvironmentId(UUID portalEnvironmentId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from " + tableName + " where portal_environment_id = :portalEnvironmentId" +
+                                " and study_environment_id is null;")
+                        .bind("portalEnvironmentId", portalEnvironmentId)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
+
+
+    public void attachTemplates(List<NotificationConfig> configs) {
         List<UUID> templateIds = configs.stream().map(NotificationConfig::getEmailTemplateId)
                 .filter(uuid -> uuid != null).toList();
         List<EmailTemplate> templates = emailTemplateDao.findAll(templateIds);
@@ -41,7 +53,6 @@ public class NotificationConfigDao extends BaseMutableJdbiDao<NotificationConfig
                     .findFirst().orElse(null)
             );
         }
-        return configs;
     }
 
     @Override
