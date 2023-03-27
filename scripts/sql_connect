@@ -1,0 +1,284 @@
+#!/usr/bin/env bash
+
+# This script is an intermediary solution that will eventually be replaced with "thelma sql connect"
+# It allows devs working on Azure web apps to connect to managed database instances with private networking enabled
+# Team needs to make sure database is set up with the correct virtual network links from the cluster with the database to the cluster used in this script
+# Dev will need to be on vpn for this script to work
+
+set -o pipefail
+
+# ERROR = 0
+# INFO = 1
+# DEBUG = 2
+declare -i desired_log_level=2
+declare -a valid_environment_targets=( dev prod )
+
+
+function usage() {
+    local -r usage="
+    $0: connect to an Azure managed database instance with private networking through AKS cluster
+
+    Usage: $0 <Enviornment> <Database> <Subscription> <AKS Cluster> <Resource Group>
+    Where:  <Environment> is one of: ${valid_environment_targets[*]}
+            <Database> is an exisiting Azure managed database instance
+            <Subscription> is the Azure subscription which contains the AKS Cluster where the pod will be spun up
+            <AKS Cluster> is an exisitng AKS cluster with the correct virtual network peering links set up to the VNet and DNS Zone containing the database
+                -- see terraform-ap-deployment postgres terraform module for set up
+            <Resource Group> is an exisiting Azure Resource group which contains the AKS Cluster in which the pod will be spun up
+    "
+    echo "$usage"
+}
+
+# make sure the arg is a valid target environment
+if [[ ! "${valid_environment_targets[*]}" =~ $1 ]];
+then 
+    usage
+    exit 1
+fi
+
+
+# General use vars
+declare -a required_tools=( az kubectl vault sleep jq )
+declare -r proj_name="d2p"
+declare -r target_environment="${1:?An environment must be specified as first argument}"
+
+# k8s vars
+declare -r k8s_namespace="${proj_name}-postgres-dev"
+declare -r k8s_pod_name="postgres"
+declare -r docker_image="postgres:12"
+# password is required but not important. can be anything
+declare postgres_password=$(openssl rand -base64 12)
+
+# azure vars
+declare subscription=""
+declare rg=""
+declare cluster=""
+declare user=""
+
+# database vars
+#default value. can be overwritten with command line flags
+declare database_name=""
+declare database_user=""
+declare database_pw=""
+
+# Vault setup
+declare -r vault_addr="https://clotho.broadinstitute.org:8200"
+declare -r vault_path="secret/dsp/ddp/d2p/${target_environment}/postgres/admin-credential"
+
+# Default Vars - used if other values are not given on the command line
+declare -r subscription_default="385ed569-ca04-4b97-97b4-677c8479585e"
+declare -r rg_default="ddp-aks-dev"
+declare -r cluster_default="ddp-aks-dev"
+declare -r database_name_default="d2p-dev-psqlflexibleserver"
+
+# Basic logging lib
+function log_debug() { _log_execute 'DEBUG' "$1"; }
+function log_info() { _log_execute 'INFO' "$1"; }
+function log_err() { _log_execute 'ERROR' "$1"; } 
+
+function _log_execute() {
+    local -r log_message=$2
+    local -r log_level=$1
+
+    case "$log_level" in
+        ERROR) priority=0;;
+        INFO)  priority=1;;
+        DEBUG) priority=2;;
+        *) return 1;;
+    esac
+
+    # check if level is at least desired level
+    [[ ${priority} -le ${desired_log_level} ]] && _log_msg "$log_message" "$log_level"
+
+    # don't want to exit with error code on messages of lower priority
+    return 0
+}
+
+function _log_msg() {
+    local -r timestamp=$(date "+%Y-%m-%d %H:%M:%S")
+    echo "$timestamp [$2] $1"
+}
+
+# All arguments are positional. See Usage(). Will use defaults if values are not given
+function parse_args() {
+    database_name="${2:-$database_name_default}"
+    subscription="${3:-$subscription_default}"
+    cluster="${4:-$cluster_default}"
+    rg="${5:-$rg_default}"
+}
+
+# Validate that all external tools used in this script are on user's PATH
+function check_required_tools() {
+    for tool in "${required_tools[@]}"
+    do
+        [[ $(type -P "$tool") ]] || { log_err "$tool not found on PATH, please install $tool"; return 1; }
+        log_debug "found $tool on PATH"
+    done
+    log_info 'all required tools found on PATH'
+}
+
+function fetch_database_creds() {
+    local -r -a vault_read_username_cmd=(vault read -field=username -address="${vault_addr}" "${vault_path}" )
+    local -r -a vault_read_password_cmd=(vault read -field=password -address="${vault_addr}" "${vault_path}" )
+
+    log_info "reading database username from vault "
+    database_user=$( "${vault_read_username_cmd[@]}" )
+    if ! "${vault_read_username_cmd[@]}" > /dev/null 2>&1 ;
+    then
+        log_err "unable to read username from vault...exiting"
+        log_debug "Are you logged into Vault?"
+        exit 1
+    fi
+    log_info "successfully read username from vault"
+
+    log_info "reading database password from vault "
+    database_pw=$( "${vault_read_password_cmd[@]}" )
+    if ! "${vault_read_password_cmd[@]}" > /dev/null 2>&1 ;
+    then
+        log_err "unable to read password from vault...exiting"
+        log_debug "Are you logged into Vault?"
+        exit 1
+    fi
+    log_info "successfully read password from vault"
+}
+
+
+function set_subscription() {
+    local -r -a set_account_cmd=(az account set --subscription "${subscription}")
+    log_info "setting azure account subscription: ${subscription}"
+    if ! "${set_account_cmd[@]}" ;
+    then
+        log_err "unable to set azure account...exiting"
+        exit 1
+    fi
+    log_info "successfully set account subcription"
+}
+
+# Ensure the calling user has the correct entry for the cluster in their kube config and/or switch the current kube context to point to that cluster
+function set_cluster() {
+    # If already set to the correct cluster, will overwrite
+    local -r -a set_cluster_cmd=(az aks get-credentials --resource-group "${rg}" --name "${cluster}" --overwrite-existing)
+    log_info "setting azure cluster to resorce group ${rg} and cluster: ${cluster}"
+    if ! "${set_cluster_cmd[@]}" ;
+    then
+        log_err "unable to set azure resource group: and cluster...exiting"
+        exit 1
+    fi
+    log_info "successfully set resource group and cluster"
+}
+
+function change_namespace(){
+    local -r -a change_namespace_cmd=(kubectl config set-context --current --namespace="${k8s_namespace}")
+    if ! "${change_namespace_cmd[@]}" ;
+    then
+        log_err "unable to change namespace...exiting"
+        exit 1
+    fi
+}
+
+function create_namespace() {
+    local -r -a create_cmd=(kubectl create namespace "${k8s_namespace}")
+    log_info "creating kubernetes namespace: ${k8s_namespace}"
+    if ! "${create_cmd[@]}" ;
+    then
+        log_err "unable to create kubernetes namespace to deploy postgres pod into...exiting"
+        log_debug "Are you connected to VPN?"
+        exit 1
+    fi
+    log_info "successfully created_namespace"
+    change_namespace
+}
+
+function cleanup_namespace() {
+    local -r -a delete_cmd=(kubectl delete namespace "${k8s_namespace}")
+    log_info "deleting kubernetes namespace: ${k8s_namespace}"
+    if ! "${delete_cmd[@]}" ;
+    then
+        log_err "unable to delete kubernetes namespace to deploy postgres pod into...exiting"
+        return 1
+    fi
+    log_info "successfully deleted_namespace"
+}
+
+function deploy_postgres_pod() {
+    local -r -a deploy_cmd=(kubectl run "${k8s_pod_name}" --image "${docker_image}" -n "${k8s_namespace}" --env="POSTGRES_PASSWORD=${postgres_password}")
+    log_info "deploying postgres pod: ${k8s_pod_name} to kuberetes namespace: ${k8s_namespace}"
+    if ! "${deploy_cmd[@]}" ;
+    then
+        log_err "unable to deploy ${k8s_pod_name} pod...exiting"
+        exit 1
+    fi
+    log_info "successfully deployed pod to namespace"
+}
+
+function delete_postgres_pod() {
+    local -r -a delete_cmd=(kubectl delete pod "${k8s_pod_name}")
+    log_info "deleting kubernetes pod: ${k8s_pod_name}"
+    if ! "${delete_cmd[@]}" ;
+    then
+        log_err "unable to delete ${k8s_pod_name} pod...exiting"
+        return 1
+    fi
+    log_info "successfully deleted pod"
+}
+
+function setup_k8s_enviornment() {
+    set_subscription
+    set_cluster
+    # Create a temporary namespace with kubectl to spin up the postgres jump pod in
+    create_namespace
+    # spin up a pod running the postgres docker image in the newly created namespace and wait for it to be ready
+    deploy_postgres_pod
+
+}
+
+function cleanup_k8s_enviornment() {
+    # Once they are done cleanup - cleanup order matters, delete the jump pod first then the namespace
+    delete_postgres_pod
+    cleanup_namespace
+}
+
+function read_user() {
+    local -r -a read_user_cmd=(az ad signed-in-user show)
+    local -r -a jq_cmd=(jq .displayName -r)
+    user=$( "${read_user_cmd[@]}" | "${jq_cmd[@]}" )
+    if ! ("${read_user_cmd[@]}" | "${jq_cmd[@]}") > /dev/null 2>&1 ;
+    then
+        log_err "unable to read azure username...exiting"
+        exit 1
+    fi
+}
+
+# use kubectl exec on behalf of the calling user to run a psql command to open a connection to the database allowing them to have a shell session into the database 
+function exec_into_pod() {
+    #let pod spin up
+    sleep 5
+    log_info "$user connected to database $database_name"
+    local -r -a connect_cmd=(kubectl exec -it -n "${k8s_namespace}" postgres -- psql "host=$database_name.postgres.database.azure.com port=5432 dbname=postgres user=$database_user password=$database_pw sslmode=require")
+ 
+    log_info "running kubernetes pod ${k8s_pod_name} in ${k8s_namespace} namespace"
+    if ! "${connect_cmd[@]}" ;
+    then
+        log_err "unable to run ${k8s_pod_name} pod...exiting"
+        return 1
+    fi
+    log_info "successfully ran pod"
+}
+
+function init() {
+    parse_args "$@"
+    check_required_tools || exit 1
+    fetch_database_creds
+}
+
+function main() {
+    init "$@"
+    setup_k8s_enviornment || exit 1
+    # ( If any thing from this point forward fails script must cleanup )
+    trap cleanup_k8s_enviornment SIGHUP SIGINT SIGQUIT
+    read_user
+    exec_into_pod
+    cleanup_k8s_enviornment
+}
+
+main "$@"
