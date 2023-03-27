@@ -37,6 +37,7 @@ const columns: ColumnDef<MailingListContact>[] = [{
   cell: info => instantToDefaultString(info.getValue() as number)
 }]
 
+/** show the mailing list in table */
 export default function MailingListView({ portalContext, portalEnv }:
 {portalContext: LoadedPortalContextT, portalEnv: PortalEnvironment}) {
   const [contacts, setContacts] = useState<MailingListContact[]>([])

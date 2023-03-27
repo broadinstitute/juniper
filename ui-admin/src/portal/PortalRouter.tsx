@@ -4,10 +4,10 @@ import StudyRouter from '../study/StudyRouter'
 import PortalDashboard from './PortalDashboard'
 import { LoadedPortalContextT, PortalContext, PortalParams } from './PortalProvider'
 import MailingListView from './MailingListView'
-import { Portal } from '../api/api'
 import { NavBreadcrumb } from '../navbar/AdminNavbar'
 import PortalEnvConfigView from './PortalEnvConfigView'
 
+/** controls routes for within a portal */
 export default function PortalRouter() {
   const portalContext = useContext(PortalContext) as LoadedPortalContextT
   return <Routes>
@@ -20,6 +20,7 @@ export default function PortalRouter() {
   </Routes>
 }
 
+/** controls routes within a portal environment, such as config, mailing list, etc... */
 function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT}) {
   const params = useParams<PortalParams>()
   const portalEnvName: string | undefined = params.portalEnv
@@ -44,6 +45,7 @@ function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT
   </>
 }
 
+/** gets absolute path to the portal mailing list page */
 export function mailingListPath(portalShortcode: string, envName: string) {
   return `/${portalShortcode}/env/${envName}/mailingList`
 }

@@ -1,5 +1,5 @@
-import React, { PropsWithChildren, ReactNode, ReactPropTypes, useEffect, useState } from 'react'
-import { Link, Outlet, useParams } from 'react-router-dom'
+import React, { PropsWithChildren, ReactNode, useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
 import Api, { Portal } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'

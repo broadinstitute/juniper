@@ -5,6 +5,7 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons'
 import { Link } from 'react-router-dom'
 import { mailingListPath } from './PortalRouter'
 
+/** shows information about the portal config, does not allow editing yet */
 export default function PortalEnvConfigView({ portalShortcode, portalEnv }:
   {portalShortcode: string, portalEnv: PortalEnvironment}) {
   const labelStyle = { minWidth: '15em', textAlign: 'left' as const }

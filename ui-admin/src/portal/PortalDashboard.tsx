@@ -1,10 +1,7 @@
-import React, { useContext } from 'react'
+import React from 'react'
 
-import { LoadedPortalContextT, PortalContext } from 'portal/PortalProvider'
-import { Portal, PortalEnvironment, Study } from 'api/api'
+import { Portal, Study } from 'api/api'
 import { Link } from 'react-router-dom'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit } from '@fortawesome/free-solid-svg-icons'
 import PortalEnvConfigView from './PortalEnvConfigView'
 
 /** Page an admin user sees immediately after logging in */
@@ -23,8 +20,8 @@ export default function PortalDashboard({ portal }: {portal: Portal}) {
       <ul className="list-unstyled">
         { portal.portalStudies.map(portalStudy => {
           const study = portalStudy.study
-          return <li key={portalStudy.study.shortcode}>
-            <StudyConfigView study={portalStudy.study}/>
+          return <li key={study.shortcode}>
+            <StudyConfigView study={study}/>
           </li>
         }
         )}
@@ -33,6 +30,7 @@ export default function PortalDashboard({ portal }: {portal: Portal}) {
   </div>
 }
 
+/** basic info about configuration for a given study */
 function StudyConfigView({ study }: {study: Study}) {
   return <div className="bg-white p-3">
     <h3 className="h5">{study.name}</h3>

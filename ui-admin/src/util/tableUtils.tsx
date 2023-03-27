@@ -3,7 +3,11 @@ import { flexRender, Header } from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons'
 
-export const sortableTableHeader = (header: Header<any, any>) => {
+/**
+ * returns a clickable header column with up/down icons indicating sort direction
+ * adapted from https://tanstack.com/table/v8/docs/examples/react/sorting
+ * */
+export function sortableTableHeader<A, B>(header: Header<A, B>) {
   return <th key={header.id}>
     <div
       {...{
@@ -20,15 +24,19 @@ export const sortableTableHeader = (header: Header<any, any>) => {
   </th>
 }
 
+/**
+ * checkbox supporting the "indeterminate" state
+ * from https://tanstack.com/table/v8/docs/examples/react/sorting
+ * */
 export function IndeterminateCheckbox({
   indeterminate,
   className = '',
   ...rest
 }: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
-  const ref = React.useRef<HTMLInputElement>(null!)
+  const ref = React.useRef<HTMLInputElement>(null)
 
   React.useEffect(() => {
-    if (typeof indeterminate === 'boolean') {
+    if (typeof indeterminate === 'boolean' && ref.current) {
       ref.current.indeterminate = !rest.checked && indeterminate
     }
   }, [ref, indeterminate])
