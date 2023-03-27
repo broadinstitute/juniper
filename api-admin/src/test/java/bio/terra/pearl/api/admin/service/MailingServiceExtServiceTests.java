@@ -1,6 +1,5 @@
 package bio.terra.pearl.api.admin.service;
 
-import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
@@ -8,7 +7,7 @@ import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class MailingServiceExtServiceTests extends BaseSpringBootTest {
+public class MailingServiceExtServiceTests {
   @Test
   public void mailingListRequiresAuth() {
     var listExtService = new MailingListExtService(new RequestUtilServiceFailsAuth(), null, null);
