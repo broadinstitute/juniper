@@ -10,10 +10,22 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { sortableTableHeader } from '../util/tableUtils'
+import { IndeterminateCheckbox, sortableTableHeader } from '../util/tableUtils'
 import { instantToDefaultString } from '../util/timeUtils'
 
 const columns: ColumnDef<MailingListContact>[] = [{
+  id: 'select',
+  header: ({ table }) => <IndeterminateCheckbox
+    checked={table.getIsAllRowsSelected()} indeterminate={table.getIsSomeRowsSelected()}
+    onChange={table.getToggleAllRowsSelectedHandler()}/>,
+  cell: ({ row }) => (
+    <div className="px-1">
+      <IndeterminateCheckbox
+        checked={row.getIsSelected()} indeterminate={row.getIsSomeSelected()}
+        onChange={row.getToggleSelectedHandler()} disabled={!row.getCanSelect()}/>
+    </div>
+  )
+}, {
   header: 'Email',
   accessorKey: 'email'
 }, {
@@ -30,16 +42,20 @@ export default function MailingListView({ portalContext, portalEnv }:
   const [contacts, setContacts] = useState<MailingListContact[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [sorting, setSorting] = React.useState<SortingState>([])
+  const [rowSelection, setRowSelection] = React.useState({})
 
   const table = useReactTable({
     data: contacts,
     columns,
     state: {
-      sorting
+      sorting,
+      rowSelection
     },
+    enableRowSelection: true,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    onRowSelectionChange: setRowSelection,
     debugTable: true
   })
 
@@ -54,6 +70,10 @@ export default function MailingListView({ portalContext, portalEnv }:
   return <div className="container p-3">
     <h1 className="h4">Mailing list </h1>
     <LoadingSpinner isLoading={isLoading}>
+      <div>
+        {Object.keys(rowSelection).length} of{' '}
+        {table.getPreFilteredRowModel().rows.length} selected
+      </div>
       <table className="table table-striped">
         <thead>
           <tr>

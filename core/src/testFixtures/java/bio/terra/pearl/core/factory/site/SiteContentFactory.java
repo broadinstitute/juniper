@@ -1,6 +1,6 @@
 package bio.terra.pearl.core.factory.site;
 
-import bio.terra.pearl.core.factory.PortalEnvironmentFactory;
+import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.service.site.SiteContentService;
