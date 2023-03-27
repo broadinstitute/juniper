@@ -33,8 +33,8 @@ public class PortalController implements PortalApi {
 
   @Override
   public ResponseEntity<Object> get(String portalShortcode) {
-    Portal portal =
-        portalExtService.fullLoad(requestService.requireAdminUser(request), portalShortcode);
+    AdminUser adminUser = requestService.requireAdminUser(request);
+    Portal portal = portalExtService.fullLoad(adminUser, portalShortcode);
     return ResponseEntity.ok(portal);
   }
 
