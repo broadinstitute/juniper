@@ -14,13 +14,10 @@ databaseChangeLog:
               - column: { name: portal_environment_id, type: uuid, constraints:
                 { nullable: false, foreignKeyName: fk_mailing_list_portal_env, references: portal_environment(id) }
               }
-              - column: { name: study_environment_id, type: uuid, constraints:
-                { foreignKeyName: fk_mailing_list_study_env, references: study_environment(id) }
-              }
               - column: { name: participant_user_id, type: uuid, constraints:
                 { foreignKeyName: fk_mailing_list_participant_user, references: participant_user(id) }
               }
         - addUniqueConstraint:
             tableName: mailing_list_contact
             constraintName: mailing_list_contact_email_envs
-            columnNames: email, portal_environment_id, study_environment_id
+            columnNames: email, portal_environment_id

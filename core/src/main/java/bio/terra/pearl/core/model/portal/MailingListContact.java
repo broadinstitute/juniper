@@ -14,9 +14,8 @@ import lombok.experimental.SuperBuilder;
 public class MailingListContact extends BaseEntity {
     private String name;
     private String email;
-    /** Someone can join the mailing list for either a portal, or a study within a portal */
+    /** mailing lists are portal-level for now */
     private UUID portalEnvironmentId;
-    private UUID studyEnvironmentId;
     /** if someone joins a mailing list while they are signed in, track it */
     private UUID participantUserId;
 }

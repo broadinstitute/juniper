@@ -21,6 +21,8 @@ export default function MailingListForm({portal}: { portal: Portal }) {
       alert('an error occured ' + e.message)
     })
   }
+  // minimal validation - name not null and email has an @ and dots
+  const inputValid = name && email && email.match(/.+@.+\..+/)
   const inputStyle = {
     background: '#f6f6f6'
   }
@@ -36,7 +38,7 @@ export default function MailingListForm({portal}: { portal: Portal }) {
              value={name} onChange={e => setName(e.target.value)}/>
       <input className="form-control my-3" size={30} style={inputStyle} type="email" placeholder="Your email"
              value={email} onChange={e => setEmail(e.target.value)}/>
-      <button className="form-control btn-primary btn">Join</button>
+      <button className="form-control btn-primary btn" disabled={!inputValid}>Join</button>
     </form>}
     {joined && <div className="text-center mt-2">
       <FontAwesomeIcon className="fa-lg p-2 rounded-circle" icon={faCheck} style={{

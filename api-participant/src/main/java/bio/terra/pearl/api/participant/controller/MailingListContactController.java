@@ -29,20 +29,12 @@ public class MailingListContactController implements MailingListContactApi {
 
   @Override
   public ResponseEntity<Object> create(
-      String portalShortcode,
-      String environmentName,
-      String studyShortcode,
-      MailingListContactDto body) {
+      String portalShortcode, String environmentName, MailingListContactDto body) {
     Optional<ParticipantUser> participantUserOpt = requestUtilService.getUserFromRequest(request);
     EnvironmentName envName = EnvironmentName.valueOfCaseInsensitive(environmentName);
     MailingListContact contact =
         mailingListContactExtService.create(
-            body.getEmail(),
-            body.getName(),
-            portalShortcode,
-            studyShortcode,
-            envName,
-            participantUserOpt);
+            body.getEmail(), body.getName(), portalShortcode, envName, participantUserOpt);
     return ResponseEntity.ok(contact);
   }
 }
