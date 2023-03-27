@@ -16,7 +16,7 @@
           "title": "Help us understand and improve cardiovascular disease risk among South Asian populations.",
           "blurb": "We're looking for participants to help us better understand - and ultimately overcome - the persistently high rates of cardiovascular diseases among South Asian populations.",
           "fullWidth": true,
-          "image": { "cleanFileName": "family.png", "version": 1},
+          "image": { "cleanFileName": "family.png", "version": 1, "alt": "" },
           "imagePosition": "right",
           "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
           "buttons": [
@@ -59,7 +59,7 @@
           ],
           "imagePosition": "left",
           "imageWidthPercentage": 34,
-          "image": {"cleanFileName": "idea_bulb.png", "version": 1, "className": "p-3 p-lg-5"}
+          "image": {"cleanFileName": "idea_bulb.png", "version": 1, "alt": "", "className": "p-3 p-lg-5"}
         }
       },{
         "sectionType": "HERO_WITH_IMAGE",
@@ -73,7 +73,7 @@
               "studyShortcode": "ourheart"
             }
           ],
-          "image": {"cleanFileName": "people_laughing.jpg", "version": 1},
+          "image": {"cleanFileName": "people_laughing.jpg", "alt": "", "version": 1},
           "imagePosition": "left"
         }
       },{
@@ -82,19 +82,19 @@
           "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
           "title": "How to Participate",
           "steps": [{
-            "image": {"cleanFileName": "step_1.png", "version": 1},
+            "image": {"cleanFileName": "step_1.png", "version": 1, "alt": ""},
             "duration": "1 minute",
             "blurb": "Answer eligibility questions and create your account."
           },{
-            "image": {"cleanFileName": "step_2.png", "version": 1},
+            "image": {"cleanFileName": "step_2.png", "version": 1, "alt": ""},
             "duration": "5 minutes",
             "blurb": "Read the consent form and decide if you’d like to join the study."
           },{
-            "image": {"cleanFileName": "step_3.png", "version": 1},
+            "image": {"cleanFileName": "step_3.png", "version": 1, "alt": ""},
             "duration": "25-45 minutes",
             "blurb": "Answer survey questions about you and your health."
           },{
-            "image": {"cleanFileName": "step_3.png", "version": 1},
+            "image": {"cleanFileName": "step_4.png", "version": 1, "alt": ""},
             "duration": "25-45 minutes",
             "blurb": "Provide your mailing address so we can send a sample kit."
           }],
@@ -137,6 +137,22 @@
             "type": "internalLink",
             "text": "More FAQs",
             "href": "/faq"
+          }]
+        }
+      },{
+        "sectionType": "SOCIAL_MEDIA",
+        "sectionConfigJson": {
+          "twitterHandle": "ourhealthstudy",
+          "instagramHandle": "ourhealthstudy"
+        }
+      },{
+        "sectionType": "HERO_CENTERED",
+        "sectionConfigJson": {
+          "title": "Stay informed",
+          "blurb": "Sign up for our mailing list or follow us on social media.",
+          "buttons": [{
+            "type": "mailingList",
+            "text": "Join Mailing LIst"
           }]
         }
       },{

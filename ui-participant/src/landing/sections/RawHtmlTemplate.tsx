@@ -1,9 +1,8 @@
 import React from 'react'
 
-type RawHtmlTemplateProps = {
-  anchorRef?: string
-  rawContent: string | null
-}
+import { TemplateComponentProps } from './templateUtils'
+
+type RawHtmlTemplateProps = TemplateComponentProps
 
 /**
  * renders raw html content

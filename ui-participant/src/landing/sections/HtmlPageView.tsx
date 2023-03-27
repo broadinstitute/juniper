@@ -1,26 +1,20 @@
 import _ from 'lodash'
 import React from 'react'
 
+import { HtmlPage, HtmlSection, SectionConfig, SectionType } from 'api/api'
+import { isPlainObject } from 'util/validationUtils'
+
 import BannerImage from './BannerImage'
 import FrequentlyAskedQuestionsTemplate from './FrequentlyAskedQuestionsTemplate'
 import HeroCenteredTemplate from './HeroCenteredTemplate'
 import HeroWithImageTemplate from './HeroWithImageTemplate'
 import StepOverviewTemplate from './StepOverviewTemplate'
 import SocialMediaTemplate from './SocialMediaTemplate'
-import { HtmlPage, HtmlSection, SectionConfig, SectionType } from 'api/api'
 import RawHtmlTemplate from './RawHtmlTemplate'
 import PhotoBlurbGrid from './PhotoBlurbGrid'
 import ParticipationDetailTemplate from './ParticipationDetailTemplate'
 import NavAndLinkSectionsFooter from './NavAndLinkSectionsFooter'
-import { isPlainObject } from 'util/validationUtils'
-
-type TemplateComponentProps = {
-  anchorRef?: string
-  config: SectionConfig
-  rawContent: string | null
-}
-
-type TemplateComponent = (props: TemplateComponentProps) => JSX.Element | null
+import { TemplateComponent } from './templateUtils'
 
 const templateComponents: Record<SectionType, TemplateComponent> = {
   'FAQ': FrequentlyAskedQuestionsTemplate,

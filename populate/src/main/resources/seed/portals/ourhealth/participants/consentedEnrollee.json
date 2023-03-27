@@ -6,6 +6,7 @@
     "givenName": "Con",
     "familyName": "Senter",
     "contactEmail": "consented@test.com",
+    "sexAtBirth": "female",
     "mailingAddress": {
       "street1": "600 Muirfield Ct.",
       "city": "Fairfield (OurHealth)",

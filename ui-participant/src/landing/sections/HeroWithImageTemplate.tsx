@@ -11,6 +11,8 @@ import { requireOptionalArray, requireOptionalNumber, requireOptionalString } fr
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
+import { TemplateComponentProps } from './templateUtils'
+
 type HeroWithImageTemplateConfig = {
   blurb?: string, //  text below the title
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
@@ -51,10 +53,7 @@ const validateHeroWithImageTemplateConfig = (config: SectionConfig): HeroWithIma
   }
 }
 
-type HeroWithImageTemplateProps = {
-  anchorRef?: string
-  config: HeroWithImageTemplateConfig
-}
+type HeroWithImageTemplateProps = TemplateComponentProps<HeroWithImageTemplateConfig>
 
 /**
  * Template for a hero with text content on the left and an image on the right.

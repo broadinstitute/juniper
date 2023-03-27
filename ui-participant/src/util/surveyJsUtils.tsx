@@ -1,3 +1,5 @@
+import classNames from 'classnames'
+import { get, set } from 'lodash'
 import React, { useEffect, useState } from 'react'
 
 import * as SurveyCore from 'survey-core'
@@ -8,7 +10,7 @@ import 'inputmask/dist/inputmask/phone-codes/phone'
 // @ts-ignore
 import * as widgets from 'surveyjs-widgets'
 import { Survey as SurveyJSComponent } from 'survey-react-ui'
-import { ResumableData, SurveyJSForm } from 'api/api'
+import { Profile, ResumableData, SurveyJSForm } from 'api/api'
 import { useSearchParams } from 'react-router-dom'
 import { getSurveyElementList } from './pearlSurveyUtils'
 
@@ -48,6 +50,9 @@ export function useRoutablePageNumber(): PageNumberControl {
   }
 }
 
+type UseSurveyJsModelOpts = {
+  extraCssClasses?: Record<string, string>
+}
 
 /**
  * handle setting up the surveyJS model for the given form/survey.
@@ -63,9 +68,23 @@ export function useRoutablePageNumber(): PageNumberControl {
  * survey on completion and display a completion banner.  To continue displaying the form, use the
  * `refreshSurvey` function
  * @param pager the control object for paging the survey
+ * @param profile
+ * @param opts optional configuration for the survey
+ * @param opts.extraCssClasses mapping of element to CSS classes to add to that element. See
+ * https://surveyjs.io/form-library/examples/survey-customcss/reactjs#content-docs for a list of available elements.
  */
-export function useSurveyJSModel(form: SurveyJSForm, resumeData: ResumableData | null,
-  onComplete: () => void, pager: PageNumberControl) {
+export function useSurveyJSModel(
+  form: SurveyJSForm,
+  resumeData: ResumableData | null,
+  onComplete: () => void,
+  pager: PageNumberControl,
+  profile?: Profile,
+  opts: UseSurveyJsModelOpts = {}
+) {
+  const {
+    extraCssClasses = {}
+  } = opts
+
   const [surveyModel, setSurveyModel] = useState<SurveyModel | null>(null)
 
   /** hand a page change by updating state of both the surveyJS model and our internal state*/
@@ -78,6 +97,10 @@ export function useSurveyJSModel(form: SurveyJSForm, resumeData: ResumableData |
   function refreshSurvey(refreshData: ResumableData | null, pagerPageNumber: number | null) {
     StylesManager.applyTheme('modern')
     const newSurveyModel = new Model(extractSurveyContent(form))
+
+    Object.entries(extraCssClasses).forEach(([elementPath, className]) => {
+      set(newSurveyModel.css, elementPath, classNames(get(newSurveyModel.css, elementPath), className))
+    })
 
     if (refreshData) {
       newSurveyModel.data = refreshData.data
@@ -94,6 +117,7 @@ export function useSurveyJSModel(form: SurveyJSForm, resumeData: ResumableData |
       pageNumber = refreshData.currentPageNo
     }
     newSurveyModel.currentPageNo = pageNumber
+    newSurveyModel.setVariable('profile', profile)
 
     newSurveyModel.showTitle = false
     setSurveyModel(newSurveyModel)
@@ -277,4 +301,3 @@ export function extractSurveyContent(survey: SurveyJSForm) {
 type PearlQuestion = Question & {
   questionTemplateName?: string
 }
-

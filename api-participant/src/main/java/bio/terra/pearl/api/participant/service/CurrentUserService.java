@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.service.participant.ProfileService;
 import com.auth0.jwt.JWT;
 import java.time.Instant;
 import java.util.List;
@@ -21,16 +22,19 @@ public class CurrentUserService {
   private PortalParticipantUserService portalParticipantUserService;
   private EnrolleeService enrolleeService;
   private ParticipantTaskService participantTaskService;
+  private ProfileService profileService;
 
   public CurrentUserService(
       ParticipantUserDao participantUserDao,
       PortalParticipantUserService portalParticipantUserService,
       EnrolleeService enrolleeService,
-      ParticipantTaskService participantTaskService) {
+      ParticipantTaskService participantTaskService,
+      ProfileService profileService) {
     this.participantUserDao = participantUserDao;
     this.portalParticipantUserService = portalParticipantUserService;
     this.enrolleeService = enrolleeService;
     this.participantTaskService = participantTaskService;
+    this.profileService = profileService;
   }
 
   public Optional<UserWithEnrollees> tokenLogin(
@@ -73,6 +77,8 @@ public class CurrentUserService {
       enrollee
           .getParticipantTasks()
           .addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
+      enrollee.setProfile(
+          profileService.loadWithMailingAddress(enrollee.getProfileId()).orElse(null));
     }
     return new UserWithEnrollees(user, enrollees);
   }

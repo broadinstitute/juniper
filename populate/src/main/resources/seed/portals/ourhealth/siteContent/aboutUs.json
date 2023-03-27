@@ -9,7 +9,8 @@
       "sectionConfigJson": {
         "image": {
           "cleanFileName": "hands_banner.jpg",
-          "version": 1
+          "version": 1,
+          "alt": ""
         }
       }
     },{
@@ -30,7 +31,7 @@
       "sectionType": "HERO_WITH_IMAGE",
       "sectionConfigJson": {
         "title": "**We are dedicated to discovering the underlying genetic factors** for cardiometabolic disease risk in South Asian populations.",
-        "image": { "cleanFileName": "discover.svg", "version": 1, "style": {"padding": "3rem 0"}},
+        "image": { "cleanFileName": "discover.svg", "version": 1, "alt": "", "style": {"padding": "3rem 0"}},
         "imagePosition": "left",
         "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
       }
@@ -60,7 +61,7 @@
       "sectionType": "HERO_WITH_IMAGE",
       "sectionConfigJson": {
         "title": "**South Asian datasets remain limited** in size, cultural diversity, and diasporic representation.",
-        "image": { "cleanFileName": "engage.svg", "version": 1, "style": {"padding": "3rem 0"}},
+        "image": { "cleanFileName": "engage.svg", "version": 1, "alt": "", "style": {"padding": "3rem 0"}},
         "imagePosition": "left",
         "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
       }
@@ -154,7 +155,7 @@
               "blurb": "Assistant Professor of Medicine, Harvard\n\nInstitute Member, Broad Institute\n\nDirector, Count Me In",
               "image": { "cleanFileName": "nikhil_wagle.jpg", "version": 1}
             },{
-              "name": "Krishna Yeshwant ",
+              "name": "Krishna Yeshwant",
               "title": "MD, MBA",
               "blurb": "Managing Partner, GV",
               "image": { "cleanFileName": "krishna_yeshwant.jpg", "version": 1}

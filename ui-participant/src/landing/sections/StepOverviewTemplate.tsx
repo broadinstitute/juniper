@@ -10,6 +10,8 @@ import { requireOptionalArray, requireOptionalString, requirePlainObject, requir
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
+import { TemplateComponentProps } from './templateUtils'
+
 type StepConfig = {
   image: PearlImageConfig,
   duration: string,
@@ -40,10 +42,7 @@ const validateStepOverviewTemplateConfig = (config: SectionConfig): StepOverview
   return { buttons, steps, title }
 }
 
-type StepOverviewTemplateProps = {
-  anchorRef?: string
-  config: StepOverviewTemplateConfig
-}
+type StepOverviewTemplateProps = TemplateComponentProps<StepOverviewTemplateConfig>
 
 /**
  * Template for rendering a step overview
