@@ -1,4 +1,5 @@
-import { Collapse } from 'bootstrap'
+// @ts-expect-error No types for this Bootstrap file
+import { Collapse } from 'bootstrap/dist/js/bootstrap.bundle.min'
 import classNames from 'classnames'
 import React, { useEffect, useId, useRef } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
