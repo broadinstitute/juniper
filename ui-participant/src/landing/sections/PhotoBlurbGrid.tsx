@@ -88,14 +88,11 @@ function PhotoBioView({ photoBio }: { photoBio: PhotoBio }) {
   photoBio.image.alt ||= photoBio.name
   return <div className="col-sm-6 col-md-4 gx-5 gy-3 text-center text-sm-start">
     <PearlImage image={photoBio.image} className="img-fluid"/>
-    <div className="my-2">
-      {photoBio.name}
-      {!!photoBio.title && (
-        <span className="detail" style={{ marginLeft: '0.5ch' }}>{photoBio.title}</span>
-      )}
+    <div className="my-2 fw-bold">
+      {photoBio.name} {photoBio.title}
     </div>
     {!!photoBio.blurb && (
-      <div className="detail" style={{ lineHeight: 1 }}>
+      <div className="fst-italic lh-1" style={{ fontSize: '0.9em' }}>
         <ReactMarkdown>{photoBio.blurb}</ReactMarkdown>
       </div>
     )}
