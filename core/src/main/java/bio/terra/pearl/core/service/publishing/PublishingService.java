@@ -12,13 +12,14 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PublishingService {
-    private static final List<String> BASE_IGNORE_PROPS = List.of("id", "createdAt", "lastUpdatedAt", "class");
-    private static final List<String> NOTIFICATION_CONFIG_IGNORE_PROPS = Stream
+    public static final List<String> BASE_IGNORE_PROPS = List.of("id", "createdAt", "lastUpdatedAt", "class");
+    public static final List<String> NOTIFICATION_CONFIG_IGNORE_PROPS = Stream
             .of(List.of("studyEnvironmentId", "portalEnvironmentId", "emailTemplateId", "emailTemplate"), BASE_IGNORE_PROPS)
             .flatMap(Collection::stream).toList();
     private PortalEnvironmentService portalEnvService;
@@ -46,7 +47,7 @@ public class PublishingService {
         var siteContentRecord = new VersionedEntityChangeRecord(sourceEnv.getSiteContent(), destEnv.getSiteContent());
         var envConfigChanges = ConfigChangeRecord.allChanges(sourceEnv.getPortalEnvironmentConfig(),
                 destEnv.getPortalEnvironmentConfig(), BASE_IGNORE_PROPS);
-        var notificationConfigChanges = diffNotifications(sourceEnv.getNotificationConfigs(), destEnv.getNotificationConfigs())
+        var notificationConfigChanges = diffNotifications(sourceEnv.getNotificationConfigs(), destEnv.getNotificationConfigs());
         return new PortalEnvironmentChangeRecord(
                siteContentRecord,
                envConfigChanges,
@@ -81,7 +82,7 @@ public class PublishingService {
         List<NotificationConfig> addedConfigs = new ArrayList<>();
         for (NotificationConfig sourceConfig : sourceConfigs) {
             var matchedConfig = destConfigs.stream().filter(
-                    destConfig -> isNotificationMatch(sourceConfig, destConfig)).findAny().orElse(null);
+                    destConfig -> isNotificationConfigMatch(sourceConfig, destConfig)).findAny().orElse(null);
             if (matchedConfig == null) {
                 addedConfigs.add(sourceConfig);
             } else {
@@ -90,17 +91,20 @@ public class PublishingService {
         }
         List<NotificationConfig> removedConfigs = destConfigs.stream()
                 .filter(destConfig -> sourceConfigs.stream().filter(
-                        sourceConfig -> isNotificationMatch(sourceConfig, destConfig)).findAny().isEmpty())
+                        sourceConfig -> isNotificationConfigMatch(sourceConfig, destConfig)).findAny().isEmpty())
                 .toList();
         return new ListChangeRecord<>(addedConfigs, removedConfigs, changedRecords);
     }
 
     /** gets whether to treat the notifications as the same for diffing purposes */
-    public static boolean isNotificationMatch(NotificationConfig configA, NotificationConfig configB) {
-        return configA.getNotificationType().equals(configB.getNotificationType()) &&
-                configA.getDeliveryType().equals(configB.getDeliveryType()) &&
-                configA.getTaskType().equals(configB.getTaskType()) &&
-                configA.getEventType().equals(configB.getEventType());
+    public static boolean isNotificationConfigMatch(NotificationConfig configA, NotificationConfig configB) {
+        if (configA == null || configB == null) {
+            return configA == configB;
+        }
+        return Objects.equals(configA.getNotificationType(), configB.getNotificationType()) &&
+                Objects.equals(configA.getDeliveryType(), configB.getDeliveryType()) &&
+                Objects.equals(configA.getTaskType(), configB.getTaskType()) &&
+                Objects.equals(configA.getEventType(), configB.getEventType());
     }
 
 
