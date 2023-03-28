@@ -32,23 +32,26 @@
       {
         "elements": [
           {
-            "name": "oh_oh_basic_firstName",
-            "type": "text",
-            "title": "First name",
-            "isRequired": true
-          }, {
-            "name": "oh_oh_basic_lastName",
-            "type": "text",
-            "title": "Last name",
-            "isRequired": true,
-            "startWithNewLine": false
-          }, {
-            "name": "oh_oh_basic_middleInitial",
-            "type": "text",
-            "title": "Middle initial",
-            "maxLength": 1,
-            "size": 1,
-            "startWithNewLine": false
+            "type": "panel",
+            "elements": [
+              {
+                "name": "oh_oh_basic_firstName",
+                "type": "text",
+                "title": "First name",
+                "isRequired": true
+              }, {
+                "name": "oh_oh_basic_lastName",
+                "type": "text",
+                "title": "Last name",
+                "isRequired": true
+              }, {
+                "name": "oh_oh_basic_middleInitial",
+                "type": "text",
+                "title": "Middle initial",
+                "maxLength": 1,
+                "size": 1
+              }
+            ]
           }, {
             "name": "oh_oh_basic_mghPatient",
             "type": "radiogroup",
