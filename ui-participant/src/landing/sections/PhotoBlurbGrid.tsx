@@ -62,19 +62,35 @@ function PhotoBlurbGrid(props: PhotoBlurbGridProps) {
   const { anchorRef, config } = props
   const { subGrids, title } = config
 
+  const hasTitle = !!title
+  // Heading levels must increase one at a time, so if the grid has no
+  // title, then the subgrid headings should be h2 elements.
+  const subGridHeadingLevel = hasTitle ? 3 : 2
+
   return <div id={anchorRef} className="py-5" style={getSectionStyle(config)}>
-    {title && <h1 className="fs-1 fw-normal lh-sm text-center mb-4">
-      {title}
-    </h1>}
-    {(subGrids ?? []).map((subGrid, index) => <SubGridView key={index} subGrid={subGrid}/>)}
+    {!!title && (
+      <h2 className="fs-1 fw-normal lh-sm text-center mb-4">
+        {title}
+      </h2>
+    )}
+    {(subGrids ?? []).map((subGrid, index) => {
+      return <SubGridView key={index} headingLevel={subGridHeadingLevel} subGrid={subGrid}/>
+    })}
   </div>
 }
 
+type SubGridViewProps = {
+  headingLevel: 2 | 3
+  subGrid: SubGrid
+}
+
 /** renders a subgrouping of photos (e.g. "Our researchers") */
-function SubGridView({ subGrid }: { subGrid: SubGrid }) {
+function SubGridView(props: SubGridViewProps) {
+  const { headingLevel, subGrid } = props
+  const Heading: 'h2' | 'h3' = `h${headingLevel}`
   return <div className="row mx-0">
     <div className="col-12 col-sm-10 col-lg-8 mx-auto">
-      {subGrid.title && <h3 className="text-center mb-4">{subGrid.title}</h3>}
+      {subGrid.title && <Heading className="text-center mb-4">{subGrid.title}</Heading>}
       <div className="row mx-0">
         {subGrid.photoBios.map((bio, index) => <PhotoBioView key={index} photoBio={bio}/>)}
       </div>
