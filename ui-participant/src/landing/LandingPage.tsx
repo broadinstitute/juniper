@@ -11,9 +11,9 @@ function LandingPageView({ localContent }: { localContent: LocalSiteContent }) {
       <div>
         <LandingNavbar aria-label="Primary" />
       </div>
-      <div className="flex-grow-1">
+      <main className="flex-grow-1">
         <Outlet/>
-      </div>
+      </main>
       {localContent.footerSection && <footer>
         <HtmlSectionView section={localContent.footerSection}/>
       </footer>}
