@@ -72,7 +72,7 @@ export function NavAndLinkSectionsFooter(props: NavAndLinkSectionsFooterProps) {
   const { config } = props
 
   return <>
-    {config.includeNavbar && <LandingNavbar/>}
+    {config.includeNavbar && <LandingNavbar aria-label="Secondary" />}
     <div className="d-flex justify-content-center py-3">
       <div className="col-lg-8">
         {_.map(config.itemSections, (section, index) =>
