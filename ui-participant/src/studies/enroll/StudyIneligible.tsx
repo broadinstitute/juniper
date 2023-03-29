@@ -7,7 +7,7 @@ export default function StudyIneligible() {
   return <div className="container col-md-6 mt-5">
     <h1 className="h3 mb-3">Sorry, you are not eligible to enroll right now</h1>
     <p>
-      The study can only accept participants who meet all of the conditions
+      The study can only accept participants who meet all of the conditions.
     </p>
     <p>
       Over time, we may be able to expand the participant requirements of this project.

@@ -9,12 +9,8 @@ import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons'
  * */
 export function sortableTableHeader<A, B>(header: Header<A, B>) {
   return <th key={header.id}>
-    <div
-      {...{
-        className: header.column.getCanSort() ? 'cursor-pointer select-none' : '',
-        onClick: header.column.getToggleSortingHandler(),
-        role: 'button'
-      }}>
+    <div className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
+      onClick={header.column.getToggleSortingHandler()} role="button">
       {flexRender(header.column.columnDef.header, header.getContext())}
       {{
         asc: <FontAwesomeIcon icon={faCaretUp}/>,

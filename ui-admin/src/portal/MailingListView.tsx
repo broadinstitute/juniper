@@ -43,7 +43,7 @@ export default function MailingListView({ portalContext, portalEnv }:
   const [contacts, setContacts] = useState<MailingListContact[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [rowSelection, setRowSelection] = React.useState({})
+  const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
 
   const table = useReactTable({
     data: contacts,
@@ -66,6 +66,7 @@ export default function MailingListView({ portalContext, portalEnv }:
       setIsLoading(false)
     }).catch((e: Error) => {
       alert(`error loading mailing list ${  e}`)
+      setIsLoading(false)
     })
   }, [])
   return <div className="container p-3">
