@@ -107,7 +107,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("newstudy.org")
                 .build();
-        PortalEnvironment portalEnv = portalEnvironmentFactory.builder("testDashLinkVariablesReplaced")
+        PortalEnvironment portalEnv = portalEnvironmentFactory.builder("testImageVariablesReplaced")
                 .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
         Portal portal = Portal.builder().name("PortalA").shortcode("foo").build();
 
