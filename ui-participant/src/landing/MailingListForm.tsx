@@ -11,8 +11,7 @@ export default function MailingListForm() {
   const [email, setEmail] = useState('')
   const [joined, setJoined] = useState(false)
 
-  const containerClasses = classNames('p-5', 'shadow-sm', 'd-flex', 'flex-column',
-    'justify-content-center', 'align-items-center', 'mx-auto')
+  const containerClasses = classNames('d-flex', 'flex-column', 'align-items-center', 'mx-auto')
 
   const submit = (e: React.SyntheticEvent) => {
     e.preventDefault()
@@ -27,14 +26,14 @@ export default function MailingListForm() {
   const inputStyle = {
     background: '#f6f6f6'
   }
-  return <div className={containerClasses} style={{ background: '#f6f6f6' }}>
-    <FontAwesomeIcon className="fa-2x p-3 rounded-circle" icon={faEnvelope} style={{
+  return <div className={containerClasses}>
+    <FontAwesomeIcon className="fa-2x p-3 rounded-circle mb-2" icon={faEnvelope} style={{
       color: 'var(--brand-color)',
       backgroundColor: 'var(--brand-color-shift-90)'
     }}/>
     <h2 className="h4">Join Mailing List</h2>
     <p>Stay updated with news about the study</p>
-    {!joined && <form onSubmit={submit}>
+    {!joined && <form onSubmit={submit} style={{ maxWidth: 300 }}>
       <input className="form-control my-3" size={30} style={inputStyle} type="text" placeholder="Your name"
         value={name} onChange={e => setName(e.target.value)}/>
       <input className="form-control my-3" size={30} style={inputStyle} type="email" placeholder="Your email"
