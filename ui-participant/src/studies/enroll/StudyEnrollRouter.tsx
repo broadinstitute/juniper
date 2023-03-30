@@ -27,12 +27,26 @@ export default function StudyEnrollRouter() {
   if (!studyEnv || !studyShortcode) {
     return <div>no matching study</div>
   }
-  return <StudyEnrollOutletMatched portal={portal} studyEnv={studyEnv} studyShortcode={studyShortcode}/>
+  return (
+    <StudyEnrollOutletMatched
+      portal={portal}
+      studyEnv={studyEnv}
+      studyName={matchedStudy.name}
+      studyShortcode={studyShortcode}
+    />
+  )
+}
+
+type StudyEnrollOutletMatchedProps = {
+  portal: Portal
+  studyEnv: StudyEnvironment
+  studyName: string
+  studyShortcode: string
 }
 
 /** handles the rendering and useEffect logic */
-function StudyEnrollOutletMatched({ portal, studyEnv, studyShortcode }:
-                                    { portal: Portal, studyEnv: StudyEnvironment, studyShortcode: string }) {
+function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
+  const { portal, studyEnv, studyName, studyShortcode } = props
   const { user, enrollees, updateEnrollee } = useUser()
   const navigate = useNavigate()
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
@@ -95,7 +109,7 @@ function StudyEnrollOutletMatched({ portal, studyEnv, studyShortcode }:
     <LandingNavbar/>
     <Routes>
       <Route path="preEnroll" element={<PreEnrollView enrollContext={enrollContext}/>}/>
-      <Route path="ineligible" element={<StudyIneligible/>}/>
+      <Route path="ineligible" element={<StudyIneligible portal={portal} studyName={studyName}/>}/>
       <Route path="register/*" element={<PortalRegistrationRouter portal={portal} returnTo={null}/>}/>
       <Route index element={<PageLoadingIndicator/>}/>
     </Routes>

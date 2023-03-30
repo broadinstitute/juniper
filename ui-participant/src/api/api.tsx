@@ -16,6 +16,7 @@ export type PortalEnvironmentParams = {
 }
 
 export type Portal = {
+  name: string
   portalEnvironments: PortalEnvironment[],
   portalStudies: PortalStudy[],
   shortcode: string
