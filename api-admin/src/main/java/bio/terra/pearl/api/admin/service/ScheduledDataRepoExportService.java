@@ -17,7 +17,7 @@ public class ScheduledDataRepoExportService {
   }
 
   @Scheduled(timeUnit = TimeUnit.HOURS, fixedDelay = 4, initialDelay = 0) // Execute every 4 hours
-  public void exportDatasets() {
-    logger.info("Exporting datasets to TDR (just kidding)");
+  public void pingDataRepoStatus() {
+    logger.info("Pinging Terra Data Repo. Up: " + dataRepoExportService.getServiceStatus());
   }
 }

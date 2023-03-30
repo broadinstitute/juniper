@@ -2,6 +2,7 @@ package bio.terra.pearl.core.dao.datarepo;
 
 import bio.terra.datarepo.api.JobsApi;
 import bio.terra.datarepo.api.RepositoryApi;
+import bio.terra.datarepo.api.UnauthenticatedApi;
 import bio.terra.datarepo.client.ApiException;
 import bio.terra.datarepo.model.*;
 import bio.terra.pearl.core.shared.GoogleServiceAccountUtils;
@@ -78,9 +79,17 @@ public class DataRepoDao {
         return jobsApi.retrieveJobResult(jobId);
     }
 
+    //Unauthenticated APIs
+    public RepositoryStatusModel getServiceStatus() throws ApiException{
+        UnauthenticatedApi unauthenticatedApi = getUnauthenticatedApi();
+
+        return unauthenticatedApi.serviceStatus();
+    }
+
     //TDR API objects
     public RepositoryApi getRepositoryApi() { return new RepositoryApi(getApiClient()); }
     public JobsApi getJobsApi() { return new JobsApi(getApiClient()); }
+    public UnauthenticatedApi getUnauthenticatedApi() { return new UnauthenticatedApi(getApiClient()); }
 
     public ApiClient getApiClient() {
         ApiClient dataRepoClient = new ApiClient();
