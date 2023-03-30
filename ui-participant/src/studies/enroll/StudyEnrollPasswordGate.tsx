@@ -3,16 +3,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classNames from 'classnames'
 import React, { useId, useState } from 'react'
 
-import { Portal, StudyEnvironment } from 'api/api'
+import { StudyEnvironment } from 'api/api'
 
 type StudyEnrollPasswordGateProps = {
-  portal: Portal
   studyEnv: StudyEnvironment
+  studyName: string
   onSubmitCorrectPassword: () => void
 }
 
 export const StudyEnrollPasswordGate = (props: StudyEnrollPasswordGateProps) => {
-  const { portal, studyEnv, onSubmitCorrectPassword } = props
+  const { studyEnv, studyName, onSubmitCorrectPassword } = props
   const { password: studyPassword } = studyEnv.studyEnvironmentConfig
 
   const inputId = useId()
@@ -23,7 +23,7 @@ export const StudyEnrollPasswordGate = (props: StudyEnrollPasswordGateProps) => 
     <div className="flex-grow-1" style={{ background: 'var(--bs-gray-100)' }}>
       <div className="mx-auto mt-5" style={{ width: 600, maxWidth: 'calc(100vw - 20px)' }}>
         <h1 className="h2 text-center mb-5">
-          We are currently pre-enrolling for {portal.name} with friends and family
+          We are currently pre-enrolling for {studyName} with friends and family
         </h1>
         <div className="card text-center" style={{ background: 'var(--bs-white)' }}>
           <div className="card-body py-5">

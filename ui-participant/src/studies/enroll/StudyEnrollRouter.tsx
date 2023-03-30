@@ -118,8 +118,8 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
     {mustProvidePassword
       ? (
         <StudyEnrollPasswordGate
-          portal={portal}
           studyEnv={studyEnv}
+          studyName={studyName}
           onSubmitCorrectPassword={setHasProvidedPassword}
         />
       ) : (
