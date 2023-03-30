@@ -1,5 +1,6 @@
-package bio.terra.pearl.core.factory;
+package bio.terra.pearl.core.factory.admin;
 
+import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import org.springframework.beans.factory.annotation.Autowired;

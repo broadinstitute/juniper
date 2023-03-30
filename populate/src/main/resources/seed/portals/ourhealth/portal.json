@@ -19,6 +19,16 @@
         "participants/jsalk.json",
         "participants/newEnrollee.json",
         "participants/consentedEnrollee.json"
+      ],
+      "mailingListContacts": [
+        {
+          "name": "Bob Mailer",
+          "email": "bobmailer@test.com"
+        },
+        {
+          "name": "Alice Messager",
+          "email": "alice@test.com"
+        }
       ]
     }
   ],

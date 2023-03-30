@@ -5,8 +5,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
 import bio.terra.pearl.api.participant.BaseSpringBootTest;
-import bio.terra.pearl.core.factory.PortalEnvironmentFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
+import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.service.portal.PortalService;
 import com.auth0.jwt.JWT;

@@ -1,8 +1,8 @@
 package bio.terra.pearl.core.service.portal;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.factory.AdminUserFactory;
-import bio.terra.pearl.core.factory.PortalFactory;
+import bio.terra.pearl.core.factory.admin.AdminUserFactory;
+import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
@@ -58,7 +58,7 @@ public class PortalServiceTests extends BaseSpringBootTest {
     @Transactional
     public void authAdminToPortalRejectsNotFoundPortal() {
         AdminUser user = adminUserFactory.buildPersisted("authAdminToPortalRejectsNotFoundPortal");
-        Assertions.assertThrows(NotFoundException.class, () -> {
+        Assertions.assertThrows(PermissionDeniedException.class, () -> {
             portalService.authAdminToPortal(user, "DOES_NOT_EXIST");
         });
     }

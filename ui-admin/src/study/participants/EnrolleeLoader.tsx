@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { StudyParams } from '../StudyRouter'
-import Api, { Enrollee } from '../../api/api'
+import Api, { Enrollee } from 'api/api'
 import { Store } from 'react-notifications-component'
-import { failureNotification } from '../../util/notifications'
+import { failureNotification } from 'util/notifications'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import LoadingSpinner from '../../util/LoadingSpinner'
+import LoadingSpinner from 'util/LoadingSpinner'
 import EnrolleeView from './EnrolleeView'
-import { NavBreadcrumb } from '../../navbar/AdminNavbar'
+import { NavBreadcrumb } from 'navbar/AdminNavbar'
 
 export type EnrolleeParams = StudyParams & {
   enrolleeShortcode: string,

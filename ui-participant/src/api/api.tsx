@@ -463,6 +463,16 @@ export default {
     return await this.processJsonResponse(result)
   },
 
+  async submitMailingListContact(name: string, email: string) {
+    const url = `${baseEnvUrl(true)}/mailingListContact`
+    const result = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify({ name, email })
+    })
+    return await this.processJsonResponse(result)
+  },
+
   async unauthedLogin(username: string): Promise<LoginResult> {
     const url = `${baseEnvUrl(true)}/current-user/unauthed/login?${new URLSearchParams({
       username

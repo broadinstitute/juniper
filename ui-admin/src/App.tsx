@@ -14,13 +14,11 @@ import NavbarProvider, { NavbarContext } from 'navbar/NavbarProvider'
 import AdminNavbar from 'navbar/AdminNavbar'
 import PortalList from 'portal/PortalList'
 import PortalProvider from 'portal/PortalProvider'
-import PortalDashboard from 'portal/PortalDashboard'
-
-import StudyRouter from 'study/StudyRouter'
 import UserProvider from 'user/UserProvider'
 import ConfigProvider, { ConfigConsumer } from 'providers/ConfigProvider'
 import { getOidcConfig } from 'authConfig'
 import { AuthProvider } from 'react-oidc-context'
+import PortalRouter from './portal/PortalRouter'
 
 
 /** container for the app including the router  */
@@ -38,12 +36,7 @@ function App() {
                     <Routes>
                       <Route element={<ProtectedRoute/>}>
                         <Route path="/" element={<PageFrame/>}>
-                          <Route path=":portalShortcode" element={<PortalProvider/>}>
-                            <Route path="studies">
-                              <Route path=":studyShortcode/*" element={<StudyRouter/>}/>
-                            </Route>
-                            <Route index element={<PortalDashboard/>}/>
-                          </Route>
+                          <Route path=":portalShortcode/*" element={<PortalProvider><PortalRouter/></PortalProvider>}/>
                           <Route index element={<PortalList/>}/>
                         </Route>
                         <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>

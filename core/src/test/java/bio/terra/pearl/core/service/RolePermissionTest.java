@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.factory.PortalAdminUserFactory;
+import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
 import bio.terra.pearl.core.factory.admin.PermissionFactory;
 import bio.terra.pearl.core.factory.admin.RoleFactory;
 import bio.terra.pearl.core.model.admin.RolePermission;

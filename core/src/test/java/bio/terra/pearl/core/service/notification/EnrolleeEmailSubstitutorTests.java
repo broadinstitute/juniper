@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service.notification;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.factory.PortalEnvironmentFactory;
+import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;

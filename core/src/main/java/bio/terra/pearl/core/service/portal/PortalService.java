@@ -139,14 +139,14 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         return dao.findByAdminUserId(user.getId());
     }
 
+    /** this will throw permission denied even if the portal doesn't exist, to avoid leaking information */
     public Portal authAdminToPortal(AdminUser user, String portalShortcode) {
         Optional<Portal> portalOpt = findOneByShortcode(portalShortcode);
-        if (portalOpt.isEmpty()) {
-            throw new NotFoundException("Portal not found: %s".formatted(portalShortcode));
-        }
-        Portal portal = portalOpt.get();
-        if (checkAdminIsInPortal(user, portal.getId())) {
-            return portal;
+        if (portalOpt.isPresent()) {
+            Portal portal = portalOpt.get();
+            if (checkAdminIsInPortal(user, portal.getId())) {
+                return portal;
+            }
         }
         throw new PermissionDeniedException("User %s does not have permissions on portal %s"
                 .formatted(user.getUsername(), portalShortcode));

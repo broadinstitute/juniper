@@ -1,66 +1,40 @@
-import React, { useContext } from 'react'
+import React from 'react'
 
-import { LoadedPortalContextT, PortalContext } from 'portal/PortalProvider'
-import { Portal, PortalEnvironment } from 'api/api'
+import { Portal, Study } from 'api/api'
 import { Link } from 'react-router-dom'
+import PortalEnvConfigView from './PortalEnvConfigView'
 
 /** Page an admin user sees immediately after logging in */
-function PortalDashboard({ portal }: {portal: Portal}) {
-  return <div className="p-4">
-    <h4>{portal.name}</h4>
-    <div className="p-5">
-      <h5>Environments</h5>
-      <div className="row">
-        { portal.portalEnvironments.map(portalEnv => <PortalEnvConfigView
-          portalEnv={portalEnv} key={portalEnv.environmentName}/>)}
-      </div>
+export default function PortalDashboard({ portal }: {portal: Portal}) {
+  return <div className="p-4 container">
+    <h2 className="h3">Environments</h2>
+    <div className="row">
+      <ul className="list-unstyled">
+        { portal.portalEnvironments.map(portalEnv => <li key={portalEnv.environmentName}>
+          <PortalEnvConfigView portalEnv={portalEnv} portalShortcode={portal.shortcode}/>
+        </li>)}
+      </ul>
     </div>
-    <div className="p-5"><h5>Website</h5></div>
-    <div className="p-5">
-      <h5>Studies</h5>
-      <div>
-        <ul className="list-group">
-          { portal.portalStudies.map((portalStudy, index) => {
-            const study = portalStudy.study
-            return <li key={index} className="list-group-item">
-              <h6>{portalStudy.study.name}</h6>
-              <Link to={`studies/${study.shortcode}`}>Configure content</Link>
-            </li>
-          }
-          )}
-        </ul>
-      </div>
+    <h2 className="h3">Studies</h2>
+    <div className="row">
+      <ul className="list-unstyled">
+        { portal.portalStudies.map(portalStudy => {
+          const study = portalStudy.study
+          return <li key={study.shortcode}>
+            <StudyConfigView study={study}/>
+          </li>
+        }
+        )}
+      </ul>
     </div>
   </div>
 }
 
-/** Reads the portal object to show in the dashboard from context */
-export default function PortalDashboardFromContext() {
-  const portalContext = useContext(PortalContext) as LoadedPortalContextT
-  return <PortalDashboard portal={portalContext.portal as Portal}/>
-}
-
-/** show the config settings for a given environment */
-function PortalEnvConfigView({ portalEnv }: {portalEnv: PortalEnvironment}) {
-  const labelStyle = { minWidth: '15em', textAlign: 'left' as const }
-  return <div className="col-md-4">
-    <h6>{portalEnv.environmentName}
-      <button className="btn btn-secondary" onClick={() => alert('not yet implemented')}>Edit</button>
-    </h6>
-    <div>
-      <div>
-        <label style={labelStyle}>Password protected:</label>
-        {portalEnv.portalEnvironmentConfig.passwordProtected ? 'yes' : 'no'}
-      </div>
-      <div>
-        <label style={labelStyle}>Password:</label>
-        {portalEnv.portalEnvironmentConfig.password}
-      </div>
-      <div>
-        <label style={labelStyle}>Accepting registration:</label>
-        {portalEnv.portalEnvironmentConfig.acceptingRegistration ? 'yes' : 'no'}
-      </div>
-    </div>
+/** basic info about configuration for a given study */
+function StudyConfigView({ study }: {study: Study}) {
+  return <div className="bg-white p-3">
+    <h3 className="h5">{study.name}</h3>
+    <Link to={`studies/${study.shortcode}`}>Configure content</Link>
   </div>
 }
 
