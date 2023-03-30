@@ -32,7 +32,7 @@ public class GoogleServiceAccountUtils {
         try {
             serviceAccountCredentials = GoogleCredentials.fromStream(new FileInputStream(pathToCredentials));
         } catch (IOException e) {
-            throw new RuntimeException("Error loading TDR SA credentials: " + e.getMessage());
+            throw new RuntimeException("Error loading TDR service account credentials: " + e.getMessage());
         }
 
         return serviceAccountCredentials;

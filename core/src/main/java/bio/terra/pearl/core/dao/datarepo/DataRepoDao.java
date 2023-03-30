@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.datarepo;
+package bio.terra.pearl.core.dao.datarepo;
 
 import bio.terra.datarepo.api.JobsApi;
 import bio.terra.datarepo.api.RepositoryApi;
@@ -9,12 +9,13 @@ import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import bio.terra.datarepo.client.ApiClient;
 
 import java.util.*;
 
-@Service
+
+@Component
 public class DataRepoDao {
 
     private GoogleCredentials serviceAccountCreds;
