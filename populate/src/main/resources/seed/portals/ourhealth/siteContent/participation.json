@@ -17,10 +17,6 @@
         "timeIndication": "5 minutes",
         "stepNumberText": "STEP 1",
         "blurb": "This section consists of several pages, but feel free to take your time.  Your progress will be automatically saved so you can come back to it later",
-        "actionButton": {
-          "href": "/docs/view/consent",
-          "text": "View Consent"
-        },
         "image": { "cleanFileName": "consent_step.png", "version": 1, "alt": "" },
         "imagePosition": "right"
       }
@@ -31,10 +27,6 @@
         "timeIndication": "45+ minutes",
         "stepNumberText": "STEP 2",
         "blurb": "In these surveys, we ask questions about your background, lifestyle, and medical history, among others. Your progress will be automatically saved so please feel free to finish at your convenience.",
-        "actionButton": {
-          "href": "/docs/view/surveys",
-          "text": "View Surveys"
-        },
         "background": "#F2F2F2",
         "image": { "cleanFileName": "survey_step.png", "version": 1, "alt": "" },
         "imagePosition": "left"
@@ -46,10 +38,6 @@
         "timeIndication": "10 minutes",
         "stepNumberText": "STEP 3",
         "blurb": "We may send you a kit to collect a sample of your saliva. We will study these samples to help improve our understanding of cardiovascular risk.",
-        "actionButton": {
-          "href": "/docs/view/kitInstructions",
-          "text": "View Kit Instructions"
-        },
         "image": { "cleanFileName": "saliva_step.png", "version": 1, "alt": "" },
         "imagePosition": "right"
       }
@@ -60,10 +48,6 @@
         "timeIndication": "Ongoing",
         "stepNumberText": "STEP 4",
         "blurb": "Over time, we will provide you with regular updates about the status of the research and share any discoveries that you have enabled us to make. We may also ask you additional questions about your experience to aid with future studies – we want to hear what’s important to you.",
-        "actionButton": {
-          "type": "mailingList",
-          "text": "Join Email List"
-        },
         "image": { "cleanFileName": "engagement_step.png", "version": 1, "alt": "" },
         "imagePosition": "left",
         "background": "#F2F2F2"

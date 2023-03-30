@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 public class MailingServiceExtServiceTests {
   @Test
   public void mailingListRequiresAuth() {
-    var listExtService = new MailingListExtService(new RequestUtilServiceFailsAuth(), null, null);
+    var listExtService = new MailingListExtService(new AuthUtilServiceFailsAuth(), null, null);
     // testing that this exception is thrown even when everything else is null is a good check that
     // no work is done prior to auth
     Assertions.assertThrows(
@@ -18,8 +18,8 @@ public class MailingServiceExtServiceTests {
         () -> listExtService.getAll("ourhealth", EnvironmentName.live, new AdminUser()));
   }
 
-  private static class RequestUtilServiceFailsAuth extends RequestUtilService {
-    public RequestUtilServiceFailsAuth() {
+  private static class AuthUtilServiceFailsAuth extends AuthUtilService {
+    public AuthUtilServiceFailsAuth() {
       super(null, null, null, null);
     }
 

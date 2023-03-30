@@ -19,8 +19,8 @@ export default function EnvironmentAlert({ portalEnvironment }: { portalEnvironm
   if (!isVisible) {
     return <></>
   }
-  return <div className="position-absolute top-0 start-50 translate-middle-x" style={alertStyle}
+  return <aside className="position-absolute top-0 start-50 translate-middle-x" style={alertStyle}
     onClick={() => setIsVisible(false)}>
     {portalEnvironment.environmentName}
-  </div>
+  </aside>
 }

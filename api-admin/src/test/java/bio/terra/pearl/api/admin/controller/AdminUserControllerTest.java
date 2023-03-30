@@ -77,7 +77,7 @@ public class AdminUserControllerTest {
   public void testGetReturnsFoundAdminUser() {
     var userId = UUID.randomUUID();
     var adminUser = AdminUser.builder().id(userId).username("tester").build();
-    var expectedAdminUserDto = new AdminUserDto().id(userId).username("tester");
+    var expectedAdminUserDto = new AdminUserDto().id(userId).superuser(false).username("tester");
     when(mockAdminUserService.find(userId)).thenReturn(Optional.of(adminUser));
 
     var response = adminUserController.get(userId);

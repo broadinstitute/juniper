@@ -10,8 +10,10 @@ import { useUser } from 'providers/UserProvider'
 
 const navLinkClasses = 'nav-link fs-5 ms-lg-3'
 
+type LandingNavbarProps = JSX.IntrinsicElements['nav']
+
 /** renders the navbar for participant landing page (for not-logged-in participants) */
-export default function LandingNavbar() {
+export default function LandingNavbar(props: LandingNavbarProps) {
   const portalEnv = usePortalEnv()
   const { localContent } = portalEnv
   const { user, logoutUser } = useUser()
@@ -41,7 +43,7 @@ export default function LandingNavbar() {
 
   const dropdownId = useId()
 
-  return <nav className="LandingNavbar navbar navbar-expand-lg navbar-light">
+  return <nav {...props} className={classNames('LandingNavbar navbar navbar-expand-lg navbar-light', props.className)}>
     <div className="container-fluid">
       <NavLink to="/" className="navbar-brand">
         <img className="Navbar-logo" style={{ maxHeight: '30px' }}

@@ -12,22 +12,22 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MailingListExtService {
-  private RequestUtilService requestUtilService;
+  private AuthUtilService authUtilService;
   private MailingListContactService mailingListContactService;
   private PortalEnvironmentService portalEnvironmentService;
 
   public MailingListExtService(
-      RequestUtilService requestUtilService,
+      AuthUtilService requestUtilService,
       MailingListContactService mailingListContactService,
       PortalEnvironmentService portalEnvironmentService) {
-    this.requestUtilService = requestUtilService;
+    this.authUtilService = requestUtilService;
     this.mailingListContactService = mailingListContactService;
     this.portalEnvironmentService = portalEnvironmentService;
   }
 
   public List<MailingListContact> getAll(
       String portalShortcode, EnvironmentName envName, AdminUser user) {
-    Portal portal = requestUtilService.authUserToPortal(user, portalShortcode);
+    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
     PortalEnvironment portalEnv =
         portalEnvironmentService.findOne(portal.getShortcode(), envName).get();
     return mailingListContactService.findByPortalEnv(portalEnv.getId());
