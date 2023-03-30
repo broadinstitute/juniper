@@ -19,13 +19,11 @@ import java.util.*;
 @Component
 public class DataRepoDao {
 
-    private GoogleCredentials serviceAccountCreds;
     private Environment env;
 
     @Autowired
     public DataRepoDao(Environment env) {
         this.env = env;
-        serviceAccountCreds = GoogleServiceAccountUtils.parseCredentials(env.getProperty("env.tdr.pathToCreds"));
     }
 
     //Dataset APIs
@@ -93,6 +91,7 @@ public class DataRepoDao {
 
     public ApiClient getApiClient() {
         ApiClient dataRepoClient = new ApiClient();
+        GoogleCredentials serviceAccountCreds = GoogleServiceAccountUtils.parseCredentials(env.getProperty("env.tdr.pathToCreds"));
         AccessToken token = GoogleServiceAccountUtils.getServiceAccountToken(serviceAccountCreds);
         dataRepoClient.setBasePath(env.getProperty("env.tdr.basePath"));
         dataRepoClient.setAccessToken(token.getTokenValue());
