@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: "booleanNotNulls"
+      author: dbush
+      changes:
+        - addNotNullConstraint:
+            tableName: admin_user
+            columnName: superuser
+            defaultNullValue: false
+        -addDefaultValue:
+            tableName: admin_user
+            columnName: superuser
+            defaultBooleanValue: false
+        - addNotNullConstraint:
+            tableName: study_environment_config
+            columnName: password_protected
+            defaultNullValue: false
+        - addNotNullConstraint:
+            tableName: study_environment_config
+            columnName: accepting_enrollment
+            defaultNullValue: false
+        - addNotNullConstraint:
+            tableName: study_environment_config
+            columnName: initialized
+            defaultNullValue: false
+        - addNotNullConstraint:
+            tableName: participant_user
+            columnName: withdrawn
+            defaultNullValue: false
+        - addNotNullConstraint:
+            tableName: portal_environment_config
+            columnName: password_protected
+            defaultNullValue: false
+        - addNotNullConstraint:
+            tableName: portal_environment_config
+            columnName: accepting_registration
+            defaultNullValue: false
+        - addNotNullConstraint:
+            tableName: portal_environment_config
+            columnName: initialized
+            defaultNullValue: false

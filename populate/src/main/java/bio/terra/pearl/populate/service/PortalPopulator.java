@@ -10,6 +10,7 @@ import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
+import bio.terra.pearl.populate.dto.AdminUserDto;
 import bio.terra.pearl.populate.dto.PortalEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.PortalPopDto;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
@@ -31,6 +32,7 @@ public class PortalPopulator extends Populator<Portal, FilePopulateContext> {
     private SiteContentPopulator siteContentPopulator;
     private PortalStudyService portalStudyService;
     private PortalParticipantUserPopulator portalParticipantUserPopulator;
+    private AdminUserPopulator adminUserPopulator;
 
 
     public PortalPopulator(PortalService portalService,
@@ -39,7 +41,8 @@ public class PortalPopulator extends Populator<Portal, FilePopulateContext> {
                            SiteContentPopulator siteContentPopulator,
                            PortalParticipantUserPopulator portalParticipantUserPopulator,
                            PortalParticipantUserService ppUserService,
-                           PortalEnvironmentService portalEnvironmentService, SurveyPopulator surveyPopulator) {
+                           PortalEnvironmentService portalEnvironmentService, SurveyPopulator surveyPopulator,
+                           AdminUserPopulator adminUserPopulator) {
         this.siteContentPopulator = siteContentPopulator;
         this.portalParticipantUserPopulator = portalParticipantUserPopulator;
         this.portalEnvironmentService = portalEnvironmentService;
@@ -47,6 +50,7 @@ public class PortalPopulator extends Populator<Portal, FilePopulateContext> {
         this.portalService = portalService;
         this.studyPopulator = studyPopulator;
         this.portalStudyService = portalStudyService;
+        this.adminUserPopulator = adminUserPopulator;
     }
 
     public Portal populateFromString(String portalContent, FilePopulateContext context) throws IOException {
@@ -88,6 +92,10 @@ public class PortalPopulator extends Populator<Portal, FilePopulateContext> {
         }
         for (String studyFileName : portalDto.getPopulateStudyFiles()) {
             populateStudy(studyFileName, portalConfig, portal);
+        }
+
+        for (AdminUserDto adminUserDto : portalDto.getAdminUsers()) {
+            adminUserPopulator.populateForPortal(adminUserDto, portal);
         }
         return portal;
     }

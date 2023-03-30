@@ -1,7 +1,7 @@
 package bio.terra.pearl.api.admin.controller.enrollee;
 
 import bio.terra.pearl.api.admin.api.NotificationsApi;
-import bio.terra.pearl.api.admin.service.RequestUtilService;
+import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.notification.Notification;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class NotificationsController implements NotificationsApi {
-  private RequestUtilService requestUtilService;
+  private AuthUtilService authUtilService;
   private NotificationService notificationService;
   private NotificationConfigService notificationConfigService;
   private NotificationDispatcher notificationDispatcher;
@@ -29,14 +29,14 @@ public class NotificationsController implements NotificationsApi {
   private HttpServletRequest request;
 
   public NotificationsController(
-      RequestUtilService requestUtilService,
+      AuthUtilService authUtilService,
       NotificationService notificationService,
       NotificationConfigService notificationConfigService,
       NotificationDispatcher notificationDispatcher,
       EnrolleeService enrolleeService,
       ObjectMapper objectMapper,
       HttpServletRequest request) {
-    this.requestUtilService = requestUtilService;
+    this.authUtilService = authUtilService;
     this.notificationService = notificationService;
     this.notificationConfigService = notificationConfigService;
     this.notificationDispatcher = notificationDispatcher;
@@ -48,8 +48,8 @@ public class NotificationsController implements NotificationsApi {
   @Override
   public ResponseEntity<Object> find(
       String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode) {
-    AdminUser adminUser = requestUtilService.getFromRequest(request);
-    requestUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
     Enrollee enrollee = enrolleeService.findOneByShortcode(enrolleeShortcode).get();
     List<Notification> notifications = notificationService.findByEnrolleeId(enrollee.getId());
     return ResponseEntity.ok(notifications);
@@ -58,8 +58,8 @@ public class NotificationsController implements NotificationsApi {
   @Override
   public ResponseEntity<Object> test(
       String portalShortcode, String envName, UUID configId, Object body) {
-    AdminUser adminUser = requestUtilService.getFromRequest(request);
-    requestUtilService.authUserToPortal(adminUser, portalShortcode);
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    authUtilService.authUserToPortal(adminUser, portalShortcode);
     EnrolleeRuleData enrolleeRuleData = objectMapper.convertValue(body, EnrolleeRuleData.class);
     NotificationConfig config = notificationConfigService.find(configId).get();
     try {

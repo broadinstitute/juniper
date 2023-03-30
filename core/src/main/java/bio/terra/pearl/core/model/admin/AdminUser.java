@@ -1,12 +1,12 @@
 package bio.terra.pearl.core.model.admin;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import java.time.Instant;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-
-import java.time.Instant;
 
 @Getter @Setter @SuperBuilder
 @NoArgsConstructor
@@ -17,6 +17,6 @@ public class AdminUser extends BaseEntity {
     private String token;
 
     private Instant lastLogin;
-
-    private Boolean superuser;
+    @Builder.Default
+    private boolean superuser = false;
 }

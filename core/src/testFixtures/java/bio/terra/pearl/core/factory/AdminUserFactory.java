@@ -20,4 +20,8 @@ public class AdminUserFactory {
     public AdminUser buildPersisted(String testName) {
         return adminUserService.create(builder(testName).build());
     }
+
+    public AdminUser buildPersisted(AdminUser.AdminUserBuilder builder) {
+        return adminUserService.create(builder.build());
+    }
 }

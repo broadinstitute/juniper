@@ -101,6 +101,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         siteContentService.deleteByPortalId(portalId);
         emailTemplateService.deleteByPortalId(portalId);
         siteImageService.deleteByPortalShortcode(portal.getShortcode());
+        portalAdminUserDao.deleteByPortalId(portalId);
         dao.delete(portalId);
     }
 
@@ -108,8 +109,8 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         return dao.findOneByShortcode(shortcode);
     }
 
-    public Optional<Portal> findOneByShortcodeFullLoad(String shortcode, String language) {
-        return dao.findOneByShortcodeFullLoad(shortcode, language);
+    public Portal fullLoad(Portal portal, String language) {
+        return dao.fullLoad(portal, language);
     }
 
     /** loads a portal environment with everything needed to render the participant-facing site */
@@ -131,8 +132,11 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         return portalOpt;
     }
 
-    public List<Portal> findByAdminUserId(UUID userId) {
-        return dao.findByAdminUserId(userId);
+    public List<Portal> findByAdminUser(AdminUser user) {
+        if (user.isSuperuser()) {
+            return dao.findAll();
+        }
+        return dao.findByAdminUserId(user.getId());
     }
 
     public Portal authAdminToPortal(AdminUser user, String portalShortcode) {
@@ -149,7 +153,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     }
 
     public boolean checkAdminIsInPortal(AdminUser user, UUID portalId) {
-        return user.getSuperuser() || portalAdminUserDao.isUserInPortal(user.getId(), portalId);
+        return user.isSuperuser() || portalAdminUserDao.isUserInPortal(user.getId(), portalId);
     }
 
     /**

@@ -6,7 +6,6 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import com.auth0.jwt.JWT;
@@ -14,16 +13,15 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
-/** Utility methods for handling requests */
+/** Utility service for common auth-related methods */
 @Service
-public class RequestUtilService {
+public class AuthUtilService {
   private CurrentUserService currentUserService;
   private BearerTokenFactory bearerTokenFactory;
   private PortalService portalService;
   private PortalStudyService portalStudyService;
-  private EnrolleeService enrolleeService;
 
-  public RequestUtilService(
+  public AuthUtilService(
       CurrentUserService currentUserService,
       BearerTokenFactory bearerTokenFactory,
       PortalService portalService,
@@ -35,7 +33,7 @@ public class RequestUtilService {
   }
 
   /** gets the user from the request, throwing an exception if not present */
-  public AdminUser getFromRequest(HttpServletRequest request) {
+  public AdminUser requireAdminUser(HttpServletRequest request) {
     String token = bearerTokenFactory.from(request).getToken();
     var decodedJWT = JWT.decode(token);
     var email = decodedJWT.getClaim("email").asString();
