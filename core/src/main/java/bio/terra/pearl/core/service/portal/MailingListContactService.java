@@ -16,4 +16,7 @@ public class MailingListContactService extends CrudService<MailingListContact, M
     public List<MailingListContact> findByPortalEnv(UUID portalEnvId) {
         return dao.findByPortalEnv(portalEnvId);
     }
+    public void deleteByPortalEnvId(UUID portalEnvId) {
+        dao.deleteByPortalEnvId(portalEnvId);
+    }
 }
