@@ -1,3 +1,11 @@
 .sd-btn--action {
   background-color: #4D72AA;
 }
+
+.sjs_sp_container {
+  border: none
+}
+
+.sjs_sp_container canvas {
+  border: 1px dashed var(--border, #d6d6d6);
+}
