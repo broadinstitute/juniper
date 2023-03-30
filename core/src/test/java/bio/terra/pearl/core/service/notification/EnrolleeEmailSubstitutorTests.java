@@ -98,4 +98,22 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
                 equalTo("here's a dashboard link: <a href=\"https://newstudy.org/hub\">Return to PortalA</a>"));
 
     }
+
+    @Test
+    public void testImageVariablesReplaced() {
+        Profile profile = Profile.builder().build();
+        Enrollee enrollee = Enrollee.builder().build();
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
+        PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
+                .participantHostname("newstudy.org")
+                .build();
+        PortalEnvironment portalEnv = portalEnvironmentFactory.builder("testDashLinkVariablesReplaced")
+                .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
+        Portal portal = Portal.builder().name("PortalA").shortcode("foo").build();
+
+        var contextInfo = new NotificationContextInfo(portal, portalEnv, null, null);
+        StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
+        assertThat(replacer.replace("here's an image: <img src=\"${siteImageBaseUrl}/1/ourhealth-logo.png\"/>"),
+                equalTo("here's an image: <img src=\"https://irb.newstudy.org/api/public/portals/v1/foo/env/irb/siteImages/1/ourhealth-logo.png\"/>"));
+    }
 }
