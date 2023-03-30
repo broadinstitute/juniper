@@ -9,8 +9,8 @@ public class DataRepoExportService {
 
     DataRepoDao dataRepoDao;
 
-    public DataRepoExportService(DataRepoDao dataRepoDAO) {
-        this.dataRepoDao = dataRepoDAO;
+    public DataRepoExportService(DataRepoDao dataRepoDao) {
+        this.dataRepoDao = dataRepoDao;
     }
 
     public boolean getServiceStatus() {
