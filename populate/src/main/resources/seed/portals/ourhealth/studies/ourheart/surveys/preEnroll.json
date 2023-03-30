@@ -1,54 +1,91 @@
 {
   "stableId": "oh_oh_preenroll",
   "version": 1,
-  "name": "Pre-registration",
+  "name": "Pre-enroll",
   "jsonContent": {
-  "title": "OurHealth pre-registration",
-  "logoPosition": "right",
-  "completeText": "Continue",
-  "showQuestionNumbers": "off",
-  "pages": [
-    {
-      "name": "page1",
-      "elements": [
-        {
-          "type": "html",
-          "name": "descriptionText",
-          "html": "<b>Thank you for your interest in participating in the study.</b><br/><br/> To get started, please answer these questions to make sure you’re eligible to participate (check all that apply)."
-        },
-        {
-          "type": "checkbox",
-          "name": "oh_oh_preenroll_checklist",
-          "title": "I am someone who",
-          "isRequired": true,
-          "choices": [
-            {
-              "value": "southAsianAncestry",
-              "text": "Identifies as having South Asian ancestry from one of these countries: Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, or Sri Lanka"
-            },
-            {
-              "value": "english",
-              "text": "Understands English"
-            },
-            {
-              "value": "isAdult",
-              "text": "Is 18 years or older"
-            },
-            {
-              "value": "livesInUS",
-              "text": "Lives in the United States"
-            }
-          ]
-        }
-      ]
-    }
-  ],
-  "calculatedValues": [
-    {
-      "name": "qualified",
-      "expression": "{oh_oh_preenroll_checklist} contains 'southAsianAncestry' && {oh_oh_preenroll_checklist} contains 'english' && {oh_oh_preenroll_checklist} contains 'isAdult' && {oh_oh_preenroll_checklist} contains 'livesInUS'",
-      "includeIntoResult": true
-    }
-  ]
-}
+    "title": "OurHealth pre-enroll",
+    "logoPosition": "right",
+    "showProgressBar": "bottom",
+    "progressBarType": "requiredQuestions",
+    "pages": [
+      {
+        "name": "page1",
+        "title": "Study Eligibility",
+        "description": "Thank you for your interest in participating in OurHealth. To get started, please answer these questions to make sure you’re eligible to participate. ",
+        "elements": [
+          {
+            "type": "radiogroup",
+            "name": "oh_oh_preenroll_southAsianAncestry",
+            "title": "I identify as having South Asian ancestry from one of these countries: Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, or Sri Lanka.",
+            "isRequired": true,
+            "choices": [
+              {
+                "value": "yes",
+                "text": "Yes"
+              },
+              {
+                "value": "no",
+                "text": "No"
+              }
+            ]
+          },
+          {
+            "type": "radiogroup",
+            "name": "oh_oh_preenroll_understandsEnglish",
+            "title": "I am comfortable reading or speaking English.",
+            "isRequired": true,
+            "choices": [
+              {
+                "value": "yes",
+                "text": "Yes"
+              },
+              {
+                "value": "no",
+                "text": "No"
+              }
+            ]
+          },
+          {
+            "type": "radiogroup",
+            "name": "oh_oh_preenroll_isAdult",
+            "title": "I am 18 years old or older.",
+            "isRequired": true,
+            "choices": [
+              {
+                "value": "yes",
+                "text": "Yes"
+              },
+              {
+                "value": "no",
+                "text": "No"
+              }
+            ]
+          },
+          {
+            "type": "radiogroup",
+            "name": "oh_oh_preenroll_livesInUS",
+            "title": "I live in the United States.",
+            "isRequired": true,
+            "choices": [
+              {
+                "value": "yes",
+                "text": "Yes"
+              },
+              {
+                "value": "no",
+                "text": "No"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "calculatedValues": [
+      {
+        "name": "qualified",
+        "expression": "{oh_oh_preenroll_southAsianAncestry} = 'yes' && {oh_oh_preenroll_understandsEnglish} = 'yes' && {oh_oh_preenroll_isAdult} = 'yes' && {oh_oh_preenroll_livesInUS} = 'yes'",
+        "includeIntoResult": true
+      }
+    ]
+  }
 }
