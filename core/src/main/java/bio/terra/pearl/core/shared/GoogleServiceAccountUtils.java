@@ -28,7 +28,6 @@ public class GoogleServiceAccountUtils {
 
     public static GoogleCredentials parseCredentials(String pathToCredentials) {
         GoogleCredentials serviceAccountCredentials;
-
         try {
             serviceAccountCredentials = GoogleCredentials.fromStream(new FileInputStream(pathToCredentials));
         } catch (IOException e) {

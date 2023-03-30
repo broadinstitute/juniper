@@ -28,5 +28,4 @@ public class DataRepoExportService {
             return String.format("d2p_%s_%s_%s", deploymentZone, studyName, environmentName);
     }
 
-
 }
