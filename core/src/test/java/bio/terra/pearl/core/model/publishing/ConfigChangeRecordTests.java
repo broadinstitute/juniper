@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.model.publishing;
 
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
-import bio.terra.pearl.core.service.publishing.PublishingService;
+import bio.terra.pearl.core.service.publishing.PortalPublishingService;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ public class ConfigChangeRecordTests {
                 .participantHostname("bar")
                 .emailSourceAddress("blah@blah.com").build();
         var changeRecords = ConfigChangeRecord.allChanges(sourceConfig, destConfig,
-                PublishingService.BASE_IGNORE_PROPS);
+                PortalPublishingService.BASE_IGNORE_PROPS);
         assertThat(changeRecords, hasSize(2));
         assertThat(changeRecords, hasItems(
                 new ConfigChangeRecord("acceptingRegistration", false, true),
@@ -65,7 +65,7 @@ public class ConfigChangeRecordTests {
                 .participantHostname("bar")
                 .emailSourceAddress("blah@blah.com").build();
         var changeRecords = ConfigChangeRecord.allChanges(sourceConfig, destConfig,
-                PublishingService.BASE_IGNORE_PROPS);
+                PortalPublishingService.BASE_IGNORE_PROPS);
         assertThat(changeRecords, hasSize(6));
         assertThat(changeRecords, hasItems(
                 new ConfigChangeRecord("emailSourceAddress", "blah@blah.com", (Object) null),
@@ -85,7 +85,7 @@ public class ConfigChangeRecordTests {
                 .participantHostname("bar")
                 .emailSourceAddress("blah@blah.com").build();
         var changeRecords = ConfigChangeRecord.allChanges(sourceConfig, destConfig,
-                PublishingService.BASE_IGNORE_PROPS);
+                PortalPublishingService.BASE_IGNORE_PROPS);
         assertThat(changeRecords, hasSize(6));
         assertThat(changeRecords, hasItems(
                 new ConfigChangeRecord("emailSourceAddress", (Object) null, (Object) "blah@blah.com"),
@@ -102,7 +102,7 @@ public class ConfigChangeRecordTests {
         PortalEnvironmentConfig sourceConfig = null;;
         PortalEnvironmentConfig destConfig = null;
         var changeRecords = ConfigChangeRecord.allChanges(sourceConfig, destConfig,
-                PublishingService.BASE_IGNORE_PROPS);
+                PortalPublishingService.BASE_IGNORE_PROPS);
         assertThat(changeRecords, hasSize(0));
     }
 }

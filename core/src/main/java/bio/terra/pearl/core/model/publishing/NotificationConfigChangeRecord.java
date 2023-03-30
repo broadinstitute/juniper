@@ -5,6 +5,10 @@ import java.util.List;
 
 public record NotificationConfigChangeRecord(List<ConfigChangeRecord> configChanges,
                                              VersionedEntityChangeRecord templateChange) {
+    public boolean isChanged() {
+        return !configChanges.isEmpty() || templateChange().isChanged();
+    }
+
     public NotificationConfigChangeRecord(NotificationConfig source,NotificationConfig dest, List<String> ignoreProps) throws Exception {
         this(
                 ConfigChangeRecord.allChanges(source, dest, ignoreProps),

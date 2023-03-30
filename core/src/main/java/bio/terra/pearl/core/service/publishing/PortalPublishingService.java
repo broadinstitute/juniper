@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PublishingService {
+public class PortalPublishingService {
     public static final List<String> BASE_IGNORE_PROPS = List.of("id", "createdAt", "lastUpdatedAt", "class");
     public static final List<String> NOTIFICATION_CONFIG_IGNORE_PROPS = Stream
             .of(List.of("studyEnvironmentId", "portalEnvironmentId", "emailTemplateId", "emailTemplate"), BASE_IGNORE_PROPS)
@@ -28,10 +28,10 @@ public class PublishingService {
     private SurveyService surveyService;
     private NotificationConfigService notificationConfigService;
 
-    public PublishingService(PortalEnvironmentService portalEnvService,
-                             PortalEnvironmentConfigService portalEnvironmentConfigService,
-                             SiteContentService siteContentService, SurveyService surveyService,
-                             NotificationConfigService notificationConfigService) {
+    public PortalPublishingService(PortalEnvironmentService portalEnvService,
+                                   PortalEnvironmentConfigService portalEnvironmentConfigService,
+                                   SiteContentService siteContentService, SurveyService surveyService,
+                                   NotificationConfigService notificationConfigService) {
         this.portalEnvService = portalEnvService;
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.siteContentService = siteContentService;
@@ -40,19 +40,22 @@ public class PublishingService {
     }
 
     public PortalEnvironmentChangeRecord diff(String shortcode, EnvironmentName source, EnvironmentName dest) throws Exception {
-
         PortalEnvironment sourceEnv = loadForDiffing(shortcode, source);
         PortalEnvironment destEnv = loadForDiffing(shortcode, dest);
+        return diff(sourceEnv, destEnv);
+    }
+
+    public PortalEnvironmentChangeRecord diff(PortalEnvironment sourceEnv, PortalEnvironment destEnv) throws Exception {
         var preRegRecord = new VersionedEntityChangeRecord(sourceEnv.getPreRegSurvey(), destEnv.getPreRegSurvey());
         var siteContentRecord = new VersionedEntityChangeRecord(sourceEnv.getSiteContent(), destEnv.getSiteContent());
         var envConfigChanges = ConfigChangeRecord.allChanges(sourceEnv.getPortalEnvironmentConfig(),
                 destEnv.getPortalEnvironmentConfig(), BASE_IGNORE_PROPS);
         var notificationConfigChanges = diffNotifications(sourceEnv.getNotificationConfigs(), destEnv.getNotificationConfigs());
         return new PortalEnvironmentChangeRecord(
-               siteContentRecord,
-               envConfigChanges,
-               preRegRecord,
-               notificationConfigChanges
+                siteContentRecord,
+                envConfigChanges,
+                preRegRecord,
+                notificationConfigChanges
         );
     }
 
@@ -86,7 +89,11 @@ public class PublishingService {
             if (matchedConfig == null) {
                 addedConfigs.add(sourceConfig);
             } else {
-                changedRecords.add(new NotificationConfigChangeRecord(sourceConfig, matchedConfig, NOTIFICATION_CONFIG_IGNORE_PROPS));
+                var changeRecord = new NotificationConfigChangeRecord(sourceConfig, matchedConfig, NOTIFICATION_CONFIG_IGNORE_PROPS);
+                if (changeRecord.isChanged()) {
+                    changedRecords.add(changeRecord);
+                }
+
             }
         }
         List<NotificationConfig> removedConfigs = destConfigs.stream()

@@ -32,7 +32,7 @@ public record ConfigChangeRecord(String propertyName, Object oldValue, Object ne
         for (String propertyName : propertyNames) {
             var record = new ConfigChangeRecord(source, dest, propertyName);
             // if the new value is different than the old, add the record
-            if (Objects.equals(record.newValue, record.oldValue)) {
+            if (!Objects.equals(record.newValue, record.oldValue)) {
                 records.add(record);
             }
         }

@@ -9,20 +9,19 @@ function PortalDashboard({ portal }: {portal: Portal}) {
   return <div className="p-4">
     <h4>{portal.name}</h4>
     <div className="p-5">
-      <h5>Environments</h5>
+      <h5>Portal Environments</h5>
       <div className="row">
         { portal.portalEnvironments.map(portalEnv => <PortalEnvConfigView
           portalEnv={portalEnv} key={portalEnv.environmentName}/>)}
       </div>
     </div>
-    <div className="p-5"><h5>Website</h5></div>
     <div className="p-5">
       <h5>Studies</h5>
       <div>
-        <ul className="list-group">
+        <ul className="list-unstyled">
           { portal.portalStudies.map((portalStudy, index) => {
             const study = portalStudy.study
-            return <li key={index} className="list-group-item">
+            return <li key={index} className="bg-white p-2">
               <h6>{portalStudy.study.name}</h6>
               <Link to={`studies/${study.shortcode}`}>Configure content</Link>
             </li>
@@ -42,23 +41,35 @@ export default function PortalDashboardFromContext() {
 
 /** show the config settings for a given environment */
 function PortalEnvConfigView({ portalEnv }: {portalEnv: PortalEnvironment}) {
-  const labelStyle = { minWidth: '15em', textAlign: 'left' as const }
-  return <div className="col-md-4">
-    <h6>{portalEnv.environmentName}
-      <button className="btn btn-secondary" onClick={() => alert('not yet implemented')}>Edit</button>
-    </h6>
-    <div>
+  const inputStyle = {
+    display: 'inline-block',
+    maxWidth: '14em',
+    width: '14em'
+  }
+  return <div className="col-md-12 bg-white my-1">
+    <h3 className="h5">
+      <button className="btn btn-secondary fw-bold" onClick={() => alert('not yet implemented')}>
+        {portalEnv.environmentName}
+      </button>
+    </h3>
+    <div className="ps-4">
       <div>
-        <label style={labelStyle}>Password protected:</label>
-        {portalEnv.portalEnvironmentConfig.passwordProtected ? 'yes' : 'no'}
+        <label className="form-label">Password protected:
+          <input className="ms-2" type="checkbox" disabled={true}
+            checked={portalEnv.portalEnvironmentConfig.passwordProtected}/>
+        </label>
       </div>
       <div>
-        <label style={labelStyle}>Password:</label>
-        {portalEnv.portalEnvironmentConfig.password}
+        <label className="form-label">Password:
+          <input className="form-control ms-2" style={inputStyle} type="text"
+            readOnly={true} value={portalEnv.portalEnvironmentConfig.password}/>
+        </label>
       </div>
       <div>
-        <label style={labelStyle}>Accepting registration:</label>
-        {portalEnv.portalEnvironmentConfig.acceptingRegistration ? 'yes' : 'no'}
+        <label className="form-label">Accepting registration:
+          <input className="ms-2" type="checkbox" disabled={true}
+            checked={portalEnv.portalEnvironmentConfig.acceptingRegistration}/>
+        </label>
       </div>
     </div>
   </div>

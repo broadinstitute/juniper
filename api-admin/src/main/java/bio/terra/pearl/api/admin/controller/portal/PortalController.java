@@ -1,4 +1,4 @@
-package bio.terra.pearl.api.admin.controller;
+package bio.terra.pearl.api.admin.controller.portal;
 
 import bio.terra.pearl.api.admin.api.PortalApi;
 import bio.terra.pearl.api.admin.model.PortalShallowDto;

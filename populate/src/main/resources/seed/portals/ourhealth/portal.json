@@ -20,6 +20,22 @@
         "participants/newEnrollee.json",
         "participants/consentedEnrollee.json"
       ]
+    },{
+      "environmentName": "irb",
+      "portalEnvironmentConfig": {
+        "acceptingRegistration": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": false
+      }
+    },{
+      "environmentName": "live",
+      "portalEnvironmentConfig": {
+        "acceptingRegistration": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": false
+      }
     }
   ],
   "siteImageDtos": [{
