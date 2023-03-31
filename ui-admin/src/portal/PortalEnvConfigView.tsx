@@ -1,42 +1,62 @@
 import React from 'react'
-import { PortalEnvironment } from '../api/api'
+import { Portal, PortalEnvironment, Study } from '../api/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
 import { Link } from 'react-router-dom'
 import { mailingListPath } from './PortalRouter'
+import PortalEnvPublishControl from './PortalEnvPublishControl'
+import { faCogs } from '@fortawesome/free-solid-svg-icons/faCogs'
+import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons/faClipboardCheck'
+import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers'
+
+
+const ENVIRONMENT_ICON_MAP: Record<string, React.ReactNode> = {
+  sandbox: <FontAwesomeIcon className="fa-sm text-gray text-muted" icon={faCogs}/>,
+  irb: <FontAwesomeIcon className="fa-sm text-gray text-muted" icon={faClipboardCheck}/>,
+  live: <FontAwesomeIcon className="fa-sm text-gray text-muted" icon={faUsers}/>
+}
 
 /** shows information about the portal config, does not allow editing yet */
-export default function PortalEnvConfigView({ portalShortcode, portalEnv }:
-  {portalShortcode: string, portalEnv: PortalEnvironment}) {
-  const labelStyle = { minWidth: '15em', textAlign: 'left' as const }
-  const config = portalEnv.portalEnvironmentConfig
-  return <div className="bg-white p-3">
-    <h3 className="h5">{portalEnv.environmentName}
-      <button className="btn btn-secondary" onClick={() => alert('not yet implemented')}>
-        <FontAwesomeIcon icon={faEdit}/>
-      </button>
-    </h3>
+export default function PortalEnvConfigView({ portal, portalEnv }:
+  {portal: Portal, portalEnv: PortalEnvironment}) {
+  const envIcon = ENVIRONMENT_ICON_MAP[portalEnv.environmentName]
+  return <div className="bg-white p-3 mb-2">
+    <div className="d-flex align-items-baseline">
+      <h3 className="h5 text-capitalize me-4">{envIcon} {portalEnv.environmentName}</h3>
+      <PortalEnvPublishControl portal={portal} publishFunc={(s, d) => s} destEnv={portalEnv}/>
+    </div>
 
-    <div className="ms-4">
-      <h4 className="h6">Configuration</h4>
-      <label style={labelStyle}>Password protected:
-        <input className="ms-2" type={'checkbox'} readOnly={true} checked={config.passwordProtected}/>
-      </label>
-      {config.passwordProtected && <label className="ms-4">
-        Password: <input type="text" readOnly={true} value={config.password}/>
-      </label>}
-      <div>
-        <label style={labelStyle}>Accepting registration:
-          <input className="ms-2" type={'checkbox'} readOnly={true} checked={config.acceptingRegistration}/>
-        </label>
-      </div>
-      <div className="mt-4"><h4 className="h6">Website</h4></div>
-
+    <div className="ms-4 mt-3">
+      <div><h4 className="h6">Website</h4></div>
       <div className="mt-4">
         <h4 className="h6">
-          <Link to={mailingListPath(portalShortcode, portalEnv.environmentName)}>Mailing List</Link>
+          <Link to={mailingListPath(portal.shortcode, portalEnv.environmentName)}>Mailing List</Link>
         </h4>
+      </div>
+      <div className="mt-4 mb-2">
+        <h4 className="h6">Studies</h4>
+        <ul>
+          { portal.portalStudies.map(portalStudy => {
+            const study = portalStudy.study
+            return <li key={study.shortcode}>
+              <StudyConfigView study={study} envName={portalEnv.environmentName}/>
+            </li>
+          }
+          )}
+        </ul>
       </div>
     </div>
   </div>
 }
+
+
+/** basic info about configuration for a given study */
+function StudyConfigView({ study, envName }: {study: Study, envName: string}) {
+  return <div>
+    <span>{study.name}</span>
+    <Link to={`studies/${study.shortcode}/env/${envName}`} className="ms-3">Content</Link>
+    <Link to={`studies/${study.shortcode}/env/${envName}/participants`} className="ms-3">Participants</Link>
+  </div>
+}
+
+

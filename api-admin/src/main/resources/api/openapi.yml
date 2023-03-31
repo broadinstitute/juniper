@@ -354,7 +354,7 @@ paths:
                 $ref: '#/components/schemas/RoleList'
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/update/env/{targetEnv}/diff:
+  /api/portals/v1/{portalShortcode}/env/{targetEnv}/update/diff:
     get:
       summary: Gets the changes between one environment and another
       tags: [ portalEnvironment ]
@@ -369,7 +369,7 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/update/env/{targetEnv}/update:
+  /api/portals/v1/{portalShortcode}/env/{targetEnv}/update:
     post:
       summary: Updates a portal environment according to the update object
       tags: [ portalEnvironment ]

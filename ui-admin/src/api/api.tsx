@@ -89,7 +89,8 @@ export type PortalEnvironment = {
 export type PortalEnvironmentConfig = {
   acceptingRegistration: boolean,
   password: string,
-  passwordProtected: boolean
+  passwordProtected: boolean,
+  initialized: boolean
 }
 
 export type EnrolleeSearchResult = {
@@ -410,6 +411,12 @@ export default {
 
   async fetchMailingList(portalShortcode: string, envName: string): Promise<MailingListContact[]> {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchEnvDiff(portalShortcode: string, sourceEnvName: string, destEnvName: string) {
+    const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/update/diff?sourceEnv=${sourceEnvName}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
