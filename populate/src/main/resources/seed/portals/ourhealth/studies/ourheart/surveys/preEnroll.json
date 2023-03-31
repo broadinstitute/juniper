@@ -17,7 +17,7 @@
           {
             "type": "radiogroup",
             "name": "oh_oh_preenroll_southAsianAncestry",
-            "title": "I identify as having South Asian ancestry from one of these countries: Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, or Sri Lanka.",
+            "title": "I identify as having South Asian ancestry from one or more of these countries: Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, or Sri Lanka.",
             "isRequired": true,
             "choices": [
               {
