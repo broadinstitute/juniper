@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.dao.datarepo;
+package bio.terra.pearl.core.service.datarepo;
 
 import bio.terra.datarepo.api.JobsApi;
 import bio.terra.datarepo.api.RepositoryApi;
@@ -17,12 +17,12 @@ import java.util.*;
 
 
 @Component
-public class DataRepoDao {
+public class DataRepoClient {
 
     private Environment env;
 
     @Autowired
-    public DataRepoDao(Environment env) {
+    public DataRepoClient(Environment env) {
         this.env = env;
     }
 

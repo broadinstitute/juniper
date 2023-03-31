@@ -1,21 +1,20 @@
 package bio.terra.pearl.core.service.datarepo;
 
 import bio.terra.datarepo.client.ApiException;
-import bio.terra.pearl.core.dao.datarepo.DataRepoDao;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DataRepoExportService {
 
-    DataRepoDao dataRepoDao;
+    DataRepoClient dataRepoClient;
 
-    public DataRepoExportService(DataRepoDao dataRepoDao) {
-        this.dataRepoDao = dataRepoDao;
+    public DataRepoExportService(DataRepoClient dataRepoClient) {
+        this.dataRepoClient = dataRepoClient;
     }
 
     public boolean getServiceStatus() {
         try {
-            return dataRepoDao.getServiceStatus().isOk();
+            return dataRepoClient.getServiceStatus().isOk();
         } catch (ApiException e) {
             return false;
         }
