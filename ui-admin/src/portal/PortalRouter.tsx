@@ -6,7 +6,7 @@ import { LoadedPortalContextT, PortalContext, PortalParams } from './PortalProvi
 import MailingListView from './MailingListView'
 import { NavBreadcrumb } from '../navbar/AdminNavbar'
 import PortalEnvConfigView from './PortalEnvConfigView'
-import EnvironmentDiff from './EnvironmentDiff'
+import EnvironmentDiff from './publish/EnvironmentDiff'
 
 /** controls routes for within a portal */
 export default function PortalRouter() {

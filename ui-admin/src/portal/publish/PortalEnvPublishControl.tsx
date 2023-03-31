@@ -1,8 +1,8 @@
-import { Portal, PortalEnvironment, Study, StudyEnvironment } from '../api/api'
+import { Portal, PortalEnvironment, Study, StudyEnvironment } from '../../api/api'
 import Modal from 'react-bootstrap/Modal'
 import React, { useState } from 'react'
 import Select from 'react-select'
-import { portalEnvDiffPath } from './PortalRouter'
+import { portalEnvDiffPath } from '../PortalRouter'
 import { Link } from 'react-router-dom'
 
 type SelectOptionType = { label: string, value: string }
