@@ -16,7 +16,7 @@
         "title": "Provide consent for the study",
         "timeIndication": "5 minutes",
         "stepNumberText": "STEP 1",
-        "blurb": "This section consists of several pages, but feel free to take your time.  Your progress will be automatically saved so you can come back to it later",
+        "blurb": "This section consists of several pages, but feel free to take your time.  Your progress will be automatically saved so you can come back to it later.",
         "image": { "cleanFileName": "consent_step.png", "version": 1, "alt": "" },
         "imagePosition": "right"
       }
