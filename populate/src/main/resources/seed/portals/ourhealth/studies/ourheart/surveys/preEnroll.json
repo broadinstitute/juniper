@@ -6,6 +6,7 @@
     "title": "OurHealth pre-enroll",
     "logoPosition": "right",
     "showProgressBar": "bottom",
+    "showQuestionNumbers": "off",
     "progressBarType": "requiredQuestions",
     "pages": [
       {
