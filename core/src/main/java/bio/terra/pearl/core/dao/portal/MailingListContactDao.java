@@ -21,4 +21,8 @@ public class MailingListContactDao extends BaseJdbiDao<MailingListContact> {
     public List<MailingListContact> findByPortalEnv(UUID portalEnvId) {
         return findAllByProperty("portal_environment_id", portalEnvId);
     }
+
+    public void deleteByPortalEnvId(UUID portalEnvId) {
+        deleteByProperty("portal_environment_id", portalEnvId);
+    }
 }

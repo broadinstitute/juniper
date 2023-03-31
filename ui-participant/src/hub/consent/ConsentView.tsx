@@ -71,7 +71,7 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
 
 
   return <div>
-    <h4 className="text-center mt-2">{form.name}</h4>
+    <h1 className="h4 text-center mt-2">{form.name}</h1>
     {surveyModel && <div className="d-flex align-items-center flex-column">
       <span className="detail">page {pageNumber} of {surveyModel.pages.length}</span>
       <SurveyComponent model={surveyModel}/>

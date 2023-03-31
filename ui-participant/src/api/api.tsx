@@ -16,6 +16,7 @@ export type PortalEnvironmentParams = {
 }
 
 export type Portal = {
+  name: string
   portalEnvironments: PortalEnvironment[],
   portalStudies: PortalStudy[],
   shortcode: string
@@ -137,12 +138,18 @@ export type ResumableData = {
 
 export type StudyEnvironment = {
   id: string,
+  studyEnvironmentConfig: StudyEnvironmentConfig,
   studyShortcode: string,
   preEnrollSurvey: Survey,
-  siteContent: SiteContent,
   environmentName: string
 }
 
+export type StudyEnvironmentConfig = {
+  acceptingEnrollment: boolean
+  initialized: boolean
+  passwordProtected: boolean
+  password: string
+}
 
 export type StudyEnvironmentSurvey = {
   id: string,

@@ -8,7 +8,9 @@ import PreEnrollView from './PreEnroll'
 import StudyIneligible from './StudyIneligible'
 import PortalRegistrationRouter from 'landing/registration/PortalRegistrationRouter'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
-import { usePreEnrollResponseId } from 'browserPersistentState'
+import { useHasProvidedStudyPassword, usePreEnrollResponseId } from 'browserPersistentState'
+
+import { StudyEnrollPasswordGate } from './StudyEnrollPasswordGate'
 
 export type StudyEnrollContext = {
   user: ParticipantUser,
@@ -27,16 +29,33 @@ export default function StudyEnrollRouter() {
   if (!studyEnv || !studyShortcode) {
     return <div>no matching study</div>
   }
-  return <StudyEnrollOutletMatched portal={portal} studyEnv={studyEnv} studyShortcode={studyShortcode}/>
+  return (
+    <StudyEnrollOutletMatched
+      portal={portal}
+      studyEnv={studyEnv}
+      studyName={matchedStudy.name}
+      studyShortcode={studyShortcode}
+    />
+  )
+}
+
+type StudyEnrollOutletMatchedProps = {
+  portal: Portal
+  studyEnv: StudyEnvironment
+  studyName: string
+  studyShortcode: string
 }
 
 /** handles the rendering and useEffect logic */
-function StudyEnrollOutletMatched({ portal, studyEnv, studyShortcode }:
-                                    { portal: Portal, studyEnv: StudyEnvironment, studyShortcode: string }) {
+function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
+  const { portal, studyEnv, studyName, studyShortcode } = props
   const { user, enrollees, updateEnrollee } = useUser()
   const navigate = useNavigate()
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
   const [preEnrollSatisfied, setPreEnrollSatisfied] = useState(!studyEnv.preEnrollSurvey)
+
+  const [hasProvidedPassword, setHasProvidedPassword] = useHasProvidedStudyPassword(studyShortcode)
+  const mustProvidePassword = studyEnv.studyEnvironmentConfig.passwordProtected && !hasProvidedPassword
 
   /** updates the state and localStorage */
   function updatePreEnrollResponseId(preEnrollId: string | null) {
@@ -68,6 +87,9 @@ function StudyEnrollOutletMatched({ portal, studyEnv, studyShortcode }:
       navigate('/hub', { replace: true })
       return
     }
+    if (mustProvidePassword) {
+      return
+    }
     if (preEnrollSatisfied) {
       if (user.isAnonymous) {
         navigate('register', { replace: true })
@@ -86,18 +108,27 @@ function StudyEnrollOutletMatched({ portal, studyEnv, studyShortcode }:
     } else {
       navigate('preEnroll', { replace: true })
     }
-  }, [preEnrollSatisfied, user.username])
+  }, [mustProvidePassword, preEnrollSatisfied, user.username])
 
   const enrollContext: StudyEnrollContext = {
     studyShortcode, studyEnv, user, preEnrollResponseId, updatePreEnrollResponseId
   }
   return <>
     <LandingNavbar/>
-    <Routes>
-      <Route path="preEnroll" element={<PreEnrollView enrollContext={enrollContext}/>}/>
-      <Route path="ineligible" element={<StudyIneligible/>}/>
-      <Route path="register/*" element={<PortalRegistrationRouter portal={portal} returnTo={null}/>}/>
-      <Route index element={<PageLoadingIndicator/>}/>
-    </Routes>
+    {mustProvidePassword
+      ? (
+        <StudyEnrollPasswordGate
+          studyEnv={studyEnv}
+          studyName={studyName}
+          onSubmitCorrectPassword={setHasProvidedPassword}
+        />
+      ) : (
+        <Routes>
+          <Route path="preEnroll" element={<PreEnrollView enrollContext={enrollContext}/>}/>
+          <Route path="ineligible" element={<StudyIneligible portal={portal} studyName={studyName}/>}/>
+          <Route path="register/*" element={<PortalRegistrationRouter portal={portal} returnTo={null}/>}/>
+          <Route index element={<PageLoadingIndicator/>}/>
+        </Routes>
+      )}
   </>
 }

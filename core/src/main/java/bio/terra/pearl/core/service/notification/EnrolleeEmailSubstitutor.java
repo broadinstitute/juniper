@@ -64,7 +64,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
     }
 
     public String getImageBaseUrl(PortalEnvironment portalEnvironment, String portalShortcode) {
-        return "http://" + routingPaths.getParticipantApiHostname()
+        return routingPaths.getParticipantBaseUrl(portalEnvironment, portalShortcode)
                 + "/api/public/portals/v1/" + portalShortcode + "/env/" + portalEnvironment.getEnvironmentName()
                 + "/siteImages";
     }
