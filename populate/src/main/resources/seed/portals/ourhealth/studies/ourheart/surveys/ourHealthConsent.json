@@ -98,7 +98,10 @@
           "type": "text",
           "isRequired": true,
           "name": "oh_oh_consent_signatureDate",
-          "title": "Date/Time"
+          "title": "Date/Time",
+          "inputType": "date",
+          "minValueExpression": "today()",
+          "maxValueExpression": "today()"
         },
         {
           "type": "signaturepad",
