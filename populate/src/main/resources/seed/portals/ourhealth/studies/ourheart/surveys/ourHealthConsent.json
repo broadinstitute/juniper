@@ -59,7 +59,8 @@
         {
           "type": "radiogroup",
           "name": "oh_oh_consent_agree",
-          "title": "Do you agree?",
+          "title": "Do you agree to the above?",
+          "titleLocation": "hidden",
           "isRequired": true,
           "choices": [
             {
