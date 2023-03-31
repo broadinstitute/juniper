@@ -61,6 +61,25 @@ paths:
           content: { application/json: { schema: { type: object }}}
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/mailingListContact:
+    post:
+      summary: submits a request to be added to a study or portal mailing list
+      tags: [ mailingListContact ]
+      operationId: create
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MailingListContactDto'
+      responses:
+        '200':
+          description: mailing list contact
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}/preReg/{surveyStableId}/{surveyVersion}:
     post:
       summary: Submits a preregistration survey
@@ -447,6 +466,15 @@ components:
       type: object
       properties:
         email:
+          type: string
+
+    MailingListContactDto:
+      type: object
+      required: [ email ]
+      properties:
+        email:
+          type: string
+        name:
           type: string
 
   securitySchemes:

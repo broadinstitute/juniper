@@ -2,7 +2,7 @@ package bio.terra.pearl.api.admin.controller;
 
 import bio.terra.pearl.api.admin.api.ConfiguredSurveyApi;
 import bio.terra.pearl.api.admin.model.ConfiguredSurveyDto;
-import bio.terra.pearl.api.admin.service.RequestUtilService;
+import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
@@ -15,13 +15,13 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class ConfiguredSurveyController implements ConfiguredSurveyApi {
-  private RequestUtilService requestService;
+  private AuthUtilService requestService;
   private HttpServletRequest request;
   private ObjectMapper objectMapper;
   private StudyEnvironmentSurveyService studyEnvSurveyService;
 
   public ConfiguredSurveyController(
-      RequestUtilService requestService,
+      AuthUtilService requestService,
       HttpServletRequest request,
       ObjectMapper objectMapper,
       StudyEnvironmentSurveyService studyEnvSurveyService) {
@@ -38,7 +38,7 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
       String envName,
       UUID configuredSurveyId,
       ConfiguredSurveyDto body) {
-    AdminUser adminUser = requestService.getFromRequest(request);
+    AdminUser adminUser = requestService.requireAdminUser(request);
     requestService.authUserToPortal(adminUser, portalShortcode);
 
     StudyEnvironmentSurvey configuredSurvey =

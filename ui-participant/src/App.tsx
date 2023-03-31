@@ -38,6 +38,7 @@ const brandStyles = (config: BrandConfiguration = {}): CSSProperties => {
     '--brand-color-shift-10': tint(0.10, brandColor),
     '--brand-color-shift-15': tint(0.15, brandColor),
     '--brand-color-shift-20': tint(0.20, brandColor),
+    '--brand-color-shift-90': tint(0.90, brandColor),
     '--brand-link-color': brandColor,
     // Override Bootstrap properties.
     '--bs-link-color': brandColor,

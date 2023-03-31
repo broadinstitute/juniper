@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import 'bootstrap/dist/js/bootstrap.bundle.min'
+import 'bootstrap'
 import 'survey-core/defaultV2.min.css'
 import './index.scss'
 import './surveyJsStyle.css'

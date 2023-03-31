@@ -2,7 +2,7 @@ package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.DaoTestUtils;
-import bio.terra.pearl.core.factory.PortalEnvironmentFactory;
+import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.factory.survey.ResponseDataFactory;

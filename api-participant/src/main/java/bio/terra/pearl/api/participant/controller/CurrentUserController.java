@@ -27,7 +27,7 @@ public class CurrentUserController implements CurrentUserApi {
 
   @Override
   public ResponseEntity<Object> tokenLogin(String portalShortcode, String envName) {
-    var token = requestUtilService.tokenFromRequest(request);
+    var token = requestUtilService.requireToken(request);
     var environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     var userWithEnrollees = currentUserService.tokenLogin(token, portalShortcode, environmentName);
     return ResponseEntity.of(userWithEnrollees.map(Function.identity()));
@@ -35,7 +35,7 @@ public class CurrentUserController implements CurrentUserApi {
 
   @Override
   public ResponseEntity<Object> refresh(String portalShortcode, String envName) {
-    String token = requestUtilService.tokenFromRequest(request);
+    String token = requestUtilService.requireToken(request);
     var environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     Optional<CurrentUserService.UserWithEnrollees> userOpt =
         currentUserService.refresh(token, portalShortcode, environmentName);
@@ -48,7 +48,7 @@ public class CurrentUserController implements CurrentUserApi {
      * this currently does a global logout. That may change as we determine how portals interact
      * with each other and how we whitelabel.
      */
-    String token = requestUtilService.tokenFromRequest(request);
+    String token = requestUtilService.requireToken(request);
     currentUserService.logout(token);
     return ResponseEntity.noContent().build();
   }

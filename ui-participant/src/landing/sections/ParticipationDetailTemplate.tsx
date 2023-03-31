@@ -82,11 +82,11 @@ function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
         </div>
       )}
       <div className={classNames({ 'col-md-8': hasImage })}>
-        <h4>
-          {stepNumberText}
-        </h4>
+        <h2>
+          <div className="h4">{stepNumberText}</div>
+          {title}
+        </h2>
         <p><FontAwesomeIcon icon={faClock}/> {timeIndication}</p>
-        <h2>{title}</h2>
         <p className="fs-4">
           {blurb}
         </p>

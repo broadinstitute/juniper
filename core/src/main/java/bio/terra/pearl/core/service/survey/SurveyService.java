@@ -2,12 +2,18 @@ package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.dao.survey.SurveyDao;
+import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import java.util.*;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,10 +21,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SurveyService extends CrudService<Survey, SurveyDao> {
     private AnswerMappingDao answerMappingDao;
+    private SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
 
-    public SurveyService(SurveyDao surveyDao, AnswerMappingDao answerMappingDao) {
+    public SurveyService(SurveyDao surveyDao, AnswerMappingDao answerMappingDao, SurveyQuestionDefinitionDao surveyQuestionDefinitionDao) {
         super(surveyDao);
         this.answerMappingDao = answerMappingDao;
+        this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
     }
 
     public Optional<Survey> findByStableId(String stableId, int version) {
@@ -33,6 +41,7 @@ public class SurveyService extends CrudService<Survey, SurveyDao> {
     @Override
     public void delete(UUID surveyId, Set<CascadeProperty> cascades) {
         answerMappingDao.deleteBySurveyId(surveyId);
+        surveyQuestionDefinitionDao.deleteBySurveyId(surveyId);
         dao.delete(surveyId);
     }
 
@@ -45,7 +54,50 @@ public class SurveyService extends CrudService<Survey, SurveyDao> {
             AnswerMapping savedMapping = answerMappingDao.create(answerMapping);
             savedSurvey.getAnswerMappings().add(savedMapping);
         }
+
+        for(SurveyQuestionDefinition questionDefinition : getSurveyQuestionDefinitions(savedSurvey)) {
+            surveyQuestionDefinitionDao.create(questionDefinition);
+        }
+
         return savedSurvey;
+    }
+
+    public List<SurveyQuestionDefinition> getSurveyQuestionDefinitions(Survey survey) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode surveyContent;
+
+        try {
+            surveyContent = objectMapper.readTree(survey.getContent());
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Malformed survey content json");
+        }
+
+        JsonNode pages = surveyContent.get("pages");
+        JsonNode templates = surveyContent.get("questionTemplates");
+
+        //Some questions use templates. We need to gather those so that we can resolve
+        //the types and possible choices for any question that uses one.
+        Map<String, JsonNode> questionTemplates = new HashMap<>();
+        if (templates != null) {
+            for(JsonNode template : templates) {
+                questionTemplates.put(template.get("name").asText(), template);
+            }
+        }
+
+        //For each page in the survey, iterate through the JsonNode tree and unroll any panels
+        List<JsonNode> questions = new ArrayList<>();
+        for (JsonNode page : pages) {
+            questions.addAll(SurveyParseUtils.getAllQuestions(page));
+        }
+
+        //Unmarshal the questions into actual definitions that we can store in the DB.
+        //If the question uses a template, resolve that.
+        List<SurveyQuestionDefinition> questionDefinitions = new ArrayList<>();
+        for (JsonNode question : questions) {
+            questionDefinitions.add(SurveyParseUtils.unmarshalSurveyQuestion(survey, question, questionTemplates));
+        }
+
+        return questionDefinitions;
     }
 
     @Transactional

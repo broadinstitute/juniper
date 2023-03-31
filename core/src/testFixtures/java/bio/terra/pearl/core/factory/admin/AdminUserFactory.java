@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.factory;
+package bio.terra.pearl.core.factory.admin;
 
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.admin.AdminUserService;
@@ -19,5 +19,9 @@ public class AdminUserFactory {
 
     public AdminUser buildPersisted(String testName) {
         return adminUserService.create(builder(testName).build());
+    }
+
+    public AdminUser buildPersisted(AdminUser.AdminUserBuilder builder) {
+        return adminUserService.create(builder.build());
     }
 }

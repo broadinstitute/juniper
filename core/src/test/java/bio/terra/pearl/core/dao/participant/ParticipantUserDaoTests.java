@@ -2,15 +2,14 @@ package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
-import bio.terra.pearl.core.factory.ProfileFactory;
+import bio.terra.pearl.core.factory.participant.ProfileFactory;
 import bio.terra.pearl.core.model.Environment;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class ParticipantUserDaoTests extends BaseSpringBootTest {
     @Autowired

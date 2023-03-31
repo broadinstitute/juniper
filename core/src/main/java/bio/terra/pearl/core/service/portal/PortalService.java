@@ -101,6 +101,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         siteContentService.deleteByPortalId(portalId);
         emailTemplateService.deleteByPortalId(portalId);
         siteImageService.deleteByPortalShortcode(portal.getShortcode());
+        portalAdminUserDao.deleteByPortalId(portalId);
         dao.delete(portalId);
     }
 
@@ -108,8 +109,8 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         return dao.findOneByShortcode(shortcode);
     }
 
-    public Optional<Portal> findOneByShortcodeFullLoad(String shortcode, String language) {
-        return dao.findOneByShortcodeFullLoad(shortcode, language);
+    public Portal fullLoad(Portal portal, String language) {
+        return dao.fullLoad(portal, language);
     }
 
     /** loads a portal environment with everything needed to render the participant-facing site */
@@ -131,25 +132,28 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         return portalOpt;
     }
 
-    public List<Portal> findByAdminUserId(UUID userId) {
-        return dao.findByAdminUserId(userId);
+    public List<Portal> findByAdminUser(AdminUser user) {
+        if (user.isSuperuser()) {
+            return dao.findAll();
+        }
+        return dao.findByAdminUserId(user.getId());
     }
 
+    /** this will throw permission denied even if the portal doesn't exist, to avoid leaking information */
     public Portal authAdminToPortal(AdminUser user, String portalShortcode) {
         Optional<Portal> portalOpt = findOneByShortcode(portalShortcode);
-        if (portalOpt.isEmpty()) {
-            throw new NotFoundException("Portal not found: %s".formatted(portalShortcode));
-        }
-        Portal portal = portalOpt.get();
-        if (checkAdminIsInPortal(user, portal.getId())) {
-            return portal;
+        if (portalOpt.isPresent()) {
+            Portal portal = portalOpt.get();
+            if (checkAdminIsInPortal(user, portal.getId())) {
+                return portal;
+            }
         }
         throw new PermissionDeniedException("User %s does not have permissions on portal %s"
                 .formatted(user.getUsername(), portalShortcode));
     }
 
     public boolean checkAdminIsInPortal(AdminUser user, UUID portalId) {
-        return user.getSuperuser() || portalAdminUserDao.isUserInPortal(user.getId(), portalId);
+        return user.isSuperuser() || portalAdminUserDao.isUserInPortal(user.getId(), portalId);
     }
 
     /**

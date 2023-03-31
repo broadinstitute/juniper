@@ -15,6 +15,7 @@ public class SurveyFactory {
         String randString = RandomStringUtils.randomAlphabetic(3);
         return Survey.builder().version(1)
                 .stableId(testName + "_" + randString)
+                .content("{\"pages\":[]}")
                 .name("Name " + randString + " survey");
     }
 

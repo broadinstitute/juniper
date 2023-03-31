@@ -45,7 +45,7 @@ public class SurveyResponseController implements SurveyResponseApi {
       String stableId,
       Integer version,
       UUID taskId) {
-    ParticipantUser user = requestUtilService.userFromRequest(request);
+    ParticipantUser user = requestUtilService.requireUser(request);
     StudyEnvironment studyEnv = requestUtilService.getStudyEnv(studyShortcode, envName);
     SurveyWithResponse result =
         surveyResponseService.findWithActiveResponse(
@@ -63,7 +63,7 @@ public class SurveyResponseController implements SurveyResponseApi {
       Integer version,
       UUID taskId,
       Object body) {
-    ParticipantUser user = requestUtilService.userFromRequest(request);
+    ParticipantUser user = requestUtilService.requireUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     PortalWithPortalUser portalWithPortalUser =
         requestUtilService.authParticipantToPortal(user.getId(), portalShortcode, environmentName);

@@ -1,5 +1,6 @@
-package bio.terra.pearl.core.factory;
+package bio.terra.pearl.core.factory.portal;
 
+import bio.terra.pearl.core.factory.EnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;

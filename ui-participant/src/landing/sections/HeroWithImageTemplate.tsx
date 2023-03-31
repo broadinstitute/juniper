@@ -109,9 +109,9 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
           )}
         >
           {!!title && (
-            <h1 className="fs-1 fw-normal lh-sm">
+            <h2 className="fs-1 fw-normal lh-sm">
               <ReactMarkdown>{title}</ReactMarkdown>
-            </h1>
+            </h2>
           )}
           {!!blurb && (
             <div className="fs-4">

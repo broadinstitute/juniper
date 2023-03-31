@@ -50,7 +50,7 @@ public class CurrentUnauthedUserController implements CurrentUnauthedUserApi {
      * this currently does a global login. That may change as we determine how portals interact with
      * each other and how we whitelabel.
      */
-    String token = requestUtilService.tokenFromRequest(request);
+    String token = requestUtilService.requireToken(request);
     var environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     // for now, log them in as long as the username exists
     Optional<CurrentUserService.UserWithEnrollees> userOpt =

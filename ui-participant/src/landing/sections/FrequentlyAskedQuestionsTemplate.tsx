@@ -74,7 +74,7 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
   return <div id={anchorRef} className="row mx-0 justify-content-center" style={getSectionStyle(config)}>
     <div className="col-12 col-sm-8 col-lg-6">
       {!!title && (
-        <h1 className="fs-1 fw-normal lh-sm mt-5 mb-4 text-center">{title}</h1>
+        <h2 className="fs-1 fw-normal lh-sm mt-5 mb-4 text-center">{title}</h2>
       )}
       {!!blurb && (
         <div className="fs-4 mb-4 text-center">

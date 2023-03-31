@@ -54,6 +54,12 @@ databaseChangeLog:
       file: changesets/2023_03_22_add_sex_to_profile.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2023_03_23_question_definition.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2023_03_24_mailing_list.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2023_03_29_portal_publishing.yaml
       relativeToChangelogFile: true
 

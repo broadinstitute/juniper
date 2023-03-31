@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service.consent;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.factory.AdminUserFactory;
+import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.consent.ConsentFormFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.consent.ConsentForm;

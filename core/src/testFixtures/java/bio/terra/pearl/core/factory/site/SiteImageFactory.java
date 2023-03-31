@@ -1,6 +1,6 @@
 package bio.terra.pearl.core.factory.site;
 
-import bio.terra.pearl.core.factory.PortalFactory;
+import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.site.SiteImage;
 import org.apache.commons.lang3.RandomStringUtils;

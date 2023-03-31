@@ -225,6 +225,12 @@ export type Config = {
   b2cClientId: string
 }
 
+export type MailingListContact = {
+  name: string,
+  email: string,
+  createdAt: number
+}
+
 let bearerToken: string | null = null
 export const API_ROOT = process.env.REACT_APP_API_ROOT
 const participantRootPath = process.env.REACT_APP_PARTICIPANT_APP_ROOT
@@ -391,7 +397,7 @@ export default {
 
   async testNotification(portalShortcode: string, envName: string,
     notificationConfigId: string, enrolleeRuleData: object): Promise<NotificationConfig> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}/notificationConfigs/${notificationConfigId}`
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/notificationConfigs/${notificationConfigId}`
       + `/test`
 
     const response = await fetch(url, {
@@ -399,6 +405,12 @@ export default {
       headers: this.getInitHeaders(),
       body: JSON.stringify(enrolleeRuleData)
     })
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchMailingList(portalShortcode: string, envName: string): Promise<MailingListContact[]> {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList`
+    const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
@@ -410,6 +422,11 @@ export default {
   setBearerToken(token: string | null) {
     bearerToken = token
   }
+}
+
+/** base api path for study-scoped api requests */
+function basePortalEnvUrl(portalShortcode: string, envName: string) {
+  return `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}`
 }
 
 /** base api path for study-scoped api requests */

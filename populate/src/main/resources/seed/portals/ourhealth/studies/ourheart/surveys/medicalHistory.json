@@ -975,7 +975,7 @@
           "visibleIf": "{oh_oh_medHx_endocrineDiagnosedConditions} contains 'otherHormoneEndocrineCondition'",
           "elements": [
             {
-              "name": "oh_oh_medHx_otherHormoneEndocrineConditionInTreatment",
+              "name": "oh_oh_medHx_otherHormoneEndocrineConditionDescription",
               "type": "text",
               "title": "What is the other hormone/endocrine condition?"
             },

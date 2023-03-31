@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.factory;
+package bio.terra.pearl.core.factory.portal;
 
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.portal.PortalService;

@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.factory;
 
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
+import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
