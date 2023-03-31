@@ -89,6 +89,9 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
                 .findFirst().get();
         checkOurhealthSurveys(jonas);
         checkOurhealthSiteContent(portal.getId());
+
+        // now check that we can populate it again, to make sure we don't have deletion issues
+        portalPopulator.populate(new FilePopulateContext("portals/ourhealth/portal.json"));
     }
 
     private void checkOurhealthSurveys(Enrollee jonas) throws IOException {

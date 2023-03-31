@@ -25,19 +25,22 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
     private ParticipantUserService participantUserService;
     private PreregistrationResponseDao preregistrationResponseDao;
     private NotificationConfigService notificationConfigService;
+    private MailingListContactService mailingListContactService;
 
     public PortalEnvironmentService(PortalEnvironmentDao portalEnvironmentDao,
                                     PortalEnvironmentConfigService portalEnvironmentConfigService,
                                     PortalParticipantUserService portalParticipantUserService,
                                     ParticipantUserService participantUserService,
                                     PreregistrationResponseDao preregistrationResponseDao,
-                                    NotificationConfigService notificationConfigService) {
+                                    NotificationConfigService notificationConfigService,
+                                    MailingListContactService mailingListContactService) {
         super(portalEnvironmentDao);
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.participantUserService = participantUserService;
         this.preregistrationResponseDao = preregistrationResponseDao;
         this.notificationConfigService = notificationConfigService;
+        this.mailingListContactService = mailingListContactService;
     }
 
     public List<PortalEnvironment> findByPortal(UUID portalId) {
@@ -92,6 +95,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
             participantUserService.deleteOrphans(participantUserIds, cascades);
         }
         notificationConfigService.deleteByPortalEnvironmentId(id);
+        mailingListContactService.deleteByPortalEnvId(id);
         dao.delete(id);
         portalEnvironmentConfigService.delete(envConfigId, cascades);
     }
