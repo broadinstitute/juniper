@@ -85,11 +85,11 @@ public class DataRepoDao {
     }
 
     //TDR API objects
-    public RepositoryApi getRepositoryApi() { return new RepositoryApi(getApiClient()); }
-    public JobsApi getJobsApi() { return new JobsApi(getApiClient()); }
-    public UnauthenticatedApi getUnauthenticatedApi() { return new UnauthenticatedApi(getApiClient()); }
+    private RepositoryApi getRepositoryApi() { return new RepositoryApi(getApiClient()); }
+    private JobsApi getJobsApi() { return new JobsApi(getApiClient()); }
+    private UnauthenticatedApi getUnauthenticatedApi() { return new UnauthenticatedApi(getApiClient()); }
 
-    public ApiClient getApiClient() {
+    private ApiClient getApiClient() {
         ApiClient dataRepoClient = new ApiClient();
         GoogleCredentials serviceAccountCreds = GoogleServiceAccountUtils.parseCredentials(env.getProperty("env.tdr.pathToCreds"));
         AccessToken token = GoogleServiceAccountUtils.getServiceAccountToken(serviceAccountCreds);
