@@ -157,7 +157,7 @@ function set_subscription() {
 # Ensure the calling user has the correct entry for the cluster in their kube config and/or switch the current kube context to point to that cluster
 function set_cluster() {
     # If already set to the correct cluster, will overwrite
-    local -r -a set_cluster_cmd=(az aks get-credentials --resource-group "${rg}" --name "${cluster}" --overwrite-existing)
+    local -r -a set_cluster_cmd=(az aks get-credentials --resource-group "${rg}" --name "${cluster}" --overwrite-existing --admin)
     log_info "setting azure cluster to resorce group ${rg} and cluster: ${cluster}"
     if ! "${set_cluster_cmd[@]}" ;
     then
