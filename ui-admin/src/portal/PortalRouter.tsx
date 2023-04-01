@@ -48,10 +48,11 @@ function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT
 }
 
 /** gets absolute path to the portal mailing list page */
-export function mailingListPath(portalShortcode: string, envName: string) {
+export const mailingListPath = (portalShortcode: string, envName: string) => {
   return `/${portalShortcode}/env/${envName}/mailingList`
 }
 
-export function portalEnvDiffPath(portalShortcode: string, destEnvName: string, sourceEnvName: string) {
+/** absolute path for the environment diff page */
+export const portalEnvDiffPath = (portalShortcode: string, destEnvName: string, sourceEnvName: string) => {
   return `/${portalShortcode}/env/${destEnvName}/diff/${sourceEnvName}`
 }

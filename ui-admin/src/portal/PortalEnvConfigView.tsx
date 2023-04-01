@@ -1,7 +1,6 @@
 import React from 'react'
 import { Portal, PortalEnvironment, Study } from '../api/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit } from '@fortawesome/free-solid-svg-icons'
 import { Link } from 'react-router-dom'
 import { mailingListPath } from './PortalRouter'
 import PortalEnvPublishControl from './publish/PortalEnvPublishControl'
@@ -23,7 +22,7 @@ export default function PortalEnvConfigView({ portal, portalEnv }:
   return <div className="bg-white p-3 mb-2">
     <div className="d-flex align-items-baseline">
       <h3 className="h5 text-capitalize me-4">{envIcon} {portalEnv.environmentName}</h3>
-      <PortalEnvPublishControl portal={portal} publishFunc={(s, d) => s} destEnv={portalEnv}/>
+      <PortalEnvPublishControl portal={portal} destEnv={portalEnv}/>
     </div>
 
     <div className="ms-4 mt-3">

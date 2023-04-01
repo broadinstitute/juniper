@@ -1,5 +1,4 @@
-import { Portal, PortalEnvironment, Study, StudyEnvironment } from '../../api/api'
-import Modal from 'react-bootstrap/Modal'
+import { Portal, PortalEnvironment } from 'api/api'
 import React, { useState } from 'react'
 import Select from 'react-select'
 import { portalEnvDiffPath } from '../PortalRouter'
@@ -14,9 +13,7 @@ const ALLOWED_COPY_FLOWS: Record<string, string[]> = {
 }
 
 /** modal allowing a user to copy one environment's configs over to another */
-function PortalEnvPublishControl({ destEnv, portal, publishFunc }: {destEnv: PortalEnvironment,
-  publishFunc: (source: string, dest: string) => void, portal: Portal}) {
-  const [showModal, setShowModal] = useState(false)
+const PortalEnvPublishControl = ({ destEnv, portal }: {destEnv: PortalEnvironment, portal: Portal}) => {
   const destEnvName = destEnv.environmentName
 
   const initializedEnvironmentNames = getInitializedEnvironmentNames(portal)
@@ -51,7 +48,7 @@ function PortalEnvPublishControl({ destEnv, portal, publishFunc }: {destEnv: Por
 }
 
 /** gets the environments that have been initialized based on their config */
-function getInitializedEnvironmentNames(portal: Portal): string[] {
+const getInitializedEnvironmentNames = (portal: Portal): string[] => {
   return portal.portalEnvironments.filter(env => env.portalEnvironmentConfig.initialized)
     .map(env => env.environmentName)
 }
