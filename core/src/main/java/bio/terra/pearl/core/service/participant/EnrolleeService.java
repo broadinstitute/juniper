@@ -74,6 +74,9 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.findOneByShortcode(shortcode);
     }
 
+    public Optional<Enrollee> findByEnrolleeId(UUID participantUserId, String enrolleeShortcode) {
+        return dao.findByEnrolleeId(participantUserId, enrolleeShortcode);
+    }
     public List<Enrollee> findByPortalParticipantUser(PortalParticipantUser ppUser) {
         return dao.findByProfileId(ppUser.getProfileId());
     }
@@ -87,17 +90,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.loadForAdminView(enrollee);
     }
 
-    /** returns the enrollee if the user is authorized to access/modify it, throws an error otherwise */
-    public Enrollee authParticipantUserToEnrollee(UUID participantUserId, UUID enrolleeId) {
-        // for now, a user is only allowed to access an enrollee if it's themself.  Later, we'll add proxies
-        return dao.findByEnrolleeId(participantUserId, enrolleeId).get();
-    }
-
-    /** returns the enrollee if the user is authorized to access/modify it, throws an error otherwise */
-    public Enrollee authParticipantUserToEnrollee(UUID participantUserId, String enrolleeShortcode) {
-        // for now, a user is only allowed to access an enrollee if it's themself.  Later, we'll add proxies
-        return dao.findByEnrolleeId(participantUserId, enrolleeShortcode).get();
-    }
 
     /** returns the enrollee if the user is authorized to access/modify it, throws an error otherwise */
     public Enrollee authAdminUserToEnrollee(AdminUser user, String enrolleeShortcode) {

@@ -5,12 +5,9 @@ import bio.terra.common.iam.BearerTokenFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.service.portal.PortalService;
-import bio.terra.pearl.core.service.portal.PortalWithPortalUser;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import com.auth0.jwt.JWT;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
@@ -21,19 +18,16 @@ public class RequestUtilService {
   private BearerTokenFactory bearerTokenFactory;
   private CurrentUserService currentUserService;
   private StudyEnvironmentService studyEnvironmentService;
-  private PortalService portalService;
 
   public static final Pattern ENVIRONMENT_NAME_PATTERN = Pattern.compile("\\/env\\/([a-zA-Z]+)\\/");
 
   public RequestUtilService(
       BearerTokenFactory bearerTokenFactory,
       CurrentUserService currentUserService,
-      StudyEnvironmentService studyEnvironmentService,
-      PortalService portalService) {
+      StudyEnvironmentService studyEnvironmentService) {
     this.bearerTokenFactory = bearerTokenFactory;
     this.currentUserService = currentUserService;
     this.studyEnvironmentService = studyEnvironmentService;
-    this.portalService = portalService;
   }
 
   /** gets the user from the request, throwing an exception if not present */
@@ -65,11 +59,6 @@ public class RequestUtilService {
     Matcher matcher = ENVIRONMENT_NAME_PATTERN.matcher(request.getRequestURI());
     matcher.find();
     return EnvironmentName.valueOfCaseInsensitive(matcher.group(1));
-  }
-
-  public PortalWithPortalUser authParticipantToPortal(
-      UUID participantId, String portalShortcode, EnvironmentName envName) {
-    return portalService.authParticipantToPortal(participantId, portalShortcode, envName);
   }
 
   public String requireToken(HttpServletRequest request) {

@@ -2,16 +2,12 @@ package bio.terra.pearl.api.participant.controller.survey;
 
 import bio.terra.pearl.api.participant.api.SurveyResponseApi;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
+import bio.terra.pearl.api.participant.service.SurveyResponseExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.survey.ResponseData;
 import bio.terra.pearl.core.model.survey.ResponseSnapshotDto;
 import bio.terra.pearl.core.model.survey.SurveyWithResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
-import bio.terra.pearl.core.service.portal.PortalWithPortalUser;
-import bio.terra.pearl.core.service.survey.SurveyResponseService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -20,17 +16,17 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class SurveyResponseController implements SurveyResponseApi {
-  private SurveyResponseService surveyResponseService;
+  private SurveyResponseExtService surveyResponseExtService;
   private HttpServletRequest request;
   private RequestUtilService requestUtilService;
   private ObjectMapper objectMapper;
 
   public SurveyResponseController(
-      SurveyResponseService surveyResponseService,
+      SurveyResponseExtService surveyResponseExtService,
       HttpServletRequest request,
       RequestUtilService requestUtilService,
       ObjectMapper objectMapper) {
-    this.surveyResponseService = surveyResponseService;
+    this.surveyResponseExtService = surveyResponseExtService;
     this.request = request;
     this.requestUtilService = requestUtilService;
     this.objectMapper = objectMapper;
@@ -46,10 +42,9 @@ public class SurveyResponseController implements SurveyResponseApi {
       Integer version,
       UUID taskId) {
     ParticipantUser user = requestUtilService.requireUser(request);
-    StudyEnvironment studyEnv = requestUtilService.getStudyEnv(studyShortcode, envName);
     SurveyWithResponse result =
-        surveyResponseService.findWithActiveResponse(
-            studyEnv.getId(), stableId, version, enrolleeShortcode, user.getId(), taskId);
+        surveyResponseExtService.findOrCreateWithActiveResponse(
+            studyShortcode, envName, stableId, version, enrolleeShortcode, user.getId(), taskId);
     return ResponseEntity.ok(result);
   }
 
@@ -65,27 +60,10 @@ public class SurveyResponseController implements SurveyResponseApi {
       Object body) {
     ParticipantUser user = requestUtilService.requireUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    PortalWithPortalUser portalWithPortalUser =
-        requestUtilService.authParticipantToPortal(user.getId(), portalShortcode, environmentName);
-    ResponseSnapshotDto response = objectMapper.convertValue(body, ResponseSnapshotDto.class);
-    processResponseSnapshotDto(response);
-    HubResponse result =
-        surveyResponseService.submitResponse(
-            user.getId(), portalWithPortalUser.ppUser(), enrolleeShortcode, taskId, response);
-    return ResponseEntity.ok(result);
-  }
-
-  /** the frontend might pass either parsed or string data back, handle either case */
-  public void processResponseSnapshotDto(ResponseSnapshotDto response) {
-    try {
-      if (response.getFullData() == null && response.getParsedData() != null) {
-        response.setFullData(objectMapper.writeValueAsString(response.getParsedData()));
-      }
-      if (response.getParsedData() == null && response.getFullData() != null) {
-        response.setParsedData(objectMapper.readValue(response.getFullData(), ResponseData.class));
-      }
-    } catch (JsonProcessingException jpe) {
-      throw new IllegalArgumentException("Could not process response:", jpe);
-    }
+    ResponseSnapshotDto responseDto = objectMapper.convertValue(body, ResponseSnapshotDto.class);
+    HubResponse hubResponse =
+        surveyResponseExtService.submitResponse(
+            user, portalShortcode, environmentName, responseDto, enrolleeShortcode, taskId);
+    return ResponseEntity.ok(hubResponse);
   }
 }

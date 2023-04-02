@@ -105,7 +105,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                         .fullData("{\"foo\": 1}")
                         .build();
         consentResponseService.submitResponse(userBundle.user().getId(), userBundle.ppUser(),
-            enrollee.getShortcode(), consentTask.getId(),  responseDto);
+            enrollee, consentTask.getId(),  responseDto);
 
         Enrollee refreshedEnrollee = enrolleeService.find(enrollee.getId()).get();
         assertThat(refreshedEnrollee.isConsented(), equalTo(true));
@@ -123,7 +123,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                         .resumeData("stuff")
                         .build();
         hubResponse = surveyResponseService.submitResponse(userBundle.user().getId(), userBundle.ppUser(),
-                enrollee.getShortcode(), surveyTasks.get(0).getId(), snapDto);
+                enrollee, surveyTasks.get(0).getId(), snapDto);
         List<ParticipantTask> updatedTasks = participantTaskService.findByEnrolleeId(enrollee.getId());
         assertThat(updatedTasks, containsInAnyOrder(hubResponse.getTasks().toArray()));
         List<ParticipantTask>  updateSurveyTasks = updatedTasks.stream().filter(task -> task.getTaskType().equals(TaskType.SURVEY)).toList();

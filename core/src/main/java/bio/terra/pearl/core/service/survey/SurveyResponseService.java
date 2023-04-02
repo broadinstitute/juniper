@@ -82,21 +82,14 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     /**
      * will load the survey and the  surveyResponse associated with the task,
      * or the most recent survey response, with the lastSnapshot attached.
-     * @param taskId (optional) a task associated with this retrieval -- will be used to help identify a
-     *               specific response in cases where the enrollee has multiple responses
      */
     public SurveyWithResponse findWithActiveResponse(UUID studyEnvId, String stableId, Integer version,
-                                                     String enrolleeShortcode, UUID participantUserId, UUID taskId) {
-        Enrollee enrollee = enrolleeService.findOneByShortcode(enrolleeShortcode).get();
-        enrolleeService.authParticipantUserToEnrollee(participantUserId, enrollee.getId());
+                                                     Enrollee enrollee, UUID participantUserId, ParticipantTask task) {
         Survey form = surveyService.findByStableId(stableId, version).get();
         SurveyResponse lastResponse = null;
-        if (taskId != null) {
+        if (task != null && task.getSurveyResponseId() != null) {
             // if there is an associated task, try to find an associated response
-            Optional<ParticipantTask> attachedTask = participantTaskService.find(taskId);
-            if (attachedTask.isPresent() && attachedTask.get().getSurveyResponseId() != null) {
-                lastResponse = dao.findOneWithLastSnapshot(attachedTask.get().getSurveyResponseId()).orElse(null);
-            }
+            lastResponse = dao.findOneWithLastSnapshot(task.getSurveyResponseId()).orElse(null);
         }
         if (lastResponse == null) {
             // if there's no response already associated with the task, grab the most recently created
@@ -116,14 +109,31 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     }
 
     /**
+     * will load the survey an an existing or new surveyResponse associated with the task, with a lastSnapshot attached.
+     * A task is required -- if we eventually want to allow participants to take surveys without having a prior
+     * assigned task, we should create tasks ad-hoc, so we still have the task object for bookkeeping.
+     */
+    @Transactional
+    public SurveyWithResponse findOrCreateWithActiveResponse(UUID studyEnvId, String stableId, Integer version,
+                                                     Enrollee enrollee, UUID participantUserId, UUID taskId) {
+        ParticipantTask task = participantTaskService.find(taskId).get();
+        var surveyWithResponse = findWithActiveResponse(studyEnvId, stableId, version, enrollee,
+                participantUserId, task);
+        if (surveyWithResponse.surveyResponse() == null) {
+            return new SurveyWithResponse(surveyWithResponse.studyEnvironmentSurvey(),
+                    createSnapshot(new ResponseSnapshotDto(), task, enrollee, participantUserId));
+        }
+        return surveyWithResponse;
+    }
+
+    /**
      * Creates a survey response and fires appropriate downstream events. 
      */
     @Transactional
     public HubResponse<ConsentResponse> submitResponse(UUID participantUserId, PortalParticipantUser ppUser,
-                                                       String enrolleeShortcode, UUID taskId,
+                                                       Enrollee enrollee, UUID taskId,
                                                        ResponseSnapshotDto snapDto) {
 
-        Enrollee enrollee = enrolleeService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
         ParticipantTask task = participantTaskService.authTaskToPortalParticipantUser(taskId, ppUser.getId()).get();
         Survey survey = surveyService.findByStableIdWithMappings(task.getTargetStableId(),
                 task.getTargetAssignedVersion()).get();

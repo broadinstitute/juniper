@@ -62,7 +62,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 .build());
 
         SurveyWithResponse survWithResponse = surveyResponseService.findWithActiveResponse(enrollee.getStudyEnvironmentId(),
-                survey.getStableId(), survey.getVersion(), enrollee.getShortcode(),
+                survey.getStableId(), survey.getVersion(), enrollee,
                 enrollee.getParticipantUserId(), null);
         assertThat(survWithResponse, notNullValue());
         assertThat(survWithResponse.surveyResponse(), notNullValue());

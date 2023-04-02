@@ -223,7 +223,7 @@ public class EnrolleePopulator extends Populator<Enrollee, StudyPopulateContext>
                     task.getTargetStableId().equals(consentForm.getStableId())).findFirst().orElse(null);
 
             HubResponse<ConsentResponse> hubResponse = consentResponseService.submitResponse(enrollee.getParticipantUserId(),
-                    ppUser, enrollee.getShortcode(), matchingTask.getId(), responseDto);
+                    ppUser, enrollee, matchingTask.getId(), responseDto);
             savedResponse = hubResponse.getResponse();
         } else {
             ConsentResponse response = ConsentResponse.builder()
