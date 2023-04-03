@@ -11,8 +11,8 @@ const aadb2cPolicyName = process.env.REACT_APP_B2C_POLICY_NAME ? process.env.REA
 
 // TODO: This is a modified copy of code from Terra UI. It could use some clean-up.
 export const getOidcConfig = (
-  b2cTenantName: string = aadB2cName, 
-  b2cClientId: string = aadb2cClientId, 
+  b2cTenantName: string = aadB2cName,
+  b2cClientId: string = aadb2cClientId,
   b2cPolicyName: string = aadb2cPolicyName) => {
   const metadata = {
     // eslint-disable-next-line camelcase, max-len
