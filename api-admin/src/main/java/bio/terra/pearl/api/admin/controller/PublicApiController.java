@@ -80,6 +80,7 @@ public class PublicApiController implements PublicApi {
   private Map<String, String> buildConfigMap() {
     return Map.of(
         "b2cTenantName", b2CConfiguration.tenantName(),
-        "b2cClientId", b2CConfiguration.clientId());
+        "b2cClientId", b2CConfiguration.clientId(),
+        "b2cPolicyName", b2CConfiguration.policyName());
   }
 }

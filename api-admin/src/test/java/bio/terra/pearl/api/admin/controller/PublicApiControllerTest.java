@@ -84,13 +84,16 @@ class PublicApiControllerTest {
   void testGetConfig() throws Exception {
     var tenantName = "test-tenant";
     var clientId = "1234-567-890";
+    var policyName = "B2C_1A_DDP_ADMIN_SIGNUP_SIGNIN";
     when(b2CConfiguration.tenantName()).thenReturn(tenantName);
     when(b2CConfiguration.clientId()).thenReturn(clientId);
+    when(b2CConfiguration.policyName()).thenReturn(policyName);
 
     this.mockMvc
         .perform(get("/config"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.b2cTenantName").value(tenantName))
-        .andExpect(jsonPath("$.b2cClientId").value(clientId));
+        .andExpect(jsonPath("$.b2cClientId").value(clientId))
+        .andExpect(jsonPath("$.b2cPolicyName").value(policyName));
   }
 }

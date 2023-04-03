@@ -7,19 +7,23 @@ import { WebStorageStateStore } from 'oidc-client-ts'
  */
 const aadB2cName = process.env.REACT_APP_B2C_TENANT_NAME ? process.env.REACT_APP_B2C_TENANT_NAME : 'NAME_NEEDED'
 const aadb2cClientId = process.env.REACT_APP_B2C_CLIENT_ID  ? process.env.REACT_APP_B2C_CLIENT_ID : 'ID_NEEDED'
+const aadb2cPolicyName = process.env.REACT_APP_B2C_POLICY_NAME ? process.env.REACT_APP_B2C_POLICY_NAME : 'POLICY_NEEDED'
 
 // TODO: This is a modified copy of code from Terra UI. It could use some clean-up.
-export const getOidcConfig = (b2cTenantName: string = aadB2cName, b2cClientId: string = aadb2cClientId) => {
+export const getOidcConfig = (
+  b2cTenantName: string = aadB2cName, 
+  b2cClientId: string = aadb2cClientId, 
+  b2cPolicyName: string = aadb2cPolicyName) => {
   const metadata = {
     // eslint-disable-next-line camelcase, max-len
-    authorization_endpoint: `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/B2C_1A_ddp_admin_signup_signin_dev/oauth2/v2.0/authorize`,
+    authorization_endpoint: `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/${b2cPolicyName}/oauth2/v2.0/authorize`,
     // eslint-disable-next-line camelcase, max-len
-    token_endpoint: `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/B2C_1A_ddp_admin_signup_signin_dev/oauth2/v2.0/token`
+    token_endpoint: `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/${b2cPolicyName}/oauth2/v2.0/token`
   }
 
   return {
     // eslint-disable-next-line max-len
-    authority: `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/B2C_1A_ddp_admin_signup_signin_dev`,
+    authority: `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/${b2cPolicyName}`,
     // eslint-disable-next-line camelcase
     client_id: b2cClientId,
     // eslint-disable-next-line camelcase
