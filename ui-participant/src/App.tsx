@@ -1,8 +1,8 @@
 import { cssVar, parseToRgb, tint } from 'polished'
-import React, { CSSProperties } from 'react'
+import React, { CSSProperties, useEffect } from 'react'
 
 import LandingPage from 'landing/LandingPage'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { isInternalLink, NavbarItemInternal } from 'api/api'
 import HtmlPageView from 'landing/sections/HtmlPageView'
@@ -46,6 +46,15 @@ const brandStyles = (config: BrandConfiguration = {}): CSSProperties => {
   } as CSSProperties
 }
 
+const ScrollToTop = () => {
+  const location = useLocation()
+  useEffect(() => {
+    // @ts-expect-error TS thinks "instant" isn't a valid scroll behavior.
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [location.pathname])
+  return null
+}
+
 /**
  * root app -- handles dynamically creating all the routes based on the siteContent
  */
@@ -81,6 +90,7 @@ function App() {
           style={brandStyles(brandConfig)}
         >
           <BrowserRouter>
+            <ScrollToTop />
             <ConfigProvider>
               <ConfigConsumer>
                 {config =>
