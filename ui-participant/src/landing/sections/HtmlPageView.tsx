@@ -46,7 +46,7 @@ export default function HtmlPageView({ page }: { page: HtmlPage }) {
     {
       _.map(page.sections, (section: HtmlSection) => <HtmlSectionView section={section} key={section.id}/>)
     }
-    <MailingListModal id={mailingListModalId} />
+    {(page.sections || []).length > 0 && <MailingListModal id={mailingListModalId} />}
   </>
 }
 
