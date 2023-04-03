@@ -60,7 +60,7 @@ function SocialMediaTemplate(props: SocialMediaTemplateProps) {
   } = config
 
   return (
-    <div id={anchorRef} className="row py-5" style={getSectionStyle(config)}>
+    <div id={anchorRef} className="row mx-0 py-5" style={getSectionStyle(config)}>
       <div className="hstack justify-content-center gap-2">
         {twitterHandle && (
           <SocialMediaLink
