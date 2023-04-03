@@ -5,8 +5,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope } from '@fortawesome/free-regular-svg-icons'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 
+type MailingListFormProps = {
+  onJoin?: () => void
+}
+
 /** shows a form for entering name and email to join the portal mailing list */
-export default function MailingListForm() {
+export default function MailingListForm(props: MailingListFormProps) {
+  const { onJoin } = props
+
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [joined, setJoined] = useState(false)
@@ -17,6 +23,7 @@ export default function MailingListForm() {
     e.preventDefault()
     Api.submitMailingListContact(name, email).then(() => {
       setJoined(true)
+      onJoin?.()
     }).catch((e: Error) => {
       alert(`an error occured ${e.message}`)
     })

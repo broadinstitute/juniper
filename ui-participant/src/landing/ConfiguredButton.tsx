@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 
 import { requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 
+import { MailingListButton } from './MailingListButton'
+
 type JoinButtonConfig = {
   type: 'join'
   studyShortcode: string
@@ -65,7 +67,11 @@ export default function ConfiguredButton({ config, className }: ConfiguredButton
     const to = config.studyShortcode ? `/studies/${config.studyShortcode}/join` : '/join'
     return <Link to={to} className={classNames(className, 'btn', 'btn-primary')}>{config.text}</Link>
   } else if (config.type === 'mailingList') {
-    return <button className={classNames(className, 'btn', 'btn-outline-primary')}>{config.text}</button>
+    return (
+      <MailingListButton className={classNames(className, 'btn', 'btn-outline-primary')}>
+        {config.text}
+      </MailingListButton>
+    )
   } else if (config.type === 'internalLink') {
     return <Link to={config.href} className={classNames(className, 'btn', 'btn-outline-primary')}>{config.text}</Link>
   }
