@@ -158,6 +158,15 @@
       },{
         "sectionType": "HERO_CENTERED",
         "sectionConfigJson": {
+          "image": {
+            "cleanFileName": "globe_and_hearts.png",
+            "version": 1
+          },
+          "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
+        }
+      },{
+        "sectionType": "HERO_CENTERED",
+        "sectionConfigJson": {
           "title": "You can make an impact",
           "blurb": "With your help, patients can be the driving force behind transformative cardiovascular research.",
           "buttons": [{
