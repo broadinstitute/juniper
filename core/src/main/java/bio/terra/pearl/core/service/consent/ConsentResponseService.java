@@ -52,9 +52,7 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
 
 
     public ConsentWithResponses findWithResponses(UUID studyEnvId, String stableId, Integer version,
-                                                  String enrolleeShortcode, UUID participantUserId) {
-        Enrollee enrollee = enrolleeService.findOneByShortcode(enrolleeShortcode).get();
-        enrolleeService.authParticipantUserToEnrollee(participantUserId, enrollee.getId());
+                                                  Enrollee enrollee, UUID participantUserId) {
         ConsentForm form = consentFormService.findByStableId(stableId, version).get();
         // TODO we should only get the most recent response, and we should search by stableId, not form id, in
         // case they have a previous response to a different version of the form.
@@ -73,8 +71,7 @@ public class ConsentResponseService extends CrudService<ConsentResponse, Consent
      */
     @Transactional
     public HubResponse<ConsentResponse> submitResponse(UUID participantUserId, PortalParticipantUser ppUser,
-                                                       String enrolleeShortcode, UUID taskId, ConsentResponseDto responseDto) {
-        Enrollee enrollee = enrolleeService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
+                                                       Enrollee enrollee, UUID taskId, ConsentResponseDto responseDto) {
         ParticipantTask task = participantTaskService.authTaskToPortalParticipantUser(taskId, ppUser.getId()).get();
         ConsentForm responseForm = consentFormService.find(responseDto.getConsentFormId()).get();
         validateResponse(responseDto, responseForm, task);

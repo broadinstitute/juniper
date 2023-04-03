@@ -248,6 +248,28 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+    patch:
+      summary: updates a snapshot with in-progress save data
+      tags: [ surveyResponse ]
+      operationId: update
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: false, schema: { type: string } }
+        - { name: version, in: path, required: true, schema: { type: integer } }
+        - { name: taskId, in: query, required: false, schema: { type: string, format: uuid } }
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        '200':
+          description: hub response object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}/internalRegister:
     post:
       summary: Submits a registration survey

@@ -26,4 +26,8 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
     public Optional<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, UUID surveyId) {
         return dao.findBySurvey(studyEnvId, surveyId);
     }
+
+    public Optional<StudyEnvironmentSurvey> findBySurveyOrUpdate(UUID studyEnvId, UUID surveyId) {
+        return dao.findBySurvey(studyEnvId, surveyId);
+    }
 }

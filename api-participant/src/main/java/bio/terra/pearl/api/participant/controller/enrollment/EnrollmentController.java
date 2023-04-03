@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.participant.controller.enrollment;
 
 import bio.terra.pearl.api.participant.api.EnrollmentApi;
+import bio.terra.pearl.api.participant.service.AuthUtilService;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
@@ -17,14 +18,17 @@ public class EnrollmentController implements EnrollmentApi {
   private EnrollmentService enrollmentService;
   private RequestUtilService requestUtilService;
   private HttpServletRequest request;
+  private AuthUtilService authUtilService;
 
   public EnrollmentController(
       EnrollmentService enrollmentService,
       RequestUtilService requestUtilService,
-      HttpServletRequest request) {
+      HttpServletRequest request,
+      AuthUtilService authUtilService) {
     this.enrollmentService = enrollmentService;
     this.requestUtilService = requestUtilService;
     this.request = request;
+    this.authUtilService = authUtilService;
   }
 
   @Override
@@ -33,7 +37,7 @@ public class EnrollmentController implements EnrollmentApi {
     ParticipantUser user = requestUtilService.requireUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     PortalWithPortalUser portalWithPortalUser =
-        requestUtilService.authParticipantToPortal(user.getId(), portalShortcode, environmentName);
+        authUtilService.authParticipantToPortal(user.getId(), portalShortcode, environmentName);
     HubResponse hubResponse =
         enrollmentService.enroll(
             user,

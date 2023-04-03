@@ -82,22 +82,17 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
     /**
      * will load the survey and the  surveyResponse associated with the task,
      * or the most recent survey response, with the lastSnapshot attached.
-     * @param taskId (optional) a task associated with this retrieval -- will be used to help identify a
-     *               specific response in cases where the enrollee has multiple responses
      */
     public SurveyWithResponse findWithActiveResponse(UUID studyEnvId, String stableId, Integer version,
-                                                     String enrolleeShortcode, UUID participantUserId, UUID taskId) {
-        Enrollee enrollee = enrolleeService.findOneByShortcode(enrolleeShortcode).get();
-        enrolleeService.authParticipantUserToEnrollee(participantUserId, enrollee.getId());
+                                                     Enrollee enrollee, UUID taskId) {
         Survey form = surveyService.findByStableId(stableId, version).get();
         SurveyResponse lastResponse = null;
         if (taskId != null) {
+            ParticipantTask task = participantTaskService.find(taskId).get();
             // if there is an associated task, try to find an associated response
-            Optional<ParticipantTask> attachedTask = participantTaskService.find(taskId);
-            if (attachedTask.isPresent() && attachedTask.get().getSurveyResponseId() != null) {
-                lastResponse = dao.findOneWithLastSnapshot(attachedTask.get().getSurveyResponseId()).orElse(null);
-            }
+            lastResponse = dao.findOneWithLastSnapshot(task.getSurveyResponseId()).orElse(null);
         }
+
         if (lastResponse == null) {
             // if there's no response already associated with the task, grab the most recently created
             lastResponse = dao.findMostRecent(enrollee.getId(), form.getId()).orElse(null);
@@ -120,16 +115,17 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
      */
     @Transactional
     public HubResponse<ConsentResponse> submitResponse(UUID participantUserId, PortalParticipantUser ppUser,
-                                                       String enrolleeShortcode, UUID taskId,
+                                                       Enrollee enrollee, UUID taskId,
                                                        ResponseSnapshotDto snapDto) {
 
-        Enrollee enrollee = enrolleeService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
         ParticipantTask task = participantTaskService.authTaskToPortalParticipantUser(taskId, ppUser.getId()).get();
         Survey survey = surveyService.findByStableIdWithMappings(task.getTargetStableId(),
                 task.getTargetAssignedVersion()).get();
         validateResponse(survey, task, snapDto);
+
         // find or create the SurveyResponse object to attach the snapshot
-        SurveyResponse response = createSnapshot(snapDto, task, enrollee, participantUserId);
+        SurveyResponse response = findOrCreateResponse(task, enrollee, participantUserId);
+        attachSnapshot(response, snapDto, participantUserId);
 
         // process any answers that need to be propagated elsewhere to the data model
         snapshotProcessingService.processAllAnswerMappings(snapDto.getParsedData(),
@@ -152,33 +148,40 @@ public class SurveyResponseService extends CrudService<SurveyResponse, SurveyRes
      * is authorized to update the given task/enrollee, and that the task corresponds to the snapshot
      */
     @Transactional
-    protected SurveyResponse createSnapshot(ResponseSnapshotDto snapDto, ParticipantTask task,
-                                      Enrollee enrollee, UUID participantUserId) {
+    protected SurveyResponse findOrCreateResponse(ParticipantTask task, Enrollee enrollee, UUID participantUserId) {
         UUID taskResponseId = task.getSurveyResponseId();
         Survey survey = surveyService.findByStableId(task.getTargetStableId(), task.getTargetAssignedVersion()).get();
-        SurveyResponse existingResponse = null;
+        SurveyResponse response = null;
         if (taskResponseId != null) {
-            existingResponse = dao.find(taskResponseId).get();
+            response = dao.find(taskResponseId).get();
         } else {
             SurveyResponse newResponse = SurveyResponse.builder()
                     .enrolleeId(enrollee.getId())
                     .creatingParticipantUserId(participantUserId)
                     .surveyId(survey.getId())
-                    .complete(snapDto.isComplete())
+                    .complete(false)
                     .build();
-            existingResponse = dao.create(newResponse);
+            response = dao.create(newResponse);
         }
+        return response;
+    }
+
+    /** Creates and attaches the snapshot to the response.  Updates the Response with the snapshot and completion */
+    @Transactional
+    protected ResponseSnapshot attachSnapshot(SurveyResponse response, ResponseSnapshotDto snapDto, UUID participantUserId) {
         ResponseSnapshot snap = ResponseSnapshot.builder()
-                .surveyResponseId(existingResponse.getId())
+                .surveyResponseId(response.getId())
                 .creatingParticipantUserId(participantUserId)
                 .fullData(snapDto.getFullData())
                 .resumeData(snapDto.getResumeData())
                 .build();
         snap = responseSnapshotService.create(snap);
-        dao.updateLastSnapshotId(existingResponse.getId(), snap.getId());
-        existingResponse.setLastSnapshot(snap);
-        existingResponse.setLastSnapshotId(snap.getId());
-        return existingResponse;
+        dao.updateLastSnapshotId(response.getId(), snap.getId());
+        response.setLastSnapshot(snap);
+        response.setLastSnapshotId(snap.getId());
+        response.setComplete(snapDto.isComplete());
+        dao.update(response);
+        return snap;
     }
 
     @Override

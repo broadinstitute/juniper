@@ -4,7 +4,6 @@ import bio.terra.pearl.core.dao.admin.PortalAdminUserDao;
 import bio.terra.pearl.core.dao.portal.PortalDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.PortalStudy;
@@ -12,7 +11,6 @@ import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
-import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.notification.EmailTemplateService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
@@ -166,22 +164,6 @@ public class PortalService extends CrudService<Portal, PortalDao> {
             }
         }
         return false;
-    }
-
-    public PortalWithPortalUser authParticipantToPortal(UUID participantUserId, String portalShortcode,
-                                                        EnvironmentName envName) {
-        Optional<Portal> portalOpt = findOneByShortcode(portalShortcode);
-        if (portalOpt.isEmpty()) {
-            throw new NotFoundException("Portal not found: %s".formatted(portalShortcode));
-        }
-        Portal portal = portalOpt.get();
-        Optional<PortalParticipantUser> ppUser = portalParticipantUserService.findOne(participantUserId, portalShortcode,
-                envName);
-        if (ppUser.isEmpty()) {
-            throw new PermissionDeniedException("User %s does not have permissions on portal %s, env %s"
-                    .formatted(participantUserId, portalShortcode, envName));
-        }
-        return new PortalWithPortalUser(portal, ppUser.get());
     }
 
     public enum AllowedCascades implements CascadeProperty {

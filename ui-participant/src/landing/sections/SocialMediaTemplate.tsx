@@ -39,7 +39,7 @@ type SocialMediaLinkProps = {
 const SocialMediaLink = (props: SocialMediaLinkProps) => {
   const { icon, label, url } = props
   return (
-    <a className="px-2" href={url}>
+    <a className="px-2" href={url} rel="noreferrer" target="_blank">
       <span className="visually-hidden">{label}</span>
       <FontAwesomeIcon icon={icon} style={{ height: '3rem' }} />
     </a>
@@ -60,7 +60,7 @@ function SocialMediaTemplate(props: SocialMediaTemplateProps) {
   } = config
 
   return (
-    <div id={anchorRef} className="row py-5" style={getSectionStyle(config)}>
+    <div id={anchorRef} className="row mx-0 py-5" style={getSectionStyle(config)}>
       <div className="hstack justify-content-center gap-2">
         {twitterHandle && (
           <SocialMediaLink

@@ -95,7 +95,7 @@
             "blurb": "Answer survey questions about you and your health."
           },{
             "image": {"cleanFileName": "step_4.png", "version": 1, "alt": ""},
-            "duration": "25-45 minutes",
+            "duration": "5 minutes",
             "blurb": "Provide your mailing address so we can send a sample kit."
           }],
           "buttons": [
@@ -143,7 +143,8 @@
         "sectionType": "SOCIAL_MEDIA",
         "sectionConfigJson": {
           "twitterHandle": "ourhealthstudy",
-          "instagramHandle": "ourhealthstudy"
+          "instagramHandle": "ourhealthstudy",
+          "facebookHandle": "ourhealthstudy"
         }
       },{
         "sectionType": "HERO_CENTERED",
@@ -152,8 +153,17 @@
           "blurb": "Sign up for our mailing list or follow us on social media.",
           "buttons": [{
             "type": "mailingList",
-            "text": "Join Mailing LIst"
+            "text": "Join Mailing List"
           }]
+        }
+      },{
+        "sectionType": "HERO_CENTERED",
+        "sectionConfigJson": {
+          "image": {
+            "cleanFileName": "globe_and_hearts.png",
+            "version": 1
+          },
+          "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
         }
       },{
         "sectionType": "HERO_CENTERED",

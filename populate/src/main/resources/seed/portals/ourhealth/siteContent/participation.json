@@ -16,7 +16,7 @@
         "title": "Provide consent for the study",
         "timeIndication": "5 minutes",
         "stepNumberText": "STEP 1",
-        "blurb": "This section consists of several pages, but feel free to take your time.  Your progress will be automatically saved so you can come back to it later",
+        "blurb": "This section consists of several pages, but feel free to take your time.  Your progress will be automatically saved so you can come back to it later.",
         "image": { "cleanFileName": "consent_step.png", "version": 1, "alt": "" },
         "imagePosition": "right"
       }
@@ -50,7 +50,11 @@
         "blurb": "Over time, we will provide you with regular updates about the status of the research and share any discoveries that you have enabled us to make. We may also ask you additional questions about your experience to aid with future studies – we want to hear what’s important to you.",
         "image": { "cleanFileName": "engagement_step.png", "version": 1, "alt": "" },
         "imagePosition": "left",
-        "background": "#F2F2F2"
+        "background": "#F2F2F2",
+        "actionButton": {
+          "type": "mailingList",
+          "text": "Join Mailing List"
+        }
       }
     },{
       "sectionType": "HERO_CENTERED",
