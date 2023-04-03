@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useId } from 'react'
 import Api, {
   ConfigChangeRecord, ListChangeRecord,
   NotificationConfig, NotificationConfigChangeRecord,
@@ -44,15 +44,15 @@ export default function EnvironmentDiff({ portal, portalEnv }: EnvironmentDiffPr
     <LoadingSpinner isLoading={isLoading}/>
     {diffResult && <div>
       <div className="bg-white p-3 my-2">
-        <h2 className="h5">Environment config</h2>
+        <h2 className="h5"><input className="me-2" type={'checkbox'} checked={true}/> Environment config</h2>
         <ConfigChanges configChanges={diffResult.configChanges}/>
       </div>
       <div className="bg-white p-3 my-2">
-        <h2 className="h5">Site content</h2>
+        <h2 className="h5"><input className="me-2" type={'checkbox'} checked={true}/> Site content</h2>
         <VersionChangeView record={diffResult.siteContentChange}/>
       </div>
       <div className="bg-white p-3 my-2">
-        <h2 className="h5">Prereg survey
+        <h2 className="h5"><input className="me-2" type={'checkbox'} checked={true}/> Prereg survey
           <span className="fst-italic text-muted fs-6 ms-3">
             Note this is pre-registration for the Portal as a whole, not a
             particular study
@@ -61,8 +61,13 @@ export default function EnvironmentDiff({ portal, portalEnv }: EnvironmentDiffPr
         <VersionChangeView record={diffResult.preRegSurveyChanges}/>
       </div>
       <div className="bg-white p-3 my-2">
-        <h2 className="h5">Notification Configs</h2>
+        <h2 className="h5"><input className="me-2" type={'checkbox'} checked={true}/> Notification Configs</h2>
         <NotificationChangeListView configChangeList={diffResult.notificationConfigChanges}/>
+      </div>
+      <div className="d-flex justify-content-center">
+        <button className="btn btn-primary">Copy changes</button>
+        <button className="btn btn-cancel">Cancel</button>
+
       </div>
     </div>}
   </div>
@@ -74,7 +79,7 @@ export default function EnvironmentDiff({ portal, portalEnv }: EnvironmentDiffPr
  */
 const VersionChangeView = ({ record }: {record: VersionedEntityChangeRecord}) => {
   if (!record.changed) {
-    return <span className="fst-italic">no changes</span>
+    return <span className="fst-italic text-muted">no changes</span>
   }
   return <div>
     {versionDisplay(record.oldStableId, record.oldVersion)}
@@ -86,7 +91,7 @@ const VersionChangeView = ({ record }: {record: VersionedEntityChangeRecord}) =>
 /** renders a list of config changes, or "no changes" if empty */
 const ConfigChanges = ({ configChanges }: {configChanges: ConfigChangeRecord[]}) => {
   if (!configChanges.length) {
-    return <span className="fst-italic">no changes</span>
+    return <span className="fst-italic text-muted">no changes</span>
   }
   return <ul>
     {configChanges.map((configChange, index) => <li key={index}>
@@ -97,13 +102,21 @@ const ConfigChanges = ({ configChanges }: {configChanges: ConfigChangeRecord[]})
 
 /** renders a config change by converting the old and new vals to strings */
 const ConfigChangeView = ({ configChange }: {configChange: ConfigChangeRecord}) => {
-  const oldValString = configChange.oldValue ? configChange.oldValue.toString() : ''
-  const newValString = configChange.newValue ? configChange.newValue.toString() : ''
+  const noVal = <span className="text-muted fst-italic">none</span>
+  const oldVal = valuePresent(configChange.oldValue) ? configChange.oldValue.toString() : noVal
+  const newVal = valuePresent(configChange.newValue) ? configChange.newValue.toString() : noVal
+  const id = useId()
   return <div>
-    {configChange.propertyName}: {oldValString}
-    <FontAwesomeIcon icon={faArrowRight} className="mx-2"/>
-    {newValString}
+    <label htmlFor={`${id}-changes`}>{configChange.propertyName}:</label>
+    <span id={`${id}-changes`} className="ms-3">{oldVal}
+      <FontAwesomeIcon icon={faArrowRight} className="mx-2"/>
+      {newVal}
+    </span>
   </div>
+}
+
+const valuePresent = (val: object) => {
+  return val !== null && typeof val !== 'undefined'
 }
 
 /**
@@ -111,7 +124,7 @@ const ConfigChangeView = ({ configChange }: {configChange: ConfigChangeRecord}) 
  */
 const versionDisplay = (stableId: string, version: number) => {
   if (!stableId) {
-    return <span className="fst-italic text-muted">not present</span>
+    return <span className="fst-italic text-muted">none</span>
   }
   return <span>{stableId} v{version}</span>
 }
@@ -119,6 +132,10 @@ const versionDisplay = (stableId: string, version: number) => {
 /** Summary of notification config changes -- doesn't show any detail yet */
 function NotificationChangeListView({ configChangeList }:
                             {configChangeList: ListChangeRecord<NotificationConfig, NotificationConfigChangeRecord>}) {
+  if (!configChangeList.addedItems.length &&
+    !configChangeList.addedItems.length && !configChangeList.addedItems.length) {
+    return <span className="fst-italic text-muted">no changes</span>
+  }
   return <ul>
     <li>Added: {configChangeList.addedItems.length}</li>
     <li>Removed: {configChangeList.removedItems.length}</li>
