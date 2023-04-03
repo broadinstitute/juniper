@@ -95,7 +95,7 @@
             "blurb": "Answer survey questions about you and your health."
           },{
             "image": {"cleanFileName": "step_4.png", "version": 1, "alt": ""},
-            "duration": "25-45 minutes",
+            "duration": "5 minutes",
             "blurb": "Provide your mailing address so we can send a sample kit."
           }],
           "buttons": [
@@ -152,7 +152,7 @@
           "blurb": "Sign up for our mailing list or follow us on social media.",
           "buttons": [{
             "type": "mailingList",
-            "text": "Join Mailing LIst"
+            "text": "Join Mailing List"
           }]
         }
       },{
