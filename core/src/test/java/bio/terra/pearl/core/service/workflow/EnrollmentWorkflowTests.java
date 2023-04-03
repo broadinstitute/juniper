@@ -1,10 +1,10 @@
 package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.consent.ConsentFormFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
+import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponseDto;
@@ -26,6 +26,7 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
+import java.time.Instant;
 import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -130,6 +131,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         assertThat(updatedTasks, hasSize(2));
         assertThat(updateSurveyTasks, hasSize(1));
         assertThat(updateSurveyTasks.get(0).getStatus(), equalTo(TaskStatus.COMPLETE));
+        assertThat(updateSurveyTasks.get(0).getCompletedAt(), greaterThan(Instant.now().minusSeconds(20)));
         assertThat(hubResponse.getProfile(), notNullValue());
     }
 

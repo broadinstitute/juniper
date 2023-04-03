@@ -40,15 +40,6 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
         deleteByProperty("enrollee_id", enrolleeId);
     }
 
-    public ParticipantTask updateTaskStatus(UUID taskId, TaskStatus newStatus) {
-        ParticipantTask task = find(taskId).get();
-        task.setStatus(newStatus);
-        if (newStatus.isTerminalStatus()) {
-            task.setCompletedAt(Instant.now());
-        }
-        return update(task);
-    }
-
     public List<EnrolleeWithTasks> findByStatusAndTime(UUID studyEnvironmentId,
                                                        TaskType taskType,
                                                        Duration minTimeSinceCreation,
