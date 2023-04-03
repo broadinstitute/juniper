@@ -45,8 +45,8 @@ public class SurveyResponseExtService {
     Enrollee enrollee =
         authUtilService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
     StudyEnvironment studyEnv = requestUtilService.getStudyEnv(studyShortcode, envName);
-    return surveyResponseService.findOrCreateWithActiveResponse(
-        studyEnv.getId(), stableId, version, enrollee, participantUserId, taskId);
+    return surveyResponseService.findWithActiveResponse(
+        studyEnv.getId(), stableId, version, enrollee, taskId);
   }
 
   public HubResponse submitResponse(
