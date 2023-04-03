@@ -30,6 +30,22 @@
           "email": "alice@test.com"
         }
       ]
+    },{
+      "environmentName": "irb",
+      "portalEnvironmentConfig": {
+        "acceptingRegistration": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": false
+      }
+    },{
+      "environmentName": "live",
+      "portalEnvironmentConfig": {
+        "acceptingRegistration": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": false
+      }
     }
   ],
   "adminUsers": [

@@ -6,6 +6,7 @@ import { LoadedPortalContextT, PortalContext, PortalParams } from './PortalProvi
 import MailingListView from './MailingListView'
 import { NavBreadcrumb } from '../navbar/AdminNavbar'
 import PortalEnvConfigView from './PortalEnvConfigView'
+import EnvironmentDiff from './publish/EnvironmentDiff'
 
 /** controls routes for within a portal */
 export default function PortalRouter() {
@@ -38,14 +39,20 @@ function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT
     </NavBreadcrumb>
     <Routes>
       <Route path="config" element={<div>Config not implemented yet</div>}/>
+      <Route path="diff/:sourceEnvName" element={<EnvironmentDiff portal={portal} portalEnv={portalEnv}/>}/>
       <Route path="mailingList" element={<MailingListView portalContext={portalContext}
         portalEnv={portalEnv}/>}/>
-      <Route index element={<PortalEnvConfigView portalShortcode={portal.shortcode} portalEnv={portalEnv}/>}/>
+      <Route index element={<PortalEnvConfigView portal={portal} portalEnv={portalEnv}/>}/>
     </Routes>
   </>
 }
 
 /** gets absolute path to the portal mailing list page */
-export function mailingListPath(portalShortcode: string, envName: string) {
+export const mailingListPath = (portalShortcode: string, envName: string) => {
   return `/${portalShortcode}/env/${envName}/mailingList`
+}
+
+/** absolute path for the environment diff page */
+export const portalEnvDiffPath = (portalShortcode: string, destEnvName: string, sourceEnvName: string) => {
+  return `/${portalShortcode}/env/${destEnvName}/diff/${sourceEnvName}`
 }

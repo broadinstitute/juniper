@@ -89,7 +89,8 @@ export type PortalEnvironment = {
 export type PortalEnvironmentConfig = {
   acceptingRegistration: boolean,
   password: string,
-  passwordProtected: boolean
+  passwordProtected: boolean,
+  initialized: boolean
 }
 
 export type EnrolleeSearchResult = {
@@ -230,6 +231,40 @@ export type MailingListContact = {
   email: string,
   createdAt: number
 }
+
+
+export type PortalEnvironmentChangeRecord = {
+  siteContentChange: VersionedEntityChangeRecord,
+  configChanges: ConfigChangeRecord[],
+  preRegSurveyChanges: VersionedEntityChangeRecord,
+  notificationConfigChanges: ListChangeRecord<NotificationConfig, NotificationConfigChangeRecord>
+}
+
+export type VersionedEntityChangeRecord = {
+  changed: boolean,
+  oldStableId: string,
+  newStableId: string,
+  oldVersion: number,
+  newVersion: number
+}
+
+export type ConfigChangeRecord = {
+  propertyName: string,
+  oldValue: object,
+  newValue: object
+}
+
+export type ListChangeRecord<T, CT> = {
+  addedItems: T[],
+  removedItems: T[],
+  changedItems: CT[]
+}
+
+export type NotificationConfigChangeRecord = {
+  configChanges: ConfigChangeRecord[],
+  templateChange: VersionedEntityChangeRecord
+}
+
 
 let bearerToken: string | null = null
 export const API_ROOT = process.env.REACT_APP_API_ROOT
@@ -410,6 +445,13 @@ export default {
 
   async fetchMailingList(portalShortcode: string, envName: string): Promise<MailingListContact[]> {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchEnvDiff(portalShortcode: string, sourceEnvName: string, destEnvName: string):
+    Promise<PortalEnvironmentChangeRecord> {
+    const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/update/diff?sourceEnv=${sourceEnvName}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },

@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "portal_publishing"
+      author: dbush
+      changes:
+        - addUniqueConstraint:
+            tableName: portal_environment
+            constraintName: portal_environment_portal_env
+            columnNames: portal_id, environment_name
