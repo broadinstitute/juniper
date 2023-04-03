@@ -166,12 +166,12 @@ export type ConsentResponse = {
 
 export type ParticipantTask = {
   id: string,
-  completedAt: number,
+  completedAt?: number,
   status: string,
   taskType: string,
   targetName: string,
   taskOrder: number,
-  blocksHub: boolean
+  blocksHub: boolean,
 }
 
 export type NotificationConfig = {
