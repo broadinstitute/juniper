@@ -34,17 +34,8 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
                            form: ConsentForm, enrollee: Enrollee, taskId: string
                            resumableData: ResumableData | null, pager: PageNumberControl, studyShortcode: string
                          }) {
-  const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData, onComplete, pager, enrollee.profile)
-  const navigate = useNavigate()
-
-  const { updateEnrollee } = useUser()
-  if (surveyModel && resumableData) {
-    // survey responses aren't yet editable after completion
-    surveyModel.mode = 'display'
-  }
-
   /** Submit the response to the server */
-  function onComplete() {
+  const onComplete = () => {
     if (!surveyModel || !refreshSurvey) {
       return
     }
@@ -66,6 +57,14 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
     })
   }
 
+  const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData, onComplete, pager, enrollee.profile)
+  const navigate = useNavigate()
+
+  const { updateEnrollee } = useUser()
+  if (surveyModel && resumableData) {
+    // survey responses aren't yet editable after completion
+    surveyModel.mode = 'display'
+  }
 
   return <div>
     <h4 className="text-center mt-2">{form.name}</h4>
@@ -74,16 +73,13 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
 }
 
 /** handles paging the form */
-function PagedSurveyView({ form, activeResponse, enrollee, studyShortcode }:
+function PagedSurveyView({ form, activeResponse, enrollee, studyShortcode, taskId }:
                            {
                              form: StudyEnvironmentSurvey, activeResponse: SurveyResponse, enrollee: Enrollee,
-                             studyShortcode: string
+                             studyShortcode: string, taskId: string
                            }) {
-  const [searchParams] = useSearchParams()
-  const taskId = searchParams.get(TASK_ID_PARAM) ?? ''
-
   let resumableData = null
-  if (activeResponse?.lastSnapshot) {
+  if (activeResponse?.lastSnapshot?.resumeData) {
     resumableData = JSON.parse(activeResponse?.lastSnapshot.resumeData) as ResumableData
   }
 
@@ -93,7 +89,7 @@ function PagedSurveyView({ form, activeResponse, enrollee, studyShortcode }:
     resumableData={resumableData} pager={pager} studyShortcode={studyShortcode}/>
 }
 
-/** handles loading the consent form and responses from the server */
+/** handles loading the survey form and responses from the server */
 function SurveyView() {
   const { portal } = usePortalEnv()
   const { enrollees } = useUser()
@@ -102,6 +98,10 @@ function SurveyView() {
   const stableId = params.stableId
   const version = parseInt(params.version ?? '')
   const studyShortcode = params.studyShortcode
+
+  const [searchParams] = useSearchParams()
+  const taskId = searchParams.get(TASK_ID_PARAM) ?? ''
+
   if (!stableId || !version || !studyShortcode) {
     return <div>You must specify study, form, and version</div>
   }
@@ -110,17 +110,17 @@ function SurveyView() {
   useEffect(() => {
     Api.fetchSurveyAndResponse({
       studyShortcode,
-      enrolleeShortcode: enrollee.shortcode, stableId, version, taskId: null
+      enrolleeShortcode: enrollee.shortcode, stableId, version, taskId
     })
       .then(response => {
         setFormAndResponse(response)
       }).catch(() => {
-        alert('error loading consent form - please retry')
+        alert('error loading survey form - please retry')
       })
   }, [])
 
   if (!formAndResponses) {
-    return <PageLoadingIndicator />
+    return <PageLoadingIndicator/>
   }
 
   return (
@@ -129,6 +129,7 @@ function SurveyView() {
       form={formAndResponses.studyEnvironmentSurvey}
       activeResponse={formAndResponses.surveyResponse}
       studyShortcode={studyShortcode}
+      taskId={taskId}
     />
   )
 }
