@@ -17,6 +17,7 @@ import HubRouter from 'hub/HubRouter'
 import PortalPasswordGate from 'landing/PortalPasswordGate'
 import EnvironmentAlert from 'EnvironmentAlert'
 import ConfigProvider, { ConfigConsumer } from 'providers/ConfigProvider'
+import { DocumentTitle } from 'util/DocumentTitle'
 
 
 type BrandConfiguration = {
@@ -84,6 +85,7 @@ function App() {
   return (
     <>
       <EnvironmentAlert portalEnvironment={portal.portalEnvironments[0]}/>
+      <DocumentTitle />
       <PortalPasswordGate portal={portal}>
         <div
           className="App d-flex flex-column min-vh-100 bg-white"

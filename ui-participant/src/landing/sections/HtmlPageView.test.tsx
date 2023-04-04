@@ -2,9 +2,24 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import HtmlPageView, { HtmlSectionView } from './HtmlPageView'
 import { HtmlPage, HtmlSection } from 'api/api'
+import { usePortalEnv } from 'providers/PortalProvider'
+
+jest.mock('providers/PortalProvider', () => {
+  return {
+    ...jest.requireActual('providers/PortalProvider'),
+    usePortalEnv: jest.fn()
+  }
+})
 
 
 describe('HTMLPageView', () => {
+  beforeEach(() => {
+    // @ts-expect-error "TS doesn't know about mocks"
+    usePortalEnv.mockReturnValue({
+      portal: { name: 'Test portal' }
+    })
+  })
+
   it('handles trivial landing page', () => {
     const simplePage: HtmlPage = {
       sections: [],
