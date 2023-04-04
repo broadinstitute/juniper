@@ -1,6 +1,8 @@
 package bio.terra.pearl.core.model.consent;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import bio.terra.pearl.core.model.Versioned;
+import bio.terra.pearl.core.model.publishing.VersionedEntityConfig;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class StudyEnvironmentConsent extends BaseEntity {
+public class StudyEnvironmentConsent extends BaseEntity implements VersionedEntityConfig {
     private UUID studyEnvironmentId;
     private UUID consentFormId;
     private ConsentForm consentForm;
@@ -28,4 +30,9 @@ public class StudyEnvironmentConsent extends BaseEntity {
     private boolean allowParticipantStart = true; // whether this survey can be completed by participants
     @Builder.Default
     private boolean allowParticipantReedit = false; // whether participants can change answers after submission
+
+    @Override
+    public Versioned getVersionedEntity() {
+        return consentForm;
+    }
 }

@@ -1,65 +1,118 @@
 package bio.terra.pearl.core.service.publishing;
 
+import bio.terra.pearl.core.dao.publishing.PortalEnvironmentChangeRecordDao;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.publishing.*;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.site.SiteContentService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PortalPublishingService {
-    public static final List<String> BASE_IGNORE_PROPS = List.of("id", "createdAt", "lastUpdatedAt", "class");
-    public static final List<String> NOTIFICATION_CONFIG_IGNORE_PROPS = Stream
-            .of(List.of("studyEnvironmentId", "portalEnvironmentId", "emailTemplateId", "emailTemplate"), BASE_IGNORE_PROPS)
-            .flatMap(Collection::stream).toList();
+    public static final List<String> CONFIG_IGNORE_PROPS = List.of("id", "createdAt", "lastUpdatedAt", "class",
+            "studyEnvironmentId", "portalEnvironmentId", "emailTemplateId", "emailTemplate",
+            "consentFormId", "consentForm", "surveyId", "survey");
     private PortalEnvironmentService portalEnvService;
     private PortalEnvironmentConfigService portalEnvironmentConfigService;
     private SiteContentService siteContentService;
     private SurveyService surveyService;
     private NotificationConfigService notificationConfigService;
+    private ObjectMapper objectMapper;
+    private PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao;
+    private StudyEnvironmentService studyEnvironmentService;
 
     public PortalPublishingService(PortalEnvironmentService portalEnvService,
                                    PortalEnvironmentConfigService portalEnvironmentConfigService,
                                    SiteContentService siteContentService, SurveyService surveyService,
-                                   NotificationConfigService notificationConfigService) {
+                                   NotificationConfigService notificationConfigService,
+                                   ObjectMapper objectMapper,
+                                   PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao,
+                                   StudyEnvironmentService studyEnvironmentService) {
         this.portalEnvService = portalEnvService;
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.siteContentService = siteContentService;
         this.surveyService = surveyService;
         this.notificationConfigService = notificationConfigService;
+        this.objectMapper = objectMapper;
+        this.portalEnvironmentChangeRecordDao = portalEnvironmentChangeRecordDao;
+        this.studyEnvironmentService = studyEnvironmentService;
     }
 
-    public PortalEnvironmentChangeRecord diff(String shortcode, EnvironmentName source, EnvironmentName dest) throws Exception {
-        PortalEnvironment sourceEnv = loadForDiffing(shortcode, source);
-        PortalEnvironment destEnv = loadForDiffing(shortcode, dest);
-        return diff(sourceEnv, destEnv);
+    /** does a full update of all properties from the source to the dest */
+    @Transactional
+    public PortalEnvironment updateAll(String shortcode, EnvironmentName source, EnvironmentName dest, AdminUser user) throws Exception {
+        PortalEnvironment destEnv = loadPortalEnvForProcessing(shortcode, dest);
+        PortalEnvironment sourceEnv = loadPortalEnvForProcessing(shortcode, source);
+        var changes = diffPortalEnvs(sourceEnv, destEnv);
+        return applyUpdate(destEnv, changes, user);
     }
 
-    public PortalEnvironmentChangeRecord diff(PortalEnvironment sourceEnv, PortalEnvironment destEnv) throws Exception {
-        var preRegRecord = new VersionedEntityChangeRecord(sourceEnv.getPreRegSurvey(), destEnv.getPreRegSurvey());
-        var siteContentRecord = new VersionedEntityChangeRecord(sourceEnv.getSiteContent(), destEnv.getSiteContent());
-        var envConfigChanges = ConfigChangeRecord.allChanges(sourceEnv.getPortalEnvironmentConfig(),
-                destEnv.getPortalEnvironmentConfig(), BASE_IGNORE_PROPS);
-        var notificationConfigChanges = diffNotifications(sourceEnv.getNotificationConfigs(), destEnv.getNotificationConfigs());
-        return new PortalEnvironmentChangeRecord(
+    /** updates the dest environment with the given changes */
+    @Transactional
+    public PortalEnvironment applyChanges(String shortcode, EnvironmentName dest, PortalEnvironmentChange change, AdminUser user) throws Exception {
+        PortalEnvironment destEnv = loadPortalEnvForProcessing(shortcode, dest);
+        return applyUpdate(destEnv, change, user);
+    }
+
+    protected PortalEnvironment applyUpdate(PortalEnvironment destEnv, PortalEnvironmentChange envChanges, AdminUser user) throws Exception {
+        applyChangesToEnvConfig(destEnv.getPortalEnvironmentConfig(), envChanges.configChanges());
+        portalEnvironmentConfigService.update(destEnv.getPortalEnvironmentConfig());
+        var changeRecord = PortalEnvironmentChangeRecord.builder()
+                .adminUserId(user.getId())
+                .portalEnvironmentChange(objectMapper.writeValueAsString(envChanges))
+                .build();
+        portalEnvironmentChangeRecordDao.create(changeRecord);
+        return destEnv;
+    }
+
+    /** updates the passed-in config with the given changes.  Returns the updated config */
+    protected PortalEnvironmentConfig applyChangesToEnvConfig(PortalEnvironmentConfig config, List<ConfigChange> changes) throws Exception {
+        for (ConfigChange change : changes) {
+            PropertyUtils.setProperty(config, change.propertyName(), change.newValue());
+        }
+        return config;
+    }
+
+
+    public PortalEnvironmentChange diffPortalEnvs(String shortcode, EnvironmentName source, EnvironmentName dest) throws Exception {
+        PortalEnvironment sourceEnv = loadPortalEnvForProcessing(shortcode, source);
+        PortalEnvironment destEnv = loadPortalEnvForProcessing(shortcode, dest);
+        return diffPortalEnvs(sourceEnv, destEnv);
+    }
+
+    public PortalEnvironmentChange diffPortalEnvs(PortalEnvironment sourceEnv, PortalEnvironment destEnv) throws Exception {
+        var preRegRecord = new VersionedEntityChange(sourceEnv.getPreRegSurvey(), destEnv.getPreRegSurvey());
+        var siteContentRecord = new VersionedEntityChange(sourceEnv.getSiteContent(), destEnv.getSiteContent());
+        var envConfigChanges = ConfigChange.allChanges(sourceEnv.getPortalEnvironmentConfig(),
+                destEnv.getPortalEnvironmentConfig(), CONFIG_IGNORE_PROPS);
+        var notificationConfigChanges = diffConfigLists(sourceEnv.getNotificationConfigs(),
+                destEnv.getNotificationConfigs(),
+                CONFIG_IGNORE_PROPS);
+
+
+        return new PortalEnvironmentChange(
                 siteContentRecord,
                 envConfigChanges,
                 preRegRecord,
-                notificationConfigChanges
+                notificationConfigChanges,
+                null
         );
     }
 
-    private PortalEnvironment loadForDiffing(String shortcode, EnvironmentName envName) {
+    private PortalEnvironment loadPortalEnvForProcessing(String shortcode, EnvironmentName envName) {
         PortalEnvironment portalEnv = portalEnvService.findOne(shortcode, envName).get();
         if (portalEnv.getPortalEnvironmentConfigId() != null) {
             portalEnv.setPortalEnvironmentConfig(portalEnvironmentConfigService
@@ -78,40 +131,82 @@ public class PortalPublishingService {
         return portalEnv;
     }
 
-    public static ListChangeRecord<NotificationConfig, NotificationConfigChangeRecord> diffNotifications(List<NotificationConfig> sourceConfigs,
-                                                                                       List<NotificationConfig> destConfigs)
+    public static <C extends VersionedEntityConfig> ListChange<C, VersionedConfigChange> diffConfigLists(
+            List<C> sourceConfigs,
+            List<C> destConfigs,
+            List<String> ignoreProps)
     throws Exception {
-        List<NotificationConfigChangeRecord> changedRecords = new ArrayList();
-        List<NotificationConfig> addedConfigs = new ArrayList<>();
-        for (NotificationConfig sourceConfig : sourceConfigs) {
-            var matchedConfig = destConfigs.stream().filter(
-                    destConfig -> isNotificationConfigMatch(sourceConfig, destConfig)).findAny().orElse(null);
+        List<C> unmatchedDestConfigs = List.copyOf(destConfigs);
+        List<VersionedConfigChange> changedRecords = new ArrayList();
+        List<C> addedConfigs = new ArrayList<>();
+        for (C sourceConfig : sourceConfigs) {
+            var matchedConfig = unmatchedDestConfigs.stream().filter(
+                    destConfig -> isVersionedConfigMatch(sourceConfig, destConfig))
+                    .findAny().orElse(null);
             if (matchedConfig == null) {
                 addedConfigs.add(sourceConfig);
             } else {
-                var changeRecord = new NotificationConfigChangeRecord(sourceConfig, matchedConfig, NOTIFICATION_CONFIG_IGNORE_PROPS);
+                unmatchedDestConfigs.remove(matchedConfig);
+                var changeRecord = new VersionedConfigChange(
+                        sourceConfig.getId(), matchedConfig.getId(),
+                        ConfigChange.allChanges(sourceConfig, matchedConfig, ignoreProps),
+                        new VersionedEntityChange(sourceConfig.getVersionedEntity(), matchedConfig.getVersionedEntity())
+                );
                 if (changeRecord.isChanged()) {
                     changedRecords.add(changeRecord);
                 }
 
             }
         }
-        List<NotificationConfig> removedConfigs = destConfigs.stream()
-                .filter(destConfig -> sourceConfigs.stream().filter(
-                        sourceConfig -> isNotificationConfigMatch(sourceConfig, destConfig)).findAny().isEmpty())
-                .toList();
-        return new ListChangeRecord<>(addedConfigs, removedConfigs, changedRecords);
+        return new ListChange<>(addedConfigs, unmatchedDestConfigs, changedRecords);
     }
 
-    /** gets whether to treat the notifications as the same for diffing purposes */
-    public static boolean isNotificationConfigMatch(NotificationConfig configA, NotificationConfig configB) {
+    /** for now, just checks to see if they reference the same versioned document */
+    public static boolean isVersionedConfigMatch(VersionedEntityConfig configA, VersionedEntityConfig configB) {
         if (configA == null || configB == null) {
             return configA == configB;
         }
-        return Objects.equals(configA.getNotificationType(), configB.getNotificationType()) &&
-                Objects.equals(configA.getDeliveryType(), configB.getDeliveryType()) &&
-                Objects.equals(configA.getTaskType(), configB.getTaskType()) &&
-                Objects.equals(configA.getEventType(), configB.getEventType());
+        return configA.getVersionedEntity().getStableId().equals(configB.getVersionedEntity().getStableId());
+    }
+
+    public StudyEnvironmentChange diffStudyEnvs(String studyShortcode, EnvironmentName source, EnvironmentName dest) throws Exception {
+        StudyEnvironment sourceEnv = loadStudyEnvForProcessing(studyShortcode, source);
+        StudyEnvironment destEnv = loadStudyEnvForProcessing(studyShortcode, dest);
+        return diffStudyEnvs(studyShortcode, sourceEnv, destEnv);
+    }
+
+    public StudyEnvironmentChange diffStudyEnvs(String studyShortcode, StudyEnvironment sourceEnv, StudyEnvironment destEnv) throws Exception {
+        var envConfigChanges = ConfigChange.allChanges(
+                sourceEnv.getStudyEnvironmentConfig(),
+                destEnv.getStudyEnvironmentConfig(),
+                CONFIG_IGNORE_PROPS);
+        var preEnrollChange = new VersionedEntityChange(sourceEnv.getPreEnrollSurvey(), destEnv.getPreEnrollSurvey());
+        var consentChanges = diffConfigLists(
+                sourceEnv.getConfiguredConsents(),
+                destEnv.getConfiguredConsents(),
+                CONFIG_IGNORE_PROPS);
+        var surveyChanges = diffConfigLists(
+                sourceEnv.getConfiguredSurveys(),
+                destEnv.getConfiguredSurveys(),
+                CONFIG_IGNORE_PROPS);
+        var notificationConfigChanges = diffConfigLists(
+                sourceEnv.getNotificationConfigs(),
+                destEnv.getNotificationConfigs(),
+                CONFIG_IGNORE_PROPS);
+
+        return new StudyEnvironmentChange(
+                studyShortcode,
+                envConfigChanges,
+                preEnrollChange,
+                consentChanges,
+                surveyChanges,
+                notificationConfigChanges
+        );
+    }
+
+    private StudyEnvironment loadStudyEnvForProcessing(String shortcode, EnvironmentName envName) {
+        StudyEnvironment studyEnvironment = studyEnvironmentService.findByStudy(shortcode, envName).get();
+        return studyEnvironmentService.loadWithAllContent(studyEnvironment);
     }
 
 

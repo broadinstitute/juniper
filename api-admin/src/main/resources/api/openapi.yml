@@ -377,8 +377,9 @@ paths:
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: targetEnv, in: path, required: true, schema: { type: string } }
+        - { name: sourceEnv, in: query, required: false, schema: { type: string } }
       requestBody:
-        required: true
+        required: false
         content: { application/json: { schema: { type: object } } }
       responses:
         '200':

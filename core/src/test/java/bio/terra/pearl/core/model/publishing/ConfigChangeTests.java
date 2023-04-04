@@ -6,14 +6,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Test;
 
-public class ConfigChangeRecordTests {
+public class ConfigChangeTests {
     @Test
     public void testSourceDestConstructor() throws Exception {
         PortalEnvironmentConfig sourceConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("foo@blah.com").build();
         var destConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("blah@blah.com").build();
-        var changeRecord = new ConfigChangeRecord(sourceConfig, destConfig, "emailSourceAddress");
+        var changeRecord = new ConfigChange(sourceConfig, destConfig, "emailSourceAddress");
         assertThat(changeRecord.newValue(), equalTo("foo@blah.com"));
         assertThat(changeRecord.oldValue(), equalTo("blah@blah.com"));
     }
@@ -23,7 +23,7 @@ public class ConfigChangeRecordTests {
         PortalEnvironmentConfig sourceConfig = null;
         var destConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("blah@blah.com").build();
-        var changeRecord = new ConfigChangeRecord(sourceConfig, destConfig, "emailSourceAddress");
+        var changeRecord = new ConfigChange(sourceConfig, destConfig, "emailSourceAddress");
         assertThat(changeRecord.newValue(), equalTo(null));
         assertThat(changeRecord.oldValue(), equalTo("blah@blah.com"));
     }
@@ -33,7 +33,7 @@ public class ConfigChangeRecordTests {
         var sourceConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("blah@blah.com").build();;
         PortalEnvironmentConfig destConfig = null;
-        var changeRecord = new ConfigChangeRecord(sourceConfig, destConfig, "emailSourceAddress");
+        var changeRecord = new ConfigChange(sourceConfig, destConfig, "emailSourceAddress");
         assertThat(changeRecord.oldValue(), equalTo(null));
         assertThat(changeRecord.newValue(), equalTo("blah@blah.com"));
     }
@@ -48,12 +48,12 @@ public class ConfigChangeRecordTests {
                 .acceptingRegistration(false)
                 .participantHostname("bar")
                 .emailSourceAddress("blah@blah.com").build();
-        var changeRecords = ConfigChangeRecord.allChanges(sourceConfig, destConfig,
+        var changeRecords = ConfigChange.allChanges(sourceConfig, destConfig,
                 PortalPublishingService.BASE_IGNORE_PROPS);
         assertThat(changeRecords, hasSize(2));
         assertThat(changeRecords, hasItems(
-                new ConfigChangeRecord("acceptingRegistration", false, true),
-                new ConfigChangeRecord("participantHostname", (Object) "bar", (Object) "foo")
+                new ConfigChange("acceptingRegistration", false, true),
+                new ConfigChange("participantHostname", (Object) "bar", (Object) "foo")
         ));
     }
 
@@ -64,16 +64,16 @@ public class ConfigChangeRecordTests {
                 .acceptingRegistration(false)
                 .participantHostname("bar")
                 .emailSourceAddress("blah@blah.com").build();
-        var changeRecords = ConfigChangeRecord.allChanges(sourceConfig, destConfig,
+        var changeRecords = ConfigChange.allChanges(sourceConfig, destConfig,
                 PortalPublishingService.BASE_IGNORE_PROPS);
         assertThat(changeRecords, hasSize(6));
         assertThat(changeRecords, hasItems(
-                new ConfigChangeRecord("emailSourceAddress", "blah@blah.com", (Object) null),
-                new ConfigChangeRecord("acceptingRegistration", false, (Object) null),
-                new ConfigChangeRecord("participantHostname", (Object) "bar", (Object) null),
-                new ConfigChangeRecord("initialized", false, (Object) null),
-                new ConfigChangeRecord("password", (Object) "broad_institute", (Object) null),
-                new ConfigChangeRecord("passwordProtected", true, (Object) null)
+                new ConfigChange("emailSourceAddress", "blah@blah.com", (Object) null),
+                new ConfigChange("acceptingRegistration", false, (Object) null),
+                new ConfigChange("participantHostname", (Object) "bar", (Object) null),
+                new ConfigChange("initialized", false, (Object) null),
+                new ConfigChange("password", (Object) "broad_institute", (Object) null),
+                new ConfigChange("passwordProtected", true, (Object) null)
         ));
     }
 
@@ -84,16 +84,16 @@ public class ConfigChangeRecordTests {
                 .acceptingRegistration(false)
                 .participantHostname("bar")
                 .emailSourceAddress("blah@blah.com").build();
-        var changeRecords = ConfigChangeRecord.allChanges(sourceConfig, destConfig,
+        var changeRecords = ConfigChange.allChanges(sourceConfig, destConfig,
                 PortalPublishingService.BASE_IGNORE_PROPS);
         assertThat(changeRecords, hasSize(6));
         assertThat(changeRecords, hasItems(
-                new ConfigChangeRecord("emailSourceAddress", (Object) null, (Object) "blah@blah.com"),
-                new ConfigChangeRecord("acceptingRegistration", (Object) null, false),
-                new ConfigChangeRecord("participantHostname", (Object) null, (Object) "bar"),
-                new ConfigChangeRecord("initialized", (Object) null, false),
-                new ConfigChangeRecord("password", (Object) null, (Object) "broad_institute"),
-                new ConfigChangeRecord("passwordProtected", (Object) null, true)
+                new ConfigChange("emailSourceAddress", (Object) null, (Object) "blah@blah.com"),
+                new ConfigChange("acceptingRegistration", (Object) null, false),
+                new ConfigChange("participantHostname", (Object) null, (Object) "bar"),
+                new ConfigChange("initialized", (Object) null, false),
+                new ConfigChange("password", (Object) null, (Object) "broad_institute"),
+                new ConfigChange("passwordProtected", (Object) null, true)
         ));
     }
 
@@ -101,7 +101,7 @@ public class ConfigChangeRecordTests {
     public void testAllChangesHandlesDoubleNull() throws Exception {
         PortalEnvironmentConfig sourceConfig = null;;
         PortalEnvironmentConfig destConfig = null;
-        var changeRecords = ConfigChangeRecord.allChanges(sourceConfig, destConfig,
+        var changeRecords = ConfigChange.allChanges(sourceConfig, destConfig,
                 PortalPublishingService.BASE_IGNORE_PROPS);
         assertThat(changeRecords, hasSize(0));
     }

@@ -17,4 +17,8 @@ public class PortalEnvironmentConfigService extends CrudService<PortalEnvironmen
     public Optional<PortalEnvironmentConfig> findByPortalEnvId(UUID portalEnvId) {
         return dao.findByPortalEnvId(portalEnvId);
     }
+
+    public PortalEnvironmentConfig update(PortalEnvironmentConfig config) {
+        return dao.update(config);
+    }
 }

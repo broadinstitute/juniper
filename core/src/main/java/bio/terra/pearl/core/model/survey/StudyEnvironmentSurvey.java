@@ -1,6 +1,8 @@
 package bio.terra.pearl.core.model.survey;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import bio.terra.pearl.core.model.Versioned;
+import bio.terra.pearl.core.model.publishing.VersionedEntityConfig;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +15,7 @@ import java.util.UUID;
 /** Includes a survey in an environment and configures scheduling and who can take it */
 @Getter
 @Setter @SuperBuilder @NoArgsConstructor
-public class StudyEnvironmentSurvey extends BaseEntity {
+public class StudyEnvironmentSurvey extends BaseEntity implements VersionedEntityConfig {
     private UUID studyEnvironmentId;
     private UUID surveyId;
     private Survey survey;
@@ -36,4 +38,9 @@ public class StudyEnvironmentSurvey extends BaseEntity {
     private boolean allowParticipantReedit = true; // whether participants can change answers after submission
     @Builder.Default
     private boolean prepopulate = false; // whether to bring forward answers from prior completions (if recur is true)
+
+    @Override
+    public Versioned getVersionedEntity() {
+        return survey;
+    }
 }

@@ -7,7 +7,7 @@ import bio.terra.pearl.core.model.notification.NotificationEventType;
 import bio.terra.pearl.core.model.notification.NotificationType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
-import bio.terra.pearl.core.model.publishing.ConfigChangeRecord;
+import bio.terra.pearl.core.model.publishing.ConfigChange;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -97,7 +97,7 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
         assertThat(diffs.addedItems(), hasSize(0));
         assertThat(diffs.changedItems(), hasSize(1));
         assertThat(diffs.changedItems().get(0).configChanges(), hasSize(1));
-        assertThat(diffs.changedItems().get(0).configChanges().get(0), equalTo(new ConfigChangeRecord(
+        assertThat(diffs.changedItems().get(0).configChanges().get(0), equalTo(new ConfigChange(
                 "afterMinutesIncomplete", 2000, 3000
         )));
         assertThat(diffs.removedItems(), hasSize(0));
@@ -146,7 +146,7 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
         var destEnv = PortalEnvironment.builder().portalEnvironmentConfig(
                 PortalEnvironmentConfig.builder().initialized(false).build()
         ).build();
-        var changeRecord = portalPublishingService.diff(sourceEnv, destEnv);
+        var changeRecord = portalPublishingService.diffPortalEnvs(sourceEnv, destEnv);
         assertThat(changeRecord.configChanges(), hasSize(0));
         assertThat(changeRecord.siteContentChange().isChanged(), equalTo(false));
         assertThat(changeRecord.preRegSurveyChanges().isChanged(), equalTo(false));
@@ -164,9 +164,18 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
         var destEnv = PortalEnvironment.builder().portalEnvironmentConfig(
                 PortalEnvironmentConfig.builder().initialized(false).build()
         ).build();
-        var changeRecord = portalPublishingService.diff(sourceEnv, destEnv);
+        var changeRecord = portalPublishingService.diffPortalEnvs(sourceEnv, destEnv);
         assertThat(changeRecord.configChanges(), hasSize(2));
         assertThat(changeRecord.siteContentChange().isChanged(), equalTo(true));
         assertThat(changeRecord.preRegSurveyChanges().isChanged(), equalTo(true));
+    }
+
+    @Test
+    public void testApplyConfigChanges() throws Exception {
+        ConfigChange change = new ConfigChange("password", (Object) "foo", (Object)"bar");
+        PortalEnvironmentConfig config = PortalEnvironmentConfig.builder()
+                .password("foo").build();
+        portalPublishingService.applyChangesToEnvConfig(config, List.of(change));
+        assertThat(config.getPassword(), equalTo("bar"));
     }
 }

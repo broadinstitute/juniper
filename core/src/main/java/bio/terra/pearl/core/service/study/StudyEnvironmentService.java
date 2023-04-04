@@ -51,6 +51,10 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         return dao.findByStudy(studyShortcode, environmentName);
     }
 
+    public StudyEnvironment loadWithAllContent(StudyEnvironment studyEnvironment) {
+        return dao.loadWithAllContent(studyEnvironment);
+    }
+
     public StudyEnvironment update(StudyEnvironment studyEnvironment) {
         return dao.update(studyEnvironment);
     }
