@@ -95,15 +95,10 @@ export default withValidatedSectionConfig(validateNavAndLinkSectionsFooterConfig
  * NavbarItem.tsx.  When the MAILING_LIST is implemented, it should be shared.
  */
 function FooterItem({ item }: { item: FooterItem }) {
-  /** will eventually popup a modal allowing email address entry */
-  function mailingList(item: FooterItem) {
-    alert(`mailing list ${item.label} - not implemented`)
-  }
-
   if (item.itemType === 'MAILING_LIST') {
-    return <a role="button" className=" me-3" onClick={() => mailingList(item)}>{item.label}</a>
+    return <a className="me-3" href="#mailing-list">{item.label}</a>
   } else if (item.itemType === 'EXTERNAL') {
-    return <a href={item.externalLink} className=" me-3" target="_blank">{item.label}</a>
+    return <a href={item.externalLink} className="me-3" target="_blank">{item.label}</a>
   }
   return null
 }

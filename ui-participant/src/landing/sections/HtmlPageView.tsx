@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import React, { useEffect, useId } from 'react'
+import React from 'react'
 
 import { HtmlPage, HtmlSection, SectionConfig, SectionType } from 'api/api'
 import { isPlainObject } from 'util/validationUtils'
@@ -15,7 +15,6 @@ import PhotoBlurbGrid from './PhotoBlurbGrid'
 import ParticipationDetailTemplate from './ParticipationDetailTemplate'
 import NavAndLinkSectionsFooter from './NavAndLinkSectionsFooter'
 import { TemplateComponent } from './templateUtils'
-import { MailingListModal } from 'landing/MailingListModal'
 
 const templateComponents: Record<SectionType, TemplateComponent> = {
   'FAQ': FrequentlyAskedQuestionsTemplate,
@@ -32,21 +31,10 @@ const templateComponents: Record<SectionType, TemplateComponent> = {
 
 /** renders a configured HtmlPage */
 export default function HtmlPageView({ page }: { page: HtmlPage }) {
-  const mailingListModalId = useId()
-
-  useEffect(() => {
-    const mailingListLinks = document.querySelectorAll<HTMLLinkElement>('a[href="#mailing-list"]')
-    Array.from(mailingListLinks).forEach(el => {
-      el.dataset.bsToggle = 'modal'
-      el.dataset.bsTarget = `#${CSS.escape(mailingListModalId)}`
-    })
-  }, [])
-
   return <>
     {
       _.map(page.sections, (section: HtmlSection) => <HtmlSectionView section={section} key={section.id}/>)
     }
-    {(page.sections || []).length > 0 && <MailingListModal id={mailingListModalId} />}
   </>
 }
 
