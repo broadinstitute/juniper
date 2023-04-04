@@ -37,7 +37,7 @@ export const getOidcConfig = (
     stateStore: new WebStorageStateStore({ store: window.localStorage }),
     userStore: new WebStorageStateStore({ store: window.localStorage }),
     automaticSilentRenew: true,
-    // Leo's setCookie interval is currently 5 min, set refresh auth then 5 min 30 seconds to gurantee that setCookie's
+    // Leo's setCookie interval is currently 5 min, set refresh auth then 5 min 30 seconds to guarantee that setCookie's
     // token won't expire between 2 setCookie api calls
     accessTokenExpiringNotificationTimeInSeconds: 330,
     includeIdTokenInSilentRenew: true,

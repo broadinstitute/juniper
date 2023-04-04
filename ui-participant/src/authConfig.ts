@@ -7,10 +7,14 @@ import { WebStorageStateStore } from 'oidc-client-ts'
  */
 const aadB2cName = process.env.REACT_APP_B2C_TENANT_NAME ? process.env.REACT_APP_B2C_TENANT_NAME : 'NAME_NEEDED'
 const aadb2cClientId = process.env.REACT_APP_B2C_CLIENT_ID ? process.env.REACT_APP_B2C_CLIENT_ID : 'ID_NEEDED'
+const aadb2cPolicyName = process.env.REACT_APP_B2C_POLICY_NAME ? process.env.REACT_APP_B2C_POLICY_NAME : 'POLICY_NEEDED'
 
 // TODO: This is a modified copy of code from Terra UI. It could use some clean-up.
 /* eslint-disable camelcase, max-len */
-export const getOidcConfig = (b2cTenantName: string = aadB2cName, b2cClientId: string = aadb2cClientId) => {
+export const getOidcConfig = (
+  b2cTenantName: string = aadB2cName,
+  b2cClientId: string = aadb2cClientId,
+  b2cPolicyName = aadb2cPolicyName) => {
   return {
     /*
      * oidc-client-ts uses `authority` to fetch `metadata`. For some reason providing `metadata` manually results in not
@@ -19,7 +23,7 @@ export const getOidcConfig = (b2cTenantName: string = aadB2cName, b2cClientId: s
      */
     // oidc-client-ts appends /v2.0/.well-known/openid-configuration, so can't use ?p={policy} here
     authority:
-      `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/B2C_1A_ddp_participant_signup_signin_dev`,
+      `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/${b2cPolicyName}`,
     client_id: b2cClientId,
     redirect_uri: `${window.origin}/redirect-from-oauth`,
     popup_redirect_uri: `${window.origin}/redirect-from-oauth`,
