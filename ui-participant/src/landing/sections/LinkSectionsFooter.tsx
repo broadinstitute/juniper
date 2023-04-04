@@ -6,13 +6,10 @@ import { SectionConfig } from 'api/api'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requirePlainObject, requireString } from 'util/validationUtils'
 
-import LandingNavbar from '../LandingNavbar'
-
 import { ButtonConfig, validateButtonConfig } from 'landing/ConfiguredButton'
 import { TemplateComponentProps } from './templateUtils'
 
-type NavAndLinkSectionsFooterConfig = {
-  includeNavbar?: boolean,
+type LinkSectionsFooterConfig = {
   itemSections?: ItemSection[]
 }
 
@@ -22,30 +19,28 @@ type ItemSection = {
 }
 
 const validateItemSection = (config: unknown): ItemSection => {
-  const message = 'Invalid NavAndLinkSectionsFooterConfig: Invalid itemSection'
+  const message = 'Invalid LinkSectionsFooterConfig: Invalid itemSection'
   const configObj = requirePlainObject(config, message)
   const items = requireOptionalArray(configObj, 'items', validateButtonConfig, message)
   const title = requireString(configObj, 'title', message)
   return { items, title }
 }
 
-/** Validate that a section configuration object conforms to NavAndLinkSectionsFooterConfig */
-const validateNavAndLinkSectionsFooterConfig = (config: SectionConfig): NavAndLinkSectionsFooterConfig => {
-  const message = 'Invalid NavAndLinkSectionsFooterConfig'
-  const includeNavbar = !!config.includeNavbar
+/** Validate that a section configuration object conforms to LinkSectionsFooterConfig */
+const validateLinkSectionsFooterConfig = (config: SectionConfig): LinkSectionsFooterConfig => {
+  const message = 'Invalid LinkSectionsFooterConfig'
   const itemSections = requireOptionalArray(config, 'itemSections', validateItemSection, message)
-  return { includeNavbar, itemSections }
+  return { itemSections }
 }
 
-type NavAndLinkSectionsFooterProps = TemplateComponentProps<NavAndLinkSectionsFooterConfig>
+type LinkSectionsFooterProps = TemplateComponentProps<LinkSectionsFooterConfig>
 
 /** renders a footer-style section */
-export function NavAndLinkSectionsFooter(props: NavAndLinkSectionsFooterProps) {
+export function LinkSectionsFooter(props: LinkSectionsFooterProps) {
   const { config } = props
 
   return <>
-    {config.includeNavbar && <LandingNavbar aria-label="Secondary" />}
-    <div className="d-flex justify-content-center py-3">
+    <div className="d-flex justify-content-center py-5">
       <div className="col-lg-8">
         <div className="row justify-content-between mx-0">
           {_.map(config.itemSections, (section, index) =>
@@ -68,7 +63,7 @@ export function NavAndLinkSectionsFooter(props: NavAndLinkSectionsFooterProps) {
   </>
 }
 
-export default withValidatedSectionConfig(validateNavAndLinkSectionsFooterConfig, NavAndLinkSectionsFooter)
+export default withValidatedSectionConfig(validateLinkSectionsFooterConfig, LinkSectionsFooter)
 
 /**
  * Renders an individual item (e.g. a link) for the footer.

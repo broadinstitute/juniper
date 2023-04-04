@@ -1,7 +1,6 @@
 {
-  "sectionType": "NAV_AND_LINK_SECTIONS_FOOTER",
+  "sectionType": "LINK_SECTIONS_FOOTER",
   "sectionConfigJson": {
-    "includeNavbar": true,
     "itemSections": [{
       "title": "OurHealth",
       "items": [{
