@@ -3,40 +3,68 @@
   "sectionConfigJson": {
     "includeNavbar": true,
     "itemSections": [{
-      "title": "Contact",
+      "title": "OurHealth",
       "items": [{
-        "itemType": "EXTERNAL",
-        "label": "617-724-1270",
-        "externalLink": "tel:617-724-1270"
+        "type": "internalLink",
+        "text": "Home",
+        "href": "/"
       },{
-        "itemType": "EXTERNAL",
-        "label": "info@ourhealthstudy.org",
-        "externalLink": "mailto:info@ourhealthstudy.org"
+        "type": "internalLink",
+        "text": "About Us",
+        "href": "/aboutUs"
+      },{
+        "type": "internalLink",
+        "text": "Participation",
+        "href": "/participation"
+      },{
+        "type": "internalLink",
+        "text": "Scientific Background",
+        "href": "/background"
+      },{
+        "type": "internalLink",
+        "text": "FAQ",
+        "href": "/faq"
       }]
     },{
       "title": "Stay Informed",
       "items": [{
-        "itemType": "MAILING_LIST",
-        "label": "Mailing List"
+        "type": "mailingList",
+        "text": "Mailing List"
       },{
-        "itemType": "EXTERNAL",
-        "label": "Twitter",
-        "externalLink": "https://twitter.com/ourhealthstudy"
+        "text": "Twitter",
+        "href": "https://twitter.com/ourhealthstudy"
       },{
-        "itemType": "EXTERNAL",
-        "label": "Instagram",
-        "externalLink": "https://instagram.com/ourhealthstudy"
+        "text": "Instagram",
+        "href": "https://instagram.com/ourhealthstudy"
       },{
-        "itemType": "EXTERNAL",
-        "label": "Facebook",
-        "externalLink": "https://facebook.com/ourhealthstudy"
+        "text": "Facebook",
+        "href": "https://facebook.com/ourhealthstudy"
+      }]
+    },{
+      "title": "Contact Us",
+      "items": [{
+        "text": "617-724-1270",
+        "href": "tel:617-724-1270"
+      },{
+        "text": "info@ourhealthstudy.org",
+        "href": "mailto:info@ourhealthstudy.org"
       }]
     },{
       "title": "Donate",
       "items": [{
-        "itemType": "EXTERNAL",
-        "label": "Contribute funds",
-        "externalLink": "mailto:info@ourhealthstudy.org"
+        "text": "Contribute funds",
+        "href": "mailto:info@ourhealthstudy.org"
+      }]
+    },{
+      "title": "For Participants",
+      "items": [{
+        "type": "internalLink",
+        "text": "Log In",
+        "href": "/hub"
+      },{
+        "type": "join",
+        "text": "Join OurHealth",
+        "studyShortcode": "ourheart"
       }]
     }]
   }

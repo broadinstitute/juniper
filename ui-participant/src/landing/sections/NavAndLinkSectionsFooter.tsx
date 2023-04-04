@@ -1,5 +1,6 @@
-import React from 'react'
 import _ from 'lodash'
+import React from 'react'
+import { Link } from 'react-router-dom'
 
 import { SectionConfig } from 'api/api'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
@@ -7,6 +8,7 @@ import { requireOptionalArray, requirePlainObject, requireString } from 'util/va
 
 import LandingNavbar from '../LandingNavbar'
 
+import { ButtonConfig, validateButtonConfig } from 'landing/ConfiguredButton'
 import { TemplateComponentProps } from './templateUtils'
 
 type NavAndLinkSectionsFooterConfig = {
@@ -16,43 +18,13 @@ type NavAndLinkSectionsFooterConfig = {
 
 type ItemSection = {
   title: string,
-  items: FooterItem[]
-}
-
-type ExternalLinkFooterItem = {
-  label: string
-  itemType: 'EXTERNAL'
-  externalLink: string
-}
-
-type MailingListFooterItem = {
-  label: string
-  itemType: 'MAILING_LIST'
-}
-
-type FooterItem = ExternalLinkFooterItem | MailingListFooterItem
-
-const validateFooterItem = (config: unknown): FooterItem => {
-  const message = 'Invalid NavAndLinkSectionsFooterConfig: Invalid item'
-  const configObj = requirePlainObject(config, message)
-  const label = requireString(configObj, 'label', message)
-  const itemType = requireString(configObj, 'itemType', message)
-  if (!(itemType === 'EXTERNAL' || itemType === 'MAILING_LIST')) {
-    throw new Error(`${message}: itemType must be one of "EXTERNAL" or "MAILING_LIST"`)
-  }
-
-  if (itemType === 'EXTERNAL') {
-    const externalLink = requireString(configObj, 'externalLink', message)
-    return { label, itemType, externalLink }
-  } else {
-    return { label, itemType }
-  }
+  items: ButtonConfig[]
 }
 
 const validateItemSection = (config: unknown): ItemSection => {
   const message = 'Invalid NavAndLinkSectionsFooterConfig: Invalid itemSection'
   const configObj = requirePlainObject(config, message)
-  const items = requireOptionalArray(configObj, 'items', validateFooterItem, message)
+  const items = requireOptionalArray(configObj, 'items', validateButtonConfig, message)
   const title = requireString(configObj, 'title', message)
   return { items, title }
 }
@@ -75,14 +47,22 @@ export function NavAndLinkSectionsFooter(props: NavAndLinkSectionsFooterProps) {
     {config.includeNavbar && <LandingNavbar aria-label="Secondary" />}
     <div className="d-flex justify-content-center py-3">
       <div className="col-lg-8">
-        {_.map(config.itemSections, (section, index) =>
-          <div key={index} className="d-inline-block pb-3 px-2">
-            <h2 className="h6">{section.title}</h2>
-            <div>
-              {_.map(section.items, (item, index) => <FooterItem item={item} key={index}/>)}
+        <div className="row justify-content-between mx-0">
+          {_.map(config.itemSections, (section, index) =>
+            <div key={index} className="col-12 col-sm-6 col-lg-auto">
+              <h2 className="h6 fw-bold mb-4">{section.title}</h2>
+              <ul className="list-unstyled">
+                {_.map(section.items, (item, index) => {
+                  return (
+                    <li key={index} className="mb-3">
+                      <FooterItem item={item} />
+                    </li>
+                  )
+                })}
+              </ul>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   </>
@@ -91,14 +71,16 @@ export function NavAndLinkSectionsFooter(props: NavAndLinkSectionsFooterProps) {
 export default withValidatedSectionConfig(validateNavAndLinkSectionsFooterConfig, NavAndLinkSectionsFooter)
 
 /**
- * renders an individual item (e.g. a link) for the footer.  this shares a bit of functionality with CustomNavLink in
- * NavbarItem.tsx.  When the MAILING_LIST is implemented, it should be shared.
+ * Renders an individual item (e.g. a link) for the footer.
  */
-function FooterItem({ item }: { item: FooterItem }) {
-  if (item.itemType === 'MAILING_LIST') {
-    return <a className="me-3" href="#mailing-list">{item.label}</a>
-  } else if (item.itemType === 'EXTERNAL') {
-    return <a href={item.externalLink} className="me-3" target="_blank">{item.label}</a>
+function FooterItem({ item }: { item: ButtonConfig }) {
+  if (item.type === 'join') {
+    const to = item.studyShortcode ? `/studies/${item.studyShortcode}/join` : '/join'
+    return <Link to={to}>{item.text}</Link>
+  } else if (item.type === 'mailingList') {
+    return <a href="#mailing-list">{item.text}</a>
+  } else if (item.type === 'internalLink') {
+    return <Link to={item.href}>{item.text}</Link>
   }
-  return null
+  return <a href={item.href} rel="noreferrer">{item.text}</a>
 }
