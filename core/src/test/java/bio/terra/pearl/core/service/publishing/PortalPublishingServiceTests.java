@@ -12,6 +12,7 @@ import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import java.util.List;
+import java.util.UUID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Test;
@@ -21,31 +22,32 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
     @Autowired
     private PortalPublishingService portalPublishingService;
     @Test
-    public void testIsNotificationConfigMatch() {
+    public void testIsVersionedConfigMatch() {
+        // configs match if stableID of template is the same
         var config = NotificationConfig.builder()
                 .notificationType(NotificationType.EVENT)
                 .eventType(NotificationEventType.STUDY_CONSENT)
-                .emailTemplate(new EmailTemplate()).build();
+                .emailTemplate(EmailTemplate.builder().stableId("foo").build()).build();
+
+        var configWithDifferentTemplate  = NotificationConfig.builder()
+                .notificationType(NotificationType.EVENT)
+                .eventType(NotificationEventType.STUDY_ENROLLMENT)
+                .emailTemplate(EmailTemplate.builder().stableId("foo").build()).build();
+        assertThat(PortalPublishingService.isVersionedConfigMatch(config, configWithDifferentTemplate), equalTo(true));
+    }
+
+    @Test
+    public void testIsVersionedConfigMatchDifferent() {
+        var config = NotificationConfig.builder()
+                .notificationType(NotificationType.EVENT)
+                .eventType(NotificationEventType.STUDY_CONSENT)
+                .emailTemplate(EmailTemplate.builder().stableId("foo").build()).build();
 
         var configWithDifferentTemplate  = NotificationConfig.builder()
                 .notificationType(NotificationType.EVENT)
                 .eventType(NotificationEventType.STUDY_CONSENT)
-                .emailTemplate(new EmailTemplate()).build();
-        assertThat(PortalPublishingService.isNotificationConfigMatch(config, configWithDifferentTemplate), equalTo(true));
-    }
-
-    @Test
-    public void testIsNotificationConfigMatchDifferentEvent() {
-        var config = NotificationConfig.builder()
-                .notificationType(NotificationType.EVENT)
-                .eventType(NotificationEventType.STUDY_CONSENT)
-                .emailTemplate(new EmailTemplate()).build();
-
-        var configWithDifferentEventType  = NotificationConfig.builder()
-                .notificationType(NotificationType.EVENT)
-                .eventType(NotificationEventType.STUDY_ENROLLMENT)
-                .emailTemplate(new EmailTemplate()).build();
-        assertThat(PortalPublishingService.isNotificationConfigMatch(config, configWithDifferentEventType), equalTo(false));
+                .emailTemplate(EmailTemplate.builder().stableId("bar").build()).build();
+        assertThat(PortalPublishingService.isVersionedConfigMatch(config, configWithDifferentTemplate), equalTo(false));
     }
 
     @Test
@@ -53,7 +55,7 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
         List<NotificationConfig> sourceList = List.of();
         List<NotificationConfig> destList = List.of();
         var diffs = PortalPublishingService
-                .diffNotifications(sourceList, destList);
+                .diffConfigLists(sourceList, destList, PortalPublishingService.CONFIG_IGNORE_PROPS);
         assertThat(diffs.addedItems(), hasSize(0));
         assertThat(diffs.changedItems(), hasSize(0));
         assertThat(diffs.removedItems(), hasSize(0));
@@ -62,17 +64,19 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
     @Test
     public void testDiffNotificationsOneEventMatched() throws Exception {
         List<NotificationConfig> sourceList = List.of(
-                NotificationConfig.builder()
+                NotificationConfig.builder().id(UUID.randomUUID())
                         .notificationType(NotificationType.EVENT)
                         .eventType(NotificationEventType.STUDY_CONSENT)
+                        .emailTemplate(EmailTemplate.builder().stableId("t1").build())
                         .build());
         List<NotificationConfig> destList = List.of(
-                NotificationConfig.builder()
+                NotificationConfig.builder().id(UUID.randomUUID())
                         .notificationType(NotificationType.EVENT)
                         .eventType(NotificationEventType.STUDY_CONSENT)
+                        .emailTemplate(EmailTemplate.builder().stableId("t1").build())
                         .build());
         var diffs = PortalPublishingService
-                .diffNotifications(sourceList, destList);
+                .diffConfigLists(sourceList, destList, PortalPublishingService.CONFIG_IGNORE_PROPS);
         assertThat(diffs.addedItems(), hasSize(0));
         assertThat(diffs.changedItems(), hasSize(0));
         assertThat(diffs.removedItems(), hasSize(0));
@@ -81,19 +85,21 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
     @Test
     public void testDiffNotificationsOneEventChanged() throws Exception {
         List<NotificationConfig> sourceList = List.of(
-                NotificationConfig.builder()
+                NotificationConfig.builder().id(UUID.randomUUID())
                         .notificationType(NotificationType.TASK_REMINDER)
                         .taskType(TaskType.CONSENT)
+                        .emailTemplate(EmailTemplate.builder().stableId("t1").build())
                         .afterMinutesIncomplete(3000)
                         .build());
         List<NotificationConfig> destList = List.of(
-                NotificationConfig.builder()
+                NotificationConfig.builder().id(UUID.randomUUID())
                         .notificationType(NotificationType.TASK_REMINDER)
                         .taskType(TaskType.CONSENT)
+                        .emailTemplate(EmailTemplate.builder().stableId("t1").build())
                         .afterMinutesIncomplete(2000)
                         .build());
         var diffs = PortalPublishingService
-                .diffNotifications(sourceList, destList);
+                .diffConfigLists(sourceList, destList, PortalPublishingService.CONFIG_IGNORE_PROPS);
         assertThat(diffs.addedItems(), hasSize(0));
         assertThat(diffs.changedItems(), hasSize(1));
         assertThat(diffs.changedItems().get(0).configChanges(), hasSize(1));
@@ -105,7 +111,7 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
 
     @Test
     public void testDiffNotificationsOneEventAdded() throws Exception {
-        var addedConfig = NotificationConfig.builder()
+        var addedConfig = NotificationConfig.builder().id(UUID.randomUUID())
                 .notificationType(NotificationType.TASK_REMINDER)
                 .taskType(TaskType.CONSENT)
                 .afterMinutesIncomplete(3000)
@@ -113,7 +119,7 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
         List<NotificationConfig> sourceList = List.of(addedConfig);
         List<NotificationConfig> destList = List.of();
         var diffs = PortalPublishingService
-                .diffNotifications(sourceList, destList);
+                .diffConfigLists(sourceList, destList, PortalPublishingService.CONFIG_IGNORE_PROPS);
         assertThat(diffs.addedItems(), hasSize(1));
         assertThat(diffs.addedItems().get(0), samePropertyValuesAs(addedConfig));
         assertThat(diffs.changedItems(), hasSize(0));
@@ -122,7 +128,7 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
 
     @Test
     public void testDiffNotificationsOneEventRemoved() throws Exception {
-        var removedConfig = NotificationConfig.builder()
+        var removedConfig = NotificationConfig.builder().id(UUID.randomUUID())
                 .notificationType(NotificationType.TASK_REMINDER)
                 .taskType(TaskType.CONSENT)
                 .afterMinutesIncomplete(3000)
@@ -130,7 +136,7 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
         List<NotificationConfig> sourceList = List.of();
         List<NotificationConfig> destList = List.of(removedConfig);
         var diffs = PortalPublishingService
-                .diffNotifications(sourceList, destList);
+                .diffConfigLists(sourceList, destList, PortalPublishingService.CONFIG_IGNORE_PROPS);
         assertThat(diffs.addedItems(), hasSize(0));
         assertThat(diffs.changedItems(), hasSize(0));
         assertThat(diffs.removedItems(), hasSize(1));

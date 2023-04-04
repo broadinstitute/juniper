@@ -38,7 +38,5 @@ public record ConfigChange(String propertyName, Object oldValue, Object newValue
         }
         return records;
     }
-
-
 }
 

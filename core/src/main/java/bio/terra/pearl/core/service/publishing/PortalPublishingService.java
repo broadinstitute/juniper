@@ -16,6 +16,7 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PortalPublishingService {
     public static final List<String> CONFIG_IGNORE_PROPS = List.of("id", "createdAt", "lastUpdatedAt", "class",
             "studyEnvironmentId", "portalEnvironmentId", "emailTemplateId", "emailTemplate",
-            "consentFormId", "consentForm", "surveyId", "survey");
+            "consentFormId", "consentForm", "surveyId", "survey", "versionedEntity");
     private PortalEnvironmentService portalEnvService;
     private PortalEnvironmentConfigService portalEnvironmentConfigService;
     private SiteContentService siteContentService;
@@ -136,7 +137,7 @@ public class PortalPublishingService {
             List<C> destConfigs,
             List<String> ignoreProps)
     throws Exception {
-        List<C> unmatchedDestConfigs = List.copyOf(destConfigs);
+        List<C> unmatchedDestConfigs = new ArrayList<>(destConfigs);
         List<VersionedConfigChange> changedRecords = new ArrayList();
         List<C> addedConfigs = new ArrayList<>();
         for (C sourceConfig : sourceConfigs) {
@@ -146,6 +147,8 @@ public class PortalPublishingService {
             if (matchedConfig == null) {
                 addedConfigs.add(sourceConfig);
             } else {
+                // this remove only works if the config has an ID, since that's how BaseEntity equality works
+                // that's fine, since we're only working with already-persisted entities in this list.
                 unmatchedDestConfigs.remove(matchedConfig);
                 var changeRecord = new VersionedConfigChange(
                         sourceConfig.getId(), matchedConfig.getId(),
@@ -166,7 +169,10 @@ public class PortalPublishingService {
         if (configA == null || configB == null) {
             return configA == configB;
         }
-        return configA.getVersionedEntity().getStableId().equals(configB.getVersionedEntity().getStableId());
+        if (configA.getVersionedEntity() == null || configB.getVersionedEntity() == null) {
+            return false;
+        }
+        return Objects.equals(configA.getVersionedEntity().getStableId(), configB.getVersionedEntity().getStableId());
     }
 
     public StudyEnvironmentChange diffStudyEnvs(String studyShortcode, EnvironmentName source, EnvironmentName dest) throws Exception {
