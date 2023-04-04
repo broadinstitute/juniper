@@ -9,7 +9,7 @@ import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
-import { requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
+import { requireOptionalBoolean, requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 
 import { TemplateComponentProps } from './templateUtils'
@@ -30,6 +30,7 @@ type FaqQuestion = {
 type FrequentlyAskedQuestionsConfig = {
   blurb?: string, //  text below the title
   questions: FaqQuestion[], // the questions
+  showToggleAllButton?: boolean, // whether or not the show the expand/collapse button
   title?: string, // large heading text
 }
 
@@ -45,7 +46,8 @@ const validateFaqQuestion = (questionConfig: unknown): FaqQuestion => {
 const validateFrequentlyAskedQuestionsConfig = (config: SectionConfig): FrequentlyAskedQuestionsConfig => {
   const message = 'Invalid FrequentlyAskedQuestionsConfig'
   const title = requireOptionalString(config, 'title', message)
-  const blurb = requireOptionalString(config, 'title', message)
+  const blurb = requireOptionalString(config, 'blurb', message)
+  const showToggleAllButton = requireOptionalBoolean(config, 'showToggleAllButton', message)
 
   const questions = config.questions
   if (!Array.isArray(questions)) {
@@ -55,6 +57,7 @@ const validateFrequentlyAskedQuestionsConfig = (config: SectionConfig): Frequent
   return {
     blurb,
     questions: questions.map(validateFaqQuestion),
+    showToggleAllButton,
     title
   }
 }
@@ -115,6 +118,7 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
   const {
     blurb,
     questions,
+    showToggleAllButton = true,
     title = 'Frequently Asked Questions'
   } = config
 
@@ -149,17 +153,19 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
           {blurb && <ReactMarkdown>{blurb}</ReactMarkdown>}
         </div>
       )}
-      <div className="mb-4">
-        <button
-          className="btn btn-outline-dark btn-rounded text-uppercase"
-          onClick={allQuestionsAreExpanded ? collapseAll : expandAll}
-        >
-          <span className="d-inline-block me-2 text-center" style={{ width: 20 }}>
-            <FontAwesomeIcon icon={allQuestionsAreExpanded ? faXmark : faPlus} />
-          </span>
-          {allQuestionsAreExpanded ? 'Collapse' : 'Expand'} all
-        </button>
-      </div>
+      {showToggleAllButton && (
+        <div className="mb-4">
+          <button
+            className="btn btn-outline-dark btn-rounded text-uppercase"
+            onClick={allQuestionsAreExpanded ? collapseAll : expandAll}
+          >
+            <span className="d-inline-block me-2 text-center" style={{ width: 20 }}>
+              <FontAwesomeIcon icon={allQuestionsAreExpanded ? faXmark : faPlus} />
+            </span>
+            {allQuestionsAreExpanded ? 'Collapse' : 'Expand'} all
+          </button>
+        </div>
+      )}
       <ul ref={questionsListRef} className="mx-0 px-0 border-top" style={{ listStyle: 'none' }}>
         {
           questions.map(({ question, answer }, i) => {

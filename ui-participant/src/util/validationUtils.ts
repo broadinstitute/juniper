@@ -68,6 +68,19 @@ export const requireOptionalNumber = (
   return value
 }
 
+export const requireOptionalBoolean = (
+  config: Record<string, unknown>,
+  key: string,
+  prefix = ''
+): boolean | undefined => {
+  const value = config[key]
+  if (!(value === undefined || typeof value === 'boolean')) {
+    const messagePrefix = prefix ? `${prefix}: ` : ''
+    throw new Error(`${messagePrefix}if provided, "${key}" must be a boolean`)
+  }
+  return value
+}
+
 export const requireOptionalArray = <ElementType>(
   config: Record<string, unknown>,
   key: string,
