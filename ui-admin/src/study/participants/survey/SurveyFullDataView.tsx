@@ -1,17 +1,17 @@
-import React, { useId } from 'react'
+import React  from 'react'
 import { ConsentForm, Survey } from 'api/api'
 import { Model, SurveyModel } from 'survey-core'
-import { extractSurveyContent } from '../../../util/surveyJSUtils'
+import { extractSurveyContent } from 'util/surveyJSUtils'
 
 /** renders every item in a survey response */
 export default function SurveyFullDataView({ fullData, survey }: {fullData: string, survey: Survey | ConsentForm}) {
   const denormalizedData = JSON.parse(fullData) as DenormalizedResponse
   const surveyJsModel = new Model(extractSurveyContent(survey))
   console.log(`rendering data for survey ${survey.stableId} -- question text not yet implemented`)
-  return <div>
+  return <dl>
     {denormalizedData.items.map((dataItem, index) => <ItemDisplay key={index}
       dataItem={dataItem} surveyJsModel={surveyJsModel}/>)}
-  </div>
+  </dl>
 }
 
 const ItemDisplay = ({ dataItem, surveyJsModel }: {dataItem: DenormalizedResponseItem, surveyJsModel: SurveyModel}) => {
@@ -24,14 +24,13 @@ const ItemDisplay = ({ dataItem, surveyJsModel }: {dataItem: DenormalizedRespons
   } else if (dataItem.stableId.endsWith('signature')) {
     displayValue = <img src={dataItem.value}/>
   }
-  const id = useId
-  return <div>
-    <label htmlFor={`${id}-answerVale`}>
+  return <>
+    <dt className="fw-normal">
       {renderQuestionText(dataItem, surveyJsModel)}
       <span className="ms-2 fst-italic text-muted">({dataItem.stableId})</span>
-    </label>
-    <pre className="fw-bold" id={`${id}-answerVale`}>{displayValue}</pre>
-  </div>
+    </dt>
+    <dl><pre className="fw-bold">{displayValue}</pre></dl>
+  </>
 }
 
 /** gets the question text -- truncates it at 100 chars */
