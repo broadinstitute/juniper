@@ -1,5 +1,5 @@
 import React, { useEffect, useId } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import LandingNavbar from './LandingNavbar'
 import { LocalSiteContent } from 'api/api'
 import { MailingListModal } from './MailingListModal'
@@ -7,6 +7,7 @@ import { HtmlSectionView } from './sections/HtmlPageView'
 
 /** renders the landing page for a portal (e.g. hearthive.org) */
 function LandingPageView({ localContent }: { localContent: LocalSiteContent }) {
+  const location = useLocation()
   const mailingListModalId = useId()
 
   useEffect(() => {
@@ -15,7 +16,7 @@ function LandingPageView({ localContent }: { localContent: LocalSiteContent }) {
       el.dataset.bsToggle = 'modal'
       el.dataset.bsTarget = `#${CSS.escape(mailingListModalId)}`
     })
-  }, [])
+  }, [location.pathname])
 
   return <div className="LandingPage">
     <div className="container-fluid bg-white min-vh-100 d-flex flex-column p-0">
