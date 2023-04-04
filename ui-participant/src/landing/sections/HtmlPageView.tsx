@@ -2,6 +2,7 @@ import _ from 'lodash'
 import React from 'react'
 
 import { HtmlPage, HtmlSection, SectionConfig, SectionType } from 'api/api'
+import { DocumentTitle } from 'util/DocumentTitle'
 import { isPlainObject } from 'util/validationUtils'
 
 import BannerImage from './BannerImage'
@@ -15,6 +16,7 @@ import PhotoBlurbGrid from './PhotoBlurbGrid'
 import ParticipationDetailTemplate from './ParticipationDetailTemplate'
 import NavAndLinkSectionsFooter from './NavAndLinkSectionsFooter'
 import { TemplateComponent } from './templateUtils'
+
 
 const templateComponents: Record<SectionType, TemplateComponent> = {
   'FAQ': FrequentlyAskedQuestionsTemplate,
@@ -32,6 +34,7 @@ const templateComponents: Record<SectionType, TemplateComponent> = {
 /** renders a configured HtmlPage */
 export default function HtmlPageView({ page }: { page: HtmlPage }) {
   return <>
+    <DocumentTitle title={page.title} />
     {
       _.map(page.sections, (section: HtmlSection) => <HtmlSectionView section={section} key={section.id}/>)
     }

@@ -9,7 +9,7 @@
     "primaryBrandColor": "rgb(155, 36, 133)",
     "footerSectionFile": "footerSection.json",
     "landingPage": {
-      "title": "OurHealth portal home",
+      "title": "",
       "sectionDtos": [{
         "sectionType": "HERO_WITH_IMAGE",
         "sectionConfigJson": {
