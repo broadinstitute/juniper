@@ -15,6 +15,17 @@ export default function SurveyFullDataView({ fullData, survey }: {fullData: stri
 }
 
 const ItemDisplay = ({ dataItem, surveyJsModel }: {dataItem: DenormalizedResponseItem, surveyJsModel: SurveyModel}) => {
+  const displayValue = getDisplayValue(dataItem)
+  return <>
+    <dt className="fw-normal">
+      {renderQuestionText(dataItem, surveyJsModel)}
+      <span className="ms-2 fst-italic text-muted">({dataItem.stableId})</span>
+    </dt>
+    <dl><pre className="fw-bold">{displayValue}</pre></dl>
+  </>
+}
+
+const getDisplayValue = (dataItem: DenormalizedResponseItem) => {
   let displayValue: React.ReactNode = dataItem.displayValue
   if (!displayValue) {
     displayValue = dataItem.simpleValue
@@ -24,13 +35,7 @@ const ItemDisplay = ({ dataItem, surveyJsModel }: {dataItem: DenormalizedRespons
   } else if (dataItem.stableId.endsWith('signature')) {
     displayValue = <img src={dataItem.value}/>
   }
-  return <>
-    <dt className="fw-normal">
-      {renderQuestionText(dataItem, surveyJsModel)}
-      <span className="ms-2 fst-italic text-muted">({dataItem.stableId})</span>
-    </dt>
-    <dl><pre className="fw-bold">{displayValue}</pre></dl>
-  </>
+  return displayValue
 }
 
 /** gets the question text -- truncates it at 100 chars */
