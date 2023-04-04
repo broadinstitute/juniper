@@ -38,7 +38,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
 
   /** gets classes to apply to nav links */
   function getLinkCssClasses({ isActive }: {isActive: boolean}) {
-    return isActive ? 'fw-bold' : ''
+    return `${isActive ? 'fw-bold' : ''} d-flex align-items-center`
   }
 
   const surveys = currentEnv.configuredSurveys
@@ -104,7 +104,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                       <NavLink to={`surveys/${stableId}`} className={getLinkCssClasses}>
                         { survey.survey.name }
                         {responseMap[stableId].responses.length > 0 &&
-                          <span className="badge align-middle" style={{  background: '#888', marginLeft: '0.5em' }}>
+                          <span className="badge align-middle bg-secondary ms-1 mb-1">
                             {responseMap[stableId].responses.length}
                           </span>
                         }
@@ -168,8 +168,8 @@ const TaskSummary = ({ tasks }: {tasks: ParticipantTask[]}) => {
 
   ]
   return <ul className="list-unstyled">
-    {countsWithLabels.map(countWithLabel => <li key={countWithLabel.label} className="ms-3">
-      {countWithLabel.label}: <span className="badge align-middle" style={{  background: '#888', marginLeft: '0.5em' }}>
+    {countsWithLabels.map(countWithLabel => <li key={countWithLabel.label} className="ms-3 d-flex align-items-center">
+      {countWithLabel.label}: <span className="badge align-middle bg-secondary ms-1">
         {countWithLabel.count}
       </span>
     </li>)}
