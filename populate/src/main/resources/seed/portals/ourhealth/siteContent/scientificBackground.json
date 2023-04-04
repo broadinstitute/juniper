@@ -25,7 +25,11 @@
       "sectionConfigJson": {
         "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
         "blurb": "South Asians have **twice the risk** of cardiovascular disease compared to Europeans.",
-        "image": { "cleanFileName": "infographic_risk.png", "version": 1}
+        "image": {
+          "cleanFileName": "infographic_risk.png",
+          "version": 1,
+          "alt": "South Asians have twice the risk of cardiovascular disease: 20% in South Asians compared to 11% in people of European descent."
+        }
       }
     },{
       "sectionType": "HERO_CENTERED",
@@ -33,7 +37,11 @@
         "title": "South Asian **ancestry is considered a risk-enhancing factor** for cardiovascular disease.",
         "blurb": "However, there has been no single gene found to be responsible and current clinical risk calculators are unable to account for the specific impact of South Asian ancestry. Clinical risk factors, such as increased cholesterol, increased blood pressure, diabetes, and smoking, are well recognized to influence cardiovascular disease risk. Additional ‘risk-enhancing’ factors are more recently recognized conditions or traits linked to excess risk beyond conventional clinical risk factors. In 2018, the American Heart Association and American College of Cardiology uniquely distinguished South Asian ancestry as a ‘risk-enhancing factor.’",
         "blurbAlign": "left",
-        "image": { "cleanFileName": "risk_factors.png", "version": 1}
+        "image": {
+          "cleanFileName": "risk_factors.png",
+          "version": 1,
+          "alt": "\"Risk-enhancing factors\" include biological conditions and traits such as high cholesterol or inflammatory biomarkers, chronic kidney disease, chronic inflammatory diseases, family history of early cardiovascular disease, metabolic syndrome, or history of early menopause. In 2018, the American Heart Association and American College of Cardiology uniquely distinguished South Asian ancestry as a \"risk-enhancing factor.\""
+        }
       }
     },{
       "sectionType": "HERO_CENTERED",
@@ -50,14 +58,22 @@
     },{
       "sectionType": "HERO_CENTERED",
       "sectionConfigJson": {
-        "image": { "cleanFileName": "population_rates.png", "version": 1}
+        "image": {
+          "cleanFileName": "population_rates.png",
+          "version": 1,
+          "alt": "South Asians make up 23% of the global population, but only 1.3% of genetic study participants."
+        }
       }
     },{
       "sectionType": "HERO_CENTERED",
       "sectionConfigJson": {
         "blurb": "Even though South Asians make up a quarter of the world population, they are underrepresented in genetic studies that are beginning to more fully shape our understanding of cardiovascular risk in the population. This disparity has not improved over time.",
         "blurbAlign": "left",
-        "image": { "cleanFileName": "individual_rates.png", "version": 1}
+        "image": {
+          "cleanFileName": "individual_rates.png",
+          "version": 1,
+          "alt": "24,626 individuals were studied to create the recommended cardiovascular risk tool most widely used in the United States, but no one of South Asian descent was included."
+        }
       }
     },{
       "sectionType": "HERO_CENTERED",
