@@ -35,23 +35,11 @@ public class AdminUserDao extends BaseMutableJdbiDao<AdminUser> {
         return Optional.empty();
     }
 
-    public Optional<AdminUser> findByToken(String token) {
-        return findByProperty("token", token);
-    }
-
-    public Optional<AdminUserWithPermissions> findByTokenWithPermissions(String token) {
-        Optional<AdminUser> userOpt = findByProperty("token", token);
-        if (userOpt.isPresent()) {
-            return loadWithPermissions(userOpt.get());
-        }
-        return Optional.empty();
-    }
-
     public Optional<AdminUserWithPermissions> loadWithPermissions(AdminUser user) {
         List<PortalPermission> portalPermissions = jdbi.withHandle(handle ->
                 handle.createQuery("select permission.name as permissionName, portal_admin_user.portal_id as portalId" +
                                 " from permission " +
-                                " join role_permission on permission_id = permission.id " +
+                                " join role_permission on role_permission.permission_id = permission.id " +
                                 " join portal_admin_user_role on role_permission.role_id = portal_admin_user_role.role_id" +
                                 " join portal_admin_user on portal_admin_user.id = portal_admin_user_role.portal_admin_user_id" +
                                 " where portal_admin_user.admin_user_id = :adminUserId")
@@ -60,11 +48,12 @@ public class AdminUserDao extends BaseMutableJdbiDao<AdminUser> {
                         .list()
         );
         // transform the list of UUIDs and permissions into a map
-        var permissionMap = new HashMap<UUID, List<String>>();
+        var permissionMap = new HashMap<UUID, HashSet<String>>();
         portalPermissions.stream().forEach(portalPerm -> {
-            List<String> perms = permissionMap.get(portalPerm.portalId);
+            HashSet<String> perms = permissionMap.get(portalPerm.portalId);
             if (perms == null) {
-                perms = new ArrayList<>();
+                perms = new HashSet<>();
+                permissionMap.put(portalPerm.portalId, perms);
             }
             perms.add(portalPerm.permissionName);
         });
