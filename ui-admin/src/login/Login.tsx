@@ -8,7 +8,7 @@ import { useAuth } from 'react-oidc-context'
 function Login() {
   const [emailAddress, setEmailAddress] = useState('')
   const [isError, setIsError] = useState(false)
-  const { loginUser } = useUser()
+  const { loginUserUnauthed } = useUser()
   const auth = useAuth()
 
   const signIn = async () => {
@@ -20,7 +20,7 @@ function Login() {
   function unauthedLogin(event: SyntheticEvent) {
     event.preventDefault()
     Api.unauthedLogin(emailAddress).then((adminUser: AdminUser) => {
-      loginUser(adminUser)
+      loginUserUnauthed(adminUser)
     }).catch(() => {
       setIsError(true)
     })

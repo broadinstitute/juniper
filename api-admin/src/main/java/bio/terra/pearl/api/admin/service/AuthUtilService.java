@@ -16,17 +16,17 @@ import org.springframework.stereotype.Service;
 /** Utility service for common auth-related methods */
 @Service
 public class AuthUtilService {
-  private CurrentUserService currentUserService;
+  private CurrentUnauthedUserService currentUnauthedUserService;
   private BearerTokenFactory bearerTokenFactory;
   private PortalService portalService;
   private PortalStudyService portalStudyService;
 
   public AuthUtilService(
-      CurrentUserService currentUserService,
+      CurrentUnauthedUserService currentUnauthedUserService,
       BearerTokenFactory bearerTokenFactory,
       PortalService portalService,
       PortalStudyService portalStudyService) {
-    this.currentUserService = currentUserService;
+    this.currentUnauthedUserService = currentUnauthedUserService;
     this.bearerTokenFactory = bearerTokenFactory;
     this.portalService = portalService;
     this.portalStudyService = portalStudyService;
@@ -37,7 +37,7 @@ public class AuthUtilService {
     String token = bearerTokenFactory.from(request).getToken();
     var decodedJWT = JWT.decode(token);
     var email = decodedJWT.getClaim("email").asString();
-    Optional<AdminUser> userOpt = currentUserService.findByUsername(email);
+    Optional<AdminUser> userOpt = currentUnauthedUserService.findByUsername(email);
     if (userOpt.isEmpty()) {
       throw new UnauthorizedException("User not found: " + email);
     }
