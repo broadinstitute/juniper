@@ -1,12 +1,11 @@
 import _ from 'lodash'
 import React from 'react'
-import { Link } from 'react-router-dom'
 
 import { SectionConfig } from 'api/api'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requirePlainObject, requireString } from 'util/validationUtils'
 
-import { ButtonConfig, validateButtonConfig } from 'landing/ConfiguredButton'
+import { ButtonConfig, ConfiguredLink, validateButtonConfig } from 'landing/ConfiguredButton'
 import { TemplateComponentProps } from './templateUtils'
 
 type LinkSectionsFooterConfig = {
@@ -48,7 +47,7 @@ export function LinkSectionsFooter(props: LinkSectionsFooterProps) {
             {_.map(section.items, (item, index) => {
               return (
                 <li key={index} className="mb-3">
-                  <FooterItem item={item} />
+                  <ConfiguredLink config={item} />
                 </li>
               )
             })}
@@ -60,18 +59,3 @@ export function LinkSectionsFooter(props: LinkSectionsFooterProps) {
 }
 
 export default withValidatedSectionConfig(validateLinkSectionsFooterConfig, LinkSectionsFooter)
-
-/**
- * Renders an individual item (e.g. a link) for the footer.
- */
-function FooterItem({ item }: { item: ButtonConfig }) {
-  if (item.type === 'join') {
-    const to = item.studyShortcode ? `/studies/${item.studyShortcode}/join` : '/join'
-    return <Link to={to}>{item.text}</Link>
-  } else if (item.type === 'mailingList') {
-    return <a href="#mailing-list">{item.text}</a>
-  } else if (item.type === 'internalLink') {
-    return <Link to={item.href}>{item.text}</Link>
-  }
-  return <a href={item.href} rel="noreferrer" target="_blank">{item.text}</a>
-}
