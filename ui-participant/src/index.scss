@@ -101,3 +101,7 @@ a {
     max-height: max(33vh, 212px);
   }
 }
+
+.btn-rounded {
+  border-radius: calc((1em * var(--bs-btn-line-height) + 2 * var(--bs-btn-padding-y)) / 2);
+}
