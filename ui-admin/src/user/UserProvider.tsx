@@ -76,7 +76,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
         user.token = token
         loginUser(user)
         setIsLoading(false)
-      }).catch(e => {
+      }).catch(() => {
         alert('We could not find an authorized user matching that login')
       })
     })
