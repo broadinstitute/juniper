@@ -76,7 +76,6 @@ function StudyTaskBox({ enrollee, portal }: { enrollee: Enrollee, portal: Portal
   const hasCompletedForms = completedForms.length > 0
 
   return <div className="p-3">
-    <h4 className="mb-3">{matchedStudy.name}</h4>
     {hasStudyTasks && <div>
       {nextTask && <div className="row">
         <div className="col-md-12 text-center p-4" style={{ background: '#eef' }}>
