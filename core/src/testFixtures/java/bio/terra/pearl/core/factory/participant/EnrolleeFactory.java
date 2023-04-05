@@ -2,6 +2,7 @@ package bio.terra.pearl.core.factory.participant;
 
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -32,6 +33,11 @@ public class EnrolleeFactory {
     }
 
     public Enrollee.EnrolleeBuilder builderWithDependencies(String testName) {
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
+        return builderWithDependencies(testName, studyEnv.getEnvironmentName());
+    }
+
+    public Enrollee.EnrolleeBuilder builderWithDependencies(String testName, EnvironmentName envName) {
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
         ParticipantUser participantUser = participantUserFactory.buildPersisted(
                 participantUserFactory.builder(testName)
