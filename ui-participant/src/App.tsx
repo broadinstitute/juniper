@@ -18,6 +18,8 @@ import PortalPasswordGate from 'landing/PortalPasswordGate'
 import EnvironmentAlert from 'EnvironmentAlert'
 import ConfigProvider, { ConfigConsumer } from 'providers/ConfigProvider'
 import { DocumentTitle } from 'util/DocumentTitle'
+import { PrivacyPolicyPage } from 'terms/PrivacyPolicyPage'
+import { TermsOfServicePage } from 'terms/TermsOfServicePage'
 
 
 type BrandConfiguration = {
@@ -109,6 +111,8 @@ function App() {
                           {landingRoutes}
                           <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
                         </Route>
+                        <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                        <Route path="/terms" element={<TermsOfServicePage />} />
                         <Route path="*" element={<div>unmatched route</div>}/>
                       </Routes>
                     </UserProvider>

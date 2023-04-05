@@ -40,25 +40,21 @@ export function LinkSectionsFooter(props: LinkSectionsFooterProps) {
   const { config } = props
 
   return <>
-    <div className="d-flex justify-content-center py-5">
-      <div className="col-lg-8">
-        <div className="row justify-content-between mx-0">
-          {_.map(config.itemSections, (section, index) =>
-            <div key={index} className="col-12 col-sm-6 col-lg-auto">
-              <h2 className="h6 fw-bold mb-4">{section.title}</h2>
-              <ul className="list-unstyled">
-                {_.map(section.items, (item, index) => {
-                  return (
-                    <li key={index} className="mb-3">
-                      <FooterItem item={item} />
-                    </li>
-                  )
-                })}
-              </ul>
-            </div>
-          )}
+    <div className="row mx-0 justify-content-between">
+      {_.map(config.itemSections, (section, index) =>
+        <div key={index} className="col-12 col-sm-6 col-lg-auto">
+          <h2 className="h6 fw-bold mb-4">{section.title}</h2>
+          <ul className="list-unstyled">
+            {_.map(section.items, (item, index) => {
+              return (
+                <li key={index} className="mb-3">
+                  <FooterItem item={item} />
+                </li>
+              )
+            })}
+          </ul>
         </div>
-      </div>
+      )}
     </div>
   </>
 }

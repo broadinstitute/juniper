@@ -1,5 +1,6 @@
+import classNames from 'classnames'
 import React, { useEffect, useId } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { Link, Outlet, useLocation } from 'react-router-dom'
 import LandingNavbar from './LandingNavbar'
 import { LocalSiteContent } from 'api/api'
 import { MailingListModal } from './MailingListModal'
@@ -18,6 +19,8 @@ function LandingPageView({ localContent }: { localContent: LocalSiteContent }) {
     })
   }, [location.pathname])
 
+  const hasFooter = !!localContent.footerSection
+
   return <div className="LandingPage">
     <div className="container-fluid bg-white min-vh-100 d-flex flex-column p-0">
       <div>
@@ -26,9 +29,29 @@ function LandingPageView({ localContent }: { localContent: LocalSiteContent }) {
       <main className="flex-grow-1">
         <Outlet/>
       </main>
-      {localContent.footerSection && <footer>
-        <HtmlSectionView section={localContent.footerSection}/>
-      </footer>}
+      <footer>
+        <div
+          className={classNames('row mx-0 d-flex justify-content-center', { 'pt-5': hasFooter })}
+        >
+          <div className="col-12 col-lg-8 px-0">
+            {localContent.footerSection && (
+              <HtmlSectionView section={localContent.footerSection}/>
+            )}
+            <div className="row mx-0">
+              <div
+                className={classNames('col-12', { 'border-top border-secondary': hasFooter })}
+                style={{
+                  paddingTop: '2rem', paddingBottom: '2rem',
+                  marginTop: hasFooter ? '6rem' : 0
+                }}
+              >
+                <Link to="/privacy">Privacy Policy</Link>
+                <Link to="/terms" style={{ marginLeft: '2rem' }}>Terms of Service</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
       <MailingListModal id={mailingListModalId} />
     </div>
   </div>
