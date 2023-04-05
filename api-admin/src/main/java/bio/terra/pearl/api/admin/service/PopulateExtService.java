@@ -6,7 +6,6 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
-import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import bio.terra.pearl.populate.service.BaseSeedPopulator;
 import bio.terra.pearl.populate.service.EnrolleePopulator;
 import bio.terra.pearl.populate.service.PortalPopulator;
@@ -23,19 +22,16 @@ public class PopulateExtService {
   private EnrolleePopulator enrolleePopulator;
   private SurveyPopulator surveyPopulator;
   private PortalPopulator portalPopulator;
-  private ApplicationRoutingPaths routingPaths;
 
   public PopulateExtService(
       BaseSeedPopulator baseSeedPopulator,
       EnrolleePopulator enrolleePopulator,
       SurveyPopulator surveyPopulator,
-      PortalPopulator portalPopulator,
-      ApplicationRoutingPaths routingPaths) {
+      PortalPopulator portalPopulator) {
     this.baseSeedPopulator = baseSeedPopulator;
     this.enrolleePopulator = enrolleePopulator;
     this.surveyPopulator = surveyPopulator;
     this.portalPopulator = portalPopulator;
-    this.routingPaths = routingPaths;
   }
 
   public BaseSeedPopulator.SetupStats populateBaseSeed(AdminUser user) {
