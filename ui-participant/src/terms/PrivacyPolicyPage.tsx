@@ -444,7 +444,7 @@ const PrivacyPolicy = () => {
   )
 }
 
-export const PrivacyPolicyPage = () => {
+const PrivacyPolicyPage = () => {
   return (
     <div className="container-fluid bg-white min-vh-100 d-flex flex-column p-0">
       <LandingNavbar aria-label="Primary" />
@@ -458,3 +458,5 @@ export const PrivacyPolicyPage = () => {
     </div>
   )
 }
+
+export default PrivacyPolicyPage

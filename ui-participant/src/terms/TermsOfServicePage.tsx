@@ -359,7 +359,7 @@ const TermsOfService = () => {
   )
 }
 
-export const TermsOfServicePage = () => {
+const TermsOfServicePage = () => {
   return (
     <div className="container-fluid bg-white min-vh-100 d-flex flex-column p-0">
       <LandingNavbar aria-label="Primary" />
@@ -373,3 +373,5 @@ export const TermsOfServicePage = () => {
     </div>
   )
 }
+
+export default TermsOfServicePage
