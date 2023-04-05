@@ -17,11 +17,21 @@ public abstract class Populator<T extends BaseEntity, P extends FilePopulateCont
     @Autowired
     protected ObjectMapper objectMapper;
 
+    /** nukes and recreates the given object */
     @Transactional
     public T populate(P context) throws IOException {
         String fileString = filePopulateService.readFile(context.getRootFileName(), context);
         return populateFromString(fileString, context);
     }
 
+    /** updates the object in-place where possible */
+    @Transactional
+    public T update(P context) throws IOException {
+        String fileString = filePopulateService.readFile(context.getRootFileName(), context);
+        return updateFromString(fileString, context);
+    }
+
     public abstract T populateFromString(String fileString, P context) throws IOException;
+
+    public abstract T updateFromString(String fileString, P context) throws IOException;
 }

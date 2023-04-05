@@ -7,6 +7,7 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -64,5 +65,9 @@ public class SiteImageService extends CrudService<SiteImage, SiteImageDao> {
         return uploadFileName.toLowerCase()
                 .replaceAll("\\s", "_")
                 .replaceAll("[^a-z\\d\\._\\-]", "");
+    }
+
+    public int getNextVersion(String cleanFileName, String portalShortcode) {
+        return dao.getNextVersion(cleanFileName, portalShortcode);
     }
 }

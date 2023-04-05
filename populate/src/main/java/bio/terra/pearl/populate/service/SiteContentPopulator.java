@@ -11,6 +11,7 @@ import bio.terra.pearl.populate.dto.site.*;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.BeanUtils;
@@ -79,20 +80,41 @@ public class SiteContentPopulator extends Populator<SiteContent, PortalPopulateC
     public void populateImages(List<SiteImagePopDto> siteImages, PortalPopulateContext context)
             throws IOException {
         for (SiteImagePopDto imageDto : siteImages) {
-            String popFileName = imageDto.getPopulateFileName();
-            byte[] imageContent = filePopulateService.readBinaryFile(popFileName, context);
-            String uploadFileName = imageDto.getUploadFileName();
-            if (uploadFileName == null) {
-                uploadFileName = popFileName.substring(popFileName.lastIndexOf("/") + 1);
-            }
-            SiteImage image = SiteImage.builder()
-                    .data(imageContent)
-                    .portalShortcode(context.getPortalShortcode())
-                    .version(imageDto.getVersion() == 0 ? 1 : imageDto.getVersion())
-                    .uploadFileName(uploadFileName)
-                    .build();
+            SiteImage image = convertDto(imageDto, context);
             siteImageService.create(image);
         }
+    }
+
+    /** WIP method -- not used because I'm not sure how we want to handle pushing image updates */
+    public void updateImages(List<SiteImagePopDto> siteImages, PortalPopulateContext context)
+            throws IOException {
+        for (SiteImagePopDto imageDto : siteImages) {
+            SiteImage image = convertDto(imageDto, context);
+            Optional<SiteImage> existingImageOpt = siteImageService.findOne(context.getPortalShortcode(),
+                    image.getCleanFileName(), image.getVersion());
+            // if the image is the same, no-op
+            if (existingImageOpt.isPresent() && Arrays.equals(image.getData(), existingImageOpt.get().getData())) {
+                continue;
+            }
+            // otherwise create a new version
+            image.setVersion(siteImageService.getNextVersion(image.getCleanFileName(), context.getPortalShortcode()));
+            siteImageService.create(image);
+        }
+    }
+
+    private SiteImage convertDto(SiteImagePopDto imageDto, PortalPopulateContext context) throws IOException {
+        String popFileName = imageDto.getPopulateFileName();
+        byte[] imageContent = filePopulateService.readBinaryFile(popFileName, context);
+        String uploadFileName = imageDto.getUploadFileName();
+        if (uploadFileName == null) {
+            uploadFileName = popFileName.substring(popFileName.lastIndexOf("/") + 1);
+        }
+        return SiteImage.builder()
+                .data(imageContent)
+                .portalShortcode(context.getPortalShortcode())
+                .version(imageDto.getVersion() == 0 ? 1 : imageDto.getVersion())
+                .uploadFileName(uploadFileName)
+                .build();
     }
 
     private void initializeNavItem(NavbarItemPopDto navItem, FilePopulateContext config) throws IOException {

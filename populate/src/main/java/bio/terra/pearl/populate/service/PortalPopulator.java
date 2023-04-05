@@ -88,6 +88,33 @@ public class PortalPopulator extends Populator<Portal, FilePopulateContext> {
         return portal;
     }
 
+    public Portal updateFromString(String portalContent, FilePopulateContext context) throws IOException {
+        PortalPopDto portalDto = objectMapper.readValue(portalContent, PortalPopDto.class);
+
+        Optional<Portal> existingPortalOpt = portalService.findOneByShortcode(portalDto.getShortcode());
+        Portal portal = existingPortalOpt.orElseGet(() -> portalService.create(portalDto));
+
+        PortalPopulateContext portalPopContext = new PortalPopulateContext(context, portal.getShortcode(), null);
+        // for now, just nuke and recreate the images
+        siteContentPopulator.populateImages(portalDto.getSiteImageDtos(), portalPopContext);
+
+        for (String surveyFile : portalDto.getSurveyFiles()) {
+            surveyPopulator.update(portalPopContext.newFrom(surveyFile));
+        }
+
+        for (PortalEnvironmentPopDto portalEnvironment : portalDto.getPortalEnvironmentDtos()) {
+            initializePortalEnv(portalEnvironment, portal, portalPopContext);
+        }
+        for (String studyFileName : portalDto.getPopulateStudyFiles()) {
+            populateStudy(studyFileName, portalPopContext, portal);
+        }
+
+        for (AdminUserDto adminUserDto : portalDto.getAdminUsers()) {
+            adminUserPopulator.populateForPortal(adminUserDto, portal);
+        }
+        return portal;
+    }
+
     private void populateStudy(String studyFileName, PortalPopulateContext context, Portal portal) throws IOException {
         Study newStudy = studyPopulator.populate(context.newFrom(studyFileName));
         PortalStudy portalStudy = portalStudyService.create(portal.getId(), newStudy.getId());

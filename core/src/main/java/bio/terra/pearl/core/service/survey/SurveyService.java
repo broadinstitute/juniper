@@ -131,4 +131,8 @@ public class SurveyService extends CrudService<Survey, SurveyDao> {
         }
         return create(newSurvey);
     }
+
+    public int getNextVersion(String stableId) {
+        return dao.getNextVersion(stableId);
+    }
 }
