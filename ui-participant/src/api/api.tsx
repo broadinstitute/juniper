@@ -257,7 +257,8 @@ export type PortalParticipantUser = {
 
 export type Config = {
   b2cTenantName: string,
-  b2cClientId: string
+  b2cClientId: string,
+  b2cPolicyName: string,
 }
 
 export type SectionConfig = Record<string, unknown>

@@ -96,7 +96,7 @@ function App() {
             <ConfigProvider>
               <ConfigConsumer>
                 {config =>
-                  <AuthProvider {...getOidcConfig(config.b2cTenantName, config.b2cClientId)}>
+                  <AuthProvider {...getOidcConfig(config.b2cTenantName, config.b2cClientId, config.b2cPolicyName)}>
                     <UserProvider>
                       <Routes>
                         <Route path="/hub/*" element={<ProtectedRoute><HubRouter/></ProtectedRoute>}/>
