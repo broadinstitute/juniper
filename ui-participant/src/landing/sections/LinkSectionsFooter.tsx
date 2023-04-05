@@ -77,5 +77,5 @@ function FooterItem({ item }: { item: ButtonConfig }) {
   } else if (item.type === 'internalLink') {
     return <Link to={item.href}>{item.text}</Link>
   }
-  return <a href={item.href} rel="noreferrer">{item.text}</a>
+  return <a href={item.href} rel="noreferrer" target="_blank">{item.text}</a>
 }
