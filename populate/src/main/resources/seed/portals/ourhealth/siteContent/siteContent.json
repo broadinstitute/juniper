@@ -9,7 +9,7 @@
     "primaryBrandColor": "rgb(155, 36, 133)",
     "footerSectionFile": "footerSection.json",
     "landingPage": {
-      "title": "OurHealth portal home",
+      "title": "",
       "sectionDtos": [{
         "sectionType": "HERO_WITH_IMAGE",
         "sectionConfigJson": {
@@ -111,7 +111,8 @@
         "sectionConfigJson": {
           "backgroundColor": "#f2f2f2",
           "blurb": "If your question is not answered below, you can call or email our study staff at **[617&#x2011;724&#x2011;1240](tel:+16177241240)** or **[info@ourhealthstudy.org](mailto:info@ourhealthstudy.org)**.",
-        "questions": [
+          "showToggleAllButton": false,
+          "questions": [
           {
             "question": "What is the OurHealth study?",
             "answer": "OurHealth is a nonprofit research initiative that enables South Asian-identifying individuals to contribute to cardiovascular research by sharing their samples, their clinical information, and their voices."

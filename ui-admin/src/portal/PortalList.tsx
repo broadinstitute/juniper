@@ -21,7 +21,7 @@ function PortalList() {
   }, [])
   return <div>
     <div className="App-study-list position-absolute top-50 start-50 translate-middle">
-      <h4 className="text-center">Arbor</h4>
+      <h4 className="text-center">Juniper</h4>
 
       <h6 className="mt-3">Select a portal</h6>
       <LoadingSpinner isLoading={isLoading}>

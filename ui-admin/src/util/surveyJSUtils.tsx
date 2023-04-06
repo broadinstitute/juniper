@@ -63,7 +63,7 @@ export function useSurveyJSCreator(survey: Survey | ConsentForm, onChange: () =>
 }
 
 /** transform the stored survey representation into what SurveyJS expects */
-function extractSurveyContent(survey: Survey | ConsentForm) {
+export const extractSurveyContent = (survey: Survey | ConsentForm) => {
   const parsedSurvey = JSON.parse(survey.content)
   const questionTemplates = parsedSurvey.questionTemplates as Question[]
   Serializer.addProperty('survey', { name: 'questionTemplates', category: 'general' })

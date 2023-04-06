@@ -97,7 +97,7 @@ export type SectionType =
   | 'FAQ'
   | 'HERO_CENTERED'
   | 'HERO_WITH_IMAGE'
-  | 'NAV_AND_LINK_SECTIONS_FOOTER'
+  | 'LINK_SECTIONS_FOOTER'
   | 'PARTICIPATION_DETAIL'
   | 'PHOTO_BLURB_GRID'
   | 'RAW_HTML'
@@ -257,7 +257,8 @@ export type PortalParticipantUser = {
 
 export type Config = {
   b2cTenantName: string,
-  b2cClientId: string
+  b2cClientId: string,
+  b2cPolicyName: string,
 }
 
 export type SectionConfig = Record<string, unknown>

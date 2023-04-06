@@ -1,7 +1,7 @@
 import React from 'react'
 import {
   ConsentResponse,
-  Enrollee,
+  Enrollee, ParticipantTask,
   StudyEnvironmentConsent,
   StudyEnvironmentSurvey,
   SurveyResponse
@@ -16,6 +16,7 @@ import PreEnrollmentView from './survey/PreEnrollmentView'
 import EnrolleeNotifications from './EnrolleeNotifications'
 import DataChangeRecords from './DataChangeRecords'
 import EnrolleeProfile from './EnrolleeProfile'
+import ParticipantTaskView from './tasks/ParticipantTaskView'
 
 export type SurveyWithResponsesT = {
   survey: StudyEnvironmentSurvey,
@@ -37,7 +38,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
 
   /** gets classes to apply to nav links */
   function getLinkCssClasses({ isActive }: {isActive: boolean}) {
-    return isActive ? 'fw-bold' : ''
+    return `${isActive ? 'fw-bold' : ''} d-flex align-items-center`
   }
 
   const surveys = currentEnv.configuredSurveys
@@ -103,7 +104,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                       <NavLink to={`surveys/${stableId}`} className={getLinkCssClasses}>
                         { survey.survey.name }
                         {responseMap[stableId].responses.length > 0 &&
-                          <span className="badge align-middle" style={{  background: '#888', marginLeft: '0.5em' }}>
+                          <span className="badge align-middle bg-secondary ms-1 mb-1">
                             {responseMap[stableId].responses.length}
                           </span>
                         }
@@ -113,17 +114,8 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                 </ul>
               </li>
               <li className="list-group-item subgroup">
-                Tasks
-                <ul className="list-group">
-                  { enrollee.participantTasks.map(task => {
-                    return <li className="list-group-item border-0" key={task.id}>
-                      <NavLink to={`tasks/${task.id}`} className={getLinkCssClasses}>
-                        { task.taskType }: {task.targetName}
-                        &nbsp; <span className="detail">{task.status}</span>
-                      </NavLink>
-                    </li>
-                  }) }
-                </ul>
+                <NavLink to="tasks" className={getLinkCssClasses}>Tasks</NavLink>
+                <TaskSummary tasks={enrollee.participantTasks}/>
               </li>
               <li className="list-group-item subgroup">
                 <NavLink to="notifications" className={getLinkCssClasses}>Notifications</NavLink>
@@ -146,6 +138,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                   responseMap={responseMap}/>}/>
                 <Route path="*" element={<div>Unknown participant survey page</div>}/>
               </Route>
+              <Route path="tasks" element={<ParticipantTaskView enrollee={enrollee}/>}/>
               <Route path="consents">
                 <Route path=":consentStableId" element={<EnrolleeConsentView enrollee={enrollee}
                   responseMap={consentMap}/>}/>
@@ -165,6 +158,22 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
       </div>
     </div>
   </div>
+}
+
+const TaskSummary = ({ tasks }: {tasks: ParticipantTask[]}) => {
+  const countsWithLabels: {label: string, count :number}[] = [
+    { label: 'New', count: tasks.filter(task => task.status === 'NEW').length },
+    { label: 'In progress', count: tasks.filter(task => task.status === 'IN_PROGRESS').length },
+    { label: 'Complete', count: tasks.filter(task => task.status === 'COMPLETE').length }
+
+  ]
+  return <ul className="list-unstyled">
+    {countsWithLabels.map(countWithLabel => <li key={countWithLabel.label} className="ms-3 d-flex align-items-center">
+      {countWithLabel.label}: <span className="badge align-middle bg-secondary ms-1">
+        {countWithLabel.count}
+      </span>
+    </li>)}
+  </ul>
 }
 
 /** TODO -- this should be computed server-side */

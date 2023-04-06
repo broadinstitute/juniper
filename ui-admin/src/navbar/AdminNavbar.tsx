@@ -43,7 +43,7 @@ function AdminNavbar({ breadCrumbs, sidebarContent, showSidebar, setShowSidebar 
             <FontAwesomeIcon icon={faBars}/>
           </button>
           <Link className="navbar-brand ms-2 fw-bold text-white" to="/">
-          Pearl
+          Juniper
           </Link>
         </div>
         <div className="collapse navbar-collapse" id="navbarNavDropdown">

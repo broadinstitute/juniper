@@ -1,7 +1,8 @@
 import _ from 'lodash'
-import React, { useEffect, useId } from 'react'
+import React from 'react'
 
 import { HtmlPage, HtmlSection, SectionConfig, SectionType } from 'api/api'
+import { DocumentTitle } from 'util/DocumentTitle'
 import { isPlainObject } from 'util/validationUtils'
 
 import BannerImage from './BannerImage'
@@ -13,9 +14,9 @@ import SocialMediaTemplate from './SocialMediaTemplate'
 import RawHtmlTemplate from './RawHtmlTemplate'
 import PhotoBlurbGrid from './PhotoBlurbGrid'
 import ParticipationDetailTemplate from './ParticipationDetailTemplate'
-import NavAndLinkSectionsFooter from './NavAndLinkSectionsFooter'
+import LinkSectionsFooter from './LinkSectionsFooter'
 import { TemplateComponent } from './templateUtils'
-import { MailingListModal } from 'landing/MailingListModal'
+
 
 const templateComponents: Record<SectionType, TemplateComponent> = {
   'FAQ': FrequentlyAskedQuestionsTemplate,
@@ -26,27 +27,17 @@ const templateComponents: Record<SectionType, TemplateComponent> = {
   'PHOTO_BLURB_GRID': PhotoBlurbGrid,
   'PARTICIPATION_DETAIL': ParticipationDetailTemplate,
   'RAW_HTML': RawHtmlTemplate,
-  'NAV_AND_LINK_SECTIONS_FOOTER': NavAndLinkSectionsFooter,
+  'LINK_SECTIONS_FOOTER': LinkSectionsFooter,
   'BANNER_IMAGE': BannerImage
 }
 
 /** renders a configured HtmlPage */
 export default function HtmlPageView({ page }: { page: HtmlPage }) {
-  const mailingListModalId = useId()
-
-  useEffect(() => {
-    const mailingListLinks = document.querySelectorAll<HTMLLinkElement>('a[href="#mailing-list"]')
-    Array.from(mailingListLinks).forEach(el => {
-      el.dataset.bsToggle = 'modal'
-      el.dataset.bsTarget = `#${CSS.escape(mailingListModalId)}`
-    })
-  }, [])
-
   return <>
+    <DocumentTitle title={page.title} />
     {
       _.map(page.sections, (section: HtmlSection) => <HtmlSectionView section={section} key={section.id}/>)
     }
-    {(page.sections || []).length > 0 && <MailingListModal id={mailingListModalId} />}
   </>
 }
 
