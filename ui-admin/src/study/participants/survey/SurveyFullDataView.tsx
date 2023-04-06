@@ -25,7 +25,7 @@ const ItemDisplay = ({ dataItem, surveyJsModel }: {dataItem: DenormalizedRespons
   </>
 }
 
-const getDisplayValue = (dataItem: DenormalizedResponseItem) => {
+export const getDisplayValue = (dataItem: DenormalizedResponseItem) => {
   let displayValue: React.ReactNode = dataItem.displayValue
   if (!displayValue) {
     displayValue = dataItem.simpleValue
@@ -39,8 +39,8 @@ const getDisplayValue = (dataItem: DenormalizedResponseItem) => {
 }
 
 /** gets the question text -- truncates it at 100 chars */
-const renderQuestionText = (dataItem: DenormalizedResponseItem, surveyJsModel: SurveyModel) => {
-  const questionText = surveyJsModel.getQuestionByName(dataItem.stableId).title
+export const renderQuestionText = (dataItem: DenormalizedResponseItem, surveyJsModel: SurveyModel) => {
+  const questionText = surveyJsModel.getQuestionByName(dataItem.stableId)?.title
   if (questionText && questionText.length > 100) {
     const truncatedText = `${questionText.substring(0, 100)  }...`
     return <span title={questionText}>{truncatedText}</span>
