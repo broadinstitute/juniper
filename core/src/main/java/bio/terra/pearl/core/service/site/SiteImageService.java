@@ -28,6 +28,10 @@ public class SiteImageService extends ImmutableEntityService<SiteImage, SiteImag
         return dao.findOne(portalShortcode, cleanFileName, version);
     }
 
+    public Optional<SiteImage> findOneLatestVersion(String portalShortcode, String cleanFileName) {
+        return dao.findOneLatestVersion(portalShortcode, cleanFileName);
+    }
+
     @Override
     public SiteImage create(SiteImage image) {
         if (!isAllowedFileName(image.getUploadFileName())) {
