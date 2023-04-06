@@ -9,6 +9,9 @@ sourceCompatibility = '17'
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://broadinstitute.jfrog.io/artifactory/plugins-snapshot'
+    }
 }
 
 dependencies {
