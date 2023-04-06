@@ -4,8 +4,9 @@ import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.common.collect.ImmutableSet;
 
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Base64;
 
 public class GoogleServiceAccountUtils {
 
@@ -26,10 +27,12 @@ public class GoogleServiceAccountUtils {
         return refreshedAccessToken;
     }
 
-    public static GoogleCredentials parseCredentials(String pathToCredentials) {
+    public static GoogleCredentials parseCredentials(String encodedServiceAccountCreds) {
+        byte[] decodedServiceAccountCreds = Base64.getDecoder().decode(encodedServiceAccountCreds);
+
         GoogleCredentials serviceAccountCredentials;
         try {
-            serviceAccountCredentials = GoogleCredentials.fromStream(new FileInputStream(pathToCredentials));
+            serviceAccountCredentials = GoogleCredentials.fromStream(new ByteArrayInputStream(decodedServiceAccountCreds));
         } catch (IOException e) {
             throw new RuntimeException("Error loading TDR service account credentials: " + e.getMessage());
         }

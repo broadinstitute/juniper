@@ -91,7 +91,7 @@ public class DataRepoClient {
 
     private ApiClient getApiClient() {
         ApiClient dataRepoClient = new ApiClient();
-        GoogleCredentials serviceAccountCreds = GoogleServiceAccountUtils.parseCredentials(env.getProperty("env.tdr.pathToCreds"));
+        GoogleCredentials serviceAccountCreds = GoogleServiceAccountUtils.parseCredentials(env.getProperty("env.tdr.serviceAccountCreds"));
         AccessToken token = GoogleServiceAccountUtils.getServiceAccountToken(serviceAccountCreds);
         dataRepoClient.setBasePath(env.getProperty("env.tdr.basePath"));
         dataRepoClient.setAccessToken(token.getTokenValue());
