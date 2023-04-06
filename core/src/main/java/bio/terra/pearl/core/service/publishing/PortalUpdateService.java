@@ -109,7 +109,7 @@ public class PortalUpdateService {
             if (change.newStableId() != null) {
                 newDocumentId = siteContentService.findByStableId(change.newStableId(), change.newVersion()).get().getId();
             }
-            portalEnv.setPreRegSurveyId(newDocumentId);
+            portalEnv.setSiteContentId(newDocumentId);
             portalEnvironmentService.update(portalEnv);
         }
     }

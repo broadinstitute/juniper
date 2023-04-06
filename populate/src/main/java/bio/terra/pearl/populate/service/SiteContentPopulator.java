@@ -34,7 +34,7 @@ public class SiteContentPopulator extends Populator<SiteContent, PortalPopulateC
     public SiteContent populateFromString(String fileString, PortalPopulateContext context) throws IOException {
         SiteContentPopDto siteContentDto = objectMapper.readValue(fileString, SiteContentPopDto.class);
         Optional<SiteContent> existingContent = siteContentService
-                .findOne(siteContentDto.getStableId(), siteContentDto.getVersion());
+                .findByStableId(siteContentDto.getStableId(), siteContentDto.getVersion());
         if (existingContent.isPresent()) {
             // for now, assume that if it exists, it has already been refreshed via populating another environment.
             return existingContent.get();
