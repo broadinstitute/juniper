@@ -35,6 +35,9 @@ public class StudyService extends CrudService<Study, StudyDao> {
     public Optional<Study> findByStudyEnvironmentId(UUID studyEnvId) {
         return dao.findByStudyEnvironmentId(studyEnvId);
     }
+    public List<Study> findByPortalId(UUID portalId) {
+        return dao.findByPortalId(portalId);
+    }
 
     @Transactional
     public Study create(Study study) {

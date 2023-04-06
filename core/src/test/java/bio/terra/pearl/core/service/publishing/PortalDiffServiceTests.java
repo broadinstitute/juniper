@@ -18,9 +18,9 @@ import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class PortalPublishingServiceTests extends BaseSpringBootTest {
+public class PortalDiffServiceTests extends BaseSpringBootTest {
     @Autowired
-    private PortalPublishingService portalPublishingService;
+    private PortalDiffService portalDiffService;
     @Test
     public void testIsVersionedConfigMatch() {
         // configs match if stableID of template is the same
@@ -33,7 +33,7 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
                 .notificationType(NotificationType.EVENT)
                 .eventType(NotificationEventType.STUDY_ENROLLMENT)
                 .emailTemplate(EmailTemplate.builder().stableId("foo").build()).build();
-        assertThat(PortalPublishingService.isVersionedConfigMatch(config, configWithDifferentTemplate), equalTo(true));
+        assertThat(PortalDiffService.isVersionedConfigMatch(config, configWithDifferentTemplate), equalTo(true));
     }
 
     @Test
@@ -47,15 +47,15 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
                 .notificationType(NotificationType.EVENT)
                 .eventType(NotificationEventType.STUDY_CONSENT)
                 .emailTemplate(EmailTemplate.builder().stableId("bar").build()).build();
-        assertThat(PortalPublishingService.isVersionedConfigMatch(config, configWithDifferentTemplate), equalTo(false));
+        assertThat(PortalDiffService.isVersionedConfigMatch(config, configWithDifferentTemplate), equalTo(false));
     }
 
     @Test
     public void testDiffNotificationsNoEvents() throws Exception {
         List<NotificationConfig> sourceList = List.of();
         List<NotificationConfig> destList = List.of();
-        var diffs = PortalPublishingService
-                .diffConfigLists(sourceList, destList, PortalPublishingService.CONFIG_IGNORE_PROPS);
+        var diffs = PortalDiffService
+                .diffConfigLists(sourceList, destList, PortalDiffService.CONFIG_IGNORE_PROPS);
         assertThat(diffs.addedItems(), hasSize(0));
         assertThat(diffs.changedItems(), hasSize(0));
         assertThat(diffs.removedItems(), hasSize(0));
@@ -75,8 +75,8 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
                         .eventType(NotificationEventType.STUDY_CONSENT)
                         .emailTemplate(EmailTemplate.builder().stableId("t1").build())
                         .build());
-        var diffs = PortalPublishingService
-                .diffConfigLists(sourceList, destList, PortalPublishingService.CONFIG_IGNORE_PROPS);
+        var diffs = PortalDiffService
+                .diffConfigLists(sourceList, destList, PortalDiffService.CONFIG_IGNORE_PROPS);
         assertThat(diffs.addedItems(), hasSize(0));
         assertThat(diffs.changedItems(), hasSize(0));
         assertThat(diffs.removedItems(), hasSize(0));
@@ -98,8 +98,8 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
                         .emailTemplate(EmailTemplate.builder().stableId("t1").build())
                         .afterMinutesIncomplete(2000)
                         .build());
-        var diffs = PortalPublishingService
-                .diffConfigLists(sourceList, destList, PortalPublishingService.CONFIG_IGNORE_PROPS);
+        var diffs = PortalDiffService
+                .diffConfigLists(sourceList, destList, PortalDiffService.CONFIG_IGNORE_PROPS);
         assertThat(diffs.addedItems(), hasSize(0));
         assertThat(diffs.changedItems(), hasSize(1));
         assertThat(diffs.changedItems().get(0).configChanges(), hasSize(1));
@@ -118,8 +118,8 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
                 .build();
         List<NotificationConfig> sourceList = List.of(addedConfig);
         List<NotificationConfig> destList = List.of();
-        var diffs = PortalPublishingService
-                .diffConfigLists(sourceList, destList, PortalPublishingService.CONFIG_IGNORE_PROPS);
+        var diffs = PortalDiffService
+                .diffConfigLists(sourceList, destList, PortalDiffService.CONFIG_IGNORE_PROPS);
         assertThat(diffs.addedItems(), hasSize(1));
         assertThat(diffs.addedItems().get(0), samePropertyValuesAs(addedConfig));
         assertThat(diffs.changedItems(), hasSize(0));
@@ -135,8 +135,8 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
                 .build();
         List<NotificationConfig> sourceList = List.of();
         List<NotificationConfig> destList = List.of(removedConfig);
-        var diffs = PortalPublishingService
-                .diffConfigLists(sourceList, destList, PortalPublishingService.CONFIG_IGNORE_PROPS);
+        var diffs = PortalDiffService
+                .diffConfigLists(sourceList, destList, PortalDiffService.CONFIG_IGNORE_PROPS);
         assertThat(diffs.addedItems(), hasSize(0));
         assertThat(diffs.changedItems(), hasSize(0));
         assertThat(diffs.removedItems(), hasSize(1));
@@ -152,7 +152,7 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
         var destEnv = PortalEnvironment.builder().portalEnvironmentConfig(
                 PortalEnvironmentConfig.builder().initialized(false).build()
         ).build();
-        var changeRecord = portalPublishingService.diffPortalEnvs(sourceEnv, destEnv);
+        var changeRecord = portalDiffService.diffPortalEnvs(sourceEnv, destEnv);
         assertThat(changeRecord.configChanges(), hasSize(0));
         assertThat(changeRecord.siteContentChange().isChanged(), equalTo(false));
         assertThat(changeRecord.preRegSurveyChanges().isChanged(), equalTo(false));
@@ -170,18 +170,9 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
         var destEnv = PortalEnvironment.builder().portalEnvironmentConfig(
                 PortalEnvironmentConfig.builder().initialized(false).build()
         ).build();
-        var changeRecord = portalPublishingService.diffPortalEnvs(sourceEnv, destEnv);
+        var changeRecord = portalDiffService.diffPortalEnvs(sourceEnv, destEnv);
         assertThat(changeRecord.configChanges(), hasSize(2));
         assertThat(changeRecord.siteContentChange().isChanged(), equalTo(true));
         assertThat(changeRecord.preRegSurveyChanges().isChanged(), equalTo(true));
-    }
-
-    @Test
-    public void testApplyConfigChanges() throws Exception {
-        ConfigChange change = new ConfigChange("password", (Object) "foo", (Object)"bar");
-        PortalEnvironmentConfig config = PortalEnvironmentConfig.builder()
-                .password("foo").build();
-        portalPublishingService.applyChangesToEnvConfig(config, List.of(change));
-        assertThat(config.getPassword(), equalTo("bar"));
     }
 }

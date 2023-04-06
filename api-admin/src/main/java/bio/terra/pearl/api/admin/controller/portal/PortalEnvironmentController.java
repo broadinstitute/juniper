@@ -41,16 +41,12 @@ public class PortalEnvironmentController implements PortalEnvironmentApi {
   }
 
   @Override
-  public ResponseEntity<Object> update(
+  public ResponseEntity<Object> apply(
       String portalShortcode, String destEnv, String sourceEnv, Object body) {
     AdminUser user = authUtilService.requireAdminUser(request);
     PortalEnvironmentChange change = objectMapper.convertValue(body, PortalEnvironmentChange.class);
     return ResponseEntity.ok(
         portalPublishingExtService.update(
-            portalShortcode,
-            EnvironmentName.valueOfCaseInsensitive(sourceEnv),
-            EnvironmentName.valueOfCaseInsensitive(destEnv),
-            change,
-            user));
+            portalShortcode, EnvironmentName.valueOfCaseInsensitive(destEnv), change, user));
   }
 }

@@ -21,7 +21,7 @@ public class SiteContentService extends CrudService<SiteContent, SiteContentDao>
         this.localizedSiteContentService = localizedSiteContentService;
     }
 
-    public Optional<SiteContent> findOne(String stableId, int version) {
+    public Optional<SiteContent> findByStableId(String stableId, int version) {
         return dao.findOne(stableId, version);
     }
 

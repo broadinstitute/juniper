@@ -51,6 +51,17 @@ public class StudyDao  extends BaseJdbiDao<Study> {
         );
     }
 
+    public List<Study> findByPortalId(UUID portalId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select " + prefixedGetQueryColumns("a") + " from " + tableName
+                                + " a join portal_study on a.id = portal_study.study_id "
+                                + " where portal_study.portal_id = :portalId")
+                        .bind("portalId", portalId)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
     public Optional<Study> findOneFullLoad(UUID id) {
         Optional<Study> studyOpt = find(id);
         studyOpt.ifPresent(study -> {

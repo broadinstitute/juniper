@@ -2,27 +2,25 @@ package bio.terra.pearl.core.service.publishing;
 
 import bio.terra.pearl.core.dao.publishing.PortalEnvironmentChangeRecordDao;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
-import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.publishing.*;
+import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class PortalPublishingService {
+public class PortalDiffService {
     public static final List<String> CONFIG_IGNORE_PROPS = List.of("id", "createdAt", "lastUpdatedAt", "class",
             "studyEnvironmentId", "portalEnvironmentId", "emailTemplateId", "emailTemplate",
             "consentFormId", "consentForm", "surveyId", "survey", "versionedEntity");
@@ -34,14 +32,15 @@ public class PortalPublishingService {
     private ObjectMapper objectMapper;
     private PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao;
     private StudyEnvironmentService studyEnvironmentService;
+    private StudyService studyService;
 
-    public PortalPublishingService(PortalEnvironmentService portalEnvService,
-                                   PortalEnvironmentConfigService portalEnvironmentConfigService,
-                                   SiteContentService siteContentService, SurveyService surveyService,
-                                   NotificationConfigService notificationConfigService,
-                                   ObjectMapper objectMapper,
-                                   PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao,
-                                   StudyEnvironmentService studyEnvironmentService) {
+    public PortalDiffService(PortalEnvironmentService portalEnvService,
+                             PortalEnvironmentConfigService portalEnvironmentConfigService,
+                             SiteContentService siteContentService, SurveyService surveyService,
+                             NotificationConfigService notificationConfigService,
+                             ObjectMapper objectMapper,
+                             PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao,
+                             StudyEnvironmentService studyEnvironmentService, StudyService studyService) {
         this.portalEnvService = portalEnvService;
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.siteContentService = siteContentService;
@@ -50,43 +49,8 @@ public class PortalPublishingService {
         this.objectMapper = objectMapper;
         this.portalEnvironmentChangeRecordDao = portalEnvironmentChangeRecordDao;
         this.studyEnvironmentService = studyEnvironmentService;
+        this.studyService = studyService;
     }
-
-    /** does a full update of all properties from the source to the dest */
-    @Transactional
-    public PortalEnvironment updateAll(String shortcode, EnvironmentName source, EnvironmentName dest, AdminUser user) throws Exception {
-        PortalEnvironment destEnv = loadPortalEnvForProcessing(shortcode, dest);
-        PortalEnvironment sourceEnv = loadPortalEnvForProcessing(shortcode, source);
-        var changes = diffPortalEnvs(sourceEnv, destEnv);
-        return applyUpdate(destEnv, changes, user);
-    }
-
-    /** updates the dest environment with the given changes */
-    @Transactional
-    public PortalEnvironment applyChanges(String shortcode, EnvironmentName dest, PortalEnvironmentChange change, AdminUser user) throws Exception {
-        PortalEnvironment destEnv = loadPortalEnvForProcessing(shortcode, dest);
-        return applyUpdate(destEnv, change, user);
-    }
-
-    protected PortalEnvironment applyUpdate(PortalEnvironment destEnv, PortalEnvironmentChange envChanges, AdminUser user) throws Exception {
-        applyChangesToEnvConfig(destEnv.getPortalEnvironmentConfig(), envChanges.configChanges());
-        portalEnvironmentConfigService.update(destEnv.getPortalEnvironmentConfig());
-        var changeRecord = PortalEnvironmentChangeRecord.builder()
-                .adminUserId(user.getId())
-                .portalEnvironmentChange(objectMapper.writeValueAsString(envChanges))
-                .build();
-        portalEnvironmentChangeRecordDao.create(changeRecord);
-        return destEnv;
-    }
-
-    /** updates the passed-in config with the given changes.  Returns the updated config */
-    protected PortalEnvironmentConfig applyChangesToEnvConfig(PortalEnvironmentConfig config, List<ConfigChange> changes) throws Exception {
-        for (ConfigChange change : changes) {
-            PropertyUtils.setProperty(config, change.propertyName(), change.newValue());
-        }
-        return config;
-    }
-
 
     public PortalEnvironmentChange diffPortalEnvs(String shortcode, EnvironmentName source, EnvironmentName dest) throws Exception {
         PortalEnvironment sourceEnv = loadPortalEnvForProcessing(shortcode, source);
@@ -103,17 +67,23 @@ public class PortalPublishingService {
                 destEnv.getNotificationConfigs(),
                 CONFIG_IGNORE_PROPS);
 
+        List<StudyEnvironmentChange> studyEnvChanges = new ArrayList<>();
+        List<Study> studies = studyService.findByPortalId(sourceEnv.getPortalId());
+        for (Study study : studies) {
+            StudyEnvironmentChange studyEnvChange = diffStudyEnvs(study.getShortcode(), sourceEnv.getEnvironmentName(), destEnv.getEnvironmentName());
+            studyEnvChanges.add(studyEnvChange);
+        }
 
         return new PortalEnvironmentChange(
                 siteContentRecord,
                 envConfigChanges,
                 preRegRecord,
                 notificationConfigChanges,
-                null
+                studyEnvChanges
         );
     }
 
-    private PortalEnvironment loadPortalEnvForProcessing(String shortcode, EnvironmentName envName) {
+    protected PortalEnvironment loadPortalEnvForProcessing(String shortcode, EnvironmentName envName) {
         PortalEnvironment portalEnv = portalEnvService.findOne(shortcode, envName).get();
         if (portalEnv.getPortalEnvironmentConfigId() != null) {
             portalEnv.setPortalEnvironmentConfig(portalEnvironmentConfigService
