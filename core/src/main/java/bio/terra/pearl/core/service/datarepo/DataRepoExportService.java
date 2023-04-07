@@ -1,12 +1,15 @@
 package bio.terra.pearl.core.service.datarepo;
 
 import bio.terra.datarepo.client.ApiException;
+import bio.terra.datarepo.model.EnumerateDatasetModel;
 import bio.terra.datarepo.model.JobModel;
 import bio.terra.datarepo.model.JobModel.JobStatusEnum;
 import bio.terra.pearl.core.dao.datarepo.InitializeDatasetJobDao;
+import bio.terra.pearl.core.dao.datarepo.TdrDatasetDao;
 import bio.terra.pearl.core.dao.study.StudyDao;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.model.datarepo.InitializeDatasetJob;
+import bio.terra.pearl.core.model.datarepo.TdrDataset;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.exception.StudyNotFoundException;
@@ -27,13 +30,20 @@ public class DataRepoExportService {
     DataRepoClient dataRepoClient;
     Environment env;
     InitializeDatasetJobDao initializeDatasetJobDao;
+    TdrDatasetDao tdrDatasetDao;
     StudyEnvironmentDao studyEnvironmentDao;
     StudyDao studyDao;
 
-    public DataRepoExportService(Environment env, DataRepoClient dataRepoClient, InitializeDatasetJobDao initializeDatasetJobDao, StudyEnvironmentDao studyEnvironmentDao, StudyDao studyDao) {
+    public DataRepoExportService(Environment env,
+                                 DataRepoClient dataRepoClient,
+                                 InitializeDatasetJobDao initializeDatasetJobDao,
+                                 StudyEnvironmentDao studyEnvironmentDao,
+                                 StudyDao studyDao,
+                                 TdrDatasetDao tdrDatasetDao) {
         this.env = env;
         this.dataRepoClient = dataRepoClient;
         this.initializeDatasetJobDao = initializeDatasetJobDao;
+        this.tdrDatasetDao = tdrDatasetDao;
         this.studyEnvironmentDao = studyEnvironmentDao;
         this.studyDao = studyDao;
     }
@@ -41,10 +51,17 @@ public class DataRepoExportService {
     @Transactional
     public void initializeStudyEnvironmentDatasets() {
         UUID defaultSpendProfileId = UUID.fromString(env.getProperty("env.tdr.billingProfileId"));
-        final String DEPLOYMENT_ZONE = "dev"; //TODO, pull from config
+        final String DEPLOYMENT_ZONE = "mbemis"; //TODO, pull from config
+
+        List<StudyEnvironment> allStudyEnvs = studyEnvironmentDao.findAll();
+
+        List<UUID> studyEnvsWithDatasets = tdrDatasetDao.findAll().stream().map(TdrDataset::getStudyEnvironmentId).toList();
+
+        List<StudyEnvironment> studyEnvsToInitialize = allStudyEnvs.stream().filter(studyEnv -> !studyEnvsWithDatasets.contains(studyEnv.getId())).toList();
+        logger.info("Found {} datasets to initialize.", studyEnvsToInitialize.size());
 
         //TODO: only find studyenvironments that don't have datasets initialized
-        for(StudyEnvironment studyEnv : studyEnvironmentDao.findAll()) {
+        for(StudyEnvironment studyEnv : studyEnvsToInitialize) {
             Study study = studyDao.find(studyEnv.getStudyId()).orElseThrow(() -> new StudyNotFoundException(studyEnv.getStudyId()));
             String environmentName = studyEnv.getEnvironmentName().name();
 
@@ -70,6 +87,7 @@ public class DataRepoExportService {
 
     }
 
+    @Transactional
     public void pollRunningInitializeJobs() {
         //Query for all running TDR dataset create jobs
         List<InitializeDatasetJob> runningInitializeJobs = initializeDatasetJobDao.findAllByStatus(JobStatusEnum.RUNNING.getValue());
@@ -82,12 +100,19 @@ public class DataRepoExportService {
 
                 switch(jobStatus) {
                     case SUCCEEDED -> {
-                        //TODO: Resolve successful output (write back to TDR_DATASET table, and update status)
-                        logger.info("initializeDataset job ID {} has succeeded.", job.getId());
+                        logger.info("initializeDataset job ID {} has succeeded. Dataset {} has been created.", job.getId(), job.getDatasetName());
+                        TdrDataset dataset = TdrDataset.builder()
+                                .studyEnvironmentId(job.getStudyEnvironmentId())
+                                .studyId(job.getStudyId())
+                                .datasetId(UUID.randomUUID()) //TODO: pull this out of getJobResult response
+                                .datasetName(job.getDatasetName())
+                                .build();
+
+                        tdrDatasetDao.create(dataset);
                         initializeDatasetJobDao.updateJobStatus(job.getId(), JobStatusEnum.RUNNING.getValue(), jobStatus.getValue());
                     }
                     case FAILED -> {
-                        logger.warn("initializeDataset job ID {} has failed.", job.getId());
+                        logger.warn("initializeDataset job ID {} has failed. Dataset {} failed to create.", job.getId(), job.getDatasetName());
                         initializeDatasetJobDao.updateJobStatus(job.getId(), JobStatusEnum.RUNNING.getValue(), jobStatus.getValue());
                     }
                     case RUNNING -> logger.info("initializeDataset job ID {} is running.", job.getId());
@@ -96,6 +121,14 @@ public class DataRepoExportService {
             } catch (ApiException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    public EnumerateDatasetModel listDatasets() {
+        try {
+            return dataRepoClient.enumerateDatasets();
+        } catch (ApiException e) {
+            throw new RuntimeException(e);
         }
     }
 

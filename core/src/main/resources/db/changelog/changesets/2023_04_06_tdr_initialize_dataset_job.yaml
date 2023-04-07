@@ -15,7 +15,8 @@ databaseChangeLog:
               }
               - column: { name: tdr_job_id, type: text, constraints: { nullable: false } }
               - column: { name: dataset_name, type: text, constraints: { nullable: false } }
-              - column: { name: status, type: text } #probably non nullable
+              - column: { name: status, type: text, constraints: { nullable: false } }
               - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
 
           #add any constraints later

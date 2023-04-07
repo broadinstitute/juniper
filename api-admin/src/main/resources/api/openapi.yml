@@ -484,6 +484,19 @@ paths:
                 type: object
         '500':
           $ref: '#/components/responses/ServerError'
+  /datasets:
+    get:
+      summary: Lists all datasets in the system
+      tags: [ datasets ]
+      operationId: listDatasets
+      security: [ ]
+      responses:
+        '200':
+          description: 'The datasets in the system'
+          content:
+            application/json:
+              schema:
+                type: object
 components:
   responses:
     SystemStatusResponse:

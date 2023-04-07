@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: "tdr_dataset"
+      author: mbemis
+      changes:
+        - createTable:
+            tableName: tdr_dataset
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: study_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_tdr_dataset_study_id, references: study(id) }
+              }
+              - column: { name: study_environment_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_tdr_dataset_study_environment_id, references: study_environment(id) }
+              }
+              - column: { name: dataset_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: dataset_name, type: text, constraints: { nullable: false } }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+
+          #add any constraints later
