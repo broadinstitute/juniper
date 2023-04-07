@@ -7,7 +7,7 @@ import bio.terra.pearl.api.participant.model.SystemStatus;
 import bio.terra.pearl.api.participant.model.VersionProperties;
 import bio.terra.pearl.api.participant.service.StatusService;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.portal.PortalEnvironmentId;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentDescriptor;
 import bio.terra.pearl.core.model.site.SiteImage;
 import bio.terra.pearl.core.service.site.SiteImageService;
 import java.util.Map;
@@ -87,9 +87,9 @@ public class PublicApiController implements PublicApi {
 
   @GetMapping(value = "/favicon.ico")
   public ResponseEntity<Resource> favicon(HttpServletRequest request) {
-    PortalEnvironmentId portalEnvId = getPortalForRequest(request);
+    PortalEnvironmentDescriptor portal = getPortalForRequest(request);
     Optional<SiteImage> imageOpt =
-        siteImageService.findOneLatestVersion(portalEnvId.getShortcode(), "favicon.ico");
+        siteImageService.findOneLatestVersion(portal.shortcode(), "favicon.ico");
     return ResponseEntity.ok()
         .contentType(MediaType.parseMediaType("image/x-icon"))
         .body(
@@ -115,21 +115,15 @@ public class PublicApiController implements PublicApi {
         "b2cPolicyName", b2CConfiguration.policyName());
   }
 
-  private PortalEnvironmentId getPortalForRequest(HttpServletRequest request) {
+  private PortalEnvironmentDescriptor getPortalForRequest(HttpServletRequest request) {
     String hostname = request.getServerName();
     String[] parts = hostname.split("\\.");
 
     Optional<EnvironmentName> envNameOpt = EnvironmentName.optionalValueOfCaseInsensitive(parts[0]);
     if (envNameOpt.isPresent()) {
-      return PortalEnvironmentId.builder()
-          .environmentName(envNameOpt.get())
-          .shortcode(parts[1])
-          .build();
+      return new PortalEnvironmentDescriptor(parts[1], envNameOpt.get());
     } else {
-      return PortalEnvironmentId.builder()
-          .environmentName(EnvironmentName.live)
-          .shortcode(parts[0])
-          .build();
+      return new PortalEnvironmentDescriptor(parts[0], EnvironmentName.live);
     }
   }
 }
