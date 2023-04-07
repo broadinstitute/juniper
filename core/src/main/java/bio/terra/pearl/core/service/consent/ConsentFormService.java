@@ -3,7 +3,8 @@ package bio.terra.pearl.core.service.consent;
 import bio.terra.pearl.core.dao.consent.ConsentFormDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.consent.ConsentForm;
-import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.ImmutableEntityService;
+import bio.terra.pearl.core.service.VersionedEntityService;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ConsentFormService extends CrudService<ConsentForm, ConsentFormDao> {
+public class ConsentFormService extends ImmutableEntityService<ConsentForm, ConsentFormDao> implements VersionedEntityService<ConsentForm> {
     public ConsentFormService(ConsentFormDao dao) {
         super(dao);
     }

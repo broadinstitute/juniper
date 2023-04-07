@@ -9,6 +9,9 @@ import java.util.UUID;
  * for how that survey should be taken.
  */
 public interface VersionedEntityConfig {
-    Versioned getVersionedEntity();
+    Versioned versionedEntity();
     UUID getId();
+    /** this is called update rather than set so it doesn't register as a bean property, and so doesn't get needlessly
+     * duplicated for dao and serialization methods */
+    void updateVersionedEntityId(UUID versionedEntityId);
 }

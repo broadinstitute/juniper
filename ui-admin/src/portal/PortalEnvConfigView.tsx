@@ -27,9 +27,9 @@ export default function PortalEnvConfigView({ portal, portalEnv }:
     </div>
 
     <div className="ms-4 mt-3">
-      <div><h4 className="h6">Website</h4></div>
       { !isInitialized && <div className="fst-italic text-muted">Not initialized</div> }
       { isInitialized && <div>
+        <div><h4 className="h6">Website</h4></div>
         <div className="mt-4">
           <h4 className="h6">
             <Link to={mailingListPath(portal.shortcode, portalEnv.environmentName)}>Mailing List</Link>

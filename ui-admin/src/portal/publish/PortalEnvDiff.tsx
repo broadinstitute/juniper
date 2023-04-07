@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Api, {
   Portal,
   PortalEnvironment,
-  PortalEnvironmentChange,
-  VersionedEntityChange
+  PortalEnvironmentChange
 } from 'api/api'
 import { useNavigate, useParams } from 'react-router-dom'
 import LoadingSpinner from 'util/LoadingSpinner'
@@ -11,9 +10,8 @@ import StudyEnvDiff from './StudyEnvDiff'
 import { ConfigChangeListView, ConfigChanges, VersionChangeView } from './diffComponents'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { failureNotification, successNotification } from '../../util/notifications'
+import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
-import app from '../../App'
 
 type EnvironmentDiffProps = {
   portal: Portal,
@@ -48,8 +46,9 @@ export default function PortalEnvDiff({ portal, portalEnv }: EnvironmentDiffProp
     if (!diffResult) {
       return
     }
-    Api.applyEnvChanges(portal.shortcode, portalEnv.environmentName, diffResult).then(result => {
+    Api.applyEnvChanges(portal.shortcode, portalEnv.environmentName, diffResult).then(() => {
       Store.addNotification(successNotification(`${portalEnv.environmentName} environment updated`))
+      // TODO dynamically update state and/or reload page
       navigate(`/${portal.shortcode}`)
     }).catch(e => {
       Store.addNotification(failureNotification(`Update failed: ${  e.message}`))

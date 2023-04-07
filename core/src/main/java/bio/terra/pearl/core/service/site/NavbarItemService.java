@@ -4,14 +4,14 @@ import bio.terra.pearl.core.dao.site.NavbarItemDao;
 import bio.terra.pearl.core.model.site.HtmlPage;
 import bio.terra.pearl.core.model.site.NavbarItem;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.ImmutableEntityService;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
 import java.util.UUID;
 
 @Service
-public class NavbarItemService extends CrudService<NavbarItem, NavbarItemDao> {
+public class NavbarItemService extends ImmutableEntityService<NavbarItem, NavbarItemDao> {
     private HtmlPageService htmlPageService;
     public NavbarItemService(NavbarItemDao dao, HtmlPageService htmlPageService) {
         super(dao);

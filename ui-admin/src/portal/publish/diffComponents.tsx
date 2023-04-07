@@ -1,7 +1,6 @@
 import {
   ConfigChange,
   ListChange,
-  NotificationConfig,
   VersionedConfigChange,
   VersionedEntityChange
 } from 'api/api'

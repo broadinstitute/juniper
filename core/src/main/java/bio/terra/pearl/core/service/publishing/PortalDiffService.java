@@ -123,7 +123,7 @@ public class PortalDiffService {
                 var changeRecord = new VersionedConfigChange(
                         sourceConfig.getId(), matchedConfig.getId(),
                         ConfigChange.allChanges(sourceConfig, matchedConfig, ignoreProps),
-                        new VersionedEntityChange(sourceConfig.getVersionedEntity(), matchedConfig.getVersionedEntity())
+                        new VersionedEntityChange(sourceConfig.versionedEntity(), matchedConfig.versionedEntity())
                 );
                 if (changeRecord.isChanged()) {
                     changedRecords.add(changeRecord);
@@ -139,10 +139,10 @@ public class PortalDiffService {
         if (configA == null || configB == null) {
             return configA == configB;
         }
-        if (configA.getVersionedEntity() == null || configB.getVersionedEntity() == null) {
+        if (configA.versionedEntity() == null || configB.versionedEntity() == null) {
             return false;
         }
-        return Objects.equals(configA.getVersionedEntity().getStableId(), configB.getVersionedEntity().getStableId());
+        return Objects.equals(configA.versionedEntity().getStableId(), configB.versionedEntity().getStableId());
     }
 
     public StudyEnvironmentChange diffStudyEnvs(String studyShortcode, EnvironmentName source, EnvironmentName dest) throws Exception {
@@ -180,7 +180,7 @@ public class PortalDiffService {
         );
     }
 
-    private StudyEnvironment loadStudyEnvForProcessing(String shortcode, EnvironmentName envName) {
+    protected StudyEnvironment loadStudyEnvForProcessing(String shortcode, EnvironmentName envName) {
         StudyEnvironment studyEnvironment = studyEnvironmentService.findByStudy(shortcode, envName).get();
         return studyEnvironmentService.loadWithAllContent(studyEnvironment);
     }

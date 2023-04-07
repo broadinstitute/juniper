@@ -5,7 +5,7 @@ import bio.terra.pearl.core.dao.site.HtmlSectionDao;
 import bio.terra.pearl.core.model.site.HtmlPage;
 import bio.terra.pearl.core.model.site.HtmlSection;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.ImmutableEntityService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-public class HtmlPageService extends CrudService<HtmlPage, HtmlPageDao> {
+public class HtmlPageService extends ImmutableEntityService<HtmlPage, HtmlPageDao> {
     private HtmlSectionDao htmlSectionDao;
 
     public HtmlPageService(HtmlPageDao dao, HtmlSectionDao htmlSectionDao) {

@@ -53,7 +53,11 @@ public class NotificationConfig extends BaseEntity implements VersionedEntityCon
     private int maxNumReminders = -1; // -1 means to keep reminding indefinitely
 
     @Override
-    public Versioned getVersionedEntity() {
+    public Versioned versionedEntity() {
         return emailTemplate;
+    }
+    @Override
+    public void updateVersionedEntityId(UUID emailTemplateId) {
+        setEmailTemplateId(emailTemplateId);
     }
 }

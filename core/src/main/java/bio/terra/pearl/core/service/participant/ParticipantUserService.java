@@ -4,7 +4,7 @@ import bio.terra.pearl.core.dao.participant.ParticipantUserDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.ImmutableEntityService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-public class ParticipantUserService extends CrudService<ParticipantUser, ParticipantUserDao> {
+public class ParticipantUserService extends ImmutableEntityService<ParticipantUser, ParticipantUserDao> {
     private PortalParticipantUserService portalParticipantUserService;
 
     public ParticipantUserService(ParticipantUserDao participantUserDao,

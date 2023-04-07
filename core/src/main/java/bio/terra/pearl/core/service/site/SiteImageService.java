@@ -2,7 +2,7 @@ package bio.terra.pearl.core.service.site;
 
 import bio.terra.pearl.core.dao.site.SiteImageDao;
 import bio.terra.pearl.core.model.site.SiteImage;
-import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SiteImageService extends CrudService<SiteImage, SiteImageDao> {
+public class SiteImageService extends ImmutableEntityService<SiteImage, SiteImageDao> {
     public static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("png", "jpeg", "jpg", "svg", "gif", "webp");
     private PortalService portalService;
     public SiteImageService(SiteImageDao dao, @Lazy PortalService portalService) {

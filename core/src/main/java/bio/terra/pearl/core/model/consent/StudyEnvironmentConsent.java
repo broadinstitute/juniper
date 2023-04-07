@@ -32,7 +32,11 @@ public class StudyEnvironmentConsent extends BaseEntity implements VersionedEnti
     private boolean allowParticipantReedit = false; // whether participants can change answers after submission
 
     @Override
-    public Versioned getVersionedEntity() {
+    public Versioned versionedEntity() {
         return consentForm;
+    }
+    @Override
+    public void updateVersionedEntityId(UUID consentId) {
+        setConsentFormId(consentId);
     }
 }

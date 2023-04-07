@@ -45,7 +45,7 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
         objectMapper.convertValue(body, StudyEnvironmentSurvey.class);
     StudyEnvironmentSurvey existing = studyEnvSurveyService.find(configuredSurvey.getId()).get();
     BeanUtils.copyProperties(body, existing);
-    StudyEnvironmentSurvey savedSes = studyEnvSurveyService.update(adminUser, existing);
+    StudyEnvironmentSurvey savedSes = studyEnvSurveyService.update(existing);
     return ResponseEntity.ok(objectMapper.convertValue(savedSes, ConfiguredSurveyDto.class));
   }
 }

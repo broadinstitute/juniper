@@ -2,7 +2,7 @@ package bio.terra.pearl.core.service.admin;
 
 import bio.terra.pearl.core.dao.admin.RoleDao;
 import bio.terra.pearl.core.model.admin.Role;
-import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.ImmutableEntityService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class RoleService extends CrudService<Role, RoleDao> {
+public class RoleService extends ImmutableEntityService<Role, RoleDao> {
 
     public RoleService(RoleDao roleDao) {
         super(roleDao);

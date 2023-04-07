@@ -45,7 +45,7 @@ public class ConfiguredConsentController implements ConfiguredConsentApi {
         objectMapper.convertValue(body, StudyEnvironmentConsent.class);
     StudyEnvironmentConsent existing = studyEnvConsentService.find(configuredSurvey.getId()).get();
     BeanUtils.copyProperties(body, existing);
-    StudyEnvironmentConsent savedConsent = studyEnvConsentService.update(adminUser, existing);
+    StudyEnvironmentConsent savedConsent = studyEnvConsentService.update(existing);
     return ResponseEntity.ok(objectMapper.convertValue(savedConsent, ConfiguredConsentDto.class));
   }
 }

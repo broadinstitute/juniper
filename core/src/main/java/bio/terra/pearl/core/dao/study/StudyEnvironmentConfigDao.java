@@ -1,6 +1,6 @@
 package bio.terra.pearl.core.dao.study;
 
-import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import java.util.List;
 import java.util.UUID;
@@ -8,7 +8,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StudyEnvironmentConfigDao extends BaseJdbiDao<StudyEnvironmentConfig> {
+public class StudyEnvironmentConfigDao extends BaseMutableJdbiDao<StudyEnvironmentConfig> {
     public StudyEnvironmentConfigDao(Jdbi jdbi) {
         super(jdbi);
     }

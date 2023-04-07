@@ -4,7 +4,7 @@ import bio.terra.pearl.core.dao.survey.ResponseSnapshotDao;
 import bio.terra.pearl.core.model.survey.ParsedSnapshot;
 import bio.terra.pearl.core.model.survey.ResponseData;
 import bio.terra.pearl.core.model.survey.ResponseSnapshot;
-import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.ImmutableEntityService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ResponseSnapshotService extends CrudService<ResponseSnapshot, ResponseSnapshotDao> {
+public class ResponseSnapshotService extends ImmutableEntityService<ResponseSnapshot, ResponseSnapshotDao> {
     private ObjectMapper objectMapper;
 
     public ResponseSnapshotService(ResponseSnapshotDao dao, ObjectMapper objectMapper) {

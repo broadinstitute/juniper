@@ -40,7 +40,11 @@ public class StudyEnvironmentSurvey extends BaseEntity implements VersionedEntit
     private boolean prepopulate = false; // whether to bring forward answers from prior completions (if recur is true)
 
     @Override
-    public Versioned getVersionedEntity() {
+    public Versioned versionedEntity() {
         return survey;
+    }
+    @Override
+    public void updateVersionedEntityId(UUID surveyId) {
+        setSurveyId(surveyId);
     }
 }

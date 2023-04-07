@@ -9,7 +9,7 @@ import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SurveyResponseService extends CrudService<SurveyResponse, SurveyResponseDao> {
+public class SurveyResponseService extends ImmutableEntityService<SurveyResponse, SurveyResponseDao> {
     private ResponseSnapshotService responseSnapshotService;
     private EnrolleeService enrolleeService;
     private SurveyService surveyService;

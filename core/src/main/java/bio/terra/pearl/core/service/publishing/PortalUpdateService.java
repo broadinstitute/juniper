@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.publishing.*;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.notification.EmailTemplateService;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
@@ -32,7 +33,9 @@ public class PortalUpdateService {
     private SurveyService surveyService;
     private EmailTemplateService emailTemplateService;
     private SiteContentService siteContentService;
+    private StudyUpdateService studyUpdateService;
     private ObjectMapper objectMapper;
+
 
     public PortalUpdateService(PortalDiffService portalDiffService,
                                PortalEnvironmentService portalEnvironmentService,
@@ -40,7 +43,7 @@ public class PortalUpdateService {
                                PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao,
                                NotificationConfigService notificationConfigService, SurveyService surveyService,
                                EmailTemplateService emailTemplateService, SiteContentService siteContentService,
-                               ObjectMapper objectMapper) {
+                               StudyUpdateService studyUpdateService, ObjectMapper objectMapper) {
         this.portalDiffService = portalDiffService;
         this.portalEnvironmentService = portalEnvironmentService;
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
@@ -49,17 +52,8 @@ public class PortalUpdateService {
         this.surveyService = surveyService;
         this.emailTemplateService = emailTemplateService;
         this.siteContentService = siteContentService;
+        this.studyUpdateService = studyUpdateService;
         this.objectMapper = objectMapper;
-    }
-
-
-    /** does a full update of all properties from the source to the dest */
-    @Transactional
-    public PortalEnvironment updateAll(String shortcode, EnvironmentName source, EnvironmentName dest, AdminUser user) throws Exception {
-        PortalEnvironment destEnv = portalDiffService.loadPortalEnvForProcessing(shortcode, dest);
-        PortalEnvironment sourceEnv = portalDiffService.loadPortalEnvForProcessing(shortcode, source);
-        var changes = portalDiffService.diffPortalEnvs(sourceEnv, destEnv);
-        return applyUpdate(destEnv, changes, user);
     }
 
     /** updates the dest environment with the given changes */
@@ -69,12 +63,17 @@ public class PortalUpdateService {
         return applyUpdate(destEnv, change, user);
     }
 
+    /** applies the given update -- the destEnv provided must already be fully-hydrated from loadPortalEnv */
     protected PortalEnvironment applyUpdate(PortalEnvironment destEnv, PortalEnvironmentChange envChanges, AdminUser user) throws Exception {
-        applyChangesToEnvConfig(destEnv.getPortalEnvironmentConfig(), envChanges.configChanges());
-        portalEnvironmentConfigService.update(destEnv.getPortalEnvironmentConfig());
+        applyChangesToEnvConfig(destEnv, envChanges.configChanges());
+
         applyChangesToPreRegSurvey(destEnv, envChanges.preRegSurveyChanges());
         applyChangesToSiteContent(destEnv, envChanges.siteContentChange());
         applyChangesToNotificationConfigs(destEnv, envChanges.notificationConfigChanges());
+        for(StudyEnvironmentChange studyEnvChange : envChanges.studyEnvChanges()) {
+            StudyEnvironment studyEnv = portalDiffService.loadStudyEnvForProcessing(studyEnvChange.studyShortcode(), destEnv.getEnvironmentName());
+            studyUpdateService.applyChanges(studyEnv, studyEnvChange);
+        }
 
         var changeRecord = PortalEnvironmentChangeRecord.builder()
                 .adminUserId(user.getId())
@@ -85,63 +84,54 @@ public class PortalUpdateService {
     }
 
     /** updates the passed-in config with the given changes.  Returns the updated config */
-    protected PortalEnvironmentConfig applyChangesToEnvConfig(PortalEnvironmentConfig config, List<ConfigChange> changes) throws Exception {
-        for (ConfigChange change : changes) {
-            PropertyUtils.setProperty(config, change.propertyName(), change.newValue());
+    protected PortalEnvironmentConfig applyChangesToEnvConfig(PortalEnvironment destEnv,
+                                                              List<ConfigChange> configChanges) throws Exception {
+        if (configChanges.isEmpty()) {
+            return destEnv.getPortalEnvironmentConfig();
         }
-        return config;
+        for (ConfigChange change : configChanges) {
+            PropertyUtils.setProperty(destEnv.getPortalEnvironmentConfig(), change.propertyName(), change.newValue());
+        }
+        return portalEnvironmentConfigService.update(destEnv.getPortalEnvironmentConfig());
     }
 
-    protected void applyChangesToPreRegSurvey(PortalEnvironment portalEnv, VersionedEntityChange change) throws Exception {
-        if (change.isChanged()) {
-            UUID newStableId = null;
-            if (change.newStableId() != null) {
-                newStableId = surveyService.findByStableId(change.newStableId(), change.newVersion()).get().getId();
+        protected PortalEnvironment applyChangesToPreRegSurvey(PortalEnvironment destEnv, VersionedEntityChange change) throws Exception {
+            if (!change.isChanged()) {
+                return destEnv;
             }
-            portalEnv.setPreRegSurveyId(newStableId);
-            portalEnvironmentService.update(portalEnv);
-        }
-    }
-
-    protected void applyChangesToSiteContent(PortalEnvironment portalEnv, VersionedEntityChange change) throws Exception {
-        if (change.isChanged()) {
-            UUID newDocumentId = null;
+            UUID newSurveyId = null;
             if (change.newStableId() != null) {
-                newDocumentId = siteContentService.findByStableId(change.newStableId(), change.newVersion()).get().getId();
+                newSurveyId = surveyService.findByStableId(change.newStableId(), change.newVersion()).get().getId();
             }
-            portalEnv.setSiteContentId(newDocumentId);
-            portalEnvironmentService.update(portalEnv);
+            destEnv.setPreRegSurveyId(newSurveyId);
+            return portalEnvironmentService.update(destEnv);
         }
+
+    protected PortalEnvironment applyChangesToSiteContent(PortalEnvironment destEnv, VersionedEntityChange change) throws Exception {
+        if (!change.isChanged()) {
+            return destEnv;
+        }
+        UUID newDocumentId = null;
+        if (change.newStableId() != null) {
+            newDocumentId = siteContentService.findByStableId(change.newStableId(), change.newVersion()).get().getId();
+        }
+        destEnv.setSiteContentId(newDocumentId);
+        return portalEnvironmentService.update(destEnv);
     }
 
-    protected void applyChangesToNotificationConfigs(PortalEnvironment portalEnv, ListChange<NotificationConfig,
+    protected void applyChangesToNotificationConfigs(PortalEnvironment destEnv, ListChange<NotificationConfig,
             VersionedConfigChange> listChange) throws Exception {
         for(NotificationConfig config : listChange.addedItems()) {
-            config.setPortalEnvironmentId(portalEnv.getId());
-            notificationConfigService.create(config);
+            config.setPortalEnvironmentId(destEnv.getId());
+            notificationConfigService.create(config.cleanForCopying());
+            destEnv.getNotificationConfigs().add(config);
         }
         for(NotificationConfig config : listChange.removedItems()) {
             notificationConfigService.delete(config.getId(), CascadeProperty.EMPTY_SET);
+            destEnv.getNotificationConfigs().remove(config);
         }
         for(VersionedConfigChange change : listChange.changedItems()) {
-            applyChangesToNotificationConfig(change);
+            StudyUpdateService.applyChangesToVersionedConfig(change, notificationConfigService, emailTemplateService);
         }
     }
-
-    protected void applyChangesToNotificationConfig(VersionedConfigChange versionedConfigChange) throws Exception {
-        NotificationConfig destConfig = notificationConfigService.find(versionedConfigChange.destId()).get();
-        for (ConfigChange change : versionedConfigChange.configChanges()) {
-            PropertyUtils.setProperty(destConfig, change.propertyName(), change.newValue());
-        }
-        if (versionedConfigChange.documentChange().isChanged()) {
-            VersionedEntityChange docChange = versionedConfigChange.documentChange();
-            UUID newDocumentId = null;
-            if (docChange.newStableId() != null) {
-                newDocumentId = emailTemplateService.findByStableId(docChange.newStableId(), docChange.newVersion()).get().getId();
-            }
-            destConfig.setEmailTemplateId(newDocumentId);
-        }
-        notificationConfigService.update(destConfig);
-    }
-
 }

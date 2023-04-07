@@ -6,7 +6,6 @@ import bio.terra.pearl.core.service.CrudService;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class NotificationConfigService extends CrudService<NotificationConfig, NotificationConfigDao> {
@@ -25,11 +24,6 @@ public class NotificationConfigService extends CrudService<NotificationConfig, N
     /** gets configs unaffiliated with a study */
     public List<NotificationConfig> findByPortalEnvironmentId(UUID portalEnvId) {
         return dao.findByPortalEnvironmentId(portalEnvId);
-    }
-
-    @Transactional
-    public NotificationConfig update(NotificationConfig config) {
-        return dao.update(config);
     }
 
     public void attachTemplates(List<NotificationConfig> configs) {

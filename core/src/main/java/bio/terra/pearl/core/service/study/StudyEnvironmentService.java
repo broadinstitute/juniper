@@ -55,10 +55,6 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         return dao.loadWithAllContent(studyEnvironment);
     }
 
-    public StudyEnvironment update(StudyEnvironment studyEnvironment) {
-        return dao.update(studyEnvironment);
-    }
-
     @Transactional
     @Override
     public StudyEnvironment create(StudyEnvironment studyEnv) {

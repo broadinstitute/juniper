@@ -51,10 +51,6 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         return dao.findOne(portalShortcode, environmentName);
     }
 
-    public PortalEnvironment update(PortalEnvironment portalEnvironment) {
-        return dao.update(portalEnvironment);
-    }
-
     /** loads a portal environment with everything needed to render the participant-facing site */
     public Optional<PortalEnvironment> loadWithParticipantSiteContent(String portalShortcode,
                                                                        EnvironmentName environmentName,

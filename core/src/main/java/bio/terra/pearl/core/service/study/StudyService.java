@@ -5,7 +5,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.ImmutableEntityService;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class StudyService extends CrudService<Study, StudyDao> {
+public class StudyService extends ImmutableEntityService<Study, StudyDao> {
     private StudyEnvironmentService studyEnvironmentService;
     private PortalStudyService portalStudyService;
 
