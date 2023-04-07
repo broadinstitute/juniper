@@ -17,6 +17,7 @@ import EnrolleeNotifications from './EnrolleeNotifications'
 import DataChangeRecords from './DataChangeRecords'
 import EnrolleeProfile from './EnrolleeProfile'
 import ParticipantTaskView from './tasks/ParticipantTaskView'
+import ErrorBoundary from '../../util/ErrorBoundary'
 
 export type SurveyWithResponsesT = {
   survey: StudyEnvironmentSurvey,
@@ -76,6 +77,10 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
               <li className="list-group-item">
                 <NavLink to="profile" className={getLinkCssClasses}>Profile</NavLink>
               </li>
+              <li className="list-group-item subgroup">
+                <NavLink to="tasks" className={getLinkCssClasses}>Tasks</NavLink>
+                <TaskSummary tasks={enrollee.participantTasks}/>
+              </li>
               <li className="list-group-item">
                 <NavLink to="preRegistration" className={getLinkCssClasses}>PreEnrollment</NavLink>
               </li>
@@ -114,10 +119,6 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                 </ul>
               </li>
               <li className="list-group-item subgroup">
-                <NavLink to="tasks" className={getLinkCssClasses}>Tasks</NavLink>
-                <TaskSummary tasks={enrollee.participantTasks}/>
-              </li>
-              <li className="list-group-item subgroup">
                 <NavLink to="notifications" className={getLinkCssClasses}>Notifications</NavLink>
               </li>
               <li className="list-group-item subgroup">
@@ -126,33 +127,35 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
             </ul>
           </div>
           <div className="participantTabContent flex-grow-1 bg-white p-3">
-            <Routes>
-              <Route path="profile" element={<EnrolleeProfile enrollee={enrollee}/>}/>
-              <Route path="consents" element={<div>consents</div>}/>
-              <Route path="preRegistration" element={
-                <PreEnrollmentView preEnrollSurvey={currentEnv.preEnrollSurvey}
-                  preEnrollResponse={enrollee.preEnrollmentResponse}/>
-              }/>
-              <Route path="surveys">
-                <Route path=":surveyStableId" element={<EnrolleeSurveyView enrollee={enrollee}
-                  responseMap={responseMap}/>}/>
-                <Route path="*" element={<div>Unknown participant survey page</div>}/>
-              </Route>
-              <Route path="tasks" element={<ParticipantTaskView enrollee={enrollee}/>}/>
-              <Route path="consents">
-                <Route path=":consentStableId" element={<EnrolleeConsentView enrollee={enrollee}
-                  responseMap={consentMap}/>}/>
-                <Route path="*" element={<div>Unknown participant survey page</div>}/>
-              </Route>
-              <Route path="notifications" element={
-                <EnrolleeNotifications enrollee={enrollee} studyEnvContext={studyEnvContext}/>
-              }/>
-              <Route path="changeRecords" element={
-                <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext}/>
-              }/>
-              <Route index element={<EnrolleeProfile enrollee={enrollee}/>}/>
-              <Route path="*" element={<div>unknown enrollee route</div>}/>
-            </Routes>
+            <ErrorBoundary>
+              <Routes>
+                <Route path="profile" element={<EnrolleeProfile enrollee={enrollee}/>}/>
+                <Route path="consents" element={<div>consents</div>}/>
+                <Route path="preRegistration" element={
+                  <PreEnrollmentView preEnrollSurvey={currentEnv.preEnrollSurvey}
+                    preEnrollResponse={enrollee.preEnrollmentResponse}/>
+                }/>
+                <Route path="surveys">
+                  <Route path=":surveyStableId" element={<EnrolleeSurveyView enrollee={enrollee}
+                    responseMap={responseMap}/>}/>
+                  <Route path="*" element={<div>Unknown participant survey page</div>}/>
+                </Route>
+                <Route path="tasks" element={<ParticipantTaskView enrollee={enrollee}/>}/>
+                <Route path="consents">
+                  <Route path=":consentStableId" element={<EnrolleeConsentView enrollee={enrollee}
+                    responseMap={consentMap}/>}/>
+                  <Route path="*" element={<div>Unknown participant survey page</div>}/>
+                </Route>
+                <Route path="notifications" element={
+                  <EnrolleeNotifications enrollee={enrollee} studyEnvContext={studyEnvContext}/>
+                }/>
+                <Route path="changeRecords" element={
+                  <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext}/>
+                }/>
+                <Route index element={<EnrolleeProfile enrollee={enrollee}/>}/>
+                <Route path="*" element={<div>unknown enrollee route</div>}/>
+              </Routes>
+            </ErrorBoundary>
           </div>
         </div>
       </div>

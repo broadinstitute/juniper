@@ -1,21 +1,16 @@
-package bio.terra.pearl.core.service;
+package bio.terra.pearl.core.service.admin;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
 import bio.terra.pearl.core.factory.admin.PermissionFactory;
+import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
 import bio.terra.pearl.core.factory.admin.RoleFactory;
 import bio.terra.pearl.core.model.admin.RolePermission;
-import bio.terra.pearl.core.service.admin.PortalAdminUserRoleService;
-import bio.terra.pearl.core.service.admin.PortalAdminUserService;
-import bio.terra.pearl.core.service.admin.RolePermissionService;
+import java.util.List;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 public class RolePermissionTest extends BaseSpringBootTest {
 

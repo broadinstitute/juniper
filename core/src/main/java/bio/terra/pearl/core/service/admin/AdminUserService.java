@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.admin;
 
 import bio.terra.pearl.core.dao.admin.AdminUserDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.admin.AdminUserWithPermissions;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import java.util.Optional;
@@ -19,8 +20,12 @@ public class AdminUserService extends ImmutableEntityService<AdminUser, AdminUse
         this.portalAdminUserService = portalAdminUserService;
     }
 
-    public Optional<AdminUser> findByUsername(String email) {
-        return dao.findByUsername(email);
+    public Optional<AdminUser> findByUsername(String username) {
+        return dao.findByUsername(username);
+    }
+
+    public Optional<AdminUserWithPermissions> findByUsernameWithPermissions(String username) {
+        return dao.findByUsernameWithPermissions(username);
     }
 
     @Transactional
