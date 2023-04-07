@@ -19,6 +19,10 @@ public class EnvironmentFactory {
         return buildPersisted(builder(testName), testName);
     }
 
+    public Environment buildPersisted(String testName, EnvironmentName envName) {
+        return buildPersisted(Environment.builder().name(envName), testName);
+    }
+
     /** since there are only 3 possible environments, we can't always return a fresh one.  check to see
      * if the given environment exists, and either return it or a new one as needed.
      */

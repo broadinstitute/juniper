@@ -17,7 +17,7 @@
           "fullDataJson": {
             "items": [
               {
-                "stableId": "oh_medHx_worriedHeartHealth",
+                "stableId": "oh_oh_cardioHx_worriedHeartHealth",
                 "simpleValue": "yesSpecificallyAboutMyHeart",
                 "displayValue": "Yes, specifically about my heart"
               }
@@ -25,7 +25,7 @@
           },
           "resumeDataJson": {
             "data": {
-              "oh_oh_medHx_worriedHeartHealth": "yesSpecificallyAboutMyHeart"
+              "oh_oh_cardioHx_worriedHeartHealth": "yesSpecificallyAboutMyHeart"
             },
             "currentPageNo": 1
           }

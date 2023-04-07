@@ -226,7 +226,8 @@ export type DataChangeRecord = {
 
 export type Config = {
   b2cTenantName: string,
-  b2cClientId: string
+  b2cClientId: string,
+  b2cPolicyName: string,
 }
 
 export type MailingListContact = {

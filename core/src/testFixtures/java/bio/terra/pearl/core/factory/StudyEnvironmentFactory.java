@@ -42,6 +42,7 @@ public class StudyEnvironmentFactory {
                 .environmentName(environmentFactory.buildPersisted(testName).getName());
     }
 
+
     public StudyEnvironment buildPersisted(String testName) {
         return studyEnvironmentService.create(builderWithDependencies(testName).build());
     }

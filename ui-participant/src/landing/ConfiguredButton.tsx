@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom'
 
 import { requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 
-import { MailingListButton } from './MailingListButton'
-
 type JoinButtonConfig = {
   type: 'join'
   studyShortcode: string
@@ -61,19 +59,29 @@ type ConfiguredButtonProps = {
   className?: string;
 }
 
-/** renders a button from a ButtonConfig */
-export default function ConfiguredButton({ config, className }: ConfiguredButtonProps) {
+export const ConfiguredLink = (props: ConfiguredButtonProps) => {
+  const { className, config } = props
   if (config.type === 'join') {
     const to = config.studyShortcode ? `/studies/${config.studyShortcode}/join` : '/join'
-    return <Link to={to} className={classNames(className, 'btn', 'btn-primary')}>{config.text}</Link>
+    return <Link to={to} className={className}>{config.text}</Link>
   } else if (config.type === 'mailingList') {
-    return (
-      <MailingListButton className={classNames(className, 'btn', 'btn-outline-primary')}>
-        {config.text}
-      </MailingListButton>
-    )
+    return <a href="#mailing-list" className={className}>{config.text}</a>
   } else if (config.type === 'internalLink') {
-    return <Link to={config.href} className={classNames(className, 'btn', 'btn-outline-primary')}>{config.text}</Link>
+    return <Link to={config.href} className={className}>{config.text}</Link>
+  } else { // external link
+    return <a href={config.href} className={className} rel="noreferrer" target="_blank">{config.text}</a>
   }
-  return <a href={config.href}className={classNames(className, 'btn', 'btn-outline-primary')}>{config.text}</a>
+}
+
+/** renders a button from a ButtonConfig */
+export default function ConfiguredButton(props: ConfiguredButtonProps) {
+  const { className, config, ...otherProps } = props
+  const buttonStyle = config.type === 'join' ? 'btn-primary' : 'btn-outline-primary'
+  return (
+    <ConfiguredLink
+      {...otherProps}
+      config={config}
+      className={classNames('btn', buttonStyle, className)}
+    />
+  )
 }

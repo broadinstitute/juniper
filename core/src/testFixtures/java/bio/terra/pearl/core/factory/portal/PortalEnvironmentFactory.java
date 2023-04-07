@@ -25,6 +25,15 @@ public class PortalEnvironmentFactory {
                 .environmentName(envName);
     }
 
+    public PortalEnvironment.PortalEnvironmentBuilder builderWithDependencies(String testName, EnvironmentName envName) {
+        Portal portal = portalFactory.buildPersisted(testName);
+        environmentFactory.buildPersisted(testName, envName);
+        return builder(testName)
+                .portalId(portal.getId())
+                .portalEnvironmentConfig(new PortalEnvironmentConfig())
+                .environmentName(envName);
+    }
+
     public PortalEnvironment.PortalEnvironmentBuilder builderWithDependencies(String testName) {
         Portal portal = portalFactory.buildPersisted(testName);
         return builder(testName)
@@ -35,5 +44,9 @@ public class PortalEnvironmentFactory {
 
     public PortalEnvironment buildPersisted(String testName) {
         return portalEnvironmentService.create(builderWithDependencies(testName).build());
+    }
+
+    public PortalEnvironment buildPersisted(String testName, EnvironmentName envName) {
+        return portalEnvironmentService.create(builderWithDependencies(testName, envName).build());
     }
 }
