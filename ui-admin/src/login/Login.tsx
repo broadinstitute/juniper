@@ -9,8 +9,8 @@ import { useAuth } from 'react-oidc-context'
 function Login() {
   const [emailAddress, setEmailAddress] = useState('')
   const [isError, setIsError] = useState(false)
-  const { loginUser } = useUser()
   const [showDevLogin, setShowDevLogin] = useState(false)
+  const { loginUserUnauthed } = useUser()
   const auth = useAuth()
 
   const signIn = async () => {
@@ -22,7 +22,7 @@ function Login() {
   function unauthedLogin(event: SyntheticEvent) {
     event.preventDefault()
     Api.unauthedLogin(emailAddress).then((adminUser: AdminUser) => {
-      loginUser(adminUser)
+      loginUserUnauthed(adminUser)
     }).catch(() => {
       setIsError(true)
     })
@@ -45,27 +45,26 @@ function Login() {
       backgroundColor: '#333F52'
     }}>
       <h1 className="h5 text-center mb-4">Juniper</h1>
+      <button type="button" className="btn btn-primary border-white text-white
+         fw-bold d-flex w-100 align-items-center justify-content-center fs-5 mb-3"
+      style={{ backgroundColor: '#4e617e' }}
+      onClick={() => signIn()}>
+        Login <img className="ms-3" style={{ maxHeight: '1em' }} src={microsoftLogo} alt="Microsoft logo"/>
+        <img className="ms-1" style={{ maxHeight: '1em' }} src={googleLogo} alt="Google logo"/>
+      </button>
       <form onSubmit={unauthedLogin} className="d-flex flex-column justify-content-center">
-        <button type="button" className="btn btn-primary border-white text-white
-         fw-bold d-flex align-items-center justify-content-center fs-5 mb-3"
-        style={{ backgroundColor: '#4e617e' }}
-        onClick={() => signIn()}>
-          Login <img className="ms-3" style={{ maxHeight: '1em' }} src={microsoftLogo}/>
-          <img className="ms-1" style={{ maxHeight: '1em' }} src={googleLogo}/>
-        </button>
-        { isError && <div className="text-danger text-center">Login failed</div> }
         <hr className="mt-2"/>
         <button type="button" className="btn btn-secondary text-white" onClick={() => setShowDevLogin(!showDevLogin)}>
           developer login
         </button>
         { showDevLogin && <div className="mb-3">
-          <input type="email" className="form-control" id="inputLoginEmail" aria-describedby="emailHelp"
-            value={emailAddress}
-            onChange={event => setEmailAddress(event.target.value)}/>
-
-          <button type="submit" className="btn btn-secondary-outline border-white text-white mt-2 w-100">Login</button>
+          <label className="form-label w-100">email
+            <input type="email" className="form-control" id="inputLoginEmail" value={emailAddress}
+              onChange={event => setEmailAddress(event.target.value)}/>
+          </label>
+          <button type="submit" className="btn btn-secondary-outline border-white text-white mt-2 w-100">Log in</button>
         </div> }
-
+        { isError && <div className="text-danger text-center">Login failed</div> }
       </form>
     </div>
   </div>

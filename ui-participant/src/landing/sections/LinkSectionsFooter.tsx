@@ -1,3 +1,5 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEnvelope } from '@fortawesome/free-regular-svg-icons'
 import _ from 'lodash'
 import React from 'react'
 
@@ -6,6 +8,7 @@ import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requirePlainObject, requireString } from 'util/validationUtils'
 
 import { ButtonConfig, ConfiguredLink, validateButtonConfig } from 'landing/ConfiguredButton'
+import { socialMediaSites } from './SocialMediaTemplate'
 import { TemplateComponentProps } from './templateUtils'
 
 type LinkSectionsFooterConfig = {
@@ -32,6 +35,23 @@ const validateLinkSectionsFooterConfig = (config: SectionConfig): LinkSectionsFo
   return { itemSections }
 }
 
+const getIcon = (item: ButtonConfig) => {
+  const style = { color: 'var(--brand-color)', width: 20, marginRight: '0.5rem' }
+  if (item.type === 'mailingList') {
+    return <FontAwesomeIcon icon={faEnvelope} style={style} />
+  }
+
+  if (!item.type) {
+    const socialMediaSite = Object.values(socialMediaSites)
+      .find(siteConfig => item.href.startsWith(`https://${siteConfig.domain}/`))
+    if (socialMediaSite) {
+      return <FontAwesomeIcon icon={socialMediaSite.icon} style={style} />
+    }
+  }
+
+  return null
+}
+
 type LinkSectionsFooterProps = TemplateComponentProps<LinkSectionsFooterConfig>
 
 /** renders a footer-style section */
@@ -47,6 +67,7 @@ export function LinkSectionsFooter(props: LinkSectionsFooterProps) {
             {_.map(section.items, (item, index) => {
               return (
                 <li key={index} className="mb-3">
+                  {getIcon(item)}
                   <ConfiguredLink config={item} />
                 </li>
               )

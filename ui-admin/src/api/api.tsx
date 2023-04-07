@@ -1,6 +1,9 @@
 export type AdminUser = {
   username: string,
-  token: string
+  token: string,
+  superuser: boolean,
+  portalPermissions: Record<string, string[]>,
+  isAnonymous: boolean
 };
 
 export type Study = {
@@ -306,24 +309,64 @@ export default {
   },
 
   async unauthedLogin(username: string): Promise<AdminUser> {
-    const url =`${API_ROOT}/current-user/v1/unauthed-login?${  new URLSearchParams({
+    const url =`${API_ROOT}/current-user/v1/unauthed/login?${  new URLSearchParams({
       username
     })}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()
     })
-    return await this.processJsonResponse(response)
+    const loginResult = await this.processJsonResponse(response)
+    const user: AdminUser = {
+      ...loginResult.user,
+      portalPermissions: loginResult.portalPermissions
+    }
+    return user
   },
 
-  async tokenLogin(token: string): Promise<AdminUser> {
-    const url =`${API_ROOT}/current-user/v1/token-login`
+  async refreshUnauthedLogin(token: string): Promise<AdminUser> {
+    const url =`${API_ROOT}/current-user/v1/unauthed/refresh`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
       body: JSON.stringify({ token })
     })
-    return await this.processJsonResponse(response)
+    const loginResult = await this.processJsonResponse(response)
+    const user: AdminUser = {
+      ...loginResult.user,
+      portalPermissions: loginResult.portalPermissions
+    }
+    return user
+  },
+
+  async tokenLogin(token: string): Promise<AdminUser> {
+    const url =`${API_ROOT}/current-user/v1/login`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify({ token })
+    })
+    const loginResult = await this.processJsonResponse(response)
+    const user: AdminUser = {
+      ...loginResult.user,
+      portalPermissions: loginResult.portalPermissions
+    }
+    return user
+  },
+
+  async refreshLogin(token: string): Promise<AdminUser> {
+    const url =`${API_ROOT}/current-user/v1/refresh`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify({ token })
+    })
+    const loginResult = await this.processJsonResponse(response)
+    const user: AdminUser = {
+      ...loginResult.user,
+      portalPermissions: loginResult.portalPermissions
+    }
+    return user
   },
 
   async getPortals(): Promise<Portal[]> {

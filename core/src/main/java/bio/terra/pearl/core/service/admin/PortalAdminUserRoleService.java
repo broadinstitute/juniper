@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.admin;
 import bio.terra.pearl.core.dao.admin.PortalAdminUserRoleDao;
 import bio.terra.pearl.core.model.admin.PortalAdminUserRole;
 import bio.terra.pearl.core.model.admin.Role;
+import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.RoleNotFoundException;
 import bio.terra.pearl.core.service.exception.UserNotFoundException;
 import bio.terra.pearl.core.service.exception.ValidationException;
@@ -14,11 +15,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class PortalAdminUserRoleService {
+public class PortalAdminUserRoleService extends CrudService<PortalAdminUserRole, PortalAdminUserRoleDao> {
 
     private PermissionService permissionService;
-
-    private PortalAdminUserRoleDao portalAdminUserRoleDao;
 
     private PortalAdminUserService portalAdminUserService;
 
@@ -31,15 +30,15 @@ public class PortalAdminUserRoleService {
                                       @Lazy PortalAdminUserService portalAdminUserService,
                                       RolePermissionService rolePermissionService,
                                       RoleService roleService) {
+        super(portalAdminUserRoleDao);
         this.permissionService = permissionService;
-        this.portalAdminUserRoleDao = portalAdminUserRoleDao;
         this.portalAdminUserService = portalAdminUserService;
         this.rolePermissionService = rolePermissionService;
         this.roleService = roleService;
     }
 
     public List<PortalAdminUserRole> getRolesForAdminUser(UUID adminUserId) {
-        return portalAdminUserRoleDao.findByPortalAdminUserId(adminUserId);
+        return dao.findByPortalAdminUserId(adminUserId);
     }
 
     /**
@@ -56,17 +55,17 @@ public class PortalAdminUserRoleService {
         var portalAdminUser = portalAdminUserService.find(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
         var roles = roleNames.stream().map(roleName -> roleService.findByName(roleName).orElseThrow(() -> new RoleNotFoundException(roleName))).toList();
 
-        portalAdminUserRoleDao.deleteByPortalAdminUserId(portalAdminUser.getId());
+        dao.deleteByPortalAdminUserId(portalAdminUser.getId());
         roles.forEach(role -> {
             PortalAdminUserRole portalAdminUserRole = PortalAdminUserRole.builder().portalAdminUserId(portalAdminUserId).roleId(role.getId()).build();
-            portalAdminUserRoleDao.create(portalAdminUserRole);
+            dao.create(portalAdminUserRole);
         });
 
         return roles.stream().map(Role::getName).toList();
     }
 
     public List<PortalAdminUserRole> findByPortalAdminUserIdWithRolesAndPermissions(UUID portalAdminUserId) {
-        var portalAdminUserRoles = portalAdminUserRoleDao.findByPortalAdminUserId(portalAdminUserId);
+        var portalAdminUserRoles = dao.findByPortalAdminUserId(portalAdminUserId);
         portalAdminUserRoles.forEach(portalAdminUserRole -> {
             roleService.findOne(portalAdminUserRole.getRoleId())
                     .ifPresent(role -> {

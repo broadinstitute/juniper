@@ -5,6 +5,7 @@ import bio.terra.common.iam.BearerTokenFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.PortalStudy;
+import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
@@ -16,17 +17,17 @@ import org.springframework.stereotype.Service;
 /** Utility service for common auth-related methods */
 @Service
 public class AuthUtilService {
-  private CurrentUserService currentUserService;
+  private AdminUserService adminUserService;
   private BearerTokenFactory bearerTokenFactory;
   private PortalService portalService;
   private PortalStudyService portalStudyService;
 
   public AuthUtilService(
-      CurrentUserService currentUserService,
+      AdminUserService adminUserService,
       BearerTokenFactory bearerTokenFactory,
       PortalService portalService,
       PortalStudyService portalStudyService) {
-    this.currentUserService = currentUserService;
+    this.adminUserService = adminUserService;
     this.bearerTokenFactory = bearerTokenFactory;
     this.portalService = portalService;
     this.portalStudyService = portalStudyService;
@@ -37,7 +38,7 @@ public class AuthUtilService {
     String token = bearerTokenFactory.from(request).getToken();
     var decodedJWT = JWT.decode(token);
     var email = decodedJWT.getClaim("email").asString();
-    Optional<AdminUser> userOpt = currentUserService.findByUsername(email);
+    Optional<AdminUser> userOpt = adminUserService.findByUsername(email);
     if (userOpt.isEmpty()) {
       throw new UnauthorizedException("User not found: " + email);
     }
