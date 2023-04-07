@@ -1,26 +1,30 @@
 package bio.terra.pearl.api.admin.controller;
 
-import bio.terra.pearl.api.admin.api.CurrentUserApi;
+import bio.terra.pearl.api.admin.api.CurrentUnauthedUserApi;
 import bio.terra.pearl.api.admin.model.TokenLoginInfo;
-import bio.terra.pearl.api.admin.service.CurrentUserService;
+import bio.terra.pearl.api.admin.service.CurrentUnauthedUserService;
 import bio.terra.pearl.core.model.admin.AdminUserWithPermissions;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+/**
+ * quick hack controller to allow fake logins to admin tool. This will likely become obsolete with
+ * B2C
+ */
 @Controller
-public class CurrentUserController implements CurrentUserApi {
-  private CurrentUserService currentUserService;
+public class CurrentUnauthedUserController implements CurrentUnauthedUserApi {
+  private CurrentUnauthedUserService currentUnauthedUserService;
 
-  public CurrentUserController(CurrentUserService currentUserService) {
-    this.currentUserService = currentUserService;
+  public CurrentUnauthedUserController(CurrentUnauthedUserService currentUnauthedUserService) {
+    this.currentUnauthedUserService = currentUnauthedUserService;
   }
 
   @Override
-  public ResponseEntity<Object> login(TokenLoginInfo tokenInfo) {
+  public ResponseEntity<Object> unauthedLogin(String username) {
     // for now, log them in as long as the username exists
     Optional<AdminUserWithPermissions> adminUserOpt =
-        currentUserService.tokenLogin(tokenInfo.getToken());
+        currentUnauthedUserService.unauthedLogin(username);
     return ResponseEntity.of(adminUserOpt.map(adminUser -> adminUser));
   }
 
@@ -28,7 +32,7 @@ public class CurrentUserController implements CurrentUserApi {
   public ResponseEntity<Object> refresh(TokenLoginInfo tokenInfo) {
     // for now, log them in as long as the username exists
     Optional<AdminUserWithPermissions> adminUserOpt =
-        currentUserService.refresh(tokenInfo.getToken());
+        currentUnauthedUserService.tokenLogin(tokenInfo.getToken());
     return ResponseEntity.of(adminUserOpt.map(adminUser -> adminUser));
   }
 }
