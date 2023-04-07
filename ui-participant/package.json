@@ -67,6 +67,5 @@
       "react-markdown": "<rootDir>/node_modules/react-markdown/react-markdown.min.js",
       "micromark": "<rootDir>/src/test-utils/micromark-mock.js"
     }
-  },
-  "proxy": "http://localhost:8081"
+  }
 }

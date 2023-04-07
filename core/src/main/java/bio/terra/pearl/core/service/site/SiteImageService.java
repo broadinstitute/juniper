@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SiteImageService extends ImmutableEntityService<SiteImage, SiteImageDao> {
-    public static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("png", "jpeg", "jpg", "svg", "gif", "webp");
+    public static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("png", "jpeg", "jpg", "svg", "gif", "webp", "ico");
     private PortalService portalService;
     public SiteImageService(SiteImageDao dao, @Lazy PortalService portalService) {
         super(dao);
@@ -26,6 +26,10 @@ public class SiteImageService extends ImmutableEntityService<SiteImage, SiteImag
 
     public Optional<SiteImage> findOne(String portalShortcode, String cleanFileName, int version) {
         return dao.findOne(portalShortcode, cleanFileName, version);
+    }
+
+    public Optional<SiteImage> findOneLatestVersion(String portalShortcode, String cleanFileName) {
+        return dao.findOneLatestVersion(portalShortcode, cleanFileName);
     }
 
     @Override
