@@ -317,14 +317,14 @@ export default {
       headers: this.getInitHeaders()
     })
     const loginResult = await this.processJsonResponse(response)
-    const user: AdminUser = loginResult.user
-    user.portalPermissions = loginResult.portalPermissions
-    this.setBearerToken(user.token)
+    const user: AdminUser = {
+      ...loginResult.user,
+      portalPermissions: loginResult.portalPermissions
+    }
     return user
   },
 
   async refreshUnauthedLogin(token: string): Promise<AdminUser> {
-    this.setBearerToken(token)
     const url =`${API_ROOT}/current-user/v1/unauthed/refresh`
     const response = await fetch(url, {
       method: 'POST',
@@ -332,13 +332,14 @@ export default {
       body: JSON.stringify({ token })
     })
     const loginResult = await this.processJsonResponse(response)
-    const user: AdminUser = loginResult.user
-    user.portalPermissions = loginResult.portalPermissions
+    const user: AdminUser = {
+      ...loginResult.user,
+      portalPermissions: loginResult.portalPermissions
+    }
     return user
   },
 
   async tokenLogin(token: string): Promise<AdminUser> {
-    this.setBearerToken(token)
     const url =`${API_ROOT}/current-user/v1/login`
     const response = await fetch(url, {
       method: 'POST',
@@ -346,13 +347,14 @@ export default {
       body: JSON.stringify({ token })
     })
     const loginResult = await this.processJsonResponse(response)
-    const user: AdminUser = loginResult.user
-    user.portalPermissions = loginResult.portalPermissions
+    const user: AdminUser = {
+      ...loginResult.user,
+      portalPermissions: loginResult.portalPermissions
+    }
     return user
   },
 
   async refreshLogin(token: string): Promise<AdminUser> {
-    this.setBearerToken(token)
     const url =`${API_ROOT}/current-user/v1/refresh`
     const response = await fetch(url, {
       method: 'POST',
@@ -360,8 +362,10 @@ export default {
       body: JSON.stringify({ token })
     })
     const loginResult = await this.processJsonResponse(response)
-    const user: AdminUser = loginResult.user
-    user.portalPermissions = loginResult.portalPermissions
+    const user: AdminUser = {
+      ...loginResult.user,
+      portalPermissions: loginResult.portalPermissions
+    }
     return user
   },
 

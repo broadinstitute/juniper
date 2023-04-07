@@ -50,6 +50,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   }
 
   const loginUserUnauthed = (adminUser: AdminUser) => {
+    Api.setBearerToken(adminUser.token)
     setUserState(adminUser)
     localStorage.setItem(INTERNAL_LOGIN_TOKEN_KEY, adminUser.token)
   }
@@ -72,6 +73,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     auth.events.addUserLoaded(user => {
       const token = user.id_token as string
+      Api.setBearerToken(token)
       Api.tokenLogin(token).then(user => {
         user.token = token
         loginUser(user)
@@ -84,6 +86,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     const oauthAccessToken = localStorage.getItem(OAUTH_ACCRESS_TOKEN_KEY)
     const internalLogintoken = localStorage.getItem(INTERNAL_LOGIN_TOKEN_KEY)
     if (oauthAccessToken) {
+      Api.setBearerToken(oauthAccessToken)
       Api.refreshLogin(oauthAccessToken).then(loginResult => {
         loginResult.token = oauthAccessToken
         loginUser(loginResult)
@@ -93,6 +96,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
         localStorage.removeItem(OAUTH_ACCRESS_TOKEN_KEY)
       })
     } else if (internalLogintoken) {
+      Api.setBearerToken(internalLogintoken)
       Api.refreshUnauthedLogin(internalLogintoken).then(loginResult => {
         loginUserUnauthed(loginResult)
         setIsLoading(false)
