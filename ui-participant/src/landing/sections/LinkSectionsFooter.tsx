@@ -1,6 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope } from '@fortawesome/free-regular-svg-icons'
-import { faFacebook, faInstagram, faTwitter } from '@fortawesome/free-brands-svg-icons'
 import _ from 'lodash'
 import React from 'react'
 
@@ -9,6 +8,7 @@ import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requirePlainObject, requireString } from 'util/validationUtils'
 
 import { ButtonConfig, ConfiguredLink, validateButtonConfig } from 'landing/ConfiguredButton'
+import { socialMediaSites } from './SocialMediaTemplate'
 import { TemplateComponentProps } from './templateUtils'
 
 type LinkSectionsFooterConfig = {
@@ -42,14 +42,10 @@ const getIcon = (item: ButtonConfig) => {
   }
 
   if (!item.type) {
-    if (item.href.startsWith('https://facebook.com/')) {
-      return <FontAwesomeIcon icon={faFacebook} style={style} />
-    }
-    if (item.href.startsWith('https://instagram.com/')) {
-      return <FontAwesomeIcon icon={faInstagram} style={style} />
-    }
-    if (item.href.startsWith('https://twitter.com/')) {
-      return <FontAwesomeIcon icon={faTwitter} style={style} />
+    const socialMediaSite = Object.values(socialMediaSites)
+      .find(siteConfig => item.href.startsWith(`https://${siteConfig.domain}/`))
+    if (socialMediaSite) {
+      return <FontAwesomeIcon icon={socialMediaSite.icon} style={style} />
     }
   }
 

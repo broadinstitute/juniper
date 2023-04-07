@@ -10,23 +10,52 @@ import { requireOptionalString } from 'util/validationUtils'
 
 import { TemplateComponentProps } from './templateUtils'
 
+type SocialMediaSite = 'Facebook' | 'Instagram' | 'Twitter'
+
+type SocialMediaSiteConfig = {
+  domain: string
+  icon: IconDefinition
+  label: SocialMediaSite
+  renderUrl: (args: { domain: string, handle: string }) => string
+}
+
+export const socialMediaSites: SocialMediaSiteConfig[] = [
+  {
+    domain: 'twitter.com',
+    icon: faTwitter,
+    label: 'Twitter',
+    renderUrl: ({ domain, handle }) => `https://${domain}/${handle}`
+  },
+  {
+    domain: 'facebook.com',
+    icon: faFacebook,
+    label: 'Facebook',
+    renderUrl: ({ domain, handle }) => `https://${domain}/${handle}`
+  },
+  {
+    domain: 'instagram.com',
+    icon: faInstagram,
+    label: 'Instagram',
+    renderUrl: ({ domain, handle }) => `https://${domain}/${handle}`
+  }
+]
+
+type HandleKey = `${Lowercase<SocialMediaSite>}Handle`
+
 type SocialMediaTemplateConfig = {
-  facebookHandle?: string, // Facebook handle
-  instagramHandle?: string, // Instagram handle
-  twitterHandle?: string, // Twitter handle
+  [handle in HandleKey]?: string
 }
 
 /** Validate that a section configuration object conforms to SocialMediaTemplateConfig */
 const validateSocialMediaTemplateConfig = (config: SectionConfig): SocialMediaTemplateConfig => {
   const message = 'Invalid SocialMediaTemplateConfig'
-  const facebookHandle = requireOptionalString(config, 'facebookHandle', message)
-  const instagramHandle = requireOptionalString(config, 'instagramHandle', message)
-  const twitterHandle = requireOptionalString(config, 'twitterHandle', message)
-  return {
-    facebookHandle,
-    instagramHandle,
-    twitterHandle
-  }
+  return socialMediaSites.reduce(
+    (acc, { label }) => {
+      const key = `${label.toLowerCase()}Handle`
+      return { ...acc, [key]: requireOptionalString(config, key, message) }
+    },
+    {}
+  )
 }
 
 
@@ -53,36 +82,25 @@ type SocialMediaTemplateProps = TemplateComponentProps<SocialMediaTemplateConfig
  */
 function SocialMediaTemplate(props: SocialMediaTemplateProps) {
   const { anchorRef, config } = props
-  const {
-    facebookHandle,
-    instagramHandle,
-    twitterHandle
-  } = config
 
   return (
     <div id={anchorRef} className="row mx-0 py-5" style={getSectionStyle(config)}>
       <div className="hstack justify-content-center gap-2">
-        {twitterHandle && (
-          <SocialMediaLink
-            icon={faTwitter}
-            label="Twitter"
-            url={`https://twitter.com/${twitterHandle}`}
-          />
-        )}
-        {facebookHandle && (
-          <SocialMediaLink
-            icon={faFacebook}
-            label="Facebook"
-            url={`https://facebook.com/${facebookHandle}`}
-          />
-        )}
-        {instagramHandle && (
-          <SocialMediaLink
-            icon={faInstagram}
-            label="Instagram"
-            url={`https://instagram.com/${instagramHandle}`}
-          />
-        )}
+        {socialMediaSites.map(site => {
+          const handleKey = `${site.label.toLowerCase()}Handle` as HandleKey
+          const handle = config[handleKey]
+          if (!handle) {
+            return null
+          } else {
+            return (
+              <SocialMediaLink
+                icon={site.icon}
+                label={site.label}
+                url={site.renderUrl({ domain: site.domain, handle })}
+              />
+            )
+          }
+        })}
       </div>
     </div>
   )
