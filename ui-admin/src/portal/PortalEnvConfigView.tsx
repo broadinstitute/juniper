@@ -19,6 +19,7 @@ const ENVIRONMENT_ICON_MAP: Record<string, React.ReactNode> = {
 export default function PortalEnvConfigView({ portal, portalEnv }:
   {portal: Portal, portalEnv: PortalEnvironment}) {
   const envIcon = ENVIRONMENT_ICON_MAP[portalEnv.environmentName]
+  const isInitialized = portalEnv.portalEnvironmentConfig.initialized
   return <div className="bg-white p-3 mb-2">
     <div className="d-flex align-items-baseline">
       <h3 className="h5 text-capitalize me-4">{envIcon} {portalEnv.environmentName}</h3>
@@ -26,24 +27,27 @@ export default function PortalEnvConfigView({ portal, portalEnv }:
     </div>
 
     <div className="ms-4 mt-3">
-      <div><h4 className="h6">Website</h4></div>
-      <div className="mt-4">
-        <h4 className="h6">
-          <Link to={mailingListPath(portal.shortcode, portalEnv.environmentName)}>Mailing List</Link>
-        </h4>
-      </div>
-      <div className="mt-4 mb-2">
-        <h4 className="h6">Studies</h4>
-        <ul>
-          { portal.portalStudies.map(portalStudy => {
-            const study = portalStudy.study
-            return <li key={study.shortcode}>
-              <StudyConfigView study={study} envName={portalEnv.environmentName}/>
-            </li>
-          }
-          )}
-        </ul>
-      </div>
+      { !isInitialized && <div className="fst-italic text-muted">Not initialized</div> }
+      { isInitialized && <div>
+        <div><h4 className="h6">Website</h4></div>
+        <div className="mt-4">
+          <h4 className="h6">
+            <Link to={mailingListPath(portal.shortcode, portalEnv.environmentName)}>Mailing List</Link>
+          </h4>
+        </div>
+        <div className="mt-4 mb-2">
+          <h4 className="h6">Studies</h4>
+          <ul>
+            { portal.portalStudies.map(portalStudy => {
+              const study = portalStudy.study
+              return <li key={study.shortcode}>
+                <StudyConfigView study={study} envName={portalEnv.environmentName}/>
+              </li>
+            }
+            )}
+          </ul>
+        </div>
+      </div>}
     </div>
   </div>
 }

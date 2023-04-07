@@ -41,6 +41,7 @@ public class ParticipantTaskService extends CrudService<ParticipantTask, Partici
     }
 
     @Transactional
+    @Override
     public ParticipantTask update(ParticipantTask task) {
         if (task.getStatus().isTerminalStatus() && task.getCompletedAt() == null) {
             task.setCompletedAt(Instant.now());

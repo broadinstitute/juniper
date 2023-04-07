@@ -1,10 +1,18 @@
 package bio.terra.pearl.core.model.publishing;
 
-import bio.terra.pearl.core.model.notification.NotificationConfig;
-import java.util.List;
+import bio.terra.pearl.core.model.BaseEntity;
+import java.util.UUID;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-public record PortalEnvironmentChangeRecord(VersionedEntityChangeRecord siteContentChange,
-                                            List<ConfigChangeRecord> configChanges,
-                                            VersionedEntityChangeRecord preRegSurveyChanges,
-                                            ListChangeRecord<NotificationConfig, NotificationConfigChangeRecord> notificationConfigChanges)
-{}
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+public class PortalEnvironmentChangeRecord extends BaseEntity {
+    private UUID adminUserId;
+    // json blob stored as string for convenience
+    private String portalEnvironmentChange;
+}

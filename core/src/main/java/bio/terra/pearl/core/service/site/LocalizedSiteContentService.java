@@ -7,14 +7,14 @@ import bio.terra.pearl.core.model.site.HtmlSection;
 import bio.terra.pearl.core.model.site.LocalizedSiteContent;
 import bio.terra.pearl.core.model.site.NavbarItem;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.ImmutableEntityService;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LocalizedSiteContentService extends CrudService<LocalizedSiteContent, LocalizedSiteContentDao> {
+public class LocalizedSiteContentService extends ImmutableEntityService<LocalizedSiteContent, LocalizedSiteContentDao> {
     private NavbarItemService navbarItemService;
     private HtmlPageService htmlPageService;
     private HtmlSectionDao htmlSectionDao;

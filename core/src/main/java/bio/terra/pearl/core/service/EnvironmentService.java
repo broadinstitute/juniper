@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EnvironmentService extends CrudService<Environment, EnvironmentDao> {
+public class EnvironmentService extends ImmutableEntityService<Environment, EnvironmentDao> {
 
     public EnvironmentService(EnvironmentDao dao) {
         super(dao);

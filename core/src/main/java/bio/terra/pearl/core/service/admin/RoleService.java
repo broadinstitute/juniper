@@ -3,16 +3,20 @@ package bio.terra.pearl.core.service.admin;
 import bio.terra.pearl.core.dao.admin.RoleDao;
 import bio.terra.pearl.core.model.admin.Permission;
 import bio.terra.pearl.core.model.admin.Role;
+
+import bio.terra.pearl.core.service.ImmutableEntityService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import bio.terra.pearl.core.model.admin.RolePermission;
-import bio.terra.pearl.core.service.CrudService;
 import java.util.List;
+
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class RoleService extends CrudService<Role, RoleDao> {
+public class RoleService extends ImmutableEntityService<Role, RoleDao> {
     private PermissionService permissionService;
     private RolePermissionService rolePermissionService;
 

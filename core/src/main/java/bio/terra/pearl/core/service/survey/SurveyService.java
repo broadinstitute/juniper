@@ -8,18 +8,18 @@ import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.CrudService;
-import java.util.*;
-
+import bio.terra.pearl.core.service.ImmutableEntityService;
+import bio.terra.pearl.core.service.VersionedEntityService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SurveyService extends CrudService<Survey, SurveyDao> {
+public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> implements VersionedEntityService<Survey> {
     private AnswerMappingDao answerMappingDao;
     private SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
 

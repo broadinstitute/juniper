@@ -108,10 +108,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.searchByStudyEnvironment(studyEnv.getId());
     }
 
-    public Enrollee update(Enrollee enrollee) {
-        return dao.update(enrollee);
-    }
-
     public Optional<Enrollee> findByPreEnrollResponseId(UUID preEnrollResponseId) {
         return dao.findByPreEnrollResponseId(preEnrollResponseId);
     }

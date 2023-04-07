@@ -400,16 +400,17 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{targetEnv}/update:
+  /api/portals/v1/{portalShortcode}/env/{targetEnv}/update/apply:
     post:
       summary: Updates a portal environment according to the update object
       tags: [ portalEnvironment ]
-      operationId: update
+      operationId: apply
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: targetEnv, in: path, required: true, schema: { type: string } }
+        - { name: sourceEnv, in: query, required: false, schema: { type: string } }
       requestBody:
-        required: true
+        required: false
         content: { application/json: { schema: { type: object } } }
       responses:
         '200':

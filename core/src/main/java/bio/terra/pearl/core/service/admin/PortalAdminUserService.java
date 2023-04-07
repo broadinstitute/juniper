@@ -3,7 +3,7 @@ package bio.terra.pearl.core.service.admin;
 import bio.terra.pearl.core.dao.admin.PortalAdminUserDao;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUserRole;
-import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class PortalAdminUserService extends CrudService<PortalAdminUser, PortalAdminUserDao> {
+public class PortalAdminUserService extends ImmutableEntityService<PortalAdminUser, PortalAdminUserDao> {
 
     private PortalAdminUserRoleService portalAdminUserRoleService;
 

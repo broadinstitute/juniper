@@ -237,14 +237,24 @@ export type MailingListContact = {
 }
 
 
-export type PortalEnvironmentChangeRecord = {
-  siteContentChange: VersionedEntityChangeRecord,
-  configChanges: ConfigChangeRecord[],
-  preRegSurveyChanges: VersionedEntityChangeRecord,
-  notificationConfigChanges: ListChangeRecord<NotificationConfig, NotificationConfigChangeRecord>
+export type PortalEnvironmentChange = {
+  siteContentChange: VersionedEntityChange,
+  configChanges: ConfigChange[],
+  preRegSurveyChanges: VersionedEntityChange,
+  notificationConfigChanges: ListChange<NotificationConfig, VersionedConfigChange>
+  studyEnvChanges: StudyEnvironmentChange[]
 }
 
-export type VersionedEntityChangeRecord = {
+export type StudyEnvironmentChange = {
+  studyShortcode: string,
+  configChanges: ConfigChange[],
+  preEnrollSurveyChanges: VersionedEntityChange,
+  consentChanges: ListChange<StudyEnvironmentConsent, VersionedConfigChange>,
+  surveyChanges: ListChange<StudyEnvironmentSurvey, VersionedConfigChange>,
+  notificationConfigChanges: ListChange<NotificationConfig, VersionedConfigChange>
+}
+
+export type VersionedEntityChange = {
   changed: boolean,
   oldStableId: string,
   newStableId: string,
@@ -252,21 +262,21 @@ export type VersionedEntityChangeRecord = {
   newVersion: number
 }
 
-export type ConfigChangeRecord = {
+export type ConfigChange = {
   propertyName: string,
   oldValue: object,
   newValue: object
 }
 
-export type ListChangeRecord<T, CT> = {
+export type ListChange<T, CT> = {
   addedItems: T[],
   removedItems: T[],
   changedItems: CT[]
 }
 
-export type NotificationConfigChangeRecord = {
-  configChanges: ConfigChangeRecord[],
-  templateChange: VersionedEntityChangeRecord
+export type VersionedConfigChange = {
+  configChanges: ConfigChange[],
+  documentChange: VersionedEntityChange
 }
 
 
@@ -494,9 +504,20 @@ export default {
   },
 
   async fetchEnvDiff(portalShortcode: string, sourceEnvName: string, destEnvName: string):
-    Promise<PortalEnvironmentChangeRecord> {
+    Promise<PortalEnvironmentChange> {
     const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/update/diff?sourceEnv=${sourceEnvName}`
     const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async applyEnvChanges(portalShortcode: string, destEnvName: string, changes: PortalEnvironmentChange):
+    Promise<PortalEnvironment> {
+    const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/update/apply`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(changes)
+    })
     return await this.processJsonResponse(response)
   },
 

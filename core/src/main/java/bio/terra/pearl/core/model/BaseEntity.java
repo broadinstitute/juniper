@@ -22,4 +22,15 @@ public abstract class BaseEntity {
                 getId() != null &&
                 getId().equals(((BaseEntity) obj).getId());
     }
+
+    /**
+     * clears the id field, and resets the createdAt, and lastUpdatedAt fields of the object.
+     * returns itself for easy chaining
+     */
+    public <T extends BaseEntity> T cleanForCopying() {
+        setLastUpdatedAt(Instant.now());
+        setCreatedAt(Instant.now());
+        setId(null);
+        return (T) this;
+    }
 }
