@@ -118,10 +118,14 @@ public class PublicApiController implements PublicApi {
   private PortalEnvironmentId getPortalForRequest(HttpServletRequest request) {
     String hostname = request.getServerName();
     String[] parts = hostname.split("\\.");
-    try {
-      EnvironmentName envName = EnvironmentName.valueOf(parts[0]);
-      return PortalEnvironmentId.builder().environmentName(envName).shortcode(parts[1]).build();
-    } catch (IllegalArgumentException ex) {
+
+    Optional<EnvironmentName> envNameOpt = EnvironmentName.optionalValueOfCaseInsensitive(parts[0]);
+    if (envNameOpt.isPresent()) {
+      return PortalEnvironmentId.builder()
+          .environmentName(envNameOpt.get())
+          .shortcode(parts[1])
+          .build();
+    } else {
       return PortalEnvironmentId.builder()
           .environmentName(EnvironmentName.live)
           .shortcode(parts[0])
