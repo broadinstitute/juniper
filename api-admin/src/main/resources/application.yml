@@ -15,6 +15,7 @@ env:
   tdr:
     basePath: ${TDR_ADDRESS:https://jade.datarepo-dev.broadinstitute.org}
     serviceAccountCreds: ${TDR_SA_CREDS:missing_tdr_sa_creds}
+    billingProfileId: ${BILLING_PROFILE_ID:550212cf-45dc-478f-9fe6-9b3290e2a1fe}
   populate:
     populate-from-classpath: true
   b2c:
