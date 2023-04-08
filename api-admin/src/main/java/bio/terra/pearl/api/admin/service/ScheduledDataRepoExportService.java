@@ -2,8 +2,6 @@ package bio.terra.pearl.api.admin.service;
 
 import bio.terra.pearl.core.service.datarepo.DataRepoExportService;
 import java.util.concurrent.TimeUnit;
-
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -34,23 +32,22 @@ public class ScheduledDataRepoExportService {
     dataset: by the next round, it should be ready.
   */
   @Scheduled(timeUnit = TimeUnit.HOURS, fixedDelay = 1, initialDelay = 0)
-  @SchedulerLock(
-      name = "DataRepoExportService.initializeStudyEnvironmentDatasets",
-      lockAtMostFor = "30m",
-      lockAtLeastFor = "5m")
+  //  @SchedulerLock(
+  //      name = "DataRepoExportService.initializeStudyEnvironmentDatasets",
+  //      lockAtMostFor = "30m",
+  //      lockAtLeastFor = "10m")
   public void initializeStudyEnvironmentDatasets() {
     logger.info("Initializing datasets...");
     dataRepoExportService.initializeStudyEnvironmentDatasets();
   }
 
   @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 10, initialDelay = 0)
-  @SchedulerLock(
-      name = "DataRepoExportService.pollRunningInitializeJobs",
-      lockAtMostFor = "5m",
-      lockAtLeastFor = "2m")
+  //  @SchedulerLock(
+  //      name = "DataRepoExportService.pollRunningInitializeJobs",
+  //      lockAtMostFor = "5m",
+  //      lockAtLeastFor = "2m")
   public void pollRunningInitializeJobs() {
     logger.info("Polling running TDR initializeDataset jobs...");
     dataRepoExportService.pollRunningInitializeJobs();
   }
-
 }

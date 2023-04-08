@@ -20,6 +20,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -100,11 +101,13 @@ public class DataRepoExportService {
 
                 switch(jobStatus) {
                     case SUCCEEDED -> {
+                        LinkedHashMap<String, Object> jobResult = (LinkedHashMap<String, Object>) dataRepoClient.getJobResult(job.getTdrJobId()); //TODO: cleaner
+
                         logger.info("initializeDataset job ID {} has succeeded. Dataset {} has been created.", job.getId(), job.getDatasetName());
                         TdrDataset dataset = TdrDataset.builder()
                                 .studyEnvironmentId(job.getStudyEnvironmentId())
                                 .studyId(job.getStudyId())
-                                .datasetId(UUID.randomUUID()) //TODO: pull this out of getJobResult response
+                                .datasetId(UUID.fromString(jobResult.get("id").toString()))
                                 .datasetName(job.getDatasetName())
                                 .build();
 
