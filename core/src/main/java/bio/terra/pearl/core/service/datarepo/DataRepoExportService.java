@@ -12,6 +12,7 @@ import bio.terra.pearl.core.model.datarepo.InitializeDatasetJob;
 import bio.terra.pearl.core.model.datarepo.TdrDataset;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.service.exception.DatasetInitializationException;
 import bio.terra.pearl.core.service.exception.StudyNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -50,8 +52,8 @@ public class DataRepoExportService {
 
     @Transactional
     public void initializeStudyEnvironmentDatasets() {
-        UUID defaultSpendProfileId = UUID.fromString(env.getProperty("env.tdr.billingProfileId"));
-        final String DEPLOYMENT_ZONE = "mbemis"; //TODO, pull from config
+        UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
+        final String DEPLOYMENT_ZONE = "dev"; //TODO, pull from config
 
         List<StudyEnvironment> allStudyEnvs = studyEnvironmentDao.findAll();
 
@@ -60,7 +62,6 @@ public class DataRepoExportService {
         List<StudyEnvironment> studyEnvsToInitialize = allStudyEnvs.stream().filter(studyEnv -> !studyEnvsWithDatasets.contains(studyEnv.getId())).toList();
         logger.info("Found {} datasets to initialize.", studyEnvsToInitialize.size());
 
-        //TODO: only find studyenvironments that don't have datasets initialized
         for(StudyEnvironment studyEnv : studyEnvsToInitialize) {
             Study study = studyDao.find(studyEnv.getStudyId()).orElseThrow(() -> new StudyNotFoundException(studyEnv.getStudyId()));
             String environmentName = studyEnv.getEnvironmentName().name();
@@ -71,7 +72,7 @@ public class DataRepoExportService {
             try {
                 response = dataRepoClient.createDataset(defaultSpendProfileId, datasetName);
             } catch (ApiException e) {
-                throw new RuntimeException(e);
+                throw new DatasetInitializationException(String.format("Unable to create TDR dataset for study environment %s", studyEnv.getStudyId()));
             }
 
             InitializeDatasetJob job = InitializeDatasetJob.builder()
@@ -119,7 +120,7 @@ public class DataRepoExportService {
                     default -> logger.warn("initializeDataset job ID {} has unrecognized job status: {}", job.getId(), job.getStatus());
                 }
             } catch (ApiException e) {
-                throw new RuntimeException(e);
+                logger.error("Unable to get TDR job status for job ID {}", job.getTdrJobId());
             }
         }
     }
