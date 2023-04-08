@@ -56,10 +56,9 @@ public class DataRepoExportService {
         final String DEPLOYMENT_ZONE = "dev"; //TODO, pull from config
 
         List<StudyEnvironment> allStudyEnvs = studyEnvironmentDao.findAll();
-
         List<UUID> studyEnvsWithDatasets = tdrDatasetDao.findAll().stream().map(TdrDataset::getStudyEnvironmentId).toList();
-
         List<StudyEnvironment> studyEnvsToInitialize = allStudyEnvs.stream().filter(studyEnv -> !studyEnvsWithDatasets.contains(studyEnv.getId())).toList();
+
         logger.info("Found {} datasets to initialize.", studyEnvsToInitialize.size());
 
         for(StudyEnvironment studyEnv : studyEnvsToInitialize) {
