@@ -132,6 +132,14 @@ public class DataRepoExportService {
         }
     }
 
+    public String deleteDataset(UUID datasetId) {
+        try {
+            return dataRepoClient.deleteDataset(datasetId).getId();
+        } catch (ApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public boolean getServiceStatus() {
         try {
             return dataRepoClient.getServiceStatus().isOk();

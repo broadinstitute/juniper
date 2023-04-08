@@ -31,7 +31,7 @@ public class ScheduledDataRepoExportService {
     that it shouldn't be a problem if the first round of ingest is delayed due to an uninitialized
     dataset: by the next round, it should be ready.
   */
-    @Scheduled(timeUnit = TimeUnit.HOURS, fixedDelay = 1, initialDelay = 0)
+  @Scheduled(timeUnit = TimeUnit.HOURS, fixedDelay = 1, initialDelay = 0)
   //  @SchedulerLock(
   //      name = "DataRepoExportService.initializeStudyEnvironmentDatasets",
   //      lockAtMostFor = "30m",

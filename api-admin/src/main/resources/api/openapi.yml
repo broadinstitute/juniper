@@ -484,10 +484,10 @@ paths:
                 type: object
         '500':
           $ref: '#/components/responses/ServerError'
-  /datasets:
+  /dataset:
     get:
       summary: Lists all datasets in the system
-      tags: [ datasets ]
+      tags: [ dataset ]
       operationId: listDatasets
       security: [ ]
       responses:
@@ -497,6 +497,21 @@ paths:
             application/json:
               schema:
                 type: object
+  /dataset/{datasetId}:
+    delete:
+      summary: Deletes a dataset (using TDR ID)
+      tags: [ dataset ]
+      operationId: deleteDataset
+      parameters:
+        - { name: datasetId, in: path, required: true, schema: { type: string } }
+      security: [ ]
+      responses:
+        '200':
+          description: 'The job ID'
+          content:
+            application/json:
+              schema:
+                type: string
 components:
   responses:
     SystemStatusResponse:
