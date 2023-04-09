@@ -18,10 +18,7 @@ public class ScheduledDataRepoExportService {
     this.dataRepoExportService = dataRepoExportService;
   }
 
-  @Scheduled(
-      timeUnit = TimeUnit.MINUTES,
-      fixedDelay = 10,
-      initialDelay = 0) // Execute every 10 minutes
+  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 10, initialDelay = 0)
   public void pingDataRepoStatus() {
     logger.info("Pinging Terra Data Repo. Up: " + dataRepoExportService.getServiceStatus());
   }
