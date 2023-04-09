@@ -7,7 +7,7 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
-import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.TransactionHandler;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ConsentResponseService extends CrudService<ConsentResponse, ConsentResponseDao> {
+public class ConsentResponseService extends ImmutableEntityService<ConsentResponse, ConsentResponseDao> {
     private ConsentFormService consentFormService;
     private StudyEnvironmentConsentService studyEnvironmentConsentService;
     private EnrolleeService enrolleeService;

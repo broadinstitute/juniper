@@ -9,6 +9,7 @@ import bio.terra.pearl.api.participant.config.VersionConfiguration;
 import bio.terra.pearl.api.participant.controller.PublicApiController;
 import bio.terra.pearl.api.participant.model.SystemStatus;
 import bio.terra.pearl.api.participant.service.StatusService;
+import bio.terra.pearl.core.service.site.SiteImageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -23,6 +24,8 @@ class PublicApiControllerTest {
   @Autowired private MockMvc mockMvc;
 
   @MockBean private B2CConfiguration b2CConfiguration;
+
+  @MockBean private SiteImageService siteImageService;
 
   @MockBean private StatusService statusService;
 

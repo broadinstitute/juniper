@@ -8,6 +8,7 @@
     "showProgressBar": "bottom",
     "showQuestionNumbers": "off",
     "progressBarType": "requiredQuestions",
+    "completeText": "Submit",
     "pages": [
       {
         "name": "page1",

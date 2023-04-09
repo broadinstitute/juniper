@@ -6,7 +6,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class PortalParticipantUserService extends CrudService<PortalParticipantUser, PortalParticipantUserDao> {
+public class PortalParticipantUserService extends ImmutableEntityService<PortalParticipantUser, PortalParticipantUserDao> {
     private ProfileService profileService;
     private PreregistrationResponseDao preregistrationResponseDao;
     private DataChangeRecordService dataChangeRecordService;

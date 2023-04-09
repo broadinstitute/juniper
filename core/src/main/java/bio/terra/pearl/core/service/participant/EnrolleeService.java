@@ -108,10 +108,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.searchByStudyEnvironment(studyEnv.getId());
     }
 
-    public Enrollee update(Enrollee enrollee) {
-        return dao.update(enrollee);
-    }
-
     public Optional<Enrollee> findByPreEnrollResponseId(UUID preEnrollResponseId) {
         return dao.findByPreEnrollResponseId(preEnrollResponseId);
     }
@@ -124,6 +120,16 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     @Transactional
     public void delete(UUID enrolleeId, Set<CascadeProperty> cascades) {
         Enrollee enrollee = dao.find(enrolleeId).get();
+        StudyEnvironment studyEnv = studyEnvironmentService.find(enrollee.getStudyEnvironmentId()).get();
+        /**
+         * We should not generally delete withdrawn participants, since we need to preserve audit records.
+         * However, we allow deleting withdrawn participants because those may be test participants
+         * run through a live site to test live configurations.
+         */
+        if (studyEnv.getEnvironmentName().equals(EnvironmentName.live) &&
+            !enrollee.isWithdrawn()) {
+            throw new UnsupportedOperationException("Cannot delete live, non-withdrawn participants");
+        }
         participantTaskService.deleteByEnrolleeId(enrolleeId);
         for (SurveyResponse surveyResponse : surveyResponseService.findByEnrolleeId(enrolleeId)) {
             surveyResponseService.delete(surveyResponse.getId(), cascades);

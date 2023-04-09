@@ -287,11 +287,10 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-
-  /api/current-user/v1/unauthed-login:
+  /api/current-user/v1/unauthed/login:
     post:
       summary: Unauthenticated login (dev only)
-      tags: [ currentUser ]
+      tags: [ currentUnauthedUser ]
       operationId: unauthedLogin
       parameters:
         - { name: username, in: query, required: true, schema: { type: string } }
@@ -301,14 +300,46 @@ paths:
           content: { application/json: { schema: {type: object} } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/current-user/v1/token-login:
+  /api/current-user/v1/unauthed/refresh:
+    post:
+      summary: Token refresh
+      tags: [ currentUnauthedUser ]
+      operationId: refresh
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/TokenLoginInfo' } } }
+      responses:
+        '200':
+          description: user object
+          content: { application/json: { schema: {
+            type: object
+          } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/current-user/v1/login:
     post:
       summary: Token login
       tags: [ currentUser ]
-      operationId: tokenLogin
+      operationId: login
       requestBody:
         required: true
         content: { application/json: { schema: {$ref: '#/components/schemas/TokenLoginInfo' } } }
+      responses:
+        '200':
+          description: user object
+          content: { application/json: { schema: {
+            type: object
+          } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/current-user/v1/refresh:
+    post:
+      summary: Token refresh
+      tags: [ currentUser ]
+      operationId: refresh
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/TokenLoginInfo' } } }
       responses:
         '200':
           description: user object
@@ -369,16 +400,17 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{targetEnv}/update:
+  /api/portals/v1/{portalShortcode}/env/{targetEnv}/update/apply:
     post:
       summary: Updates a portal environment according to the update object
       tags: [ portalEnvironment ]
-      operationId: update
+      operationId: apply
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: targetEnv, in: path, required: true, schema: { type: string } }
+        - { name: sourceEnv, in: query, required: false, schema: { type: string } }
       requestBody:
-        required: true
+        required: false
         content: { application/json: { schema: { type: object } } }
       responses:
         '200':

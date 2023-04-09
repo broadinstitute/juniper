@@ -2,29 +2,24 @@ package bio.terra.pearl.core.service.study;
 
 import bio.terra.pearl.core.dao.study.StudyEnvironmentConfigDao;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
-import org.springframework.beans.factory.annotation.Autowired;
+import bio.terra.pearl.core.service.CrudService;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 @Service
-public class StudyEnvironmentConfigService {
-    @Autowired
-    private StudyEnvironmentConfigDao studyEnvironmentConfigDao;
-
-    @Transactional
-    public StudyEnvironmentConfig create(StudyEnvironmentConfig config) {
-        return studyEnvironmentConfigDao.create(config);
+public class StudyEnvironmentConfigService extends CrudService<StudyEnvironmentConfig, StudyEnvironmentConfigDao> {
+    public StudyEnvironmentConfigService(StudyEnvironmentConfigDao dao) {
+        super(dao);
     }
 
     @Transactional
     public void deleteByStudyEnvironmentId(UUID studyEnvId) {
-        studyEnvironmentConfigDao.deleteByStudyEnvironmentId(studyEnvId);
+        dao.deleteByStudyEnvironmentId(studyEnvId);
     }
 
     @Transactional
     public void delete(UUID configId) {
-        studyEnvironmentConfigDao.delete(configId);
+        dao.delete(configId);
     }
 }

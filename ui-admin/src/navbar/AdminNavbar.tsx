@@ -43,7 +43,7 @@ function AdminNavbar({ breadCrumbs, sidebarContent, showSidebar, setShowSidebar 
             <FontAwesomeIcon icon={faBars}/>
           </button>
           <Link className="navbar-brand ms-2 fw-bold text-white" to="/">
-          Pearl
+          Juniper
           </Link>
         </div>
         <div className="collapse navbar-collapse" id="navbarNavDropdown">
@@ -59,7 +59,7 @@ function AdminNavbar({ breadCrumbs, sidebarContent, showSidebar, setShowSidebar 
             {!currentUser.user.isAnonymous && <li className="nav-item dropdown">
               <a className="nav-link dropdown-toggle text-white" href="#"
                 role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                {currentUser.user.email}
+                {currentUser.user.username}
               </a>
               <ul className="dropdown-menu">
                 <li><a className="dropdown-item" onClick={currentUser.logoutUser}>Logout</a></li>

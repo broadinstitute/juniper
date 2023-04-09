@@ -6,11 +6,20 @@ import bio.terra.pearl.api.participant.config.VersionConfiguration;
 import bio.terra.pearl.api.participant.model.SystemStatus;
 import bio.terra.pearl.api.participant.model.VersionProperties;
 import bio.terra.pearl.api.participant.service.StatusService;
+import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentDescriptor;
+import bio.terra.pearl.core.model.site.SiteImage;
+import bio.terra.pearl.core.service.site.SiteImageService;
 import java.util.Map;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +27,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class PublicApiController implements PublicApi {
   private final B2CConfiguration b2CConfiguration;
+  private final SiteImageService siteImageService;
   private final StatusService statusService;
   private final VersionConfiguration versionConfiguration;
   private final Environment env;
@@ -25,10 +35,12 @@ public class PublicApiController implements PublicApi {
   @Autowired
   public PublicApiController(
       B2CConfiguration b2CConfiguration,
+      SiteImageService siteImageService,
       StatusService statusService,
       VersionConfiguration versionConfiguration,
       Environment env) {
     this.b2CConfiguration = b2CConfiguration;
+    this.siteImageService = siteImageService;
     this.statusService = statusService;
     this.versionConfiguration = versionConfiguration;
     this.env = env;
@@ -73,6 +85,19 @@ public class PublicApiController implements PublicApi {
     return "forward:/";
   }
 
+  @GetMapping(value = "/favicon.ico")
+  public ResponseEntity<Resource> favicon(HttpServletRequest request) {
+    PortalEnvironmentDescriptor portal = getPortalForRequest(request);
+    Optional<SiteImage> imageOpt =
+        siteImageService.findOneLatestVersion(portal.shortcode(), "favicon.ico");
+    return ResponseEntity.ok()
+        .contentType(MediaType.parseMediaType("image/x-icon"))
+        .body(
+            imageOpt.isPresent()
+                ? new ByteArrayResource(imageOpt.get().getData())
+                : new ClassPathResource("images/favicon.ico"));
+  }
+
   /**
    * enable react router to handle all non-api, non-resource paths by routing everything else to the
    * index path. Adapted from
@@ -86,6 +111,19 @@ public class PublicApiController implements PublicApi {
   private Map<String, String> buildConfigMap() {
     return Map.of(
         "b2cTenantName", b2CConfiguration.tenantName(),
-        "b2cClientId", b2CConfiguration.clientId());
+        "b2cClientId", b2CConfiguration.clientId(),
+        "b2cPolicyName", b2CConfiguration.policyName());
+  }
+
+  private PortalEnvironmentDescriptor getPortalForRequest(HttpServletRequest request) {
+    String hostname = request.getServerName();
+    String[] parts = hostname.split("\\.");
+
+    Optional<EnvironmentName> envNameOpt = EnvironmentName.optionalValueOfCaseInsensitive(parts[0]);
+    if (envNameOpt.isPresent()) {
+      return new PortalEnvironmentDescriptor(parts[1], envNameOpt.get());
+    } else {
+      return new PortalEnvironmentDescriptor(parts[0], EnvironmentName.live);
+    }
   }
 }

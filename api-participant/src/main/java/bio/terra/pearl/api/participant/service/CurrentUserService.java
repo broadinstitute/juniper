@@ -93,13 +93,6 @@ public class CurrentUserService {
     participantUserDao.update(user);
   }
 
-  public Optional<ParticipantUser> findByToken(String token) {
-    if (token == null) {
-      return Optional.empty();
-    }
-    return participantUserDao.findByToken(token);
-  }
-
   public Optional<ParticipantUser> findByUsername(
       String username, EnvironmentName environmentName) {
     return participantUserDao.findOne(username, environmentName);

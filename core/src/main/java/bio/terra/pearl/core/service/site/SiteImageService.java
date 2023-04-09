@@ -2,7 +2,7 @@ package bio.terra.pearl.core.service.site;
 
 import bio.terra.pearl.core.dao.site.SiteImageDao;
 import bio.terra.pearl.core.model.site.SiteImage;
-import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import java.util.Arrays;
 import java.util.List;
@@ -13,8 +13,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SiteImageService extends CrudService<SiteImage, SiteImageDao> {
-    public static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("png", "jpeg", "jpg", "svg", "gif", "webp");
+public class SiteImageService extends ImmutableEntityService<SiteImage, SiteImageDao> {
+    public static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("png", "jpeg", "jpg", "svg", "gif", "webp", "ico");
     private PortalService portalService;
     public SiteImageService(SiteImageDao dao, @Lazy PortalService portalService) {
         super(dao);
@@ -27,6 +27,10 @@ public class SiteImageService extends CrudService<SiteImage, SiteImageDao> {
 
     public Optional<SiteImage> findOne(String portalShortcode, String cleanFileName, int version) {
         return dao.findOne(portalShortcode, cleanFileName, version);
+    }
+
+    public Optional<SiteImage> findOneLatestVersion(String portalShortcode, String cleanFileName) {
+        return dao.findOneLatestVersion(portalShortcode, cleanFileName);
     }
 
     @Override

@@ -14,7 +14,7 @@ import SocialMediaTemplate from './SocialMediaTemplate'
 import RawHtmlTemplate from './RawHtmlTemplate'
 import PhotoBlurbGrid from './PhotoBlurbGrid'
 import ParticipationDetailTemplate from './ParticipationDetailTemplate'
-import NavAndLinkSectionsFooter from './NavAndLinkSectionsFooter'
+import LinkSectionsFooter from './LinkSectionsFooter'
 import { TemplateComponent } from './templateUtils'
 
 
@@ -27,7 +27,7 @@ const templateComponents: Record<SectionType, TemplateComponent> = {
   'PHOTO_BLURB_GRID': PhotoBlurbGrid,
   'PARTICIPATION_DETAIL': ParticipationDetailTemplate,
   'RAW_HTML': RawHtmlTemplate,
-  'NAV_AND_LINK_SECTIONS_FOOTER': NavAndLinkSectionsFooter,
+  'LINK_SECTIONS_FOOTER': LinkSectionsFooter,
   'BANNER_IMAGE': BannerImage
 }
 

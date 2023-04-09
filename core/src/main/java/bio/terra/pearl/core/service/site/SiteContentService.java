@@ -4,7 +4,7 @@ import bio.terra.pearl.core.dao.site.SiteContentDao;
 import bio.terra.pearl.core.model.site.LocalizedSiteContent;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.ImmutableEntityService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-public class SiteContentService extends CrudService<SiteContent, SiteContentDao> {
+public class SiteContentService extends ImmutableEntityService<SiteContent, SiteContentDao> {
     private LocalizedSiteContentService localizedSiteContentService;
 
     public SiteContentService(SiteContentDao dao, LocalizedSiteContentService localizedSiteContentService) {
@@ -21,7 +21,7 @@ public class SiteContentService extends CrudService<SiteContent, SiteContentDao>
         this.localizedSiteContentService = localizedSiteContentService;
     }
 
-    public Optional<SiteContent> findOne(String stableId, int version) {
+    public Optional<SiteContent> findByStableId(String stableId, int version) {
         return dao.findOne(stableId, version);
     }
 

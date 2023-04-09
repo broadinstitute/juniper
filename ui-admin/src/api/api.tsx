@@ -1,6 +1,9 @@
 export type AdminUser = {
   username: string,
-  token: string
+  token: string,
+  superuser: boolean,
+  portalPermissions: Record<string, string[]>,
+  isAnonymous: boolean
 };
 
 export type Study = {
@@ -223,7 +226,8 @@ export type DataChangeRecord = {
 
 export type Config = {
   b2cTenantName: string,
-  b2cClientId: string
+  b2cClientId: string,
+  b2cPolicyName: string,
 }
 
 export type MailingListContact = {
@@ -233,14 +237,24 @@ export type MailingListContact = {
 }
 
 
-export type PortalEnvironmentChangeRecord = {
-  siteContentChange: VersionedEntityChangeRecord,
-  configChanges: ConfigChangeRecord[],
-  preRegSurveyChanges: VersionedEntityChangeRecord,
-  notificationConfigChanges: ListChangeRecord<NotificationConfig, NotificationConfigChangeRecord>
+export type PortalEnvironmentChange = {
+  siteContentChange: VersionedEntityChange,
+  configChanges: ConfigChange[],
+  preRegSurveyChanges: VersionedEntityChange,
+  notificationConfigChanges: ListChange<NotificationConfig, VersionedConfigChange>
+  studyEnvChanges: StudyEnvironmentChange[]
 }
 
-export type VersionedEntityChangeRecord = {
+export type StudyEnvironmentChange = {
+  studyShortcode: string,
+  configChanges: ConfigChange[],
+  preEnrollSurveyChanges: VersionedEntityChange,
+  consentChanges: ListChange<StudyEnvironmentConsent, VersionedConfigChange>,
+  surveyChanges: ListChange<StudyEnvironmentSurvey, VersionedConfigChange>,
+  notificationConfigChanges: ListChange<NotificationConfig, VersionedConfigChange>
+}
+
+export type VersionedEntityChange = {
   changed: boolean,
   oldStableId: string,
   newStableId: string,
@@ -248,21 +262,21 @@ export type VersionedEntityChangeRecord = {
   newVersion: number
 }
 
-export type ConfigChangeRecord = {
+export type ConfigChange = {
   propertyName: string,
   oldValue: object,
   newValue: object
 }
 
-export type ListChangeRecord<T, CT> = {
+export type ListChange<T, CT> = {
   addedItems: T[],
   removedItems: T[],
   changedItems: CT[]
 }
 
-export type NotificationConfigChangeRecord = {
-  configChanges: ConfigChangeRecord[],
-  templateChange: VersionedEntityChangeRecord
+export type VersionedConfigChange = {
+  configChanges: ConfigChange[],
+  documentChange: VersionedEntityChange
 }
 
 
@@ -305,24 +319,64 @@ export default {
   },
 
   async unauthedLogin(username: string): Promise<AdminUser> {
-    const url =`${API_ROOT}/current-user/v1/unauthed-login?${  new URLSearchParams({
+    const url =`${API_ROOT}/current-user/v1/unauthed/login?${  new URLSearchParams({
       username
     })}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()
     })
-    return await this.processJsonResponse(response)
+    const loginResult = await this.processJsonResponse(response)
+    const user: AdminUser = {
+      ...loginResult.user,
+      portalPermissions: loginResult.portalPermissions
+    }
+    return user
   },
 
-  async tokenLogin(token: string): Promise<AdminUser> {
-    const url =`${API_ROOT}/current-user/v1/token-login`
+  async refreshUnauthedLogin(token: string): Promise<AdminUser> {
+    const url =`${API_ROOT}/current-user/v1/unauthed/refresh`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
       body: JSON.stringify({ token })
     })
-    return await this.processJsonResponse(response)
+    const loginResult = await this.processJsonResponse(response)
+    const user: AdminUser = {
+      ...loginResult.user,
+      portalPermissions: loginResult.portalPermissions
+    }
+    return user
+  },
+
+  async tokenLogin(token: string): Promise<AdminUser> {
+    const url =`${API_ROOT}/current-user/v1/login`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify({ token })
+    })
+    const loginResult = await this.processJsonResponse(response)
+    const user: AdminUser = {
+      ...loginResult.user,
+      portalPermissions: loginResult.portalPermissions
+    }
+    return user
+  },
+
+  async refreshLogin(token: string): Promise<AdminUser> {
+    const url =`${API_ROOT}/current-user/v1/refresh`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify({ token })
+    })
+    const loginResult = await this.processJsonResponse(response)
+    const user: AdminUser = {
+      ...loginResult.user,
+      portalPermissions: loginResult.portalPermissions
+    }
+    return user
   },
 
   async getPortals(): Promise<Portal[]> {
@@ -450,9 +504,20 @@ export default {
   },
 
   async fetchEnvDiff(portalShortcode: string, sourceEnvName: string, destEnvName: string):
-    Promise<PortalEnvironmentChangeRecord> {
+    Promise<PortalEnvironmentChange> {
     const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/update/diff?sourceEnv=${sourceEnvName}`
     const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async applyEnvChanges(portalShortcode: string, destEnvName: string, changes: PortalEnvironmentChange):
+    Promise<PortalEnvironment> {
+    const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/update/apply`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(changes)
+    })
     return await this.processJsonResponse(response)
   },
 

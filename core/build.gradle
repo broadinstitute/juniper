@@ -11,6 +11,9 @@ sourceCompatibility = '17'
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://broadinstitute.jfrog.io/artifactory/plugins-snapshot'
+    }
 }
 
 dependencies {
@@ -29,6 +32,8 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
     implementation 'com.sendgrid:sendgrid-java:4.0.1'
     implementation 'com.auth0:java-jwt:4.2.2'
+    implementation group: "bio.terra", name: "datarepo-client", version: "1.456.0-SNAPSHOT"
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.4.0'
 
     liquibaseRuntime 'org.liquibase:liquibase-core'
     liquibaseRuntime 'info.picocli:picocli:4.6.1'

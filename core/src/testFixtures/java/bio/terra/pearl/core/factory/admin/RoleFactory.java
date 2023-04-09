@@ -2,6 +2,7 @@ package bio.terra.pearl.core.factory.admin;
 
 import bio.terra.pearl.core.model.admin.Role;
 import bio.terra.pearl.core.service.admin.RoleService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,5 +19,10 @@ public class RoleFactory {
     public Role buildPersisted(String testName) {
         var role = builder(testName).build();
         return roleService.create(role);
+    }
+
+    public Role buildPersisted(String testName, List<String> permissions) {
+        var role = builder(testName).build();
+        return roleService.create(role, permissions);
     }
 }
