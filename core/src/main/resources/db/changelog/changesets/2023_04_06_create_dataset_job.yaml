@@ -18,5 +18,3 @@ databaseChangeLog:
               - column: { name: status, type: text, constraints: { nullable: false } }
               - column: { name: created_at, type: datetime, constraints: { nullable: false } }
               - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
-
-          #add any constraints later
