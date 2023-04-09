@@ -60,7 +60,7 @@ public class DataRepoExportService {
         List<UUID> studyEnvsWithDatasets = tdrDatasetDao.findAll().stream().map(TdrDataset::getStudyEnvironmentId).toList();
         List<StudyEnvironment> studyEnvsToInitialize = allStudyEnvs.stream().filter(studyEnv -> !studyEnvsWithDatasets.contains(studyEnv.getId())).toList();
 
-        logger.info("Found {} datasets to initialize.", studyEnvsToInitialize.size());
+        logger.info("Found {} study environments requiring dataset initialization .", studyEnvsToInitialize.size());
 
         for(StudyEnvironment studyEnv : studyEnvsToInitialize) {
             Study study = studyDao.find(studyEnv.getStudyId()).orElseThrow(() -> new StudyNotFoundException(studyEnv.getStudyId()));
@@ -95,6 +95,7 @@ public class DataRepoExportService {
 
         logger.info("Found {} running initializeDataset jobs", runningInitializeJobs.size());
 
+        //For each running job, query TDR for the latest status
         for(InitializeDatasetJob job : runningInitializeJobs) {
             try {
                 JobStatusEnum jobStatus = dataRepoClient.getJobStatus(job.getTdrJobId()).getJobStatus();
