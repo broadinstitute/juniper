@@ -66,10 +66,10 @@ databaseChangeLog:
       file: changesets/2023_04_05_portal_env_change_records.yaml
       relativeToChangelogFile: true
   - include:
-      file: changesets/2023_04_06_tdr_initialize_dataset_job.yaml
+      file: changesets/2023_04_06_create_dataset_job.yaml
       relativeToChangelogFile: true
   - include:
-      file: changesets/2023_04_07_tdr_dataset.yaml
+      file: changesets/2023_04_07_dataset.yaml
       relativeToChangelogFile: true
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements
