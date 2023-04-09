@@ -128,22 +128,6 @@ public class DataRepoExportService {
         }
     }
 
-    public EnumerateDatasetModel listDatasets() {
-        try {
-            return dataRepoClient.enumerateDatasets();
-        } catch (ApiException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public String deleteDataset(UUID datasetId) {
-        try {
-            return dataRepoClient.deleteDataset(datasetId).getId();
-        } catch (ApiException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public boolean getServiceStatus() {
         try {
             return dataRepoClient.getServiceStatus().isOk();
