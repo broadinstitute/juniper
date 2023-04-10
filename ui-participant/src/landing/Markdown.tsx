@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import React, { CSSProperties } from 'react'
 import ReactMarkdown from 'react-markdown'
 
@@ -11,7 +12,7 @@ type MarkdownProps = {
 export const Markdown = (props: MarkdownProps) => {
   const { children, className, style } = props
   return (
-    <div className={className} style={style}>
+    <div className={classNames('markdown', className)} style={style}>
       <ReactMarkdown>{children}</ReactMarkdown>
     </div>
   )
