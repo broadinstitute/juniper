@@ -9,6 +9,7 @@ import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalNumber, requireOptionalString } from 'util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
+import { InlineMarkdown } from '../Markdown'
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
 import { TemplateComponentProps } from './templateUtils'
@@ -110,7 +111,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
         >
           {!!title && (
             <h2 className="fs-1 fw-normal lh-sm">
-              <ReactMarkdown>{title}</ReactMarkdown>
+              <InlineMarkdown>{title}</InlineMarkdown>
             </h2>
           )}
           {!!blurb && (

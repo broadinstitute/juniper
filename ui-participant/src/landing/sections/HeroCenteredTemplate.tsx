@@ -9,6 +9,7 @@ import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalString } from 'util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
+import { InlineMarkdown } from '../Markdown'
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
 import { TemplateComponentProps } from './templateUtils'
@@ -64,7 +65,7 @@ function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
     <div className="col-12 col-sm-10 col-lg-6 mx-auto py-5 text-center">
       {hasTitle && (
         <h2 className={classNames('fs-1 fw-normal lh-sm', hasContentFollowingTitle ? 'mb-4' : 'mb-0')}>
-          <ReactMarkdown disallowedElements={['p']} unwrapDisallowed>{title}</ReactMarkdown>
+          <InlineMarkdown>{title}</InlineMarkdown>
         </h2>
       )}
       {hasBlurb && (
