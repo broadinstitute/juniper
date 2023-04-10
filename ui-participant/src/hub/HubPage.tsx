@@ -28,31 +28,39 @@ export default function HubPage() {
   const hubMessage = hubUpdate?.message
   const unjoinedStudies = portal.portalStudies.filter(pStudy => !userHasJoinedPortalStudy(pStudy, enrollees))
   const hasUnjoinedStudies = unjoinedStudies.length > 0
-  return <div>
-    <div className="container">
-      {!!hubMessage && <div className="row mb-2 justify-content-center">
-        <div className="col-md-6">
-          <TaskStatusMessage content={hubMessage.content} messageType={hubMessage.messageType}/>
-        </div>
-      </div>}
-      <div className="row justify-content-center">
-        <div className="col-md-6">
-          {enrollees.map(enrollee => <StudyTaskBox enrollee={enrollee} portal={portal} key={enrollee.id}/>)}
-        </div>
+  return (
+    <div
+      className="flex-grow-1"
+      style={{ background: 'linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%' }}
+    >
+      <div
+        className="hub-dashboard py-4 px-2 px-md-5 my-md-5 mx-auto shadow-sm"
+        style={{ background: '#fff', maxWidth: 768 }}
+      >
+        <h1>{portal.name}</h1>
+
+        {!!hubMessage && (
+          <div className="mb-2">
+            <TaskStatusMessage content={hubMessage.content} messageType={hubMessage.messageType}/>
+          </div>
+        )}
+
+        {enrollees.map(enrollee => <StudyTaskBox enrollee={enrollee} portal={portal} key={enrollee.id}/>)}
+
+        {hasUnjoinedStudies && (
+          <>
+            <h2 className="text-center">Studies you can join</h2>
+            <ul className="list-group">
+              {unjoinedStudies.map(portalStudy => <li key={portalStudy.study.shortcode} className="list-group-item">
+                <h6>{portalStudy.study.name}</h6>
+                <NavLink to={`/studies/${portalStudy.study.shortcode}/join`}>Join</NavLink>
+              </li>)}
+            </ul>
+          </>
+        )}
       </div>
-      {hasUnjoinedStudies && <div className="row justify-content-center">
-        <div className="col-md-6">
-          <h3 className="text-center">Studies you can join</h3>
-          <ul className="list-group">
-            {unjoinedStudies.map(portalStudy => <li key={portalStudy.study.shortcode} className="list-group-item">
-              <h6>{portalStudy.study.name}</h6>
-              <NavLink to={`/studies/${portalStudy.study.shortcode}/join`}>Join</NavLink>
-            </li>)}
-          </ul>
-        </div>
-      </div>}
     </div>
-  </div>
+  )
 }
 
 const taskTypeDisplayMap: Record<string, string> = {

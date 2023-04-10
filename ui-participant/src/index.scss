@@ -111,3 +111,9 @@ a {
     margin-bottom: 0;
   }
 }
+
+.hub-dashboard {
+  @include media-breakpoint-up(md) {
+    border-radius: var(--bs-border-radius-lg);
+  }
+}
