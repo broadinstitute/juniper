@@ -59,7 +59,7 @@ public class DataRepoExportService {
         List<UUID> studyEnvsWithDatasets = datasetDao.findAll().stream().map(Dataset::getStudyEnvironmentId).toList();
         List<StudyEnvironment> studyEnvsWithoutDatasets = allStudyEnvs.stream().filter(studyEnv -> !studyEnvsWithDatasets.contains(studyEnv.getId())).toList();
 
-        logger.info("Found {} study environments requiring dataset creation .", studyEnvsWithoutDatasets.size());
+        logger.info("Found {} study environments requiring dataset creation.", studyEnvsWithoutDatasets.size());
 
         for(StudyEnvironment studyEnv : studyEnvsWithoutDatasets) {
             Study study = studyDao.find(studyEnv.getStudyId()).orElseThrow(() -> new StudyNotFoundException(studyEnv.getStudyId()));
