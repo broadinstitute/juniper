@@ -274,16 +274,6 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
-    public void updateProperty(UUID id, String columnName, Object oldColumnValue, Object newColumnValue) {
-        jdbi.withHandle(handle ->
-                handle.createUpdate("update " + tableName + " set " + columnName + " = :newColumnValue where id = :id and " + columnName + " = :oldColumnValue")
-                        .bind("id", id)
-                        .bind("oldColumnValue", oldColumnValue)
-                        .bind("newColumnValue", newColumnValue)
-                        .execute()
-        );
-    }
-
     public int count() {
         return jdbi.withHandle(handle -> handle
                 .createQuery("select count(1) from " + tableName)

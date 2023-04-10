@@ -111,11 +111,11 @@ public class DataRepoExportService {
                                 .build();
 
                         datasetDao.create(dataset);
-                        createDatasetJobDao.updateJobStatus(job.getId(), JobStatusEnum.RUNNING.getValue(), jobStatus.getValue());
+                        createDatasetJobDao.updateJobStatus(job.getId(), jobStatus.getValue());
                     }
                     case FAILED -> {
                         logger.warn("createDataset job ID {} has failed. Dataset {} failed to create.", job.getId(), job.getDatasetName());
-                        createDatasetJobDao.updateJobStatus(job.getId(), JobStatusEnum.RUNNING.getValue(), jobStatus.getValue());
+                        createDatasetJobDao.updateJobStatus(job.getId(), jobStatus.getValue());
                     }
                     case RUNNING -> logger.info("createDataset job ID {} is running.", job.getId());
                     default -> logger.warn("createDataset job ID {} has unrecognized job status: {}", job.getId(), job.getStatus());
