@@ -96,33 +96,37 @@ public class DataRepoExportService {
 
         //For each running job, query TDR for the latest status
         for(CreateDatasetJob job : runningCreateJobs) {
-            try {
-                JobStatusEnum jobStatus = dataRepoClient.getJobStatus(job.getTdrJobId()).getJobStatus();
+            pollAndUpdateJobStatus(job);
+        }
+    }
 
-                switch(jobStatus) {
-                    case SUCCEEDED -> {
-                        LinkedHashMap<String, Object> jobResult = (LinkedHashMap<String, Object>) dataRepoClient.getJobResult(job.getTdrJobId());
+    private void pollAndUpdateJobStatus(CreateDatasetJob job) {
+        try {
+            JobStatusEnum jobStatus = dataRepoClient.getJobStatus(job.getTdrJobId()).getJobStatus();
 
-                        logger.info("createDataset job ID {} has succeeded. Dataset {} has been created.", job.getId(), job.getDatasetName());
-                        Dataset dataset = Dataset.builder()
-                                .studyEnvironmentId(job.getStudyEnvironmentId())
-                                .datasetId(UUID.fromString(jobResult.get("id").toString()))
-                                .datasetName(job.getDatasetName())
-                                .build();
+            switch(jobStatus) {
+                case SUCCEEDED -> {
+                    LinkedHashMap<String, Object> jobResult = (LinkedHashMap<String, Object>) dataRepoClient.getJobResult(job.getTdrJobId());
 
-                        datasetDao.create(dataset);
-                        createDatasetJobDao.updateJobStatus(job.getId(), jobStatus.getValue());
-                    }
-                    case FAILED -> {
-                        logger.warn("createDataset job ID {} has failed. Dataset {} failed to create.", job.getId(), job.getDatasetName());
-                        createDatasetJobDao.updateJobStatus(job.getId(), jobStatus.getValue());
-                    }
-                    case RUNNING -> logger.info("createDataset job ID {} is running.", job.getId());
-                    default -> logger.warn("createDataset job ID {} has unrecognized job status: {}", job.getId(), job.getStatus());
+                    logger.info("createDataset job ID {} has succeeded. Dataset {} has been created.", job.getId(), job.getDatasetName());
+                    Dataset dataset = Dataset.builder()
+                            .studyEnvironmentId(job.getStudyEnvironmentId())
+                            .datasetId(UUID.fromString(jobResult.get("id").toString()))
+                            .datasetName(job.getDatasetName())
+                            .build();
+
+                    datasetDao.create(dataset);
+                    createDatasetJobDao.updateJobStatus(job.getId(), jobStatus.getValue());
                 }
-            } catch (ApiException e) {
-                logger.error("Unable to get TDR job status for job ID {}", job.getTdrJobId());
+                case FAILED -> {
+                    logger.warn("createDataset job ID {} has failed. Dataset {} failed to create.", job.getId(), job.getDatasetName());
+                    createDatasetJobDao.updateJobStatus(job.getId(), jobStatus.getValue());
+                }
+                case RUNNING -> logger.info("createDataset job ID {} is running.", job.getId());
+                default -> logger.warn("createDataset job ID {} has unrecognized job status: {}", job.getId(), job.getStatus());
             }
+        } catch (ApiException e) {
+            logger.error("Unable to get TDR job status for job ID {}", job.getTdrJobId());
         }
     }
 
