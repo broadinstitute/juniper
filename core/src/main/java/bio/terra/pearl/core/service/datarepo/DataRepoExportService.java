@@ -101,7 +101,7 @@ public class DataRepoExportService {
 
                 switch(jobStatus) {
                     case SUCCEEDED -> {
-                        LinkedHashMap<String, Object> jobResult = (LinkedHashMap<String, Object>) dataRepoClient.getJobResult(job.getTdrJobId()); //TODO: cleaner
+                        LinkedHashMap<String, Object> jobResult = (LinkedHashMap<String, Object>) dataRepoClient.getJobResult(job.getTdrJobId());
 
                         logger.info("createDataset job ID {} has succeeded. Dataset {} has been created.", job.getId(), job.getDatasetName());
                         Dataset dataset = Dataset.builder()
