@@ -13,7 +13,6 @@ import java.util.UUID;
 @Setter @ToString
 @SuperBuilder @NoArgsConstructor
 public class Dataset extends BaseEntity {
-    private UUID studyId;
     private UUID studyEnvironmentId;
     private UUID datasetId;
     private String datasetName;

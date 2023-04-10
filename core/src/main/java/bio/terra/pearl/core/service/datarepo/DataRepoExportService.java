@@ -106,7 +106,6 @@ public class DataRepoExportService {
                         logger.info("createDataset job ID {} has succeeded. Dataset {} has been created.", job.getId(), job.getDatasetName());
                         Dataset dataset = Dataset.builder()
                                 .studyEnvironmentId(job.getStudyEnvironmentId())
-                                .studyId(job.getStudyId())
                                 .datasetId(UUID.fromString(jobResult.get("id").toString()))
                                 .datasetName(job.getDatasetName())
                                 .build();
