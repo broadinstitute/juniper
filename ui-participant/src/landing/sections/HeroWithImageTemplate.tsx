@@ -1,7 +1,6 @@
 import classNames from 'classnames'
 import _ from 'lodash'
 import React from 'react'
-import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
@@ -9,7 +8,7 @@ import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalNumber, requireOptionalString } from 'util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
-import { InlineMarkdown } from '../Markdown'
+import { InlineMarkdown, Markdown } from '../Markdown'
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
 import { TemplateComponentProps } from './templateUtils'
@@ -114,11 +113,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
               <InlineMarkdown>{title}</InlineMarkdown>
             </h2>
           )}
-          {!!blurb && (
-            <div className="fs-4">
-              <ReactMarkdown>{blurb}</ReactMarkdown>
-            </div>
-          )}
+          {!!blurb && <Markdown className="fs-4">{blurb}</Markdown>}
           {(buttons || []).length > 0 && (
             <div className="d-grid gap-2 d-md-flex justify-content-md-start">
               {

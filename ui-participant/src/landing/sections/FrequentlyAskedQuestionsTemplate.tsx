@@ -5,12 +5,13 @@ import { Collapse } from 'bootstrap'
 import classNames from 'classnames'
 import _ from 'lodash'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
 import { requireOptionalBoolean, requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
+
+import { Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
 
@@ -98,11 +99,9 @@ const FrequentlyAskedQuestion = (props: FrequentlyAskedQuestionProps) => {
         {question}
       </button>
       <div ref={collapseRef} className="collapse px-0 px-sm-2 ms-2" id={idFor(question)}>
-        <div className="fs-5" style={{ marginLeft: 20 }}>
-          <ReactMarkdown>
-            {answer}
-          </ReactMarkdown>
-        </div>
+        <Markdown className="fs-5" style={{ marginLeft: 20 }}>
+          {answer}
+        </Markdown>
       </div>
     </>
   )
@@ -149,9 +148,9 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
         <h2 className="fs-1 fw-normal lh-sm mb-4 text-center">{title}</h2>
       )}
       {!!blurb && (
-        <div className="fs-4 mb-4 text-center">
-          {blurb && <ReactMarkdown>{blurb}</ReactMarkdown>}
-        </div>
+        <Markdown className="fs-4 mb-4 text-center">
+          {blurb}
+        </Markdown>
       )}
       {showToggleAllButton && (
         <div className="mb-4">

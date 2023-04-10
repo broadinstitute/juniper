@@ -1,7 +1,6 @@
 import _ from 'lodash'
 import classNames from 'classnames'
 import React from 'react'
-import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
@@ -9,7 +8,7 @@ import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalString } from 'util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
-import { InlineMarkdown } from '../Markdown'
+import { InlineMarkdown, Markdown } from '../Markdown'
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
 import { TemplateComponentProps } from './templateUtils'
@@ -69,9 +68,9 @@ function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
         </h2>
       )}
       {hasBlurb && (
-        <div className="fs-4" style={{ textAlign: blurbAlign || 'center' }}>
-          <ReactMarkdown>{blurb}</ReactMarkdown>
-        </div>
+        <Markdown className="fs-4" style={{ textAlign: blurbAlign || 'center' }}>
+          {blurb}
+        </Markdown>
       )}
       {hasImage && (
         <PearlImage image={image} className={classNames('img-fluid', { 'mb-4': hasContentFollowingImage })} />

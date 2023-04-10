@@ -1,5 +1,21 @@
-import React from 'react'
+import React, { CSSProperties } from 'react'
 import ReactMarkdown from 'react-markdown'
+
+type MarkdownProps = {
+  children: string
+  className?: string
+  style?: CSSProperties
+}
+
+/** Render Markdown. */
+export const Markdown = (props: MarkdownProps) => {
+  const { children, className, style } = props
+  return (
+    <div className={className} style={style}>
+      <ReactMarkdown>{children}</ReactMarkdown>
+    </div>
+  )
+}
 
 type InlineMarkdownProps = {
   children: string

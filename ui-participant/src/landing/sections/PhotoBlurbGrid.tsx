@@ -1,11 +1,11 @@
 import React from 'react'
-import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 
+import { Markdown } from '../Markdown'
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
 import { TemplateComponentProps } from './templateUtils'
@@ -108,9 +108,9 @@ function PhotoBioView({ photoBio }: { photoBio: PhotoBio }) {
       {photoBio.name} {photoBio.title}
     </div>
     {!!photoBio.blurb && (
-      <div className="fst-italic lh-1" style={{ fontSize: '0.9em' }}>
-        <ReactMarkdown>{photoBio.blurb}</ReactMarkdown>
-      </div>
+      <Markdown className="fst-italic lh-1" style={{ fontSize: '0.9em' }}>
+        {photoBio.blurb}
+      </Markdown>
     )}
   </div>
 }
