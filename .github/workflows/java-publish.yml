@@ -52,7 +52,7 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
-          channel: '#pearl-dev-notifications'
+          channel: '#juniper-dev-notifications'
           status: failure
           author_name: Publish docker Image
           fields: job
@@ -87,7 +87,7 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
-          channel: '#pearl-dev-notifications'
+          channel: '#juniper-dev-notifications'
           status: failure
           author_name: Publish docker Image
           fields: job
@@ -127,7 +127,7 @@ jobs:
         env: 
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
-          channel: '#pearl-dev-notifications'
+          channel: '#juniper-dev-notifications'
           # Result status on the set version in dev job which actually performs the deploy
           status: ${{ needs.set-version-in-dev.result }}
           author_name: Auto Deploy to Dev
