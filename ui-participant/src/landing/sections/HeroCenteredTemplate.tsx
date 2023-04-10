@@ -58,6 +58,7 @@ function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
   const hasButtons = (buttons || []).length > 0
 
   const hasContentFollowingTitle = hasBlurb || hasImage || hasButtons
+  const hasContentFollowingBlurb = hasImage || hasButtons
   const hasContentFollowingImage = hasButtons
 
   return <div id={anchorRef} className="row mx-0" style={getSectionStyle(config)}>
@@ -68,7 +69,10 @@ function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
         </h2>
       )}
       {hasBlurb && (
-        <Markdown className="fs-4" style={{ textAlign: blurbAlign || 'center' }}>
+        <Markdown
+          className={classNames('fs-4', { 'mb-4': hasContentFollowingBlurb })}
+          style={{ textAlign: blurbAlign || 'center' }}
+        >
           {blurb}
         </Markdown>
       )}

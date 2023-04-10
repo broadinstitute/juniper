@@ -77,6 +77,12 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
     : (fullWidth ? 50 : 33)
   const imageCols = Math.max(Math.floor(imageWidthPercentage / 100 * 12), 1)
 
+  const hasButtons = (buttons || []).length > 0
+  const hasLogos = (logos || []).length > 0
+
+  const hasContentFollowingBlurb = hasButtons || hasLogos
+  const hasContentFollowingButtons = hasLogos
+
   return (
     <div
       className={classNames('row', 'mx-0', isLeftImage ? 'flex-row' : 'flex-row-reverse')}
@@ -113,9 +119,18 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
               <InlineMarkdown>{title}</InlineMarkdown>
             </h2>
           )}
-          {!!blurb && <Markdown className="fs-4">{blurb}</Markdown>}
-          {(buttons || []).length > 0 && (
-            <div className="d-grid gap-2 d-md-flex justify-content-md-start">
+          {!!blurb && (
+            <Markdown className={classNames('fs-4', { 'mb-4': hasContentFollowingBlurb })}>
+              {blurb}
+            </Markdown>
+          )}
+          {hasButtons && (
+            <div
+              className={classNames(
+                'd-grid gap-2 d-md-flex justify-content-md-start',
+                { 'mb-4': hasContentFollowingButtons }
+              )}
+            >
               {
                 _.map(buttons, (buttonConfig, i) =>
                   <ConfiguredButton key={i} config={buttonConfig} className="btn-lg px-4 me-md-2"/>
@@ -123,7 +138,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
               }
             </div>
           )}
-          {(logos || []).length > 0 && (
+          {hasLogos && (
             <div
               className={classNames(
                 'd-flex',
@@ -132,7 +147,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
               )}
             >
               {_.map(logos, logo => {
-                return <PearlImage key={logo.cleanFileName} image={logo} className="mt-4 me-sm-4" />
+                return <PearlImage key={logo.cleanFileName} image={logo} className="me-sm-4" />
               })}
             </div>
           )}

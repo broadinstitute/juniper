@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import React from 'react'
 
 import { SectionConfig } from 'api/api'
@@ -74,21 +75,29 @@ function PhotoBlurbGrid(props: PhotoBlurbGridProps) {
       </h2>
     )}
     {(subGrids ?? []).map((subGrid, index) => {
-      return <SubGridView key={index} headingLevel={subGridHeadingLevel} subGrid={subGrid}/>
+      return (
+        <SubGridView
+          key={index}
+          className={index === 0 ? undefined : 'mt-4'}
+          headingLevel={subGridHeadingLevel}
+          subGrid={subGrid}
+        />
+      )
     })}
   </div>
 }
 
 type SubGridViewProps = {
+  className?: string
   headingLevel: 2 | 3
   subGrid: SubGrid
 }
 
 /** renders a subgrouping of photos (e.g. "Our researchers") */
 function SubGridView(props: SubGridViewProps) {
-  const { headingLevel, subGrid } = props
+  const { className, headingLevel, subGrid } = props
   const Heading: 'h2' | 'h3' = `h${headingLevel}`
-  return <div className="row mx-0">
+  return <div className={classNames('row mx-0', className)}>
     <div className="col-12 col-sm-10 col-lg-8 mx-auto">
       {subGrid.title && <Heading className="text-center mb-4">{subGrid.title}</Heading>}
       <div className="row mx-0">
