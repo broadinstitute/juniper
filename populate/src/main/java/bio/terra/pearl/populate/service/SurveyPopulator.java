@@ -2,7 +2,6 @@ package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
-import bio.terra.pearl.core.model.Versioned;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -14,7 +13,6 @@ import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.BeanUtils;
@@ -22,7 +20,7 @@ import org.springframework.stereotype.Service;
 
 /** populator for surveys and consent forms */
 @Service
-public class SurveyPopulator extends Populator<Survey, PortalPopulateContext> {
+public class SurveyPopulator extends Populator<Survey, SurveyPopDto, PortalPopulateContext> {
     private SurveyService surveyService;
     private PortalService portalService;
     private SurveyPopulateDao surveyPopulateDao;
@@ -42,51 +40,11 @@ public class SurveyPopulator extends Populator<Survey, PortalPopulateContext> {
     }
 
     @Override
-    public Survey populateFromString(String fileString, PortalPopulateContext context) throws IOException {
-        SurveyPopDto surveyPopDto = objectMapper.readValue(fileString, SurveyPopDto.class);
-        String newContent = surveyPopDto.getJsonContent().toString();
-        surveyPopDto.setContent(newContent);
+    protected void updateDtoFromContext(SurveyPopDto popDto, PortalPopulateContext context) {
         UUID portalId = portalService.findOneByShortcode(context.getPortalShortcode()).get().getId();
-        surveyPopDto.setPortalId(portalId);
-        Optional<Survey> existingSurveyOpt = fetchFromPopDto(surveyPopDto);
-
-        if (existingSurveyOpt.isPresent()) {
-            Survey existingSurvey = existingSurveyOpt.get();
-            // don't delete the survey, since it may have other entities attached to it. Just mod the content
-            existingSurvey.setContent(surveyPopDto.getContent());
-            existingSurvey.setName(surveyPopDto.getName());
-            surveyPopulateDao.update(existingSurvey);
-            updateAnswerMappings(existingSurvey, surveyPopDto);
-            surveyQuestionDefinitionDao.deleteBySurveyId(existingSurvey.getId());
-            for (SurveyQuestionDefinition questionDefinition : surveyService.getSurveyQuestionDefinitions(surveyPopDto)) {
-                surveyQuestionDefinitionDao.create(questionDefinition);
-            }
-
-            return existingSurvey;
-        }
-        return surveyService.create(surveyPopDto);
-    }
-
-    @Override
-    public Survey updateFromString(String fileString, PortalPopulateContext context) throws IOException {
-        SurveyPopDto surveyPopDto = objectMapper.readValue(fileString, SurveyPopDto.class);
-        String newContent = surveyPopDto.getJsonContent().toString();
-        surveyPopDto.setContent(newContent);
-        UUID portalId = portalService.findOneByShortcode(context.getPortalShortcode()).get().getId();
-        surveyPopDto.setPortalId(portalId);
-        Optional<Survey> existingSurveyOpt = fetchFromPopDto(surveyPopDto);
-
-        if (existingSurveyOpt.isPresent()) {
-            Survey existingSurvey = existingSurveyOpt.get();
-            if (Objects.equals(existingSurvey.getContent(), surveyPopDto.getContent())) {
-                // if the content is the same, just update the answer mappings in case they've changed
-                updateAnswerMappings(existingSurvey, surveyPopDto);
-                return existingSurvey;
-            }
-            // otherwise we need to 
-
-        }
-        return surveyService.create(surveyPopDto);
+        popDto.setPortalId(portalId);
+        String newContent = popDto.getJsonContent().toString();
+        popDto.setContent(newContent);
     }
 
     private void updateAnswerMappings(Survey existingSurvey, SurveyPopDto surveyPopDto) {
@@ -108,7 +66,41 @@ public class SurveyPopulator extends Populator<Survey, PortalPopulateContext> {
         return configuredSurvey;
     }
 
-    public Optional<Survey> fetchFromPopDto(Versioned popDto) {
+    @Override
+    protected Class<SurveyPopDto> getDtoClazz() {
+        return SurveyPopDto.class;
+    }
+
+    @Override
+    public Optional<Survey> findFromDto(SurveyPopDto popDto, PortalPopulateContext context) {
+        if (popDto.getPopulateFileName() != null) {
+            return context.fetchFromPopDto(popDto, surveyService);
+        }
         return surveyService.findByStableId(popDto.getStableId(), popDto.getVersion());
+    }
+
+    @Override
+    public Survey overwriteExisting(Survey existingObj, SurveyPopDto popDto, PortalPopulateContext context) throws IOException {
+        existingObj.setContent(popDto.getContent());
+        existingObj.setName(popDto.getName());
+        surveyPopulateDao.update(existingObj);
+        updateAnswerMappings(existingObj, popDto);
+        surveyQuestionDefinitionDao.deleteBySurveyId(existingObj.getId());
+        for (SurveyQuestionDefinition questionDefinition : surveyService.getSurveyQuestionDefinitions(popDto)) {
+            surveyQuestionDefinitionDao.create(questionDefinition);
+        }
+        return existingObj;
+    }
+
+    @Override
+    public Survey createPreserveExisting(Survey existingObj, SurveyPopDto popDto, PortalPopulateContext context) throws IOException {
+        int newVersion = surveyService.getNextVersion(popDto.getStableId());
+        popDto.setVersion(newVersion);
+        return createNew(popDto, context, false);
+    }
+
+    @Override
+    public Survey createNew(SurveyPopDto popDto, PortalPopulateContext context, boolean overwrite) throws IOException {
+        return surveyService.create(popDto);
     }
 }

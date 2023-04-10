@@ -4,6 +4,7 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.site.HtmlPage;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.site.SiteImage;
+import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.site.SiteImageService;
@@ -11,14 +12,13 @@ import bio.terra.pearl.populate.dto.site.*;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SiteContentPopulator extends Populator<SiteContent, PortalPopulateContext> {
+public class SiteContentPopulator extends Populator<SiteContent, SiteContentPopDto, PortalPopulateContext> {
     private SiteContentService siteContentService;
     private SiteImageService siteImageService;
     private PortalService portalService;
@@ -29,34 +29,6 @@ public class SiteContentPopulator extends Populator<SiteContent, PortalPopulateC
         this.portalService = portalService;
         this.siteContentService = siteContentService;
         this.siteImageService = siteImageService;
-    }
-
-    @Override
-    public SiteContent populateFromString(String fileString, PortalPopulateContext context) throws IOException {
-        SiteContentPopDto siteContentDto = objectMapper.readValue(fileString, SiteContentPopDto.class);
-        Optional<SiteContent> existingContent = siteContentService
-                .findByStableId(siteContentDto.getStableId(), siteContentDto.getVersion());
-        if (existingContent.isPresent()) {
-            // for now, assume that if it exists, it has already been refreshed via populating another environment.
-            return existingContent.get();
-        };
-        Portal attachedPortal = portalService.findOneByShortcode(context.getPortalShortcode()).get();
-        siteContentDto.setPortalId(attachedPortal.getId());
-        for (LocalizedSiteContentPopDto lsc : siteContentDto.getLocalizedSiteContentDtos()) {
-            lsc.setLandingPage(parseHtmlPageDto(lsc.getLandingPage()));
-            for (NavbarItemPopDto navItem : lsc.getNavbarItemDtos()) {
-                initializeNavItem(navItem, context);
-            }
-            lsc.getNavbarItems().clear();
-            lsc.getNavbarItems().addAll(lsc.getNavbarItemDtos());
-            initializeFooterConfig(lsc, context);
-        }
-
-        siteContentDto.getLocalizedSiteContents().clear();
-        siteContentDto.getLocalizedSiteContents().addAll(siteContentDto.getLocalizedSiteContentDtos());
-        SiteContent savedContent = siteContentService.create(siteContentDto);
-
-        return savedContent;
     }
 
     /** we need to convert dto properties from json to Strings for storing in the DB. */
@@ -77,28 +49,17 @@ public class SiteContentPopulator extends Populator<SiteContent, PortalPopulateC
         }
     }
 
-    public void populateImages(List<SiteImagePopDto> siteImages, PortalPopulateContext context)
+    public void populateImages(List<SiteImagePopDto> siteImages, PortalPopulateContext context, boolean overwrite)
             throws IOException {
         for (SiteImagePopDto imageDto : siteImages) {
             SiteImage image = convertDto(imageDto, context);
-            siteImageService.create(image);
-        }
-    }
-
-    /** WIP method -- not used because I'm not sure how we want to handle pushing image updates */
-    public void updateImages(List<SiteImagePopDto> siteImages, PortalPopulateContext context)
-            throws IOException {
-        for (SiteImagePopDto imageDto : siteImages) {
-            SiteImage image = convertDto(imageDto, context);
-            Optional<SiteImage> existingImageOpt = siteImageService.findOne(context.getPortalShortcode(),
-                    image.getCleanFileName(), image.getVersion());
-            // if the image is the same, no-op
-            if (existingImageOpt.isPresent() && Arrays.equals(image.getData(), existingImageOpt.get().getData())) {
-                continue;
+            // we don't have to worry about deleting if it's overwrite -- the portal delete will have already deleted the images
+            if (!overwrite) {
+                int nextVersion = siteImageService.getNextVersion(image.getCleanFileName(), image.getPortalShortcode());
+                image.setVersion(nextVersion);
             }
-            // otherwise create a new version
-            image.setVersion(siteImageService.getNextVersion(image.getCleanFileName(), context.getPortalShortcode()));
-            siteImageService.create(image);
+            SiteImage savedImage = siteImageService.create(image);
+            context.markFilenameAsPopulated(imageDto.getPopulateFileName(), savedImage.getId());
         }
     }
 
@@ -136,4 +97,51 @@ public class SiteContentPopulator extends Populator<SiteContent, PortalPopulateC
         }
     }
 
+    @Override
+    protected Class<SiteContentPopDto> getDtoClazz() {
+        return SiteContentPopDto.class;
+    }
+
+    protected void updateDtoFromContext(SiteContentPopDto popDto, PortalPopulateContext context) throws IOException {
+        Portal attachedPortal = portalService.findOneByShortcode(context.getPortalShortcode()).get();
+        popDto.setPortalId(attachedPortal.getId());
+        for (LocalizedSiteContentPopDto lsc : popDto.getLocalizedSiteContentDtos()) {
+            lsc.setLandingPage(parseHtmlPageDto(lsc.getLandingPage()));
+            for (NavbarItemPopDto navItem : lsc.getNavbarItemDtos()) {
+                initializeNavItem(navItem, context);
+            }
+            lsc.getNavbarItems().clear();
+            lsc.getNavbarItems().addAll(lsc.getNavbarItemDtos());
+            initializeFooterConfig(lsc, context);
+        }
+
+        popDto.getLocalizedSiteContents().clear();
+        popDto.getLocalizedSiteContents().addAll(popDto.getLocalizedSiteContentDtos());
+    }
+
+    @Override
+    public Optional<SiteContent> findFromDto(SiteContentPopDto popDto, PortalPopulateContext context) {
+        if (popDto.getPopulateFileName() != null) {
+            return context.fetchFromPopDto(popDto, siteContentService);
+        }
+        return siteContentService.findByStableId(popDto.getStableId(), popDto.getVersion());
+    }
+
+    @Override
+    public SiteContent overwriteExisting(SiteContent existingObj, SiteContentPopDto popDto, PortalPopulateContext context) throws IOException {
+        siteContentService.delete(existingObj.getId(), CascadeProperty.EMPTY_SET);
+        return createNew(popDto, context, true);
+    }
+
+    @Override
+    public SiteContent createPreserveExisting(SiteContent existingObj, SiteContentPopDto popDto, PortalPopulateContext context) throws IOException {
+        int newVersion = siteContentService.getNextVersion(popDto.getStableId());
+        popDto.setVersion(newVersion);
+        return createNew(popDto, context, false);
+    }
+
+    @Override
+    public SiteContent createNew(SiteContentPopDto popDto, PortalPopulateContext context, boolean overwrite) throws IOException {
+        return siteContentService.create(popDto);
+    }
 }

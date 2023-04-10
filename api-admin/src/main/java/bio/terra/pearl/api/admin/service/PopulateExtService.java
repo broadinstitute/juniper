@@ -14,6 +14,7 @@ import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
 import java.io.IOException;
+import java.util.HashMap;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -37,26 +38,28 @@ public class PopulateExtService {
   public BaseSeedPopulator.SetupStats populateBaseSeed(AdminUser user) {
     authorizeUser(user);
     try {
-      return baseSeedPopulator.populate(new FilePopulateContext(""));
+      return baseSeedPopulator.populate("");
     } catch (IOException e) {
       throw new IllegalArgumentException("populate failed", e);
     }
   }
 
-  public Portal populatePortal(String filePathName, AdminUser user) {
+  public Portal populatePortal(String filePathName, AdminUser user, boolean overwrite) {
     authorizeUser(user);
     try {
-      return portalPopulator.populate(new FilePopulateContext(filePathName));
+      return portalPopulator.populate(new FilePopulateContext(filePathName), overwrite);
     } catch (IOException e) {
       throw new IllegalArgumentException("populate failed", e);
     }
   }
 
-  public Survey populateSurvey(String portalShortcode, String filePathName, AdminUser user) {
+  public Survey populateSurvey(
+      String portalShortcode, String filePathName, AdminUser user, boolean overwrite) {
     authorizeUser(user);
-    PortalPopulateContext config = new PortalPopulateContext(filePathName, portalShortcode, null);
+    PortalPopulateContext config =
+        new PortalPopulateContext(filePathName, portalShortcode, null, new HashMap<>());
     try {
-      return surveyPopulator.populate(config);
+      return surveyPopulator.populate(config, overwrite);
     } catch (IOException e) {
       throw new IllegalArgumentException("populate failed", e);
     }
@@ -67,12 +70,14 @@ public class PopulateExtService {
       EnvironmentName envName,
       String studyShortcode,
       String filePathName,
-      AdminUser user) {
+      AdminUser user,
+      boolean overwrite) {
     authorizeUser(user);
     StudyPopulateContext config =
-        new StudyPopulateContext(filePathName, portalShortcode, studyShortcode, envName);
+        new StudyPopulateContext(
+            filePathName, portalShortcode, studyShortcode, envName, new HashMap<>());
     try {
-      return enrolleePopulator.populate(config);
+      return enrolleePopulator.populate(config, overwrite);
     } catch (IOException e) {
       throw new IllegalArgumentException("populate failed", e);
     }

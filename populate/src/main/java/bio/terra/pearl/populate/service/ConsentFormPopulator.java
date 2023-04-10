@@ -8,7 +8,6 @@ import bio.terra.pearl.populate.dao.ConsentFormPopulateDao;
 import bio.terra.pearl.populate.dto.consent.ConsentFormPopDto;
 import bio.terra.pearl.populate.dto.consent.StudyEnvironmentConsentPopDto;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
-import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.BeanUtils;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 /** populates ConsentForms.  this currently has a lot in common with SurveyPopulator */
 @Service
-public class ConsentFormPopulator extends Populator<ConsentForm, PortalPopulateContext> {
+public class ConsentFormPopulator extends Populator<ConsentForm, ConsentFormPopDto, PortalPopulateContext> {
     private ConsentFormService consentFormService;
     private PortalService portalService;
     private ConsentFormPopulateDao consentFormPopulateDao;
@@ -29,28 +28,11 @@ public class ConsentFormPopulator extends Populator<ConsentForm, PortalPopulateC
     }
 
     @Override
-    public ConsentForm populateFromString(String fileString, PortalPopulateContext context) throws IOException {
-        ConsentFormPopDto consentPopDto = objectMapper.readValue(fileString, ConsentFormPopDto.class);
-        String newContent = consentPopDto.getJsonContent().toString();
-        consentPopDto.setContent(newContent);
+    protected void updateDtoFromContext(ConsentFormPopDto popDto, PortalPopulateContext context) {
         UUID portalId = portalService.findOneByShortcode(context.getPortalShortcode()).get().getId();
-        consentPopDto.setPortalId(portalId);
-        Optional<ConsentForm> existingOpt = fetchFromPopDto(consentPopDto);
-
-        if (existingOpt.isPresent()) {
-            ConsentForm existing = existingOpt.get();
-            // don't delete the form, since it may have other entities attached to it. Just mod the content
-            existing.setContent(consentPopDto.getContent());
-            existing.setName(consentPopDto.getName());
-            consentFormPopulateDao.update(existing);
-            return existing;
-        }
-        return consentFormService.create(consentPopDto);
-    }
-
-    public Optional<ConsentForm> fetchFromPopDto(ConsentFormPopDto formDto) {
-        return consentFormService.findByStableId(formDto.getStableId(),
-                formDto.getVersion());
+        popDto.setPortalId(portalId);
+        String newContent = popDto.getJsonContent().toString();
+        popDto.setContent(newContent);
     }
 
     public StudyEnvironmentConsent convertConfiguredConsent(StudyEnvironmentConsentPopDto configConsentDto, int index) {
@@ -61,5 +43,38 @@ public class ConsentFormPopulator extends Populator<ConsentForm, PortalPopulateC
         configuredConsent.setConsentFormId(consent.getId());
         configuredConsent.setConsentOrder(index);
         return configuredConsent;
+    }
+
+    @Override
+    protected Class<ConsentFormPopDto> getDtoClazz() {
+        return ConsentFormPopDto.class;
+    }
+
+    @Override
+    public ConsentForm createNew(ConsentFormPopDto popDto, PortalPopulateContext context, boolean overwrite) {
+        return consentFormService.create(popDto);
+    }
+
+    @Override
+    public ConsentForm createPreserveExisting(ConsentForm existingObj, ConsentFormPopDto popDto, PortalPopulateContext context) {
+        int newVersion = consentFormService.getNextVersion(popDto.getStableId());
+        popDto.setVersion(newVersion);
+        return consentFormService.create(popDto);
+    }
+
+    @Override
+    public ConsentForm overwriteExisting(ConsentForm existingObj, ConsentFormPopDto popDto, PortalPopulateContext context) {
+        // don't delete the form, since it may have other entities attached to it. Just mod the content
+        existingObj.setContent(popDto.getContent());
+        existingObj.setName(popDto.getName());
+        return consentFormPopulateDao.update(existingObj);
+    }
+
+    @Override
+    public Optional<ConsentForm> findFromDto(ConsentFormPopDto popDto, PortalPopulateContext context) {
+        if (popDto.getPopulateFileName() != null) {
+            return context.fetchFromPopDto(popDto, consentFormService);
+        }
+        return consentFormService.findByStableId(popDto.getStableId(), popDto.getVersion());
     }
 }

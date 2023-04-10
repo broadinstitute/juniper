@@ -1,6 +1,6 @@
 package bio.terra.pearl.core.dao.portal;
 
-import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.dao.admin.PortalAdminUserDao;
 import bio.terra.pearl.core.dao.study.PortalStudyDao;
 import bio.terra.pearl.core.dao.study.StudyDao;
@@ -15,7 +15,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PortalDao extends BaseJdbiDao<Portal> {
+public class PortalDao extends BaseMutableJdbiDao<Portal> {
     private PortalEnvironmentDao portalEnvironmentDao;
     private PortalStudyDao portalStudyDao;
     private StudyDao studyDao;

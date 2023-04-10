@@ -43,4 +43,8 @@ public class ConsentFormService extends ImmutableEntityService<ConsentForm, Cons
         logger.info("Created new ConsentForm version:  stableId: {}, version: {}");
         return newForm;
     }
+
+    public int getNextVersion(String stableId) {
+        return dao.getNextVersion(stableId);
+    }
 }

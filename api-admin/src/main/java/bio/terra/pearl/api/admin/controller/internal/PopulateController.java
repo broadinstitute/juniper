@@ -37,27 +37,40 @@ public class PopulateController implements PopulateApi {
   }
 
   @Override
-  public ResponseEntity<Object> populatePortal(String filePathName) {
+  public ResponseEntity<Object> populatePortal(String filePathName, Boolean overwrite) {
     AdminUser user = authUtilService.requireAdminUser(request);
-    var populatedObj = populateExtService.populatePortal(filePathName, user);
+    var populatedObj =
+        populateExtService.populatePortal(filePathName, user, Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
   }
 
   @Override
-  public ResponseEntity<Object> populateSurvey(String portalShortcode, String filePathName) {
+  public ResponseEntity<Object> populateSurvey(
+      String portalShortcode, String filePathName, Boolean overwrite) {
     AdminUser user = authUtilService.requireAdminUser(request);
-    var populatedObj = populateExtService.populateSurvey(portalShortcode, filePathName, user);
+    var populatedObj =
+        populateExtService.populateSurvey(
+            portalShortcode, filePathName, user, Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
   }
 
   @Override
   public ResponseEntity<Object> populateEnrollee(
-      String portalShortcode, String envName, String studyShortcode, String filePathName) {
+      String portalShortcode,
+      String envName,
+      String studyShortcode,
+      String filePathName,
+      Boolean overwrite) {
     EnvironmentName environmentName = EnvironmentName.valueOf(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
     var populatedObj =
         populateExtService.populateEnrollee(
-            portalShortcode, environmentName, studyShortcode, filePathName, user);
+            portalShortcode,
+            environmentName,
+            studyShortcode,
+            filePathName,
+            user,
+            Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
   }
 }

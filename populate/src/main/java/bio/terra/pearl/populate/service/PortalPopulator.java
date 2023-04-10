@@ -11,6 +11,7 @@ import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.MailingListContactService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
+import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.populate.dto.AdminUserDto;
 import bio.terra.pearl.populate.dto.PortalEnvironmentPopDto;
@@ -18,17 +19,17 @@ import bio.terra.pearl.populate.dto.PortalPopDto;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PortalPopulator extends Populator<Portal, FilePopulateContext> {
+public class PortalPopulator extends Populator<Portal, PortalPopDto, FilePopulateContext> {
 
     private PortalService portalService;
 
     private PortalEnvironmentService portalEnvironmentService;
+    private SiteContentService siteContentService;
     private StudyPopulator studyPopulator;
     private SurveyPopulator surveyPopulator;
     private SiteContentPopulator siteContentPopulator;
@@ -59,91 +60,37 @@ public class PortalPopulator extends Populator<Portal, FilePopulateContext> {
         this.adminUserPopulator = adminUserPopulator;
     }
 
-    public Portal populateFromString(String portalContent, FilePopulateContext context) throws IOException {
-        PortalPopDto portalDto = objectMapper.readValue(portalContent, PortalPopDto.class);
-        Optional<Portal> existingPortal = portalService.findOneByShortcode(portalDto.getShortcode());
-        existingPortal.ifPresent(portal ->
-            portalService.delete(portal.getId(), new HashSet<>(Arrays.asList(PortalService.AllowedCascades.STUDY)))
-        );
-
-        Portal portal = portalService.create(portalDto);
-        PortalPopulateContext portalPopContext = new PortalPopulateContext(context, portal.getShortcode(), null);
-
-        siteContentPopulator.populateImages(portalDto.getSiteImageDtos(), portalPopContext);
-
-        for (String surveyFile : portalDto.getSurveyFiles()) {
-            surveyPopulator.populate(portalPopContext.newFrom(surveyFile));
-        }
-
-        for (PortalEnvironmentPopDto portalEnvironment : portalDto.getPortalEnvironmentDtos()) {
-            initializePortalEnv(portalEnvironment, portal, portalPopContext);
-        }
-        for (String studyFileName : portalDto.getPopulateStudyFiles()) {
-            populateStudy(studyFileName, portalPopContext, portal);
-        }
-
-        for (AdminUserDto adminUserDto : portalDto.getAdminUsers()) {
-            adminUserPopulator.populateForPortal(adminUserDto, portal);
-        }
-        return portal;
-    }
-
-    public Portal updateFromString(String portalContent, FilePopulateContext context) throws IOException {
-        PortalPopDto portalDto = objectMapper.readValue(portalContent, PortalPopDto.class);
-
-        Optional<Portal> existingPortalOpt = portalService.findOneByShortcode(portalDto.getShortcode());
-        Portal portal = existingPortalOpt.orElseGet(() -> portalService.create(portalDto));
-
-        PortalPopulateContext portalPopContext = new PortalPopulateContext(context, portal.getShortcode(), null);
-        // for now, just nuke and recreate the images
-        siteContentPopulator.populateImages(portalDto.getSiteImageDtos(), portalPopContext);
-
-        for (String surveyFile : portalDto.getSurveyFiles()) {
-            surveyPopulator.update(portalPopContext.newFrom(surveyFile));
-        }
-
-        for (PortalEnvironmentPopDto portalEnvironment : portalDto.getPortalEnvironmentDtos()) {
-            initializePortalEnv(portalEnvironment, portal, portalPopContext);
-        }
-        for (String studyFileName : portalDto.getPopulateStudyFiles()) {
-            populateStudy(studyFileName, portalPopContext, portal);
-        }
-
-        for (AdminUserDto adminUserDto : portalDto.getAdminUsers()) {
-            adminUserPopulator.populateForPortal(adminUserDto, portal);
-        }
-        return portal;
-    }
-
-    private void populateStudy(String studyFileName, PortalPopulateContext context, Portal portal) throws IOException {
-        Study newStudy = studyPopulator.populate(context.newFrom(studyFileName));
+    private void populateStudy(String studyFileName, PortalPopulateContext context, Portal portal, boolean overwrite) throws IOException {
+        Study newStudy = studyPopulator.populate(context.newFrom(studyFileName), overwrite);
         PortalStudy portalStudy = portalStudyService.create(portal.getId(), newStudy.getId());
         portal.getPortalStudies().add(portalStudy);
         portalStudy.setStudy(newStudy);
     }
 
-    private void initializePortalEnv(PortalEnvironmentPopDto portalEnvPopDto, Portal savedPortal, PortalPopulateContext portalPopContext) throws IOException {
+    private void initializePortalEnv(PortalEnvironmentPopDto portalEnvPopDto, Portal savedPortal,
+                                     PortalPopulateContext portalPopContext, boolean overwrite) throws IOException {
         PortalPopulateContext envConfig = portalPopContext.newFrom(portalEnvPopDto.getEnvironmentName());
         // we're iterating over each population file spec, so now match the current on to the
         // actual entity that got saved as a result of the portal create call.
         PortalEnvironment savedEnv = savedPortal.getPortalEnvironments().stream()
                 .filter(env -> env.getEnvironmentName().equals(portalEnvPopDto.getEnvironmentName()))
                 .findFirst().get();
-        if (portalEnvPopDto.getSiteContentFile() != null) {
-            SiteContent content = siteContentPopulator.populate(envConfig.newFrom(portalEnvPopDto.getSiteContentFile()));
+
+        if (portalEnvPopDto.getSiteContentPopDto() != null) {
+            SiteContent content = siteContentPopulator
+                    .findFromDto(portalEnvPopDto.getSiteContentPopDto(), portalPopContext).get();
             savedEnv.setSiteContent(content);
             savedEnv.setSiteContentId(content.getId());
         }
         if (portalEnvPopDto.getPreRegSurveyDto() != null) {
-            Survey matchedSurvey = surveyPopulator.fetchFromPopDto(portalEnvPopDto.getPreRegSurveyDto()).get();
+            Survey matchedSurvey = surveyPopulator.findFromDto(portalEnvPopDto.getPreRegSurveyDto(), portalPopContext).get();
             savedEnv.setPreRegSurveyId(matchedSurvey.getId());
         }
         for (String userFileName : portalEnvPopDto.getParticipantUserFiles()) {
-            portalParticipantUserPopulator.populate(envConfig.newFrom(userFileName));
+            portalParticipantUserPopulator.populate(envConfig.newFrom(userFileName), overwrite);
         }
         // re-save the portal environment to update it with any attached siteContents or preRegSurveys
         portalEnvironmentService.update(savedEnv);
-
         populateMailingList(portalEnvPopDto, savedEnv);
     }
 
@@ -154,5 +101,59 @@ public class PortalPopulator extends Populator<Portal, FilePopulateContext> {
             contact.setName(contact.getName());
             mailingListContactService.create(contact);
         }
+    }
+
+    @Override
+    protected Class<PortalPopDto> getDtoClazz() {
+        return PortalPopDto.class;
+    }
+
+    @Override
+    public Optional<Portal> findFromDto(PortalPopDto popDto, FilePopulateContext context) {
+        return portalService.findOneByShortcode(popDto.getShortcode());
+    }
+
+    @Override
+    public Portal overwriteExisting(Portal existingObj, PortalPopDto popDto, FilePopulateContext context) throws IOException {
+        portalService.delete(existingObj.getId(), Set.of(PortalService.AllowedCascades.STUDY));
+        return createNew(popDto, context, true);
+    }
+
+    @Override
+    public Portal createPreserveExisting(Portal existingObj, PortalPopDto popDto, FilePopulateContext context) throws IOException {
+        existingObj.setName(popDto.getName());
+        portalService.update(existingObj);
+        return populateChildren(existingObj, popDto, context, false);
+    }
+
+    @Override
+    public Portal createNew(PortalPopDto popDto, FilePopulateContext context, boolean overwrite) throws IOException {
+        Portal portal = portalService.create(popDto);
+        return populateChildren(portal, popDto, context, overwrite);
+    }
+
+    protected Portal populateChildren(Portal portal, PortalPopDto popDto, FilePopulateContext context, boolean overwrite) throws IOException {
+        PortalPopulateContext portalPopContext = new PortalPopulateContext(context, portal.getShortcode(), null);
+
+        siteContentPopulator.populateImages(popDto.getSiteImageDtos(), portalPopContext, overwrite);
+
+        for (String surveyFile : popDto.getSurveyFiles()) {
+            surveyPopulator.populate(portalPopContext.newFrom(surveyFile), overwrite);
+        }
+        for (String siteContentFile : popDto.getSiteContentFiles()) {
+            siteContentPopulator.populate(portalPopContext.newFrom(siteContentFile), overwrite);
+        }
+
+        for (PortalEnvironmentPopDto portalEnvironment : popDto.getPortalEnvironmentDtos()) {
+            initializePortalEnv(portalEnvironment, portal, portalPopContext, overwrite);
+        }
+        for (String studyFileName : popDto.getPopulateStudyFiles()) {
+            populateStudy(studyFileName, portalPopContext, portal, overwrite);
+        }
+
+        for (AdminUserDto adminUserDto : popDto.getAdminUsers()) {
+            adminUserPopulator.populateForPortal(adminUserDto, portalPopContext, overwrite, portal);
+        }
+        return portal;
     }
 }

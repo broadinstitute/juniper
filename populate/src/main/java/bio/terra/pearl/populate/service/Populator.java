@@ -3,13 +3,13 @@ package bio.terra.pearl.populate.service;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 
-public abstract class Populator<T extends BaseEntity, P extends FilePopulateContext> {
+public abstract class Populator<T extends BaseEntity, D extends T, P extends FilePopulateContext> {
     // in general, we use constructor injection, but for widely-used and inherited beans with no complex dependencies
     // annotation injection saves a lot of lines of code
     @Autowired
@@ -17,21 +17,44 @@ public abstract class Populator<T extends BaseEntity, P extends FilePopulateCont
     @Autowired
     protected ObjectMapper objectMapper;
 
-    /** nukes and recreates the given object */
     @Transactional
-    public T populate(P context) throws IOException {
+    public T populate(P context, boolean overwrite) throws IOException {
         String fileString = filePopulateService.readFile(context.getRootFileName(), context);
-        return populateFromString(fileString, context);
+        return populateFromString(fileString, context, overwrite);
     }
 
-    /** updates the object in-place where possible */
-    @Transactional
-    public T update(P context) throws IOException {
-        String fileString = filePopulateService.readFile(context.getRootFileName(), context);
-        return updateFromString(fileString, context);
+    public T populateFromString(String fileString, P context, boolean overwrite) throws IOException {
+        D popDto = objectMapper.readValue(fileString, getDtoClazz());
+        return populateFromDto(popDto, context, overwrite);
     }
 
-    public abstract T populateFromString(String fileString, P context) throws IOException;
+    public T populateFromDto(D popDto, P context, boolean overwrite) throws IOException {
+        Optional<T> existingObjOpt = findFromDto(popDto, context);
+        updateDtoFromContext(popDto, context);
+        T newObj;
+        if (existingObjOpt.isPresent()) {
+            if (overwrite) {
+                newObj = overwriteExisting(existingObjOpt.get(), popDto, context);
+            } else {
+                newObj = createPreserveExisting(existingObjOpt.get(), popDto, context);
+            }
+        } else {
+            newObj = createNew(popDto, context, overwrite);
+        }
+        context.markFilenameAsPopulated(context.getBasePath() + "/" + context.getRootFileName(),
+                newObj.getId());
+        return newObj;
+    }
 
-    public abstract T updateFromString(String fileString, P context) throws IOException;
+    protected void updateDtoFromContext(D popDto, P context) throws IOException {
+        // default is no-op
+    }
+
+    protected abstract Class<D> getDtoClazz();
+
+    public abstract Optional<T> findFromDto(D popDto, P context);
+
+    public abstract T overwriteExisting(T existingObj, D popDto, P context) throws IOException;
+    public abstract T createPreserveExisting(T existingObj, D popDto, P context) throws IOException;
+    public abstract T createNew(D popDto, P context, boolean overwrite) throws IOException;
 }

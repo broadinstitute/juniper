@@ -4,7 +4,7 @@ import bio.terra.pearl.core.dao.admin.AdminUserDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.admin.AdminUserWithPermissions;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.ImmutableEntityService;
+import bio.terra.pearl.core.service.CrudService;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class AdminUserService extends ImmutableEntityService<AdminUser, AdminUserDao> {
+public class AdminUserService extends CrudService<AdminUser, AdminUserDao> {
     private PortalAdminUserService portalAdminUserService;
 
     public AdminUserService(AdminUserDao adminUserDao, PortalAdminUserService portalAdminUserService) {

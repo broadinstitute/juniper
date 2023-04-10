@@ -4,4 +4,6 @@ import java.util.Optional;
 
 public interface VersionedEntityService<T> {
     Optional<T> findByStableId(String stableId, int version);
+
+    int getNextVersion(String stableId);
 }

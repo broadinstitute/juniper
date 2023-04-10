@@ -2,6 +2,7 @@ package bio.terra.pearl.populate.dto;
 
 import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.populate.dto.site.SiteContentPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -15,6 +16,6 @@ import lombok.Setter;
 public class PortalEnvironmentPopDto extends PortalEnvironment {
     private Set<String> participantUserFiles = new HashSet<>();
     private SurveyPopDto preRegSurveyDto;
-    private String siteContentFile;
+    private SiteContentPopDto siteContentPopDto;
     private List<MailingListContact> mailingListContacts = new ArrayList<>();
 }

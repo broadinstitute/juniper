@@ -439,6 +439,7 @@ paths:
       operationId: populatePortal
       parameters:
         - { name: filePathName, in: query, required: true, schema: { type: string } }
+        - { name: overwrite, in: query, required: false, schema: { type: boolean } }
       responses:
         '201':
           description: portal object
@@ -456,6 +457,7 @@ paths:
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: filePathName, in: query, required: true, schema: { type: string } }
+        - { name: overwrite, in: query, required: false, schema: { type: boolean } }
       responses:
         '201':
           description: survey object
@@ -475,6 +477,7 @@ paths:
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: filePathName, in: query, required: true, schema: { type: string } }
+        - { name: overwrite, in: query, required: false, schema: { type: boolean } }
       responses:
         '201':
           description: enrollee object
