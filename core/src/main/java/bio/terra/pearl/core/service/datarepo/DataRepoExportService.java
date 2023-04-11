@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,6 +30,7 @@ public class DataRepoExportService {
 
     Environment env;
     CreateDatasetJobService createDatasetJobService;
+    DatasetService datasetService;
     DataRepoClient dataRepoClient;
     CreateDatasetJobDao createDatasetJobDao;
     DatasetDao datasetDao;
@@ -40,6 +40,7 @@ public class DataRepoExportService {
     public DataRepoExportService(Environment env,
                                  DataRepoClient dataRepoClient,
                                  CreateDatasetJobService createDatasetJobService,
+                                 DatasetService datasetService,
                                  DatasetDao datasetDao,
                                  CreateDatasetJobDao createDatasetJobDao,
                                  StudyDao studyDao,
@@ -115,8 +116,8 @@ public class DataRepoExportService {
                             .datasetName(job.getDatasetName())
                             .build();
 
-                    datasetDao.create(dataset);
-                    createDatasetJobDao.updateJobStatus(job.getId(), jobStatus.getValue());
+                    datasetService.create(dataset);
+                    createDatasetJobService.updateJobStatus(job.getId(), jobStatus.getValue());
                 }
                 case FAILED -> {
                     logger.warn("createDataset job ID {} has failed. Dataset {} failed to create.", job.getId(), job.getDatasetName());
