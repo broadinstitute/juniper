@@ -76,7 +76,6 @@ public class DataRepoExportService {
 
             CreateDatasetJob job = CreateDatasetJob.builder()
                     .studyEnvironmentId(studyEnv.getId())
-                    .studyId(studyEnv.getStudyId())
                     .status(response.getJobStatus().getValue())
                     .datasetName(datasetName)
                     .tdrJobId(response.getId())

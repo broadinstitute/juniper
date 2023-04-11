@@ -7,9 +7,6 @@ databaseChangeLog:
             tableName: create_dataset_job
             columns:
               - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
-              - column: { name: study_id, type: uuid, constraints:
-                { nullable: false, foreignKeyName: fk_create_dataset_job_study_id, references: study(id) }
-              }
               - column: { name: study_environment_id, type: uuid, constraints:
                 { nullable: false, foreignKeyName: fk_create_dataset_job_study_environment_id, references: study_environment(id) }
               }
