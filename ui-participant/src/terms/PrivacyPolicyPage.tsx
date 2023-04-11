@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import React from 'react'
 
-import LandingNavbar from '../landing/LandingNavbar'
+import Navbar from '../Navbar'
 
 type SectionHeadingProps = JSX.IntrinsicElements['h2']
 
@@ -447,7 +447,7 @@ const PrivacyPolicy = () => {
 const PrivacyPolicyPage = () => {
   return (
     <div className="container-fluid bg-white min-vh-100 d-flex flex-column p-0">
-      <LandingNavbar aria-label="Primary" />
+      <Navbar aria-label="Primary" />
       <main className="flex-grow-1 py-5">
         <div className="row mx-0 justify-content-center">
           <div className="col-12 col-sm-10 col-lg-6">

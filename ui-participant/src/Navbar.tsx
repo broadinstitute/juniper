@@ -1,7 +1,7 @@
 import { Collapse } from 'bootstrap'
 import classNames from 'classnames'
 import React, { useEffect, useId, useRef } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
 import Api, { getImageUrl, isInternalAnchorLink, isInternalLink, NavbarItem } from 'api/api'
@@ -10,10 +10,10 @@ import { useUser } from 'providers/UserProvider'
 
 const navLinkClasses = 'nav-link fs-5 ms-lg-3'
 
-type LandingNavbarProps = JSX.IntrinsicElements['nav']
+type NavbarProps = JSX.IntrinsicElements['nav']
 
-/** renders the navbar for participant landing page (for not-logged-in participants) */
-export default function LandingNavbar(props: LandingNavbarProps) {
+/** renders the navbar for participants */
+export default function Navbar(props: NavbarProps) {
   const portalEnv = usePortalEnv()
   const { localContent } = portalEnv
   const { user, logoutUser } = useUser()
@@ -43,7 +43,7 @@ export default function LandingNavbar(props: LandingNavbarProps) {
 
   const dropdownId = useId()
 
-  return <nav {...props} className={classNames('LandingNavbar navbar navbar-expand-lg navbar-light', props.className)}>
+  return <nav {...props} className={classNames('navbar navbar-expand-lg navbar-light', props.className)}>
     <div className="container-fluid">
       <NavLink to="/" className="navbar-brand">
         <img className="Navbar-logo" style={{ maxHeight: '30px' }}
@@ -98,6 +98,8 @@ export default function LandingNavbar(props: LandingNavbarProps) {
               {user.username}
             </a>
             <ul className="dropdown-menu">
+              <li><Link className="dropdown-item" to="/hub">Dashboard</Link></li>
+              <li><hr className="dropdown-divider" /></li>
               <li><a className="dropdown-item" onClick={doLogout}>Log Out</a></li>
             </ul>
           </li>}
