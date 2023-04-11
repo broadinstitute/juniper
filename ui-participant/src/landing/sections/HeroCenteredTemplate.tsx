@@ -62,7 +62,7 @@ function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
   const hasContentFollowingImage = hasButtons
 
   return <div id={anchorRef} className="row mx-0" style={getSectionStyle(config)}>
-    <div className="col-12 col-sm-10 col-lg-6 mx-auto py-5 text-center">
+    <div className="col-12 col-sm-10 col-lg-6 mx-auto text-center">
       {hasTitle && (
         <h2 className={classNames('fs-1 fw-normal lh-sm', hasContentFollowingTitle ? 'mb-4' : 'mb-0')}>
           <InlineMarkdown>{title}</InlineMarkdown>

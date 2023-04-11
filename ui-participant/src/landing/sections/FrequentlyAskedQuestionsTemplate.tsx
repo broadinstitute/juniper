@@ -142,7 +142,7 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
     collapses.forEach(el => { Collapse.getOrCreateInstance(el).hide() })
   }, [])
 
-  return <div id={anchorRef} className="row mx-0 py-5 justify-content-center" style={getSectionStyle(config)}>
+  return <div id={anchorRef} className="row mx-0 justify-content-center" style={getSectionStyle(config)}>
     <div className="col-12 col-sm-8 col-lg-6">
       {!!title && (
         <h2 className="fs-1 fw-normal lh-sm mb-4 text-center">{title}</h2>
