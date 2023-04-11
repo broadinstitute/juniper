@@ -165,7 +165,7 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
           </button>
         </div>
       )}
-      <ul ref={questionsListRef} className="mx-0 px-0 border-top" style={{ listStyle: 'none' }}>
+      <ul ref={questionsListRef} className="list-unstyled mb-0 border-top">
         {
           questions.map(({ question, answer }, i) => {
             return (

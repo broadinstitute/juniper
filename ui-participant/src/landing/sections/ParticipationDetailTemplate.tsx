@@ -87,7 +87,7 @@ function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
           {title}
         </h2>
         <p><FontAwesomeIcon icon={faClock}/> {timeIndication}</p>
-        <p className="fs-4">
+        <p className={classNames('fs-4', actionButton ? 'mb-4' : 'mb-0')}>
           {blurb}
         </p>
         {actionButton && <ConfiguredButton config={actionButton} />}

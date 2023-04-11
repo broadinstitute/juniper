@@ -77,9 +77,11 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
     : (fullWidth ? 50 : 33)
   const imageCols = Math.max(Math.floor(imageWidthPercentage / 100 * 12), 1)
 
+  const hasBlurb = !!blurb
   const hasButtons = (buttons || []).length > 0
   const hasLogos = (logos || []).length > 0
 
+  const hasContentFollowingTitle = hasBlurb || hasButtons || hasLogos
   const hasContentFollowingBlurb = hasButtons || hasLogos
   const hasContentFollowingButtons = hasLogos
 
@@ -115,11 +117,11 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
           )}
         >
           {!!title && (
-            <h2 className="fs-1 fw-normal lh-sm">
+            <h2 className={classNames('fs-1 fw-normal lh-sm', hasContentFollowingTitle ? 'mb-4' : 'mb-0')}>
               <InlineMarkdown>{title}</InlineMarkdown>
             </h2>
           )}
-          {!!blurb && (
+          {hasBlurb && (
             <Markdown className={classNames('fs-4', { 'mb-4': hasContentFollowingBlurb })}>
               {blurb}
             </Markdown>

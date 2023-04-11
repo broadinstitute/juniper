@@ -51,22 +51,24 @@ function StepOverviewTemplate(props: StepOverviewTemplateProps) {
   const { anchorRef, config } = props
   const { buttons, steps, title } = config
 
+  const hasButtons = (buttons || []).length > 0
+
   // TODO: improve layout code for better flexing, especially with <> 4 steps
   return <div id={anchorRef} className="py-5" style={getSectionStyle(config)}>
     {!!title && (
-      <h2 className="fs-1 fw-normal lh-sm mb-3 text-center">
+      <h2 className="fs-1 fw-normal lh-sm text-center">
         <InlineMarkdown>{title}</InlineMarkdown>
       </h2>
     )}
     <div className="row mx-0">
       {
         _.map(steps, ({ image, duration, blurb }: StepConfig, i: number) => {
-          return <div key={i} className="col-12 col-lg-3 d-flex flex-column align-items-center">
+          return <div key={i} className="col-12 col-lg-3 d-flex flex-column align-items-center mt-4">
             <div className="w-75 d-flex flex-column align-items-center align-items-lg-start">
               <PearlImage image={image} className="img-fluid p-3" style={{ maxWidth: '200px' }}/>
               <p className="text-uppercase fs-5 fw-semibold mb-0">Step {i + 1}</p>
               <p className="text-uppercase fs-6">{duration}</p>
-              <p className="fs-4">
+              <p className="fs-4 mb-0">
                 {blurb}
               </p>
             </div>
@@ -74,13 +76,15 @@ function StepOverviewTemplate(props: StepOverviewTemplateProps) {
         })
       }
     </div>
-    <div className="d-grid gap-2 d-md-flex pt-4 justify-content-center">
-      {
-        _.map(buttons, (button, i) => {
-          return <ConfiguredButton key={i} config={button} className="px-4 me-md-2" />
-        })
-      }
-    </div>
+    {hasButtons && (
+      <div className="d-grid gap-2 d-md-flex justify-content-center mt-4">
+        {
+          _.map(buttons, (button, i) => {
+            return <ConfiguredButton key={i} config={button} className="px-4 me-md-2" />
+          })
+        }
+      </div>
+    )}
   </div>
 }
 
