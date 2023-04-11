@@ -29,8 +29,9 @@ public class DataRepoExportService {
 
     private static final Logger logger = LoggerFactory.getLogger(DataRepoExportService.class);
 
-    DataRepoClient dataRepoClient;
     Environment env;
+    CreateDatasetJobService createDatasetJobService;
+    DataRepoClient dataRepoClient;
     CreateDatasetJobDao createDatasetJobDao;
     DatasetDao datasetDao;
     StudyEnvironmentDao studyEnvironmentDao;
@@ -38,19 +39,20 @@ public class DataRepoExportService {
 
     public DataRepoExportService(Environment env,
                                  DataRepoClient dataRepoClient,
+                                 CreateDatasetJobService createDatasetJobService,
+                                 DatasetDao datasetDao,
                                  CreateDatasetJobDao createDatasetJobDao,
-                                 StudyEnvironmentDao studyEnvironmentDao,
                                  StudyDao studyDao,
-                                 DatasetDao datasetDao) {
+                                 StudyEnvironmentDao studyEnvironmentDao) {
         this.env = env;
         this.dataRepoClient = dataRepoClient;
+        this.createDatasetJobService = createDatasetJobService;
         this.createDatasetJobDao = createDatasetJobDao;
         this.datasetDao = datasetDao;
-        this.studyEnvironmentDao = studyEnvironmentDao;
         this.studyDao = studyDao;
+        this.studyEnvironmentDao = studyEnvironmentDao;
     }
 
-    @Transactional
     public void createDatasetsForStudyEnvironments() {
         UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
         final String DEPLOYMENT_ZONE = "dev"; //TODO, pull from config
@@ -81,12 +83,11 @@ public class DataRepoExportService {
                     .tdrJobId(response.getId())
                     .build();
 
-            createDatasetJobDao.create(job);
+            createDatasetJobService.create(job);
         }
 
     }
 
-    @Transactional
     public void pollRunningCreateDatasetJobs() {
         //Query for all running TDR dataset create jobs
         List<CreateDatasetJob> runningCreateJobs = createDatasetJobDao.findAllByStatus(JobStatusEnum.RUNNING.getValue());
