@@ -145,7 +145,8 @@
         "sectionConfigJson": {
           "twitterHandle": "ourhealthstudy",
           "instagramHandle": "ourhealthstudy",
-          "facebookHandle": "ourhealthstudy"
+          "facebookHandle": "ourhealthstudy",
+          "paddingBottom": 0
         }
       },{
         "sectionType": "HERO_CENTERED",
@@ -164,7 +165,8 @@
             "cleanFileName": "globe_and_hearts.png",
             "version": 1
           },
-          "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
+          "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
+          "paddingBottom": 0
         }
       },{
         "sectionType": "HERO_CENTERED",
