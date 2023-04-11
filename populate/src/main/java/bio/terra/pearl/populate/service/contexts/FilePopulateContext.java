@@ -67,9 +67,11 @@ public class FilePopulateContext {
     }
 
     public <T extends BaseEntity> Optional<T> fetchFromPopDto(FilePopulatable popDto, ImmutableEntityService<T, ?> service) {
-        String fullName = getBasePath() + "/" + popDto.getPopulateFileName();
-        if (isAlreadyPopulated(fullName)) {
-            return service.find(getUUIDForFileName(fullName));
+        if (popDto.getPopulateFileName() != null) {
+            String fullName = getBasePath() + "/" + popDto.getPopulateFileName();
+            if (isAlreadyPopulated(fullName)) {
+                return service.find(getUUIDForFileName(fullName));
+            }
         }
         return Optional.empty();
     }

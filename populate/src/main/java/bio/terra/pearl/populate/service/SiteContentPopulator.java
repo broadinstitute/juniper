@@ -3,32 +3,26 @@ package bio.terra.pearl.populate.service;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.site.HtmlPage;
 import bio.terra.pearl.core.model.site.SiteContent;
-import bio.terra.pearl.core.model.site.SiteImage;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.site.SiteContentService;
-import bio.terra.pearl.core.service.site.SiteImageService;
 import bio.terra.pearl.populate.dto.site.*;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SiteContentPopulator extends Populator<SiteContent, SiteContentPopDto, PortalPopulateContext> {
+public class SiteContentPopulator extends BasePopulator<SiteContent, SiteContentPopDto, PortalPopulateContext> {
     private SiteContentService siteContentService;
-    private SiteImageService siteImageService;
     private PortalService portalService;
 
     public SiteContentPopulator(SiteContentService siteContentService,
-                                SiteImageService siteImageService,
                                 PortalService portalService) {
         this.portalService = portalService;
         this.siteContentService = siteContentService;
-        this.siteImageService = siteImageService;
     }
 
     /** we need to convert dto properties from json to Strings for storing in the DB. */
@@ -47,35 +41,6 @@ public class SiteContentPopulator extends Populator<SiteContent, SiteContentPopD
         if (sectionPopDto.getSectionConfigJson() != null)  {
             sectionPopDto.setSectionConfig(sectionPopDto.getSectionConfigJson().toString());
         }
-    }
-
-    public void populateImages(List<SiteImagePopDto> siteImages, PortalPopulateContext context, boolean overwrite)
-            throws IOException {
-        for (SiteImagePopDto imageDto : siteImages) {
-            SiteImage image = convertDto(imageDto, context);
-            // we don't have to worry about deleting if it's overwrite -- the portal delete will have already deleted the images
-            if (!overwrite) {
-                int nextVersion = siteImageService.getNextVersion(image.getCleanFileName(), image.getPortalShortcode());
-                image.setVersion(nextVersion);
-            }
-            SiteImage savedImage = siteImageService.create(image);
-            context.markFilenameAsPopulated(imageDto.getPopulateFileName(), savedImage.getId());
-        }
-    }
-
-    private SiteImage convertDto(SiteImagePopDto imageDto, PortalPopulateContext context) throws IOException {
-        String popFileName = imageDto.getPopulateFileName();
-        byte[] imageContent = filePopulateService.readBinaryFile(popFileName, context);
-        String uploadFileName = imageDto.getUploadFileName();
-        if (uploadFileName == null) {
-            uploadFileName = popFileName.substring(popFileName.lastIndexOf("/") + 1);
-        }
-        return SiteImage.builder()
-                .data(imageContent)
-                .portalShortcode(context.getPortalShortcode())
-                .version(imageDto.getVersion() == 0 ? 1 : imageDto.getVersion())
-                .uploadFileName(uploadFileName)
-                .build();
     }
 
     private void initializeNavItem(NavbarItemPopDto navItem, FilePopulateContext config) throws IOException {
@@ -102,7 +67,7 @@ public class SiteContentPopulator extends Populator<SiteContent, SiteContentPopD
         return SiteContentPopDto.class;
     }
 
-    protected void updateDtoFromContext(SiteContentPopDto popDto, PortalPopulateContext context) throws IOException {
+    protected void preProcessDto(SiteContentPopDto popDto, PortalPopulateContext context) throws IOException {
         Portal attachedPortal = portalService.findOneByShortcode(context.getPortalShortcode()).get();
         popDto.setPortalId(attachedPortal.getId());
         for (LocalizedSiteContentPopDto lsc : popDto.getLocalizedSiteContentDtos()) {

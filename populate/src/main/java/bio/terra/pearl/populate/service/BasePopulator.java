@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 
-public abstract class Populator<T extends BaseEntity, D extends T, P extends FilePopulateContext> {
+public abstract class BasePopulator<T extends BaseEntity, D extends T, P extends FilePopulateContext> {
     // in general, we use constructor injection, but for widely-used and inherited beans with no complex dependencies
     // annotation injection saves a lot of lines of code
     @Autowired
@@ -29,8 +29,8 @@ public abstract class Populator<T extends BaseEntity, D extends T, P extends Fil
     }
 
     public T populateFromDto(D popDto, P context, boolean overwrite) throws IOException {
+        preProcessDto(popDto, context);
         Optional<T> existingObjOpt = findFromDto(popDto, context);
-        updateDtoFromContext(popDto, context);
         T newObj;
         if (existingObjOpt.isPresent()) {
             if (overwrite) {
@@ -46,7 +46,7 @@ public abstract class Populator<T extends BaseEntity, D extends T, P extends Fil
         return newObj;
     }
 
-    protected void updateDtoFromContext(D popDto, P context) throws IOException {
+    protected void preProcessDto(D popDto, P context) throws IOException {
         // default is no-op
     }
 

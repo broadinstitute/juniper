@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service.portal;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.dao.DaoTestUtils;
+import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.portal.MailingListContactFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.portal.MailingListContact;

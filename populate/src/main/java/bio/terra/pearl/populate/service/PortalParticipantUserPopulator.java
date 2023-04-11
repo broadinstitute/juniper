@@ -12,7 +12,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PortalParticipantUserPopulator extends Populator<PortalParticipantUser, PortalParticipantUser, PortalPopulateContext> {
+public class PortalParticipantUserPopulator extends BasePopulator<PortalParticipantUser, PortalParticipantUser, PortalPopulateContext> {
     private ParticipantUserService participantUserService;
     private PortalParticipantUserService portalParticipantUserService;
     private PortalEnvironmentService portalEnvironmentService;
@@ -26,7 +26,7 @@ public class PortalParticipantUserPopulator extends Populator<PortalParticipantU
     }
 
     @Override
-    protected void updateDtoFromContext(PortalParticipantUser popDto, PortalPopulateContext context) {
+    protected void preProcessDto(PortalParticipantUser popDto, PortalPopulateContext context) {
         ParticipantUser userDto = popDto.getParticipantUser();
         userDto.setEnvironmentName(context.getEnvironmentName());
         Optional<ParticipantUser> existingUserOpt = participantUserService
@@ -46,10 +46,9 @@ public class PortalParticipantUserPopulator extends Populator<PortalParticipantU
 
     @Override
     public Optional<PortalParticipantUser> findFromDto(PortalParticipantUser popDto, PortalPopulateContext context) {
-        ParticipantUser user = popDto.getParticipantUser();
         PortalEnvironment portalEnvironment = portalEnvironmentService
                 .findOne(context.getPortalShortcode(), context.getEnvironmentName()).get();
-        return portalParticipantUserService.findOne(user.getId(), portalEnvironment.getId());
+        return portalParticipantUserService.findOne(popDto.getParticipantUserId(), portalEnvironment.getId());
     }
 
     @Override
@@ -60,8 +59,8 @@ public class PortalParticipantUserPopulator extends Populator<PortalParticipantU
 
     @Override
     public PortalParticipantUser createPreserveExisting(PortalParticipantUser existingObj, PortalParticipantUser popDto, PortalPopulateContext context) {
-        // we don't support preserving existing for participant/enrollee type objects
-        return overwriteExisting(existingObj, popDto, context);
+        // we don't support updating participant users in-place yet
+        return existingObj;
     }
 
     @Override

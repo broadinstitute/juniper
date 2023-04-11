@@ -3,6 +3,7 @@ package bio.terra.pearl.populate.service;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import bio.terra.pearl.populate.dto.AdminUserDto;
@@ -13,7 +14,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AdminUserPopulator extends Populator<AdminUser, AdminUserDto, FilePopulateContext> {
+public class AdminUserPopulator extends BasePopulator<AdminUser, AdminUserDto, FilePopulateContext> {
     private AdminUserService adminUserService;
     private PortalAdminUserService portalAdminUserService;
 
@@ -50,7 +51,8 @@ public class AdminUserPopulator extends Populator<AdminUser, AdminUserDto, FileP
 
     @Override
     public AdminUser overwriteExisting(AdminUser existingObj, AdminUserDto popDto, FilePopulateContext context) {
-        return null;
+        adminUserService.delete(existingObj.getId(), CascadeProperty.EMPTY_SET);
+        return createNew(popDto, context, true);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package bio.terra.pearl.populate.service;
 
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -11,11 +12,11 @@ import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.MailingListContactService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
-import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.populate.dto.AdminUserDto;
 import bio.terra.pearl.populate.dto.PortalEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.PortalPopDto;
+import bio.terra.pearl.populate.dto.site.SiteImagePopDto;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import java.io.IOException;
@@ -24,12 +25,12 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PortalPopulator extends Populator<Portal, PortalPopDto, FilePopulateContext> {
+public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePopulateContext> {
 
     private PortalService portalService;
 
     private PortalEnvironmentService portalEnvironmentService;
-    private SiteContentService siteContentService;
+    private SiteImagePopulator siteImagePopulator;
     private StudyPopulator studyPopulator;
     private SurveyPopulator surveyPopulator;
     private SiteContentPopulator siteContentPopulator;
@@ -46,12 +47,14 @@ public class PortalPopulator extends Populator<Portal, PortalPopDto, FilePopulat
                            SiteContentPopulator siteContentPopulator,
                            PortalParticipantUserPopulator portalParticipantUserPopulator,
                            PortalParticipantUserService ppUserService,
-                           PortalEnvironmentService portalEnvironmentService, SurveyPopulator surveyPopulator,
+                           PortalEnvironmentService portalEnvironmentService,
+                           SiteImagePopulator siteImagePopulator, SurveyPopulator surveyPopulator,
                            AdminUserPopulator adminUserPopulator,
                            MailingListContactService mailingListContactService) {
         this.siteContentPopulator = siteContentPopulator;
         this.portalParticipantUserPopulator = portalParticipantUserPopulator;
         this.portalEnvironmentService = portalEnvironmentService;
+        this.siteImagePopulator = siteImagePopulator;
         this.surveyPopulator = surveyPopulator;
         this.portalService = portalService;
         this.studyPopulator = studyPopulator;
@@ -62,19 +65,26 @@ public class PortalPopulator extends Populator<Portal, PortalPopDto, FilePopulat
 
     private void populateStudy(String studyFileName, PortalPopulateContext context, Portal portal, boolean overwrite) throws IOException {
         Study newStudy = studyPopulator.populate(context.newFrom(studyFileName), overwrite);
-        PortalStudy portalStudy = portalStudyService.create(portal.getId(), newStudy.getId());
-        portal.getPortalStudies().add(portalStudy);
-        portalStudy.setStudy(newStudy);
+        Optional<PortalStudy> portalStudyOpt = portalStudyService.findStudyInPortal(newStudy.getShortcode(), portal.getId());
+        if (portalStudyOpt.isEmpty()) {
+            PortalStudy portalStudy = portalStudyService.create(portal.getId(), newStudy.getId());
+            portal.getPortalStudies().add(portalStudy);
+            portalStudy.setStudy(newStudy);
+        }
     }
 
-    private void initializePortalEnv(PortalEnvironmentPopDto portalEnvPopDto, Portal savedPortal,
+    private void initializePortalEnv(PortalEnvironmentPopDto portalEnvPopDto,
                                      PortalPopulateContext portalPopContext, boolean overwrite) throws IOException {
         PortalPopulateContext envConfig = portalPopContext.newFrom(portalEnvPopDto.getEnvironmentName());
         // we're iterating over each population file spec, so now match the current on to the
         // actual entity that got saved as a result of the portal create call.
-        PortalEnvironment savedEnv = savedPortal.getPortalEnvironments().stream()
-                .filter(env -> env.getEnvironmentName().equals(portalEnvPopDto.getEnvironmentName()))
-                .findFirst().get();
+        PortalEnvironment savedEnv = portalEnvironmentService
+                .findOne(portalPopContext.getPortalShortcode(), portalEnvPopDto.getEnvironmentName()).get();
+
+        /** unless we've overwritten the whole portal (overwirte mode) don't alter non-sandbox environments */
+        if (!savedEnv.getEnvironmentName().equals(EnvironmentName.sandbox) && !overwrite) {
+            return;
+        }
 
         if (portalEnvPopDto.getSiteContentPopDto() != null) {
             SiteContent content = siteContentPopulator
@@ -91,10 +101,15 @@ public class PortalPopulator extends Populator<Portal, PortalPopDto, FilePopulat
         }
         // re-save the portal environment to update it with any attached siteContents or preRegSurveys
         portalEnvironmentService.update(savedEnv);
-        populateMailingList(portalEnvPopDto, savedEnv);
+        populateMailingList(portalEnvPopDto, savedEnv, overwrite);
     }
 
-    private void populateMailingList(PortalEnvironmentPopDto portalEnvPopDto, PortalEnvironment savedEnv) {
+    private void populateMailingList(PortalEnvironmentPopDto portalEnvPopDto, PortalEnvironment savedEnv,
+                                     boolean overwrite) {
+        if (!overwrite) {
+            // we don't support updating mailing lists in-place yet
+            return;
+        }
         for (MailingListContact contact : portalEnvPopDto.getMailingListContacts()) {
             contact.setPortalEnvironmentId(savedEnv.getId());
             contact.setEmail(contact.getEmail());
@@ -135,8 +150,9 @@ public class PortalPopulator extends Populator<Portal, PortalPopDto, FilePopulat
     protected Portal populateChildren(Portal portal, PortalPopDto popDto, FilePopulateContext context, boolean overwrite) throws IOException {
         PortalPopulateContext portalPopContext = new PortalPopulateContext(context, portal.getShortcode(), null);
 
-        siteContentPopulator.populateImages(popDto.getSiteImageDtos(), portalPopContext, overwrite);
-
+        for (SiteImagePopDto imagePopDto : popDto.getSiteImageDtos()) {
+            siteImagePopulator.populateFromDto(imagePopDto, portalPopContext, overwrite);
+        }
         for (String surveyFile : popDto.getSurveyFiles()) {
             surveyPopulator.populate(portalPopContext.newFrom(surveyFile), overwrite);
         }
@@ -145,7 +161,7 @@ public class PortalPopulator extends Populator<Portal, PortalPopDto, FilePopulat
         }
 
         for (PortalEnvironmentPopDto portalEnvironment : popDto.getPortalEnvironmentDtos()) {
-            initializePortalEnv(portalEnvironment, portal, portalPopContext, overwrite);
+            initializePortalEnv(portalEnvironment, portalPopContext, overwrite);
         }
         for (String studyFileName : popDto.getPopulateStudyFiles()) {
             populateStudy(studyFileName, portalPopContext, portal, overwrite);

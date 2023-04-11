@@ -42,7 +42,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EnrolleePopulator extends Populator<Enrollee, EnrolleePopDto, StudyPopulateContext> {
+public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, StudyPopulateContext> {
     private EnrolleeService enrolleeService;
     private StudyEnvironmentService studyEnvironmentService;
     private ParticipantUserService participantUserService;

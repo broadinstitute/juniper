@@ -9,6 +9,7 @@ import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dto.StudyEnvironmentPopDto;
@@ -24,8 +25,9 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
-public class StudyPopulator extends Populator<Study, StudyPopDto, PortalPopulateContext> {
+public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopulateContext> {
     private StudyService studyService;
+    private StudyEnvironmentService studyEnvService;
     private EnrolleePopulator enrolleePopulator;
     private SurveyPopulator surveyPopulator;
     private SurveyService surveyService;
@@ -34,12 +36,13 @@ public class StudyPopulator extends Populator<Study, StudyPopDto, PortalPopulate
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
 
     public StudyPopulator(StudyService studyService,
-                          EnrolleePopulator enrolleePopulator,
+                          StudyEnvironmentService studyEnvService, EnrolleePopulator enrolleePopulator,
                           SurveyPopulator surveyPopulator, SurveyService surveyService,
                           ConsentFormPopulator consentFormPopulator,
                           EmailTemplatePopulator emailTemplatePopulator,
                           PreEnrollmentResponseDao preEnrollmentResponseDao) {
         this.studyService = studyService;
+        this.studyEnvService = studyEnvService;
         this.enrolleePopulator = enrolleePopulator;
         this.surveyPopulator = surveyPopulator;
         this.surveyService = surveyService;
@@ -52,7 +55,7 @@ public class StudyPopulator extends Populator<Study, StudyPopDto, PortalPopulate
     private void initializeStudyEnvironmentDto(StudyEnvironmentPopDto studyEnv, PortalPopulateContext context) {
         for (int i = 0; i < studyEnv.getConfiguredSurveyDtos().size(); i++) {
             StudyEnvironmentSurveyPopDto configSurveyDto = studyEnv.getConfiguredSurveyDtos().get(i);
-            StudyEnvironmentSurvey configSurvey = surveyPopulator.convertConfiguredSurvey(configSurveyDto, i);
+            StudyEnvironmentSurvey configSurvey = surveyPopulator.convertConfiguredSurvey(configSurveyDto, i, context);
             studyEnv.getConfiguredSurveys().add(configSurvey);
         }
         if (studyEnv.getPreEnrollSurveyDto() != null) {
@@ -61,7 +64,7 @@ public class StudyPopulator extends Populator<Study, StudyPopDto, PortalPopulate
         }
         for (int i = 0; i < studyEnv.getConfiguredConsentDtos().size(); i++) {
             StudyEnvironmentConsentPopDto configConsentDto = studyEnv.getConfiguredConsentDtos().get(i);
-            StudyEnvironmentConsent configConsent = consentFormPopulator.convertConfiguredConsent(configConsentDto, i);
+            StudyEnvironmentConsent configConsent = consentFormPopulator.convertConfiguredConsent(configConsentDto, i, context);
             studyEnv.getConfiguredConsents().add(configConsent);
         }
         for (NotificationConfigPopDto configPopDto : studyEnv.getNotificationConfigDtos()) {
@@ -71,10 +74,10 @@ public class StudyPopulator extends Populator<Study, StudyPopDto, PortalPopulate
     }
 
     /** populates any objects that require an already-persisted study environment to save */
-    private void postProcessStudyEnv(Study savedStudy, StudyEnvironmentPopDto studyPopEnv, StudyPopulateContext context, boolean overwrite)
+    private void postProcessStudyEnv(StudyEnvironmentPopDto studyPopEnv, StudyPopulateContext context, boolean overwrite)
     throws IOException {
-        StudyEnvironment savedEnv = savedStudy.getStudyEnvironments().stream().filter(env ->
-                env.getEnvironmentName().equals(studyPopEnv.getEnvironmentName())).findFirst().get();
+        StudyEnvironment savedEnv = studyEnvService.findByStudy(context.getStudyShortcode(), studyPopEnv.getEnvironmentName()).get();
+
         // save any of the pre-enrollment responses that aren't associated with an enrollee
         for (PreEnrollmentResponsePopDto responsePopDto : studyPopEnv.getPreEnrollmentResponseDtos()) {
             Survey survey = surveyService.findByStableId(responsePopDto.getSurveyStableId(),
@@ -114,17 +117,32 @@ public class StudyPopulator extends Populator<Study, StudyPopDto, PortalPopulate
     public Study createPreserveExisting(Study existingObj, StudyPopDto popDto, PortalPopulateContext context) throws IOException {
         existingObj.setName(popDto.getName());
         Study study = studyService.update(existingObj);
-        return populateChildren(study, popDto, context, true);
+        return createOrUpdate(study, popDto, context, false);
     }
 
     @Override
     public Study createNew(StudyPopDto popDto, PortalPopulateContext context, boolean overwrite) throws IOException {
-        Study study = studyService.create(popDto);
-        return populateChildren(study, popDto, context, overwrite);
+        return createOrUpdate(null, popDto, context, overwrite);
     }
 
-    protected Study populateChildren(Study study, StudyPopDto popDto, PortalPopulateContext context, boolean overwrite) throws IOException {
+    protected Study createOrUpdate(Study existingStudy, StudyPopDto popDto, PortalPopulateContext context, boolean overwrite) throws IOException {
         // first, populate the surveys and consent forms themselves
+        populateDocuments(popDto, context, overwrite);
+        if (existingStudy == null) {
+            for (StudyEnvironmentPopDto studyEnv : popDto.getStudyEnvironmentDtos()) {
+                initializeStudyEnvironmentDto(studyEnv, context.newFrom(studyEnv.getEnvironmentName()));
+            }
+            existingStudy = studyService.create(popDto);
+        }
+
+        StudyPopulateContext studyEnvContext = new StudyPopulateContext(context, existingStudy.getShortcode());
+        for (StudyEnvironmentPopDto studyPopEnv : popDto.getStudyEnvironmentDtos()) {
+            postProcessStudyEnv(studyPopEnv, studyEnvContext.newFrom(studyPopEnv.getEnvironmentName()), overwrite);
+        }
+        return existingStudy;
+    }
+
+    protected void populateDocuments(StudyPopDto popDto, PortalPopulateContext context, boolean overwrite) throws IOException {
         for (String surveyFile : popDto.getSurveyFiles()) {
             surveyPopulator.populate(context.newFrom(surveyFile), overwrite);
         }
@@ -134,15 +152,5 @@ public class StudyPopulator extends Populator<Study, StudyPopDto, PortalPopulate
         for (String template : popDto.getEmailTemplateFiles()) {
             emailTemplatePopulator.populate(context.newFrom(template), overwrite);
         }
-        for (StudyEnvironmentPopDto studyEnv : popDto.getStudyEnvironmentDtos()) {
-            initializeStudyEnvironmentDto(studyEnv, context.newFrom(studyEnv.getEnvironmentName()));
-        }
-
-        Study newStudy = studyService.create(popDto);
-        StudyPopulateContext studyEnvContext = new StudyPopulateContext(context, newStudy.getShortcode());
-        for (StudyEnvironmentPopDto studyPopEnv : popDto.getStudyEnvironmentDtos()) {
-            postProcessStudyEnv(newStudy, studyPopEnv, studyEnvContext.newFrom(studyPopEnv.getEnvironmentName()), overwrite);
-        }
-        return newStudy;
     }
 }

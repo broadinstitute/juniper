@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EnvironmentPopulator extends Populator<Environment, Environment, FilePopulateContext> {
+public class EnvironmentPopulator extends BasePopulator<Environment, Environment, FilePopulateContext> {
     private EnvironmentService environmentService;
 
     public EnvironmentPopulator(EnvironmentService environmentService) {

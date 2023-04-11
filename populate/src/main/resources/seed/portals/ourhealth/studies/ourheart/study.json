@@ -34,38 +34,34 @@
         "version": 1
       },
       "configuredSurveyDtos": [
-        {"surveyStableId": "oh_oh_basicInfo", "surveyVersion": 1, "required": true},
-        {"surveyStableId": "oh_oh_cardioHx", "surveyVersion": 1, "required": true},
-        {"surveyStableId": "oh_oh_medHx", "surveyVersion": 1},
-        {"surveyStableId": "oh_oh_mental", "surveyVersion": 1},
-        {"surveyStableId": "oh_oh_famHx", "surveyVersion": 1},
-        {"surveyStableId": "oh_oh_lifestyle", "surveyVersion": 1},
-        {"surveyStableId": "oh_oh_medList", "surveyVersion": 1},
-        {"surveyStableId": "oh_oh_socialHealth", "surveyVersion": 1}
+        {"populateFileName": "surveys/basic.json", "required": true},
+        {"populateFileName": "surveys/cardioHistory.json", "required": true},
+        {"populateFileName": "surveys/medicalHistory.json"},
+        {"populateFileName": "surveys/lifestyle.json"},
+        {"populateFileName": "surveys/medList.json"},
+        {"populateFileName": "surveys/phq9gad7.json"},
+        {"populateFileName": "surveys/familyHistory.json"},
+        {"populateFileName": "surveys/lifestyle.json"}
       ],
       "configuredConsentDtos": [
         {
-          "consentStableId": "oh_oh_consent",
-          "consentVersion": 1
+          "populateFileName": "surveys/ourHealthConsent.json"
         }
       ],
       "notificationConfigDtos": [{
         "notificationType": "EVENT",
         "eventType": "STUDY_ENROLLMENT",
-        "emailTemplateStableId": "oh_oh_studyEnroll",
-        "emailTemplateVersion": 1
+        "populateFileName": "emails/studyEnroll.json"
       },{
         "notificationType": "TASK_REMINDER",
         "taskType": "SURVEY",
-        "emailTemplateStableId": "oh_oh_reminderSurvey",
-        "emailTemplateVersion": 1
+        "populateFileName": "emails/consentReminder.json"
       },{
         "notificationType": "TASK_REMINDER",
         "taskType": "CONSENT",
         "reminderIntervalMinutes": 10080,
         "maxNumReminders": 2,
-        "emailTemplateStableId": "oh_oh_reminderConsent",
-        "emailTemplateVersion": 1
+        "populateFileName": "emails/surveyReminder.json"
       }],
       "enrolleeFiles": [
         "enrollees/jsalk.json",

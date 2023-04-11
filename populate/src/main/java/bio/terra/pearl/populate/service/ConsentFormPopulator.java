@@ -7,7 +7,9 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.populate.dao.ConsentFormPopulateDao;
 import bio.terra.pearl.populate.dto.consent.ConsentFormPopDto;
 import bio.terra.pearl.populate.dto.consent.StudyEnvironmentConsentPopDto;
+import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.BeanUtils;
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Service;
 
 /** populates ConsentForms.  this currently has a lot in common with SurveyPopulator */
 @Service
-public class ConsentFormPopulator extends Populator<ConsentForm, ConsentFormPopDto, PortalPopulateContext> {
+public class ConsentFormPopulator extends BasePopulator<ConsentForm, ConsentFormPopDto, PortalPopulateContext> {
     private ConsentFormService consentFormService;
     private PortalService portalService;
     private ConsentFormPopulateDao consentFormPopulateDao;
@@ -28,18 +30,24 @@ public class ConsentFormPopulator extends Populator<ConsentForm, ConsentFormPopD
     }
 
     @Override
-    protected void updateDtoFromContext(ConsentFormPopDto popDto, PortalPopulateContext context) {
+    protected void preProcessDto(ConsentFormPopDto popDto, PortalPopulateContext context) {
         UUID portalId = portalService.findOneByShortcode(context.getPortalShortcode()).get().getId();
         popDto.setPortalId(portalId);
         String newContent = popDto.getJsonContent().toString();
         popDto.setContent(newContent);
     }
 
-    public StudyEnvironmentConsent convertConfiguredConsent(StudyEnvironmentConsentPopDto configConsentDto, int index) {
+    public StudyEnvironmentConsent convertConfiguredConsent(StudyEnvironmentConsentPopDto configConsentDto,
+                                                            int index, FilePopulateContext context) {
         StudyEnvironmentConsent configuredConsent = new StudyEnvironmentConsent();
         BeanUtils.copyProperties(configConsentDto, configuredConsent);
-        ConsentForm consent = consentFormService.findByStableId(configConsentDto.getConsentStableId(),
-                configConsentDto.getConsentVersion()).get();
+        ConsentForm consent;
+        if (configConsentDto.getPopulateFileName() != null) {
+            consent = context.fetchFromPopDto(configConsentDto, consentFormService).get();
+        } else {
+            consent = consentFormService.findByStableId(configConsentDto.getConsentStableId(),
+                    configConsentDto.getConsentVersion()).get();
+        }
         configuredConsent.setConsentFormId(consent.getId());
         configuredConsent.setConsentOrder(index);
         return configuredConsent;
@@ -57,6 +65,10 @@ public class ConsentFormPopulator extends Populator<ConsentForm, ConsentFormPopD
 
     @Override
     public ConsentForm createPreserveExisting(ConsentForm existingObj, ConsentFormPopDto popDto, PortalPopulateContext context) {
+        if (Objects.equals(existingObj.getContent(), popDto.getContent())) {
+            // the things are the same, don't bother creating a new version
+            return existingObj;
+        }
         int newVersion = consentFormService.getNextVersion(popDto.getStableId());
         popDto.setVersion(newVersion);
         return consentFormService.create(popDto);
@@ -72,8 +84,9 @@ public class ConsentFormPopulator extends Populator<ConsentForm, ConsentFormPopD
 
     @Override
     public Optional<ConsentForm> findFromDto(ConsentFormPopDto popDto, PortalPopulateContext context) {
-        if (popDto.getPopulateFileName() != null) {
-            return context.fetchFromPopDto(popDto, consentFormService);
+        Optional<ConsentForm> existingOpt = context.fetchFromPopDto(popDto, consentFormService);
+        if (existingOpt.isPresent()) {
+            return existingOpt;
         }
         return consentFormService.findByStableId(popDto.getStableId(), popDto.getVersion());
     }

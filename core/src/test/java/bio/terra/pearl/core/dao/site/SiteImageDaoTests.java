@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.dao.site;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.dao.DaoTestUtils;
+import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.site.SiteImageFactory;
 import bio.terra.pearl.core.model.site.SiteImage;
 import static org.hamcrest.MatcherAssert.assertThat;

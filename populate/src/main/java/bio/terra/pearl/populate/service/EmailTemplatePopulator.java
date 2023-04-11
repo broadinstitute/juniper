@@ -11,12 +11,13 @@ import bio.terra.pearl.populate.dto.notifications.EmailTemplatePopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationConfigPopDto;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmailTemplatePopulator extends Populator<EmailTemplate, EmailTemplatePopDto, PortalPopulateContext> {
+public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTemplatePopDto, PortalPopulateContext> {
     private EmailTemplateService emailTemplateService;
     private PortalService portalService;
     private EmailTemplatePopulateDao emailTemplatePopulateDao;
@@ -38,14 +39,20 @@ public class EmailTemplatePopulator extends Populator<EmailTemplate, EmailTempla
         PortalEnvironment portalEnv = portalEnvironmentService
                 .findOne(context.getPortalShortcode(), context.getEnvironmentName()).get();
         config.setPortalEnvironmentId(portalEnv.getId());
-        EmailTemplate template = emailTemplateService.findByStableId(configPopDto.getEmailTemplateStableId(),
-                configPopDto.getEmailTemplateVersion()).get();
+
+        EmailTemplate template;
+        if (configPopDto.getPopulateFileName() != null) {
+            template = context.fetchFromPopDto(configPopDto, emailTemplateService).get();
+        } else {
+            template = emailTemplateService.findByStableId(configPopDto.getEmailTemplateStableId(),
+                    configPopDto.getEmailTemplateVersion()).get();
+        }
         config.setEmailTemplateId(template.getId());
         return config;
     }
 
     @Override
-    protected void updateDtoFromContext(EmailTemplatePopDto popDto, PortalPopulateContext context) throws IOException  {
+    protected void preProcessDto(EmailTemplatePopDto popDto, PortalPopulateContext context) throws IOException  {
         String bodyContent = filePopulateService.readFile(popDto.getBodyPopulateFile(), context);
         popDto.setBody(bodyContent);
     }
@@ -57,8 +64,9 @@ public class EmailTemplatePopulator extends Populator<EmailTemplate, EmailTempla
 
     @Override
     public Optional<EmailTemplate> findFromDto(EmailTemplatePopDto popDto, PortalPopulateContext context) {
-        if (popDto.getPopulateFileName() != null) {
-            return context.fetchFromPopDto(popDto, emailTemplateService);
+        Optional<EmailTemplate> existingOpt = context.fetchFromPopDto(popDto, emailTemplateService);
+        if (existingOpt.isPresent()) {
+            return existingOpt;
         }
         return emailTemplateService.findByStableId(popDto.getStableId(), popDto.getVersion());
     }
@@ -74,6 +82,12 @@ public class EmailTemplatePopulator extends Populator<EmailTemplate, EmailTempla
 
     @Override
     public EmailTemplate createPreserveExisting(EmailTemplate existingObj, EmailTemplatePopDto popDto, PortalPopulateContext context) {
+        if (Objects.equals(existingObj.getBody(), popDto.getBody()) &&
+                Objects.equals(existingObj.getSubject(), popDto.getSubject()) &&
+                Objects.equals(existingObj.getName(), popDto.getName())) {
+            // the things are the same, don't bother creating a new version
+            return existingObj;
+        }
         int newVersion = emailTemplateService.getNextVersion(popDto.getStableId());
         popDto.setVersion(newVersion);
         return emailTemplateService.create(popDto);

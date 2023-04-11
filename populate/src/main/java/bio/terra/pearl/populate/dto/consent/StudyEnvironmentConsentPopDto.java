@@ -1,6 +1,7 @@
 package bio.terra.pearl.populate.dto.consent;
 
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
+import bio.terra.pearl.populate.dto.FilePopulatable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +10,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class StudyEnvironmentConsentPopDto extends StudyEnvironmentConsent {
+public class StudyEnvironmentConsentPopDto extends StudyEnvironmentConsent implements FilePopulatable {
     private String consentStableId;
     private int consentVersion;
+    private String populateFileName;
 }

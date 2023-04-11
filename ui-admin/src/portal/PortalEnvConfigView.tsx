@@ -7,7 +7,7 @@ import PortalEnvPublishControl from './publish/PortalEnvPublishControl'
 import { faCogs } from '@fortawesome/free-solid-svg-icons/faCogs'
 import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons/faClipboardCheck'
 import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers'
-import {useUser} from "../user/UserProvider";
+import { useUser } from '../user/UserProvider'
 
 
 const ENVIRONMENT_ICON_MAP: Record<string, React.ReactNode> = {
@@ -19,14 +19,13 @@ const ENVIRONMENT_ICON_MAP: Record<string, React.ReactNode> = {
 /** shows information about the portal config, does not allow editing yet */
 export default function PortalEnvConfigView({ portal, portalEnv }:
   {portal: Portal, portalEnv: PortalEnvironment}) {
-  const {user} = useUser()
+  const { user } = useUser()
   const envIcon = ENVIRONMENT_ICON_MAP[portalEnv.environmentName]
   const isInitialized = portalEnv.portalEnvironmentConfig.initialized
   return <div className="bg-white p-3 mb-2">
     <div className="d-flex align-items-baseline">
       <h3 className="h5 text-capitalize me-4">{envIcon} {portalEnv.environmentName}</h3>
       <PortalEnvPublishControl portal={portal} destEnv={portalEnv}/>
-      {user.<button className="btn-secondary float-end">Reset</button>
     </div>
 
     <div className="ms-4 mt-3">

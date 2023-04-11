@@ -11,8 +11,11 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dao.SurveyPopulateDao;
 import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
+import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.BeanUtils;
@@ -20,7 +23,7 @@ import org.springframework.stereotype.Service;
 
 /** populator for surveys and consent forms */
 @Service
-public class SurveyPopulator extends Populator<Survey, SurveyPopDto, PortalPopulateContext> {
+public class SurveyPopulator extends BasePopulator<Survey, SurveyPopDto, PortalPopulateContext> {
     private SurveyService surveyService;
     private PortalService portalService;
     private SurveyPopulateDao surveyPopulateDao;
@@ -40,27 +43,24 @@ public class SurveyPopulator extends Populator<Survey, SurveyPopDto, PortalPopul
     }
 
     @Override
-    protected void updateDtoFromContext(SurveyPopDto popDto, PortalPopulateContext context) {
+    protected void preProcessDto(SurveyPopDto popDto, PortalPopulateContext context) {
         UUID portalId = portalService.findOneByShortcode(context.getPortalShortcode()).get().getId();
         popDto.setPortalId(portalId);
         String newContent = popDto.getJsonContent().toString();
         popDto.setContent(newContent);
     }
 
-    private void updateAnswerMappings(Survey existingSurvey, SurveyPopDto surveyPopDto) {
-        answerMappingDao.deleteBySurveyId(existingSurvey.getId());
-        existingSurvey.getAnswerMappings().clear();
-        for (AnswerMapping answerMapping : surveyPopDto.getAnswerMappings()) {
-            answerMapping.setSurveyId(existingSurvey.getId());
-            existingSurvey.getAnswerMappings().add(answerMappingDao.create(answerMapping));
-        }
-    }
-
-    public StudyEnvironmentSurvey convertConfiguredSurvey(StudyEnvironmentSurveyPopDto configuredSurveyDto, int index) {
+    public StudyEnvironmentSurvey convertConfiguredSurvey(StudyEnvironmentSurveyPopDto configuredSurveyDto,
+                                                          int index, FilePopulateContext context) {
         StudyEnvironmentSurvey configuredSurvey = new StudyEnvironmentSurvey();
         BeanUtils.copyProperties(configuredSurveyDto, configuredSurvey);
-        Survey survey = surveyService.findByStableId(configuredSurveyDto.getSurveyStableId(),
-                configuredSurveyDto.getSurveyVersion()).get();
+        Survey survey;
+        if (configuredSurveyDto.getPopulateFileName() != null) {
+            survey = context.fetchFromPopDto(configuredSurveyDto, surveyService).get();
+        } else {
+            survey = surveyService.findByStableId(configuredSurveyDto.getSurveyStableId(),
+                    configuredSurveyDto.getSurveyVersion()).get();
+        }
         configuredSurvey.setSurveyId(survey.getId());
         configuredSurvey.setSurveyOrder(index);
         return configuredSurvey;
@@ -73,10 +73,12 @@ public class SurveyPopulator extends Populator<Survey, SurveyPopDto, PortalPopul
 
     @Override
     public Optional<Survey> findFromDto(SurveyPopDto popDto, PortalPopulateContext context) {
-        if (popDto.getPopulateFileName() != null) {
-            return context.fetchFromPopDto(popDto, surveyService);
+        Optional<Survey> existingOpt = context.fetchFromPopDto(popDto, surveyService);
+        if (existingOpt.isPresent()) {
+            return existingOpt;
         }
-        return surveyService.findByStableId(popDto.getStableId(), popDto.getVersion());
+        // load with mappings since we'll check those for equality
+        return surveyService.findByStableIdWithMappings(popDto.getStableId(), popDto.getVersion());
     }
 
     @Override
@@ -86,14 +88,30 @@ public class SurveyPopulator extends Populator<Survey, SurveyPopDto, PortalPopul
         surveyPopulateDao.update(existingObj);
         updateAnswerMappings(existingObj, popDto);
         surveyQuestionDefinitionDao.deleteBySurveyId(existingObj.getId());
+        popDto.setId(existingObj.getId());
         for (SurveyQuestionDefinition questionDefinition : surveyService.getSurveyQuestionDefinitions(popDto)) {
             surveyQuestionDefinitionDao.create(questionDefinition);
         }
         return existingObj;
     }
 
+
+    private void updateAnswerMappings(Survey existingSurvey, SurveyPopDto surveyPopDto) {
+        answerMappingDao.deleteBySurveyId(existingSurvey.getId());
+        existingSurvey.getAnswerMappings().clear();
+        for (AnswerMapping answerMapping : surveyPopDto.getAnswerMappings()) {
+            answerMapping.setSurveyId(existingSurvey.getId());
+            existingSurvey.getAnswerMappings().add(answerMappingDao.create(answerMapping));
+        }
+    }
+
     @Override
     public Survey createPreserveExisting(Survey existingObj, SurveyPopDto popDto, PortalPopulateContext context) throws IOException {
+        if (Objects.equals(existingObj.getContent(), popDto.getContent()) &&
+                isAnswerMappingsEqual(existingObj.getAnswerMappings(), popDto.getAnswerMappings())) {
+            // the things are the same, don't bother creating a new version
+            return existingObj;
+        }
         int newVersion = surveyService.getNextVersion(popDto.getStableId());
         popDto.setVersion(newVersion);
         return createNew(popDto, context, false);
@@ -103,4 +121,30 @@ public class SurveyPopulator extends Populator<Survey, SurveyPopDto, PortalPopul
     public Survey createNew(SurveyPopDto popDto, PortalPopulateContext context, boolean overwrite) throws IOException {
         return surveyService.create(popDto);
     }
+
+    public boolean isAnswerMappingsEqual(List<AnswerMapping> mappingsA, List<AnswerMapping> mappingsB) {
+        if (mappingsA == null || mappingsB == null) {
+            return mappingsA == mappingsB;
+        }
+        if (mappingsA.size() != mappingsB.size()) {
+            return false;
+        }
+        for (int i = 0; i < mappingsA.size(); i++) {
+            if (!isAnswerMappingEqual(mappingsA.get(i), mappingsB.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isAnswerMappingEqual(AnswerMapping mapA, AnswerMapping mapB) {
+        return Objects.equals(mapA.getMapType(), mapB.getMapType()) &&
+                Objects.equals(mapA.getTargetType(), mapB.getTargetType()) &&
+                Objects.equals(mapA.getFormatString(), mapB.getFormatString()) &&
+                Objects.equals(mapA.getTargetField(), mapB.getTargetField()) &&
+                Objects.equals(mapA.getQuestionStableId(), mapB.getQuestionStableId()) &&
+                Objects.equals(mapA.isErrorOnFail(), mapB.isErrorOnFail());
+    }
+
+
 }

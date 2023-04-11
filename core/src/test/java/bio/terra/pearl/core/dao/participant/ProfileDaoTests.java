@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.dao.DaoTestUtils;
+import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.model.participant.Profile;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
