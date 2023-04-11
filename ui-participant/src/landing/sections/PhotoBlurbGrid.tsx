@@ -1,11 +1,12 @@
+import classNames from 'classnames'
 import React from 'react'
-import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 
+import { Markdown } from '../Markdown'
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
 import { TemplateComponentProps } from './templateUtils'
@@ -74,21 +75,29 @@ function PhotoBlurbGrid(props: PhotoBlurbGridProps) {
       </h2>
     )}
     {(subGrids ?? []).map((subGrid, index) => {
-      return <SubGridView key={index} headingLevel={subGridHeadingLevel} subGrid={subGrid}/>
+      return (
+        <SubGridView
+          key={index}
+          className={index === 0 ? undefined : 'mt-4'}
+          headingLevel={subGridHeadingLevel}
+          subGrid={subGrid}
+        />
+      )
     })}
   </div>
 }
 
 type SubGridViewProps = {
+  className?: string
   headingLevel: 2 | 3
   subGrid: SubGrid
 }
 
 /** renders a subgrouping of photos (e.g. "Our researchers") */
 function SubGridView(props: SubGridViewProps) {
-  const { headingLevel, subGrid } = props
+  const { className, headingLevel, subGrid } = props
   const Heading: 'h2' | 'h3' = `h${headingLevel}`
-  return <div className="row mx-0">
+  return <div className={classNames('row mx-0', className)}>
     <div className="col-12 col-sm-10 col-lg-8 mx-auto">
       {subGrid.title && <Heading className="text-center mb-4">{subGrid.title}</Heading>}
       <div className="row mx-0">
@@ -108,9 +117,9 @@ function PhotoBioView({ photoBio }: { photoBio: PhotoBio }) {
       {photoBio.name} {photoBio.title}
     </div>
     {!!photoBio.blurb && (
-      <div className="fst-italic lh-1" style={{ fontSize: '0.9em' }}>
-        <ReactMarkdown>{photoBio.blurb}</ReactMarkdown>
-      </div>
+      <Markdown className="fst-italic lh-1" style={{ fontSize: '0.9em' }}>
+        {photoBio.blurb}
+      </Markdown>
     )}
   </div>
 }

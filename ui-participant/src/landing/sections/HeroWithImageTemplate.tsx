@@ -1,7 +1,6 @@
 import classNames from 'classnames'
 import _ from 'lodash'
 import React from 'react'
-import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
@@ -9,6 +8,7 @@ import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalNumber, requireOptionalString } from 'util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
+import { InlineMarkdown, Markdown } from '../Markdown'
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
 import { TemplateComponentProps } from './templateUtils'
@@ -77,6 +77,12 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
     : (fullWidth ? 50 : 33)
   const imageCols = Math.max(Math.floor(imageWidthPercentage / 100 * 12), 1)
 
+  const hasButtons = (buttons || []).length > 0
+  const hasLogos = (logos || []).length > 0
+
+  const hasContentFollowingBlurb = hasButtons || hasLogos
+  const hasContentFollowingButtons = hasLogos
+
   return (
     <div
       className={classNames('row', 'mx-0', isLeftImage ? 'flex-row' : 'flex-row-reverse')}
@@ -110,16 +116,21 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
         >
           {!!title && (
             <h2 className="fs-1 fw-normal lh-sm">
-              <ReactMarkdown>{title}</ReactMarkdown>
+              <InlineMarkdown>{title}</InlineMarkdown>
             </h2>
           )}
           {!!blurb && (
-            <div className="fs-4">
-              <ReactMarkdown>{blurb}</ReactMarkdown>
-            </div>
+            <Markdown className={classNames('fs-4', { 'mb-4': hasContentFollowingBlurb })}>
+              {blurb}
+            </Markdown>
           )}
-          {(buttons || []).length > 0 && (
-            <div className="d-grid gap-2 d-md-flex justify-content-md-start">
+          {hasButtons && (
+            <div
+              className={classNames(
+                'd-grid gap-2 d-md-flex justify-content-md-start',
+                { 'mb-4': hasContentFollowingButtons }
+              )}
+            >
               {
                 _.map(buttons, (buttonConfig, i) =>
                   <ConfiguredButton key={i} config={buttonConfig} className="btn-lg px-4 me-md-2"/>
@@ -127,7 +138,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
               }
             </div>
           )}
-          {(logos || []).length > 0 && (
+          {hasLogos && (
             <div
               className={classNames(
                 'd-flex',
@@ -136,7 +147,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
               )}
             >
               {_.map(logos, logo => {
-                return <PearlImage key={logo.cleanFileName} image={logo} className="mt-4 me-sm-4" />
+                return <PearlImage key={logo.cleanFileName} image={logo} className="me-sm-4" />
               })}
             </div>
           )}

@@ -1,6 +1,5 @@
 import _ from 'lodash'
 import React from 'react'
-import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
@@ -8,6 +7,7 @@ import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
+import { InlineMarkdown } from '../Markdown'
 import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
 import { TemplateComponentProps } from './templateUtils'
@@ -55,7 +55,7 @@ function StepOverviewTemplate(props: StepOverviewTemplateProps) {
   return <div id={anchorRef} className="py-5" style={getSectionStyle(config)}>
     {!!title && (
       <h2 className="fs-1 fw-normal lh-sm mb-3 text-center">
-        <ReactMarkdown>{title}</ReactMarkdown>
+        <InlineMarkdown>{title}</InlineMarkdown>
       </h2>
     )}
     <div className="row mx-0">
