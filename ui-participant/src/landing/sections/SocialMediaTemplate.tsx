@@ -94,6 +94,7 @@ function SocialMediaTemplate(props: SocialMediaTemplateProps) {
           } else {
             return (
               <SocialMediaLink
+                key={site.label}
                 icon={site.icon}
                 label={site.label}
                 url={site.renderUrl({ domain: site.domain, handle })}
