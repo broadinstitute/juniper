@@ -87,7 +87,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
 
   return (
     <div
-      className={classNames('row', 'mx-0', isLeftImage ? 'flex-row' : 'flex-row-reverse')}
+      className={classNames('row', 'py-0', 'mx-0', isLeftImage ? 'flex-row' : 'flex-row-reverse')}
       id={anchorRef}
       style={getSectionStyle(config)}
     >

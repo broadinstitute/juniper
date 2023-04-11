@@ -67,7 +67,7 @@ function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
 
   const hasImage = !!image
   const isLeftImage = imagePosition === 'left' // default is right, so left has to be explicitly specified
-  return <div id={anchorRef} className="row mx-0 py-5" style={getSectionStyle(config)}>
+  return <div id={anchorRef} className="row mx-0" style={getSectionStyle(config)}>
     <div
       className={classNames(
         'col-md-10 col-lg-8', 'mx-auto', 'row',

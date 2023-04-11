@@ -68,7 +68,7 @@ function PhotoBlurbGrid(props: PhotoBlurbGridProps) {
   // title, then the subgrid headings should be h2 elements.
   const subGridHeadingLevel = hasTitle ? 3 : 2
 
-  return <div id={anchorRef} className="py-5" style={getSectionStyle(config)}>
+  return <div id={anchorRef} style={getSectionStyle(config)}>
     {!!title && (
       <h2 className="fs-1 fw-normal lh-sm text-center mb-4">
         {title}
