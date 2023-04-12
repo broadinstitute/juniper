@@ -3,7 +3,7 @@ import { useUser } from 'providers/UserProvider'
 import { Route, Routes, useNavigate, useParams } from 'react-router-dom'
 import { usePortalEnv } from 'providers/PortalProvider'
 import Api, { ParticipantUser, Portal, StudyEnvironment } from 'api/api'
-import LandingNavbar from 'landing/LandingNavbar'
+import NavBar from '../../Navbar'
 import PreEnrollView from './PreEnroll'
 import StudyIneligible from './StudyIneligible'
 import PortalRegistrationRouter from 'landing/registration/PortalRegistrationRouter'
@@ -114,7 +114,7 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
     studyShortcode, studyEnv, user, preEnrollResponseId, updatePreEnrollResponseId
   }
   return <>
-    <LandingNavbar/>
+    <NavBar/>
     {mustProvidePassword
       ? (
         <StudyEnrollPasswordGate
