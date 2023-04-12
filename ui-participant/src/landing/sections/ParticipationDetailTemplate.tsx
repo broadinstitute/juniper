@@ -9,14 +9,14 @@ import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalString } from 'util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
-import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
+import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
 
 import { TemplateComponentProps } from './templateUtils'
 
 type ParticipationDetailTemplateConfig = {
   actionButton?: ButtonConfig, // button
   blurb?: string, //  text below the title
-  image?: PearlImageConfig, // image
+  image?: ImageConfig, // image
   imagePosition?: 'left' | 'right' // left or right.  Default is right
   stepNumberText?: string, // e.g. STEP 1
   timeIndication?: string, // e.g. 45+ minutes
@@ -28,7 +28,7 @@ const validateParticipationDetailTemplateConfig = (config: SectionConfig): Parti
   const message = 'Invalid ParticipationDetailTemplateConfig'
   const actionButton = config.actionButton ? validateButtonConfig(config.actionButton) : undefined
   const blurb = requireOptionalString(config, 'blurb', message)
-  const image = config.image ? validatePearlImageConfig(config.image) : undefined
+  const image = config.image ? validateImageConfig(config.image) : undefined
   const imagePosition = requireOptionalString(config, 'imagePosition', message)
   if (!(imagePosition === undefined || imagePosition === 'left' || imagePosition === 'right')) {
     throw new Error(`${message}: if provided, imagePosition must be one of "left", "right"`)
@@ -78,7 +78,7 @@ function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
     >
       {hasImage && (
         <div className="col-6 col-md-3 mx-auto mx-md-0 text-center">
-          <PearlImage image={image} className="img-fluid mb-4 mb-md-0"/>
+          <ConfiguredImage image={image} className="img-fluid mb-4 mb-md-0"/>
         </div>
       )}
       <div className={classNames({ 'col-md-8': hasImage })}>

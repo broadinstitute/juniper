@@ -6,8 +6,8 @@ import { getSectionStyle } from 'util/styleUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 
+import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
 import { Markdown } from '../Markdown'
-import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
 import { TemplateComponentProps } from './templateUtils'
 
@@ -22,7 +22,7 @@ type SubGrid = {
 }
 
 type PhotoBio = {
-  image: PearlImageConfig,
+  image: ImageConfig,
   name: string,
   title?: string,
   blurb?: string
@@ -31,7 +31,7 @@ type PhotoBio = {
 const validatePhotoBio = (config: unknown): PhotoBio => {
   const message = 'Invalid Invalid PhotoBlurbGridConfig: invalid photoBio'
   const configObj = requirePlainObject(config, message)
-  const image = validatePearlImageConfig(configObj.image)
+  const image = validateImageConfig(configObj.image)
   const name = requireString(configObj, 'name', message)
   const title = requireOptionalString(configObj, 'title', message)
   const blurb = requireOptionalString(configObj, 'blurb', message)
@@ -112,7 +112,7 @@ function PhotoBioView({ photoBio }: { photoBio: PhotoBio }) {
   // Default alt text to person's name
   photoBio.image.alt ||= photoBio.name
   return <div className="col-sm-6 col-md-4 gx-5 gy-3 text-center text-sm-start">
-    <PearlImage image={photoBio.image} className="img-fluid"/>
+    <ConfiguredImage image={photoBio.image} className="img-fluid"/>
     <div className="my-2 fw-bold">
       {photoBio.name} {photoBio.title}
     </div>

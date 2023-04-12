@@ -97,7 +97,7 @@ a {
 }
 
 @include media-breakpoint-down(lg) {
-  .pearl-image {
+  .configured-image {
     max-height: max(33vh, 212px);
   }
 }
