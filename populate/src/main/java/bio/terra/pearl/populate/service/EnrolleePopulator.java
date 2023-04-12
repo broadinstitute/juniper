@@ -42,7 +42,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EnrolleePopulator extends Populator<Enrollee, StudyPopulateContext> {
+public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, StudyPopulateContext> {
     private EnrolleeService enrolleeService;
     private StudyEnvironmentService studyEnvironmentService;
     private ParticipantUserService participantUserService;
@@ -85,72 +85,6 @@ public class EnrolleePopulator extends Populator<Enrollee, StudyPopulateContext>
         this.snapshotProcessingService = snapshotProcessingService;
         this.enrollmentService = enrollmentService;
         this.profileService = profileService;
-    }
-
-    @Override
-    public Enrollee populateFromString(String fileString, StudyPopulateContext context) throws IOException {
-        EnrolleePopDto enrolleeDto = objectMapper.readValue(fileString, EnrolleePopDto.class);
-        Optional<Enrollee> existingEnrollee = enrolleeService.findOneByShortcode(enrolleeDto.getShortcode());
-        existingEnrollee.ifPresent(exEnrollee ->
-                enrolleeService.delete(exEnrollee.getId(), CascadeProperty.EMPTY_SET)
-        );
-        StudyEnvironment attachedEnv = studyEnvironmentService
-                .findByStudy(context.getStudyShortcode(), context.getEnvironmentName()).get();
-        enrolleeDto.setStudyEnvironmentId(attachedEnv.getId());
-        ParticipantUser attachedUser = participantUserService
-                .findOne(enrolleeDto.getLinkedUsername(), context.getEnvironmentName()).get();
-        PortalParticipantUser ppUser = portalParticipantUserService
-                .findOne(attachedUser.getId(), context.getPortalShortcode()).get();
-        enrolleeDto.setParticipantUserId(attachedUser.getId());
-        enrolleeDto.setProfileId(ppUser.getProfileId());
-
-        PreEnrollmentResponse preEnrollmentResponse = populatePreEnrollResponse(enrolleeDto, attachedEnv);
-        enrolleeDto.setPreEnrollmentResponseId(preEnrollmentResponse != null ? preEnrollmentResponse.getId() : null);
-        Enrollee enrollee;
-        List<ParticipantTask> tasks;
-
-        // temporarily set the enrollee to doNotEmail so that we don't spam emails during population
-        Profile profile = profileService.find(ppUser.getProfileId()).get();
-        boolean isDoNotEmail = profile.isDoNotEmail();
-        profile.setDoNotEmail(true);
-        profileService.update(profile);
-
-        if (enrolleeDto.isSimulateSubmissions()) {
-            HubResponse<Enrollee>  hubResponse = enrollmentService.enroll(attachedUser, ppUser,
-                    attachedEnv.getEnvironmentName(), context.getStudyShortcode(), enrolleeDto.getPreEnrollmentResponseId());
-            enrollee = hubResponse.getEnrollee();
-            tasks = hubResponse.getTasks();
-            // we want the shortcode to not be random so that test enrollee urls are consistent, so set it manually
-            enrollee.setShortcode(enrolleeDto.getShortcode());
-            enrolleeService.update(enrollee);
-
-        } else {
-            enrollee = enrolleeService.create(enrolleeDto);
-            tasks = new ArrayList<>();
-        }
-
-        for (SurveyResponsePopDto responsePopDto : enrolleeDto.getSurveyResponseDtos()) {
-            populateResponse(enrollee, responsePopDto, ppUser);
-        }
-        for (ConsentResponsePopDto consentPopDto : enrolleeDto.getConsentResponseDtos()) {
-            populateConsent(enrollee, ppUser, consentPopDto, tasks, enrolleeDto.isSimulateSubmissions());
-        }
-        for (ParticipantTaskPopDto taskDto : enrolleeDto.getParticipantTaskDtos()) {
-            populateTask(enrollee, ppUser, taskDto);
-        }
-        populateNotifications(enrollee, enrolleeDto, attachedEnv.getId(), ppUser);
-
-        /**
-         * restore the email status
-         * note that the email process is async, and so this may reset the email preference before the email
-         * process actually triggers.  That's ok, though, because the Enrollee information is loaded from the DB as
-         * part of the synchronous submission processes, and that's what's passed to the EmailService.
-         */
-        profile = profileService.find(ppUser.getProfileId()).get();
-        profile.setDoNotEmail(isDoNotEmail);
-        profileService.update(profile);
-
-        return enrollee;
     }
 
     private void populateResponse(Enrollee enrollee, SurveyResponsePopDto responsePopDto, PortalParticipantUser ppUser)
@@ -298,5 +232,91 @@ public class EnrolleePopulator extends Populator<Enrollee, StudyPopulateContext>
         }
         return fullData;
     }
+
+    @Override
+    protected Class<EnrolleePopDto> getDtoClazz() {
+        return EnrolleePopDto.class;
+    }
+
+    @Override
+    public Optional<Enrollee> findFromDto(EnrolleePopDto popDto, StudyPopulateContext context) {
+        return enrolleeService.findOneByShortcode(popDto.getShortcode());
+    }
+
+    @Override
+    public Enrollee overwriteExisting(Enrollee existingObj, EnrolleePopDto popDto, StudyPopulateContext context) throws IOException {
+        enrolleeService.delete(existingObj.getId(), CascadeProperty.EMPTY_SET);
+        return createNew(popDto, context, true);
+    }
+
+    @Override
+    public Enrollee createPreserveExisting(Enrollee existingObj, EnrolleePopDto popDto, StudyPopulateContext context) throws IOException {
+        // we don't support preserving existing synthetic enrollees yet
+        enrolleeService.delete(existingObj.getId(), CascadeProperty.EMPTY_SET);
+        return createNew(popDto, context, true);
+    }
+
+    @Override
+    public Enrollee createNew(EnrolleePopDto popDto, StudyPopulateContext context, boolean overwrite) throws IOException {
+        StudyEnvironment attachedEnv = studyEnvironmentService
+                .findByStudy(context.getStudyShortcode(), context.getEnvironmentName()).get();
+        popDto.setStudyEnvironmentId(attachedEnv.getId());
+        ParticipantUser attachedUser = participantUserService
+                .findOne(popDto.getLinkedUsername(), context.getEnvironmentName()).get();
+        PortalParticipantUser ppUser = portalParticipantUserService
+                .findOne(attachedUser.getId(), context.getPortalShortcode()).get();
+        popDto.setParticipantUserId(attachedUser.getId());
+        popDto.setProfileId(ppUser.getProfileId());
+
+        PreEnrollmentResponse preEnrollmentResponse = populatePreEnrollResponse(popDto, attachedEnv);
+        popDto.setPreEnrollmentResponseId(preEnrollmentResponse != null ? preEnrollmentResponse.getId() : null);
+
+        Enrollee enrollee;
+        List<ParticipantTask> tasks;
+
+        // temporarily set the enrollee to doNotEmail so that we don't spam emails during population
+        Profile profile = profileService.find(ppUser.getProfileId()).get();
+        boolean isDoNotEmail = profile.isDoNotEmail();
+        profile.setDoNotEmail(true);
+        profileService.update(profile);
+
+        if (popDto.isSimulateSubmissions()) {
+            HubResponse<Enrollee>  hubResponse = enrollmentService.enroll(attachedUser, ppUser,
+                    attachedEnv.getEnvironmentName(), context.getStudyShortcode(), popDto.getPreEnrollmentResponseId());
+            enrollee = hubResponse.getEnrollee();
+            tasks = hubResponse.getTasks();
+            // we want the shortcode to not be random so that test enrollee urls are consistent, so set it manually
+            enrollee.setShortcode(popDto.getShortcode());
+            enrolleeService.update(enrollee);
+
+        } else {
+            enrollee = enrolleeService.create(popDto);
+            tasks = new ArrayList<>();
+        }
+
+        for (SurveyResponsePopDto responsePopDto : popDto.getSurveyResponseDtos()) {
+            populateResponse(enrollee, responsePopDto, ppUser);
+        }
+        for (ConsentResponsePopDto consentPopDto : popDto.getConsentResponseDtos()) {
+            populateConsent(enrollee, ppUser, consentPopDto, tasks, popDto.isSimulateSubmissions());
+        }
+        for (ParticipantTaskPopDto taskDto : popDto.getParticipantTaskDtos()) {
+            populateTask(enrollee, ppUser, taskDto);
+        }
+        populateNotifications(enrollee, popDto, attachedEnv.getId(), ppUser);
+
+        /**
+         * restore the email status
+         * note that the email process is async, and so this may reset the email preference before the email
+         * process actually triggers.  That's ok, though, because the Enrollee information is loaded from the DB as
+         * part of the synchronous submission processes, and that's what's passed to the EmailService.
+         */
+        profile = profileService.find(ppUser.getProfileId()).get();
+        profile.setDoNotEmail(isDoNotEmail);
+        profileService.update(profile);
+
+        return enrollee;
+    }
+
 }
 

@@ -110,7 +110,7 @@ terra.common:
     samplingRate: ${env.tracing.samplingRate}
 
 cors:
-  enabled-path: http://localhost:3001,http://*.localhost:3001,http://*.*.localhost:3001
+  enabled-path: https://localhost:3001,https://*.localhost:3001,https://*.*.localhost:3001
 
 populate.populate-from-classpath: false
 

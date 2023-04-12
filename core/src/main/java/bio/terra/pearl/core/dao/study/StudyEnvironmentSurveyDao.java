@@ -37,7 +37,7 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
     public List<StudyEnvironmentSurvey> findAllByStudyEnvIdWithSurvey(UUID studyEnvId) {
         List<StudyEnvironmentSurvey> studyEnvSurvs = findAllByStudyEnvironmentId(studyEnvId);
         List<UUID> surveyIds = studyEnvSurvs.stream().map(ses -> ses.getSurveyId()).collect(Collectors.toList());
-        List<Survey> surveys = surveyDao.findAllById(surveyIds);
+        List<Survey> surveys = surveyDao.findAll(surveyIds);
         for (StudyEnvironmentSurvey ses : studyEnvSurvs) {
             ses.setSurvey(surveys.stream().filter(survey -> survey.getId().equals(ses.getSurveyId()))
                     .findFirst().get());

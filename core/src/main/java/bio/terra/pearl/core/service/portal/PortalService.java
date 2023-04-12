@@ -9,6 +9,7 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
@@ -29,7 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class PortalService extends ImmutableEntityService<Portal, PortalDao> {
+public class PortalService extends CrudService<Portal, PortalDao> {
     private PortalStudyService portalStudyService;
     private PortalEnvironmentService portalEnvironmentService;
     private ParticipantUserService participantUserService;

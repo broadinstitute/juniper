@@ -1,6 +1,6 @@
 package bio.terra.pearl.core.dao.notification;
 
-import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.dao.BaseVersionedJdbiDao;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 import java.util.Optional;
 import java.util.UUID;
@@ -8,7 +8,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EmailTemplateDao extends BaseJdbiDao<EmailTemplate> {
+public class EmailTemplateDao extends BaseVersionedJdbiDao<EmailTemplate> {
     public EmailTemplateDao(Jdbi jdbi) {
         super(jdbi);
     }

@@ -40,6 +40,17 @@ public class SiteImageDao extends BaseJdbiDao<SiteImage> {
         );
     }
 
+    public int getNextVersion(String cleanFileName, String portalShortcode) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select max(version) from " + tableName + " where clean_file_name = :cleanFileName" +
+                                " and portal_shortcode = :portalShortcode")
+                        .bind("cleanFileName", cleanFileName)
+                        .bind("portalShortcode", portalShortcode)
+                        .mapTo(int.class)
+                        .one()
+        ) + 1;
+    }
+
     public void deleteByPortalShortcode(String portalShortcode) {
         deleteByProperty("portal_shortcode", portalShortcode);
     }

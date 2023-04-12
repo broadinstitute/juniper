@@ -8,7 +8,6 @@ import { faCogs } from '@fortawesome/free-solid-svg-icons/faCogs'
 import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons/faClipboardCheck'
 import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers'
 
-
 const ENVIRONMENT_ICON_MAP: Record<string, React.ReactNode> = {
   sandbox: <FontAwesomeIcon className="fa-sm text-gray text-muted" icon={faCogs}/>,
   irb: <FontAwesomeIcon className="fa-sm text-gray text-muted" icon={faClipboardCheck}/>,

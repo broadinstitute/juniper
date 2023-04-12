@@ -24,6 +24,10 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.7.5'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:2.7.5'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
+
+    testImplementation 'org.apache.commons:commons-text:1.10.0'
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+    testImplementation(testFixtures(project(":core")))
 }
 
 test {

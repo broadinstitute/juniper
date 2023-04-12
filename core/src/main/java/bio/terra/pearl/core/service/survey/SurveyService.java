@@ -73,6 +73,11 @@ public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> imp
         }
 
         JsonNode pages = surveyContent.get("pages");
+        if (pages == null) {
+            // surveys should probably always have pages, but we want to not have this fail if the content is empty,
+            // perhaps because it is a placeholder in-development survey
+            pages = objectMapper.createArrayNode();
+        }
         JsonNode templates = surveyContent.get("questionTemplates");
 
         //Some questions use templates. We need to gather those so that we can resolve
@@ -130,5 +135,9 @@ public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> imp
             newSurvey.getAnswerMappings().add(newAnswerMapping);
         }
         return create(newSurvey);
+    }
+
+    public int getNextVersion(String stableId) {
+        return dao.getNextVersion(stableId);
     }
 }

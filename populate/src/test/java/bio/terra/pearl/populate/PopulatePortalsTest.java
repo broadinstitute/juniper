@@ -1,5 +1,6 @@
 package bio.terra.pearl.populate;
 
+import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.Portal;
@@ -12,11 +13,11 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.ResponseSnapshotService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import bio.terra.pearl.populate.service.BaseSeedPopulator;
 import bio.terra.pearl.populate.service.EnvironmentPopulator;
 import bio.terra.pearl.populate.service.PortalPopulator;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
@@ -56,11 +57,11 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
     @Autowired
     private PortalEnvironmentService portalEnvironmentService;
     @Autowired
-    private SiteContentService siteContentService;
+    private EnrolleeFactory enrolleeFactory;
 
     private void setUpEnvironments() throws IOException {
-        for (EnvironmentName envName : EnvironmentName.values()) {
-            environmentPopulator.populate("environments/" + envName + ".json");
+        for (String fileName : BaseSeedPopulator.ENVIRONMENTS_TO_POPULATE) {
+            environmentPopulator.populate(new FilePopulateContext(fileName), true);
         }
     }
 
@@ -73,7 +74,7 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
     @Transactional
     public void testPopulateOurHealth() throws IOException {
         setUpEnvironments();
-        Portal portal = portalPopulator.populate(new FilePopulateContext("portals/ourhealth/portal.json"));
+        Portal portal = portalPopulator.populate(new FilePopulateContext("portals/ourhealth/portal.json"), true);
         Assertions.assertEquals("ourhealth", portal.getShortcode());
 
         Study mainStudy = portal.getPortalStudies().stream().findFirst().get().getStudy();
@@ -91,7 +92,7 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
         checkOurhealthSiteContent(portal.getId());
 
         // now check that we can populate it again, to make sure we don't have deletion issues
-        portalPopulator.populate(new FilePopulateContext("portals/ourhealth/portal.json"));
+        portalPopulator.populate(new FilePopulateContext("portals/ourhealth/portal.json"), true);
     }
 
     private void checkOurhealthSurveys(Enrollee jonas) throws IOException {
@@ -125,8 +126,10 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
     @Transactional
     public void testPopulateHeartHive() throws IOException {
         setUpEnvironments();
-        Portal portal = portalPopulator.populate(new FilePopulateContext("portals/hearthive/portal.json"));
+        Portal portal = portalPopulator.populate(new FilePopulateContext("portals/hearthive/portal.json"), true);
         Assertions.assertEquals("hearthive", portal.getShortcode());
+        PortalEnvironment sandbox = portalEnvironmentService.findOne("hearthive", EnvironmentName.sandbox).get();
+        assertThat(sandbox.getPreRegSurveyId(), notNullValue());
         assertThat(portal.getPortalStudies(), hasSize(2));
         Study myopathyStudy = portal.getPortalStudies().stream()
                 .filter(portalStudy -> portalStudy.getStudy().getShortcode().equals("cmyop"))
@@ -142,5 +145,14 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
         Enrollee gertrude = enrollees.stream().filter(enrollee -> "HHGELI".equals(enrollee.getShortcode()))
                 .findFirst().get();
         assertThat(gertrude.getPreEnrollmentResponseId(), notNullValue());
+
+        PortalEnvironment liveEnv = portalEnvironmentService.findOne("hearthive", EnvironmentName.live).get();
+        StudyEnvironment liveStudyEnv = studyEnvironmentService.findByStudy(myopathyStudy.getShortcode(), EnvironmentName.live).get();
+
+        enrolleeFactory.buildWithPortalUser("testPopulateHeartHive", liveEnv, liveStudyEnv);
+        // confirm we can't populate with overwrite if the liveEnrollee isn't withdrawn
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+            portalPopulator.populate(new FilePopulateContext("portals/hearthive/portal.json"), true);
+        });
     }
 }
