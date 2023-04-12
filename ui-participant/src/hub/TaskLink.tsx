@@ -1,34 +1,31 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Enrollee, ParticipantTask } from 'api/api'
-import { faCheck, faChevronRight, faCircleHalfStroke, faLock, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
-import { faCircle } from '@fortawesome/free-regular-svg-icons'
+import { faCheck, faCircleHalfStroke, faLock } from '@fortawesome/free-solid-svg-icons'
+import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export type StatusDisplayInfo = {
   icon: React.ReactNode,
-  statusDisplay: string,
-  actionDisplay?: React.ReactNode
+  statusDisplay: string
 }
 
 const statusDisplayMap: Record<string, StatusDisplayInfo> = {
   'COMPLETE': {
-    icon: <FontAwesomeIcon className="fa-lg" style={{ color: 'green' }} icon={faCheck}/>,
-    statusDisplay: 'Completed', actionDisplay: 'View'
+    icon: <FontAwesomeIcon icon={faCheck} className="fa-lg" style={{ color: 'rgb(122, 152, 188)' }} />,
+    statusDisplay: 'Complete'
   },
   'IN_PROGRESS': {
-    icon: <FontAwesomeIcon icon={faCircleHalfStroke}/>,
-    statusDisplay: 'In progress',
-    actionDisplay: <span>Start <FontAwesomeIcon icon={faChevronRight}/></span>
+    icon: <FontAwesomeIcon icon={faCircleHalfStroke} style={{ color: 'rgb(129, 172, 82)' }} />,
+    statusDisplay: 'In Progress'
   },
   'NEW': {
-    icon: <FontAwesomeIcon icon={faCircle}/>,
-    statusDisplay: 'Not started',
-    actionDisplay: <span>Start <FontAwesomeIcon className="me-1" icon={faChevronRight}/></span>
+    icon: <FontAwesomeIcon icon={faCircle} style={{ color: '#777' }} />,
+    statusDisplay: 'Not Started'
   },
   'REJECTED': {
-    icon: <FontAwesomeIcon icon={faTimesCircle}/>,
-    statusDisplay: 'Declined', actionDisplay: 'View'
+    icon: <FontAwesomeIcon icon={faCircleXmark} style={{ color: '#777' }} />,
+    statusDisplay: 'Declined'
   }
 }
 
@@ -45,25 +42,28 @@ export default function TaskLink({ task, studyShortcode, enrollee }:
     padding: '1em 0em',
     borderBottom: '1px solid #e4e4e4',
     width: '100%',
-    color: isAccessible ? undefined : '#aaa'
+    color: isAccessible ? undefined : '#595959'
   }
-  if (!isAccessible) {
-    return <div className="d-flex flex-row" style={styleProps}>
-      <div><FontAwesomeIcon icon={faLock} title="you must consent for the study"/></div>
-      <div className="flex-grow-1 ms-3">{task.targetName}</div>
+
+  return (
+    <div className="d-flex flex-row" style={styleProps}>
+      <div className="detail">
+        {isAccessible
+          ? statusDisplayMap[task.status].icon
+          : <FontAwesomeIcon icon={faLock} style={{ color: 'rgb(203, 203, 203)' }} />}
+      </div>
+      <div className="flex-grow-1 ms-3">
+        {isAccessible
+          ? <Link to={getTaskPath(task, enrollee.shortcode, studyShortcode)}>{task.targetName}</Link>
+          : task.targetName}
+      </div>
+      <div className="ms-3">
+        {isAccessible
+          ? statusDisplayMap[task.status].statusDisplay
+          : 'Locked'}
+      </div>
     </div>
-  }
-  return <div className="d-flex flex-row" style={styleProps}>
-    <div className="detail">
-      {statusDisplayMap[task.status].icon}
-    </div>
-    <div className="flex-grow-1 ms-3">
-      <Link to={getTaskPath(task, enrollee.shortcode, studyShortcode)}>{task.targetName}</Link>
-    </div>
-    <div className="ms-3">
-      {statusDisplayMap[task.status].statusDisplay}
-    </div>
-  </div>
+  )
 }
 
 /** returns a string for including in a <Link to={}> link to be navigated by the participant */
@@ -87,4 +87,3 @@ export function isTaskAccessible(task: ParticipantTask, enrollee: Enrollee) {
 export function isTaskActive(task: ParticipantTask) {
   return ['NEW', 'IN_PROGRESS'].includes(task.status)
 }
-

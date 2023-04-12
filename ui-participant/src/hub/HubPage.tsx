@@ -74,7 +74,7 @@ const StudySection = (props: StudySectionProps) => {
 
   return (
     <>
-      <h1>{matchedStudy.name}</h1>
+      <h1 className="mb-4">{matchedStudy.name}</h1>
       <StudyTasks enrollee={enrollee} study={matchedStudy} />
     </>
   )
