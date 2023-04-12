@@ -4,19 +4,18 @@ import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
 import bio.terra.pearl.core.model.consent.*;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.survey.ResponseData;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.ImmutableEntityService;
-import bio.terra.pearl.core.service.TransactionHandler;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
-import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.workflow.EventService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,26 +23,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class ConsentResponseService extends ImmutableEntityService<ConsentResponse, ConsentResponseDao> {
     private ConsentFormService consentFormService;
     private StudyEnvironmentConsentService studyEnvironmentConsentService;
-    private EnrolleeService enrolleeService;
     private ParticipantTaskService participantTaskService;
-    private PortalParticipantUserService portalParticipantUserService;
     private EventService eventService;
-    private TransactionHandler transactionHandler;
+    private ObjectMapper objectMapper;
 
     public ConsentResponseService(ConsentResponseDao dao, ConsentFormService consentFormService,
                                   StudyEnvironmentConsentService studyEnvironmentConsentService,
-                                  @Lazy EnrolleeService enrolleeService,
                                   ParticipantTaskService participantTaskService,
-                                  PortalParticipantUserService portalParticipantUserService,
-                                  EventService eventService, TransactionHandler transactionHandler) {
+                                  EventService eventService, ObjectMapper objectMapper) {
         super(dao);
         this.consentFormService = consentFormService;
         this.studyEnvironmentConsentService = studyEnvironmentConsentService;
-        this.enrolleeService = enrolleeService;
         this.participantTaskService = participantTaskService;
-        this.portalParticipantUserService = portalParticipantUserService;
         this.eventService = eventService;
-        this.transactionHandler = transactionHandler;
+        this.objectMapper = objectMapper;
     }
 
     public List<ConsentResponse> findByEnrolleeId(UUID enrolleeId) {
@@ -75,6 +68,7 @@ public class ConsentResponseService extends ImmutableEntityService<ConsentRespon
         ParticipantTask task = participantTaskService.authTaskToPortalParticipantUser(taskId, ppUser.getId()).get();
         ConsentForm responseForm = consentFormService.find(responseDto.getConsentFormId()).get();
         validateResponse(responseDto, responseForm, task);
+        processResponseDto(responseDto);
         ConsentResponse response = create(participantUserId, enrollee.getId(), task, responseDto);
 
         // now update the task status and response id
@@ -102,6 +96,20 @@ public class ConsentResponseService extends ImmutableEntityService<ConsentRespon
                 .enrolleeId(enrolleeId)
                 .build();
         return dao.create(response);
+    }
+
+    /** the frontend might pass either parsed or string data back, handle either case */
+    public void processResponseDto(ConsentResponseDto response) {
+        try {
+            if (response.getFullData() == null && response.getParsedData() != null) {
+                response.setFullData(objectMapper.writeValueAsString(response.getParsedData()));
+            }
+            if (response.getParsedData() == null && response.getFullData() != null) {
+                response.setParsedData(objectMapper.readValue(response.getFullData(), ResponseData.class));
+            }
+        } catch (JsonProcessingException jpe) {
+            throw new IllegalArgumentException("Could not process response:", jpe);
+        }
     }
 
     public void validateResponse(ConsentResponseDto responseDto, ConsentForm form, ParticipantTask task) {
