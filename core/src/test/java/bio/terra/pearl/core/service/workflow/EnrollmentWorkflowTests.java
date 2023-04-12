@@ -103,7 +103,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         ConsentResponseDto responseDto = ConsentResponseDto.builder()
                         .consented(true)
                         .consentFormId(consent.getId())
-                        .fullData("{\"foo\": 1}")
+                        .fullData("{\"items\": []}")
                         .build();
         consentResponseService.submitResponse(userBundle.user().getId(), userBundle.ppUser(),
             enrollee, consentTask.getId(),  responseDto);
