@@ -85,6 +85,12 @@ const taskTypeDisplayMap: Record<string, string> = {
   SURVEY: 'Survey'
 }
 
+const enrolleeHasStartedTaskType = (enrollee: Enrollee, taskType: string): boolean => {
+  return enrollee.participantTasks
+    .filter(task => task.taskType === taskType && (task.status === 'COMPLETE' || task.status === 'IN_PROGRESS'))
+    .length > 0
+}
+
 type StudyTasksProps = {
   enrollee: Enrollee
   study: Study
@@ -124,10 +130,10 @@ function StudyTasks(props: StudyTasksProps) {
             to={getTaskPath(nextTask, enrollee.shortcode, study.shortcode)}
             className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary"
           >
-            {enrollee.participantTasks
-              .filter(task => task.taskType === nextTask.taskType && task.status === 'COMPLETE')
-              .length > 0
-              ? 'Continue' : 'Start'} {taskTypeDisplayMap[nextTask.taskType]}s
+            {enrolleeHasStartedTaskType(enrollee, nextTask.taskType)
+              ? 'Continue'
+              : 'Start'}
+            {' '}{taskTypeDisplayMap[nextTask.taskType]}s
           </Link>
         </div>
       )}
