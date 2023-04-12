@@ -7,8 +7,6 @@ import PortalEnvPublishControl from './publish/PortalEnvPublishControl'
 import { faCogs } from '@fortawesome/free-solid-svg-icons/faCogs'
 import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons/faClipboardCheck'
 import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers'
-import { useUser } from '../user/UserProvider'
-
 
 const ENVIRONMENT_ICON_MAP: Record<string, React.ReactNode> = {
   sandbox: <FontAwesomeIcon className="fa-sm text-gray text-muted" icon={faCogs}/>,
@@ -19,7 +17,6 @@ const ENVIRONMENT_ICON_MAP: Record<string, React.ReactNode> = {
 /** shows information about the portal config, does not allow editing yet */
 export default function PortalEnvConfigView({ portal, portalEnv }:
   {portal: Portal, portalEnv: PortalEnvironment}) {
-  const { user } = useUser()
   const envIcon = ENVIRONMENT_ICON_MAP[portalEnv.environmentName]
   const isInitialized = portalEnv.portalEnvironmentConfig.initialized
   return <div className="bg-white p-3 mb-2">
