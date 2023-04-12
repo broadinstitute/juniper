@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { Portal } from 'api/api'
-import PortalEnvConfigView from './PortalEnvConfigView'
+import PortalEnvView from './PortalEnvView'
 const ENV_SORT_ORDER = ['sandbox', 'irb', 'live']
 /** Page an admin user sees immediately after logging in */
 export default function PortalDashboard({ portal }: {portal: Portal}) {
@@ -11,7 +11,7 @@ export default function PortalDashboard({ portal }: {portal: Portal}) {
     <div className="row">
       <ul className="list-unstyled">
         { sortedEnvs.map(portalEnv => <li key={portalEnv.environmentName}>
-          <PortalEnvConfigView portalEnv={portalEnv} portal={portal}/>
+          <PortalEnvView portalEnv={portalEnv} portal={portal}/>
         </li>)}
       </ul>
     </div>

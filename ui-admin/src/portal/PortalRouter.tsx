@@ -5,8 +5,10 @@ import PortalDashboard from './PortalDashboard'
 import { LoadedPortalContextT, PortalContext, PortalParams } from './PortalProvider'
 import MailingListView from './MailingListView'
 import { NavBreadcrumb } from '../navbar/AdminNavbar'
-import PortalEnvConfigView from './PortalEnvConfigView'
+import PortalEnvView from './PortalEnvView'
 import PortalEnvDiff from './publish/PortalEnvDiff'
+import SiteContentView from './siteContent/SiteContentView'
+import PortalEnvConfigView from './PortalEnvConfigView'
 
 /** controls routes for within a portal */
 export default function PortalRouter() {
@@ -38,11 +40,12 @@ function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT
       </Link>
     </NavBreadcrumb>
     <Routes>
-      <Route path="config" element={<div>Config not implemented yet</div>}/>
+      <Route path="config" element={<PortalEnvConfigView portalEnv={portalEnv}/>}/>
+      <Route path="siteContent" element={<SiteContentView portalEnv={portalEnv}/>}/>
       <Route path="diff/:sourceEnvName" element={<PortalEnvDiff portal={portal} portalEnv={portalEnv}/>}/>
       <Route path="mailingList" element={<MailingListView portalContext={portalContext}
         portalEnv={portalEnv}/>}/>
-      <Route index element={<PortalEnvConfigView portal={portal} portalEnv={portalEnv}/>}/>
+      <Route index element={<PortalEnvView portal={portal} portalEnv={portalEnv}/>}/>
     </Routes>
   </>
 }
@@ -55,4 +58,20 @@ export const mailingListPath = (portalShortcode: string, envName: string) => {
 /** absolute path for the environment diff page */
 export const portalEnvDiffPath = (portalShortcode: string, destEnvName: string, sourceEnvName: string) => {
   return `/${portalShortcode}/env/${destEnvName}/diff/${sourceEnvName}`
+}
+
+export const siteContentPath = (portalShortcode: string, envName: string) => {
+  return `/${portalShortcode}/env/${envName}/siteContent`
+}
+
+export const portalConfigPath = (portalShortcode: string, envName: string) => {
+  return `/${portalShortcode}/env/${envName}/config`
+}
+
+export const studyParticipantsPath = (portalShortcode: string, envName: string, studyShortcode: string) => {
+  return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/participants`
+}
+
+export const studyContentPath = (portalShortcode: string, envName: string, studyShortcode: string) => {
+  return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}`
 }
