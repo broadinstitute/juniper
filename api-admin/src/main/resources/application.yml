@@ -111,6 +111,3 @@ terra.common:
   tracing:
     stackdriverExportEnabled: ${env.tracing.exportEnabled}
     samplingRate: ${env.tracing.samplingRate}
-
-cors:
-  enabled-path: http://localhost:3000,http://localhost:3005,http://*.localhost:3005,http://*.*.localhost:3005
