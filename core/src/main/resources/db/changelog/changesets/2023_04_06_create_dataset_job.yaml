@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: "create_dataset_job"
+      author: mbemis
+      changes:
+        - createTable:
+            tableName: create_dataset_job
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: study_environment_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_create_dataset_job_study_environment_id, references: study_environment(id) }
+              }
+              - column: { name: tdr_job_id, type: text, constraints: { nullable: false } }
+              - column: { name: dataset_name, type: text, constraints: { nullable: false } }
+              - column: { name: status, type: text, constraints: { nullable: false } }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }

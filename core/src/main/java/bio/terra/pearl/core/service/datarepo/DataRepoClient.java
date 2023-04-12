@@ -30,11 +30,13 @@ public class DataRepoClient {
     public JobModel createDataset(UUID spendProfileId, String datasetName) throws ApiException {
         RepositoryApi repositoryApi = getRepositoryApi();
 
-        //TODO: AR-229. Blank schema for now, need to determine mapping of survey schema to TDR schema.
-        DatasetSpecificationModel schema = new DatasetSpecificationModel();
+        //TODO: AR-229. Placeholder schema for now, need to determine mapping of survey schema to TDR schema.
+        DatasetSpecificationModel schema = new DatasetSpecificationModel()
+                .tables(List.of(new TableModel().name("my_table").columns(List.of(new ColumnModel().name("my_column").datatype(TableDataType.STRING)))));
 
         DatasetRequestModel dataset = new DatasetRequestModel()
                 .name(datasetName)
+                .cloudPlatform(CloudPlatform.AZURE)
                 .defaultProfileId(spendProfileId)
                 .schema(schema);
 
