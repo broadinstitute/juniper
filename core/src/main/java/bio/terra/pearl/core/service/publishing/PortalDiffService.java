@@ -180,7 +180,7 @@ public class PortalDiffService {
         );
     }
 
-    protected StudyEnvironment loadStudyEnvForProcessing(String shortcode, EnvironmentName envName) {
+    public StudyEnvironment loadStudyEnvForProcessing(String shortcode, EnvironmentName envName) {
         StudyEnvironment studyEnvironment = studyEnvironmentService.findByStudy(shortcode, envName).get();
         return studyEnvironmentService.loadWithAllContent(studyEnvironment);
     }

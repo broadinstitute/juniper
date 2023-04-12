@@ -11,13 +11,13 @@ import bio.terra.pearl.populate.dto.notifications.EmailTemplatePopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationConfigPopDto;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmailTemplatePopulator extends Populator<EmailTemplate, PortalPopulateContext> {
+public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTemplatePopDto, PortalPopulateContext> {
     private EmailTemplateService emailTemplateService;
     private PortalService portalService;
     private EmailTemplatePopulateDao emailTemplatePopulateDao;
@@ -33,40 +33,69 @@ public class EmailTemplatePopulator extends Populator<EmailTemplate, PortalPopul
         this.portalEnvironmentService = portalEnvironmentService;
     }
 
-    @Override
-    public EmailTemplate populateFromString(String fileString, PortalPopulateContext context) throws IOException {
-        EmailTemplatePopDto templatePopDto = objectMapper.readValue(fileString, EmailTemplatePopDto.class);
-        String newContent = filePopulateService.readFile(templatePopDto.getBodyPopulateFile(), context);
-        templatePopDto.setBody(newContent);
-        UUID portalId = portalService.findOneByShortcode(context.getPortalShortcode()).get().getId();
-        templatePopDto.setPortalId(portalId);
-        Optional<EmailTemplate> existingOpt = fetchFromPopDto(templatePopDto);
-
-        if (existingOpt.isPresent()) {
-            EmailTemplate existing = existingOpt.get();
-            // don't delete the template, since it may have other entities attached to it. Just mod the content
-            existing.setBody(templatePopDto.getBody());
-            existing.setSubject(templatePopDto.getSubject());
-            existing.setName(templatePopDto.getName());
-            emailTemplatePopulateDao.update(existing);
-            return existing;
-        }
-        return emailTemplateService.create(templatePopDto);
-    }
-
     public NotificationConfig convertNotificationConfig(NotificationConfigPopDto configPopDto, PortalPopulateContext context) {
         NotificationConfig config = new NotificationConfig();
         BeanUtils.copyProperties(configPopDto, config);
         PortalEnvironment portalEnv = portalEnvironmentService
                 .findOne(context.getPortalShortcode(), context.getEnvironmentName()).get();
         config.setPortalEnvironmentId(portalEnv.getId());
-        EmailTemplate template = emailTemplateService.findByStableId(configPopDto.getEmailTemplateStableId(),
-                configPopDto.getEmailTemplateVersion()).get();
+
+        EmailTemplate template;
+        if (configPopDto.getPopulateFileName() != null) {
+            template = context.fetchFromPopDto(configPopDto, emailTemplateService).get();
+        } else {
+            template = emailTemplateService.findByStableId(configPopDto.getEmailTemplateStableId(),
+                    configPopDto.getEmailTemplateVersion()).get();
+        }
         config.setEmailTemplateId(template.getId());
+        config.setEmailTemplate(template);
         return config;
     }
 
-    public Optional<EmailTemplate> fetchFromPopDto(EmailTemplatePopDto templatePopDto) {
-        return emailTemplateService.findByStableId(templatePopDto.getStableId(), templatePopDto.getVersion());
+    @Override
+    protected void preProcessDto(EmailTemplatePopDto popDto, PortalPopulateContext context) throws IOException  {
+        String bodyContent = filePopulateService.readFile(popDto.getBodyPopulateFile(), context);
+        popDto.setBody(bodyContent);
+    }
+
+    @Override
+    protected Class<EmailTemplatePopDto> getDtoClazz() {
+        return EmailTemplatePopDto.class;
+    }
+
+    @Override
+    public Optional<EmailTemplate> findFromDto(EmailTemplatePopDto popDto, PortalPopulateContext context) {
+        Optional<EmailTemplate> existingOpt = context.fetchFromPopDto(popDto, emailTemplateService);
+        if (existingOpt.isPresent()) {
+            return existingOpt;
+        }
+        return emailTemplateService.findByStableId(popDto.getStableId(), popDto.getVersion());
+    }
+
+    @Override
+    public EmailTemplate overwriteExisting(EmailTemplate existingObj, EmailTemplatePopDto popDto, PortalPopulateContext context) {
+        // don't delete the template, since it may have other entities attached to it. Just mod the content
+        existingObj.setBody(popDto.getBody());
+        existingObj.setSubject(popDto.getSubject());
+        existingObj.setName(popDto.getName());
+        return emailTemplatePopulateDao.update(existingObj);
+    }
+
+    @Override
+    public EmailTemplate createPreserveExisting(EmailTemplate existingObj, EmailTemplatePopDto popDto, PortalPopulateContext context) {
+        if (Objects.equals(existingObj.getBody(), popDto.getBody()) &&
+                Objects.equals(existingObj.getSubject(), popDto.getSubject()) &&
+                Objects.equals(existingObj.getName(), popDto.getName())) {
+            // the things are the same, don't bother creating a new version
+            return existingObj;
+        }
+        int newVersion = emailTemplateService.getNextVersion(popDto.getStableId());
+        popDto.setVersion(newVersion);
+        return emailTemplateService.create(popDto);
+    }
+
+    @Override
+    public EmailTemplate createNew(EmailTemplatePopDto popDto, PortalPopulateContext context, boolean overwrite) {
+        return emailTemplateService.create(popDto);
     }
 }

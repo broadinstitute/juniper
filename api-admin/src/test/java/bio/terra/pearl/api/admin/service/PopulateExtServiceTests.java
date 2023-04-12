@@ -20,7 +20,7 @@ public class PopulateExtServiceTests {
   public void portalRequiresAuth() {
     AdminUser user = new AdminUser();
     Assertions.assertThrows(
-        PermissionDeniedException.class, () -> emptyService.populatePortal("dfafd", user));
+        PermissionDeniedException.class, () -> emptyService.populatePortal("dfafd", user, false));
   }
 
   @Test
@@ -28,7 +28,7 @@ public class PopulateExtServiceTests {
     AdminUser user = new AdminUser();
     Assertions.assertThrows(
         PermissionDeniedException.class,
-        () -> emptyService.populateSurvey("dsafsd", "filepath", user));
+        () -> emptyService.populateSurvey("dsafsd", "filepath", user, false));
   }
 
   @Test
@@ -36,6 +36,8 @@ public class PopulateExtServiceTests {
     AdminUser user = new AdminUser();
     Assertions.assertThrows(
         PermissionDeniedException.class,
-        () -> emptyService.populateEnrollee("ffo", EnvironmentName.live, "dfa", "dfadf", user));
+        () ->
+            emptyService.populateEnrollee(
+                "ffo", EnvironmentName.live, "dfa", "dfadf", user, false));
   }
 }

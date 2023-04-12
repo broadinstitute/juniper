@@ -1,6 +1,6 @@
 package bio.terra.pearl.core.dao.consent;
 
-import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.dao.BaseVersionedJdbiDao;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import java.util.Collection;
 import java.util.List;
@@ -10,7 +10,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ConsentFormDao extends BaseJdbiDao<ConsentForm> {
+public class ConsentFormDao extends BaseVersionedJdbiDao<ConsentForm> {
     public ConsentFormDao(Jdbi jdbi) {
         super(jdbi);
     }

@@ -1,20 +1,19 @@
 package bio.terra.pearl.core.dao.site;
 
-import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.dao.BaseVersionedJdbiDao;
 import bio.terra.pearl.core.model.site.HtmlPage;
 import bio.terra.pearl.core.model.site.HtmlSection;
 import bio.terra.pearl.core.model.site.NavbarItem;
 import bio.terra.pearl.core.model.site.SiteContent;
-import org.jdbi.v3.core.Jdbi;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.jdbi.v3.core.Jdbi;
+import org.springframework.stereotype.Component;
 
 @Component
-public class SiteContentDao extends BaseJdbiDao<SiteContent> {
+public class SiteContentDao extends BaseVersionedJdbiDao<SiteContent> {
     private LocalizedSiteContentDao localizedSiteContentDao;
     private NavbarItemDao navbarItemDao;
     private HtmlPageDao htmlPageDao;
@@ -73,5 +72,16 @@ public class SiteContentDao extends BaseJdbiDao<SiteContent> {
             });
         });
         return siteContentOpt;
+    }
+
+    public int getNextVersion(String cleanFileName, String portalShortcode) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select max(version) from " + tableName + " where clean_file_name = :cleanFileName" +
+                                " and portal_shortcode = :portalShortcode")
+                        .bind("cleanFileName", cleanFileName)
+                        .bind("portalShortcode", portalShortcode)
+                        .mapTo(int.class)
+                        .one()
+        ) + 1;
     }
 }

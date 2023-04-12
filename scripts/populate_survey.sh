@@ -6,6 +6,6 @@ SERVER_NAME="localhost:8080"
 set -u
 
 ACCESS_TOKEN=$(az account get-access-token | jq -r .accessToken)
-curl -X POST -H "Authorization: Bearer $ACCESS_TOKEN" "$SERVER_NAME/api/internal/v1/populate/survey/$1?filePathName=$2"
+curl -X POST -H "Authorization: Bearer $ACCESS_TOKEN" "$SERVER_NAME/api/internal/v1/populate/survey/$1?filePathName=$2&overwrite=true"
 
 echo ""

@@ -1,6 +1,5 @@
 package bio.terra.pearl.populate.service;
 
-import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.service.EnvironmentService;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Service;
  * If those users/items exist, the will be updated, rather than duplicated.
  * */
 @Service
-public class BaseSeedPopulator extends Populator<BaseSeedPopulator.SetupStats, FilePopulateContext> {
+public class BaseSeedPopulator {
     private AdminUserPopulator adminUserPopulator;
     private EnvironmentPopulator environmentPopulator;
     private AdminUserService adminUserService;
@@ -43,10 +42,10 @@ public class BaseSeedPopulator extends Populator<BaseSeedPopulator.SetupStats, F
     public SetupStats populate(String filePathName) throws IOException {
         // for now, we ignore the pathname
         for (String file : ADMIN_USERS_TO_POPULATE) {
-            adminUserPopulator.populate(new FilePopulateContext(file));
+            adminUserPopulator.populate(new FilePopulateContext(file), false);
         }
         for (String file : ENVIRONMENTS_TO_POPULATE) {
-            environmentPopulator.populate(file);
+            environmentPopulator.populate(new FilePopulateContext(file), false);
         }
         return SetupStats.builder()
                 .numAdminUsers(adminUserService.count())
@@ -54,17 +53,12 @@ public class BaseSeedPopulator extends Populator<BaseSeedPopulator.SetupStats, F
                 .build();
     }
 
-    @Override
-    public SetupStats populateFromString(String fileString, FilePopulateContext config) throws IOException {
-        return null;
-    }
-
     /** This class is NOT persisted, despite extending BaseEntity */
     @Getter
     @Setter
     @NoArgsConstructor
     @SuperBuilder
-    public static class SetupStats extends BaseEntity {
+    public static class SetupStats {
         private int numAdminUsers;
         private int numEnvironments;
     }

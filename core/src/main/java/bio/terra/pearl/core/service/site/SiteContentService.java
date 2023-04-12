@@ -51,4 +51,8 @@ public class SiteContentService extends ImmutableEntityService<SiteContent, Site
             delete(siteContent.getId(), CascadeProperty.EMPTY_SET);
         }
     }
+
+    public int getNextVersion(String stableId) {
+        return dao.getNextVersion(stableId);
+    }
 }

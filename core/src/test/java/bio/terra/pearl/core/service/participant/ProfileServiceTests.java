@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.dao.DaoTestUtils;
+import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.model.participant.MailingAddress;
 import bio.terra.pearl.core.model.participant.Profile;
 import org.apache.commons.lang3.RandomStringUtils;

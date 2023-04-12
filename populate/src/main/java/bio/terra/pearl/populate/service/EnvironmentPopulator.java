@@ -3,34 +3,41 @@ package bio.terra.pearl.populate.service;
 import bio.terra.pearl.core.model.Environment;
 import bio.terra.pearl.core.service.EnvironmentService;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
-import java.io.IOException;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class EnvironmentPopulator extends Populator<Environment, FilePopulateContext> {
+public class EnvironmentPopulator extends BasePopulator<Environment, Environment, FilePopulateContext> {
     private EnvironmentService environmentService;
 
     public EnvironmentPopulator(EnvironmentService environmentService) {
         this.environmentService = environmentService;
     }
 
-    @Transactional
-    public Environment populate(String filePathName) throws IOException {
-        FilePopulateContext config = new FilePopulateContext(filePathName);
-        String portalFileString = filePopulateService.readFile(config.getRootFileName(), config);
-        return populateFromString(portalFileString, config);
+    @Override
+    protected Class<Environment> getDtoClazz() {
+        return Environment.class;
     }
 
-    public Environment populateFromString(String envContent, FilePopulateContext context)  throws IOException {
-        Environment environment = objectMapper.readValue(envContent, Environment.class);
-        Optional<Environment> existingEnvironment = environmentService.findOneByName(environment.getName());
-        existingEnvironment.ifPresentOrElse(env -> {
-            String noop = "noop";
-        }, () -> {
-            environmentService.create(environment);
-        });
-        return environment;
+    @Override
+    public Environment createNew(Environment popDto, FilePopulateContext context, boolean overwrite) {
+        return environmentService.create(popDto);
+    }
+
+    @Override
+    public Environment createPreserveExisting(Environment existingObj, Environment popDto, FilePopulateContext context) {
+        // there's nothing in environments yet except the name, so just leave as-is
+        return existingObj;
+    }
+
+    @Override
+    public Environment overwriteExisting(Environment existingObj, Environment popDto, FilePopulateContext context) {
+        // there's nothing in environments yet except the name, so just leave as-is
+        return existingObj;
+    }
+
+    @Override
+    public Optional<Environment> findFromDto(Environment popDto, FilePopulateContext context) {
+        return environmentService.findOneByName(popDto.getName());
     }
 }
