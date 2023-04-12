@@ -48,6 +48,7 @@ public class DataRepoExportService {
         this.env = env;
         this.dataRepoClient = dataRepoClient;
         this.createDatasetJobService = createDatasetJobService;
+        this.datasetService = datasetService;
         this.createDatasetJobDao = createDatasetJobDao;
         this.datasetDao = datasetDao;
         this.studyDao = studyDao;
