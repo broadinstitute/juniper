@@ -126,7 +126,9 @@ public class StudyUpdateService {
             destEnv.getNotificationConfigs().add(config);
         }
         for(NotificationConfig config : listChange.removedItems()) {
-            notificationConfigService.delete(config.getId(), CascadeProperty.EMPTY_SET);
+            // don't delete notification configs since they may be referenced by already-sent emails
+            config.setActive(false);
+            notificationConfigService.update(config);
             destEnv.getNotificationConfigs().remove(config);
         }
         for(VersionedConfigChange change : listChange.changedItems()) {

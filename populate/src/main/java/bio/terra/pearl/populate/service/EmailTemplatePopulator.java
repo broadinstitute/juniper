@@ -48,6 +48,7 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
                     configPopDto.getEmailTemplateVersion()).get();
         }
         config.setEmailTemplateId(template.getId());
+        config.setEmailTemplate(template);
         return config;
     }
 

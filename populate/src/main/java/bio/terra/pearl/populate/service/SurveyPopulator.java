@@ -62,6 +62,7 @@ public class SurveyPopulator extends BasePopulator<Survey, SurveyPopDto, PortalP
                     configuredSurveyDto.getSurveyVersion()).get();
         }
         configuredSurvey.setSurveyId(survey.getId());
+        configuredSurvey.setSurvey(survey);
         configuredSurvey.setSurveyOrder(index);
         return configuredSurvey;
     }

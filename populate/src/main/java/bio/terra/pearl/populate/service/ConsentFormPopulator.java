@@ -50,6 +50,7 @@ public class ConsentFormPopulator extends BasePopulator<ConsentForm, ConsentForm
         }
         configuredConsent.setConsentFormId(consent.getId());
         configuredConsent.setConsentOrder(index);
+        configuredConsent.setConsentForm(consent);
         return configuredConsent;
     }
 

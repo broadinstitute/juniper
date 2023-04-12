@@ -30,8 +30,7 @@
         "initialized": true
       },
       "preEnrollSurveyDto": {
-        "stableId": "oh_oh_preenroll",
-        "version": 1
+        "populateFileName": "surveys/preEnroll.json"
       },
       "configuredSurveyDtos": [
         {"populateFileName": "surveys/basic.json", "required": true},

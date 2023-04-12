@@ -1,6 +1,7 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.study.Study;
@@ -9,6 +10,8 @@ import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.publishing.PortalDiffService;
+import bio.terra.pearl.core.service.publishing.StudyUpdateService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -34,13 +37,16 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
     private ConsentFormPopulator consentFormPopulator;
     private EmailTemplatePopulator emailTemplatePopulator;
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
+    private PortalDiffService portalDiffService;
+    private StudyUpdateService studyUpdateService;
 
     public StudyPopulator(StudyService studyService,
                           StudyEnvironmentService studyEnvService, EnrolleePopulator enrolleePopulator,
                           SurveyPopulator surveyPopulator, SurveyService surveyService,
                           ConsentFormPopulator consentFormPopulator,
                           EmailTemplatePopulator emailTemplatePopulator,
-                          PreEnrollmentResponseDao preEnrollmentResponseDao) {
+                          PreEnrollmentResponseDao preEnrollmentResponseDao,
+                          PortalDiffService portalDiffService, StudyUpdateService studyUpdateService) {
         this.studyService = studyService;
         this.studyEnvService = studyEnvService;
         this.enrolleePopulator = enrolleePopulator;
@@ -49,6 +55,8 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
         this.consentFormPopulator = consentFormPopulator;
         this.emailTemplatePopulator = emailTemplatePopulator;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
+        this.portalDiffService = portalDiffService;
+        this.studyUpdateService = studyUpdateService;
     }
 
     /** takes a dto and hydrates it with already-populated objects (surveys, consents, etc...) */
@@ -61,6 +69,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
         if (studyEnv.getPreEnrollSurveyDto() != null) {
             Survey preEnrollSurvey = surveyPopulator.findFromDto(studyEnv.getPreEnrollSurveyDto(), context).get();
             studyEnv.setPreEnrollSurveyId(preEnrollSurvey.getId());
+            studyEnv.setPreEnrollSurvey(preEnrollSurvey);
         }
         for (int i = 0; i < studyEnv.getConfiguredConsentDtos().size(); i++) {
             StudyEnvironmentConsentPopDto configConsentDto = studyEnv.getConfiguredConsentDtos().get(i);
@@ -128,12 +137,31 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
     protected Study createOrUpdate(Study existingStudy, StudyPopDto popDto, PortalPopulateContext context, boolean overwrite) throws IOException {
         // first, populate the surveys and consent forms themselves
         populateDocuments(popDto, context, overwrite);
+        for (StudyEnvironmentPopDto studyEnv : popDto.getStudyEnvironmentDtos()) {
+            initializeStudyEnvironmentDto(studyEnv, context.newFrom(studyEnv.getEnvironmentName()));
+        }
         if (existingStudy == null) {
-            for (StudyEnvironmentPopDto studyEnv : popDto.getStudyEnvironmentDtos()) {
-                initializeStudyEnvironmentDto(studyEnv, context.newFrom(studyEnv.getEnvironmentName()));
-            }
             existingStudy = studyService.create(popDto);
         }
+
+        if (!overwrite) {
+            // if we're not overwriting, we just want to update the sandbox configuration
+            StudyEnvironment sourceEnv = popDto.getStudyEnvironmentDtos().stream()
+                    .filter(env -> env.getEnvironmentName().equals(EnvironmentName.sandbox))
+                    .findFirst().get();
+            StudyEnvironment destEnv = portalDiffService.
+                    loadStudyEnvForProcessing(existingStudy.getShortcode(), EnvironmentName.sandbox);
+            try {
+                var studyEnvChange = portalDiffService.diffStudyEnvs(existingStudy.getShortcode(),
+                        sourceEnv, destEnv);
+                studyUpdateService.applyChanges(destEnv, studyEnvChange);
+            } catch (Exception e) {
+                // we probably want to move this to some sort of "PopulateException"
+                throw new IOException(e);
+            }
+
+        }
+
 
         StudyPopulateContext studyEnvContext = new StudyPopulateContext(context, existingStudy.getShortcode());
         for (StudyEnvironmentPopDto studyPopEnv : popDto.getStudyEnvironmentDtos()) {

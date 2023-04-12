@@ -75,16 +75,16 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
 
     private void initializePortalEnv(PortalEnvironmentPopDto portalEnvPopDto,
                                      PortalPopulateContext portalPopContext, boolean overwrite) throws IOException {
+        /** unless we've overwritten the whole portal (overwirte mode) don't alter non-sandbox environments */
+        if (!portalEnvPopDto.getEnvironmentName().equals(EnvironmentName.sandbox) && !overwrite) {
+            return;
+        }
+
         PortalPopulateContext envConfig = portalPopContext.newFrom(portalEnvPopDto.getEnvironmentName());
         // we're iterating over each population file spec, so now match the current on to the
         // actual entity that got saved as a result of the portal create call.
         PortalEnvironment savedEnv = portalEnvironmentService
                 .findOne(portalPopContext.getPortalShortcode(), portalEnvPopDto.getEnvironmentName()).get();
-
-        /** unless we've overwritten the whole portal (overwirte mode) don't alter non-sandbox environments */
-        if (!savedEnv.getEnvironmentName().equals(EnvironmentName.sandbox) && !overwrite) {
-            return;
-        }
 
         if (portalEnvPopDto.getSiteContentPopDto() != null) {
             SiteContent content = siteContentPopulator
