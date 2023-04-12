@@ -64,8 +64,8 @@
       },{
         "sectionType": "HERO_WITH_IMAGE",
         "sectionConfigJson": {
-          "title": "**Who can join?** Anyone who is:",
-          "blurb": "* Living in the United States\n * Older than 18 years old\n * Comfortable filling out surveys in English\n * Of South Asian Ancestry*\n\n&nbsp;\n\n*Self-identified ancestry from one of the South Asian countries defined by the American Heart Association as Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, and Sri Lanka.",
+          "title": "Who can join?",
+          "blurb": "Anyone who is:\n\n* Living in the United States\n * Older than 18 years old\n * Comfortable filling out surveys in English\n * Of South Asian Ancestry*\n\n&nbsp;\n\n*Self-identified ancestry from one of the South Asian countries defined by the American Heart Association as Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, and Sri Lanka.",
           "fullWidth": true,
           "buttons": [
             {"text": "Get Started",
@@ -96,7 +96,7 @@
           },{
             "image": {"cleanFileName": "step_4.png", "version": 1, "alt": ""},
             "duration": "5 minutes",
-            "blurb": "Provide your mailing address so we can send a sample kit."
+            "blurb": "Provide your mailing address so we can send a sample donation kit."
           }],
           "buttons": [
             {"text": "Learn More About Participation",
@@ -118,12 +118,12 @@
             "answer": "OurHealth is a nonprofit research initiative that enables South Asian-identifying individuals to contribute to cardiovascular research by sharing their samples, their clinical information, and their voices."
           },
           {
-            "question": "Why is this needed?",
+            "question": "Why are we doing this study?",
             "answer": "Individuals of South Asian ancestry are disproportionately affected by cardiometabolic diseases, including heart disease, stroke, and diabetes. However, they have historically been underrepresented in genetic studies. In the United States, South Asian ancestry is now considered a risk-enhancing factor for cardiovascular disease, highlighting an awareness but distinct knowledge gap. OurHealth aims to address this gap by creating a cohort of South Asian individuals, from whom survey and genomic data will be analyzed to further our understanding of cardiovascular disease risk within this population."
           },
           {
             "question": "How can I participate?",
-            "answer": "If you are over 18 years of age, live in the United States, and identify as South Asian, you can sign up by clicking “Join” in the top right corner of this page."
+            "answer": "If you are over 18 years of age, live in the United States, and identify as South Asian, you can sign up by clicking [“Join”](/studies/ourheart/join)."
           },
           {
             "question": "What does OurHealth do with the data?",
@@ -145,7 +145,8 @@
         "sectionConfigJson": {
           "twitterHandle": "ourhealthstudy",
           "instagramHandle": "ourhealthstudy",
-          "facebookHandle": "ourhealthstudy"
+          "facebookHandle": "ourhealthstudy",
+          "paddingBottom": 0
         }
       },{
         "sectionType": "HERO_CENTERED",
@@ -162,9 +163,11 @@
         "sectionConfigJson": {
           "image": {
             "cleanFileName": "globe_and_hearts.png",
-            "version": 1
+            "version": 1,
+            "alt": ""
           },
-          "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
+          "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
+          "paddingBottom": 0
         }
       },{
         "sectionType": "HERO_CENTERED",

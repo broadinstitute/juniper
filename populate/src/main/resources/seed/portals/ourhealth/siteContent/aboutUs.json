@@ -54,7 +54,7 @@
       "sectionType": "HERO_CENTERED",
       "sectionConfigJson": {
         "blurbAlign": "left",
-        "blurb": "The OurHealth investigators, led by Co-Principal Investigators Dr. Pradeep Natarajan and Dr. Amit V. Khera, have extensive experience in studying the genetic basis of cardiovascular and cardiometabolic disease. By closely studying the contribution of genetics towards heart and metabolic disease in individuals of Sputh Asian ancestry living outside the United States, they have helped develop a new genotyping array optimized for South Asians. Unfortunately, South Asian datasets remain limited in size, cultural diversity, and diasporic representation.\n\nHelp us close this gap! Join the OurHealth study and contribute to improving South Asian heart health."
+        "blurb": "The OurHealth investigators, led by Co-Principal Investigators Dr. Pradeep Natarajan and Dr. Amit V. Khera, have extensive experience in studying the genetic basis of cardiovascular and cardiometabolic disease. By closely studying the contribution of genetics towards heart and metabolic disease in individuals of South Asian ancestry living outside the United States, they have helped develop a new genotyping array optimized for South Asians. Unfortunately, South Asian datasets remain limited in size, cultural diversity, and diasporic representation.\n\nHelp us close this gap! [Join the OurHealth study](/studies/ourheart/join) and contribute to improving South Asian heart health."
       }
     },
     {
@@ -80,7 +80,7 @@
             },{
               "name": "Amit Khera",
               "title": "MD MSc",
-              "blurb": "Co-Principal Investigator, OurHealth",
+              "blurb": "Co-Principal Investigator, OurHealth\n\nVice President, Genomic Medicine, Verve Therapeutics\n\nCardiologist, Brigham and Women's Hospital\n\nLecturer, Harvard Medical School",
               "image": { "cleanFileName": "amit_khera.jpg", "version": 1}
             },{
               "name": "Romit Bhattacharya",
@@ -105,12 +105,12 @@
             },{
               "name": "Puneet Batra",
               "title": "PhD",
-              "blurb": "Co-Investigator, OurHealth\n\nDirector, Machine Learning, Broad Institute of Harvard and MIT",
+              "blurb": "Co-Investigator, OurHealth",
               "image": { "cleanFileName": "puneet_batra.jpg", "version": 1}
             },{
               "name": "Sara Haidermota",
               "title": "BS",
-              "blurb": "Clinical Research Coordinator, Massachusetts General Hospital",
+              "blurb": "Project Manager, Massachusetts General Hospital",
               "image": { "cleanFileName": "sara_heidermota.jpg", "version": 1}
             },{
               "name": "Nishant Uppal",
@@ -152,7 +152,7 @@
             },{
               "name": "Nikhil Wagle",
               "title": "MD",
-              "blurb": "Assistant Professor of Medicine, Harvard\n\nInstitute Member, Broad Institute\n\nDirector, Count Me In",
+              "blurb": "Assistant Professor of Medicine, Harvard\n\nInstitute Member, Broad Institute\n\nVice President and Head of Translational Medicine, Genentech",
               "image": { "cleanFileName": "nikhil_wagle.jpg", "version": 1}
             },{
               "name": "Krishna Yeshwant",

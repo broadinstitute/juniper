@@ -1,5 +1,6 @@
 import React, { SyntheticEvent, useState } from 'react'
 import microsoftLogo from 'images/microsoft_logo.png'
+import googleLogo from 'images/googleLogo.png'
 import Api, { AdminUser } from 'api/api'
 import { useUser } from 'user/UserProvider'
 import { useAuth } from 'react-oidc-context'
@@ -8,6 +9,7 @@ import { useAuth } from 'react-oidc-context'
 function Login() {
   const [emailAddress, setEmailAddress] = useState('')
   const [isError, setIsError] = useState(false)
+  const [showDevLogin, setShowDevLogin] = useState(false)
   const { loginUserUnauthed } = useUser()
   const auth = useAuth()
 
@@ -36,24 +38,33 @@ function Login() {
       opacity: 0.4,
       backgroundColor: '#888'
     }}></div>
-    <div className="Login-dialog position-absolute top-50 start-50 translate-middle bg-white p-4" style={{
+    <div className="Login-dialog position-absolute top-50 start-50 translate-middle p-4 text-white" style={{
       borderRadius: '10px',
-      zIndex: 2
+      zIndex: 2,
+      minWidth: '300px',
+      backgroundColor: '#333F52'
     }}>
-      <form onSubmit={unauthedLogin}>
-        <button type="button" className="btn btn-secondary" onClick={() => signIn()}>
-          <img src={microsoftLogo}/> Login with Azure AD
+      <h1 className="h5 text-center mb-4">Juniper</h1>
+      <button type="button" className="btn btn-primary border-white text-white
+         fw-bold d-flex w-100 align-items-center justify-content-center fs-5 mb-3"
+      style={{ backgroundColor: '#4e617e' }}
+      onClick={() => signIn()}>
+        Login <img className="ms-3" style={{ maxHeight: '1em' }} src={microsoftLogo} alt="Microsoft logo"/>
+        <img className="ms-1" style={{ maxHeight: '1em' }} src={googleLogo} alt="Google logo"/>
+      </button>
+      <form onSubmit={unauthedLogin} className="d-flex flex-column justify-content-center">
+        <hr className="mt-2"/>
+        <button type="button" className="btn btn-secondary text-white" onClick={() => setShowDevLogin(!showDevLogin)}>
+          developer login
         </button>
-        <hr/>
-        <div className="mb-3">
-          <label htmlFor="inputLoginEmail" className="form-label">Email address</label>
-          <input type="email" className="form-control" id="inputLoginEmail" aria-describedby="emailHelp"
-            value={emailAddress}
-            onChange={event => setEmailAddress(event.target.value)}/>
-          <div id="emailHelp" className="form-text">development login only</div>
-        </div>
-        <button type="submit" className="btn btn-primary w-100">Login</button>
-        { isError && <span className="text-danger">Login failed</span> }
+        { showDevLogin && <div className="mb-3">
+          <label className="form-label w-100">email
+            <input type="email" className="form-control" id="inputLoginEmail" value={emailAddress}
+              onChange={event => setEmailAddress(event.target.value)}/>
+          </label>
+          <button type="submit" className="btn btn-secondary-outline border-white text-white mt-2 w-100">Log in</button>
+        </div> }
+        { isError && <div className="text-danger text-center">Login failed</div> }
       </form>
     </div>
   </div>

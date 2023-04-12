@@ -4,6 +4,9 @@
   "populateStudyFiles": [
     "studies/ourheart/study.json"
   ],
+  "siteContentFiles": [
+    "siteContent/siteContent.json"
+  ],
   "portalEnvironmentDtos": [
     {
       "environmentName": "sandbox",
@@ -14,7 +17,9 @@
         "initialized": true,
         "emailSourceAddress": "dbush@broadinstitute.org"
       },
-      "siteContentFile": "siteContent/siteContent.json",
+      "siteContentPopDto": {
+        "populateFileName": "siteContent/siteContent.json"
+      },
       "participantUserFiles": [
         "participants/jsalk.json",
         "participants/newEnrollee.json",
@@ -133,5 +138,7 @@
     "populateFileName": "images/logos/mgh_logo.png"
   }, {
     "populateFileName": "images/globe_and_hearts.png"
+  }, {
+    "populateFileName": "images/favicon.ico"
   }]
 }

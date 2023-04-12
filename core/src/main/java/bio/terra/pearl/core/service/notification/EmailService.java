@@ -49,7 +49,7 @@ public class EmailService implements NotificationSender {
         this.emailTemplateService = emailTemplateService;
         this.routingPaths = routingPaths;
     }
-    
+
     @Async
     @Override
     public void processNotificationAsync(Notification notification, NotificationConfig config, EnrolleeRuleData ruleData) {
@@ -143,6 +143,9 @@ public class EmailService implements NotificationSender {
     public Mail buildEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData) {
         Email from = new Email(contextInfo.portalEnv().getPortalEnvironmentConfig().getEmailSourceAddress());
         Email to = new Email(ruleData.profile().getContactEmail());
+
+        //Set the 'from' name on the email to the portal name
+        from.setName(contextInfo.portal().getName());
 
         StringSubstitutor stringSubstitutor = EnrolleeEmailSubstitutor
                 .newSubstitutor(ruleData, contextInfo, routingPaths);

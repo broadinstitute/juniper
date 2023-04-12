@@ -28,31 +28,56 @@ export default function HubPage() {
   const hubMessage = hubUpdate?.message
   const unjoinedStudies = portal.portalStudies.filter(pStudy => !userHasJoinedPortalStudy(pStudy, enrollees))
   const hasUnjoinedStudies = unjoinedStudies.length > 0
-  return <div>
-    <div className="container">
-      {!!hubMessage && <div className="row mb-2 justify-content-center">
-        <div className="col-md-6">
-          <TaskStatusMessage content={hubMessage.content} messageType={hubMessage.messageType}/>
-        </div>
-      </div>}
-      <div className="row justify-content-center">
-        <div className="col-md-6">
-          {enrollees.map(enrollee => <StudyTaskBox enrollee={enrollee} portal={portal} key={enrollee.id}/>)}
-        </div>
+  return (
+    <div
+      className="flex-grow-1"
+      style={{ background: 'linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%' }}
+    >
+      <div
+        className="hub-dashboard py-4 px-2 px-md-5 my-md-5 mx-auto shadow-sm"
+        style={{ background: '#fff', maxWidth: 768 }}
+      >
+        {!!hubMessage && (
+          <div className="mb-2">
+            <TaskStatusMessage content={hubMessage.content} messageType={hubMessage.messageType}/>
+          </div>
+        )}
+
+        {enrollees.map(enrollee => <StudySection key={enrollee.id} enrollee={enrollee} portal={portal} />)}
+
+        {hasUnjoinedStudies && (
+          <>
+            <h2 className="text-center">Studies you can join</h2>
+            <ul className="list-group">
+              {unjoinedStudies.map(portalStudy => <li key={portalStudy.study.shortcode} className="list-group-item">
+                <h6>{portalStudy.study.name}</h6>
+                <NavLink to={`/studies/${portalStudy.study.shortcode}/join`}>Join</NavLink>
+              </li>)}
+            </ul>
+          </>
+        )}
       </div>
-      {hasUnjoinedStudies && <div className="row justify-content-center">
-        <div className="col-md-6">
-          <h3 className="text-center">Studies you can join</h3>
-          <ul className="list-group">
-            {unjoinedStudies.map(portalStudy => <li key={portalStudy.study.shortcode} className="list-group-item">
-              <h6>{portalStudy.study.name}</h6>
-              <NavLink to={`/studies/${portalStudy.study.shortcode}/join`}>Join</NavLink>
-            </li>)}
-          </ul>
-        </div>
-      </div>}
     </div>
-  </div>
+  )
+}
+
+type StudySectionProps = {
+  enrollee: Enrollee
+  portal: Portal
+}
+
+const StudySection = (props: StudySectionProps) => {
+  const { enrollee, portal } = props
+
+  const matchedStudy = portal.portalStudies
+    .find(pStudy => pStudy.study.studyEnvironments[0].id === enrollee.studyEnvironmentId)?.study as Study
+
+  return (
+    <>
+      <h1>{matchedStudy.name}</h1>
+      <StudyTasks enrollee={enrollee} study={matchedStudy} />
+    </>
+  )
 }
 
 const taskTypeDisplayMap: Record<string, string> = {
@@ -60,40 +85,87 @@ const taskTypeDisplayMap: Record<string, string> = {
   SURVEY: 'Survey'
 }
 
-/** Renders pending tasks for a given study */
-function StudyTaskBox({ enrollee, portal }: { enrollee: Enrollee, portal: Portal }) {
-  const matchedStudy = portal.portalStudies
-    .find(pStudy => pStudy.study.studyEnvironments[0].id === enrollee.studyEnvironmentId)?.study as Study
-  const hasStudyTasks = enrollee.participantTasks.length > 0
-  const sortedConsentTasks = enrollee.participantTasks.filter(task => task.taskType === 'CONSENT' &&
-    isTaskActive(task)).sort(taskComparator)
-  const hasActiveConsentTasks = sortedConsentTasks.length > 0
-  const sortedSurveyTasks = enrollee.participantTasks.filter(task => task.taskType === 'SURVEY').sort(taskComparator)
-  const hasActiveSurveyTasks = sortedSurveyTasks.length > 0
-  const nextTask = getNextTask(enrollee, [...sortedConsentTasks, ...sortedSurveyTasks])
-  const completedForms = enrollee.participantTasks.filter(task => task.status === 'COMPLETE' &&
-    task.taskType === 'CONSENT')
-  const hasCompletedForms = completedForms.length > 0
+const enrolleeHasStartedTaskType = (enrollee: Enrollee, taskType: string): boolean => {
+  return enrollee.participantTasks
+    .filter(task => task.taskType === taskType && (task.status === 'COMPLETE' || task.status === 'IN_PROGRESS'))
+    .length > 0
+}
 
-  return <div className="p-3">
-    {hasStudyTasks && <div>
-      {nextTask && <div className="row">
-        <div className="col-md-12 text-center p-4" style={{ background: '#eef' }}>
-          <Link to={getTaskPath(nextTask, enrollee.shortcode, matchedStudy.shortcode)}
-            className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
-            Continue {taskTypeDisplayMap[nextTask.taskType]}s
+type StudyTasksProps = {
+  enrollee: Enrollee
+  study: Study
+}
+
+/** Renders pending tasks for a given study */
+function StudyTasks(props: StudyTasksProps) {
+  const { enrollee, study } = props
+
+  const hasStudyTasks = enrollee.participantTasks.length > 0
+
+  const sortedActiveConsentTasks = enrollee.participantTasks
+    .filter(task => task.taskType === 'CONSENT' && isTaskActive(task))
+    .sort(taskComparator)
+  const hasActiveConsentTasks = sortedActiveConsentTasks.length > 0
+
+  const sortedSurveyTasks = enrollee.participantTasks
+    .filter(task => task.taskType === 'SURVEY')
+    .sort(taskComparator)
+  const hasSurveyTasks = sortedSurveyTasks.length > 0
+
+  const nextTask = getNextTask(enrollee, [...sortedActiveConsentTasks, ...sortedSurveyTasks])
+
+  const completedConsentTasks = enrollee.participantTasks
+    .filter(task => task.status === 'COMPLETE' && task.taskType === 'CONSENT')
+  const hasCompletedConsentTasks = completedConsentTasks.length > 0
+
+  if (!hasStudyTasks) {
+    return <div className="fst-italic">No tasks for this study</div>
+  }
+
+  return (
+    <>
+      {nextTask && (
+        <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
+          <Link
+            to={getTaskPath(nextTask, enrollee.shortcode, study.shortcode)}
+            className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary"
+          >
+            {enrolleeHasStartedTaskType(enrollee, nextTask.taskType)
+              ? 'Continue'
+              : 'Start'}
+            {' '}{taskTypeDisplayMap[nextTask.taskType]}s
           </Link>
         </div>
-      </div>}
-      {hasActiveConsentTasks && <TaskGrouping title="CONSENT" tasks={sortedConsentTasks} enrollee={enrollee}
-        studyShortcode={matchedStudy.shortcode}/>}
-      {hasActiveSurveyTasks && <TaskGrouping title="SURVEYS" tasks={sortedSurveyTasks} enrollee={enrollee}
-        studyShortcode={matchedStudy.shortcode}/>}
-      {hasCompletedForms && <TaskGrouping title="FORMS" tasks={completedForms} enrollee={enrollee}
-        studyShortcode={matchedStudy.shortcode}/>}
-    </div>}
-    {!hasStudyTasks && <span className="detail">No tasks for this study</span>}
-  </div>
+      )}
+
+      {hasActiveConsentTasks && (
+        <TaskGrouping
+          enrollee={enrollee}
+          studyShortcode={study.shortcode}
+          tasks={sortedActiveConsentTasks}
+          title="Consent"
+        />
+      )}
+
+      {hasSurveyTasks && (
+        <TaskGrouping
+          enrollee={enrollee}
+          tasks={sortedSurveyTasks}
+          studyShortcode={study.shortcode}
+          title="Surveys"
+        />
+      )}
+
+      {hasCompletedConsentTasks && (
+        <TaskGrouping
+          enrollee={enrollee}
+          studyShortcode={study.shortcode}
+          tasks={completedConsentTasks}
+          title="Forms"
+        />
+      )}
+    </>
+  )
 }
 
 /** renders a group like "CONSENTS" or "SURVEYS" */
@@ -101,15 +173,17 @@ function TaskGrouping({ title, tasks, enrollee, studyShortcode }: {
   title: string, tasks: ParticipantTask[],
   enrollee: Enrollee, studyShortcode: string
 }) {
-  return <div className="mt-4">
-    <span className="fw-bold">{title}</span>
-    <ol style={{ listStyleType: 'none', paddingInlineStart: 0, width: '100%' }}>
-      {tasks.map(task => <li key={task.id}>
-        <TaskLink task={task} key={task.id} studyShortcode={studyShortcode}
-          enrollee={enrollee}/>
-      </li>)}
-    </ol>
-  </div>
+  return (
+    <>
+      <h3 className="fs-6 text-uppercase mb-0">{title}</h3>
+      <ol className="list-unstyled p-0">
+        {tasks.map(task => <li key={task.id}>
+          <TaskLink task={task} key={task.id} studyShortcode={studyShortcode}
+            enrollee={enrollee}/>
+        </li>)}
+      </ol>
+    </>
+  )
 }
 
 /** returns the next actionable task for the enrollee, or undefined if there is no remaining task */

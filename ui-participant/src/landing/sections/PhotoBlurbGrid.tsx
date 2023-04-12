@@ -1,12 +1,13 @@
+import classNames from 'classnames'
 import React from 'react'
-import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 
-import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
+import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
+import { Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
 
@@ -21,7 +22,7 @@ type SubGrid = {
 }
 
 type PhotoBio = {
-  image: PearlImageConfig,
+  image: ImageConfig,
   name: string,
   title?: string,
   blurb?: string
@@ -30,7 +31,7 @@ type PhotoBio = {
 const validatePhotoBio = (config: unknown): PhotoBio => {
   const message = 'Invalid Invalid PhotoBlurbGridConfig: invalid photoBio'
   const configObj = requirePlainObject(config, message)
-  const image = validatePearlImageConfig(configObj.image)
+  const image = validateImageConfig(configObj.image)
   const name = requireString(configObj, 'name', message)
   const title = requireOptionalString(configObj, 'title', message)
   const blurb = requireOptionalString(configObj, 'blurb', message)
@@ -67,28 +68,36 @@ function PhotoBlurbGrid(props: PhotoBlurbGridProps) {
   // title, then the subgrid headings should be h2 elements.
   const subGridHeadingLevel = hasTitle ? 3 : 2
 
-  return <div id={anchorRef} className="py-5" style={getSectionStyle(config)}>
+  return <div id={anchorRef} style={getSectionStyle(config)}>
     {!!title && (
       <h2 className="fs-1 fw-normal lh-sm text-center mb-4">
         {title}
       </h2>
     )}
     {(subGrids ?? []).map((subGrid, index) => {
-      return <SubGridView key={index} headingLevel={subGridHeadingLevel} subGrid={subGrid}/>
+      return (
+        <SubGridView
+          key={index}
+          className={index === 0 ? undefined : 'mt-4'}
+          headingLevel={subGridHeadingLevel}
+          subGrid={subGrid}
+        />
+      )
     })}
   </div>
 }
 
 type SubGridViewProps = {
+  className?: string
   headingLevel: 2 | 3
   subGrid: SubGrid
 }
 
 /** renders a subgrouping of photos (e.g. "Our researchers") */
 function SubGridView(props: SubGridViewProps) {
-  const { headingLevel, subGrid } = props
+  const { className, headingLevel, subGrid } = props
   const Heading: 'h2' | 'h3' = `h${headingLevel}`
-  return <div className="row mx-0">
+  return <div className={classNames('row mx-0', className)}>
     <div className="col-12 col-sm-10 col-lg-8 mx-auto">
       {subGrid.title && <Heading className="text-center mb-4">{subGrid.title}</Heading>}
       <div className="row mx-0">
@@ -103,14 +112,14 @@ function PhotoBioView({ photoBio }: { photoBio: PhotoBio }) {
   // Default alt text to person's name
   photoBio.image.alt ||= photoBio.name
   return <div className="col-sm-6 col-md-4 gx-5 gy-3 text-center text-sm-start">
-    <PearlImage image={photoBio.image} className="img-fluid"/>
+    <ConfiguredImage image={photoBio.image} className="img-fluid"/>
     <div className="my-2 fw-bold">
       {photoBio.name} {photoBio.title}
     </div>
     {!!photoBio.blurb && (
-      <div className="fst-italic lh-1" style={{ fontSize: '0.9em' }}>
-        <ReactMarkdown>{photoBio.blurb}</ReactMarkdown>
-      </div>
+      <Markdown className="fst-italic lh-1" style={{ fontSize: '0.9em' }}>
+        {photoBio.blurb}
+      </Markdown>
     )}
   </div>
 }

@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.dao;
+package bio.terra.pearl.core.factory;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import java.time.Instant;

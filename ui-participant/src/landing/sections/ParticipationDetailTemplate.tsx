@@ -9,14 +9,14 @@ import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalString } from 'util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
-import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
+import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
 
 import { TemplateComponentProps } from './templateUtils'
 
 type ParticipationDetailTemplateConfig = {
   actionButton?: ButtonConfig, // button
   blurb?: string, //  text below the title
-  image?: PearlImageConfig, // image
+  image?: ImageConfig, // image
   imagePosition?: 'left' | 'right' // left or right.  Default is right
   stepNumberText?: string, // e.g. STEP 1
   timeIndication?: string, // e.g. 45+ minutes
@@ -28,7 +28,7 @@ const validateParticipationDetailTemplateConfig = (config: SectionConfig): Parti
   const message = 'Invalid ParticipationDetailTemplateConfig'
   const actionButton = config.actionButton ? validateButtonConfig(config.actionButton) : undefined
   const blurb = requireOptionalString(config, 'blurb', message)
-  const image = config.image ? validatePearlImageConfig(config.image) : undefined
+  const image = config.image ? validateImageConfig(config.image) : undefined
   const imagePosition = requireOptionalString(config, 'imagePosition', message)
   if (!(imagePosition === undefined || imagePosition === 'left' || imagePosition === 'right')) {
     throw new Error(`${message}: if provided, imagePosition must be one of "left", "right"`)
@@ -67,7 +67,7 @@ function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
 
   const hasImage = !!image
   const isLeftImage = imagePosition === 'left' // default is right, so left has to be explicitly specified
-  return <div id={anchorRef} className="row mx-0 py-5" style={getSectionStyle(config)}>
+  return <div id={anchorRef} className="row mx-0" style={getSectionStyle(config)}>
     <div
       className={classNames(
         'col-md-10 col-lg-8', 'mx-auto', 'row',
@@ -78,7 +78,7 @@ function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
     >
       {hasImage && (
         <div className="col-6 col-md-3 mx-auto mx-md-0 text-center">
-          <PearlImage image={image} className="img-fluid mb-4 mb-md-0"/>
+          <ConfiguredImage image={image} className="img-fluid mb-4 mb-md-0"/>
         </div>
       )}
       <div className={classNames({ 'col-md-8': hasImage })}>
@@ -87,7 +87,7 @@ function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
           {title}
         </h2>
         <p><FontAwesomeIcon icon={faClock}/> {timeIndication}</p>
-        <p className="fs-4">
+        <p className={classNames('fs-4', actionButton ? 'mb-4' : 'mb-0')}>
           {blurb}
         </p>
         {actionButton && <ConfiguredButton config={actionButton} />}

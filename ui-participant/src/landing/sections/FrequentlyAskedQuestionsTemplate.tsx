@@ -5,12 +5,13 @@ import { Collapse } from 'bootstrap'
 import classNames from 'classnames'
 import _ from 'lodash'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
 import { requireOptionalBoolean, requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
+
+import { Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
 
@@ -98,11 +99,9 @@ const FrequentlyAskedQuestion = (props: FrequentlyAskedQuestionProps) => {
         {question}
       </button>
       <div ref={collapseRef} className="collapse px-0 px-sm-2 ms-2" id={idFor(question)}>
-        <div className="fs-5" style={{ marginLeft: 20 }}>
-          <ReactMarkdown>
-            {answer}
-          </ReactMarkdown>
-        </div>
+        <Markdown className="fs-5" style={{ marginLeft: 20 }}>
+          {answer}
+        </Markdown>
       </div>
     </>
   )
@@ -143,15 +142,15 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
     collapses.forEach(el => { Collapse.getOrCreateInstance(el).hide() })
   }, [])
 
-  return <div id={anchorRef} className="row mx-0 py-5 justify-content-center" style={getSectionStyle(config)}>
+  return <div id={anchorRef} className="row mx-0 justify-content-center" style={getSectionStyle(config)}>
     <div className="col-12 col-sm-8 col-lg-6">
       {!!title && (
         <h2 className="fs-1 fw-normal lh-sm mb-4 text-center">{title}</h2>
       )}
       {!!blurb && (
-        <div className="fs-4 mb-4 text-center">
-          {blurb && <ReactMarkdown>{blurb}</ReactMarkdown>}
-        </div>
+        <Markdown className="fs-4 mb-4 text-center">
+          {blurb}
+        </Markdown>
       )}
       {showToggleAllButton && (
         <div className="mb-4">
@@ -166,7 +165,7 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
           </button>
         </div>
       )}
-      <ul ref={questionsListRef} className="mx-0 px-0 border-top" style={{ listStyle: 'none' }}>
+      <ul ref={questionsListRef} className="list-unstyled mb-0 border-top">
         {
           questions.map(({ question, answer }, i) => {
             return (

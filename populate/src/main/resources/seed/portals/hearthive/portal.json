@@ -8,6 +8,9 @@
   "surveyFiles": [
     "preRegistration.json"
   ],
+  "siteContentFiles": [
+    "siteContent.json"
+  ],
   "portalEnvironmentDtos": [
     {
       "environmentName": "sandbox",
@@ -17,10 +20,8 @@
         "password": "broad_institute",
         "initialized": true
       },
-      "siteContentFile": "siteContent.json",
       "preRegSurveyDto": {
-        "stableId": "hh_preregistation",
-        "version": 1
+        "populateFileName": "preRegistration.json"
       },
       "participantUserFiles": [
         "participants/consentedEnrollee.json",
@@ -35,9 +36,7 @@
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": false
-      },
-      "siteContentFile": "siteContent.json",
-      "participantUserFiles": []
+      }
     },
     {
       "environmentName": "live",
@@ -46,8 +45,7 @@
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": false
-      },
-      "siteContentFile": "siteContent.json"
+      }
     }
   ],
   "siteImageDtos": [{

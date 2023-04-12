@@ -84,7 +84,7 @@ function SocialMediaTemplate(props: SocialMediaTemplateProps) {
   const { anchorRef, config } = props
 
   return (
-    <div id={anchorRef} className="row mx-0 py-5" style={getSectionStyle(config)}>
+    <div id={anchorRef} className="row mx-0" style={getSectionStyle(config)}>
       <div className="hstack justify-content-center gap-2">
         {socialMediaSites.map(site => {
           const handleKey = `${site.label.toLowerCase()}Handle` as HandleKey
@@ -94,6 +94,7 @@ function SocialMediaTemplate(props: SocialMediaTemplateProps) {
           } else {
             return (
               <SocialMediaLink
+                key={site.label}
                 icon={site.icon}
                 label={site.label}
                 url={site.renderUrl({ domain: site.domain, handle })}

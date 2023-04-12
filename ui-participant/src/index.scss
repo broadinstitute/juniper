@@ -97,11 +97,23 @@ a {
 }
 
 @include media-breakpoint-down(lg) {
-  .pearl-image {
+  .configured-image {
     max-height: max(33vh, 212px);
   }
 }
 
 .btn-rounded {
   border-radius: calc((1em * var(--bs-btn-line-height) + 2 * var(--bs-btn-padding-y)) / 2);
+}
+
+.markdown {
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.hub-dashboard {
+  @include media-breakpoint-up(md) {
+    border-radius: var(--bs-border-radius-lg);
+  }
 }

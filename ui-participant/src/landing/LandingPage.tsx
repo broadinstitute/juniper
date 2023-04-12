@@ -1,8 +1,8 @@
 import classNames from 'classnames'
 import React, { useEffect, useId } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
-import LandingNavbar from './LandingNavbar'
 import { LocalSiteContent } from 'api/api'
+import Navbar from '../Navbar'
 import { MailingListModal } from './MailingListModal'
 import { HtmlSectionView } from './sections/HtmlPageView'
 
@@ -23,9 +23,7 @@ function LandingPageView({ localContent }: { localContent: LocalSiteContent }) {
 
   return <div className="LandingPage">
     <div className="container-fluid bg-white min-vh-100 d-flex flex-column p-0">
-      <div>
-        <LandingNavbar aria-label="Primary" />
-      </div>
+      <Navbar />
       <main className="flex-grow-1">
         <Outlet/>
       </main>

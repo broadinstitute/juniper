@@ -1,7 +1,6 @@
 import classNames from 'classnames'
 import _ from 'lodash'
 import React from 'react'
-import ReactMarkdown from 'react-markdown'
 
 import { SectionConfig } from 'api/api'
 import { getSectionStyle } from 'util/styleUtils'
@@ -9,7 +8,8 @@ import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalNumber, requireOptionalString } from 'util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
-import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
+import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
+import { InlineMarkdown, Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
 
@@ -17,10 +17,10 @@ type HeroWithImageTemplateConfig = {
   blurb?: string, //  text below the title
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   fullWidth?: boolean, // span the full page width or not
-  image?: PearlImageConfig, // image
+  image?: ImageConfig, // image
   imagePosition?: 'left' | 'right', // left or right.  Default is right
   imageWidthPercentage?: number, // number between 0 and 100. Percentage of row width given to image.
-  logos?: PearlImageConfig[],
+  logos?: ImageConfig[],
   title?: string // large heading text
 }
 
@@ -30,7 +30,7 @@ const validateHeroWithImageTemplateConfig = (config: SectionConfig): HeroWithIma
   const blurb = requireOptionalString(config, 'blurb', message)
   const buttons = requireOptionalArray(config, 'buttons', validateButtonConfig, message)
   const fullWidth = !!config.fullWidth
-  const image = config.image ? validatePearlImageConfig(config.image) : undefined
+  const image = config.image ? validateImageConfig(config.image) : undefined
   const imagePosition = requireOptionalString(config, 'imagePosition', message)
   if (!(imagePosition === undefined || imagePosition === 'left' || imagePosition === 'right')) {
     throw new Error(`${message}: if provided, imagePosition must be one of "left", "right"`)
@@ -39,7 +39,7 @@ const validateHeroWithImageTemplateConfig = (config: SectionConfig): HeroWithIma
   if (imageWidthPercentage !== undefined && (imageWidthPercentage < 0 || imageWidthPercentage > 100)) {
     throw new Error(`${message}: imageWidthPercentage must be between 0 and 100`)
   }
-  const logos = requireOptionalArray(config, 'logos', validatePearlImageConfig, message)
+  const logos = requireOptionalArray(config, 'logos', validateImageConfig, message)
   const title = requireOptionalString(config, 'title', message)
   return {
     blurb,
@@ -77,9 +77,17 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
     : (fullWidth ? 50 : 33)
   const imageCols = Math.max(Math.floor(imageWidthPercentage / 100 * 12), 1)
 
+  const hasBlurb = !!blurb
+  const hasButtons = (buttons || []).length > 0
+  const hasLogos = (logos || []).length > 0
+
+  const hasContentFollowingTitle = hasBlurb || hasButtons || hasLogos
+  const hasContentFollowingBlurb = hasButtons || hasLogos
+  const hasContentFollowingButtons = hasLogos
+
   return (
     <div
-      className={classNames('row', 'mx-0', isLeftImage ? 'flex-row' : 'flex-row-reverse')}
+      className={classNames('row', 'py-0', 'mx-0', isLeftImage ? 'flex-row' : 'flex-row-reverse')}
       id={anchorRef}
       style={getSectionStyle(config)}
     >
@@ -98,7 +106,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
               'd-flex justify-content-center align-items-center p-0'
             )}
           >
-            <PearlImage image={image} className="img-fluid"/>
+            <ConfiguredImage image={image} className="img-fluid"/>
           </div>
         )}
         <div
@@ -109,17 +117,22 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
           )}
         >
           {!!title && (
-            <h2 className="fs-1 fw-normal lh-sm">
-              <ReactMarkdown>{title}</ReactMarkdown>
+            <h2 className={classNames('fs-1 fw-normal lh-sm', hasContentFollowingTitle ? 'mb-4' : 'mb-0')}>
+              <InlineMarkdown>{title}</InlineMarkdown>
             </h2>
           )}
-          {!!blurb && (
-            <div className="fs-4">
-              <ReactMarkdown>{blurb}</ReactMarkdown>
-            </div>
+          {hasBlurb && (
+            <Markdown className={classNames('fs-4', { 'mb-4': hasContentFollowingBlurb })}>
+              {blurb}
+            </Markdown>
           )}
-          {(buttons || []).length > 0 && (
-            <div className="d-grid gap-2 d-md-flex justify-content-md-start">
+          {hasButtons && (
+            <div
+              className={classNames(
+                'd-grid gap-2 d-md-flex justify-content-md-start',
+                { 'mb-4': hasContentFollowingButtons }
+              )}
+            >
               {
                 _.map(buttons, (buttonConfig, i) =>
                   <ConfiguredButton key={i} config={buttonConfig} className="btn-lg px-4 me-md-2"/>
@@ -127,7 +140,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
               }
             </div>
           )}
-          {(logos || []).length > 0 && (
+          {hasLogos && (
             <div
               className={classNames(
                 'd-flex',
@@ -136,7 +149,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
               )}
             >
               {_.map(logos, logo => {
-                return <PearlImage key={logo.cleanFileName} image={logo} className="mt-4 me-sm-4" />
+                return <ConfiguredImage key={logo.cleanFileName} image={logo} className="me-sm-4" />
               })}
             </div>
           )}

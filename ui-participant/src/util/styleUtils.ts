@@ -6,18 +6,25 @@ import { isPlainObject } from 'util/validationUtils'
 const allowedStyles = [
   'background',
   'backgroundColor',
-  'color'
+  'color',
+  'paddingBottom',
+  'paddingTop'
 ] as const
 
 export const sectionStyleConfigKeys = [...allowedStyles, 'backgroundImage'] as const
 
 /** From section configuration, get styles to apply to the section's container */
 export const getSectionStyle = (config: SectionConfig): CSSProperties => {
+  const defaultStyles = {
+    paddingBottom: '3rem',
+    paddingTop: '3rem'
+  }
+
   const style: CSSProperties = allowedStyles.reduce(
-    (acc, property) => config[property]
+    (acc, property) => Object.hasOwn(config, property)
       ? { ...acc, [property]: config[property] }
       : acc,
-    {}
+    defaultStyles
   )
 
   // backgroundImage is not a pass-through style, so must be handled separately.

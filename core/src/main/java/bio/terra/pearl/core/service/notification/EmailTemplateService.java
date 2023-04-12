@@ -18,6 +18,10 @@ public class EmailTemplateService extends ImmutableEntityService<EmailTemplate, 
         return dao.findByStableId(stableId, version);
     }
 
+    public int getNextVersion(String stableId) {
+        return dao.getNextVersion(stableId);
+    }
+
     public void deleteByPortalId(UUID portalId) {
         dao.deleteByPortalId(portalId);
     }
