@@ -4,7 +4,7 @@ import { getImageUrl } from 'api/api'
 
 import { requireOptionalString, requireNumber, requirePlainObject, requireString } from 'util/validationUtils'
 
-export type PearlImageConfig = {
+export type ImageConfig = {
   cleanFileName: string,
   version: number,
   alt?: string,
@@ -12,7 +12,7 @@ export type PearlImageConfig = {
   style?: CSSProperties
 }
 
-export const validatePearlImageConfig = (imageConfig: unknown): PearlImageConfig => {
+export const validateImageConfig = (imageConfig: unknown): ImageConfig => {
   const message = 'Invalid image config'
   const config = requirePlainObject(imageConfig, message)
 
@@ -33,21 +33,21 @@ export const validatePearlImageConfig = (imageConfig: unknown): PearlImageConfig
   }
 }
 
-type PearlImageProps = {
-  image: PearlImageConfig
+type ConfiguredImageProps = {
+  image: ImageConfig
   className?: string
   style?: CSSProperties
 }
 
 /** renders an image that is part of a SiteContent spec */
-export default function PearlImage(props: PearlImageProps) {
+export default function ConfiguredImage(props: ConfiguredImageProps) {
   const { image, className, style } = props
 
   return (
     <img
       src={getImageUrl(image.cleanFileName, image.version)}
       alt={image.alt}
-      className={classNames('pearl-image', className, image.className)}
+      className={classNames('configured-image', className, image.className)}
       loading="lazy"
       style={{ ...style, ...image.style }}
     />

@@ -7,13 +7,13 @@ import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
+import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
 import { InlineMarkdown } from '../Markdown'
-import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
 import { TemplateComponentProps } from './templateUtils'
 
 type StepConfig = {
-  image: PearlImageConfig,
+  image: ImageConfig,
   duration: string,
   blurb: string
 }
@@ -27,7 +27,7 @@ type StepOverviewTemplateConfig = {
 const validateStepConfig = (config: unknown): StepConfig => {
   const message = 'Invalid StepOverviewTemplateConfig: Invalid step'
   const configObj = requirePlainObject(config, message)
-  const image = validatePearlImageConfig(configObj.image)
+  const image = validateImageConfig(configObj.image)
   const duration = requireString(configObj, 'duration', message)
   const blurb = requireString(configObj, 'blurb', message)
   return { image, duration, blurb }
@@ -65,7 +65,7 @@ function StepOverviewTemplate(props: StepOverviewTemplateProps) {
         _.map(steps, ({ image, duration, blurb }: StepConfig, i: number) => {
           return <div key={i} className="col-12 col-lg-3 d-flex flex-column align-items-center mt-4">
             <div className="w-75 d-flex flex-column align-items-center align-items-lg-start">
-              <PearlImage image={image} className="img-fluid p-3" style={{ maxWidth: '200px' }}/>
+              <ConfiguredImage image={image} className="img-fluid p-3" style={{ maxWidth: '200px' }}/>
               <p className="text-uppercase fs-5 fw-semibold mb-0">Step {i + 1}</p>
               <p className="text-uppercase fs-6">{duration}</p>
               <p className="fs-4 mb-0">

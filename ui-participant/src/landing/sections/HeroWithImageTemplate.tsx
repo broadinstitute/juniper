@@ -8,8 +8,8 @@ import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalNumber, requireOptionalString } from 'util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
+import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
 import { InlineMarkdown, Markdown } from '../Markdown'
-import PearlImage, { PearlImageConfig, validatePearlImageConfig } from '../PearlImage'
 
 import { TemplateComponentProps } from './templateUtils'
 
@@ -17,10 +17,10 @@ type HeroWithImageTemplateConfig = {
   blurb?: string, //  text below the title
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   fullWidth?: boolean, // span the full page width or not
-  image?: PearlImageConfig, // image
+  image?: ImageConfig, // image
   imagePosition?: 'left' | 'right', // left or right.  Default is right
   imageWidthPercentage?: number, // number between 0 and 100. Percentage of row width given to image.
-  logos?: PearlImageConfig[],
+  logos?: ImageConfig[],
   title?: string // large heading text
 }
 
@@ -30,7 +30,7 @@ const validateHeroWithImageTemplateConfig = (config: SectionConfig): HeroWithIma
   const blurb = requireOptionalString(config, 'blurb', message)
   const buttons = requireOptionalArray(config, 'buttons', validateButtonConfig, message)
   const fullWidth = !!config.fullWidth
-  const image = config.image ? validatePearlImageConfig(config.image) : undefined
+  const image = config.image ? validateImageConfig(config.image) : undefined
   const imagePosition = requireOptionalString(config, 'imagePosition', message)
   if (!(imagePosition === undefined || imagePosition === 'left' || imagePosition === 'right')) {
     throw new Error(`${message}: if provided, imagePosition must be one of "left", "right"`)
@@ -39,7 +39,7 @@ const validateHeroWithImageTemplateConfig = (config: SectionConfig): HeroWithIma
   if (imageWidthPercentage !== undefined && (imageWidthPercentage < 0 || imageWidthPercentage > 100)) {
     throw new Error(`${message}: imageWidthPercentage must be between 0 and 100`)
   }
-  const logos = requireOptionalArray(config, 'logos', validatePearlImageConfig, message)
+  const logos = requireOptionalArray(config, 'logos', validateImageConfig, message)
   const title = requireOptionalString(config, 'title', message)
   return {
     blurb,
@@ -106,7 +106,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
               'd-flex justify-content-center align-items-center p-0'
             )}
           >
-            <PearlImage image={image} className="img-fluid"/>
+            <ConfiguredImage image={image} className="img-fluid"/>
           </div>
         )}
         <div
@@ -149,7 +149,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
               )}
             >
               {_.map(logos, logo => {
-                return <PearlImage key={logo.cleanFileName} image={logo} className="me-sm-4" />
+                return <ConfiguredImage key={logo.cleanFileName} image={logo} className="me-sm-4" />
               })}
             </div>
           )}
