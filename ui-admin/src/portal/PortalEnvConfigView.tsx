@@ -1,7 +1,7 @@
 import React from 'react'
-import { Portal, PortalEnvironment } from 'api/api'
+import { PortalEnvironment } from 'api/api'
 
-const PortalEnvConfigView = ({ portal, portalEnv }: {portal: Portal, portalEnv: PortalEnvironment}) => {
+const PortalEnvConfigView = ({ portalEnv }: {portalEnv: PortalEnvironment}) => {
   const config = portalEnv.portalEnvironmentConfig
 
   return <div className="container p-4">
