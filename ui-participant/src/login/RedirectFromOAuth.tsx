@@ -5,6 +5,8 @@ import { useUser } from 'providers/UserProvider'
 import Api from 'api/api'
 import { usePreEnrollResponseId, usePreRegResponseId, useReturnToStudy } from 'browserPersistentState'
 
+import { HubUpdate } from '../hub/hubUpdates'
+
 export const RedirectFromOAuth = () => {
   const auth = useAuth()
   const { loginUser, updateEnrollee, user } = useUser()
@@ -49,10 +51,14 @@ export const RedirectFromOAuth = () => {
           try {
             const response = await Api.createEnrollee({ studyShortcode: returnToStudy, preEnrollResponseId })
             updateEnrollee(response.enrollee)
-            navigate('/hub', {
-              replace: true,
-              state: { message: { content: 'Welcome to the study!', messageType: 'success' } }
-            })
+            const hubUpdate: HubUpdate = {
+              message: {
+                title: 'Welcome to the study.',
+                detail: 'Please read and sign the consent form below to complete registration.',
+                type: 'info'
+              }
+            }
+            navigate('/hub', { replace: true, state: hubUpdate })
           } catch {
             alert('an error occurred, please try again, or contact support')
           }

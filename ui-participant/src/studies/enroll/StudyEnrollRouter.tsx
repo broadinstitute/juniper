@@ -10,6 +10,8 @@ import PortalRegistrationRouter from 'landing/registration/PortalRegistrationRou
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { useHasProvidedStudyPassword, usePreEnrollResponseId } from 'browserPersistentState'
 
+import { HubUpdate } from '../../hub/hubUpdates'
+
 import { StudyEnrollPasswordGate } from './StudyEnrollPasswordGate'
 
 export type StudyEnrollContext = {
@@ -97,10 +99,14 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
         // when preEnroll is satisfied, and we have a user, we're clear to create an Enrollee
         Api.createEnrollee({ studyShortcode, preEnrollResponseId }).then(response => {
           updateEnrollee(response.enrollee)
-          navigate('/hub', {
-            replace: true,
-            state: { message: { content: 'Welcome to the study!', messageType: 'success' } }
-          })
+          const hubUpdate: HubUpdate = {
+            message: {
+              title: 'Welcome to the study.',
+              detail: 'Please read and sign the consent form below to complete registration.',
+              type: 'info'
+            }
+          }
+          navigate('/hub', { replace: true, state: hubUpdate })
         }).catch(() => {
           alert('an error occurred, please try again, or contact support')
         })
