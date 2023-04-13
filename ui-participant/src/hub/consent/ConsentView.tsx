@@ -19,6 +19,7 @@ import {
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
+import { HubUpdate } from 'hub/hubUpdates'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
@@ -62,7 +63,13 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
     }).then(response => {
       response.enrollee.participantTasks = response.tasks
       updateEnrollee(response.enrollee)
-      navigate('/hub', { state: { message: { content: `${form.name} submitted`, messageType: 'success' } } })
+      const hubUpdate: HubUpdate = {
+        message: {
+          title: `${form.name} completed`,
+          type: 'success'
+        }
+      }
+      navigate('/hub', { state: hubUpdate })
     }).catch(() => {
       refreshSurvey(surveyModel, null)
       alert('an error occurred')

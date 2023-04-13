@@ -1,48 +1,45 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { usePortalEnv } from '../providers/PortalProvider'
 import { useUser } from '../providers/UserProvider'
 
 import { Enrollee, ParticipantTask, Portal, PortalStudy, Study } from '../api/api'
 import TaskLink, { getTaskPath, isTaskAccessible, isTaskActive } from './TaskLink'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 
-import TaskStatusMessage from './TaskStatusMessage'
+import { HubMessageAlert, useHubUpdate } from './hubUpdates'
 
-export type HubUpdate = {
-  message: {
-    content: string,
-    messageType: string
-  }
-}
 
 /** renders the logged-in hub page */
 export default function HubPage() {
   const { portal } = usePortalEnv()
   const { enrollees } = useUser()
-  const location = useLocation()
-  /**
-   * Pull any messages to be displayed as a result of where we came from e.g. "survey complete"
-   * This is in accord with recommended usage of location state with React Router v6.
-   */
-  const hubUpdate: HubUpdate | undefined = location.state
-  const hubMessage = hubUpdate?.message
+
+  const hubUpdate = useHubUpdate()
+  const [displayedHubMessage, setDisplayedHubMessage] = useState(hubUpdate?.message)
+
   const unjoinedStudies = portal.portalStudies.filter(pStudy => !userHasJoinedPortalStudy(pStudy, enrollees))
   const hasUnjoinedStudies = unjoinedStudies.length > 0
   return (
     <div
-      className="flex-grow-1"
+      className="hub-dashboard-background flex-grow-1"
       style={{ background: 'linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%' }}
     >
+      {!!displayedHubMessage && (
+        <HubMessageAlert
+          message={displayedHubMessage}
+          className="mx-1 mx-md-auto my-1 my-md-5 shadow-sm"
+          role="alert"
+          style={{ maxWidth: 768 }}
+          onDismiss={() => {
+            setDisplayedHubMessage(undefined)
+          }}
+        />
+      )}
+
       <div
         className="hub-dashboard py-4 px-2 px-md-5 my-md-5 mx-auto shadow-sm"
         style={{ background: '#fff', maxWidth: 768 }}
       >
-        {!!hubMessage && (
-          <div className="mb-2">
-            <TaskStatusMessage content={hubMessage.content} messageType={hubMessage.messageType}/>
-          </div>
-        )}
-
         {enrollees.map(enrollee => <StudySection key={enrollee.id} enrollee={enrollee} portal={portal} />)}
 
         {hasUnjoinedStudies && (

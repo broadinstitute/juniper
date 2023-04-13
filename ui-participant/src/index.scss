@@ -117,3 +117,39 @@ a {
     border-radius: var(--bs-border-radius-lg);
   }
 }
+
+.hub-dashboard-background {
+  @include media-breakpoint-down(md) {
+    background: none !important;
+  }
+}
+
+.alert-primary {
+  --bs-alert-color: #281D1C;
+  --bs-alert-bg: var(--brand-color-shift-90);
+  --bs-alert-border-color: var(--brand-color);
+}
+
+.alert-info {
+  --bs-alert-color: #281D1C;
+  --bs-alert-bg: #F1F7FF;
+  --bs-alert-border-color: #4D72AA;
+}
+
+.alert-success {
+  --bs-alert-color: #281D1C;
+  --bs-alert-bg: #E3F3D9;
+  --bs-alert-border-color: #A4B19C;
+}
+
+.alert-warning {
+  --bs-alert-color: #281D1C;
+  --bs-alert-bg: #FFF9F2;
+  --bs-alert-border-color: #F7981C;
+}
+
+.alert-danger {
+  --bs-alert-color: #281D1C;
+  --bs-alert-bg: #FFE6E2;
+  --bs-alert-border-color: #DB3214;
+}
