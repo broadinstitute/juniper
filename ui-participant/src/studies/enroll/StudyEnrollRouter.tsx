@@ -6,11 +6,10 @@ import Api, { ParticipantUser, Portal, StudyEnvironment } from 'api/api'
 import NavBar from '../../Navbar'
 import PreEnrollView from './PreEnroll'
 import StudyIneligible from './StudyIneligible'
+import { HubUpdate } from 'hub/hubUpdates'
 import PortalRegistrationRouter from 'landing/registration/PortalRegistrationRouter'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { useHasProvidedStudyPassword, usePreEnrollResponseId } from 'browserPersistentState'
-
-import { HubUpdate } from '../../hub/hubUpdates'
 
 import { StudyEnrollPasswordGate } from './StudyEnrollPasswordGate'
 

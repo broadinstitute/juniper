@@ -19,12 +19,11 @@ import {
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
+import { HubUpdate } from 'hub/hubUpdates'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { withErrorBoundary } from '../../util/ErrorBoundary'
-
-import { HubUpdate } from '../hubUpdates'
 
 const TASK_ID_PARAM = 'taskId'
 
