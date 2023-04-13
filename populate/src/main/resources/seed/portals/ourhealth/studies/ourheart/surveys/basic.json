@@ -426,6 +426,23 @@
               {"text": "Sri Lanka", "value": "sriLanka"}
             ]
           },{
+            "name": "oh_oh_basic_bangladeshRegion",
+            "type": "checkbox",
+            "title": "From BANGLADESH: Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
+            "visibleIf": "{oh_oh_basic_nationalIdentity} contains 'bangladesh'",
+            "showOtherItem": true,
+            "otherText": "Other",
+            "otherPlaceholder": "Please specify",
+            "choices": [
+              {"text": "Barisal", "value": "barisal"},
+              {"text": "Chittagong", "value": "chittagong"},
+              {"text": "Dhaka", "value": "dhaka"},
+              {"text": "Khulna", "value": "khulna"},
+              {"text": "Mymensingh", "value": "mymensingh"},
+              {"text": "Rajshahi", "value": "rajshahi"},
+              {"text": "Sylhet", "value": "sylhet"}
+            ]
+          },{
             "name": "oh_oh_basic_indiaRegion",
             "type": "checkbox",
             "title": "From INDIA: Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
@@ -489,23 +506,6 @@
               {"text": "Gilgit-Baltistan", "value": "gilgitBaltistan"}
             ]
           },{
-            "name": "oh_oh_basic_bangladeshRegion",
-            "type": "checkbox",
-            "title": "From BANGLADESH: Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
-            "visibleIf": "{oh_oh_basic_nationalIdentity} contains 'bangladesh'",
-            "showOtherItem": true,
-            "otherText": "Other",
-            "otherPlaceholder": "Please specify",
-            "choices": [
-              {"text": "Barisal", "value": "barisal"},
-              {"text": "Chittagong", "value": "chittagong"},
-              {"text": "Dhaka", "value": "dhaka"},
-              {"text": "Khulna", "value": "khulna"},
-              {"text": "Mymensingh", "value": "mymensingh"},
-              {"text": "Rajshahi", "value": "rajshahi"},
-              {"text": "Sylhet", "value": "sylhet"}
-            ]
-          },{
             "name": "oh_oh_basic_asianLanguage",
             "type": "checkbox",
             "title": "Which of the national language(s) in South Asia would you consider to be your “mother tongue”, or most identified with your family? Check all that apply. ",
@@ -557,7 +557,7 @@
           },{
             "name": "oh_oh_basic_settledOtherRegion",
             "type": "radiogroup",
-            "title": "Prior to coming to the USA, had you or your family settled (1 or more generations) in a different region  of the world outside of South Asia?? ",
+            "title": "Prior to coming to the USA, had you or your family settled (1 or more generations) in a different region of the world outside of South Asia?",
             "isRequired": true,
             "choices": [
               {"text": "No", "value": "no"},
