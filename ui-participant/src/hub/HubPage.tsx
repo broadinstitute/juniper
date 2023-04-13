@@ -133,7 +133,8 @@ function StudyTasks(props: StudyTasksProps) {
             {enrolleeHasStartedTaskType(enrollee, nextTask.taskType)
               ? 'Continue'
               : 'Start'}
-            {' '}{taskTypeDisplayMap[nextTask.taskType]}s
+            {' '}{taskTypeDisplayMap[nextTask.taskType]}
+            {enrollee.participantTasks.filter(task => task.taskType === nextTask.taskType).length > 1 && 's'}
           </Link>
         </div>
       )}
