@@ -113,6 +113,9 @@ function StudyTasks(props: StudyTasksProps) {
   const hasSurveyTasks = sortedSurveyTasks.length > 0
 
   const nextTask = getNextTask(enrollee, [...sortedActiveConsentTasks, ...sortedSurveyTasks])
+  const numTasksOfNextTaskType = nextTask
+    ? enrollee.participantTasks.filter(task => task.taskType === nextTask.taskType).length
+    : 0
 
   const completedConsentTasks = enrollee.participantTasks
     .filter(task => task.status === 'COMPLETE' && task.taskType === 'CONSENT')
@@ -133,7 +136,8 @@ function StudyTasks(props: StudyTasksProps) {
             {enrolleeHasStartedTaskType(enrollee, nextTask.taskType)
               ? 'Continue'
               : 'Start'}
-            {' '}{taskTypeDisplayMap[nextTask.taskType]}s
+            {' '}{taskTypeDisplayMap[nextTask.taskType]}
+            {numTasksOfNextTaskType > 1 && 's'}
           </Link>
         </div>
       )}
