@@ -396,7 +396,7 @@
             "title": "Check all that apply.",
             "visibleIf": "{oh_oh_basic_otherEthnicity} = 'yes'",
             "showNoneItem": true,
-            "noneValue": "preferNoAnswer",
+            "noneValue": "none",
             "noneText": "None of the above",
             "hideNumber": true,
             "choices": [
