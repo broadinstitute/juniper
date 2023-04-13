@@ -1,7 +1,7 @@
-import React, { HTMLProps } from 'react'
-import { flexRender, Header } from '@tanstack/react-table'
+import React, { HTMLProps, useState } from 'react'
+import { flexRender, Header, Table } from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons'
+import { faCaretDown, faCaretUp, faColumns } from '@fortawesome/free-solid-svg-icons'
 
 /**
  * returns a clickable header column with up/down icons indicating sort direction
@@ -46,3 +46,49 @@ export function IndeterminateCheckbox({
     />
   )
 }
+
+/**
+ * adapted from https://tanstack.com/table/v8/docs/examples/react/column-visibility
+ * For now, this control assumes that all the headers are simple strings.
+ * */
+export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
+  const [show, setShow] = useState(false)
+  return <div className="position-relative">
+    <button className="btn btn-secondary" onClick={() => setShow(!show)} aria-label="show or hide columns">
+      <FontAwesomeIcon icon={faColumns} className="fa-lg"/>
+    </button>
+    { show && <div className="position-absolute border border-gray rounded bg-white p-3"
+      style={{ width: '300px', zIndex: 100, right: 0 }}>
+      <div className="border-b border-black">
+        <label>
+          <input
+            {...{
+              type: 'checkbox',
+              checked: table.getIsAllColumnsVisible(),
+              onChange: table.getToggleAllColumnsVisibilityHandler()
+            }}
+          />
+          <span className="ps-2">Toggle All</span>
+        </label>
+      </div>
+      <hr/>
+      {table.getAllLeafColumns().map(column => {
+        return (
+          <div key={column.id} className="pb-1">
+            <label>
+              <input
+                {...{
+                  type: 'checkbox',
+                  checked: column.getIsVisible(),
+                  onChange: column.getToggleVisibilityHandler()
+                }}
+              />
+              <span className="ps-2">{ column.columnDef.header as string ?? column.columnDef.id }</span>
+            </label>
+          </div>
+        )
+      })}
+    </div> }
+  </div>
+}
+
