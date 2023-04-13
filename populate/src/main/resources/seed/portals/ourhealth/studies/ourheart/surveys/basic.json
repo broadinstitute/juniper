@@ -15,8 +15,6 @@
   },{
     "questionStableId": "oh_oh_basic_zip", "targetType": "PROFILE", "targetField": "mailingAddress.postalCode", "mapType": "TEXT_NODE_TO_STRING"
   },{
-    "questionStableId": "oh_oh_basic_email", "targetType": "PROFILE", "targetField": "contactEmail", "mapType": "TEXT_NODE_TO_STRING"
-  },{
     "questionStableId": "oh_oh_basic_phoneNumber", "targetType": "PROFILE", "targetField": "phoneNumber", "mapType": "TEXT_NODE_TO_STRING"
   },{
     "questionStableId": "oh_oh_basic_dateOfBirth", "targetType": "PROFILE", "targetField": "birthDate", "mapType": "TEXT_NODE_TO_LOCAL_DATE",
@@ -146,17 +144,10 @@
           }, {
             "name": "oh_oh_basic_zip",
             "type": "text",
-            "title": "Zip code (5 digits)",
+            "title": "ZIP code (5 digits)",
             "maxLength": 5,
             "size": "5",
             "inputType": "text",
-            "isRequired": true
-          }, {
-            "name": "oh_oh_basic_email",
-            "type": "text",
-            "title": "Email address",
-            "inputType": "email",
-            "inputMask": "email",
             "isRequired": true
           }, {
             "name": "oh_oh_basic_phoneNumber",
@@ -179,20 +170,133 @@
             "isRequired": true
           }, {
             "name": "oh_oh_basic_height",
-            "type": "multipletext",
+            "type": "dropdown",
             "title": "Height ",
-            "itemSize": 2,
-            "items": [{
-              "name": "oh_oh_basic_heightFeet",
-              "title": "ft.",
-              "inputType": "number",
-              "max": 8
-            },{
-              "name": "oh_oh_basic_heightInches",
-              "title": "in.",
-              "inputType": "number",
-              "max": 11
-            }]
+            "choices": [
+              {"text": "3' 0\" (91cm)", "value": "91"},
+              {"text": "3' 1\" (94cm)", "value": "94"},
+              {"text": "3' 2\" (97cm)", "value": "97"},
+              {"text": "3' 3\" (99cm)", "value": "99"},
+              {"text": "3' 4\" (102cm)", "value": "102"},
+              {"text": "3' 5\" (104cm)", "value": "104"},
+              {"text": "3' 6\" (107cm)", "value": "107"},
+              {"text": "3' 7\" (109cm)", "value": "109"},
+              {"text": "3' 8\" (112cm)", "value": "112"},
+              {"text": "3' 9\" (114cm)", "value": "114"},
+              {"text": "3' 10\" (117cm)", "value": "117"},
+              {"text": "3' 11\" (119cm)", "value": "119"},
+              {"text": "4' 0\" (122cm)", "value": "122"},
+              {"text": "4' 1\" (124cm)", "value": "124"},
+              {"text": "4' 2\" (127cm)", "value": "127"},
+              {"text": "4' 3\" (130cm)", "value": "130"},
+              {"text": "4' 4\" (132cm)", "value": "132"},
+              {"text": "4' 5\" (135cm)", "value": "135"},
+              {"text": "4' 6\" (137cm)", "value": "137"},
+              {"text": "4' 7\" (140cm)", "value": "140"},
+              {"text": "4' 8\" (142cm)", "value": "142"},
+              {"text": "4' 9\" (145cm)", "value": "145"},
+              {"text": "4' 10\" (147cm)", "value": "147"},
+              {"text": "4' 11\" (150cm)", "value": "150"},
+              {"text": "5' 0\" (152cm)", "value": "152"},
+              {"text": "5' 1\" (155cm)", "value": "155"},
+              {"text": "5' 2\" (157cm)", "value": "157"},
+              {"text": "5' 3\" (160cm)", "value": "160"},
+              {"text": "5' 4\" (163cm)", "value": "163"},
+              {"text": "5' 5\" (165cm)", "value": "165"},
+              {"text": "5' 6\" (168cm)", "value": "168"},
+              {"text": "5' 7\" (170cm)", "value": "170"},
+              {"text": "5' 8\" (173cm)", "value": "173"},
+              {"text": "5' 9\" (175cm)", "value": "175"},
+              {"text": "5' 10\" (178cm)", "value": "178"},
+              {"text": "5' 11\" (180cm)", "value": "180"},
+              {"text": "6' 0\" (183cm)", "value": "183"},
+              {"text": "6' 1\" (185cm)", "value": "185"},
+              {"text": "6' 2\" (188cm)", "value": "188"},
+              {"text": "6' 3\" (191cm)", "value": "191"},
+              {"text": "6' 4\" (193cm)", "value": "193"},
+              {"text": "6' 5\" (196cm)", "value": "196"},
+              {"text": "6' 6\" (198cm)", "value": "198"},
+              {"text": "6' 7\" (201cm)", "value": "201"},
+              {"text": "6' 8\" (203cm)", "value": "203"},
+              {"text": "6' 9\" (206cm)", "value": "206"},
+              {"text": "6' 10\" (208cm)", "value": "208"},
+              {"text": "6' 11\" (211cm)", "value": "211"},
+              {"text": "7' 0\" (213cm)", "value": "213"},
+              {"text": "7' 1\" (216cm)", "value": "216"},
+              {"text": "7' 2\" (218cm)", "value": "218"},
+              {"text": "7' 3\" (221cm)", "value": "221"},
+              {"text": "7' 4\" (224cm)", "value": "224"},
+              {"text": "7' 5\" (226cm)", "value": "226"},
+              {"text": "7' 6\" (229cm)", "value": "229"},
+              {"text": "7' 7\" (231cm)", "value": "231"},
+              {"text": "7' 8\" (234cm)", "value": "234"},
+              {"text": "7' 9\" (236cm)", "value": "236"},
+              {"text": "7' 10\" (239cm)", "value": "239"},
+              {"text": "7' 11\" (241cm)", "value": "241"}
+            ]
+          }, {
+            "name": "oh_oh_basic_weight",
+            "type": "dropdown",
+            "title": "Weight ",
+            "choices": [
+              {"text": "70lbs (32kg)", "value": "32"},
+              {"text": "75lbs (34kg)", "value": "34"},
+              {"text": "80lbs (36kg)", "value": "36"},
+              {"text": "85lbs (39kg)", "value": "39"},
+              {"text": "90lbs (41kg)", "value": "41"},
+              {"text": "95lbs (43kg)", "value": "43"},
+              {"text": "100lbs (45kg)", "value": "45"},
+              {"text": "105lbs (48kg)", "value": "48"},
+              {"text": "110lbs (50kg)", "value": "50"},
+              {"text": "115lbs (52kg)", "value": "52"},
+              {"text": "120lbs (54kg)", "value": "54"},
+              {"text": "125lbs (57kg)", "value": "57"},
+              {"text": "130lbs (59kg)", "value": "59"},
+              {"text": "135lbs (61kg)", "value": "61"},
+              {"text": "140lbs (64kg)", "value": "64"},
+              {"text": "145lbs (66kg)", "value": "66"},
+              {"text": "150lbs (68kg)", "value": "68"},
+              {"text": "155lbs (70kg)", "value": "70"},
+              {"text": "160lbs (73kg)", "value": "73"},
+              {"text": "165lbs (75kg)", "value": "75"},
+              {"text": "170lbs (77kg)", "value": "77"},
+              {"text": "175lbs (79kg)", "value": "79"},
+              {"text": "180lbs (82kg)", "value": "82"},
+              {"text": "185lbs (84kg)", "value": "84"},
+              {"text": "190lbs (86kg)", "value": "86"},
+              {"text": "195lbs (89kg)", "value": "89"},
+              {"text": "200lbs (91kg)", "value": "91"},
+              {"text": "205lbs (93kg)", "value": "93"},
+              {"text": "210lbs (95kg)", "value": "95"},
+              {"text": "215lbs (98kg)", "value": "98"},
+              {"text": "220lbs (100kg)", "value": "100"},
+              {"text": "225lbs (102kg)", "value": "102"},
+              {"text": "230lbs (104kg)", "value": "104"},
+              {"text": "235lbs (107kg)", "value": "107"},
+              {"text": "240lbs (109kg)", "value": "109"},
+              {"text": "245lbs (111kg)", "value": "111"},
+              {"text": "250lbs (113kg)", "value": "113"},
+              {"text": "255lbs (116kg)", "value": "116"},
+              {"text": "260lbs (118kg)", "value": "118"},
+              {"text": "265lbs (120kg)", "value": "120"},
+              {"text": "270lbs (123kg)", "value": "123"},
+              {"text": "275lbs (125kg)", "value": "125"},
+              {"text": "280lbs (127kg)", "value": "127"},
+              {"text": "285lbs (129kg)", "value": "129"},
+              {"text": "290lbs (132kg)", "value": "132"},
+              {"text": "295lbs (134kg)", "value": "134"},
+              {"text": "300lbs (136kg)", "value": "136"},
+              {"text": "305lbs (138kg)", "value": "138"},
+              {"text": "310lbs (141kg)", "value": "141"},
+              {"text": "315lbs (143kg)", "value": "143"},
+              {"text": "320lbs (145kg)", "value": "145"},
+              {"text": "325lbs (148kg)", "value": "148"},
+              {"text": "330lbs (150kg)", "value": "150"},
+              {"text": "335lbs (152kg)", "value": "152"},
+              {"text": "340lbs (154kg)", "value": "154"},
+              {"text": "345lbs (157kg)", "value": "157"},
+              {"text": "350lbs (159kg)", "value": "159"}
+            ]
           }
         ]
       }, {
@@ -227,13 +331,15 @@
             "name": "oh_oh_basic_sexualOrientation",
             "type": "checkbox",
             "title": "Which of the following best represents how you think of yourself? (Check all that apply)",
+            "showNoneItem": true,
+            "noneText": "Prefer not to answer",
+            "noneValue": "preferNoAnswer",
             "choices": [
               {"text": "Bisexual", "value": "bisexual"},
               {"text": "Gay", "value": "gay"},
               {"text": "Lesbian", "value": "lesbian"},
               {"text": "Straight/Heterosexual", "value": "straightHeterosexual"},
-              {"text": "None of these describe me, and I’d like to see additional options", "value": "noneOfThese"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {"text": "None of these describe me, and I’d like to see additional options", "value": "noneOfThese"}
             ]
           }, {
             "name": "oh_oh_basic_sexualOrientationFollowUp",
@@ -275,7 +381,7 @@
           }, {
             "name": "ethnicityNote",
             "type": "html",
-            "html": "Note, you are eligible for this study because you identify as South Asian, defined as ancestry from Bangladesh, Bhutan, India, Maldives, Nepal, Pakistan, and/or Sri Lanka."
+            "html": "<b>Note, you are eligible for this study because you identify as South Asian, defined as ancestry from Bangladesh, Bhutan, India, Maldives, Nepal, Pakistan, and/or Sri Lanka.</b>"
           }, {
             "name": "oh_oh_basic_otherEthnicity",
             "type": "radiogroup",
@@ -289,14 +395,16 @@
             "type": "checkbox",
             "title": "Check all that apply.",
             "visibleIf": "{oh_oh_basic_otherEthnicity} = 'yes'",
+            "showNoneItem": true,
+            "noneValue": "none",
+            "noneText": "None of the above",
             "hideNumber": true,
             "choices": [
-              {"text": "White", "value": "white"},
-              {"text": "Black", "value": "black"},
+              {"text": "African American/Black", "value": "black"},
+              {"text": "Caucasian/White", "value": "white"},
               {"text": "East of Southeast Asian", "value": "eastOfSoutheastAsian"},
               {"text": "Native American (American Indian or Alaska Native)", "value": "nativeAmerican"},
-              {"text": "Native Hawaiian or Other Pacific Islander", "value": "pacificIslander"},
-              {"text": "None of the above", "value": "noneOfTheAbove"}
+              {"text": "Native Hawaiian or Other Pacific Islander", "value": "pacificIslander"}
             ]
           },{
             "name": "oh_oh_basic_nationalIdentity",
@@ -305,6 +413,9 @@
             "showOtherItem": true,
             "otherText": "Other (fill in the blank)",
             "otherPlaceholder": "Please specify",
+            "showNoneItem": true,
+            "noneValue": "preferNoAnswer",
+            "noneText": "Prefer not to answer",
             "choices": [
               {"text": "Bangladesh", "value": "bangladesh"},
               {"text": "Bhutan", "value": "bhutan"},
@@ -312,14 +423,33 @@
               {"text": "Maldives", "value": "maldives"},
               {"text": "Nepal", "value": "nepal"},
               {"text": "Pakistan", "value": "pakistan"},
-              {"text": "Sri Lanka", "value": "sriLanka"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {"text": "Sri Lanka", "value": "sriLanka"}
+            ]
+          },{
+            "name": "oh_oh_basic_bangladeshRegion",
+            "type": "checkbox",
+            "title": "From BANGLADESH: Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
+            "visibleIf": "{oh_oh_basic_nationalIdentity} contains 'bangladesh'",
+            "showOtherItem": true,
+            "otherText": "Other",
+            "otherPlaceholder": "Please specify",
+            "choices": [
+              {"text": "Barisal", "value": "barisal"},
+              {"text": "Chittagong", "value": "chittagong"},
+              {"text": "Dhaka", "value": "dhaka"},
+              {"text": "Khulna", "value": "khulna"},
+              {"text": "Mymensingh", "value": "mymensingh"},
+              {"text": "Rajshahi", "value": "rajshahi"},
+              {"text": "Sylhet", "value": "sylhet"}
             ]
           },{
             "name": "oh_oh_basic_indiaRegion",
             "type": "checkbox",
-            "title": "Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
+            "title": "From INDIA: Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
             "visibleIf": "{oh_oh_basic_nationalIdentity} contains 'india'",
+            "showOtherItem": true,
+            "otherText": "Other",
+            "otherPlaceholder": "Please specify",
             "choices": [
               {"text": "Andhra Pradesh", "value": "andhraPradesh"},
               {"text": "Arunachal Pradesh", "value": "arunachalPradesh"},
@@ -361,8 +491,11 @@
           },{
             "name": "oh_oh_basic_pakistanRegion",
             "type": "checkbox",
-            "title": "Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
+            "title": "From Pakistan: Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
             "visibleIf": "{oh_oh_basic_nationalIdentity} contains 'pakistan'",
+            "showOtherItem": true,
+            "otherText": "Other",
+            "otherPlaceholder": "Please specify",
             "choices": [
               {"text": "Punjab", "value": "punjab"},
               {"text": "Sindh", "value": "sindh"},
@@ -373,26 +506,15 @@
               {"text": "Gilgit-Baltistan", "value": "gilgitBaltistan"}
             ]
           },{
-            "name": "oh_oh_basic_bangladeshRegion",
-            "type": "checkbox",
-            "title": "Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
-            "visibleIf": "{oh_oh_basic_nationalIdentity} contains 'bangladesh'",
-            "choices": [
-              {"text": "Barisal", "value": "barisal"},
-              {"text": "Chittagong", "value": "chittagong"},
-              {"text": "Dhaka", "value": "dhaka"},
-              {"text": "Khulna", "value": "khulna"},
-              {"text": "Mymensingh", "value": "mymensingh"},
-              {"text": "Rajshahi", "value": "rajshahi"},
-              {"text": "Sylhet", "value": "sylhet"}
-            ]
-          },{
             "name": "oh_oh_basic_asianLanguage",
             "type": "checkbox",
             "title": "Which of the national language(s) in South Asia would you consider to be your “mother tongue”, or most identified with your family? Check all that apply. ",
             "showOtherItem": true,
             "otherText": "Other",
             "otherPlaceholder": "Please specify",
+            "showNoneItem": true,
+            "noneValue": "preferNoAnswer",
+            "noneText": "Prefer not to answer",
             "choices": [
               {"text": "Assamese", "value": "assamese"},
               {"text": "Balochi", "value": "balochi"},
@@ -421,8 +543,7 @@
               {"text": "Sinhala", "value": "sinhala"},
               {"text": "Tamil", "value": "tamil"},
               {"text": "Telugu", "value": "telugu"},
-              {"text": "Urdu", "value": "urdu"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {"text": "Urdu", "value": "urdu"}
             ]
           }
 
@@ -436,7 +557,7 @@
           },{
             "name": "oh_oh_basic_settledOtherRegion",
             "type": "radiogroup",
-            "title": "Prior to coming to the USA, had you or your family settled (1 or more generations) in a different region? ",
+            "title": "Prior to coming to the USA, had you or your family settled (1 or more generations) in a different region of the world outside of South Asia?",
             "isRequired": true,
             "choices": [
               {"text": "No", "value": "no"},
@@ -445,7 +566,7 @@
           },{
             "name": "oh_oh_basic_settledOtherRegionDetail",
             "type": "checkbox",
-            "title": "Check all that apply.",
+            "title": "Which region(s)? Check all that apply.",
             "visibleIf": "{oh_oh_basic_settledOtherRegion} = 'yes'",
             "showOtherItem": true,
             "otherText": "Other",
@@ -456,6 +577,7 @@
               {"text": "Caribbean", "value": "caribbean"},
               {"text": "Fiji", "value": "fiji"},
               {"text": "South Africa/East Africa", "value": "southAfricaEastAfrica"},
+              {"text": "South America/Guyana", "value":  "southAmericaGuyana"},
               {"text": "UK/Europe", "value": "ukEurope"}
             ]
           },{
@@ -474,15 +596,34 @@
             "type": "radiogroup",
             "title": "What is your citizenship status? (This type of question helps us to ensure we are surveying a diverse group of South Asians in the US)  ",
             "choices": [
-              {"text": "United States-born citizen", "value": "unitedStatesBornCitizen"},
-              {"text": "Naturalized United States-citizen", "value": "naturalizedUnitedStatesCitizen"},
+              {"text": "US citizen", "value": "usCitizen"},
               {"text": "Non-United States citizenship", "value": "nonUnitedStatesCitizenship"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "oh_oh_basic_citizenship_us",
+            "type": "radiogroup",
+            "title": "How did you get your U.S. citizenship?",
+            "visibleIf": "{oh_oh_basic_citizenship} = 'usCitizen'",
+            "choices": [
+              {"text": "Citizenship by birth", "value": "unitedStatesBornCitizen"},
+              {"text": "Naturalized United States citizen", "value": "naturalizedUnitedStatesCitizen"}
+            ]
+          },{
+            "name": "oh_oh_basic_residencyInUS",
+            "type": "radiogroup",
+            "title": "When did you arrive the in the US?",
+            "choices": [
+              {"text": "I was born in the US.", "value": "bornInTheUs"},
+              {"text": "I came to the US after I was born.", "value": "cameToTheUs"},
+              {"text": "I do not primarily reside in the US.", "value": "doNotPrimarilyResideInTheUs"},
               {"text": "Prefer not to answer", "value": "preferNoAnswer"}
             ]
           },{
             "name": "oh_oh_basic_yearCameToUS",
             "type": "dropdown",
-            "title": "In what year did you come to live in the United States? ",
+            "visibleIf": "{oh_oh_basic_residencyInUS} = 'cameToTheUs'",
+            "title": "In what year did you come to live in the United States?",
             "choices": [
               {"text": "1920", "value": "1920"},
               {"text": "1921", "value": "1921"},
@@ -590,15 +731,6 @@
               {"text": "2023", "value": "2023"},
               {"text": "2024", "value": "2024"}
             ]
-          },{
-            "name": "oh_oh_basic_residencyOther",
-            "type": "radiogroup",
-            "title": "OR ",
-            "choices": [
-              {"text": "I was born in the US.", "value": "bornInTheUs"},
-              {"text": "I do not primarily reside in the US.", "value": "doNotPrimarilyResideInTheUs"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
-            ]
           }
         ]
       }, {
@@ -665,6 +797,9 @@
             "showOtherItem": true,
             "otherText": "Other",
             "otherPlaceholder": "Please specify",
+            "showNoneItem": true,
+            "noneText": "Prefer not to answer",
+            "noneValue": "preferNoAnswer",
             "choices": [
               {"text": "Buddhist", "value": "buddhist"},
               {"text": "Christian", "value": "christian"},
@@ -674,8 +809,7 @@
               {"text": "Muslim", "value": "muslim"},
               {"text": "Sikh", "value": "sikh"},
               {"text": "Zoroastrian", "value": "zoroastrian"},
-              {"text": "Atheist/Agnostic", "value": "atheistAgnostic"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {"text": "Atheist/Agnostic", "value": "atheistAgnostic"}
             ]
           },{
             "name": "oh_oh_basic_howImportantReligion",
@@ -696,6 +830,9 @@
             "name": "oh_oh_basic_employmentStatus",
             "type": "checkbox",
             "title": "What is your current employment status? Check all that apply. ",
+            "showNoneItem": true,
+            "noneText": "None of the above",
+            "noneValue": "noneOfAbove",
             "choices": [
               {"text": "Paid employment or self employed", "value": "paidEmploymentOrSelfEmployed"},
               {"text": "Retired", "value": "retired"},
@@ -703,7 +840,6 @@
               {"text": "Looking after home or family", "value": "lookingAfterHomeOrFamily"},
               {"text": "Unable to work due to sickness or disability", "value": "unableToWork"},
               {"text": "Full or Part Time student", "value": "fullOrPartTimeStudent"},
-              {"text": "None of the above", "value": "noneOfTheAbove"},
               {"text": "Prefer not to answer", "value": "preferNoAnswer"}
             ]
           },{
@@ -716,7 +852,7 @@
               {"text": "$50,000-$99,999", "value": "50to99k"},
               {"text": "$100,000-$199,999", "value": "100kTo199k"},
               {"text": "$200,000-$999,999", "value": "200kTo1m"},
-              {"text": "More than 1,000,000", "value": "moreThan1m"}
+              {"text": "More than $1,000,000", "value": "moreThan1m"}
             ]
           },{
             "name": "oh_oh_basic_ownOrRent",
