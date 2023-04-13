@@ -15,7 +15,7 @@
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true,
-        "emailSourceAddress": "dbush@broadinstitute.org"
+        "emailSourceAddress": "info@ourhealthstudy.org"
       },
       "siteContentPopDto": {
         "populateFileName": "siteContent/siteContent.json"
