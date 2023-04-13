@@ -285,7 +285,17 @@
               {"text": "285lbs (129kg)", "value": "129"},
               {"text": "290lbs (132kg)", "value": "132"},
               {"text": "295lbs (134kg)", "value": "134"},
-              {"text": "300lbs (136kg)", "value": "136"}
+              {"text": "300lbs (136kg)", "value": "136"},
+              {"text": "305lbs (138kg)", "value": "138"},
+              {"text": "310lbs (141kg)", "value": "141"},
+              {"text": "315lbs (143kg)", "value": "143"},
+              {"text": "320lbs (145kg)", "value": "145"},
+              {"text": "325lbs (148kg)", "value": "148"},
+              {"text": "330lbs (150kg)", "value": "150"},
+              {"text": "335lbs (152kg)", "value": "152"},
+              {"text": "340lbs (154kg)", "value": "154"},
+              {"text": "345lbs (157kg)", "value": "157"},
+              {"text": "350lbs (159kg)", "value": "159"}
             ]
           }
         ]
