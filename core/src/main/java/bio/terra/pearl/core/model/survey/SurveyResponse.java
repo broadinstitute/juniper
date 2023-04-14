@@ -22,10 +22,11 @@ public class SurveyResponse extends BaseEntity {
     private UUID creatingParticipantUserId;
     private UUID creatingAdminUserId;
     private UUID surveyId;
-    private UUID lastSnapshotId;
+    // the latest survey data JSON, stored as a string for performance/convenience
+    // this is the result of running merge on all the snapshots in order
+    private String latestData;
     @Builder.Default
     private boolean complete = false;
-    private ResponseSnapshot lastSnapshot;
     @Builder.Default
     private Set<ResponseSnapshot> snapshots = new HashSet<>();
 }

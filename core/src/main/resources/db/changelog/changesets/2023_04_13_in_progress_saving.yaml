@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: "in_progress_saving"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: survey_response
+            columns:
+              - column: { name: latest_data, type: text }
+        - dropColumn:
+            tableName: survey_response
+            columns:
+              - column: { name: last_snapshot_id }
+        - addColumn:
+            tableName: response_snapshot
+            columns:
+              - column: { name: diff, type: text, constraints: { nullable: false } }
+        - dropColumn:
+            tableName: response_snapshot
+            columns:
+              - column: { name: full_data }
+              - column: { name: resume_data }

@@ -402,7 +402,7 @@
             "choices": [
               {"text": "African American/Black", "value": "black"},
               {"text": "Caucasian/White", "value": "white"},
-              {"text": "East of Southeast Asian", "value": "eastOfSoutheastAsian"},
+              {"text": "East or Southeast Asian", "value": "eastOfSoutheastAsian"},
               {"text": "Native American (American Indian or Alaska Native)", "value": "nativeAmerican"},
               {"text": "Native Hawaiian or Other Pacific Islander", "value": "pacificIslander"}
             ]
