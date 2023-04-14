@@ -27,4 +27,7 @@ public class CreateDatasetJobDao extends BaseMutableJdbiDao<CreateDatasetJob> {
         updateProperty(id, "status", newJobStatus);
     }
 
+    public void deleteByStudyEnvironmentId(UUID studyEnvId) {
+        deleteByProperty("study_environment_id", studyEnvId);
+    }
 }

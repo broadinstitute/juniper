@@ -17,4 +17,8 @@ public class CreateDatasetJobService extends CrudService<CreateDatasetJob, Creat
     public void updateJobStatus(UUID id, String newJobStatus) {
         dao.updateJobStatus(id, newJobStatus);
     }
+
+    public void deleteByStudyEnvironmentId(UUID studyEnvId) {
+        dao.deleteByStudyEnvironmentId(studyEnvId);
+    }
 }
