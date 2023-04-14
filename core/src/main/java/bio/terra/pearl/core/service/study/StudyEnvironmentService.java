@@ -12,6 +12,8 @@ import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.datarepo.CreateDatasetJobService;
+import bio.terra.pearl.core.service.datarepo.DatasetService;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import java.util.*;
@@ -26,6 +28,8 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     private StudyEnvironmentConsentDao studyEnvironmentConsentDao;
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
     private NotificationConfigService notificationConfigService;
+    private DatasetService datasetService;
+    private CreateDatasetJobService createDatasetJobService;
 
 
     public StudyEnvironmentService(StudyEnvironmentDao studyEnvironmentDao,
@@ -33,7 +37,10 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
                                    StudyEnvironmentConfigService studyEnvironmentConfigService,
                                    EnrolleeService enrolleeService,
                                    StudyEnvironmentConsentDao studyEnvironmentConsentDao,
-                                   PreEnrollmentResponseDao preEnrollmentResponseDao, NotificationConfigService notificationConfigService) {
+                                   PreEnrollmentResponseDao preEnrollmentResponseDao,
+                                   NotificationConfigService notificationConfigService,
+                                   DatasetService datasetService,
+                                   CreateDatasetJobService createDatasetJobService) {
         super(studyEnvironmentDao);
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
         this.studyEnvironmentConfigService =  studyEnvironmentConfigService;
@@ -41,6 +48,8 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         this.studyEnvironmentConsentDao = studyEnvironmentConsentDao;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.notificationConfigService = notificationConfigService;
+        this.datasetService = datasetService;
+        this.createDatasetJobService = createDatasetJobService;
     }
 
     public Set<StudyEnvironment> findByStudy(UUID studyId) {
@@ -89,6 +98,8 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         studyEnvironmentConsentDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         notificationConfigService.deleteByStudyEnvironmentId(studyEnvironmentId);
         preEnrollmentResponseDao.deleteByStudyEnvironmentId(studyEnvironmentId);
+        createDatasetJobService.deleteByStudyEnvironmentId(studyEnvironmentId);
+        datasetService.deleteByStudyEnvironmentId(studyEnvironmentId);
         dao.delete(studyEnvironmentId);
         if (studyEnv.getStudyEnvironmentConfigId() != null) {
             studyEnvironmentConfigService.delete(studyEnv.getStudyEnvironmentConfigId());
