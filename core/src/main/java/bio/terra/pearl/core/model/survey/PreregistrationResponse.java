@@ -25,6 +25,7 @@ public class PreregistrationResponse extends BaseEntity {
     private UUID creatingParticipantUserId;
     private UUID surveyId;
     private UUID portalEnvironmentId;
+    // a list of Answers, stored as JSON
     private String fullData;
     @Builder.Default
     private boolean qualified = false; // whether or not the responses meet the criteria for eligibility.

@@ -20,3 +20,30 @@ databaseChangeLog:
             columns:
               - column: { name: full_data }
               - column: { name: resume_data }
+        - createTable:
+            tableName: answer
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: creating_participant_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_answer_participant_user, references: participant_user(id) }
+              }
+              - column: { name: creating_admin_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_answer_admin_user, references: admin_user(id) }
+              }
+              - column: { name: enrollee_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_answer_enrollee, references: enrollee(id) }
+              }
+              - column: { name: survey_response_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_answer_survey_response, references: survey_response(id) }
+              }
+              - column: { name: value, type: text }
+              - column: { name: display_value, type: text }
+              - column: { name: question_stable_id, type: text, constraints: { nullable: false } }
+              - column: { name: survey_stable_id, type: text, constraints: { nullable: false } }
+              - column: { name: survey_version, type: integer, constraints: { nullable: false } }
+              - column: { name: active, type: boolean, constraints: { nullable: false } }
+        - sql: # check that one and only one of the user_id columns is specified
+            sql: alter table answer add constraint chk_answer_has_user check ((creating_participant_user_id is null) != (creating_admin_user_id is null));
+
