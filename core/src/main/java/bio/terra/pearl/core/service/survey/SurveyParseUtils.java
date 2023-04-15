@@ -66,7 +66,7 @@ public class SurveyParseUtils {
         Map<String, String> choices = new HashMap<>();
         for(JsonNode choice : question.get("choices")) {
             // if all text/value pairs are the same, surveyjs transforms the choices into an array of strings.  grrrr...
-            if (choice.get("text") == null) {
+            if (choice.isTextual()) {
                 choices.put(choice.asText(), choice.asText());
             } else {
                 choices.put(choice.get("value").asText(), choice.get("text").asText());
