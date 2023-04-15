@@ -22,7 +22,10 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
         return dao.findBySurvey(studyEnvId, surveyId);
     }
 
-    public Optional<StudyEnvironmentSurvey> findBySurveyOrUpdate(UUID studyEnvId, UUID surveyId) {
-        return dao.findBySurvey(studyEnvId, surveyId);
+    public Optional<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, String stableId) {
+        var configs = dao.findBySurvey(studyEnvId, stableId);
+        // we don't yet have robust support for having multiple surveys with the same stableId configured for an
+        // environment.  For now, just pick one
+        return configs.stream().findFirst();
     }
 }

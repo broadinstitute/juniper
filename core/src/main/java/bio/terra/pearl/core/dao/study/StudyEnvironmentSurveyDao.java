@@ -46,8 +46,21 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
     }
 
     /** finds by a surveyId and studyEnvironment */
-    public Optional<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, UUID consentFormId) {
+    public Optional<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, UUID surveyId) {
         return findByTwoProperties("study_environment_id",studyEnvId,
-                "survey_id", consentFormId);
+                "survey_id", surveyId);
+    }
+
+    public List<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, String surveyStableId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select " + prefixedGetQueryColumns("a") + " from " + tableName +
+                                " a join survey on survey.id = a.survey_id" +
+                                " where survey.stable_id = :stableId " +
+                                " and a.study_environment_id = :studyEnvId;")
+                        .bind("stableId", surveyStableId)
+                        .bind("studyEnvId", studyEnvId)
+                        .mapTo(clazz)
+                        .list()
+        );
     }
 }
