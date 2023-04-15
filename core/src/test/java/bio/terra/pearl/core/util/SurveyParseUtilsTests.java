@@ -124,4 +124,24 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
 
         Assertions.assertEquals(expected, actual);
     }
+
+    @Test
+    public void testResolvingQuestionDropdown() throws JsonProcessingException {
+        String questionWithChoices = """
+                {
+                  "name": "oh_oh_cardioHx_coronaryDiseaseProcedure",
+                  "type": "dropdown",
+                  "title": "Have you had any of the following treatments?",
+                  "choices": [ "foo", "bar", "baz"]
+                }""";
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode questionNode = mapper.readTree(questionWithChoices);
+
+        String actual = SurveyParseUtils.unmarshalSurveyQuestionChoices(questionNode);
+        String expected = """
+                {"bar":"bar","foo":"foo","baz":"baz"}""";
+
+        Assertions.assertEquals(expected, actual);
+    }
 }
