@@ -1,13 +1,16 @@
 import React from 'react'
 import SurveyFullDataView from './SurveyFullDataView'
-import { PreregistrationResponse, Survey } from 'api/api'
+import { Answer, PreregistrationResponse, Survey } from 'api/api'
 
 /** show a preEnrollment response */
 export default function PreEnrollmentView({ preEnrollResponse, preEnrollSurvey }:
 {preEnrollResponse?: PreregistrationResponse, preEnrollSurvey: Survey}) {
+  if (!preEnrollResponse) {
+    return <span className="text-muted fst-italic"> no pre-enrollment data</span>
+  }
+  const answers: Answer[] = JSON.parse(preEnrollResponse.fullData)
   return <div>
-    <h5>Pre-enrollment responses</h5>
-    {!preEnrollResponse && <span className="detail"> no pre-enrollment data</span> }
-    {preEnrollResponse && <SurveyFullDataView fullData={preEnrollResponse?.fullData} survey={preEnrollSurvey}/>}
+    <h5>Pre-enrollment response</h5>
+    {preEnrollResponse && <SurveyFullDataView answers={answers} survey={preEnrollSurvey}/>}
   </div>
 }

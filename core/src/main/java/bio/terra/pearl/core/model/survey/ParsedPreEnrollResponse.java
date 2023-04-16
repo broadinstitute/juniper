@@ -11,5 +11,5 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 public class ParsedPreEnrollResponse extends PreEnrollmentResponse {
-    private List<Answer> parsedData;
+    private List<Answer> answers;
 }

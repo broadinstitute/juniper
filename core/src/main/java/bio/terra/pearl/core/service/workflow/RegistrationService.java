@@ -6,13 +6,12 @@ import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
-import bio.terra.pearl.core.model.survey.ParsedSnapshot;
 import bio.terra.pearl.core.model.survey.PreregistrationResponse;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import bio.terra.pearl.core.service.survey.SnapshotProcessingService;
+import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import java.util.Map;
 import java.util.Optional;
@@ -32,7 +31,7 @@ public class RegistrationService {
     private SurveyService surveyService;
     private PortalEnvironmentService portalEnvService;
     private PreregistrationResponseDao preregistrationResponseDao;
-    private SnapshotProcessingService snapshotProcessingService;
+    private AnswerProcessingService answerProcessingService;
     private ParticipantUserService participantUserService;
     private PortalParticipantUserService portalParticipantUserService;
     private EventService eventService;
@@ -40,13 +39,13 @@ public class RegistrationService {
     public RegistrationService(SurveyService surveyService,
                                PortalEnvironmentService portalEnvService,
                                PreregistrationResponseDao preregistrationResponseDao,
-                               SnapshotProcessingService snapshotProcessingService,
+                               AnswerProcessingService answerProcessingService,
                                ParticipantUserService participantUserService,
                                PortalParticipantUserService portalParticipantUserService, EventService eventService) {
         this.surveyService = surveyService;
         this.portalEnvService = portalEnvService;
         this.preregistrationResponseDao = preregistrationResponseDao;
-        this.snapshotProcessingService = snapshotProcessingService;
+        this.answerProcessingService = answerProcessingService;
         this.participantUserService = participantUserService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.eventService = eventService;
@@ -77,14 +76,6 @@ public class RegistrationService {
 
     public record RegistrationResult(ParticipantUser participantUser,
                                      PortalParticipantUser portalParticipantUser) {}
-
-    /** creates a new PortalParticipantUser, and also a new ParticipantUser if necessary */
-    @Transactional
-    public RegistrationResult register(String portalShortcode, EnvironmentName environmentName,
-                         ParsedSnapshot response, UUID preRegResponseId) {
-        RequiredRegistrationInfo info = extractRegistrationValues(response);
-        return register(portalShortcode, environmentName, preRegResponseId, info);
-    }
 
     @Transactional
     public RegistrationResult register(String portalShortcode, EnvironmentName environmentName,
@@ -157,10 +148,6 @@ public class RegistrationService {
         private String email;
     }
 
-    protected RequiredRegistrationInfo extractRegistrationValues(ParsedSnapshot data) {
-        return snapshotProcessingService.extractValues(data,
-                REGISTRATION_FIELD_MAP, RegistrationService.RequiredRegistrationInfo.class);
-    }
 
     /** we'll likely want to move this into the database at some point along with the registration survey */
     public static final Map<String, String> REGISTRATION_FIELD_MAP = Map.of(

@@ -11,5 +11,6 @@ import java.util.Set;
 public class SurveyResponsePopDto extends SurveyResponse {
     private String surveyStableId;
     private int surveyVersion;
-    private Set<ResponseSnapshotPopDto> responseSnapshotDtos;
+    private Set<AnswerPopDto> answerPopDtos;
+    private int currentPageNo;
 }

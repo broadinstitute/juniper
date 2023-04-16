@@ -5,6 +5,7 @@ import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.consent.ConsentFormFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
+import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponseDto;
@@ -12,9 +13,9 @@ import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.survey.ResponseSnapshotDto;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
@@ -28,6 +29,7 @@ import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Test;
@@ -118,13 +120,13 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         assertThat(surveyTasks.get(0).getTargetStableId(), equalTo(survey.getStableId()));
 
         // now try to complete the survey
-        ResponseSnapshotDto snapDto = ResponseSnapshotDto.builder()
-                        .fullData("{ \"items\": [{ \"simpleValue\": 1, \"stableId\": \"foo\"]}")
+        SurveyResponse survResponseDto = SurveyResponse.builder()
+                        .answers(AnswerFactory.fromMap(Map.of("sampleQuestion", "foo")))
                         .complete(true)
                         .resumeData("stuff")
                         .build();
-        hubResponse = surveyResponseService.submitResponse(userBundle.user().getId(), userBundle.ppUser(),
-                enrollee, surveyTasks.get(0).getId(), snapDto);
+        hubResponse = surveyResponseService.submitResponse(survResponseDto, userBundle.user().getId(), userBundle.ppUser(),
+                enrollee, surveyTasks.get(0).getId());
         List<ParticipantTask> updatedTasks = participantTaskService.findByEnrolleeId(enrollee.getId());
         assertThat(updatedTasks, containsInAnyOrder(hubResponse.getTasks().toArray()));
         List<ParticipantTask>  updateSurveyTasks = updatedTasks.stream().filter(task -> task.getTaskType().equals(TaskType.SURVEY)).toList();

@@ -1,15 +1,17 @@
 package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.factory.survey.ResponseSnapshotFactory;
+import bio.terra.pearl.core.factory.DaoTestUtils;
+import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
+import java.util.List;
+import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class SurveyResponseServiceTests extends BaseSpringBootTest {
     @Autowired
     private SurveyResponseFactory surveyResponseFactory;
-    @Autowired
-    private ResponseSnapshotFactory responseSnapshotFactory;
     @Autowired
     private SurveyResponseService surveyResponseService;
     @Autowired
@@ -43,14 +43,21 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testSurveyResponseWithSnapshot() {
         String testName = "testSurveyResponseCrud";
+        List<Answer> answers = AnswerFactory.fromMap(Map.of("foo", "bar", "test1", "ans1"));
         SurveyResponse surveyResponse = surveyResponseFactory.builderWithDependencies(testName)
+                .answers(answers)
                 .build();
-        ResponseSnapshot firstSnapshot = responseSnapshotFactory.builder(testName).build();
-        surveyResponse.getSnapshots().add(firstSnapshot);
+
         SurveyResponse savedResponse = surveyResponseService.create(surveyResponse);
-        Assertions.assertNotNull(savedResponse.getId());
-        Assertions.assertNotNull(savedResponse.getLastSnapshotId());
-        Assertions.assertEquals(savedResponse.getLastSnapshot().getFullData(), firstSnapshot.getFullData());
+        DaoTestUtils.assertGeneratedProperties(savedResponse);
+        assertThat(savedResponse.getAnswers(), hasSize(2));
+        Answer fooAnswer = savedResponse.getAnswers().stream()
+                .filter(ans -> ans.getQuestionStableId().equals("foo")).findFirst().get();
+        assertThat(fooAnswer.getAnswerType(), equalTo(AnswerType.STRING));
+        assertThat(fooAnswer.getEnrolleeId(), equalTo(surveyResponse.getEnrolleeId()));
+        assertThat(fooAnswer.getSurveyResponseId(), equalTo(surveyResponse.getId()));
+        assertThat(fooAnswer.getStringValue(), equalTo("bar"));
+        assertThat(fooAnswer.getCreatingParticipantUserId(), equalTo(surveyResponse.getCreatingParticipantUserId()));
 
         // attach the form to a study environment so we can test full retrieval
         Enrollee enrollee = enrolleeService.find(savedResponse.getEnrolleeId()).get();
@@ -65,7 +72,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 survey.getStableId(), survey.getVersion(), enrollee, null);
         assertThat(survWithResponse, notNullValue());
         assertThat(survWithResponse.surveyResponse(), notNullValue());
-        assertThat(survWithResponse.surveyResponse().getLastSnapshot().getFullData(), equalTo(firstSnapshot.getFullData()));
+        assertThat(survWithResponse.surveyResponse().getAnswers(), hasSize(2));
         assertThat(survWithResponse.studyEnvironmentSurvey().getSurveyOrder(), equalTo(2));
         assertThat(survWithResponse.studyEnvironmentSurvey().getSurvey().getId(),
                 equalTo(survey.getId()));

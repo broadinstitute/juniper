@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.survey;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
@@ -20,7 +21,10 @@ public class SurveyResponse extends BaseEntity {
     private UUID creatingParticipantUserId;
     private UUID creatingAdminUserId;
     private UUID surveyId;
-    private List<Answer> answers;
+    @Builder.Default
+    private List<Answer> answers = new ArrayList<>();
     @Builder.Default
     private boolean complete = false;
+    // json map of userId -> { currentPageNo }
+    private String resumeData;
 }

@@ -1,22 +1,19 @@
 package bio.terra.pearl.core.dao.survey;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
-import bio.terra.pearl.core.model.survey.ResponseSnapshot;
+import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
+import java.util.*;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
 @Component
 public class SurveyResponseDao extends BaseMutableJdbiDao<SurveyResponse> {
-    private ResponseSnapshotDao responseSnapshotDao;
+    private AnswerDao answerDao;
 
-    public SurveyResponseDao(Jdbi jdbi, ResponseSnapshotDao responseSnapshotDao) {
+    public SurveyResponseDao(Jdbi jdbi, AnswerDao answerDao) {
         super(jdbi);
-        this.responseSnapshotDao = responseSnapshotDao;
+        this.answerDao = answerDao;
     }
 
 
@@ -29,20 +26,36 @@ public class SurveyResponseDao extends BaseMutableJdbiDao<SurveyResponse> {
         return findAllByProperty("enrollee_id", enrolleeId);
     }
 
-    public List<SurveyResponse> findByEnrolleeIdWithLastSnapshot(UUID enrolleeId) {
+    /**
+     * this avoids N+1 querying, but is otherwise unoptimized. It grabs all the responses, then all the answers
+     */
+    public List<SurveyResponse> findByEnrolleeIdWithAnswers(UUID enrolleeId) {
         List<SurveyResponse> responses = findAllByProperty("enrollee_id", enrolleeId);
-        List<UUID> snapshotIds = responses.stream().map(response -> response.getLastSnapshotId()).toList();
-        List<ResponseSnapshot> snapshots = responseSnapshotDao.findAll(snapshotIds);
+        List<Answer> answers = answerDao.findByEnrolleeId(enrolleeId);
+        // build a map of id -> response for more efficient assignment of answers
+        Map<UUID, SurveyResponse> responseById = new HashMap<>();
         for (SurveyResponse response : responses) {
-            response.setLastSnapshot(snapshots.stream()
-                    .filter(snap -> snap.getId().equals(response.getLastSnapshotId())).findFirst().orElse(null));
+            responseById.put(response.getId(), response);
+        }
+        for (Answer answer : answers) {
+            responseById.get(answer.getSurveyResponseId()).getAnswers().add(answer);
         }
         return responses;
     }
 
-    public Optional<SurveyResponse> findOneWithLastSnapshot(UUID responseId) {
-        return findWithChild(responseId, "lastSnapshotId",
-                "lastSnapshot", responseSnapshotDao);
+    public Optional<SurveyResponse> findOneWithAnswers(UUID responseId) {
+        Optional<SurveyResponse> responseOpt = find(responseId);
+        responseOpt.ifPresent(response -> {
+            attachAnswers(response);
+        });
+        return responseOpt;
+    }
+
+    /** attaches answers to the passed-in response, and then returns it */
+    public SurveyResponse attachAnswers(SurveyResponse response) {
+        List<Answer> answers = answerDao.findByResponse(response.getId());
+        response.setAnswers(answers);
+        return response;
     }
 
     public Optional<SurveyResponse> findMostRecent(UUID enrolleeId, UUID surveyId) {
@@ -55,18 +68,4 @@ public class SurveyResponseDao extends BaseMutableJdbiDao<SurveyResponse> {
                         .findOne()
         );
     }
-
-    /**
-     * clears the lastSnapshotId.  this is necessary in some cases to enable
-     * deletion, since that snapshot is bidirectionally linked to the response
-     */
-    public void clearLastSnapshotId(UUID responseId) {
-        updateProperty(responseId, "last_snapshot_id", null);
-    }
-
-    public void updateLastSnapshotId(UUID responseId, UUID lastSnapshotId) {
-        updateProperty(responseId, "last_snapshot_id", lastSnapshotId);
-    }
-
-
 }

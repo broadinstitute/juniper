@@ -73,7 +73,7 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
 
     /** loads child relationships including survey responses, profile, etc... */
     public Enrollee loadForAdminView(Enrollee enrollee) {
-        enrollee.getSurveyResponses().addAll(surveyResponseDao.findByEnrolleeIdWithLastSnapshot(enrollee.getId()));
+        enrollee.getSurveyResponses().addAll(surveyResponseDao.findByEnrolleeIdWithAnswers(enrollee.getId()));
         enrollee.getConsentResponses().addAll(consentResponseDao.findByEnrolleeId(enrollee.getId()));
         enrollee.setProfile(profileDao.loadWithMailingAddress(enrollee.getProfileId()).get());
         enrollee.getParticipantTasks().addAll(participantTaskDao.findByEnrolleeId(enrollee.getId()));

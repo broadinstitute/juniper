@@ -6,7 +6,6 @@ import bio.terra.pearl.api.participant.service.CurrentUnauthedUserService;
 import bio.terra.pearl.api.participant.service.CurrentUserService;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.survey.ParsedSnapshot;
 import bio.terra.pearl.core.service.workflow.RegistrationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
@@ -52,12 +51,12 @@ public class RegistrationController implements RegistrationApi {
 
   @Override
   public ResponseEntity<Object> internalRegister(
-      String portalShortcode, String envName, UUID preRegResponseId, Object body) {
-    ParsedSnapshot response = objectMapper.convertValue(body, ParsedSnapshot.class);
+      String portalShortcode, String envName, UUID preRegResponseId, RegistrationInfo body) {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
-    RegistrationService.RegistrationResult registrationResult =
-        registrationService.register(portalShortcode, environmentName, response, preRegResponseId);
+    var registrationResult =
+        registrationService.register(
+            portalShortcode, environmentName, body.getEmail(), preRegResponseId);
     // log in the user if not already
     if (registrationResult.participantUser().getToken() == null) {
       CurrentUserService.UserWithEnrollees loggedInUser =

@@ -36,8 +36,7 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, responses }:
   }
   // just show the last response for now
   const lastResponse = responses[responses.length - 1]
-  const lastSnapshot = lastResponse.lastSnapshot
-  if (!lastSnapshot) {
+  if (!lastResponse.answers?.length) {
     return <div>Most recent response has no data yet </div>
   }
 
@@ -49,7 +48,7 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, responses }:
         {isEditing ? 'cancel' : 'update / edit'}
       </button>
       <hr/>
-      {!isEditing && <SurveyFullDataView fullData={lastSnapshot.fullData} survey={configSurvey.survey}/> }
+      {!isEditing && <SurveyFullDataView answers={lastResponse.answers} survey={configSurvey.survey}/> }
       {isEditing && <SurveyEditView survey={configSurvey.survey} response={lastResponse}/>}
     </div>
   </div>
