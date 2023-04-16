@@ -32,6 +32,20 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
         return findAllByProperty("enrollee_id", enrolleeId);
     }
 
+    /** Attempts to find a task for the given activity and study.  If there are multiple, it will return the first */
+    public Optional<ParticipantTask> findTaskForActivity(UUID ppUserId, UUID studyEnvironmentId, String activityStableId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from " + tableName + " where portal_participant_user_id = :ppUserId "
+                                + " and target_stable_id = :activityStableId and study_environment_id = :studyEnvironmentId"
+                        )
+                        .bind("ppUserId", ppUserId)
+                        .bind("activityStableId", activityStableId)
+                        .bind("studyEnvironmentId", studyEnvironmentId)
+                        .mapTo(clazz)
+                        .stream().findFirst()
+        );
+    }
+
     public Optional<ParticipantTask> findByPortalParticipantUserId(UUID taskId, UUID ppUserId) {
         return findByTwoProperties("id", taskId, "portal_participant_user_id", ppUserId);
     }

@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
-import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.*;
@@ -105,7 +104,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
      * Creates a survey response and fires appropriate downstream events. 
      */
     @Transactional
-    public HubResponse<ConsentResponse> submitResponse(SurveyResponse responseDto, UUID participantUserId,
+    public HubResponse<SurveyResponse> submitResponse(SurveyResponse responseDto, UUID participantUserId,
                                                        PortalParticipantUser ppUser,
                                                        Enrollee enrollee, UUID taskId) {
 
@@ -131,7 +130,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
 
         EnrolleeSurveyEvent event = eventService.publishEnrolleeSurveyEvent(enrollee, response, ppUser);
         logger.info("SurveyReponse received -- enrollee: {}, surveyStabledId: {}", enrollee.getShortcode(), survey.getStableId());
-        HubResponse hubResponse = eventService.buildHubResponse(event, response);
+        HubResponse<SurveyResponse> hubResponse = eventService.buildHubResponse(event, response);
         return hubResponse;
     }
 

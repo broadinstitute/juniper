@@ -90,7 +90,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         this.profileService = profileService;
     }
 
-    private void populateResponse(Enrollee enrollee, SurveyResponsePopDto responsePopDto, PortalParticipantUser ppUser)
+    private void populateResponse(Enrollee enrollee, SurveyResponsePopDto responsePopDto,
+                                  PortalParticipantUser ppUser, boolean simulateSubmissions)
             throws JsonProcessingException {
         Survey survey = surveyService.findByStableIdWithMappings(responsePopDto.getSurveyStableId(),
                 responsePopDto.getSurveyVersion()).get();
@@ -104,7 +105,16 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             Answer answer = convertAnswerPopDto(answerPopDto);
             response.getAnswers().add(answer);
         }
-        SurveyResponse savedResponse = surveyResponseService.create(response);
+        SurveyResponse savedResponse;
+        if (simulateSubmissions) {
+            ParticipantTask task = participantTaskService
+                    .findTaskForActivity(ppUser.getId(), enrollee.getStudyEnvironmentId(), survey.getStableId()).get();
+            HubResponse<SurveyResponse> hubResponse = surveyResponseService
+                    .submitResponse(response, ppUser.getParticipantUserId(), ppUser, enrollee, task.getId());
+            savedResponse = hubResponse.getResponse();
+        } else {
+            savedResponse = surveyResponseService.create(response);
+        }
         enrollee.getSurveyResponses().add(savedResponse);
     }
 
@@ -275,7 +285,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         }
 
         for (SurveyResponsePopDto responsePopDto : popDto.getSurveyResponseDtos()) {
-            populateResponse(enrollee, responsePopDto, ppUser);
+            populateResponse(enrollee, responsePopDto, ppUser, popDto.isSimulateSubmissions());
         }
         for (ConsentResponsePopDto consentPopDto : popDto.getConsentResponseDtos()) {
             populateConsent(enrollee, ppUser, consentPopDto, tasks, popDto.isSimulateSubmissions());
