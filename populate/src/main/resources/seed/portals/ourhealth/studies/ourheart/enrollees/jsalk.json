@@ -10,7 +10,8 @@
       {"questionStableId":"oh_oh_preenroll_southAsianAncestry", "stringValue": "yes"},
       {"questionStableId":"oh_oh_preenroll_understandsEnglish", "stringValue": "yes"},
       {"questionStableId":"oh_oh_preenroll_isAdult", "stringValue": "yes"},
-      {"questionStableId":"oh_oh_preenroll_livesInUS", "stringValue": "yes"}
+      {"questionStableId":"oh_oh_preenroll_livesInUS", "stringValue": "yes"},
+      {"questionStableId":"qualified", "booleanValue": true}
     ]
   },
   "surveyResponseDtos": [
@@ -18,7 +19,8 @@
       "surveyStableId": "oh_oh_cardioHx",
       "surveyVersion": 1,
       "answerPopDtos": [
-        { "questionStableId": "oh_oh_cardioHx_worriedHeartHealth", "stringValue": "yesSpecificallyAboutMyHeart"}
+        { "questionStableId": "oh_oh_cardioHx_worriedHeartHealth", "stringValue": "yesSpecificallyAboutMyHeart"},
+        { "questionStableId": "oh_oh_cardioHx_diagnosedHeartConditions", "objectJsonValue": ["bleedingDisorder", "anemia"]}
       ],
       "currentPageNo": 2
     }, {

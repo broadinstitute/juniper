@@ -253,14 +253,15 @@ export type Answer = {
   stringValue?: string,
   numberValue?: number,
   booleanValue?: boolean,
-  objectValue?: object | null,
+  objectValue?: string,
   questionStableId: string
 }
 
 export type HubResponse = {
   enrollee: Enrollee,
   tasks: ParticipantTask[],
-  response: object
+  response: object,
+  profile: Profile
 }
 
 export type PortalParticipantUser = {

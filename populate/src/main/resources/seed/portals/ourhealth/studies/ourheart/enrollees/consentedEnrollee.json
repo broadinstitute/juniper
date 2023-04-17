@@ -10,7 +10,8 @@
       {"questionStableId":"oh_oh_preenroll_southAsianAncestry", "stringValue": "yes"},
       {"questionStableId":"oh_oh_preenroll_understandsEnglish", "stringValue": "yes"},
       {"questionStableId":"oh_oh_preenroll_isAdult", "stringValue": "yes"},
-      {"questionStableId":"oh_oh_preenroll_livesInUS", "stringValue": "yes"}
+      {"questionStableId":"oh_oh_preenroll_livesInUS", "stringValue": "yes"},
+      {"questionStableId":"qualified", "booleanValue": true}
     ]
   },
   "simulateSubmissions": true,

@@ -125,9 +125,10 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         return null;
     }
 
-    public Answer convertAnswerPopDto(AnswerPopDto popDto) {
-        // for now, do nothing -- SurveyResponse service takes care of setting the answer fields like enrolleeId
-        // later, this will likely need to convert json values or otherwise handle convenience setters
+    public Answer convertAnswerPopDto(AnswerPopDto popDto) throws JsonProcessingException {
+        if (popDto.getObjectJsonValue() != null) {
+            popDto.setObjectValue(objectMapper.writeValueAsString(popDto.getObjectJsonValue()));
+        }
         return popDto;
     }
 

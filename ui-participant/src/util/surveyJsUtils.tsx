@@ -216,7 +216,7 @@ type ValueType = string | boolean | number | object | null
 export function getResumeData(surveyJSModel: SurveyModel, participantUserId: string | null): string {
   const resumeData: Record<string, UserResumeData> = {}
   if (participantUserId) {
-    resumeData[participantUserId] = {currentPageNo: surveyJSModel?.currentPageNo}
+    resumeData[participantUserId] = {currentPageNo: surveyJSModel.currentPageNo + 1}
   }
   return JSON.stringify(resumeData)
 }
@@ -240,7 +240,11 @@ export function makeSurveyJsData(resumeData: string | undefined, answers: Answer
   answers = answers ?? []
   const answerHash = answers.reduce(
     (hash: Record<string, ValueType>, answer: Answer) => {
-      hash[answer.questionStableId] = answer.stringValue ?? answer.numberValue ?? answer.objectValue ?? null
+      if (answer.objectValue) {
+        hash[answer.questionStableId] = JSON.parse(answer.objectValue)
+      } else {
+        hash[answer.questionStableId] = answer.stringValue ?? answer.numberValue ?? null
+      }
       return hash
     }, {})
   let currentPageNo = 0
@@ -266,7 +270,7 @@ function mapToAnswer(value: ValueType, questionStableId: string): Answer {
     // for now, we don't have a use case for booleans, so just convert them to strings
     answer.booleanValue = value
   } else {
-    answer.objectValue = value
+    answer.objectValue = JSON.stringify(value)
   }
   return answer
 }

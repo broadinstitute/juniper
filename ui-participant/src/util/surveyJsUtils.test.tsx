@@ -161,5 +161,12 @@ test('gets numeric answers from survey model', () => {
   expect(answers).toContainEqual({questionStableId: 'numberQ', numberValue: 40})
 })
 
+test('gets checkbox answers from survey model', () => {
+  const model = new Model(sampleSurvey)
+  model.data = {'checkboxQ': ['x', 'y']}
+  const answers = getAnswerList(model)
+  expect(answers).toContainEqual({questionStableId: 'checkboxQ', objectValue: ['x', 'y']})
+})
+
 
 
