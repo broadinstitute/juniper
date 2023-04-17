@@ -99,12 +99,13 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
 
         List<SurveyResponse> jonasResponses = surveyResponseService.findByEnrolleeId(jonas.getId());
         Assertions.assertEquals(2, jonasResponses.size());
-        SurveyResponse medHistoryResp = jonasResponses.stream()
+        SurveyResponse cardioHistoryResp = jonasResponses.stream()
                 .filter(response -> cardioHistorySurvey.getId().equals(response.getSurveyId()))
                 .findFirst().get();
-        SurveyResponse fetchedResponse = surveyResponseService.findOneWithAnswers(medHistoryResp.getId()).get();
-        Answer firstAnswer = fetchedResponse.getAnswers().get(0);
-        Assertions.assertEquals("yesSpecificallyAboutMyHeart", firstAnswer.getStringValue());
+        SurveyResponse fetchedResponse = surveyResponseService.findOneWithAnswers(cardioHistoryResp.getId()).get();
+        Answer heartHealthAns = fetchedResponse.getAnswers().stream()
+                .filter(ans -> ans.getQuestionStableId().equals("oh_oh_cardioHx_worriedHeartHealth")).findFirst().get();
+        Assertions.assertEquals("yesSpecificallyAboutMyHeart", heartHealthAns.getStringValue());
     }
 
     private void checkOurhealthSiteContent(UUID portalId) {
