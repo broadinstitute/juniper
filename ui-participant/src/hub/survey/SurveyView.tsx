@@ -1,9 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {useNavigate, useParams, useSearchParams} from 'react-router-dom'
-import _union from 'lodash/union'
-import _keys from 'lodash/keys'
-import _reduce from 'lodash/reduce'
-import _isEqual from 'lodash/isEqual'
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import Api, {
   ConsentForm,
@@ -15,7 +11,7 @@ import Api, {
   SurveyWithResponse
 } from 'api/api'
 
-import {Survey as SurveyComponent} from 'survey-react-ui'
+import { Survey as SurveyComponent } from 'survey-react-ui'
 import {
   generateFormResponseDto,
   getResumableData,
@@ -24,18 +20,18 @@ import {
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
-import {HubUpdate} from 'hub/hubUpdates'
-import {usePortalEnv} from 'providers/PortalProvider'
-import {useUser} from 'providers/UserProvider'
-import {PageLoadingIndicator} from 'util/LoadingSpinner'
-import {withErrorBoundary} from '../../util/ErrorBoundary'
+import { HubUpdate } from 'hub/hubUpdates'
+import { usePortalEnv } from 'providers/PortalProvider'
+import { useUser } from 'providers/UserProvider'
+import { PageLoadingIndicator } from 'util/LoadingSpinner'
+import { withErrorBoundary } from '../../util/ErrorBoundary'
 
 const TASK_ID_PARAM = 'taskId'
 
 /**
  * display a single survey form to a participant.
  */
-function RawSurveyView({form, enrollee, resumableData, pager, studyShortcode, taskId}:
+function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, taskId }:
                          {
                            form: ConsentForm, enrollee: Enrollee, taskId: string
                            resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string
@@ -62,18 +58,18 @@ function RawSurveyView({form, enrollee, resumableData, pager, studyShortcode, ta
           type: 'success'
         }
       }
-      navigate('/hub', {state: hubUpdate})
+      navigate('/hub', { state: hubUpdate })
     }).catch(() => {
       refreshSurvey(surveyModel, null)
       alert('an error occurred')
     })
   }
 
-  const {surveyModel, refreshSurvey, setSurveyModel} = useSurveyJSModel(form, resumableData,
+  const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData,
     onComplete, pager, enrollee.profile)
   const navigate = useNavigate()
 
-  const {updateEnrollee} = useUser()
+  const { updateEnrollee } = useUser()
   if (surveyModel && resumableData) {
     // survey responses aren't yet editable after completion
     surveyModel.mode = 'display'
@@ -86,23 +82,23 @@ function RawSurveyView({form, enrollee, resumableData, pager, studyShortcode, ta
 }
 
 /** handles paging the form */
-function PagedSurveyView({form, activeResponse, enrollee, studyShortcode, taskId}:
+function PagedSurveyView({ form, activeResponse, enrollee, studyShortcode, taskId }:
                            {
                              form: StudyEnvironmentSurvey, activeResponse?: SurveyResponse, enrollee: Enrollee,
                              studyShortcode: string, taskId: string
                            }) {
-  let resumableData = getResumableData(activeResponse, enrollee.participantUserId)
+  const resumableData = getResumableData(activeResponse, enrollee.participantUserId)
 
   const pager = useRoutablePageNumber()
 
   return <RawSurveyView enrollee={enrollee} form={form.survey} taskId={taskId}
-                        resumableData={resumableData} pager={pager} studyShortcode={studyShortcode}/>
+    resumableData={resumableData} pager={pager} studyShortcode={studyShortcode}/>
 }
 
 /** handles loading the survey form and responses from the server */
 function SurveyView() {
-  const {portal} = usePortalEnv()
-  const {enrollees} = useUser()
+  const { portal } = usePortalEnv()
+  const { enrollees } = useUser()
   const [formAndResponses, setFormAndResponse] = useState<SurveyWithResponse | null>(null)
   const params = useParams()
   const stableId = params.stableId
@@ -125,8 +121,8 @@ function SurveyView() {
       .then(response => {
         setFormAndResponse(response)
       }).catch(() => {
-      alert('error loading survey form - please retry')
-    })
+        alert('error loading survey form - please retry')
+      })
   }, [])
 
   if (!formAndResponses) {
@@ -156,35 +152,4 @@ function enrolleeForStudy(enrollees: Enrollee[], studyShortcode: string, portal:
     throw `enrollment not found for ${studyShortcode}`
   }
   return enrollee
-}
-
-function computeDiff(original: Record<string, object> | null, updated: Record<string, object>): SurveyDiff {
-  if (!original) {
-    return {
-      diff: updated,
-      deletedKeys: []
-    }
-  }
-  const allkeys = _union(_keys(original), _keys(updated));
-  const deletedKeys: string[] = []
-  const differences = _reduce(allkeys, function (result, key) {
-    if (!_isEqual(original[key], updated[key])) {
-      if (key in updated) {
-        // @ts-expect-error not sure how to typescript reduce
-        result[key] = updated[key]
-      } else {
-        deletedKeys.push(key)
-      }
-    }
-    return result;
-  }, {});
-  return {
-    diff: differences,
-    deletedKeys: deletedKeys
-  }
-}
-
-export type SurveyDiff = {
-  diff: Record<string, object>,
-  deletedKeys: string[]
 }

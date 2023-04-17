@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {useNavigate, useParams, useSearchParams} from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import Api, {
   ConsentForm,
   ConsentResponse,
@@ -10,7 +10,7 @@ import Api, {
   SurveyJsResumeData
 } from 'api/api'
 
-import {Survey as SurveyComponent} from 'survey-react-ui'
+import { Survey as SurveyComponent } from 'survey-react-ui'
 import {
   ConsentResponseDto,
   generateFormResponseDto,
@@ -18,10 +18,10 @@ import {
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
-import {HubUpdate} from 'hub/hubUpdates'
-import {usePortalEnv} from 'providers/PortalProvider'
-import {useUser} from 'providers/UserProvider'
-import {PageLoadingIndicator} from 'util/LoadingSpinner'
+import { HubUpdate } from 'hub/hubUpdates'
+import { usePortalEnv } from 'providers/PortalProvider'
+import { useUser } from 'providers/UserProvider'
+import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
 const TASK_ID_PARAM = 'taskId'
 
@@ -29,14 +29,14 @@ const TASK_ID_PARAM = 'taskId'
  * display a single consent form to a participant.  The pageNumber argument can be specified to start at the given
  * page
  */
-function RawConsentView({form, enrollee, resumableData, pager, studyShortcode, taskId}:
+function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, taskId }:
                           {
                             form: ConsentForm, enrollee: Enrollee, taskId: string
                             resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string
                           }) {
-  const {surveyModel, pageNumber, refreshSurvey} = useSurveyJSModel(form, resumableData, onComplete, pager)
+  const { surveyModel, pageNumber, refreshSurvey } = useSurveyJSModel(form, resumableData, onComplete, pager)
   const navigate = useNavigate()
-  const {updateEnrollee} = useUser()
+  const { updateEnrollee } = useUser()
   if (surveyModel && resumableData) {
     // consent responses are not editable -- they must be withdrawn via separate workflow
     surveyModel.mode = 'display'
@@ -68,7 +68,7 @@ function RawConsentView({form, enrollee, resumableData, pager, studyShortcode, t
           type: 'success'
         }
       }
-      navigate('/hub', {state: hubUpdate})
+      navigate('/hub', { state: hubUpdate })
     }).catch(() => {
       refreshSurvey(surveyModel, null)
       alert('an error occurred')
@@ -86,7 +86,7 @@ function RawConsentView({form, enrollee, resumableData, pager, studyShortcode, t
 }
 
 /** handles paging the form */
-function PagedConsentView({form, responses, enrollee, studyShortcode}:
+function PagedConsentView({ form, responses, enrollee, studyShortcode }:
                             {
                               form: StudyEnvironmentConsent, responses: ConsentResponse[], enrollee: Enrollee,
                               studyShortcode: string
@@ -104,13 +104,13 @@ function PagedConsentView({form, responses, enrollee, studyShortcode}:
   const pager = useRoutablePageNumber()
 
   return <RawConsentView enrollee={enrollee} form={form.consentForm} taskId={taskId}
-                         resumableData={resumableData} pager={pager} studyShortcode={studyShortcode}/>
+    resumableData={resumableData} pager={pager} studyShortcode={studyShortcode}/>
 }
 
 /** handles loading the consent form and responses from the server */
 export default function ConsentView() {
-  const {portal} = usePortalEnv()
-  const {enrollees} = useUser()
+  const { portal } = usePortalEnv()
+  const { enrollees } = useUser()
   const [formAndResponses, setFormAndResponses] = useState<ConsentWithResponses | null>(null)
   const params = useParams()
   const stableId = params.stableId
@@ -129,8 +129,8 @@ export default function ConsentView() {
       .then(response => {
         setFormAndResponses(response)
       }).catch(() => {
-      alert('error loading consent form - please retry')
-    })
+        alert('error loading consent form - please retry')
+      })
   }, [])
 
   if (!formAndResponses) {

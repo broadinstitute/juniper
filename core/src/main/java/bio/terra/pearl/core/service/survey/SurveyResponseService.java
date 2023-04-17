@@ -92,7 +92,6 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
             if (lastResponse != null) {
                 dao.attachAnswers(lastResponse);
             }
-
         }
         // TODO -- this lookup should be by stableId, not formId
         StudyEnvironmentSurvey configSurvey = studyEnvironmentSurveyService
