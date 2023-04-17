@@ -92,18 +92,13 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             throws JsonProcessingException {
         Survey survey = surveyService.findByStableIdWithMappings(responsePopDto.getSurveyStableId(),
                 responsePopDto.getSurveyVersion()).get();
-        String resumeData = null;
-        if (responsePopDto.getCurrentPageNo() != null) {
-            resumeData = objectMapper.writeValueAsString(Map.of(enrollee.getParticipantUserId(),
-                    Map.of("currentPageNo", responsePopDto.getCurrentPageNo())));
-        }
 
         SurveyResponse response = SurveyResponse.builder()
                 .surveyId(survey.getId())
                 .enrolleeId(enrollee.getId())
                 .complete(responsePopDto.isComplete())
                 .creatingParticipantUserId(enrollee.getParticipantUserId())
-                .resumeData(resumeData)
+                .resumeData(makeResumeData(responsePopDto.getCurrentPageNo(), enrollee.getParticipantUserId()))
                 .build();
         for (AnswerPopDto answerPopDto : responsePopDto.getAnswerPopDtos()) {
             Answer answer = convertAnswerPopDto(answerPopDto);
@@ -120,6 +115,14 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             savedResponse = surveyResponseService.create(response);
         }
         enrollee.getSurveyResponses().add(savedResponse);
+    }
+
+    public String makeResumeData(Integer currentPageNo, UUID participantUserId) throws JsonProcessingException {
+        if (currentPageNo != null) {
+            return objectMapper.writeValueAsString(Map.of(participantUserId,
+                    Map.of("currentPageNo", currentPageNo)));
+        }
+        return null;
     }
 
     public Answer convertAnswerPopDto(AnswerPopDto popDto) {
@@ -154,14 +157,16 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 responsePopDto.getConsentVersion()).get();
 
         ConsentResponse savedResponse;
+
+        ConsentResponseDto responseDto = ConsentResponseDto.builder()
+                .consentFormId(consentForm.getId())
+                .enrolleeId(enrollee.getId())
+                .creatingParticipantUserId(enrollee.getParticipantUserId())
+                .consented(responsePopDto.isConsented())
+                .answers(responsePopDto.getAnswers())
+                .resumeData(makeResumeData(responsePopDto.getCurrentPageNo(), enrollee.getParticipantUserId()))
+                .build();
         if (simulateSubmissions) {
-            ConsentResponseDto responseDto = ConsentResponseDto.builder()
-                    .consentFormId(consentForm.getId())
-                    .enrolleeId(enrollee.getId())
-                    .creatingParticipantUserId(enrollee.getParticipantUserId())
-                    .consented(responsePopDto.isConsented())
-                    .answers(responsePopDto.getAnswers())
-                    .build();
             ParticipantTask matchingTask = tasks.stream().filter(task ->
                     task.getTargetStableId().equals(consentForm.getStableId())).findFirst().orElse(null);
 
@@ -170,15 +175,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             savedResponse = hubResponse.getResponse();
         } else {
             String fullData = objectMapper.writeValueAsString(responsePopDto.getAnswers());
-            ConsentResponse response = ConsentResponse.builder()
-                    .consentFormId(consentForm.getId())
-                    .enrolleeId(enrollee.getId())
-                    .creatingParticipantUserId(enrollee.getParticipantUserId())
-                    .consented(responsePopDto.isConsented())
-                    .fullData(fullData)
-                    .currentPageNo(responsePopDto.getCurrentPageNo())
-                    .build();
-            savedResponse = consentResponseService.create(response);
+            responseDto.setFullData(fullData);
+            savedResponse = consentResponseService.create(responseDto);
         }
         enrollee.getConsentResponses().add(savedResponse);
     }

@@ -90,7 +90,7 @@ public class ConsentResponseService extends ImmutableEntityService<ConsentRespon
                 .consentFormId(responseDto.getConsentFormId())
                 .creatingParticipantUserId(participantUserId)
                 .consented(responseDto.isConsented())
-                .currentPageNo(responseDto.getCurrentPageNo())
+                .resumeData(responseDto.getResumeData())
                 .fullData(responseDto.getFullData())
                 .enrolleeId(enrolleeId)
                 .build();

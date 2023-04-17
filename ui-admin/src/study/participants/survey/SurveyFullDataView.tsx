@@ -27,6 +27,10 @@ const ItemDisplay = ({ answer, surveyJsModel }: {answer: Answer, surveyJsModel: 
 
 export const getDisplayValue = (answer: Answer, question: Question | QuestionWithChoices) => {
   const answerValue = answer.stringValue ?? answer.numberValue ?? answer.objectValue
+  if (!question) {
+    // if the answer represents a computedValue, we won't have a question for it
+    return answerValue
+  }
   let displayValue: React.ReactNode = answerValue
   if (question.choices) {
     displayValue = question.choices.find((choice: ItemValue)  => choice.value === answerValue).text ?? answerValue
@@ -48,6 +52,9 @@ type ItemValue = { text: string, value: string }
 
 /** gets the question text -- truncates it at 100 chars */
 export const renderQuestionText = (answer: Answer, question: Question) => {
+  if (!question) {
+    return <span>-</span>
+  }
   const questionText = question?.title
   if (questionText && questionText.length > 100) {
     const truncatedText = `${questionText.substring(0, 100)  }...`

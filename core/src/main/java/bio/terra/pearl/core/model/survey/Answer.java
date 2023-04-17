@@ -30,27 +30,22 @@ public class Answer extends BaseEntity {
     private String objectValue;
     // store all numbers as doubles to match Javascript/JSON.
     private Double numberValue;
+    private Boolean booleanValue;
 
-//    public Object getValue() {
-//        if (Objects.equals(answerType, AnswerType.STRING)) {
-//            return stringValue;
-//        } else if (Objects.equals(answerType, AnswerType.NUMBER)) {
-//            return numberValue;
-//        } else {
-//            return objectValue;
-//        }
-//    }
-//
-//    public void setValue(Object value) {
-//        if (answerType == null) {
-//            answerType = AnswerType.forValue(value);
-//        }
-//        if (answerType.equals(AnswerType.STRING)) {
-//            stringValue = (String) value;
-//        } else if (answerType.equals(AnswerType.NUMBER)) {
-//            numberValue = (Double) value;
-//        } else {
-//            objectValue = (String) value;
-//        }
-//    }
+    public void setValueAndType(Object value) {
+        answerType = AnswerType.forValue(value);
+        setValue(value);
+    }
+
+    public void setValue(Object value) {
+        if (answerType.equals(AnswerType.STRING)) {
+            stringValue = (String) value;
+        } else if (answerType.equals(AnswerType.NUMBER)) {
+            numberValue = (Double) value;
+        } else if (answerType.equals(AnswerType.BOOLEAN)) {
+            booleanValue = (Boolean) value;
+        } else {
+            objectValue = (String) value;
+        }
+    }
 }

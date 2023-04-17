@@ -12,4 +12,5 @@ public class ConsentResponsePopDto extends ConsentResponseDto {
     private String consentStableId;
     private int consentVersion;
     private List<AnswerPopDto> answerPopDtos;
+    private Integer currentPageNo;
 }

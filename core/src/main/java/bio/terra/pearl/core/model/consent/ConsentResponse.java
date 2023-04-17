@@ -26,8 +26,9 @@ public class ConsentResponse extends BaseEntity {
     private boolean completed = false;
     @Builder.Default
     private boolean consented = false;
-    @Builder.Default
-    private int currentPageNo = 1;
+    // a json map of userId -> an object with information about where that particular user left off
+    // currently, the only property stored on that object is currentPageNo
+    private String resumeData;
     // list of Answers stored as a JSON string
     private String fullData;
 }

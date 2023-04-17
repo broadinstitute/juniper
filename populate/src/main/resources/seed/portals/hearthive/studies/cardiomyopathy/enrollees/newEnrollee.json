@@ -5,14 +5,7 @@
     "qualified": true,
     "surveyStableId": "hh_cmyop_preEnroll",
     "surveyVersion": 1,
-    "fullDataJson": {
-      "items": [
-        {
-          "stableId": "hh_cmyop_prereg_dx",
-          "simpleValue": "yes"
-        }
-      ]
-    }
+    "answers": [{"questionStableId": "hh_cmyop_prereg_dx","stringValue": "yes"}]
   },
   "participantTaskDtos": [{
     "status": "NEW",

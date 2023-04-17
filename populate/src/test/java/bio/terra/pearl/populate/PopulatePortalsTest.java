@@ -10,11 +10,12 @@ import bio.terra.pearl.core.model.site.HtmlSectionType;
 import bio.terra.pearl.core.model.site.LocalizedSiteContent;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.model.survey.Answer;
+import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
-import bio.terra.pearl.core.service.survey.ResponseSnapshotService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.service.BaseSeedPopulator;
@@ -52,8 +53,6 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
     private SurveyService surveyService;
     @Autowired
     private SurveyResponseService surveyResponseService;
-    @Autowired
-    private ResponseSnapshotService responseSnapshotService;
     @Autowired
     private PortalEnvironmentService portalEnvironmentService;
     @Autowired
@@ -103,11 +102,9 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
         SurveyResponse medHistoryResp = jonasResponses.stream()
                 .filter(response -> cardioHistorySurvey.getId().equals(response.getSurveyId()))
                 .findFirst().get();
-        ResponseSnapshot medHistorySnapshot = surveyResponseService.findOneWithLastSnapshot(medHistoryResp.getId())
-                .get().getLastSnapshot();
-        ParsedSnapshot parsedSnap = responseSnapshotService.parse(medHistorySnapshot);
-        ResponseDataItem firstAnswer = parsedSnap.getParsedData().getItems().get(0);
-        Assertions.assertEquals("yesSpecificallyAboutMyHeart", firstAnswer.getSimpleValue());
+        SurveyResponse fetchedResponse = surveyResponseService.findOneWithAnswers(medHistoryResp.getId()).get();
+        Answer firstAnswer = fetchedResponse.getAnswers().get(0);
+        Assertions.assertEquals("yesSpecificallyAboutMyHeart", firstAnswer.getStringValue());
     }
 
     private void checkOurhealthSiteContent(UUID portalId) {

@@ -1,5 +1,3 @@
-import { ConsentResponseDto, PreEnrollResponseDto, PreRegResponseDto, SurveyResponseDto } from '../util/surveyJsUtils'
-
 export type ParticipantUser = {
   username: string,
   token: string
@@ -173,21 +171,37 @@ export type StudyEnvironmentConsent = {
   prepopulate: boolean
 }
 
-export type ConsentResponse = {
-  id: string,
-  createdAt: number,
-  consented: boolean,
-  consentFormId: string,
+export type FormResponse = {
+  id?: string,
+  createdAt?: number,
+  enrolleeId?: string,
   resumeData: string,
+  creatingParticipantUserId?: string,
+}
+
+export type ConsentResponse = FormResponse & {
+  consentFormId: string,
+  consented: boolean,
   fullData: string
 }
 
-export type PreregistrationResponse = {
-  id: string
+export type SurveyResponse = FormResponse & {
+  surveyId: string,
+  complete: boolean,
+  answers: Answer[]
 }
 
-export type PreEnrollmentResponse = {
-  id: string
+export type PreregistrationResponse = FormResponse & {
+  qualified: false,
+  surveyId: string,
+  fullData: string
+}
+
+export type PreEnrollmentResponse = FormResponse & {
+  qualified: false,
+  surveyId: string,
+  studyEnvironmentId: string,
+  fullData: string
 }
 
 export type Enrollee = {
@@ -229,17 +243,6 @@ export type ConsentWithResponses = {
 export type SurveyWithResponse = {
   studyEnvironmentSurvey: StudyEnvironmentSurvey,
   surveyResponse?: SurveyResponse
-}
-
-export type SurveyResponse = {
-  createdAt: number, // this is a java instant, so number of seconds since epoch start
-  lastUpdatedAt: string,
-  surveyId: string,
-  surveyStableId: string,
-  surveyVersion: string,
-  answers: Answer[],
-  resumeData?: string,
-  parsedResumeData?: Record<string, UserResumeData>
 }
 
 export type UserResumeData = {
@@ -315,7 +318,7 @@ export default {
   async submitPreRegResponse({ surveyStableId, surveyVersion, preRegResponse }:
                                {
                                  surveyStableId: string, surveyVersion: number,
-                                 preRegResponse: PreRegResponseDto
+                                 preRegResponse: PreregistrationResponse
                                }):
     Promise<PreregistrationResponse> {
     const url = `${baseEnvUrl(true)}/preReg/${surveyStableId}/${surveyVersion}`
@@ -344,7 +347,7 @@ export default {
   async submitPreEnrollResponse({ surveyStableId, surveyVersion, preEnrollResponse }:
                                   {
                                     surveyStableId: string, surveyVersion: number,
-                                    preEnrollResponse: PreEnrollResponseDto
+                                    preEnrollResponse: PreEnrollmentResponse
                                   }):
     Promise<PreEnrollmentResponse> {
     const url = `${baseEnvUrl(true)}/preEnroll/${surveyStableId}/${surveyVersion}`
@@ -433,7 +436,7 @@ export default {
   },
 
   async submitConsentResponse({ studyShortcode, stableId, version, enrolleeShortcode, response, taskId }: {
-    studyShortcode: string, stableId: string, version: number, response: ConsentResponseDto, enrolleeShortcode: string,
+    studyShortcode: string, stableId: string, version: number, response: ConsentResponse, enrolleeShortcode: string,
     taskId: string
   }): Promise<HubResponse> {
     let url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}`
@@ -463,7 +466,7 @@ export default {
   },
 
   async submitSurveyResponse({ studyShortcode, stableId, version, enrolleeShortcode, response, taskId }: {
-    studyShortcode: string, stableId: string, version: number, response: SurveyResponseDto, enrolleeShortcode: string,
+    studyShortcode: string, stableId: string, version: number, response: SurveyResponse, enrolleeShortcode: string,
     taskId: string
   }): Promise<HubResponse> {
     let url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}`

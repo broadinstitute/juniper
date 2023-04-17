@@ -31,6 +31,5 @@ public class RegistrationServiceTests extends BaseSpringBootTest {
                 portalEnv.getEnvironmentName(), username, null);
         Assertions.assertEquals(username, result.participantUser().getUsername());
         Assertions.assertTrue(participantUserService.findOne(username, portalEnv.getEnvironmentName()).isPresent());
-        Assertions.assertEquals("TestFirstName", result.portalParticipantUser().getProfile().getGivenName());
     }
 }

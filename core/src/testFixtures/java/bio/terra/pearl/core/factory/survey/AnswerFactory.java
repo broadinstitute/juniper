@@ -10,7 +10,7 @@ public class AnswerFactory {
             Answer answer = Answer.builder()
                     .questionStableId(entry.getKey())
                     .build();
-            answer.setValue(entry.getValue());
+            answer.setValueAndType(entry.getValue());
             return answer;
         }).toList();
     }

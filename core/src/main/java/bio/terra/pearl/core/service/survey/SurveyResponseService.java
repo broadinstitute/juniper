@@ -46,7 +46,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         return dao.findByEnrolleeId(enrolleeId);
     }
 
-    public Optional<SurveyResponse> findOneWithLastSnapshot(UUID responseId) {
+    public Optional<SurveyResponse> findOneWithAnswers(UUID responseId) {
         return dao.findOneWithAnswers(responseId);
     }
 
@@ -149,7 +149,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
             response = dao.find(taskResponseId).get();
             if (response.isComplete() != response.isComplete()) {
                 response.setComplete(responseDto.isComplete());
-                // we will need to merge, rather than set, resumeData to enable simultaneous editing with page-saving
+                // TODO - we should merge, rather than set, resumeData to enable simultaneous editing with page-saving
                 response.setResumeData(responseDto.getResumeData());
                 dao.update(response);
             }

@@ -11,10 +11,6 @@ databaseChangeLog:
             tableName: survey_response
             columns:
               - column: { name: resume_data , type: text }
-        - dropColumn:
-            tableName: consent_response
-            columns:
-              - column: { name: resume_data }
         - addColumn:
             tableName: consent_response
             columns:
@@ -42,6 +38,7 @@ databaseChangeLog:
               - column: { name: object_value, type: text }
               - column: { name: string_value, type: text }
               - column: { name: number_value, type: double }
+              - column: { name: boolean_value, type: boolean }
               - column: { name: answer_type, type: text }
               - column: { name: question_stable_id, type: text, constraints: { nullable: false } }
               - column: { name: survey_stable_id, type: text, constraints: { nullable: false } }
@@ -63,38 +60,3 @@ databaseChangeLog:
                   name: enrollee_id
         - sql: # for auditing compliance, check that one and only one of the user_id columns is specified
             sql: alter table answer add constraint chk_answer_has_user check ((creating_participant_user_id is null) != (creating_admin_user_id is null));
-        - createTable:
-            tableName: answer_record
-            columns:
-              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
-              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
-              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
-              - column: { name: creating_participant_user_id, type: uuid, constraints:
-                { foreignKeyName: fk_answer_record_participant_user, references: participant_user(id) }
-              }
-              - column: { name: creating_admin_user_id, type: uuid, constraints:
-                { foreignKeyName: fk_answer_record_admin_user, references: admin_user(id) }
-              }
-              - column: { name: enrollee_id, type: uuid, constraints:
-                { nullable: false, foreignKeyName: fk_answer_record_enrollee, references: enrollee(id) }
-              }
-              - column: { name: survey_response_id, type: uuid, constraints:
-                { nullable: false, foreignKeyName: fk_answer_record_survey_response, references: survey_response(id) }
-              }
-              - column: { name: object_value, type: text }
-              - column: { name: string_value, type: text }
-              - column: { name: number_value, type: double }
-              - column: { name: answer_type, type: text }
-              - column: { name: question_stable_id, type: text, constraints: { nullable: false } }
-              - column: { name: survey_stable_id, type: text, constraints: { nullable: false } }
-              - column: { name: survey_version, type: integer, constraints: { nullable: false } }
-              - createIndex: # for tracing answer history
-                  tableName: answer
-                  indexName: idx_answer_record_survey_response_question
-                  columns:
-                    - column:
-                        name: survey_response_id
-                    - column:
-                        name: question_stable_id
-              - sql: # for auditing compliance, check that one and only one of the user_id columns is specified
-                  sql: alter table answer_record add constraint chk_answer_record_has_user check ((creating_participant_user_id is null) != (creating_admin_user_id is null));

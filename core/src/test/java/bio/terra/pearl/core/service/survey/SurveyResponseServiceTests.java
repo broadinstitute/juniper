@@ -35,13 +35,13 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         SurveyResponse surveyResponse = surveyResponseFactory.builderWithDependencies("testSurveyResponseCrud")
                 .build();
         SurveyResponse savedResponse = surveyResponseService.create(surveyResponse);
-        Assertions.assertNotNull(savedResponse.getId());
+        DaoTestUtils.assertGeneratedProperties(savedResponse);
         Assertions.assertEquals(surveyResponse.getSurveyId(), savedResponse.getSurveyId());
     }
 
     @Test
     @Transactional
-    public void testSurveyResponseWithSnapshot() {
+    public void testSurveyResponseWithAnswers() {
         String testName = "testSurveyResponseCrud";
         List<Answer> answers = AnswerFactory.fromMap(Map.of("foo", "bar", "test1", "ans1"));
         SurveyResponse surveyResponse = surveyResponseFactory.builderWithDependencies(testName)
@@ -55,7 +55,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 .filter(ans -> ans.getQuestionStableId().equals("foo")).findFirst().get();
         assertThat(fooAnswer.getAnswerType(), equalTo(AnswerType.STRING));
         assertThat(fooAnswer.getEnrolleeId(), equalTo(surveyResponse.getEnrolleeId()));
-        assertThat(fooAnswer.getSurveyResponseId(), equalTo(surveyResponse.getId()));
+        assertThat(fooAnswer.getSurveyResponseId(), equalTo(savedResponse.getId()));
         assertThat(fooAnswer.getStringValue(), equalTo("bar"));
         assertThat(fooAnswer.getCreatingParticipantUserId(), equalTo(surveyResponse.getCreatingParticipantUserId()));
 

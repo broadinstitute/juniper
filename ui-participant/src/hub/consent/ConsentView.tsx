@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import Api, {
+  Answer,
   ConsentForm,
   ConsentResponse,
   ConsentWithResponses,
@@ -12,8 +13,9 @@ import Api, {
 
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import {
-  ConsentResponseDto,
-  generateFormResponseDto,
+  getAnswerList,
+  getResumeData,
+  makeSurveyJsData,
   PageNumberControl,
   useRoutablePageNumber,
   useSurveyJSModel
@@ -47,18 +49,21 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
     if (!surveyModel || !refreshSurvey) {
       return
     }
-    const consentResponseDto = generateFormResponseDto({
-      surveyJSModel: surveyModel, enrolleeId: enrollee.id, participantUserId: enrollee.participantUserId
-    }) as ConsentResponseDto
-    // if the form doesn't export an explicit "consented" property, then the default is that they've consented
-    // if they are able to submit it
-    const consented = surveyModel.getCalculatedValueByName('consented')?.value ?? true
-    consentResponseDto.consented = consented
-    consentResponseDto.consentFormId = form.id
+    const responseDto = {
+      resumeData: getResumeData(surveyModel, enrollee.participantUserId),
+      enrolleeId: enrollee.id,
+      fullData: JSON.stringify(getAnswerList(surveyModel)),
+      creatingParticipantId: enrollee.participantUserId,
+      consentFormId: form.id,
+      // if the form doesn't export an explicit "consented" property, then the default is that they've consented
+      // if they are able to submit it
+      consented: surveyModel.getCalculatedValueByName('consented')?.value ?? true,
+      completed: true
+    } as ConsentResponse
 
     Api.submitConsentResponse({
       studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
-      version: form.version, response: consentResponseDto, taskId
+      version: form.version, response: responseDto, taskId
     }).then(response => {
       response.enrollee.participantTasks = response.tasks
       updateEnrollee(response.enrollee)
@@ -95,11 +100,11 @@ function PagedConsentView({ form, responses, enrollee, studyShortcode }:
   const taskId = searchParams.get(TASK_ID_PARAM) ?? ''
 
   const response = responses[0]
-
-  let resumableData = null
-  if (response?.resumeData) {
-    resumableData = JSON.parse(response?.resumeData) as SurveyJsResumeData
+  let answers: Answer[] = []
+  if (response.fullData) {
+    answers = JSON.parse(response.fullData)
   }
+  const resumableData = makeSurveyJsData(response?.resumeData, answers, enrollee.participantUserId)
 
   const pager = useRoutablePageNumber()
 
