@@ -33,15 +33,23 @@ export const getDisplayValue = (answer: Answer, question: Question | QuestionWit
   }
   let displayValue: React.ReactNode = answerValue
   if (question.choices) {
-    displayValue = question.choices.find((choice: ItemValue)  => choice.value === answerValue).text ?? answerValue
+    if (answer.objectValue) {
+      const valueArray = JSON.parse(answerValue)
+      const textArray = valueArray.map((value: string | number) => getTextForChoice(value, question))
+      displayValue = JSON.stringify(textArray)
+    } else {
+      displayValue = getTextForChoice(answerValue, question)
+    }
   }
 
-  if (typeof displayValue === 'object') {
-    displayValue = JSON.stringify(answerValue, null, 2)
-  } else if (answer.questionStableId.endsWith('signature')) {
+  if (answer.questionStableId.endsWith('signature')) {
     displayValue = <img src={answerValue}/>
   }
   return displayValue
+}
+
+export const getTextForChoice = (value: string | number, question: Question) => {
+  return question.choices.find((choice: ItemValue)  => choice.value === value)?.text ?? value
 }
 
 type QuestionWithChoices = Question & {
@@ -61,29 +69,4 @@ export const renderQuestionText = (answer: Answer, question: Question) => {
     return <span title={questionText}>{truncatedText}</span>
   }
   return <span>{questionText}</span>
-}
-
-export enum SourceType {
-  PARTICIPANT = 'PARTICIPANT',
-  ADMIN = 'ADMIN',
-  CLINICAL_RECORD = 'CLINICAL RECORD',
-  PROXY = 'PROXY'
-}
-
-export type DenormalizedResponse = {
-  formStableId: string,
-  formVersion: number,
-  participantShortcode: string,
-  sourceShortcode: string,
-  sourceType: SourceType,
-  items: DenormalizedResponseItem[]
-}
-
-export type DenormalizedResponseItem = {
-  stableId: string,
-  questionText: string,
-  questionType: string,
-  simpleValue: string,
-  displayValue: string,
-  value: string
 }
