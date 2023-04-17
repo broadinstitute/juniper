@@ -31,15 +31,15 @@ const TASK_ID_PARAM = 'taskId'
  * display a single consent form to a participant.  The pageNumber argument can be specified to start at the given
  * page
  */
-function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, taskId }:
+function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, taskId, isEditingPrevious }:
                           {
-                            form: ConsentForm, enrollee: Enrollee, taskId: string
+                            form: ConsentForm, enrollee: Enrollee, taskId: string, isEditingPrevious: boolean
                             resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string
                           }) {
   const { surveyModel, pageNumber, refreshSurvey } = useSurveyJSModel(form, resumableData, onComplete, pager)
   const navigate = useNavigate()
   const { updateEnrollee } = useUser()
-  if (surveyModel && resumableData) {
+  if (surveyModel && isEditingPrevious) {
     // consent responses are not editable -- they must be withdrawn via separate workflow
     surveyModel.mode = 'display'
   }
@@ -101,7 +101,7 @@ function PagedConsentView({ form, responses, enrollee, studyShortcode }:
 
   const response = responses[0]
   let answers: Answer[] = []
-  if (response.fullData) {
+  if (response?.fullData) {
     answers = JSON.parse(response.fullData)
   }
   const resumableData = makeSurveyJsData(response?.resumeData, answers, enrollee.participantUserId)
@@ -109,7 +109,8 @@ function PagedConsentView({ form, responses, enrollee, studyShortcode }:
   const pager = useRoutablePageNumber()
 
   return <RawConsentView enrollee={enrollee} form={form.consentForm} taskId={taskId}
-    resumableData={resumableData} pager={pager} studyShortcode={studyShortcode}/>
+    isEditingPrevious={!!response} resumableData={resumableData} pager={pager}
+    studyShortcode={studyShortcode}/>
 }
 
 /** handles loading the consent form and responses from the server */
