@@ -38,10 +38,7 @@ import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -95,11 +92,18 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             throws JsonProcessingException {
         Survey survey = surveyService.findByStableIdWithMappings(responsePopDto.getSurveyStableId(),
                 responsePopDto.getSurveyVersion()).get();
+        String resumeData = null;
+        if (responsePopDto.getCurrentPageNo() != null) {
+            resumeData = objectMapper.writeValueAsString(Map.of(enrollee.getParticipantUserId(),
+                    Map.of("currentPageNo", responsePopDto.getCurrentPageNo())));
+        }
 
         SurveyResponse response = SurveyResponse.builder()
                 .surveyId(survey.getId())
                 .enrolleeId(enrollee.getId())
+                .complete(responsePopDto.isComplete())
                 .creatingParticipantUserId(enrollee.getParticipantUserId())
+                .resumeData(resumeData)
                 .build();
         for (AnswerPopDto answerPopDto : responsePopDto.getAnswerPopDtos()) {
             Answer answer = convertAnswerPopDto(answerPopDto);

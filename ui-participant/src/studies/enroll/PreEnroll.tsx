@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react'
+import React, {useEffect} from 'react'
 import Api from 'api/api'
-import { generateFormResponseDto, PreEnrollResponseDto, SourceType, useSurveyJSModel } from 'util/surveyJsUtils' // eslint-disable-line max-len
-import { useNavigate } from 'react-router-dom'
-import { StudyEnrollContext } from './StudyEnrollRouter'
+import {generateFormResponseDto, PreEnrollResponseDto, useSurveyJSModel} from 'util/surveyJsUtils' // eslint-disable-line max-len
+import {useNavigate} from 'react-router-dom'
+import {StudyEnrollContext} from './StudyEnrollRouter'
 
 /**
  * pre-enrollment surveys are expected to have a calculated value that indicates
@@ -11,19 +11,19 @@ import { StudyEnrollContext } from './StudyEnrollRouter'
 const ENROLLMENT_QUALIFIED_VARIABLE = 'qualified'
 
 /** Renders a pre-enrollment form, and handles submitting the user-inputted response */
-export default function PreEnrollView({ enrollContext }: { enrollContext: StudyEnrollContext }) {
-  const { studyEnv, updatePreEnrollResponseId } = enrollContext
+export default function PreEnrollView({enrollContext}: { enrollContext: StudyEnrollContext }) {
+  const {studyEnv, updatePreEnrollResponseId} = enrollContext
   const survey = studyEnv.preEnrollSurvey
   const navigate = useNavigate()
   // for now, we assume all pre-screeners are a single page
-  const pager = { pageNumber: 0, updatePageNumber: () => 0 }
-  const { surveyModel, refreshSurvey, SurveyComponent } = useSurveyJSModel(
+  const pager = {pageNumber: 0, updatePageNumber: () => 0}
+  const {surveyModel, refreshSurvey, SurveyComponent} = useSurveyJSModel(
     survey,
     null,
     handleComplete,
     pager,
     undefined,
-    { extraCssClasses: { container: 'my-0' } }
+    {extraCssClasses: {container: 'my-0'}}
   )
 
   /** submit the form */
@@ -32,7 +32,7 @@ export default function PreEnrollView({ enrollContext }: { enrollContext: StudyE
       return
     }
     const responseDto = generateFormResponseDto({
-      surveyJSModel: surveyModel, enrolleeId: null, sourceType: SourceType.ANON
+      surveyJSModel: surveyModel, enrolleeId: null, participantUserId: null
     })
     const qualified = surveyModel.getCalculatedValueByName(ENROLLMENT_QUALIFIED_VARIABLE).value
     const preEnrollResponse = {

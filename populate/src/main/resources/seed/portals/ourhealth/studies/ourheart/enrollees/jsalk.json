@@ -20,7 +20,7 @@
       "answerPopDtos": [
         { "questionStableId": "oh_oh_cardioHx_worriedHeartHealth", "stringValue": "yesSpecificallyAboutMyHeart"}
       ],
-      "currentPageNo": 1
+      "currentPageNo": 2
     }, {
       "surveyStableId": "oh_oh_basicInfo",
       "surveyVersion": 1,
@@ -30,7 +30,8 @@
         {"questionStableId": "oh_oh_basic_streetAddress", "stringValue": "123 Walnut Street"},
         {"questionStableId": "oh_oh_basic_mghPatient", "stringValue": "yes"}
       ],
-      "currentPageNo": 2
+      "currentPageNo": 1,
+      "complete": true
     }
   ],
   "consentResponseDtos": [{

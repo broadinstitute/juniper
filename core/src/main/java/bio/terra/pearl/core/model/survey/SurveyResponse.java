@@ -25,6 +25,7 @@ public class SurveyResponse extends BaseEntity {
     private List<Answer> answers = new ArrayList<>();
     @Builder.Default
     private boolean complete = false;
-    // json map of userId -> { currentPageNo }
+    // a json map of userId -> an object with information about where that particular user left off
+    // currently, the only property stored on that object is currentPageNo
     private String resumeData;
 }

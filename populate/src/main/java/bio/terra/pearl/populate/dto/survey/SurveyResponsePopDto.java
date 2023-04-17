@@ -12,5 +12,5 @@ public class SurveyResponsePopDto extends SurveyResponse {
     private String surveyStableId;
     private int surveyVersion;
     private Set<AnswerPopDto> answerPopDtos;
-    private int currentPageNo;
+    private Integer currentPageNo;
 }

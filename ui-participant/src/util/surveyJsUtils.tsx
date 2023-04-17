@@ -19,7 +19,7 @@ import 'inputmask/dist/inputmask/phone-codes/phone'
 // @ts-ignore
 import * as widgets from 'surveyjs-widgets'
 import {Survey as SurveyJSComponent} from 'survey-react-ui'
-import {Profile, ResumableData, SurveyJSForm} from 'api/api'
+import {Answer, Profile, SurveyJSForm, SurveyJsResumeData, SurveyResponse, UserResumeData} from 'api/api'
 import {useSearchParams} from 'react-router-dom'
 import {getSurveyElementList} from './pearlSurveyUtils'
 
@@ -120,7 +120,7 @@ type UseSurveyJsModelOpts = {
  */
 export function useSurveyJSModel(
   form: SurveyJSForm,
-  resumeData: ResumableData | null,
+  resumeData: SurveyJsResumeData | null,
   onComplete: () => void,
   pager: PageNumberControl,
   profile?: Profile,
@@ -139,7 +139,7 @@ export function useSurveyJSModel(
   }
 
   /** syncs the surveyJS survey model with the given data/pageNumber */
-  function refreshSurvey(refreshData: ResumableData | null, pagerPageNumber: number | null) {
+  function refreshSurvey(refreshData: SurveyJsResumeData | null, pagerPageNumber: number | null) {
     StylesManager.applyTheme('modern')
     const newSurveyModel = new Model(extractSurveyContent(form))
 
@@ -213,24 +213,18 @@ export enum SourceType {
 
 export type FormResponseDto = {
   enrolleeId: string,
-  sourceType: SourceType,
+  creatingParticipantUserId?: string,
   resumeData?: string,
-  parsedData: {
-    items: FormResponseItem[]
-  }
+  answers: Answer[]
 }
 
 export type PreRegResponseDto = {
-  parsedData: {
-    items: FormResponseItem[]
-  }
+  answers: Answer[],
   qualified: boolean
 }
 
 export type PreEnrollResponseDto = {
-  parsedData: {
-    items: FormResponseItem[]
-  }
+  answers: Answer[],
   qualified: boolean,
   studyEnvironmentId: string
 }
@@ -243,14 +237,6 @@ export type ConsentResponseDto = FormResponseDto & {
 export type SurveyResponseDto = FormResponseDto & {
   surveyId: string,
   complete: boolean
-}
-
-export type FormResponseItem = {
-  stableId: string,
-  questionText: string,
-  questionType: string,
-  value: string | object | undefined,
-  displayValue: string | object | undefined,
 }
 
 export type SurveyJsItem = {
@@ -269,48 +255,77 @@ type CalculatedValue = {
 /**
  * Takes a ConsentForm or Survey object, along with a surveyJS model of the user's input, and generates a response DTO
  */
-export function generateFormResponseDto({surveyJSModel, enrolleeId, sourceType}:
+export function generateFormResponseDto({surveyJSModel, enrolleeId, participantUserId}:
                                           {
                                             surveyJSModel: SurveyModel,
-                                            enrolleeId: string | null, sourceType: SourceType
+                                            enrolleeId: string | null,
+                                            participantUserId: string | null
                                           }): FormResponseDto {
+  let resumeData: Record<string, UserResumeData> = {}
+  if (participantUserId) {
+    resumeData[participantUserId] = {currentPageNo: surveyJSModel?.currentPageNo}
+  }
   const response = {
     enrolleeId,
-    sourceType,
-    resumeData: JSON.stringify({data: surveyJSModel?.data, currentPageNo: surveyJSModel?.currentPageNo}),
-    parsedData: {
-      items: []
-    }
+    creatingParticipantUserId: participantUserId,
+    resumeData: JSON.stringify(resumeData),
+    answers: []
   } as FormResponseDto
 
   // the getPlainData call does not include the calculated values, but getAllValues does not include display values,
   // so to get the format we need we call getPlainData for questions, and then combine that with calculatedValues
   const data = surveyJSModel.getPlainData()
-  const questionItems = data.map(({name, title, value, displayValue}: SurveyJsItem) => {
-    const questionType = surveyJSModel.getQuestionByName(name.toString())?.getType()
-    return {
-      stableId: name,
-      questionText: title,
-      questionType,
-      value,
-      displayValue: displayValue.toString()
-    } as FormResponseItem
+  const answers = data.map(({name, value}: SurveyJsItem) => {
+    return mapToAnswer(value, name as string)
   })
 
-  const computedValues = getCalculatedValues(surveyJSModel)
-  response.parsedData.items = questionItems.concat(computedValues)
+  const computedAnswers = getCalculatedValues(surveyJSModel)
+  response.answers = answers.concat(computedAnswers)
   return response
 }
 
+/** convert a list of answers into the resume data format surveyJs expects */
+export function getResumableData(response: SurveyResponse | undefined, userId: string): SurveyJsResumeData | null {
+  if (!response) {
+    return null
+  }
+  const answerHash = response.answers.reduce(
+    (hash: Record<string, object | string | number | undefined | null>, answer: Answer) => {
+      hash[answer.questionStableId] = answer.stringValue ?? answer.numberValue ?? answer.objectValue
+      return hash
+    }, {})
+  let currentPageNo = 0
+  if (response.resumeData) {
+    const userResumeData = JSON.parse(response.resumeData)[userId]
+    // subtract 1 since surveyJS is 0-indexed
+    currentPageNo = userResumeData?.currentPageNo - 1
+  }
+  return {
+    data: answerHash,
+    currentPageNo
+  }
+}
+
 /** extract the calculated values as DenormalizedResponseItems */
-function getCalculatedValues(surveyJSModel: SurveyModel): FormResponseItem[] {
+function getCalculatedValues(surveyJSModel: SurveyModel): Answer[] {
   return surveyJSModel.calculatedValues.map((calculatedValue: CalculatedValue) => {
-    return {
-      stableId: calculatedValue.name,
-      value: calculatedValue.value,
-      questionType: 'calculated'
-    } as FormResponseItem
+    return mapToAnswer(calculatedValue.value, calculatedValue.name)
   })
+}
+
+function mapToAnswer(value: string | number | object | boolean | null, questionStableId: string): Answer {
+  const answer: Answer = {questionStableId}
+  if (typeof value === 'string') {
+    answer.stringValue = value
+  } else if (typeof value == 'number') {
+    answer.numberValue = value
+  } else if (typeof value == 'boolean') {
+    // for now, we don't have a use case for booleans, so just convert them to strings
+    answer.stringValue = value ? 'true' : 'false'
+  } else {
+    answer.objectValue = value
+  }
+  return answer;
 }
 
 /** transform the stored survey representation into what SurveyJS expects */

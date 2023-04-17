@@ -89,7 +89,10 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         if (lastResponse == null) {
             // if there's no response already associated with the task, grab the most recently created
             lastResponse = dao.findMostRecent(enrollee.getId(), form.getId()).orElse(null);
-            dao.attachAnswers(lastResponse);
+            if (lastResponse != null) {
+                dao.attachAnswers(lastResponse);
+            }
+
         }
         // TODO -- this lookup should be by stableId, not formId
         StudyEnvironmentSurvey configSurvey = studyEnvironmentSurveyService
@@ -115,8 +118,6 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
 
         // find or create the SurveyResponse object to attach the snapshot
         SurveyResponse response = findOrCreateResponse(task, enrollee, participantUserId, responseDto);
-        //
-
         createAnswers(response, responseDto.getAnswers(), survey, enrollee.getId(), participantUserId);
 
         // process any answers that need to be propagated elsewhere to the data model
@@ -149,6 +150,8 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
             response = dao.find(taskResponseId).get();
             if (response.isComplete() != response.isComplete()) {
                 response.setComplete(responseDto.isComplete());
+                // we will need to merge, rather than set, resumeData to enable simultaneous editing with page-saving
+                response.setResumeData(responseDto.getResumeData());
                 dao.update(response);
             }
         } else {
@@ -157,6 +160,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                     .creatingParticipantUserId(participantUserId)
                     .surveyId(survey.getId())
                     .complete(responseDto.isComplete())
+                    .resumeData(responseDto.getResumeData())
                     .build();
             response = dao.create(newResponse);
         }

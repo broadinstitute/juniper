@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {useNavigate, useParams, useSearchParams} from 'react-router-dom'
 import _union from 'lodash/union'
 import _keys from 'lodash/keys'
@@ -9,8 +9,8 @@ import Api, {
   ConsentForm,
   Enrollee,
   Portal,
-  ResumableData,
   StudyEnvironmentSurvey,
+  SurveyJsResumeData,
   SurveyResponse,
   SurveyWithResponse
 } from 'api/api'
@@ -18,8 +18,8 @@ import Api, {
 import {Survey as SurveyComponent} from 'survey-react-ui'
 import {
   generateFormResponseDto,
+  getResumableData,
   PageNumberControl,
-  SourceType,
   SurveyResponseDto,
   useRoutablePageNumber,
   useSurveyJSModel
@@ -38,16 +38,15 @@ const TASK_ID_PARAM = 'taskId'
 function RawSurveyView({form, enrollee, resumableData, pager, studyShortcode, taskId}:
                          {
                            form: ConsentForm, enrollee: Enrollee, taskId: string
-                           resumableData: ResumableData | null, pager: PageNumberControl, studyShortcode: string
+                           resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string
                          }) {
-  let prevSave = useRef(resumableData?.data ?? {})
   /** Submit the response to the server */
   const onComplete = () => {
     if (!surveyModel || !refreshSurvey) {
       return
     }
     const responseDto = generateFormResponseDto({
-      surveyJSModel: surveyModel, enrolleeId: enrollee.id, sourceType: SourceType.ENROLLEE
+      surveyJSModel: surveyModel, enrolleeId: enrollee.id, participantUserId: enrollee.participantUserId
     }) as SurveyResponseDto
     responseDto.complete = true
 
@@ -80,25 +79,6 @@ function RawSurveyView({form, enrollee, resumableData, pager, studyShortcode, ta
     surveyModel.mode = 'display'
   }
 
-  function saveDiff(prevData: ResumableData | null) {
-    setSurveyModel(freshSurveyModel => {
-      if (freshSurveyModel) {
-        console.log(prevSave.current)
-        console.log(freshSurveyModel.data)
-        console.log(computeDiff(prevSave.current as Record<string, object>, freshSurveyModel.data))
-        prevSave.current = freshSurveyModel.data
-      }
-      return freshSurveyModel
-    })
-  }
-
-  useEffect(() => {
-    const interval = window.setInterval(saveDiff, 5000)
-    return () => {
-      window.clearInterval(interval)
-    }
-  }, [])
-
   return <div>
     <h4 className="text-center mt-2">{form.name}</h4>
     {surveyModel && <SurveyComponent model={surveyModel}/>}
@@ -108,13 +88,10 @@ function RawSurveyView({form, enrollee, resumableData, pager, studyShortcode, ta
 /** handles paging the form */
 function PagedSurveyView({form, activeResponse, enrollee, studyShortcode, taskId}:
                            {
-                             form: StudyEnvironmentSurvey, activeResponse: SurveyResponse, enrollee: Enrollee,
+                             form: StudyEnvironmentSurvey, activeResponse?: SurveyResponse, enrollee: Enrollee,
                              studyShortcode: string, taskId: string
                            }) {
-  let resumableData = null
-  if (activeResponse?.lastSnapshot?.resumeData) {
-    resumableData = JSON.parse(activeResponse?.lastSnapshot.resumeData) as ResumableData
-  }
+  let resumableData = getResumableData(activeResponse, enrollee.participantUserId)
 
   const pager = useRoutablePageNumber()
 

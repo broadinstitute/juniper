@@ -1,17 +1,17 @@
 import React from 'react'
-import Api, { Survey } from 'api/api'
-import { generateFormResponseDto, PreRegResponseDto, SourceType, useSurveyJSModel } from 'util/surveyJsUtils'
-import { RegistrationContextT } from './PortalRegistrationRouter'
-import { useNavigate } from 'react-router-dom'
+import Api, {Survey} from 'api/api'
+import {generateFormResponseDto, PreRegResponseDto, useSurveyJSModel} from 'util/surveyJsUtils'
+import {RegistrationContextT} from './PortalRegistrationRouter'
+import {useNavigate} from 'react-router-dom'
 
 /** Renders a preregistration form, and handles submitting the user-inputted response */
-export default function PreRegistration({ registrationContext }: { registrationContext: RegistrationContextT }) {
-  const { preRegSurvey, updatePreRegResponseId } = registrationContext
+export default function PreRegistration({registrationContext}: { registrationContext: RegistrationContextT }) {
+  const {preRegSurvey, updatePreRegResponseId} = registrationContext
   const navigate = useNavigate()
   const survey = preRegSurvey as Survey
   // for now, we assume all pre-screeners are a single page
-  const pager = { pageNumber: 0, updatePageNumber: () => 0 }
-  const { surveyModel, refreshSurvey, SurveyComponent } =
+  const pager = {pageNumber: 0, updatePageNumber: () => 0}
+  const {surveyModel, refreshSurvey, SurveyComponent} =
     useSurveyJSModel(survey, null, handleComplete, pager)
 
   /** submit the form */
@@ -20,10 +20,10 @@ export default function PreRegistration({ registrationContext }: { registrationC
       return
     }
     const responseDto = generateFormResponseDto({
-      surveyJSModel: surveyModel, enrolleeId: null, sourceType: SourceType.ANON
+      surveyJSModel: surveyModel, enrolleeId: null, participantUserId: null
     })
     const qualified = surveyModel.getCalculatedValueByName('qualified').value
-    const preRegResponse = { ...responseDto, qualified } as PreRegResponseDto
+    const preRegResponse = {...responseDto, qualified} as PreRegResponseDto
     // submit the form even if it isn't eligible, so we can track stats on exclusions
     Api.submitPreRegResponse({
       surveyStableId: survey.stableId,
