@@ -57,7 +57,7 @@ public class DataRepoExportService {
 
     public void createDatasetsForStudyEnvironments() {
         UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
-        final String DEPLOYMENT_ZONE = "dev"; //TODO, pull from config
+        final String DEPLOYMENT_ZONE = env.getProperty("env.deploymentZone");
 
         List<StudyEnvironment> allStudyEnvs = studyEnvironmentDao.findAll();
         List<UUID> studyEnvsWithDatasets = datasetDao.findAll().stream().map(Dataset::getStudyEnvironmentId).toList();
