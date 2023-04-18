@@ -567,6 +567,7 @@ export type EnvSpec = {
 
 let currentEnvSpec: EnvSpec | null = null
 
+/** updates the shortcode of the envSpec, useful for after getting the initial server response */
 function updateEnvSpec(portalShortcode: string) {
   if (currentEnvSpec) {
     currentEnvSpec.shortcode = portalShortcode
