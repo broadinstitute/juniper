@@ -13,20 +13,17 @@
       "sectionDtos": [{
         "sectionType": "HERO_WITH_IMAGE",
         "sectionConfigJson": {
-          "title": "Help us understand and improve cardiovascular disease risk among South Asian populations.",
-          "blurb": "We're looking for participants to help us better understand - and ultimately overcome - the persistently high rates of cardiovascular diseases among South Asian populations.",
+          "title": "Help us understand cardiovascular disease risk among South Asian populations.",
+          "blurb": "OurHealth studies health and genetic information of South Asians living in the United States to better prevent and manage cardiovascular disease risk.",
           "fullWidth": true,
           "image": { "cleanFileName": "family.png", "version": 1, "alt": "" },
           "imagePosition": "right",
           "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
           "buttons": [
-            {"text": "Join OurHealth",
+            {
+              "text": "Become a Participant",
               "type": "join",
               "studyShortcode": "ourheart"
-            }, {
-              "text": "Learn More About Us",
-              "type": "internalLink",
-              "href": "/aboutUs"
             }
           ],
           "logos": [
