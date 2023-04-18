@@ -66,6 +66,12 @@ public class DataRepoClient {
         return repositoryApi.deleteDataset(datasetId);
     }
 
+    public EnumerateDatasetModel enumerateDatasets(Integer offset, Integer limit) throws ApiException {
+        RepositoryApi repositoryApi = getRepositoryApi();
+
+        return repositoryApi.enumerateDatasets(offset, limit, EnumerateSortByParam.NAME, SqlSortDirection.ASC, null, null);
+    }
+
     //Job APIs
     public JobModel getJobStatus(String jobId) throws ApiException {
         JobsApi jobsApi = getJobsApi();
