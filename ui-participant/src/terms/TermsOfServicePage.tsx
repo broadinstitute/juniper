@@ -351,9 +351,7 @@ const TermsOfService = () => {
       <p>
         If you have any questions regarding our Platform or these Terms, you can
         contact us at{' '}
-        <a href="mailto:juniper_terms_privacy@broadinstitute.org">
-          juniper_terms_privacy@broadinstitute.org
-        </a>
+        <a href="mailto:support@juniper.terra.bio">support@juniper.terra.bio</a>
       </p>
     </>
   )

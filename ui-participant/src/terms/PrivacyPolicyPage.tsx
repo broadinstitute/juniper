@@ -415,9 +415,7 @@ const PrivacyPolicy = () => {
       </p>
       <p>
         By email to:{' '}
-        <a href="mailto:juniper_terms_privacy@broadinstitute.org">
-          juniper_terms_privacy@broadinstitute.org
-        </a>
+        <a href="mailto:support@juniper.terra.bio">support@juniper.terra.bio</a>
       </p>
 
       <SectionHeading>Will you update or change this Policy?</SectionHeading>
