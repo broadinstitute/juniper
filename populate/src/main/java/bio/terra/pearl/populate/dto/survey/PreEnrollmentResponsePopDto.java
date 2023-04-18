@@ -1,7 +1,7 @@
 package bio.terra.pearl.populate.dto.survey;
 
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
-import com.fasterxml.jackson.databind.JsonNode;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,5 +11,5 @@ import lombok.Setter;
 public class PreEnrollmentResponsePopDto extends PreEnrollmentResponse {
     private String surveyStableId;
     private int surveyVersion;
-    private JsonNode fullDataJson;
+    List<AnswerPopDto> answers;
 }

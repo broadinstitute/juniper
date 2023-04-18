@@ -10,7 +10,10 @@ import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.model.survey.Answer;
+import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
+import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -21,7 +24,7 @@ import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.participant.*;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
-import bio.terra.pearl.core.service.survey.SnapshotProcessingService;
+import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
@@ -29,16 +32,13 @@ import bio.terra.pearl.populate.dto.EnrolleePopDto;
 import bio.terra.pearl.populate.dto.ParticipantTaskPopDto;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
+import bio.terra.pearl.populate.dto.survey.AnswerPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
-import bio.terra.pearl.populate.dto.survey.ResponseSnapshotPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -55,7 +55,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     private ParticipantTaskService participantTaskService;
     private NotificationConfigService notificationConfigService;
     private NotificationService notificationService;
-    private SnapshotProcessingService snapshotProcessingService;
+    private AnswerProcessingService answerProcessingService;
     private EnrollmentService enrollmentService;
     private ProfileService profileService;
 
@@ -68,7 +68,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                              ConsentResponseService consentResponseService,
                              ParticipantTaskService participantTaskService,
                              NotificationConfigService notificationConfigService,
-                             NotificationService notificationService, SnapshotProcessingService snapshotProcessingService,
+                             NotificationService notificationService, AnswerProcessingService answerProcessingService,
                              EnrollmentService enrollmentService, ProfileService profileService) {
         this.portalParticipantUserService = portalParticipantUserService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
@@ -82,12 +82,13 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         this.enrolleeService = enrolleeService;
         this.studyEnvironmentService = studyEnvironmentService;
         this.participantUserService = participantUserService;
-        this.snapshotProcessingService = snapshotProcessingService;
+        this.answerProcessingService = answerProcessingService;
         this.enrollmentService = enrollmentService;
         this.profileService = profileService;
     }
 
-    private void populateResponse(Enrollee enrollee, SurveyResponsePopDto responsePopDto, PortalParticipantUser ppUser)
+    private void populateResponse(Enrollee enrollee, SurveyResponsePopDto responsePopDto,
+                                  PortalParticipantUser ppUser, boolean simulateSubmissions)
             throws JsonProcessingException {
         Survey survey = surveyService.findByStableIdWithMappings(responsePopDto.getSurveyStableId(),
                 responsePopDto.getSurveyVersion()).get();
@@ -95,64 +96,78 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         SurveyResponse response = SurveyResponse.builder()
                 .surveyId(survey.getId())
                 .enrolleeId(enrollee.getId())
+                .complete(responsePopDto.isComplete())
                 .creatingParticipantUserId(enrollee.getParticipantUserId())
+                .resumeData(makeResumeData(responsePopDto.getCurrentPageNo(), enrollee.getParticipantUserId()))
                 .build();
-        for (ResponseSnapshotPopDto snapDto : responsePopDto.getResponseSnapshotDtos()) {
-            // we need to convert this to a ResponseData to hydrate some additional fields,
-            // then we turn it back to JSON to serialize it to the database
-            ResponseData responseData = objectMapper.convertValue(snapDto.getFullDataJson(), ResponseData.class);
-            responseData = processResponsePopulateData(responseData);
-            response.getSnapshots().add(
-                    ResponseSnapshot.builder()
-                            .fullData(objectMapper.writeValueAsString(responseData))
-                            .resumeData(snapDto.getResumeDataJson().toString())
-                            .creatingParticipantUserId(enrollee.getParticipantUserId())
-                            .build()
-            );
-            if (snapDto.isProcessSnapshot()) {
-                snapshotProcessingService.processAllAnswerMappings(responseData, survey.getAnswerMappings(),
-                        ppUser, enrollee.getParticipantUserId(), enrollee.getId(), survey.getId());
-            }
+        for (AnswerPopDto answerPopDto : responsePopDto.getAnswerPopDtos()) {
+            Answer answer = convertAnswerPopDto(answerPopDto);
+            response.getAnswers().add(answer);
         }
-        SurveyResponse savedResponse = surveyResponseService.create(response);
+        SurveyResponse savedResponse;
+        if (simulateSubmissions) {
+            ParticipantTask task = participantTaskService
+                    .findTaskForActivity(ppUser.getId(), enrollee.getStudyEnvironmentId(), survey.getStableId()).get();
+            HubResponse<SurveyResponse> hubResponse = surveyResponseService
+                    .submitResponse(response, ppUser.getParticipantUserId(), ppUser, enrollee, task.getId());
+            savedResponse = hubResponse.getResponse();
+        } else {
+            savedResponse = surveyResponseService.create(response);
+        }
         enrollee.getSurveyResponses().add(savedResponse);
     }
 
+    public String makeResumeData(Integer currentPageNo, UUID participantUserId) throws JsonProcessingException {
+        if (currentPageNo != null) {
+            return objectMapper.writeValueAsString(Map.of(participantUserId,
+                    Map.of("currentPageNo", currentPageNo)));
+        }
+        return null;
+    }
+
+    public Answer convertAnswerPopDto(AnswerPopDto popDto) throws JsonProcessingException {
+        if (popDto.getObjectJsonValue() != null) {
+            popDto.setObjectValue(objectMapper.writeValueAsString(popDto.getObjectJsonValue()));
+        }
+        return popDto;
+    }
+
     /** persists any preEnrollmentResponse, and then attaches it to the enrollee */
-    private PreEnrollmentResponse populatePreEnrollResponse(EnrolleePopDto enrolleeDto, StudyEnvironment studyEnv) {
+    private PreEnrollmentResponse populatePreEnrollResponse(EnrolleePopDto enrolleeDto, StudyEnvironment studyEnv) throws JsonProcessingException {
         PreEnrollmentResponsePopDto responsePopDto = enrolleeDto.getPreEnrollmentResponseDto();
         if (responsePopDto == null) {
             return null;
         }
         Survey survey = surveyService.findByStableId(responsePopDto.getSurveyStableId(),
                 responsePopDto.getSurveyVersion()).get();
-
+        String fullData = objectMapper.writeValueAsString(responsePopDto.getAnswers());
         PreEnrollmentResponse response = PreEnrollmentResponse.builder()
                 .surveyId(survey.getId())
                 .creatingParticipantUserId(enrolleeDto.getParticipantUserId())
                 .studyEnvironmentId(studyEnv.getId())
                 .qualified(responsePopDto.isQualified())
-                .fullData(responsePopDto.getFullDataJson().toString())
+                .fullData(fullData)
                 .build();
 
         return preEnrollmentResponseDao.create(response);
     }
 
     private void populateConsent(Enrollee enrollee, PortalParticipantUser ppUser, ConsentResponsePopDto responsePopDto,
-                                 List<ParticipantTask> tasks, boolean simulateSubmissions) {
+                                 List<ParticipantTask> tasks, boolean simulateSubmissions) throws JsonProcessingException {
         ConsentForm consentForm = consentFormService.findByStableId(responsePopDto.getConsentStableId(),
                 responsePopDto.getConsentVersion()).get();
 
         ConsentResponse savedResponse;
+
+        ConsentResponseDto responseDto = ConsentResponseDto.builder()
+                .consentFormId(consentForm.getId())
+                .enrolleeId(enrollee.getId())
+                .creatingParticipantUserId(enrollee.getParticipantUserId())
+                .consented(responsePopDto.isConsented())
+                .answers(responsePopDto.getAnswers())
+                .resumeData(makeResumeData(responsePopDto.getCurrentPageNo(), enrollee.getParticipantUserId()))
+                .build();
         if (simulateSubmissions) {
-            ConsentResponseDto responseDto = ConsentResponseDto.builder()
-                    .consentFormId(consentForm.getId())
-                    .enrolleeId(enrollee.getId())
-                    .creatingParticipantUserId(enrollee.getParticipantUserId())
-                    .consented(responsePopDto.isConsented())
-                    .parsedData(objectMapper.convertValue(responsePopDto.getFullDataJson(), ResponseData.class))
-                    .resumeData(responsePopDto.getResumeDataJson().toString())
-                    .build();
             ParticipantTask matchingTask = tasks.stream().filter(task ->
                     task.getTargetStableId().equals(consentForm.getStableId())).findFirst().orElse(null);
 
@@ -160,15 +175,9 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                     ppUser, enrollee, matchingTask.getId(), responseDto);
             savedResponse = hubResponse.getResponse();
         } else {
-            ConsentResponse response = ConsentResponse.builder()
-                    .consentFormId(consentForm.getId())
-                    .enrolleeId(enrollee.getId())
-                    .creatingParticipantUserId(enrollee.getParticipantUserId())
-                    .consented(responsePopDto.isConsented())
-                    .fullData(responsePopDto.getFullDataJson().toString())
-                    .resumeData(responsePopDto.getResumeDataJson().toString())
-                    .build();
-            savedResponse = consentResponseService.create(response);
+            String fullData = objectMapper.writeValueAsString(responsePopDto.getAnswers());
+            responseDto.setFullData(fullData);
+            savedResponse = consentResponseService.create(responseDto);
         }
         enrollee.getConsentResponses().add(savedResponse);
     }
@@ -215,22 +224,6 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 config.getNotificationType().equals(notification.getNotificationConfigType()) &&
                 config.getDeliveryType().equals(notification.getDeliveryType()))
                 .findFirst().orElse(null);
-    }
-
-    /** iterates through the response data and adds displayValues and simpleValues as needed
-     * convenience method so that the populate files don't have to repeat themselves */
-    private ResponseData processResponsePopulateData(ResponseData fullData) {
-        for (ResponseDataItem item : fullData.getItems()) {
-            if (item.getValue() != null) {
-                if (item.getSimpleValue() == null) {
-                    item.setSimpleValue(item.getValue().asText());
-                }
-                if (item.getDisplayValue() == null) {
-                    item.setDisplayValue(item.getValue().asText());
-                }
-            }
-        }
-        return fullData;
     }
 
     @Override
@@ -295,7 +288,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         }
 
         for (SurveyResponsePopDto responsePopDto : popDto.getSurveyResponseDtos()) {
-            populateResponse(enrollee, responsePopDto, ppUser);
+            populateResponse(enrollee, responsePopDto, ppUser, popDto.isSimulateSubmissions());
         }
         for (ConsentResponsePopDto consentPopDto : popDto.getConsentResponseDtos()) {
             populateConsent(enrollee, ppUser, consentPopDto, tasks, popDto.isSimulateSubmissions());

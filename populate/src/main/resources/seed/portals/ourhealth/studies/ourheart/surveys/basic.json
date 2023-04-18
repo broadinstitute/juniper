@@ -3,24 +3,24 @@
   "version": 1,
   "name": "The Basics",
   "answerMappings": [{
-    "questionStableId": "oh_oh_basic_firstName", "targetType": "PROFILE", "targetField": "givenName", "mapType": "TEXT_NODE_TO_STRING"
+    "questionStableId": "oh_oh_basic_firstName", "targetType": "PROFILE", "targetField": "givenName", "mapType": "STRING_TO_STRING"
   },{
-    "questionStableId": "oh_oh_basic_lastName", "targetType": "PROFILE", "targetField": "familyName", "mapType": "TEXT_NODE_TO_STRING"
+    "questionStableId": "oh_oh_basic_lastName", "targetType": "PROFILE", "targetField": "familyName", "mapType": "STRING_TO_STRING"
   },{
-    "questionStableId": "oh_oh_basic_streetAddress", "targetType": "PROFILE", "targetField": "mailingAddress.street1", "mapType": "TEXT_NODE_TO_STRING"
+    "questionStableId": "oh_oh_basic_streetAddress", "targetType": "PROFILE", "targetField": "mailingAddress.street1", "mapType": "STRING_TO_STRING"
   },{
-    "questionStableId": "oh_oh_basic_city", "targetType": "PROFILE", "targetField": "mailingAddress.city", "mapType": "TEXT_NODE_TO_STRING"
+    "questionStableId": "oh_oh_basic_city", "targetType": "PROFILE", "targetField": "mailingAddress.city", "mapType": "STRING_TO_STRING"
   },{
-    "questionStableId": "oh_oh_basic_state", "targetType": "PROFILE", "targetField": "mailingAddress.state", "mapType": "TEXT_NODE_TO_STRING"
+    "questionStableId": "oh_oh_basic_state", "targetType": "PROFILE", "targetField": "mailingAddress.state", "mapType": "STRING_TO_STRING"
   },{
-    "questionStableId": "oh_oh_basic_zip", "targetType": "PROFILE", "targetField": "mailingAddress.postalCode", "mapType": "TEXT_NODE_TO_STRING"
+    "questionStableId": "oh_oh_basic_zip", "targetType": "PROFILE", "targetField": "mailingAddress.postalCode", "mapType": "STRING_TO_STRING"
   },{
-    "questionStableId": "oh_oh_basic_phoneNumber", "targetType": "PROFILE", "targetField": "phoneNumber", "mapType": "TEXT_NODE_TO_STRING"
+    "questionStableId": "oh_oh_basic_phoneNumber", "targetType": "PROFILE", "targetField": "phoneNumber", "mapType": "STRING_TO_STRING"
   },{
-    "questionStableId": "oh_oh_basic_dateOfBirth", "targetType": "PROFILE", "targetField": "birthDate", "mapType": "TEXT_NODE_TO_LOCAL_DATE",
+    "questionStableId": "oh_oh_basic_dateOfBirth", "targetType": "PROFILE", "targetField": "birthDate", "mapType": "STRING_TO_LOCAL_DATE",
     "formatString": "MM/dd/yyyy"
   },{
-    "questionStableId": "oh_oh_basic_birthSex", "targetType": "PROFILE", "targetField": "sexAtBirth", "mapType": "TEXT_NODE_TO_STRING"
+    "questionStableId": "oh_oh_basic_birthSex", "targetType": "PROFILE", "targetField": "sexAtBirth", "mapType": "STRING_TO_STRING"
   }],
   "jsonContent": {
     "title": "The Basics",
@@ -402,7 +402,7 @@
             "choices": [
               {"text": "African American/Black", "value": "black"},
               {"text": "Caucasian/White", "value": "white"},
-              {"text": "East of Southeast Asian", "value": "eastOfSoutheastAsian"},
+              {"text": "East or Southeast Asian", "value": "eastOfSoutheastAsian"},
               {"text": "Native American (American Indian or Alaska Native)", "value": "nativeAmerican"},
               {"text": "Native Hawaiian or Other Pacific Islander", "value": "pacificIslander"}
             ]

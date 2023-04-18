@@ -70,7 +70,7 @@ public class EnrollmentService {
         PreEnrollmentResponse response = PreEnrollmentResponse.builder()
                 .surveyId(survey.getId())
                 .qualified(parsedResponse.isQualified())
-                .fullData(objectMapper.writeValueAsString(parsedResponse.getParsedData()))
+                .fullData(objectMapper.writeValueAsString(parsedResponse.getAnswers()))
                 .studyEnvironmentId(studyEnvironmentId).build();
         return preEnrollmentResponseDao.create(response);
     }

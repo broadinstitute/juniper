@@ -9,9 +9,9 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 /**
- * Container for response to a consent form.  Unlike SurveyResponses, which store data in snapshots, the data are
- * are contained in the response object itself.  This is because consent forms do not need to support recurrence,
- * admin-editing workflows, and other complexities that surveys must support.
+ * Container for response to a consent form.  Unlike SurveyResponses, which store data in answers, the data
+ * is contained in the response object itself.  This is because consent forms do not need to support recurrence,
+ * admin-editing workflows, answer-by-answer analysis, and other complexities that surveys must support.
  */
 @Getter
 @Setter
@@ -26,8 +26,9 @@ public class ConsentResponse extends BaseEntity {
     private boolean completed = false;
     @Builder.Default
     private boolean consented = false;
-    // the JSON that surveyJS needs to pick up a survey where it was last left, stored as string for performance reasons
+    // a json map of userId -> an object with information about where that particular user left off
+    // currently, the only property stored on that object is currentPageNo
     private String resumeData;
-    // ResponseFullData, stored as a string for performance and simplicity
+    // list of Answers stored as a JSON string
     private String fullData;
 }

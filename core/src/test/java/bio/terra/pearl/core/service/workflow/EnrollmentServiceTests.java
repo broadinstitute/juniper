@@ -2,21 +2,22 @@ package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
-import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
-import bio.terra.pearl.core.factory.survey.ResponseDataFactory;
+import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
+import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.ParsedPreEnrollResponse;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
-import bio.terra.pearl.core.model.survey.ResponseData;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.List;
 import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -37,13 +38,13 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
         studyEnvironmentService.update(studyEnv);
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
 
-        ResponseData responseData = ResponseDataFactory.fromMap(Map.of(
+        List<Answer> answers = AnswerFactory.fromMap(Map.of(
                 "qualified", true,
                 "areOver18", "yes"
         ));
         ParsedPreEnrollResponse response = ParsedPreEnrollResponse.builder()
                 .studyEnvironmentId(studyEnv.getId())
-                .parsedData(responseData)
+                .answers(answers)
                 .qualified(true).build();
 
         PreEnrollmentResponse savedResponse = enrollmentService.createAnonymousPreEnroll(studyEnv.getId(), survey.getStableId(), survey.getVersion(), response);

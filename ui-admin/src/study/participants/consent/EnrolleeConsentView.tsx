@@ -1,5 +1,6 @@
 import React  from 'react'
 import {
+  Answer,
   ConsentResponse, Enrollee,
   StudyEnvironmentConsent
 } from 'api/api'
@@ -37,13 +38,14 @@ export function RawEnrolleeConsentView({ enrollee, configConsent, responses }:
   }
   // just show the last response for now
   const lastResponse = responses[responses.length - 1]
+  const answers: Answer[] = JSON.parse(lastResponse.fullData)
 
   return <div>
     <h6>{configConsent.consentForm.name}</h6>
     <div>
       <span className="fst-italic">completed {instantToDefaultString(lastResponse.createdAt)}</span>
       <hr/>
-      <SurveyFullDataView fullData={lastResponse.fullData} survey={configConsent.consentForm}/>
+      <SurveyFullDataView answers={answers} survey={configConsent.consentForm}/>
     </div>
   </div>
 }

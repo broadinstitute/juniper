@@ -3,18 +3,19 @@ package bio.terra.pearl.core.service.survey;
 import bio.terra.pearl.core.dao.workflow.DataChangeRecordDao;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.model.survey.Answer;
+import bio.terra.pearl.core.model.survey.AnswerMapping;
+import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
+import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
 import bio.terra.pearl.core.model.workflow.DataChangeRecord;
 import bio.terra.pearl.core.model.workflow.ObjectWithChangeLog;
 import bio.terra.pearl.core.service.participant.ProfileService;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.BiFunction;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,13 +26,13 @@ import org.springframework.transaction.annotation.Transactional;
  * which map question stableIds to the object properties they should be assigned to.
  */
 @Service
-public class SnapshotProcessingService {
-    private static final Logger logger = LoggerFactory.getLogger(SnapshotProcessingService.class);
+public class AnswerProcessingService {
+    private static final Logger logger = LoggerFactory.getLogger(AnswerProcessingService.class);
     private ObjectMapper objectMapper;
     private ProfileService profileService;
     private DataChangeRecordDao dataChangeRecordDao;
-    public SnapshotProcessingService(ObjectMapper objectMapper, ProfileService profileService,
-                                     DataChangeRecordDao dataChangeRecordDao) {
+    public AnswerProcessingService(ObjectMapper objectMapper, ProfileService profileService,
+                                   DataChangeRecordDao dataChangeRecordDao) {
         this.objectMapper = objectMapper;
         this.profileService = profileService;
         this.dataChangeRecordDao = dataChangeRecordDao;
@@ -41,14 +42,14 @@ public class SnapshotProcessingService {
      * also logs the changes as persisted DataChangeRecords
      * */
     @Transactional
-    public List<DataChangeRecord> processAllAnswerMappings(ResponseData responseData, List<AnswerMapping> mappings,
+    public List<DataChangeRecord> processAllAnswerMappings(List<Answer> answers, List<AnswerMapping> mappings,
                                          PortalParticipantUser ppUser, UUID responsibleUserId, UUID enrolleeId,
                                                            UUID surveyId) {
         if (mappings.isEmpty()) {
             return new ArrayList<>();
         }
         UUID operationId = UUID.randomUUID();
-        ObjectWithChangeLog<Profile> profileChanges = processProfileAnswerMappings(responseData, mappings, ppUser);
+        ObjectWithChangeLog<Profile> profileChanges = processProfileAnswerMappings(answers, mappings, ppUser);
         /**
          * for now, it's assumed these record updates are a small number at a time -- if this gets large, it
          * might be worth creating as a batch
@@ -69,7 +70,7 @@ public class SnapshotProcessingService {
      * this does not load the participant's profile, and instead returns an object with a null 'obj' and an empty changelist
      */
     @Transactional
-    public ObjectWithChangeLog<Profile> processProfileAnswerMappings(ResponseData responseData, List<AnswerMapping> mappings,
+    public ObjectWithChangeLog<Profile> processProfileAnswerMappings(List<Answer> answers, List<AnswerMapping> mappings,
                                              PortalParticipantUser ppUser) {
         List<AnswerMapping> profileMappings = mappings.stream().filter(mapping ->
                 mapping.getTargetType().equals(AnswerMappingTargetType.PROFILE)).toList();
@@ -77,27 +78,27 @@ public class SnapshotProcessingService {
             return new ObjectWithChangeLog<>(null, new ArrayList<>());
         }
         Profile profile = profileService.loadWithMailingAddress(ppUser.getProfileId()).get();
-        ObjectWithChangeLog<Profile> profileChanges = mapValuesToType(responseData, profileMappings,
+        ObjectWithChangeLog<Profile> profileChanges = mapValuesToType(answers, profileMappings,
                 profile, AnswerMappingTargetType.PROFILE);
         profileService.updateWithMailingAddress(profile);
         return profileChanges;
     }
 
     /** returns the target object with the values from the snapshot mapped onto it.  Modifies the passed-in object */
-    public <T> ObjectWithChangeLog<T> mapValuesToType(ResponseData responseData, List<AnswerMapping> mappings, T targetObj,
+    public <T> ObjectWithChangeLog<T> mapValuesToType(List<Answer> answers, List<AnswerMapping> mappings, T targetObj,
                                  AnswerMappingTargetType targetType) {
         HashMap<String, AnswerMapping> fieldTargetMap = new HashMap<>();
         List<DataChangeRecord> changeRecords = new ArrayList<>();
         mappings.stream().filter(mapping -> mapping.getTargetType().equals(targetType))
                 .forEach(mapping -> fieldTargetMap.put(mapping.getQuestionStableId(), mapping));
-        for (ResponseDataItem item : responseData.getItems()) {
-            String stableId = item.getStableId();
-            if (fieldTargetMap.containsKey(stableId) && item.getValue() != null) {
+        for (Answer answer : answers) {
+            String stableId = answer.getQuestionStableId();
+            if (fieldTargetMap.containsKey(stableId)) {
                 try {
                     AnswerMapping mapping = fieldTargetMap.get(stableId);
                     String oldValue = Objects.toString(PropertyUtils.getNestedProperty(targetObj, mapping.getTargetField()), "");
-                    BiFunction<JsonNode, AnswerMapping, Object> mapFunc = JSON_MAPPERS.get(mapping.getMapType());
-                    Object newValue = mapFunc.apply(item.getValue(), mapping);
+                    BiFunction<Answer, AnswerMapping, Object> mapFunc = JSON_MAPPERS.get(mapping.getMapType());
+                    Object newValue = mapFunc.apply(answer, mapping);
                     PropertyUtils.setNestedProperty(targetObj, mapping.getTargetField(), newValue);
                     DataChangeRecord changeRecord = DataChangeRecord.builder()
                             .modelName(targetType.name())
@@ -117,41 +118,21 @@ public class SnapshotProcessingService {
         return new ObjectWithChangeLog<T>(targetObj, changeRecords);
     }
 
-    public static final Map<AnswerMappingMapType, BiFunction<JsonNode, AnswerMapping, Object>> JSON_MAPPERS = Map.of(
-            AnswerMappingMapType.TEXT_NODE_TO_STRING, (JsonNode jsonNode, AnswerMapping mapping) -> jsonNode.asText(),
-            AnswerMappingMapType.TEXT_NODE_TO_LOCAL_DATE, (JsonNode jsonNode, AnswerMapping mapping) ->
-                    mapToDate(jsonNode, mapping)
+    public static final Map<AnswerMappingMapType, BiFunction<Answer, AnswerMapping, Object>> JSON_MAPPERS = Map.of(
+            AnswerMappingMapType.STRING_TO_STRING, (Answer answer, AnswerMapping mapping) -> answer.getStringValue(),
+            AnswerMappingMapType.STRING_TO_LOCAL_DATE, (Answer answer, AnswerMapping mapping) ->
+                    mapToDate(answer.getStringValue(), mapping)
     );
 
-    public static LocalDate mapToDate(JsonNode jsonNode, AnswerMapping mapping) {
-        String dateText = jsonNode.asText();
-        if (StringUtils.isBlank(dateText)) {
-            return null;
-        }
+    public static LocalDate mapToDate(String dateString, AnswerMapping mapping) {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(mapping.getFormatString());
-            return LocalDate.parse(dateText, formatter);
+            return LocalDate.parse(dateString, formatter);
         } catch (Exception e) {
             if (mapping.isErrorOnFail()) {
-                throw new IllegalArgumentException("Could not parse date " + dateText + " to format " + mapping.getFormatString());
+                throw new IllegalArgumentException("Could not parse date " + dateString + " to format " + mapping.getFormatString());
             }
         }
         return null;
     }
-
-
-    /** legacy value extract method for hardcoded surveys with hardcoded mappings, like REGISTRATION_FIELD_MAP
-     * in RegistrationService */
-    public <T> T extractValues(ParsedSnapshot snapshot, Map<String, String> stableIdMap, Class<T> clazz) {
-        Map<String, Object> fieldValues = new HashMap<>();
-        for (ResponseDataItem item : snapshot.getParsedData().getItems()) {
-            String stableId = item.getStableId();
-            if (stableIdMap.containsKey(stableId)) {
-                fieldValues.put(stableIdMap.get(stableId), item.getValue());
-            }
-
-        }
-        return objectMapper.convertValue(fieldValues, clazz);
-    }
-
 }

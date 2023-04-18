@@ -5,7 +5,7 @@ import bio.terra.pearl.api.participant.service.RequestUtilService;
 import bio.terra.pearl.api.participant.service.SurveyResponseExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.survey.ResponseSnapshotDto;
+import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.survey.SurveyWithResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,7 +60,7 @@ public class SurveyResponseController implements SurveyResponseApi {
       Object body) {
     ParticipantUser user = requestUtilService.requireUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    ResponseSnapshotDto responseDto = objectMapper.convertValue(body, ResponseSnapshotDto.class);
+    SurveyResponse responseDto = objectMapper.convertValue(body, SurveyResponse.class);
     HubResponse hubResponse =
         surveyResponseExtService.submitResponse(
             user, portalShortcode, environmentName, responseDto, enrolleeShortcode, taskId);

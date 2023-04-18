@@ -19,7 +19,7 @@ import 'inputmask/dist/inputmask/phone-codes/phone'
 // @ts-ignore
 import * as widgets from 'surveyjs-widgets'
 import { Survey as SurveyJSComponent } from 'survey-react-ui'
-import { Profile, ResumableData, SurveyJSForm } from 'api/api'
+import { Answer, Profile, SurveyJSForm, SurveyJsResumeData, UserResumeData } from 'api/api'
 import { useSearchParams } from 'react-router-dom'
 import { getSurveyElementList } from './pearlSurveyUtils'
 
@@ -120,7 +120,7 @@ type UseSurveyJsModelOpts = {
  */
 export function useSurveyJSModel(
   form: SurveyJSForm,
-  resumeData: ResumableData | null,
+  resumeData: SurveyJsResumeData | null,
   onComplete: () => void,
   pager: PageNumberControl,
   profile?: Profile,
@@ -139,7 +139,7 @@ export function useSurveyJSModel(
   }
 
   /** syncs the surveyJS survey model with the given data/pageNumber */
-  function refreshSurvey(refreshData: ResumableData | null, pagerPageNumber: number | null) {
+  function refreshSurvey(refreshData: SurveyJsResumeData | null, pagerPageNumber: number | null) {
     StylesManager.applyTheme('modern')
     const newSurveyModel = new Model(extractSurveyContent(form))
 
@@ -191,7 +191,7 @@ export function useSurveyJSModel(
   }, [surveyModel])
   const pageNumber = surveyModel ? surveyModel.currentPageNo + 1 : 1
   const SurveyComponent = surveyModel ? <SurveyJSComponent model={surveyModel}/> : <></>
-  return { surveyModel, refreshSurvey, pageNumber, SurveyComponent }
+  return { surveyModel, refreshSurvey, pageNumber, SurveyComponent, setSurveyModel }
 }
 
 export const applyMarkdown = (survey: object, options: { text: string, html: string }) => {
@@ -203,56 +203,6 @@ export const applyMarkdown = (survey: object, options: { text: string, html: str
   }
 }
 
-export enum SourceType {
-  ENROLLEE = 'ENROLLEE',
-  ADMIN = 'ADMIN',
-  CLINICAL_RECORD = 'CLINICAL RECORD',
-  PROXY = 'PROXY',
-  ANON = 'ANON' // for not-logged-in users (e.g. preregistration)
-}
-
-export type FormResponseDto = {
-  enrolleeId: string,
-  sourceType: SourceType,
-  resumeData?: string,
-  parsedData: {
-    items: FormResponseItem[]
-  }
-}
-
-export type PreRegResponseDto = {
-  parsedData: {
-    items: FormResponseItem[]
-  }
-  qualified: boolean
-}
-
-export type PreEnrollResponseDto = {
-  parsedData: {
-    items: FormResponseItem[]
-  }
-  qualified: boolean,
-  studyEnvironmentId: string
-}
-
-export type ConsentResponseDto = FormResponseDto & {
-  consentFormId: string,
-  consented: boolean
-}
-
-export type SurveyResponseDto = FormResponseDto & {
-  surveyId: string,
-  complete: boolean
-}
-
-export type FormResponseItem = {
-  stableId: string,
-  questionText: string,
-  questionType: string,
-  value: string | object | undefined,
-  displayValue: string | object | undefined,
-}
-
 export type SurveyJsItem = {
   name: string | number,
   title: string,
@@ -260,57 +210,69 @@ export type SurveyJsItem = {
   displayValue: string
 }
 
-// SurveyJS doesn't seem to export their calculated value type, so we define a shim here
-type CalculatedValue = {
-  name: string,
-  value: string | boolean | null | number | object
+type ValueType = string | boolean | number | object | null
+
+/** get resumeData suitable for including on a form response, current a map of userId -> data */
+export function getResumeData(surveyJSModel: SurveyModel, participantUserId: string | null): string {
+  const resumeData: Record<string, UserResumeData> = {}
+  if (participantUserId) {
+    resumeData[participantUserId] = { currentPageNo: surveyJSModel.currentPageNo + 1 }
+  }
+  return JSON.stringify(resumeData)
 }
 
-/**
- * Takes a ConsentForm or Survey object, along with a surveyJS model of the user's input, and generates a response DTO
- */
-export function generateFormResponseDto({ surveyJSModel, enrolleeId, sourceType }:
-                                          {
-                                            surveyJSModel: SurveyModel,
-                                            enrolleeId: string | null, sourceType: SourceType
-                                          }): FormResponseDto {
-  const response = {
-    enrolleeId,
-    sourceType,
-    resumeData: JSON.stringify({ data: surveyJSModel?.data, currentPageNo: surveyJSModel?.currentPageNo }),
-    parsedData: {
-      items: []
-    }
-  } as FormResponseDto
-
-  // the getPlainData call does not include the calculated values, but getAllValues does not include display values,
-  // so to get the format we need we call getPlainData for questions, and then combine that with calculatedValues
-  const data = surveyJSModel.getPlainData()
-  const questionItems = data.map(({ name, title, value, displayValue }: SurveyJsItem) => {
-    const questionType = surveyJSModel.getQuestionByName(name.toString())?.getType()
-    return {
-      stableId: name,
-      questionText: title,
-      questionType,
-      value,
-      displayValue: displayValue.toString()
-    } as FormResponseItem
-  })
-
-  const computedValues = getCalculatedValues(surveyJSModel)
-  response.parsedData.items = questionItems.concat(computedValues)
-  return response
+/** converts the given model into a list of answers, or an empty array if undefined */
+export function getAnswerList(surveyJSModel: SurveyModel): Answer[] {
+  if (!surveyJSModel.data) {
+    return []
+  }
+  return Object.entries(surveyJSModel.data)
+    // don't make answers for the descriptive sections
+    .filter(([key]) => {
+      return surveyJSModel.getQuestionByName(key)?.getType() !== 'html'
+    })
+    .map(([key, value]) => mapToAnswer(value as ValueType, key))
 }
 
-/** extract the calculated values as DenormalizedResponseItems */
-function getCalculatedValues(surveyJSModel: SurveyModel): FormResponseItem[] {
-  return surveyJSModel.calculatedValues.map((calculatedValue: CalculatedValue) => {
-    return {
-      stableId: calculatedValue.name,
-      value: calculatedValue.value,
-      questionType: 'calculated'
-    } as FormResponseItem
-  })
+/** convert a list of answers and resumeData into the resume data format surveyJs expects */
+export function makeSurveyJsData(resumeData: string | undefined, answers: Answer[] | undefined, userId: string):
+  SurveyJsResumeData | null {
+  answers = answers ?? []
+  const answerHash = answers.reduce(
+    (hash: Record<string, ValueType>, answer: Answer) => {
+      if (answer.objectValue) {
+        hash[answer.questionStableId] = JSON.parse(answer.objectValue)
+      } else {
+        hash[answer.questionStableId] = answer.stringValue ?? answer.numberValue ?? null
+      }
+      return hash
+    }, {})
+  let currentPageNo = 0
+  if (resumeData) {
+    const userResumeData = JSON.parse(resumeData)[userId]
+    // subtract 1 since surveyJS is 0-indexed
+    currentPageNo = userResumeData?.currentPageNo - 1
+  }
+  return {
+    data: answerHash,
+    currentPageNo
+  }
+}
+
+/** return an Answer for the given value.  This should be updated to take some sort of questionType/dataType param */
+function mapToAnswer(value: ValueType, questionStableId: string): Answer {
+  const answer: Answer = { questionStableId }
+  if (typeof value === 'string') {
+    answer.stringValue = value
+  } else if (typeof value == 'number') {
+    answer.numberValue = value
+  } else if (typeof value == 'boolean') {
+    // for now, we don't have a use case for booleans, so just convert them to strings
+    answer.booleanValue = value
+  } else {
+    answer.objectValue = JSON.stringify(value)
+  }
+  return answer
 }
 
 /** transform the stored survey representation into what SurveyJS expects */

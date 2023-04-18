@@ -91,11 +91,12 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
         for (PreEnrollmentResponsePopDto responsePopDto : studyPopEnv.getPreEnrollmentResponseDtos()) {
             Survey survey = surveyService.findByStableId(responsePopDto.getSurveyStableId(),
                     responsePopDto.getSurveyVersion()).get();
+            String fullData = objectMapper.writeValueAsString(responsePopDto.getAnswers());
             PreEnrollmentResponse response = PreEnrollmentResponse.builder()
                     .surveyId(survey.getId())
                     .studyEnvironmentId(savedEnv.getId())
                     .qualified(responsePopDto.isQualified())
-                    .fullData(responsePopDto.getFullDataJson().toString())
+                    .fullData(fullData)
                     .build();
             preEnrollmentResponseDao.create(response);
         }

@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+
 import Api, {
   ConsentForm,
   Enrollee,
   Portal,
-  ResumableData,
   StudyEnvironmentSurvey,
+  SurveyJsResumeData,
   SurveyResponse,
   SurveyWithResponse
 } from 'api/api'
 
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import {
-  generateFormResponseDto,
+  getAnswerList,
+  getResumeData,
+  makeSurveyJsData,
   PageNumberControl,
-  SourceType,
-  SurveyResponseDto,
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
@@ -30,26 +31,34 @@ const TASK_ID_PARAM = 'taskId'
 /**
  * display a single survey form to a participant.
  */
-function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, taskId }:
+function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, taskId, isEditingPrevious }:
                          {
-                           form: ConsentForm, enrollee: Enrollee, taskId: string
-                           resumableData: ResumableData | null, pager: PageNumberControl, studyShortcode: string
+                           form: ConsentForm, enrollee: Enrollee, taskId: string, isEditingPrevious: boolean,
+                           resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string
                          }) {
+  const navigate = useNavigate()
+  const { updateEnrollee } = useUser()
+
   /** Submit the response to the server */
   const onComplete = () => {
     if (!surveyModel || !refreshSurvey) {
       return
     }
-    const responseDto = generateFormResponseDto({
-      surveyJSModel: surveyModel, enrolleeId: enrollee.id, sourceType: SourceType.ENROLLEE
-    }) as SurveyResponseDto
-    responseDto.complete = true
+    const responseDto = {
+      resumeData: getResumeData(surveyModel, enrollee.participantUserId),
+      enrolleeId: enrollee.id,
+      answers: getAnswerList(surveyModel),
+      creatingParticipantId: enrollee.participantUserId,
+      surveyId: form.id,
+      complete: true
+    } as SurveyResponse
 
     Api.submitSurveyResponse({
       studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
       version: form.version, response: responseDto, taskId
     }).then(response => {
       response.enrollee.participantTasks = response.tasks
+      response.enrollee.profile = response.profile
       updateEnrollee(response.enrollee)
       const hubUpdate: HubUpdate = {
         message: {
@@ -63,13 +72,11 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
       alert('an error occurred')
     })
   }
+  const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData,
+    onComplete, pager, enrollee.profile)
 
-  const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData, onComplete, pager, enrollee.profile)
-  const navigate = useNavigate()
-
-  const { updateEnrollee } = useUser()
-  if (surveyModel && resumableData) {
-    // survey responses aren't yet editable after completion
+  if (isEditingPrevious && surveyModel) {
+    // we don't yet support editing prior answers
     surveyModel.mode = 'display'
   }
 
@@ -82,17 +89,15 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
 /** handles paging the form */
 function PagedSurveyView({ form, activeResponse, enrollee, studyShortcode, taskId }:
                            {
-                             form: StudyEnvironmentSurvey, activeResponse: SurveyResponse, enrollee: Enrollee,
+                             form: StudyEnvironmentSurvey, activeResponse?: SurveyResponse, enrollee: Enrollee,
                              studyShortcode: string, taskId: string
                            }) {
-  let resumableData = null
-  if (activeResponse?.lastSnapshot?.resumeData) {
-    resumableData = JSON.parse(activeResponse?.lastSnapshot.resumeData) as ResumableData
-  }
+  const resumableData = makeSurveyJsData(activeResponse?.resumeData,
+    activeResponse?.answers, enrollee.participantUserId)
 
   const pager = useRoutablePageNumber()
 
-  return <RawSurveyView enrollee={enrollee} form={form.survey} taskId={taskId}
+  return <RawSurveyView enrollee={enrollee} form={form.survey} taskId={taskId} isEditingPrevious={!!activeResponse}
     resumableData={resumableData} pager={pager} studyShortcode={studyShortcode}/>
 }
 

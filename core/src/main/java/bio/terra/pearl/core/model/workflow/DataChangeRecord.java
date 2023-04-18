@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 
 /**
  * logs a discrete change to a participant's persisted data, such as a change to their profile
- * Note that this does *not* log changes to survey answers--those are tracked via ResponseSnapshots.
+ * Note that this does *not* log changes to survey answers--those are tracked via AnswerChangeRecord.
  * This is mainly kept for auditing (HIPAA) and troubleshooting purposes.
  * To support application-level functionality (such as undo/redo)
  * more sophisticated mechanisms should likely be used.

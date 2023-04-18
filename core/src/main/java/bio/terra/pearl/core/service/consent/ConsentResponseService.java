@@ -4,7 +4,6 @@ import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
 import bio.terra.pearl.core.model.consent.*;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.survey.ResponseData;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
@@ -100,11 +99,8 @@ public class ConsentResponseService extends ImmutableEntityService<ConsentRespon
     /** the frontend might pass either parsed or string data back, handle either case */
     public void processResponseDto(ConsentResponseDto response) {
         try {
-            if (response.getFullData() == null && response.getParsedData() != null) {
-                response.setFullData(objectMapper.writeValueAsString(response.getParsedData()));
-            }
-            if (response.getParsedData() == null && response.getFullData() != null) {
-                response.setParsedData(objectMapper.readValue(response.getFullData(), ResponseData.class));
+            if (response.getFullData() == null && response.getAnswers() != null) {
+                response.setFullData(objectMapper.writeValueAsString(response.getAnswers()));
             }
         } catch (JsonProcessingException jpe) {
             throw new IllegalArgumentException("Could not process response:", jpe);

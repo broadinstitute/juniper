@@ -43,7 +43,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         AnswerMapping answerMapping = AnswerMapping.builder()
                 .questionStableId("qStableId")
                 .targetField("givenName")
-                .mapType(AnswerMappingMapType.TEXT_NODE_TO_STRING)
+                .mapType(AnswerMappingMapType.STRING_TO_STRING)
                 .targetType(AnswerMappingTargetType.PROFILE)
                 .build();
         survey.getAnswerMappings().add(answerMapping);

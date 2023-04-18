@@ -221,8 +221,14 @@ export type SurveyResponse = {
   surveyId: string,
   surveyStableId: string,
   surveyVersion: string,
-  snapshots: ResponseSnapshot[],
-  lastSnapshot: ResponseSnapshot
+  answers: Answer[]
+}
+
+export type Answer = {
+  stringValue: string,
+  numberValue: number,
+  objectValue: object,
+  questionStableId: string
 }
 
 export type PreregistrationResponse = {

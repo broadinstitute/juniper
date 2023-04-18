@@ -282,7 +282,8 @@ paths:
       requestBody:
         content:
           application/json:
-            schema: { type: object }
+            schema:
+              $ref: '#/components/schemas/RegistrationInfo'
       responses:
         '200':
           description: preregistration response

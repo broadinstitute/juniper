@@ -1,6 +1,6 @@
 import React from 'react'
 import { Survey as SurveyComponent } from 'survey-react-ui'
-import { generateFormResponseDto, SourceType, useSurveyJSModel } from 'util/surveyJsUtils'
+import { useSurveyJSModel } from 'util/surveyJsUtils'
 import Api, { Survey } from 'api/api'
 import { RegistrationContextT } from './PortalRegistrationRouter'
 import { useUser } from '../../providers/UserProvider'
@@ -63,24 +63,24 @@ export default function RegistrationUnauthed({ registrationContext, returnTo }: 
     if (!surveyModel) {
       return
     }
-    const responseDto = generateFormResponseDto({
-      surveyJSModel: surveyModel, enrolleeId: null, sourceType: SourceType.ANON
-    })
+    const registrationInfo = {
+      email: surveyModel.data.reg_email
+    }
+
     const resumeData = surveyModel?.data
     Api.internalRegister({
       preRegResponseId: preRegResponseId as string,
-      fullData: responseDto
+      fullData: registrationInfo
+    }).then(response => {
+      loginUser({ user: response.participantUser, enrollees: [] }, response.participantUser.token)
+      if (returnTo) {
+        navigate(returnTo)
+      }
+    }).catch(() => {
+      alert('an error occurred.  Please retry.  If this persists, contact us')
+      // if there's an error, reshow the survey (for now, assume registration is a single page)
+      refreshSurvey(resumeData, 1)
     })
-      .then(response => {
-        loginUser({ user: response.participantUser, enrollees: [] }, response.participantUser.token)
-        if (returnTo) {
-          navigate(returnTo)
-        }
-      }).catch(() => {
-        alert('an error occurred.  Please retry.  If this persists, contact us')
-        // if there's an error, reshow the survey (for now, assume registration is a single page)
-        refreshSurvey(resumeData, 1)
-      })
   }
 
   return <div>
