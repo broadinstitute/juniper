@@ -1,5 +1,6 @@
 import classNames from 'classnames'
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 import Navbar from '../Navbar'
 
@@ -88,12 +89,13 @@ const TermsOfUse = () => {
       <SectionHeading>Privacy</SectionHeading>
       <p>
         Broad understands the importance of confidentiality and privacy
-        regarding your information. Please see our Privacy Policy for a
-        description of how we collect, use, and disclose your personal
-        information when you access or use the Platform. By using the Platform
-        or by clicking to accept or agree to these Terms when this option is
-        made available to you, you consent to our use of your information and
-        our contacting you, in each case, in compliance with our Privacy Policy.
+        regarding your information. Please see our{' '}
+        <Link to="/privacy">Privacy Policy</Link> for a description of how we
+        collect, use, and disclose your personal information when you access or
+        use the Platform. By using the Platform or by clicking to accept or
+        agree to these Terms when this option is made available to you, you
+        consent to our use of your information and our contacting you, in each
+        case, in compliance with our Privacy Policy.
       </p>
 
       <SectionHeading>Communication Preferences</SectionHeading>
