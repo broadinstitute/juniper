@@ -109,7 +109,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             ParticipantTask task = participantTaskService
                     .findTaskForActivity(ppUser.getId(), enrollee.getStudyEnvironmentId(), survey.getStableId()).get();
             HubResponse<SurveyResponse> hubResponse = surveyResponseService
-                    .submitResponse(response, ppUser.getParticipantUserId(), ppUser, enrollee, task.getId());
+                    .updateResponse(response, ppUser.getParticipantUserId(), ppUser, enrollee, task.getId());
             savedResponse = hubResponse.getResponse();
         } else {
             savedResponse = surveyResponseService.create(response);

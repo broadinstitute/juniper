@@ -3,6 +3,8 @@ package bio.terra.pearl.core.service.survey;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.service.CrudService;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +12,14 @@ import org.springframework.stereotype.Service;
 public class AnswerService extends CrudService<Answer, AnswerDao> {
     public AnswerService(AnswerDao dao) {
         super(dao);
+    }
+
+    public Optional<Answer> findForQuestion(UUID surveyResponseId, String questionStableId) {
+        return dao.findForQuestion(surveyResponseId, questionStableId);
+    }
+
+    public List<Answer> findAll(UUID surveyResponseId, List<String> questionStableIds) {
+        return dao.findAll(surveyResponseId, questionStableIds);
     }
 
     public void deleteByResponseId(UUID responseId) {

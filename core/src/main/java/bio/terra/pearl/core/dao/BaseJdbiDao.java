@@ -117,7 +117,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
                         .one()
         );
     }
-
+    
     /** basic get-by-id */
     public Optional<T> find(UUID id) {
         return jdbi.withHandle(handle ->

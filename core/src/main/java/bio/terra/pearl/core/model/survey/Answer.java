@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.survey;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,5 +48,32 @@ public class Answer extends BaseEntity {
         } else {
             objectValue = (String) value;
         }
+    }
+
+    public String valueAsString() {
+        if (objectValue != null) {
+            return objectValue;
+        } else if (booleanValue != null) {
+            return booleanValue.toString();
+        } else if (numberValue != null) {
+            return numberValue.toString();
+        }
+        return stringValue;
+    }
+
+    // dumb copy of answer values and type
+    public void copyValuesFrom(Answer answer) {
+        stringValue = answer.stringValue;
+        booleanValue = answer.booleanValue;
+        numberValue = answer.numberValue;
+        objectValue = answer.objectValue;
+        answerType = answer.answerType;
+    }
+
+    public boolean valuesEqual(Answer answer) {
+        return Objects.equals(booleanValue, answer.booleanValue) &&
+                Objects.equals(stringValue, answer.stringValue) &&
+                Objects.equals(numberValue, answer.numberValue) &&
+                Objects.equals(objectValue, answer.objectValue);
     }
 }

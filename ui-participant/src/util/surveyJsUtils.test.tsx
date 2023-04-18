@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event'
 import {setupRouterTest} from 'test-utils/router-testing-utils'
 import {Profile, SurveyJSForm} from 'api/api'
 
-import {extractSurveyContent, getAnswerList, useRoutablePageNumber, useSurveyJSModel} from './surveyJsUtils'
+import {extractSurveyContent, getSurveyJsAnswerList, useRoutablePageNumber, useSurveyJSModel} from './surveyJsUtils'
 import {Survey as SurveyComponent} from 'survey-react-ui'
 import {
   generateSurvey,
@@ -139,7 +139,7 @@ const sampleSurvey = {
 test('gets text answers from survey model', () => {
   const model = new Model(sampleSurvey)
   model.data = {'textQ': 'some text'}
-  const answers = getAnswerList(model)
+  const answers = getSurveyJsAnswerList(model)
   expect(answers).toHaveLength(2)
   expect(answers).toContainEqual({questionStableId: 'textQ', stringValue: 'some text'})
   expect(answers).toContainEqual({questionStableId: 'qualified', booleanValue: false})
@@ -148,7 +148,7 @@ test('gets text answers from survey model', () => {
 test('gets choice answers from survey model', () => {
   const model = new Model(sampleSurvey)
   model.data = {'radioQ': 'b'}
-  const answers = getAnswerList(model)
+  const answers = getSurveyJsAnswerList(model)
   expect(answers).toHaveLength(2)
   expect(answers).toContainEqual({questionStableId: 'radioQ', stringValue: 'b'})
   expect(answers).toContainEqual({questionStableId: 'qualified', booleanValue: true})
@@ -157,14 +157,14 @@ test('gets choice answers from survey model', () => {
 test('gets numeric answers from survey model', () => {
   const model = new Model(sampleSurvey)
   model.data = {'numberQ': 40}
-  const answers = getAnswerList(model)
+  const answers = getSurveyJsAnswerList(model)
   expect(answers).toContainEqual({questionStableId: 'numberQ', numberValue: 40})
 })
 
 test('gets checkbox answers from survey model', () => {
   const model = new Model(sampleSurvey)
   model.data = {'checkboxQ': ['x', 'y']}
-  const answers = getAnswerList(model)
+  const answers = getSurveyJsAnswerList(model)
   expect(answers).toContainEqual({
     questionStableId: 'checkboxQ',
     objectValue: JSON.stringify(['x', 'y'])

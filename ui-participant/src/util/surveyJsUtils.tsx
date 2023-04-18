@@ -1,6 +1,6 @@
 import classNames from 'classnames'
-import { get, set, throttle } from 'lodash'
-import React, { useEffect, useState } from 'react'
+import {get, set, throttle} from 'lodash'
+import React, {useEffect, useState} from 'react'
 
 import * as SurveyCore from 'survey-core'
 import {
@@ -13,15 +13,15 @@ import {
   StylesManager,
   SurveyModel
 } from 'survey-core'
-import { micromark } from 'micromark'
+import {micromark} from 'micromark'
 import 'inputmask/dist/inputmask/phone-codes/phone'
 // eslint-disable-next-line
 // @ts-ignore
 import * as widgets from 'surveyjs-widgets'
-import { Survey as SurveyJSComponent } from 'survey-react-ui'
-import { Answer, Profile, SurveyJSForm, SurveyJsResumeData, UserResumeData } from 'api/api'
-import { useSearchParams } from 'react-router-dom'
-import { getSurveyElementList } from './pearlSurveyUtils'
+import {Survey as SurveyJSComponent} from 'survey-react-ui'
+import {Answer, Profile, SurveyJSForm, SurveyJsResumeData, UserResumeData} from 'api/api'
+import {useSearchParams} from 'react-router-dom'
+import {getSurveyElementList} from './pearlSurveyUtils'
 
 
 // See https://surveyjs.io/form-library/examples/control-data-entry-formats-with-input-masks/reactjs#content-code
@@ -37,7 +37,7 @@ const autosizedSignaturePadWidget: Partial<QuestionCustomWidget> = {
   isDefaultRender: true,
   afterRender: (question: QuestionSignaturePadModel, el: HTMLElement) => {
     const resizeSignaturePad = throttle(() => {
-      const { width } = el.getBoundingClientRect()
+      const {width} = el.getBoundingClientRect()
       question.signatureWidth = width
     }, 150)
 
@@ -46,7 +46,7 @@ const autosizedSignaturePadWidget: Partial<QuestionCustomWidget> = {
       window.removeEventListener('resize', resizeSignaturePad)
     }
 
-    const { width } = el.getBoundingClientRect()
+    const {width} = el.getBoundingClientRect()
     question.signatureWidth = width
 
     // If no signature has been entered, re-center "Sign here" placeholder.
@@ -191,7 +191,7 @@ export function useSurveyJSModel(
   }, [surveyModel])
   const pageNumber = surveyModel ? surveyModel.currentPageNo + 1 : 1
   const SurveyComponent = surveyModel ? <SurveyJSComponent model={surveyModel}/> : <></>
-  return { surveyModel, refreshSurvey, pageNumber, SurveyComponent, setSurveyModel }
+  return {surveyModel, refreshSurvey, pageNumber, SurveyComponent, setSurveyModel}
 }
 
 export const applyMarkdown = (survey: object, options: { text: string, html: string }) => {
@@ -216,13 +216,13 @@ type ValueType = string | boolean | number | object | null
 export function getResumeData(surveyJSModel: SurveyModel, participantUserId: string | null): string {
   const resumeData: Record<string, UserResumeData> = {}
   if (participantUserId) {
-    resumeData[participantUserId] = { currentPageNo: surveyJSModel.currentPageNo + 1 }
+    resumeData[participantUserId] = {currentPageNo: surveyJSModel.currentPageNo + 1}
   }
   return JSON.stringify(resumeData)
 }
 
 /** converts the given model into a list of answers, or an empty array if undefined */
-export function getAnswerList(surveyJSModel: SurveyModel): Answer[] {
+export function getSurveyJsAnswerList(surveyJSModel: SurveyModel): Answer[] {
   if (!surveyJSModel.data) {
     return []
   }
@@ -231,7 +231,7 @@ export function getAnswerList(surveyJSModel: SurveyModel): Answer[] {
     .filter(([key]) => {
       return surveyJSModel.getQuestionByName(key)?.getType() !== 'html'
     })
-    .map(([key, value]) => mapToAnswer(value as ValueType, key))
+    .map(([key, value]) => makeAnswer(value as ValueType, key))
 }
 
 /** convert a list of answers and resumeData into the resume data format surveyJs expects */
@@ -260,16 +260,15 @@ export function makeSurveyJsData(resumeData: string | undefined, answers: Answer
 }
 
 /** return an Answer for the given value.  This should be updated to take some sort of questionType/dataType param */
-function mapToAnswer(value: ValueType, questionStableId: string): Answer {
-  const answer: Answer = { questionStableId }
+export function makeAnswer(value: ValueType, questionStableId: string): Answer {
+  const answer: Answer = {questionStableId}
   if (typeof value === 'string') {
     answer.stringValue = value
   } else if (typeof value == 'number') {
     answer.numberValue = value
   } else if (typeof value == 'boolean') {
-    // for now, we don't have a use case for booleans, so just convert them to strings
     answer.booleanValue = value
-  } else {
+  } else if (answer.objectValue) {
     answer.objectValue = JSON.stringify(value)
   }
   return answer
@@ -279,8 +278,8 @@ function mapToAnswer(value: ValueType, questionStableId: string): Answer {
 export function extractSurveyContent(survey: SurveyJSForm) {
   const parsedSurvey = JSON.parse(survey.content)
   const questionTemplates = parsedSurvey.questionTemplates as Question[]
-  Serializer.addProperty('survey', { name: 'questionTemplates', category: 'general' })
-  Serializer.addProperty('question', { name: 'questionTemplateName', category: 'general' })
+  Serializer.addProperty('survey', {name: 'questionTemplates', category: 'general'})
+  Serializer.addProperty('question', {name: 'questionTemplateName', category: 'general'})
   // we need a custom "none" value on some questions because some of our "none" are "prefer not to answer"
   // see https://github.com/surveyjs/survey-library/issues/5459
   Serializer.addProperty('selectbase', {
