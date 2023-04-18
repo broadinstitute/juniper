@@ -106,6 +106,9 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     public Optional<Portal> findOneByShortcode(String shortcode) {
         return dao.findOneByShortcode(shortcode);
     }
+    public Optional<Portal> findOneByShortcodeOrHostname(String shortcodeOrHostname) {
+        return dao.findOneByShortcodeOrHostname(shortcodeOrHostname);
+    }
 
     public Portal fullLoad(Portal portal, String language) {
         return dao.fullLoad(portal, language);

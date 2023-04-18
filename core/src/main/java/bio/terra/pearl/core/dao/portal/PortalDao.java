@@ -40,8 +40,9 @@ public class PortalDao extends BaseMutableJdbiDao<Portal> {
     }
 
     /**
-     * matches on either a shortcode or hostname. if it's a hostname, the hostname can either be the full "somedomain.org"
-     * or just the server name "somedomain".  This is to handle requests from the client where the client does not necessarily
+     * matches on either a shortcode or hostname. if it's a hostname, the hostname should not include the tld.
+     * e.g. it should be "somedomain", not "somedomain.org"
+     * This is to handle requests from the client where the client does not necessarily
      * know whether the string from a url is a custom domain or the shortcode.
      *
      * The query has a limit of 1 put on it to cover the case where multiple environments of a portal might have the same hostname
@@ -59,9 +60,9 @@ public class PortalDao extends BaseMutableJdbiDao<Portal> {
                                        inner join portal_environment pe on pe.portal_id = p.id
                                        inner join portal_environment_config pec on pec.id = pe.portal_environment_config_id 
                                        where pec.participant_hostname like :hostnameLike
+                                       order by p.created_at asc
                                        limit 1
                                            """)
-                            .bind("shortcodeOrHostname", shortcodeOrHostname)
                             .bind("hostnameLike", shortcodeOrHostname + ".%")
                             .mapTo(Portal.class)
                             .findOne()
