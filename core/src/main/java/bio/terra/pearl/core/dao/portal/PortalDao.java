@@ -40,6 +40,37 @@ public class PortalDao extends BaseMutableJdbiDao<Portal> {
     }
 
     /**
+     * matches on either a shortcode or hostname. if it's a hostname, the hostname can either be the full "somedomain.org"
+     * or just the server name "somedomain".  This is to handle requests from the client where the client does not necessarily
+     * know whether the string from a url is a custom domain or the shortcode.
+     *
+     * The query has a limit of 1 put on it to cover the case where multiple environments of a portal might have the same hostname
+     * e.g. we might want both the irb and live environments of [[customer]] to be at sandbox.customer.org and customer.org
+     *
+     * This likewise means we will have to put substantial restrictions around who/how the "participant_hostname" field can be edited,
+     * otherwise, a new portal could inadvertently put "ourhealthstudy.org" as their participant_hostname,
+     * and suddenly start stealing ourhealth's traffic.
+     */
+    public Optional<Portal> findOneByShortcodeOrHostname(String shortcodeOrHostname) {
+        Optional<Portal> portal = findOneByShortcode(shortcodeOrHostname)
+                .or(() -> jdbi.withHandle(handle ->
+                    handle.createQuery("select " + prefixedGetQueryColumns("p") + """
+                                        from portal p
+                                       inner join portal_environment pe on pe.portal_id = p.id
+                                       inner join portal_environment_config pec on pec.id = pe.portal_environment_config_id 
+                                       where pec.participant_hostname like :hostnameLike
+                                       limit 1
+                                           """)
+                            .bind("shortcodeOrHostname", shortcodeOrHostname)
+                            .bind("hostnameLike", shortcodeOrHostname + ".%")
+                            .mapTo(Portal.class)
+                            .findOne()
+            )
+        );
+        return portal;
+    }
+
+    /**
      * hydrates the passed-in portal object, with all children, excepting users, participants, and images
      * This isn't terribly optimized yet
      * */

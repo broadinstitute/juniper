@@ -10,7 +10,6 @@ import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
-import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.notification.EmailTemplateService;
@@ -113,15 +112,15 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     }
 
     /** loads a portal environment with everything needed to render the participant-facing site */
-    public Optional<Portal> loadWithParticipantSiteContent(String portalShortcode,
+    public Optional<Portal> loadWithParticipantSiteContent(String shortcodeOrHostname,
                                                                        EnvironmentName environmentName,
                                                                        String language) {
-        Optional<Portal> portalOpt = dao.findOneByShortcode(portalShortcode);
+        Optional<Portal> portalOpt = dao.findOneByShortcodeOrHostname(shortcodeOrHostname);
         portalOpt.ifPresent(portal -> {
             Optional<PortalEnvironment> portalEnv = portalEnvironmentService
-                    .loadWithParticipantSiteContent(portalShortcode, environmentName, language);
+                    .loadWithParticipantSiteContent(portal.getShortcode(), environmentName, language);
             portal.getPortalEnvironments().add(portalEnv.get());
-            List<Study> studies = studyService.findWithPreregContent(portalShortcode, environmentName);
+            List<Study> studies = studyService.findWithPreregContent(portal.getShortcode(), environmentName);
             for (Study study : studies) {
                 portal.getPortalStudies().add(
                         PortalStudy.builder().study(study).build()
