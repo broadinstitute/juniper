@@ -9,7 +9,7 @@ function Login() {
 
   const signIn = () => {
     auth.signinRedirect(
-      { extraQueryParams: { portalShortcode: envSpec.shortcode as string, portalHomeLink: window.location.origin } })
+      { redirectMethod: 'replace', extraQueryParams: { portalShortcode: envSpec.shortcode as string} })
   }
 
   useEffect(() => {

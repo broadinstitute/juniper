@@ -101,9 +101,8 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                         .orElse(null));
             }
         }
-        // TODO -- this lookup should be by stableId, not formId
         StudyEnvironmentSurvey configSurvey = studyEnvironmentSurveyService
-                .findBySurvey(studyEnvId, form.getId()).get();
+                .findBySurvey(studyEnvId, stableId).get();
         configSurvey.setSurvey(form);
         return new SurveyWithResponse(
                 configSurvey, lastResponse

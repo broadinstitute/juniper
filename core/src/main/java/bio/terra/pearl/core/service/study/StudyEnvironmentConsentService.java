@@ -21,4 +21,11 @@ public class StudyEnvironmentConsentService extends CrudService<StudyEnvironment
     public Optional<StudyEnvironmentConsent> findByConsentForm(UUID studyEnvId, UUID consentFormId) {
         return dao.findByConsentForm(studyEnvId, consentFormId);
     }
+
+    public Optional<StudyEnvironmentConsent> findByConsentForm(UUID studyEnvId, String stableId) {
+        var configs = dao.findByConsentForm(studyEnvId, stableId);
+        // we don't yet have robust support for having multiple consents with the same stableId configured for an
+        // environment.  For now, just pick one
+        return configs.stream().findFirst();
+    }
 }

@@ -47,12 +47,11 @@ public class ConsentResponseService extends ImmutableEntityService<ConsentRespon
     public ConsentWithResponses findWithResponses(UUID studyEnvId, String stableId, Integer version,
                                                   Enrollee enrollee, UUID participantUserId) {
         ConsentForm form = consentFormService.findByStableId(stableId, version).get();
-        // TODO we should only get the most recent response, and we should search by stableId, not form id, in
-        // case they have a previous response to a different version of the form.
+        // this searches by form id -- we don't carry forward responses from one version of a consent to the next
         List<ConsentResponse> responses = dao.findByEnrolleeId(enrollee.getId(), form.getId());
-        // TODO this lookup should be by stableId -- it will fail if the version has been updated
+
         StudyEnvironmentConsent configConsent = studyEnvironmentConsentService
-                .findByConsentForm(studyEnvId, form.getId()).get();
+                .findByConsentForm(studyEnvId, stableId).get();
         configConsent.setConsentForm(form);
         return new ConsentWithResponses(
             configConsent, responses

@@ -64,8 +64,14 @@ public class SurveyParseUtils {
 
     public static String unmarshalSurveyQuestionChoices(JsonNode question) {
         Map<String, String> choices = new HashMap<>();
-        for(JsonNode choice : question.get("choices")){
-            choices.put(choice.get("value").asText(), choice.get("text").asText());
+        for(JsonNode choice : question.get("choices")) {
+            // if all text/value pairs are the same, surveyjs transforms the choices into an array of strings.  grrrr...
+            if (choice.isTextual()) {
+                choices.put(choice.asText(), choice.asText());
+            } else {
+                choices.put(choice.get("value").asText(), choice.get("text").asText());
+            }
+
         }
         ObjectMapper mapper = new ObjectMapper();
 

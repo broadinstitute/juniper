@@ -40,6 +40,19 @@ public class StudyEnvironmentConsentDao extends BaseMutableJdbiDao<StudyEnvironm
         return studyEnvConsents;
     }
 
+    public List<StudyEnvironmentConsent> findByConsentForm(UUID studyEnvId, String consentStableId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select " + prefixedGetQueryColumns("a") + " from " + tableName +
+                        " a join consent_form on consent_form.id = a.consent_form_id " +
+                        " where consent_form.stable_id = :stableId " +
+                        " and a.study_environment_id = :studyEnvId;")
+                        .bind("stableId", consentStableId)
+                        .bind("studyEnvId", studyEnvId)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
     public Optional<StudyEnvironmentConsent> findByConsentForm(UUID studyEnvId, UUID consentFormId) {
         return findByTwoProperties("study_environment_id",studyEnvId,
                 "consent_form_id", consentFormId);
