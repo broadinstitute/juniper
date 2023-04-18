@@ -1,5 +1,6 @@
 import classNames from 'classnames'
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 import Navbar from '../Navbar'
 
@@ -29,12 +30,12 @@ const PrivacyPolicy = () => {
         provides important information about how Broad collects and uses your
         Personal Information when you access or use the Juniper platform (the{' '}
         <strong>“Platform”</strong>). Please review this Policy, which is
-        incorporated into and made part of the Terms of Use that apply to you:
-        Participant Terms of Use or Investigator Terms of Use. By accessing or
-        using the Platform, you consent to our collection, use, and disclosure
-        of your information in accordance with this Policy and our Terms of Use.
-        If you do not agree to our Policy or Terms of Use, you may not use the
-        Platform.
+        incorporated into and made part of the Terms of Use that apply to you:{' '}
+        <Link to="/terms">Participant Terms of Use</Link> or Investigator Terms
+        of Use. By accessing or using the Platform, you consent to our
+        collection, use, and disclosure of your information in accordance with
+        this Policy and our Terms of Use. If you do not agree to our Policy or
+        Terms of Use, you may not use the Platform.
       </p>
       <p>
         If you are a participant in a research project (
