@@ -21,7 +21,7 @@
           },
           {
             "name": "oh_oh_medList_statins",
-            "type": "checkbox",
+            "type": "radiogroup",
             "title": "Category: Cholesterol Medications - Statins: ",
             "choices": [
               {
@@ -54,6 +54,10 @@
               },
               {
                 "text": "None, I was prescribed a statin but cannot tolerate it",
+                "value": "noneCannotTolerate"
+              },
+              {
+                "text": "I am not currently taking a statin",
                 "value": "none"
               }
             ]
@@ -251,7 +255,10 @@
                 "text": "Bempedoic Acid",
                 "value": "bempedoicAcid"
               }
-            ]
+            ],
+            "showNoneItem": true,
+            "noneValue": "noneOfTheAbove",
+            "noneText": "I am not currently taking any of these medications"
           }
         ]
       },
@@ -287,7 +294,10 @@
                 "text": "Other",
                 "value": "other"
               }
-            ]
+            ],
+            "showNoneItem": true,
+            "noneValue": "none",
+            "noneText": "I am not currently taking an antiplatelet medication"
           },
           {
             "name": "oh_oh_medList_bloodThinners",
@@ -326,7 +336,10 @@
                 "text": "Other",
                 "value": "other"
               }
-            ]
+            ],
+            "showNoneItem": true,
+            "noneValue": "none",
+            "noneText": "I am not currently taking a blood thinner (anticoagulant) medication"
           }
         ]
       },
@@ -475,7 +488,10 @@
                 "text": "Torsemide",
                 "value": "torsemide"
               }
-            ]
+            ],
+            "showNoneItem": true,
+            "noneValue": "noneOfTheAbove",
+            "noneText": "I am not currently taking any of these medications"
           }
         ]
       },
@@ -570,7 +586,10 @@
                 "text": "Tirzepatide (Mounjaro)",
                 "value": "tirzepatide"
               }
-            ]
+            ],
+            "showNoneItem": true,
+            "noneValue": "noneOfTheAbove",
+            "noneText": "I am not currently taking any of these medications"
           }
         ]
       }, {
