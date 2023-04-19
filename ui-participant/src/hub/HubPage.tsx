@@ -2,9 +2,10 @@ import React, { useState } from 'react'
 import { usePortalEnv } from '../providers/PortalProvider'
 import { useUser } from '../providers/UserProvider'
 
-import { Enrollee, ParticipantTask, Portal, PortalStudy, Study } from '../api/api'
+import { Enrollee, ParticipantTask, Portal, Study } from '../api/api'
 import TaskLink, { getTaskPath, isTaskAccessible, isTaskActive } from './TaskLink'
 import { Link, NavLink } from 'react-router-dom'
+import { userHasJoinedPortalStudy } from 'util/enrolleeUtils'
 
 import { HubMessageAlert, useHubUpdate } from './hubUpdates'
 
@@ -207,9 +208,4 @@ function taskComparator(taskA: ParticipantTask, taskB: ParticipantTask) {
     return statusOrder
   }
   return taskA.taskOrder - taskB.taskOrder
-}
-
-/** whether the list of enrollees contains an enrollee matching the study */
-function userHasJoinedPortalStudy(portalStudy: PortalStudy, enrollees: Enrollee[]) {
-  return !!enrollees.find(enrollee => enrollee.studyEnvironmentId === portalStudy.study.studyEnvironments[0].id)
 }

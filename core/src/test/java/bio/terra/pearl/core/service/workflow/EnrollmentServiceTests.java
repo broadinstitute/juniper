@@ -61,7 +61,7 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
     }
 
     @Test
-    public void testEnrollRequiresPreEnroll() throws JsonProcessingException {
+    public void testEnrollDoesNotRequirePreEnroll() throws JsonProcessingException {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testAnonPreEnroll");
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testAnonPreEnroll");
         Survey survey = surveyFactory.buildPersisted("testPreEnroll");
@@ -72,11 +72,9 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
 
 
-        Exception e = assertThrows(IllegalArgumentException.class, () -> {
-            HubResponse hubResponse = enrollmentService.enroll(userBundle.user(), userBundle.ppUser(),
-                    studyEnv.getEnvironmentName(), studyShortcode, null);
-        });
-        assertThat(e.getMessage(), containsString("pre-enrollment survey is required"));
+        HubResponse hubResponse = enrollmentService.enroll(userBundle.user(), userBundle.ppUser(),
+                studyEnv.getEnvironmentName(), studyShortcode, null);
+        assertThat(hubResponse.getEnrollee(), notNullValue());
     }
 
     @Autowired
