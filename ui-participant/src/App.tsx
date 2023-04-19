@@ -21,6 +21,7 @@ import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
+const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
 const ParticipantTermsOfUsePage = lazy(() => import('terms/ParticipantTermsOfUsePage'))
 
 
@@ -115,7 +116,8 @@ function App() {
                             <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
                           </Route>
                           <Route path="/privacy" element={<PrivacyPolicyPage />} />
-                          <Route path="/terms" element={<ParticipantTermsOfUsePage />} />
+                          <Route path="/terms/investigator" element={<InvestigatorTermsOfUsePage />} />
+                          <Route path="/terms/participant" element={<ParticipantTermsOfUsePage />} />
                           <Route path="*" element={<div>unmatched route</div>}/>
                         </Routes>
                       </Suspense>

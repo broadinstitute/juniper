@@ -44,7 +44,7 @@ function LandingPageView({ localContent }: { localContent: LocalSiteContent }) {
                 }}
               >
                 <Link to="/privacy">Privacy Policy</Link>
-                <Link to="/terms" style={{ marginLeft: '2rem' }}>Terms of Use</Link>
+                <Link to="/terms/participant" style={{ marginLeft: '2rem' }}>Terms of Use</Link>
               </div>
             </div>
           </div>
