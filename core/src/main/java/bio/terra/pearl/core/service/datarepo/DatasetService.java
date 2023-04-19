@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.datarepo;
 
 import bio.terra.datarepo.client.ApiException;
+import bio.terra.datarepo.model.JobModel;
 import bio.terra.pearl.core.dao.datarepo.DatasetDao;
 import bio.terra.pearl.core.model.datarepo.Dataset;
 import bio.terra.pearl.core.service.CascadeProperty;
@@ -22,11 +23,11 @@ public class DatasetService extends CrudService<Dataset, DatasetDao> {
         this.dataRepoClient = dataRepoClient;
     }
 
-    @Override
-    public void delete(UUID id, Set<CascadeProperty> cascades) {
-        dao.delete(id);
+    public void delete(Dataset dataset) {
+        dao.delete(dataset.getId());
         try {
-            dataRepoClient.deleteDataset(id);
+            JobModel jobModel = dataRepoClient.deleteDataset(dataset.getDatasetId());
+            logger.info("Deleted dataset: {} (TDR job ID {})", dataset.getDatasetId(), jobModel.getId());
         } catch (ApiException e) {
             throw new DatasetDeletionException(e.getMessage());
         }
@@ -35,11 +36,8 @@ public class DatasetService extends CrudService<Dataset, DatasetDao> {
     public void deleteByStudyEnvironmentId(UUID studyEnvId) {
         List<Dataset> datasets = dao.findByStudyEnvironmentId(studyEnvId);
         for (Dataset dataset : datasets) {
-            delete(dataset.getId(), CascadeProperty.EMPTY_SET);
+            delete(dataset);
         }
     }
 
-    public List<UUID> findOrphanedDatasets() {
-
-    }
 }
