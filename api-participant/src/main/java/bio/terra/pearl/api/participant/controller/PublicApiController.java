@@ -7,8 +7,10 @@ import bio.terra.pearl.api.participant.model.SystemStatus;
 import bio.terra.pearl.api.participant.model.VersionProperties;
 import bio.terra.pearl.api.participant.service.StatusService;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentDescriptor;
 import bio.terra.pearl.core.model.site.SiteImage;
+import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.site.SiteImageService;
 import java.util.Map;
 import java.util.Optional;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class PublicApiController implements PublicApi {
   private final B2CConfiguration b2CConfiguration;
   private final SiteImageService siteImageService;
+  private final PortalService portalService;
   private final StatusService statusService;
   private final VersionConfiguration versionConfiguration;
   private final Environment env;
@@ -36,11 +39,13 @@ public class PublicApiController implements PublicApi {
   public PublicApiController(
       B2CConfiguration b2CConfiguration,
       SiteImageService siteImageService,
+      PortalService portalService,
       StatusService statusService,
       VersionConfiguration versionConfiguration,
       Environment env) {
     this.b2CConfiguration = b2CConfiguration;
     this.siteImageService = siteImageService;
+    this.portalService = portalService;
     this.statusService = statusService;
     this.versionConfiguration = versionConfiguration;
     this.env = env;
@@ -87,9 +92,12 @@ public class PublicApiController implements PublicApi {
 
   @GetMapping(value = "/favicon.ico")
   public ResponseEntity<Resource> favicon(HttpServletRequest request) {
-    PortalEnvironmentDescriptor portal = getPortalForRequest(request);
+    Optional<PortalEnvironmentDescriptor> portal = getPortalDescriptorForRequest(request);
+    if (portal.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
     Optional<SiteImage> imageOpt =
-        siteImageService.findOneLatestVersion(portal.shortcode(), "favicon.ico");
+        siteImageService.findOneLatestVersion(portal.get().shortcode(), "favicon.ico");
     return ResponseEntity.ok()
         .contentType(MediaType.parseMediaType("image/x-icon"))
         .body(
@@ -115,15 +123,22 @@ public class PublicApiController implements PublicApi {
         "b2cPolicyName", b2CConfiguration.policyName());
   }
 
-  private PortalEnvironmentDescriptor getPortalForRequest(HttpServletRequest request) {
+  private Optional<PortalEnvironmentDescriptor> getPortalDescriptorForRequest(
+      HttpServletRequest request) {
     String hostname = request.getServerName();
     String[] parts = hostname.split("\\.");
 
     Optional<EnvironmentName> envNameOpt = EnvironmentName.optionalValueOfCaseInsensitive(parts[0]);
+    EnvironmentName envName = EnvironmentName.live;
+    String shortcodeOrHostname = parts[0];
     if (envNameOpt.isPresent()) {
-      return new PortalEnvironmentDescriptor(parts[1], envNameOpt.get());
-    } else {
-      return new PortalEnvironmentDescriptor(parts[0], EnvironmentName.live);
+      envName = envNameOpt.get();
+      shortcodeOrHostname = parts[1];
     }
+    Optional<Portal> portal = portalService.findOneByShortcodeOrHostname(shortcodeOrHostname);
+    if (portal.isPresent()) {
+      return Optional.of(new PortalEnvironmentDescriptor(portal.get().getShortcode(), envName));
+    }
+    return Optional.empty();
   }
 }

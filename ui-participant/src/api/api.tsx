@@ -312,8 +312,12 @@ export default {
   },
 
   async getPortal(): Promise<Portal> {
-    const response = await fetch(baseEnvUrl(true), this.getGetInit())
-    return await this.processJsonResponse(response)
+    const { shortcodeOrHostname, envName } = currentEnvSpec
+    const url = `${API_ROOT}/public/portals/v1/${shortcodeOrHostname}/env/${envName}`
+    const response = await fetch(url, this.getGetInit())
+    const parsedResponse: Portal = await this.processJsonResponse(response)
+    updateEnvSpec(parsedResponse.shortcode)
+    return parsedResponse
   },
 
   /** submit portal preregistration survey data */
@@ -555,7 +559,7 @@ export default {
 
 /** get the baseurl for endpoints that include the portal and environment */
 function baseEnvUrl(isPublic: boolean) {
-  const { shortcode, envName } = getEnvSpec()
+  const { shortcode, envName } = currentEnvSpec
   return `${API_ROOT}/${isPublic ? 'public/' : ''}portals/v1/${shortcode}/env/${envName}`
 }
 
@@ -572,32 +576,40 @@ export function getImageUrl(cleanFileName: string, version: number) {
 }
 
 export type EnvSpec = {
-  shortcode: string,
+  shortcodeOrHostname: string,
+  shortcode?: string,
   envName: string
 }
 
-/** gets the current environment params */
-export function getEnvSpec(): EnvSpec {
-  return readEnvFromHostname(window.location.hostname)
+const ALLOWED_ENV_NAMES = [
+  'sandbox', 'irb', 'live'
+]
+const currentEnvSpec: EnvSpec = readEnvFromHostname(window.location.hostname)
+
+/**
+ * gets the environment psec with name and shortcode.  the shortcode might not be immediately available if
+ * the call to getPortal hasn't returned.
+ * */
+export function getEnvSpec() {
+  return currentEnvSpec
 }
 
-/** parses shortcode and environment from hostname */
+/** updates the shortcode of the envSpec, useful for after getting the initial server response */
+function updateEnvSpec(portalShortcode: string) {
+  currentEnvSpec.shortcode = portalShortcode
+}
+
+/** parses shortcodeOrHostname and environment from hostname */
 function readEnvFromHostname(hostname: string): EnvSpec {
-  let shortname
+  let shortcodeOrHostname
   let envName = ''
   const splitHostname = hostname.split('.')
-  if (Object.keys(ALLOWED_ENV_NAMES).includes(splitHostname[0])) {
-    envName = ALLOWED_ENV_NAMES[splitHostname[0]]
-    shortname = splitHostname[1]
+  if (ALLOWED_ENV_NAMES.includes(splitHostname[0])) {
+    envName = splitHostname[0]
+    shortcodeOrHostname = splitHostname[1]
   } else {
-    envName = 'LIVE'
-    shortname = splitHostname[0]
+    envName = 'live'
+    shortcodeOrHostname = splitHostname[0]
   }
-  return { envName, shortcode: shortname }
-}
-
-const ALLOWED_ENV_NAMES: Record<string, string> = {
-  'sandbox': 'SANDBOX',
-  'irb': 'IRB',
-  'live': 'LIVE'
+  return { envName, shortcodeOrHostname }
 }
