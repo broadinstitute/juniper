@@ -7,6 +7,7 @@ import Api from 'api/api'
 import { HubUpdate } from 'hub/hubUpdates'
 import { usePreEnrollResponseId, usePreRegResponseId, useReturnToStudy } from 'browserPersistentState'
 import { userHasJoinedPortalStudy } from 'util/enrolleeUtils'
+import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
 export const RedirectFromOAuth = () => {
   const auth = useAuth()
@@ -87,5 +88,5 @@ export const RedirectFromOAuth = () => {
     handleRedirectFromOauth()
   })
 
-  return <div>Loading...</div>
+  return <PageLoadingIndicator />
 }
