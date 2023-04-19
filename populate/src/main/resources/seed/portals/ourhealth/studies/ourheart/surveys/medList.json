@@ -54,6 +54,10 @@
               },
               {
                 "text": "None, I was prescribed a statin but cannot tolerate it",
+                "value": "noneCannotTolerate"
+              },
+              {
+                "text": "I am not currently taking a statin",
                 "value": "none"
               }
             ]
@@ -250,6 +254,10 @@
               {
                 "text": "Bempedoic Acid",
                 "value": "bempedoicAcid"
+              },
+              {
+                "text": "I am not currently taking any of these medications",
+                "value": "noneOfTheAbove"
               }
             ]
           }
@@ -286,6 +294,10 @@
               {
                 "text": "Other",
                 "value": "other"
+              },
+              {
+                "text": "I am not currently taking an antiplatelet medication",
+                "value": "none"
               }
             ]
           },
@@ -325,6 +337,10 @@
               {
                 "text": "Other",
                 "value": "other"
+              },
+              {
+                "text": "I am not currently taking a blood thinner (anticoagulant) medication",
+                "value": "none"
               }
             ]
           }
@@ -474,6 +490,10 @@
               {
                 "text": "Torsemide",
                 "value": "torsemide"
+              },
+              {
+                "text": "I am not currently taking any of these medications",
+                "value": "noneOfTheAbove"
               }
             ]
           }
@@ -569,6 +589,10 @@
               {
                 "text": "Tirzepatide (Mounjaro)",
                 "value": "tirzepatide"
+              },
+              {
+                "text": "I am not currently taking any of these medications",
+                "value": "noneOfTheAbove"
               }
             ]
           }
