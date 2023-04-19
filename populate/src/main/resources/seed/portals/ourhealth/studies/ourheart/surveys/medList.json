@@ -254,12 +254,11 @@
               {
                 "text": "Bempedoic Acid",
                 "value": "bempedoicAcid"
-              },
-              {
-                "text": "I am not currently taking any of these medications",
-                "value": "noneOfTheAbove"
               }
-            ]
+            ],
+            "showNoneItem": true,
+            "noneValue": "noneOfTheAbove",
+            "noneText": "I am not currently taking any of these medications"
           }
         ]
       },
@@ -294,12 +293,11 @@
               {
                 "text": "Other",
                 "value": "other"
-              },
-              {
-                "text": "I am not currently taking an antiplatelet medication",
-                "value": "none"
               }
-            ]
+            ],
+            "showNoneItem": true,
+            "noneValue": "none",
+            "noneText": "I am not currently taking an antiplatelet medication"
           },
           {
             "name": "oh_oh_medList_bloodThinners",
@@ -337,12 +335,11 @@
               {
                 "text": "Other",
                 "value": "other"
-              },
-              {
-                "text": "I am not currently taking a blood thinner (anticoagulant) medication",
-                "value": "none"
               }
-            ]
+            ],
+            "showNoneItem": true,
+            "noneValue": "none",
+            "noneText": "I am not currently taking a blood thinner (anticoagulant) medication"
           }
         ]
       },
@@ -490,12 +487,11 @@
               {
                 "text": "Torsemide",
                 "value": "torsemide"
-              },
-              {
-                "text": "I am not currently taking any of these medications",
-                "value": "noneOfTheAbove"
               }
-            ]
+            ],
+            "showNoneItem": true,
+            "noneValue": "noneOfTheAbove",
+            "noneText": "I am not currently taking any of these medications"
           }
         ]
       },
@@ -589,12 +585,11 @@
               {
                 "text": "Tirzepatide (Mounjaro)",
                 "value": "tirzepatide"
-              },
-              {
-                "text": "I am not currently taking any of these medications",
-                "value": "noneOfTheAbove"
               }
-            ]
+            ],
+            "showNoneItem": true,
+            "noneValue": "noneOfTheAbove",
+            "noneText": "I am not currently taking any of these medications"
           }
         ]
       }, {
