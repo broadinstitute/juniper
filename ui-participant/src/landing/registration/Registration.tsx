@@ -14,7 +14,7 @@ export default function Registration() {
     // Remember study for when we come back from B2C,
     // at which point RedirectFromOAuth will complete the registration
     setReturnToStudy(studyShortcode)
-    auth.signinRedirect({ extraQueryParams: { option: 'signup' } })
+    auth.signinRedirect({ redirectMethod: 'replace', extraQueryParams: { option: 'signup' } })
   }
 
   useEffect(() => {
