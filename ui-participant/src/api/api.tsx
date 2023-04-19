@@ -214,11 +214,6 @@ export type Enrollee = {
   profile: Profile
 }
 
-/** whether the list of enrollees contains an enrollee matching the study */
-export function userHasJoinedPortalStudy(portalStudy: PortalStudy, enrollees: Enrollee[]) {
-  return !!enrollees.find(enrollee => enrollee.studyEnvironmentId === portalStudy.study.studyEnvironments[0].id)
-}
-
 export type Profile = {
   sexAtBirth: string
 }

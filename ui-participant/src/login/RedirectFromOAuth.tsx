@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
-import Api, { userHasJoinedPortalStudy } from 'api/api'
+import Api from 'api/api'
 import { HubUpdate } from 'hub/hubUpdates'
 import { usePreEnrollResponseId, usePreRegResponseId, useReturnToStudy } from 'browserPersistentState'
+import { userHasJoinedPortalStudy } from 'util/enrolleeUtils'
 
 export const RedirectFromOAuth = () => {
   const auth = useAuth()
