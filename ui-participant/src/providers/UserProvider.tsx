@@ -114,7 +114,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     const internalLogintoken = localStorage.getItem(INTERNAL_LOGIN_TOKEN_KEY)
     if (oauthAccessToken) {
       Api.refreshLogin(oauthAccessToken).then(loginResult => {
-        loginUser(loginResult, loginResult.user.token)
+        loginUser(loginResult, oauthAccessToken)
         setIsLoading(false)
       }).catch(() => {
         setIsLoading(false)

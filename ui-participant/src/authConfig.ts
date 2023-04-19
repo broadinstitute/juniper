@@ -23,13 +23,13 @@ export const getOidcConfig = (
      */
     // oidc-client-ts appends /v2.0/.well-known/openid-configuration, so can't use ?p={policy} here
     authority:
-      `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/${b2cPolicyName}`,
+      `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/${b2cPolicyName}/v2.0`,
     client_id: b2cClientId,
     redirect_uri: `${window.origin}/redirect-from-oauth`,
     popup_redirect_uri: `${window.origin}/redirect-from-oauth`,
     silent_redirect_uri: `${window.origin}/redirect-from-oauth-silent`,
     prompt: 'login',
-    scope: 'openid',
+    scope: `openid email ${b2cClientId}`,
     loadUserInfo: false,
     stateStore: new WebStorageStateStore({ store: window.localStorage }),
     userStore: new WebStorageStateStore({ store: window.localStorage }),
