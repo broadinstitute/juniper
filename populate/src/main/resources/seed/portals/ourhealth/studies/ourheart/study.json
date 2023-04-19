@@ -36,11 +36,10 @@
         {"populateFileName": "surveys/basic.json", "required": true},
         {"populateFileName": "surveys/cardioHistory.json", "required": true},
         {"populateFileName": "surveys/medicalHistory.json"},
-        {"populateFileName": "surveys/lifestyle.json"},
-        {"populateFileName": "surveys/medList.json"},
-        {"populateFileName": "surveys/phq9gad7.json"},
         {"populateFileName": "surveys/familyHistory.json"},
-        {"populateFileName": "surveys/lifestyle.json"}
+        {"populateFileName": "surveys/medList.json"},
+        {"populateFileName": "surveys/lifestyle.json"},
+        {"populateFileName": "surveys/phq9gad7.json"}
       ],
       "configuredConsentDtos": [
         {
