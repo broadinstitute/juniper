@@ -11,7 +11,7 @@ const SectionHeading = (props: SectionHeadingProps) => {
   return <h2 {...otherProps} className={classNames('h3', className)} />
 }
 
-const TermsOfUse = () => {
+const ParticipantTermsOfUse = () => {
   return (
     <>
       <h1 className="h2 text-center mb-5">
@@ -359,14 +359,14 @@ const TermsOfUse = () => {
   )
 }
 
-const TermsOfUsePage = () => {
+const ParticipantTermsOfUsePage = () => {
   return (
     <div className="container-fluid bg-white min-vh-100 d-flex flex-column p-0">
       <Navbar aria-label="Primary" />
       <main className="flex-grow-1 py-5">
         <div className="row mx-0 justify-content-center">
           <div className="col-12 col-sm-10 col-lg-6">
-            <TermsOfUse />
+            <ParticipantTermsOfUse />
           </div>
         </div>
       </main>
@@ -374,4 +374,4 @@ const TermsOfUsePage = () => {
   )
 }
 
-export default TermsOfUsePage
+export default ParticipantTermsOfUsePage

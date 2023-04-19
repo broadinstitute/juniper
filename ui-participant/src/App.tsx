@@ -21,7 +21,7 @@ import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
-const TermsOfUsePage = lazy(() => import('terms/TermsOfUsePage'))
+const ParticipantTermsOfUsePage = lazy(() => import('terms/ParticipantTermsOfUsePage'))
 
 
 type BrandConfiguration = {
@@ -115,7 +115,7 @@ function App() {
                             <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
                           </Route>
                           <Route path="/privacy" element={<PrivacyPolicyPage />} />
-                          <Route path="/terms" element={<TermsOfUsePage />} />
+                          <Route path="/terms" element={<ParticipantTermsOfUsePage />} />
                           <Route path="*" element={<div>unmatched route</div>}/>
                         </Routes>
                       </Suspense>
