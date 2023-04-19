@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { usePortalEnv } from '../providers/PortalProvider'
 import { useUser } from '../providers/UserProvider'
 
-import { Enrollee, ParticipantTask, Portal, PortalStudy, Study, userHasJoinedPortalStudy } from '../api/api'
+import { Enrollee, ParticipantTask, Portal, Study, userHasJoinedPortalStudy } from '../api/api'
 import TaskLink, { getTaskPath, isTaskAccessible, isTaskActive } from './TaskLink'
 import { Link, NavLink } from 'react-router-dom'
 
