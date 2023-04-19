@@ -1,20 +1,15 @@
 import { WebStorageStateStore } from 'oidc-client-ts'
+import { AuthProviderProps } from 'react-oidc-context'
 
 /**
  * To learn more about user flows, visit: https://docs.microsoft.com/en-us/azure/active-directory-b2c/user-flow-overview
  * To learn more about custom policies,
  *    visit: https://docs.microsoft.com/en-us/azure/active-directory-b2c/custom-policy-overview
  */
-const aadB2cName = process.env.REACT_APP_B2C_TENANT_NAME ? process.env.REACT_APP_B2C_TENANT_NAME : 'NAME_NEEDED'
-const aadb2cClientId = process.env.REACT_APP_B2C_CLIENT_ID ? process.env.REACT_APP_B2C_CLIENT_ID : 'ID_NEEDED'
-const aadb2cPolicyName = process.env.REACT_APP_B2C_POLICY_NAME ? process.env.REACT_APP_B2C_POLICY_NAME : 'POLICY_NEEDED'
 
 // TODO: This is a modified copy of code from Terra UI. It could use some clean-up.
 /* eslint-disable camelcase, max-len */
-export const getOidcConfig = (
-  b2cTenantName: string = aadB2cName,
-  b2cClientId: string = aadb2cClientId,
-  b2cPolicyName = aadb2cPolicyName) => {
+export const getOidcConfig = (b2cTenantName: string, b2cClientId: string, b2cPolicyName: string): AuthProviderProps => {
   return {
     /*
      * oidc-client-ts uses `authority` to fetch `metadata`. For some reason providing `metadata` manually results in not
