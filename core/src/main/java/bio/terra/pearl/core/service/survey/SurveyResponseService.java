@@ -121,7 +121,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
 
         // find or create the SurveyResponse object to attach the snapshot
         SurveyResponse response = findOrCreateResponse(task, enrollee, participantUserId, responseDto);
-        createOrUpdateAnswers(responseDto.getAnswers(), response, survey, enrollee.getId(), participantUserId);
+        createOrUpdateAnswers(responseDto.getAnswers(), response, survey, ppUser);
 
         // process any answers that need to be propagated elsewhere to the data model
         answerProcessingService.processAllAnswerMappings(responseDto.getAnswers(),
@@ -176,7 +176,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     /** Creates and attaches the answers to the response. */
     @Transactional
     protected List<Answer> createOrUpdateAnswers(List<Answer> answers, SurveyResponse response,
-                                                 Survey survey, UUID enrolleeId, UUID participantUserId) {
+                                                 Survey survey, PortalParticipantUser ppUser) {
         List<String> updatedStableIds = answers.stream().map(Answer::getQuestionStableId).toList();
         // bulk-fetch any existingAnswers that will need to be updated
         // note that we do not use any answer ids returned by the client -- we'd have to run a query on them anyway
@@ -189,46 +189,49 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         for (Answer answer : existingAnswers) {
             existingAnswerMap.put(answer.getQuestionStableId(), answer);
         }
+        List<DataChangeRecord> changeRecords = new ArrayList<>();
         List<Answer> updatedAnswers = answers.stream().map(answer -> {
             Answer existing = existingAnswerMap.get(answer.getQuestionStableId());
             if (existing != null) {
-                return updateAnswer(existing, answer, response, survey, enrolleeId, participantUserId);
+                return updateAnswer(existing, answer, response, survey, ppUser, changeRecords);
             }
-            return createAnswer(answer, response, survey, enrolleeId, participantUserId)
+            return createAnswer(answer, response, survey, ppUser);
         }).toList();
+        dataChangeRecordService.bulkCreate(changeRecords);
         return updatedAnswers;
     }
 
     @Transactional
     protected Answer updateAnswer(Answer existing, Answer updated, SurveyResponse response,
-                                  Survey survey, UUID enrolleeId, UUID participantUserId) {
+                                  Survey survey, PortalParticipantUser ppUser, List<DataChangeRecord> changeRecords) {
         if (existing.valuesEqual(updated)) {
             // if the values are the same, don't bother with an update
             return existing;
         }
-        existing.setSurveyVersion(survey.getVersion());
-        existing.copyValuesFrom(updated);
         DataChangeRecord change = DataChangeRecord.builder()
                 .surveyId(survey.getId())
-                .enrolleeId(enrolleeId)
+                .enrolleeId(response.getEnrolleeId())
                 .operationId(response.getId())
-                .responsibleUserId(participantUserId)
+                .responsibleUserId(ppUser.getParticipantUserId())
+                .portalParticipantUserId(ppUser.getId())
                 .modelName(survey.getStableId())
                 .fieldName(existing.getQuestionStableId())
                 .oldValue(existing.valueAsString())
                 .newValue(updated.valueAsString()).build();
-        dataChangeRecordService.create(change);
+        changeRecords.add(change);
+        existing.setSurveyVersion(survey.getVersion());
+        existing.copyValuesFrom(updated);
         return answerService.update(existing);
     }
 
     @Transactional
     protected Answer createAnswer(Answer answer, SurveyResponse response,
-                                  Survey survey, UUID enrolleeId, UUID participantUserId) {
-        answer.setCreatingParticipantUserId(participantUserId);
+                                  Survey survey, PortalParticipantUser ppUser) {
+        answer.setCreatingParticipantUserId(ppUser.getParticipantUserId());
         answer.setSurveyResponseId(response.getId());
         answer.setSurveyStableId(survey.getStableId());
         answer.setSurveyVersion(survey.getVersion());
-        answer.setEnrolleeId(enrolleeId);
+        answer.setEnrolleeId(response.getEnrolleeId());
         return answerService.create(answer);
     }
 

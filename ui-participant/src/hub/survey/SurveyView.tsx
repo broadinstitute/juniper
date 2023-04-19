@@ -1,11 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react'
 import {useNavigate, useParams, useSearchParams} from 'react-router-dom'
-import _union from 'lodash/union'
-import _keys from 'lodash/keys'
-import _isEqual from 'lodash/isEqual'
 
 import Api, {
-  Answer,
   ConsentForm,
   Enrollee,
   Portal,
@@ -19,7 +15,7 @@ import {Survey as SurveyComponent} from 'survey-react-ui'
 import {
   getResumeData,
   getSurveyJsAnswerList,
-  makeAnswer,
+  getUpdatedAnswers,
   makeSurveyJsData,
   PageNumberControl,
   useRoutablePageNumber,
@@ -44,7 +40,7 @@ function RawSurveyView({form, enrollee, resumableData, pager, studyShortcode, ta
                          }) {
   const navigate = useNavigate()
   const {updateEnrollee} = useUser()
-  let prevSave = useRef(resumableData?.data ?? {})
+  const prevSave = useRef(resumableData?.data ?? {})
 
   /** Submit the response to the server */
   const onComplete = () => {
@@ -85,7 +81,7 @@ function RawSurveyView({form, enrollee, resumableData, pager, studyShortcode, ta
   const {surveyModel, refreshSurvey, setSurveyModel} = useSurveyJSModel(form, resumableData,
     onComplete, pager, enrollee.profile)
 
-  const saveDiff = (prevData: SurveyJsResumeData | null) => {
+  const saveDiff = () => {
     // we use setSurveyModel to make sure we have the latest version of it, we're not updating it
     setSurveyModel(freshSurveyModel => {
       if (freshSurveyModel) {
@@ -206,11 +202,4 @@ function enrolleeForStudy(enrollees: Enrollee[], studyShortcode: string, portal:
     throw `enrollment not found for ${studyShortcode}`
   }
   return enrollee
-}
-
-function getUpdatedAnswers(original: Record<string, object>, updated: Record<string, object>): Answer[] {
-  const allKeys = _union(_keys(original), _keys(updated))
-  const updatedAnswers = allKeys.filter(key => !_isEqual(original[key], updated[key]))
-    .map(key => makeAnswer(updated[key], key))
-  return updatedAnswers
 }

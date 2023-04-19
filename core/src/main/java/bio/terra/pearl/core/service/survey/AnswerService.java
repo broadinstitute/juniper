@@ -18,6 +18,10 @@ public class AnswerService extends CrudService<Answer, AnswerDao> {
         return dao.findForQuestion(surveyResponseId, questionStableId);
     }
 
+    public List<Answer> findByResponse(UUID surveyResponseId) {
+        return dao.findByResponse(surveyResponseId);
+    }
+
     public List<Answer> findAll(UUID surveyResponseId, List<String> questionStableIds) {
         return dao.findAll(surveyResponseId, questionStableIds);
     }

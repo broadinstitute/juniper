@@ -6,7 +6,6 @@ import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.Study;
-import java.sql.BatchUpdateException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +15,7 @@ import lombok.Setter;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +80,7 @@ public class BaseJdbiDaoTests extends BaseSpringBootTest {
         Portal portal1 = portalFactory.builder("testBulkInsertOfBasicList").build();
         Portal portal2 = portalFactory.builder("testBulkInsertOfBasicList").build();
         Portal portal3 = Portal.builder().shortcode(null).build();
-        Assertions.assertThrows(BatchUpdateException.class, () -> {
+        Assertions.assertThrows(UnableToExecuteStatementException.class, () -> {
             portalDao.bulkCreate(List.of(portal1, portal2, portal3));
         });
     }

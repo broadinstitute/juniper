@@ -25,6 +25,11 @@ public abstract class ImmutableEntityService<M extends BaseEntity, D extends Bas
         return dao.create(model);
     }
 
+    @Transactional
+    public void bulkCreate(List<M> modelObjs) {
+        dao.bulkCreate(modelObjs);
+    }
+
     public Optional<M> find(UUID id) {
         return dao.find(id);
     }

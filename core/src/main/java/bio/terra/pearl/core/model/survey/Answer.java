@@ -38,7 +38,7 @@ public class Answer extends BaseEntity {
         setValue(value);
     }
 
-    public void setValue(Object value) {
+    protected void setValue(Object value) {
         if (answerType.equals(AnswerType.STRING)) {
             stringValue = (String) value;
         } else if (answerType.equals(AnswerType.NUMBER)) {

@@ -125,6 +125,9 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
      * return the created objects --it returns an int[] with the number of rows modified -- it should be all ones
      * */
     public void bulkCreate(List<T> modelObjs) {
+        if (modelObjs.isEmpty()) {
+            return;
+        }
         int[] result = jdbi.withHandle(handle -> {
             PreparedBatch batch = handle.prepareBatch(createQuerySql);
             for (T obj : modelObjs) {
