@@ -21,7 +21,7 @@
           },
           {
             "name": "oh_oh_medList_statins",
-            "type": "checkbox",
+            "type": "radiogroup",
             "title": "Category: Cholesterol Medications - Statins: ",
             "choices": [
               {
