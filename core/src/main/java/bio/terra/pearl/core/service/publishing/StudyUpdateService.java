@@ -53,12 +53,13 @@ public class StudyUpdateService {
 
     /** the study environment must be fully hydrated by a call to loadStudyEnvForProcessing prior to passing in */
     @Transactional
-    public StudyEnvironment applyChanges(StudyEnvironment destEnv, StudyEnvironmentChange envChange) throws Exception {
+    public StudyEnvironment applyChanges(StudyEnvironment destEnv, StudyEnvironmentChange envChange,
+                                         UUID destPortalEnvId) throws Exception {
         applyChangesToStudyEnvConfig(destEnv, envChange.configChanges());
         applyChangesToPreEnrollSurvey(destEnv, envChange.preEnrollSurveyChanges());
         applyChangesToConsents(destEnv, envChange.consentChanges());
         applyChangesToSurveys(destEnv, envChange.surveyChanges());
-        applyChangesToNotificationConfigs(destEnv, envChange.notificationConfigChanges());
+        applyChangesToNotificationConfigs(destEnv, envChange.notificationConfigChanges(), destPortalEnvId);
         return destEnv;
     }
 
@@ -119,9 +120,10 @@ public class StudyUpdateService {
     }
 
     protected void applyChangesToNotificationConfigs(StudyEnvironment destEnv, ListChange<NotificationConfig,
-            VersionedConfigChange> listChange) throws Exception {
+            VersionedConfigChange> listChange, UUID destPortalEnvId) throws Exception {
         for(NotificationConfig config : listChange.addedItems()) {
             config.setStudyEnvironmentId(destEnv.getId());
+            config.setPortalEnvironmentId(destPortalEnvId);
             notificationConfigService.create(config.cleanForCopying());
             destEnv.getNotificationConfigs().add(config);
         }
