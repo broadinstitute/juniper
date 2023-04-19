@@ -19,6 +19,8 @@ import EnvironmentAlert from 'EnvironmentAlert'
 import ConfigProvider, { ConfigConsumer } from 'providers/ConfigProvider'
 import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
+import { useCookiesAcknowledged } from './browserPersistentState'
+import { CookieAlert } from './CookieAlert'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const TermsOfUsePage = lazy(() => import('terms/TermsOfUsePage'))
@@ -64,6 +66,7 @@ const ScrollToTop = () => {
  * root app -- handles dynamically creating all the routes based on the siteContent
  */
 function App() {
+  const [cookiesAcknowledged, setCookiesAcknowledged] = useCookiesAcknowledged()
   const { localContent, portal } = usePortalEnv()
 
   const brandConfig: BrandConfiguration = {}
@@ -124,6 +127,7 @@ function App() {
                 }
               </ConfigConsumer>
             </ConfigProvider>
+            {!cookiesAcknowledged && <CookieAlert onDismiss={() => setCookiesAcknowledged()} />}
           </BrowserRouter>
         </div>
       </PortalPasswordGate>

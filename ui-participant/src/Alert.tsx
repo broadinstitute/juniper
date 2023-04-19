@@ -42,7 +42,7 @@ export const Alert = (props: AlertProps) => {
         <div className="alert-heading fw-bold">{title}</div>
         {children}
       </div>
-      {!!onDismiss && <button aria-label="Close"className="btn-close" onClick={onDismiss} />}
+      {!!onDismiss && <button aria-label="Close" className="btn-close ms-3" onClick={onDismiss} />}
     </div>
   )
 }
