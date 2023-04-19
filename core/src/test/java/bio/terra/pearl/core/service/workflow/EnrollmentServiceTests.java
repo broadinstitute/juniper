@@ -25,11 +25,13 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 public class EnrollmentServiceTests extends BaseSpringBootTest {
 
 
     @Test
+    @Transactional
     public void testAnonymousPreEnroll() throws JsonProcessingException {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testAnonPreEnroll");
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testAnonPreEnroll");
@@ -61,6 +63,7 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
     }
 
     @Test
+    @Transactional
     public void testEnrollRequiresPreEnroll() throws JsonProcessingException {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testAnonPreEnroll");
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testAnonPreEnroll");

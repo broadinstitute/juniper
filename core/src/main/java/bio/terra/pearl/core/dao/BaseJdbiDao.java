@@ -13,6 +13,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 import org.jdbi.v3.core.result.RowView;
+import org.jdbi.v3.core.statement.PreparedBatch;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 
@@ -25,6 +26,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     protected List<String> getQueryFields;
     protected List<String> getQueryFieldSymbols;
     protected List<String> getQueryColumns;
+    protected String createQuerySql;
 
     protected String tableName;
     protected Class<T> clazz;
@@ -97,6 +99,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         getQueryFieldSymbols = getQueryFields.stream().map(field -> ":" + field).collect(Collectors.toList());
         getQueryColumns = generateGetColumns(getQueryFields);
         tableName = getTableName();
+        createQuerySql = getCreateQuerySql();
         initializeRowMapper(jdbi);
     }
 
@@ -109,13 +112,39 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
             throw new IllegalArgumentException("object passed to create already has id - " + modelObj.getId());
         }
         return jdbi.withHandle(handle ->
-                handle.createUpdate("insert into " + tableName + " (" + StringUtils.join(insertColumns, ", ") +") " +
-                                "values (" + StringUtils.join(insertFieldSymbols, ", ") + ");")
+                handle.createUpdate(createQuerySql)
                         .bindBean(modelObj)
                         .executeAndReturnGeneratedKeys()
                         .mapTo(clazz)
                         .one()
         );
+    }
+
+    /**
+     * creates all the objects with a single call to the database -- this has the downside that it does not
+     * return the created objects --it returns an int[] with the number of rows modified -- it should be all ones
+     * */
+    public void bulkCreate(List<T> modelObjs) {
+        int[] result = jdbi.withHandle(handle -> {
+            PreparedBatch batch = handle.prepareBatch(createQuerySql);
+            for (T obj : modelObjs) {
+                if (obj.getId() != null) {
+                    throw new IllegalArgumentException("object passed to bulk create already has id: " + obj.getId());
+                }
+                batch.bindBean(obj).add();
+            }
+            return batch.execute();
+        });
+        // I can't think of any case where a create command would not update a row and also not throw an exception,
+        // but just in case, we check for it here
+        if (result.length != modelObjs.size() || Arrays.stream(result).anyMatch(rowsUpdated -> rowsUpdated != 1)) {
+            throw new IllegalStateException("bulk create failed for at least one row");
+        }
+    }
+
+    protected String getCreateQuerySql() {
+        return "insert into " + tableName + " (" + StringUtils.join(insertColumns, ", ") +") " +
+                "values (" + StringUtils.join(insertFieldSymbols, ", ") + ");";
     }
     
     /** basic get-by-id */
