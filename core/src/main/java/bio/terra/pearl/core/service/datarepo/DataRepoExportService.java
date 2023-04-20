@@ -11,7 +11,7 @@ import bio.terra.pearl.core.model.datarepo.CreateDatasetJob;
 import bio.terra.pearl.core.model.datarepo.Dataset;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.service.exception.DatasetCreationException;
+import bio.terra.pearl.core.service.exception.datarepo.DatasetCreationException;
 import bio.terra.pearl.core.service.exception.StudyNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
