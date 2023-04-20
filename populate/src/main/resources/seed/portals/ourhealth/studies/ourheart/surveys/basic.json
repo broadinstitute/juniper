@@ -33,6 +33,16 @@
             "type": "panel",
             "elements": [
               {
+                "type": "html",
+                "name": "oh_oh_basic_intro",
+                "html": "<h2>About You</h2> Please answer each question as honestly as possible. There are no right or wrong answers to any of the questions. We are looking for your own answers, and not what you think your doctors, family, or friends want you to say. If you do not want to answer, please select “Prefer not to answer” and move to the next question."
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "elements": [
+              {
                 "name": "oh_oh_basic_firstName",
                 "type": "text",
                 "title": "First name",
@@ -64,104 +74,7 @@
                 "value": "no"
               }
             ]
-          }
-        ]
-      },{
-        "elements": [
-          {
-            "name": "oh_oh_basic_streetAddress",
-            "type": "text",
-            "title": "Address",
-            "isRequired": true
-          }, {
-            "name": "oh_oh_basic_city",
-            "type": "text",
-            "title": "City",
-            "isRequired": true
-          }, {
-            "name": "oh_oh_basic_state",
-            "type": "dropdown",
-            "title": "State",
-            "isRequired": true,
-            "choices": [
-              {"text": "Alaska", "value": "AK"},
-              {"text": "American Samoa", "value": "AS"},
-              {"text": "Arizona", "value": "AZ"},
-              {"text": "Arkansas", "value": "AR"},
-              {"text": "California", "value": "CA"},
-              {"text": "Colorado", "value": "CO"},
-              {"text": "Connecticut", "value": "CT"},
-              {"text": "Delaware", "value": "DE"},
-              {"text": "District of Columbia", "value": "DC"},
-              {"text": "Florida", "value": "FL"},
-              {"text": "Georgia", "value": "GA"},
-              {"text": "Guam", "value": "GU"},
-              {"text": "Hawaii", "value": "HI"},
-              {"text": "Idaho", "value": "ID"},
-              {"text": "Illinois", "value": "IL"},
-              {"text": "Indiana", "value": "IN"},
-              {"text": "Iowa", "value": "IA"},
-              {"text": "Kansas", "value": "KS"},
-              {"text": "Kentucky", "value": "KY"},
-              {"text": "Louisiana", "value": "LA"},
-              {"text": "Maine", "value": "ME"},
-              {"text": "Maryland", "value": "MD"},
-              {"text": "Massachusetts", "value": "MA"},
-              {"text": "Michigan", "value": "MI"},
-              {"text": "Minnesota", "value": "MN"},
-              {"text": "Mississippi", "value": "MS"},
-              {"text": "Missouri", "value": "MO"},
-              {"text": "Montana", "value": "MT"},
-              {"text": "Nebraska", "value": "NE"},
-              {"text": "Nevada", "value": "NV"},
-              {"text": "New Hampshire", "value": "NH"},
-              {"text": "New Jersey", "value": "NJ"},
-              {"text": "New Mexico", "value": "NM"},
-              {"text": "New York", "value": "NY"},
-              {"text": "North Carolina", "value": "NC"},
-              {"text": "North Dakota", "value": "ND"},
-              {"text": "Northern Mariana Islands", "value": "MP"},
-              {"text": "Ohio", "value": "OH"},
-              {"text": "Oklahoma", "value": "OK"},
-              {"text": "Oregon", "value": "OR"},
-              {"text": "Pennsylvania", "value": "PA"},
-              {"text": "Puerto Rico", "value": "PR"},
-              {"text": "Rhode Island", "value": "RI"},
-              {"text": "South Carolina", "value": "SC"},
-              {"text": "South Dakota", "value": "SD"},
-              {"text": "Tennessee", "value": "TN"},
-              {"text": "Texas", "value": "TX"},
-              {"text": "U.S. Minor Outlying Islands", "value": "UM"},
-              {"text": "U.S. Virgin Islands", "value": "VI"},
-              {"text": "Utah", "value": "UT"},
-              {"text": "Vermont", "value": "VT"},
-              {"text": "Virginia", "value": "VA"},
-              {"text": "Washington", "value": "WA"},
-              {"text": "West Virginia", "value": "WV"},
-              {"text": "Wisconsin", "value": "WI"},
-              {"text": "Wyoming", "value": "WY"}
-            ]
-          }, {
-            "name": "oh_oh_basic_zip",
-            "type": "text",
-            "title": "ZIP code (5 digits)",
-            "maxLength": 5,
-            "size": "5",
-            "inputType": "text",
-            "isRequired": true
-          }, {
-            "name": "oh_oh_basic_phoneNumber",
-            "type": "text",
-            "title": "Preferred phone number",
-            "inputMask": "phone",
-            "inputFormat": "999-999-9999",
-            "isRequired": true
-          }
-        ]
-      },
-      {
-        "elements": [
-          {
+          },{
             "name": "oh_oh_basic_dateOfBirth",
             "type": "text",
             "title": "Date of Birth",
@@ -297,10 +210,7 @@
               {"text": "345lbs (157kg)", "value": "157"},
               {"text": "350lbs (159kg)", "value": "159"}
             ]
-          }
-        ]
-      }, {
-        "elements": [
+          },
           {
             "name": "oh_oh_basic_birthSex",
             "type": "radiogroup",
@@ -359,26 +269,7 @@
               {"text": "Do not use labels to identify yourself", "value": "doNotUseLabels"},
               {"text": "Don’t know the answer", "value": "dontKnow"}
             ]
-          }
-        ]
-      }, {
-        "elements": [
-          {
-            "name": "oh_oh_basic_educationLevel",
-            "type": "radiogroup",
-            "title": "What is the highest grade or year of school you completed? ",
-            "choices": [
-              {"text": "Never attended school or only attended kindergarten", "value": "neverAttendedSchool"},
-              {"text": "Grades 1 through 4 (Primary)", "value": "primary"},
-              {"text": "Grades 5 through 8 (Middle school)", "value": "middleSchool"},
-              {"text": "Grades 9 through 11 (Some high school)", "value": "someHighSchool"},
-              {"text": "Grade 12 or GED (High school graduate)", "value": "highSchoolGraduate"},
-              {"text": "1 to 3 years after high school (Some college, Associate’s degree, or technical school)", "value": "someCollege"},
-              {"text": "College 4 years or more (College graduate)", "value": "collegeGraduate"},
-              {"text": "Advanced degree (Master’s, Doctorate, etc.)", "value": "advancedDegree"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
-            ]
-          }, {
+          },{
             "name": "ethnicityNote",
             "type": "html",
             "html": "<b>Note, you are eligible for this study because you identify as South Asian, defined as ancestry from Bangladesh, Bhutan, India, Maldives, Nepal, Pakistan, and/or Sri Lanka.</b>"
@@ -409,7 +300,7 @@
           },{
             "name": "oh_oh_basic_nationalIdentity",
             "type": "checkbox",
-            "title": "Which of the following South Asian nations do you or your family identify with? Check all that apply.",
+            "title": "With which of the following South Asian nations do you or your family identify? Check all that apply.",
             "showOtherItem": true,
             "otherText": "Other (fill in the blank)",
             "otherPlaceholder": "Please specify",
@@ -546,14 +437,120 @@
               {"text": "Urdu", "value": "urdu"}
             ]
           }
-
         ]
-      }, {
+      },{
         "elements": [
           {
-            "type": "html",
-            "name": "livingInUsprompt",
-            "html": "<b>The next questions are about living in the United States, citizenship, parents, and relationship status.</b> Please answer each question as honestly as possible. There are no right or wrong answers to any of the questions. It is important that you answer as many questions as you can. We are looking for your own answers, and not what you think your doctors, family, or friends want you to say. \n \nIf you aren’t sure how to answer a question, choose the best answer from the options given. If you do not want to answer, please select “Prefer not to answer” and move to the next question."
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "oh_oh_basic_mailingIntro",
+                "html": "<h2>Mailing Address</h2> We ask this so that we may send you a saliva collection kit.."
+              }
+            ]
+          },
+          {
+            "name": "oh_oh_basic_streetAddress",
+            "type": "text",
+            "title": "Address",
+            "isRequired": true
+          }, {
+            "name": "oh_oh_basic_city",
+            "type": "text",
+            "title": "City",
+            "isRequired": true
+          }, {
+            "name": "oh_oh_basic_state",
+            "type": "dropdown",
+            "title": "State",
+            "isRequired": true,
+            "choices": [
+              {"text": "Alaska", "value": "AK"},
+              {"text": "American Samoa", "value": "AS"},
+              {"text": "Arizona", "value": "AZ"},
+              {"text": "Arkansas", "value": "AR"},
+              {"text": "California", "value": "CA"},
+              {"text": "Colorado", "value": "CO"},
+              {"text": "Connecticut", "value": "CT"},
+              {"text": "Delaware", "value": "DE"},
+              {"text": "District of Columbia", "value": "DC"},
+              {"text": "Florida", "value": "FL"},
+              {"text": "Georgia", "value": "GA"},
+              {"text": "Guam", "value": "GU"},
+              {"text": "Hawaii", "value": "HI"},
+              {"text": "Idaho", "value": "ID"},
+              {"text": "Illinois", "value": "IL"},
+              {"text": "Indiana", "value": "IN"},
+              {"text": "Iowa", "value": "IA"},
+              {"text": "Kansas", "value": "KS"},
+              {"text": "Kentucky", "value": "KY"},
+              {"text": "Louisiana", "value": "LA"},
+              {"text": "Maine", "value": "ME"},
+              {"text": "Maryland", "value": "MD"},
+              {"text": "Massachusetts", "value": "MA"},
+              {"text": "Michigan", "value": "MI"},
+              {"text": "Minnesota", "value": "MN"},
+              {"text": "Mississippi", "value": "MS"},
+              {"text": "Missouri", "value": "MO"},
+              {"text": "Montana", "value": "MT"},
+              {"text": "Nebraska", "value": "NE"},
+              {"text": "Nevada", "value": "NV"},
+              {"text": "New Hampshire", "value": "NH"},
+              {"text": "New Jersey", "value": "NJ"},
+              {"text": "New Mexico", "value": "NM"},
+              {"text": "New York", "value": "NY"},
+              {"text": "North Carolina", "value": "NC"},
+              {"text": "North Dakota", "value": "ND"},
+              {"text": "Northern Mariana Islands", "value": "MP"},
+              {"text": "Ohio", "value": "OH"},
+              {"text": "Oklahoma", "value": "OK"},
+              {"text": "Oregon", "value": "OR"},
+              {"text": "Pennsylvania", "value": "PA"},
+              {"text": "Puerto Rico", "value": "PR"},
+              {"text": "Rhode Island", "value": "RI"},
+              {"text": "South Carolina", "value": "SC"},
+              {"text": "South Dakota", "value": "SD"},
+              {"text": "Tennessee", "value": "TN"},
+              {"text": "Texas", "value": "TX"},
+              {"text": "U.S. Minor Outlying Islands", "value": "UM"},
+              {"text": "U.S. Virgin Islands", "value": "VI"},
+              {"text": "Utah", "value": "UT"},
+              {"text": "Vermont", "value": "VT"},
+              {"text": "Virginia", "value": "VA"},
+              {"text": "Washington", "value": "WA"},
+              {"text": "West Virginia", "value": "WV"},
+              {"text": "Wisconsin", "value": "WI"},
+              {"text": "Wyoming", "value": "WY"}
+            ]
+          }, {
+            "name": "oh_oh_basic_zip",
+            "type": "text",
+            "title": "ZIP code (5 digits)",
+            "maxLength": 5,
+            "size": "5",
+            "inputType": "text",
+            "isRequired": true
+          }, {
+            "name": "oh_oh_basic_phoneNumber",
+            "type": "text",
+            "title": "Preferred phone number",
+            "inputMask": "phone",
+            "inputFormat": "999-999-9999",
+            "isRequired": true
+          }
+        ]
+      },{
+        "elements": [
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "oh_oh_basic_livingIntro",
+                "html": "<h2>Living in the United States, Citizenship, Parents, and Relationship Status</h2>"
+              }
+            ]
           },{
             "name": "oh_oh_basic_settledOtherRegion",
             "type": "radiogroup",
@@ -594,7 +591,8 @@
           },{
             "name": "oh_oh_basic_citizenship",
             "type": "radiogroup",
-            "title": "What is your citizenship status? (This type of question helps us to ensure we are surveying a diverse group of South Asians in the US)  ",
+            "title": "What is your citizenship status?",
+            "description": "This type of question helps us to ensure we are surveying a diverse group of South Asians in the U.S.",
             "choices": [
               {"text": "US citizen", "value": "usCitizen"},
               {"text": "Non-United States citizenship", "value": "nonUnitedStatesCitizenship"},
@@ -731,11 +729,7 @@
               {"text": "2023", "value": "2023"},
               {"text": "2024", "value": "2024"}
             ]
-          }
-        ]
-      }, {
-        "elements": [
-          {
+          },{
             "name": "oh_oh_basic_parentsRelated",
             "type": "radiogroup",
             "title": "Are your parents related by blood? ",
@@ -774,6 +768,7 @@
             "type": "dropdown",
             "title": "Not including yourself, how many other people live at home with you?",
             "choices": [
+              {"text": "0", "value": "0"},
               {"text": "1", "value": "1"},
               {"text": "2", "value": "2"},
               {"text": "3", "value": "3"},
@@ -790,7 +785,21 @@
               {"text": "14", "value": "14"},
               {"text": "15", "value": "15"}
             ]
-          },{
+          }
+        ]
+      }, {
+        "elements": [
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "oh_oh_basic_religionIntro",
+                "html": "<h2>Religion and Spirituality</h2>"
+              }
+            ]
+          },
+          {
             "name": "oh_oh_basic_religiousBackground",
             "type": "checkbox",
             "title": "Which best describe(s) your religious background? Check all that apply.",
@@ -826,6 +835,32 @@
         ]
       },{
         "elements": [
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "oh_oh_basic_eductationWorkIntro",
+                "html": "<h2>School and Income</h2>"
+              }
+            ]
+          },
+          {
+            "name": "oh_oh_basic_educationLevel",
+            "type": "radiogroup",
+            "title": "What is the highest grade or year of school you completed? ",
+            "choices": [
+              {"text": "Never attended school or only attended kindergarten", "value": "neverAttendedSchool"},
+              {"text": "Grades 1 through 4 (Primary)", "value": "primary"},
+              {"text": "Grades 5 through 8 (Middle school)", "value": "middleSchool"},
+              {"text": "Grades 9 through 11 (Some high school)", "value": "someHighSchool"},
+              {"text": "Grade 12 or GED (High school graduate)", "value": "highSchoolGraduate"},
+              {"text": "1 to 3 years after high school (Some college, Associate’s degree, or technical school)", "value": "someCollege"},
+              {"text": "College 4 years or more (College graduate)", "value": "collegeGraduate"},
+              {"text": "Advanced degree (Master’s, Doctorate, etc.)", "value": "advancedDegree"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },
           {
             "name": "oh_oh_basic_employmentStatus",
             "type": "checkbox",
