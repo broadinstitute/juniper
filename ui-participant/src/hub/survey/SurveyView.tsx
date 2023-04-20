@@ -117,10 +117,16 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
   }
 
   useEffect(() => {
-    // auto-save the survey every 10 seconds
-    const interval = window.setInterval(saveDiff, AUTO_SAVE_INTERVAL)
+    let timeoutHandle: number
+    // auto-save the survey at the specified interval
+    (function loop() {
+      timeoutHandle = window.setTimeout(() => {
+        saveDiff()
+        loop()
+      }, AUTO_SAVE_INTERVAL)
+    })()
     return () => {
-      window.clearInterval(interval)
+      window.clearTimeout(timeoutHandle)
     }
   }, [])
 
