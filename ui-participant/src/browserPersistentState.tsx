@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 
-import { useSessionStorage } from 'util/storageUtils'
+import { useLocalStorage, useSessionStorage } from 'util/storageUtils'
 
 /** store the preregistration response id in local storage so a page refresh does not lose their progress.
  * The user isn't signed in yet (since they don't have an account), so local storage is the best way to keep this. */
@@ -19,4 +19,9 @@ export const useHasProvidedStudyPassword = (studyShortcode: string): [boolean, (
   const [value, setValue] = useSessionStorage(`provided-study-password/${studyShortcode}`)
   const setHasProvidedStudyPassword = useCallback(() => setValue('true'), [])
   return [value === 'true', setHasProvidedStudyPassword]
+}
+
+export const useCookiesAcknowledged = (): [boolean, () => void] => {
+  const [value, setValue] = useLocalStorage('cookiesAcknowledged')
+  return [!!value, () => setValue('true')]
 }
