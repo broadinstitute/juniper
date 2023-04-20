@@ -1,10 +1,13 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context'
+import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import Api from 'api/api'
 import { HubUpdate } from 'hub/hubUpdates'
 import { usePreEnrollResponseId, usePreRegResponseId, useReturnToStudy } from 'browserPersistentState'
+import { userHasJoinedPortalStudy } from 'util/enrolleeUtils'
+import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
 export const RedirectFromOAuth = () => {
   const auth = useAuth()
@@ -13,6 +16,15 @@ export const RedirectFromOAuth = () => {
   const [preRegResponseId, setPreRegResponseId] = usePreRegResponseId()
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
   const [returnToStudy, setReturnToStudy] = useReturnToStudy()
+  const { portal } = usePortalEnv()
+
+  // Select a study to enroll in based on a previously saved session storage property
+  const findReturnToStudy = () =>
+    portal.portalStudies.find(portalStudy => portalStudy.study.shortcode === returnToStudy)
+
+  // Select the portal's single study if there is only one; otherwise return null
+  const getSingleStudy = () => portal.portalStudies.length === 1 ? portal.portalStudies[0] : null
+
 
   useEffect(() => {
     const handleRedirectFromOauth = async () => {
@@ -32,23 +44,25 @@ export const RedirectFromOAuth = () => {
         //   * handle possible study enrollment
         //   * navigate to the hub
         // TODO: remember where the user was trying to go and navigate there instead of hard-coding /hub
+        const email = auth.user.profile.email as string
+        const accessToken = auth.user.access_token
 
-        if (auth.user.profile.newUser) {
-          const loginResult = await Api.register({
-            preRegResponseId,
-            email: auth.user.profile.email as string,
-            accessToken: auth.user.access_token
-          })
-          loginUser(loginResult, auth.user.access_token)
-          setPreRegResponseId(null)
-        } else {
-          const loginResult = await Api.tokenLogin(auth.user.access_token)
-          loginUser(loginResult, auth.user.access_token)
-        }
+        // Register or login
+        const loginResult = auth.user.profile.newUser
+          ? await Api.register({ preRegResponseId, email, accessToken })
+          : await Api.tokenLogin(accessToken)
+        loginUser(loginResult, accessToken)
 
-        if (preEnrollResponseId && returnToStudy) {
+        // Decide if there's a study that has either been explicitly selected or is implicit because it's the only one
+        const portalStudy = findReturnToStudy() || getSingleStudy() || null
+
+        // Enroll in the study if not already enrolled
+        if (portalStudy && !userHasJoinedPortalStudy(portalStudy, loginResult.enrollees)) {
           try {
-            const response = await Api.createEnrollee({ studyShortcode: returnToStudy, preEnrollResponseId })
+            const response = await Api.createEnrollee({
+              studyShortcode: portalStudy.study.shortcode,
+              preEnrollResponseId
+            })
             updateEnrollee(response.enrollee)
             const hubUpdate: HubUpdate = {
               message: {
@@ -61,18 +75,18 @@ export const RedirectFromOAuth = () => {
           } catch {
             alert('an error occurred, please try again, or contact support')
           }
-
-          setPreEnrollResponseId(null)
-          setReturnToStudy(null)
+        } else {
+          navigate('/hub', { replace: true })
         }
 
-        // If we haven't already navigated somewhere, navigate to the hub (or wherever they were trying to go to) now
-        navigate('/hub', { replace: true })
+        setPreRegResponseId(null)
+        setPreEnrollResponseId(null)
+        setReturnToStudy(null)
       }
     }
 
     handleRedirectFromOauth()
   })
 
-  return <div>Loading...</div>
+  return <PageLoadingIndicator />
 }

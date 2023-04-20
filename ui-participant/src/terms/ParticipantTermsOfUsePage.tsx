@@ -1,5 +1,6 @@
 import classNames from 'classnames'
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 import Navbar from '../Navbar'
 
@@ -10,7 +11,7 @@ const SectionHeading = (props: SectionHeadingProps) => {
   return <h2 {...otherProps} className={classNames('h3', className)} />
 }
 
-const TermsOfService = () => {
+const ParticipantTermsOfUse = () => {
   return (
     <>
       <h1 className="h2 text-center mb-5">
@@ -88,12 +89,13 @@ const TermsOfService = () => {
       <SectionHeading>Privacy</SectionHeading>
       <p>
         Broad understands the importance of confidentiality and privacy
-        regarding your information. Please see our Privacy Policy for a
-        description of how we collect, use, and disclose your personal
-        information when you access or use the Platform. By using the Platform
-        or by clicking to accept or agree to these Terms when this option is
-        made available to you, you consent to our use of your information and
-        our contacting you, in each case, in compliance with our Privacy Policy.
+        regarding your information. Please see our{' '}
+        <Link to="/privacy">Privacy Policy</Link> for a description of how we
+        collect, use, and disclose your personal information when you access or
+        use the Platform. By using the Platform or by clicking to accept or
+        agree to these Terms when this option is made available to you, you
+        consent to our use of your information and our contacting you, in each
+        case, in compliance with our Privacy Policy.
       </p>
 
       <SectionHeading>Communication Preferences</SectionHeading>
@@ -351,22 +353,20 @@ const TermsOfService = () => {
       <p>
         If you have any questions regarding our Platform or these Terms, you can
         contact us at{' '}
-        <a href="mailto:juniper_terms_privacy@broadinstitute.org">
-          juniper_terms_privacy@broadinstitute.org
-        </a>
+        <a href="mailto:support@juniper.terra.bio">support@juniper.terra.bio</a>
       </p>
     </>
   )
 }
 
-const TermsOfServicePage = () => {
+const ParticipantTermsOfUsePage = () => {
   return (
     <div className="container-fluid bg-white min-vh-100 d-flex flex-column p-0">
       <Navbar aria-label="Primary" />
       <main className="flex-grow-1 py-5">
         <div className="row mx-0 justify-content-center">
           <div className="col-12 col-sm-10 col-lg-6">
-            <TermsOfService />
+            <ParticipantTermsOfUse />
           </div>
         </div>
       </main>
@@ -374,4 +374,4 @@ const TermsOfServicePage = () => {
   )
 }
 
-export default TermsOfServicePage
+export default ParticipantTermsOfUsePage

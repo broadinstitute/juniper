@@ -19,9 +19,12 @@ import EnvironmentAlert from 'EnvironmentAlert'
 import ConfigProvider, { ConfigConsumer } from 'providers/ConfigProvider'
 import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
+import { useCookiesAcknowledged } from './browserPersistentState'
+import { CookieAlert } from './CookieAlert'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
-const TermsOfServicePage = lazy(() => import('terms/TermsOfServicePage'))
+const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
+const ParticipantTermsOfUsePage = lazy(() => import('terms/ParticipantTermsOfUsePage'))
 
 
 type BrandConfiguration = {
@@ -64,6 +67,7 @@ const ScrollToTop = () => {
  * root app -- handles dynamically creating all the routes based on the siteContent
  */
 function App() {
+  const [cookiesAcknowledged, setCookiesAcknowledged] = useCookiesAcknowledged()
   const { localContent, portal } = usePortalEnv()
 
   const brandConfig: BrandConfiguration = {}
@@ -112,10 +116,11 @@ function App() {
                           </Route>
                           <Route path="/" element={<LandingPage localContent={localContent}/>}>
                             {landingRoutes}
-                            <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
                           </Route>
+                          <Route path="/redirect-from-oauth" element={<RedirectFromOAuth/>}/>
                           <Route path="/privacy" element={<PrivacyPolicyPage />} />
-                          <Route path="/terms" element={<TermsOfServicePage />} />
+                          <Route path="/terms/investigator" element={<InvestigatorTermsOfUsePage />} />
+                          <Route path="/terms/participant" element={<ParticipantTermsOfUsePage />} />
                           <Route path="*" element={<div>unmatched route</div>}/>
                         </Routes>
                       </Suspense>
@@ -124,6 +129,7 @@ function App() {
                 }
               </ConfigConsumer>
             </ConfigProvider>
+            {!cookiesAcknowledged && <CookieAlert onDismiss={() => setCookiesAcknowledged()} />}
           </BrowserRouter>
         </div>
       </PortalPasswordGate>

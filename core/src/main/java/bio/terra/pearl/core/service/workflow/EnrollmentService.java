@@ -110,7 +110,8 @@ public class EnrollmentService {
             return null;
         }
         if (preEnrollResponseId == null) {
-            throw new IllegalArgumentException("pre-enrollment survey is required to enroll in this study");
+            logger.warn("Could not match enrollee to pre-enrollment survey results; user {}", participantUserId);
+            return null;
         }
         PreEnrollmentResponse response = preEnrollmentResponseDao.find(preEnrollResponseId).get();
         if (!response.isQualified()) {

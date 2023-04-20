@@ -11,7 +11,7 @@ import bio.terra.pearl.core.model.datarepo.CreateDatasetJob;
 import bio.terra.pearl.core.model.datarepo.Dataset;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.service.exception.DatasetCreationException;
+import bio.terra.pearl.core.service.exception.datarepo.DatasetCreationException;
 import bio.terra.pearl.core.service.exception.StudyNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +57,7 @@ public class DataRepoExportService {
 
     public void createDatasetsForStudyEnvironments() {
         UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
-        final String DEPLOYMENT_ZONE = "dev"; //TODO, pull from config
+        final String DEPLOYMENT_ZONE = env.getProperty("env.tdr.deploymentZone");
 
         List<StudyEnvironment> allStudyEnvs = studyEnvironmentDao.findAll();
         List<UUID> studyEnvsWithDatasets = datasetDao.findAll().stream().map(Dataset::getStudyEnvironmentId).toList();

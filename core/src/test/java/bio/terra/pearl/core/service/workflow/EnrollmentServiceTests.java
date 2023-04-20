@@ -22,7 +22,6 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +63,7 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testEnrollRequiresPreEnroll() throws JsonProcessingException {
+    public void testEnrollDoesNotRequirePreEnroll() throws JsonProcessingException {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testAnonPreEnroll");
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testAnonPreEnroll");
         Survey survey = surveyFactory.buildPersisted("testPreEnroll");
@@ -75,11 +74,9 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
 
 
-        Exception e = assertThrows(IllegalArgumentException.class, () -> {
-            HubResponse hubResponse = enrollmentService.enroll(userBundle.user(), userBundle.ppUser(),
-                    studyEnv.getEnvironmentName(), studyShortcode, null);
-        });
-        assertThat(e.getMessage(), containsString("pre-enrollment survey is required"));
+        HubResponse hubResponse = enrollmentService.enroll(userBundle.user(), userBundle.ppUser(),
+                studyEnv.getEnvironmentName(), studyShortcode, null);
+        assertThat(hubResponse.getEnrollee(), notNullValue());
     }
 
     @Autowired

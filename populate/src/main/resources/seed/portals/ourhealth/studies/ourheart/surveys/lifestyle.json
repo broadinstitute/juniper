@@ -176,7 +176,7 @@
         {
           "name": "oh_oh_lifestyle_smoke100cigs",
           "type": "radiogroup",
-          "title": "*Thank you for your answers. The next questions will ask about your smoking habits, including cigarettes, bidis, electronic nicotine products, hookah/shisha, and paan with tobacco products. This will help researchers better understand how smoking affects health. As always, your answers are private.* \n\nHave you smoked at least 100 cigarettes in your entire life? (There are 20 cigarettes in a pack)?",
+          "title": "*Thank you for your answers. The next questions will ask about your smoking habits, including cigarettes, bidis, electronic nicotine products, hookah/shisha, and paan with tobacco products. This will help researchers better understand how smoking affects health. As always, your answers are private.* \n\nHave you ever smoked the equivalent of at least 100 cigarettes in your life? Including bidis, hookah, or other forms of smoking? (There are 20 cigarettes in a pack.)",
           "choices": [
             {"text": "Yes", "value": "yes"},
             {"text": "No", "value": "no"},
@@ -238,7 +238,7 @@
             "inputType": "number",
             "title": "On average, how many cigarettes do you smoke per day now? (There are 20 cigarettes in a pack.) ",
             "max": 99,
-            "min": 1,
+            "min": 0,
             "size": "2"
           },{
             "name": "oh_oh_lifestyle_numberCigsDayLife",

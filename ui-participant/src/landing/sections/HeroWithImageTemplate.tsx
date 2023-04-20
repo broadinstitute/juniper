@@ -148,8 +148,14 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
                 'flex-sm-row align-items-sm-start flex-sm-wrap'
               )}
             >
-              {_.map(logos, logo => {
-                return <ConfiguredImage key={logo.cleanFileName} image={logo} className="me-sm-4" />
+              {_.map(logos, (logo, i) => {
+                return (
+                  <ConfiguredImage
+                    key={logo.cleanFileName}
+                    image={logo}
+                    className={classNames({ 'mt-4': i !== 0 }, 'mt-sm-0', 'me-sm-4')}
+                  />
+                )
               })}
             </div>
           )}

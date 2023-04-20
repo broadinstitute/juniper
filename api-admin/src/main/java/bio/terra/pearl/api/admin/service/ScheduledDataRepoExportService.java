@@ -70,7 +70,7 @@ public class ScheduledDataRepoExportService {
   }
 
   public boolean isTdrConfigured() {
-    String envProp = env.getProperty("env.tdr.serviceAccountCreds");
-    return !StringUtils.isBlank(envProp) && !envProp.equals("missing_tdr_sa_creds");
+    return StringUtils.isNotBlank(env.getProperty("env.tdr.serviceAccountCreds"))
+        && StringUtils.isNotBlank(env.getProperty("env.tdr.deploymentZone"));
   }
 }

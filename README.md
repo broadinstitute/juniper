@@ -68,6 +68,9 @@ Open the root folder in IntelliJ.
         * set active profiles of "human-readable-logging" and "development"
         * set environment variable: `SENDGRID_API_KEY=<<vault read -field=api_key secret/dsp/ddp/d2p/dev/sendgrid>>`
         * set environment variable: `REDIRECT_ALL_EMAILS_TO=<<your email address>>`
+        * set environment variable: `B2C_TENANT_NAME=ddpdevb2c`
+        * set environment variable: `B2C_CLIENT_ID=<<vault read -field value secret/dsp/ddp/b2c/dev/application_id>>`
+        * set environment variable: `B2C_POLICY_NAME=B2C_1A_ddp_participant_signup_signin_dev`
         * disable launch optimization
         
          
@@ -97,12 +100,12 @@ Then go to `localhost:3000`
 In intelliJ, you can either run ApiParticipantApp (from the api-participant module) directly, or execute the "bootRun" gradle task.
 In basic development mode, this will only serve the API, not the frontend assets.
 
-##### Participant UI (ui-admin module)
+##### Participant UI (ui-participant module)
 * Participant UI:  From the command line:
   ```
   cd ui-participant
   npm install
-  REACT_APP_B2C_TENANT_NAME=ddpdevb2c REACT_APP_B2C_CLIENT_ID=$(vault read -field value secret/dsp/ddp/b2c/dev/application_id) npm start
+  HTTPS=true npm start
   ```
 (note that you can just run `npm start` if you don't need to test B2C login functionality)
 Then go to `sandbox.ourhealth.localhost:3001`
