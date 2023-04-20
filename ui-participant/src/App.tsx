@@ -116,8 +116,8 @@ function App() {
                           </Route>
                           <Route path="/" element={<LandingPage localContent={localContent}/>}>
                             {landingRoutes}
-                            <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
                           </Route>
+                          <Route path="/redirect-from-oauth" element={<RedirectFromOAuth/>}/>
                           <Route path="/privacy" element={<PrivacyPolicyPage />} />
                           <Route path="/terms/investigator" element={<InvestigatorTermsOfUsePage />} />
                           <Route path="/terms/participant" element={<ParticipantTermsOfUsePage />} />
