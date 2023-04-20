@@ -52,11 +52,11 @@
         "populateFileName": "emails/studyEnroll.json"
       },{
         "notificationType": "TASK_REMINDER",
-        "taskType": "SURVEY",
+        "taskType": "CONSENT",
         "populateFileName": "emails/consentReminder.json"
       },{
         "notificationType": "TASK_REMINDER",
-        "taskType": "CONSENT",
+        "taskType": "SURVEY",
         "reminderIntervalMinutes": 10080,
         "maxNumReminders": 2,
         "populateFileName": "emails/surveyReminder.json"

@@ -4,12 +4,14 @@ import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.publishing.PortalDiffService;
 import bio.terra.pearl.core.service.publishing.StudyUpdateService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
@@ -39,6 +41,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
     private PortalDiffService portalDiffService;
     private StudyUpdateService studyUpdateService;
+    private PortalEnvironmentService portalEnvironmentService;
 
     public StudyPopulator(StudyService studyService,
                           StudyEnvironmentService studyEnvService, EnrolleePopulator enrolleePopulator,
@@ -152,10 +155,12 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
                     .findFirst().get();
             StudyEnvironment destEnv = portalDiffService.
                     loadStudyEnvForProcessing(existingStudy.getShortcode(), EnvironmentName.sandbox);
+            PortalEnvironment destPortalEnv = portalEnvironmentService
+                    .findOne(context.getPortalShortcode(), context.getEnvironmentName()).get();
             try {
                 var studyEnvChange = portalDiffService.diffStudyEnvs(existingStudy.getShortcode(),
                         sourceEnv, destEnv);
-                studyUpdateService.applyChanges(destEnv, studyEnvChange);
+                studyUpdateService.applyChanges(destEnv, studyEnvChange, destPortalEnv.getId());
             } catch (Exception e) {
                 // we probably want to move this to some sort of "PopulateException"
                 throw new IOException(e);

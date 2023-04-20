@@ -72,7 +72,7 @@ public class PortalUpdateService {
         applyChangesToNotificationConfigs(destEnv, envChanges.notificationConfigChanges());
         for(StudyEnvironmentChange studyEnvChange : envChanges.studyEnvChanges()) {
             StudyEnvironment studyEnv = portalDiffService.loadStudyEnvForProcessing(studyEnvChange.studyShortcode(), destEnv.getEnvironmentName());
-            studyUpdateService.applyChanges(studyEnv, studyEnvChange);
+            studyUpdateService.applyChanges(studyEnv, studyEnvChange, destEnv.getId());
         }
 
         var changeRecord = PortalEnvironmentChangeRecord.builder()
