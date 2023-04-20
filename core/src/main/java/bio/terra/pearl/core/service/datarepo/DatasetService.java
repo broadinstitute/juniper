@@ -26,7 +26,7 @@ public class DatasetService extends CrudService<Dataset, DatasetDao> {
             JobModel jobModel = dataRepoClient.deleteDataset(dataset.getDatasetId());
             logger.info("Deleted dataset: {} (TDR job ID {})", dataset.getDatasetId(), jobModel.getId());
         } catch (ApiException e) {
-            logger.warn("Unable to delete dataset {}. Error: {}", dataset.getDatasetId(), e.getMessage());
+            logger.error("Unable to delete dataset {}. Error: {}", dataset.getDatasetId(), e.getMessage());
         }
     }
 
