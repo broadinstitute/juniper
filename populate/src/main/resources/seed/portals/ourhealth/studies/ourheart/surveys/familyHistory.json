@@ -125,14 +125,29 @@
       {
         "elements": [
           {
-            "type": "html",
-            "name": "oh_oh_famHx_intro",
-            "html": "Please answer each question as honestly as possible. There are no right or wrong answers to any of the questions. It is important that you answer as many questions as you can. We are looking for your own answers, and not what you think your doctors, family, or friends want you to say.<br/>Don’t feel like you have to spend a long time on each question. The first answer that comes to you is usually the best one. If you aren’t sure how to answer a question, choose the best answer from the available choices. Some questions also let you say if you don’t know an answer, or would rather not answer.<br/>This module asks you about your family’s medical history. You will be shown a list of conditions and asked to select those that certain family members have or had. Understanding your family’s experiences with medical issues can tell us a lot about what kinds of medical issues might be related to your genetics. Genetics has to do with traits that are passed down from generation to generation in a family.\n"
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "oh_oh_famHx_intro",
+                "html": "<p>This survey asks you about your family’s medical history. You will be shown a list of conditions and asked to select those that certain family members have or had. Understanding your family’s experiences with medical issues can tell us a lot about what kinds of medical issues might be related to your genetics. Genetics has to do with traits that are passed down from generation to generation in a family.<br/><br/>For these next few questions, please answer with your family members' biological sex in mind. We define an individual's biological sex as male, female, or intersex. Biological sex is often assigned at birth and associated with chromosomes and physical attributes such as anatomy. Someone who is intersex might be assigned from birth or they might not know until later in life.</p>"
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "oh_oh_famHx_knowledgeIntro",
+                "html": "<h2>Family Health Knowledge</h2><p>Think only of people you are related to by blood including those living or deceased. Before asking a comprehensive family history, we will ask you about some of the most serious cardiac conditions that can run in families. </p>"
+              }
+            ]
           },
           {
             "name": "oh_oh_famHx_famKnowledge",
             "type": "radiogroup",
-            "title": "*You will be asked questions about your family. Think only of people you are related to by blood including those living or deceased. Before asking a comprehensive family history, we will ask you about some of the most serious cardiac conditions that can run in families.*\n\n How much do you know about illnesses or health problems of your parents, grandparents, brothers, sisters, and/or children?",
+            "title": "How much do you know about illnesses or health problems of your parents, grandparents, brothers, sisters, and/or children?",
             "choices": [
               {
                 "text": "A lot",
@@ -153,9 +168,14 @@
       {
         "elements": [
           {
-            "type": "html",
-            "name": "oh_oh_famHx_conditionIntro",
-            "html": "Please indicate if ANY of your parents, grandparents, brothers, sisters, and/or children have had any of the following. Think only of the people you are related to by blood. (please select all that apply) \n"
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "oh_oh_famHx_conditionIntro",
+                "html": "<h2>Family Cardiac Health</h2><p>Please indicate if ANY of your parents, grandparents, brothers, sisters, and/or children have had any of the following. Think only of the people you are related to by blood. (please select all that apply)</p>"
+              }
+            ]
           },
           {
             "name": "oh_oh_famHx_suddenDeathUnexplained",
@@ -519,11 +539,17 @@
           }
         ]
       },{
-        "elements": [{
-          "type": "html",
-          "name": "motherConditionsDescription",
-          "html": "Please indicate if your mother has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (please select all that apply)"
-        },{
+        "elements": [
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "motherConditionsDescription",
+                "html": "<h2>Your Mother’s Health</h2><p>Please indicate if your mother has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (please select all that apply)</p>"
+              }
+            ]
+          },{
           "name": "oh_oh_famHx_motherCancer",
           "type": "checkbox",
           "title": "Cancer",
@@ -697,11 +723,17 @@
           ]
         }]
       },{
-        "elements": [{
-          "type": "html",
-          "name": "fatherConditionsDescription",
-          "html": "Please indicate if your father has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (please select all that apply)"
-        },{
+        "elements": [
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "fatherConditionsDescription",
+                "html": "<h2>Your Father’s Health</h2><p>Please indicate if your father has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (please select all that apply)</p>"
+              }
+            ]
+          },{
           "name": "oh_oh_famHx_fatherCancer",
           "type": "checkbox",
           "title": "Cancer",
@@ -872,11 +904,17 @@
           ]
         }]
       },{
-        "elements": [{
-          "type": "html",
-          "name": "siblingConditionsDescription",
-          "html": "Please indicate if your brothers and/or sisters [people with the same mother and/or sibling as you] has ever been diagnosed with the following health conditions and/or health events. Think only of those people you are related to by blood. If you have more than one brother or sister, check the box if any of your brothers or sisters have the condition (select all that apply)"
-        },{
+        "elements": [
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "siblingConditionsDescription",
+                "html": "<h2>Your Sibling’s Health</h2><p>Please indicate if your brothers and/or sisters [people with the same mother and/or sibling as you] has ever been diagnosed with the following health conditions and/or health events. Think only of those people you are related to by blood. If you have more than one brother or sister, check the box if any of your brothers or sisters have the condition (select all that apply)</p>"
+              }
+            ]
+          },{
           "name": "oh_oh_famHx_siblingCancer",
           "type": "checkbox",
           "title": "Cancer",
@@ -1052,9 +1090,14 @@
         }]
       },{
         "elements": [{
-          "type": "html",
-          "name": "daughterConditionsDescription",
-          "html": "Please indicate if your daughter(s) has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (select all that apply) "
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "daughterConditionsDescription",
+              "html": "<h2>Your Daughter’s Health</h2><p>Please indicate if your daughter(s) has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (select all that apply)</p>"
+            }
+          ]
         },{
           "name": "oh_oh_famHx_daughterCancer",
           "type": "checkbox",
@@ -1230,9 +1273,14 @@
         }]
       },{
         "elements": [{
-          "type": "html",
-          "name": "sonConditionsDescription",
-          "html": "Please indicate if your son(s) has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (select all that apply) "
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "sonConditionsDescription",
+              "html": "<h2>Your Son’s Health</h2><p>Please indicate if your son(s) has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (select all that apply)</p?"
+            }
+          ]
         },{
           "name": "oh_oh_famHx_sonCancer",
           "type": "checkbox",
@@ -1405,9 +1453,14 @@
         }]
       },{
         "elements": [{
-          "type": "html",
-          "name": "grandparentConditionsDescription",
-          "html": "Please indicate if your grandparent(s) has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (select all that apply) "
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "grandparentConditionsDescription",
+              "html": "<h2>Your Grandparents’ Health</h2><p>Please indicate if your grandparent(s) has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (select all that apply)</p>"
+            }
+          ]
         },{
           "name": "oh_oh_famHx_grandparentCancer",
           "type": "checkbox",

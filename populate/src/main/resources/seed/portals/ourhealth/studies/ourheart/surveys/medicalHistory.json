@@ -54,14 +54,24 @@
     {
       "elements": [
         {
-          "type": "html",
-          "name": "oh_oh_medHx_overallDescription",
-          "html": "This survey asks questions about Other Medical History. This is to better understand how it may affect health. <br/><br/>It will take about 10-15 minutes to answer these questions. Please answer each question as honestly as possible. Some of the questions may be sensitive. You can choose not to answer. There are no right or wrong answers to any of the questions. It is important that you answer as many questions as you can. We are looking for your own answers, not what you think your doctors, family, or friends want you to say.  <br/><br/>Do not feel like you have to spend a long time on each question. The first answer that comes to you is usually the best one. If you are not sure how to answer a question, choose the best answer from the options given.  \n"
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "oh_oh_medHx_overallDescription",
+              "html": "<p>This survey asks questions about Other Medical History. This is to better understand how it may affect health. It will take about 5-10 minutes to answer these questions. Please answer each question as honestly as possible. We are looking for your own answers, not what you think your doctors, family, or friends want you to say. Do not feel like you have to spend a long time on each question. The first answer that comes to you is usually the best one.</p>"
+            }
+          ]
         },
         {
-          "type": "html",
-          "name": "oh_oh_medHx_cancerHealthDescription",
-          "html": "<h5>Cancer Conditions</h5><p>The next few questions are about cancer. Cancer is very important when considering your overall health. Answering these questions will help us get a more complete picture of your total health.</p>"
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "oh_oh_medHx_cancerHealthDescription",
+              "html": "<h2>Cancer Conditions</h2>"
+            }
+          ]
         },
         {
           "name": "oh_oh_medHx_cancerTypes",
@@ -483,9 +493,14 @@
     {
       "elements": [
         {
-          "type": "html",
-          "name": "oh_oh_medHx_digestiveDescription",
-          "html": "<h6>Digestive conditions:</h6>\n<p>The next few questions are about digestive conditions. Digestive conditions are very important when considering your\n    overall health. Answering these questions will help us get a more complete picture of your total health.</p>"
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "oh_oh_medHx_digestiveDescription",
+              "html": "<h2>Digestive conditions</h2>"
+            }
+          ]
         },
         {
           "name": "oh_oh_medHx_digestiveConditionsDiagnoses",
@@ -745,9 +760,14 @@
     {
       "elements": [
         {
-          "type": "html",
-          "name": "oh_oh_medHx_kidneyDescription",
-          "html": "<h6>Kidney conditions</h6>\n<p>The next few questions are about kidney conditions. Kidney conditions are very important when considering your overall health. Answering these questions will help us get a more complete picture of your total health.</p>\n"
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "oh_oh_medHx_kidneyDescription",
+              "html": "<h2>Kidney conditions</h2>"
+            }
+          ]
         },
         {
           "name": "oh_oh_medHx_kidneyDiagnosedConditions",
@@ -848,9 +868,14 @@
       "name": "page5",
       "elements": [
         {
-          "name": "oh_oh_medHx_endocrineDescription",
-          "type": "html",
-          "html": "<h6>Hormone/endocrine conditions:</h6>\n<p>The next few questions are about hormone/endocrine conditions. Hormone/endocrine conditions are very important when\n    considering your overall health. Answering these questions will help us get a more complete picture of your total\n    health.</p>\n"
+          "type": "panel",
+          "elements": [
+            {
+              "name": "oh_oh_medHx_endocrineDescription",
+              "type": "html",
+              "html": "<h2>Hormone/endocrine conditions</h2>"
+            }
+          ]
         },
         {
           "name": "oh_oh_medHx_endocrineDiagnosedConditions",
@@ -994,9 +1019,14 @@
     {
       "elements": [
         {
-          "type": "html",
-          "name": "oh_oh_medHx_mentalHealthDescription",
-          "html": "<h6>Mental health and substance use conditions</h6><br/>The next question is about mental health and substance use conditions. Mental health and substance use conditions are very important when considering your overall health. Answering this and any follow up questions will help us get a more complete picture of your total health.\n"
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "oh_oh_medHx_mentalHealthDescription",
+              "html": "<h2>Mental health and substance use conditions</h2>"
+            }
+          ]
         },
         {
           "name": "oh_oh_medHx_mentalHealthDxConditions",
@@ -1193,9 +1223,14 @@
     {
       "elements": [
         {
-          "type": "html",
-          "name": "oh_oh_medHx_lungHealthDescription",
-          "html": "The next few questions are about lung health issues. Lung health is very important when considering your overall health. Answering these questions will help us get a more complete picture of your total health.</p>"
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "oh_oh_medHx_lungHealthDescription",
+              "html": "<h2>Lung Health</h2>"
+            }
+          ]
         },
         {
           "name": "oh_oh_medHx_diagnosedLungConditions",
@@ -1279,9 +1314,14 @@
     {
       "elements": [
         {
-          "type": "html",
-          "name": "oh_oh_medHx_boneJointDiagnosedDescription",
-          "html": "<h6>Bone, joint and muscle conditions</h6>\n<p>The next few questions are about bone, joint and muscle conditions. Bone, joint and muscle conditions are very important when considering your overall health. Answering these questions will help us get a more complete picture of your total health.\n</p>\n"
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "oh_oh_medHx_boneJointDiagnosedDescription",
+              "html": "<h2>Bone, joint and muscle conditions</h2>"
+            }
+          ]
         },
         {
           "name": "oh_oh_medHx_boneJointDiagnosedConditions",
@@ -1493,9 +1533,14 @@
     {
       "elements": [
         {
-          "type": "html",
-          "name": "oh_oh_medHx_infectiousDiagnosedDescription",
-          "html": "<h6>Infectious diseases</h6><br/>The next question is about infectious diseases. Infectious diseases are very important when considering your overall health. Answering this and any follow up questions will help us get a more complete picture of your total health."
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "oh_oh_medHx_infectiousDiagnosedDescription",
+              "html": "<h2>Infectious diseases</h2>"
+            }
+          ]
         },
         {
           "name": "oh_oh_medHx_infectiousDiseasedDiagnosed",
@@ -1835,9 +1880,14 @@
     },{
       "elements": [
         {
-          "type": "html",
-          "name": "oh_oh_medHx_nervousDiagnosedDescription",
-          "html": "<h6>Brain and nervous system conditions</h6><br/>The next question is about brain and nervous system conditions. Brain and nervous system conditions are very important when considering your overall health. Answering this and any follow up questions will help us get a more complete picture of your total health."
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "oh_oh_medHx_nervousDiagnosedDescription",
+              "html": "<h2>Brain and nervous system conditions</h2>"
+            }
+          ]
         },
         {
           "name": "oh_oh_medHx_nervousSystemDx",
@@ -2016,9 +2066,14 @@
     },{
       "elements": [
         {
-          "type": "html",
-          "name": "oh_oh_medHx_hearingEyeDiagnosedDescription",
-          "html": "<h6>Hearing and eye conditions</h6><br/>The next question is about hearing and eye conditions. Hearing and eye conditions are very important when considering your overall health. Answering this and any follow up questions will help us get a more complete picture of your total health."
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "oh_oh_medHx_hearingEyeDiagnosedDescription",
+              "html": "<h2>Hearing and eye conditions</h2>"
+            }
+          ]
         },
         {
           "name": "oh_oh_medHx_hearingEyeDiagnosed",

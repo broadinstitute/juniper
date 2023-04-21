@@ -26,3 +26,7 @@
   font-weight: 600;
 }
 
+.survey-js-survey .sd-html p:only-child {
+  padding-top: 2em;
+  margin-bottom: 0;
+}
