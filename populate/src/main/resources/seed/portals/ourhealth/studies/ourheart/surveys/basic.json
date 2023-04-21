@@ -404,10 +404,6 @@
               {"text": "Khulna", "value": "khulna"},
               {"text": "Mymensingh", "value": "mymensingh"},
               {"text": "Rajshahi", "value": "rajshahi"},
-<<<<<<< HEAD
-              {"text": "Sylhet", "value": "sylhet"},
-=======
->>>>>>> development
               {"text": "Sylhet", "value": "sylhet"}
             ]
           },{
