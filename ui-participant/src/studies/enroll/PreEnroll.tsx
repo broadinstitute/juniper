@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import Api, { PreEnrollmentResponse } from 'api/api'
-import { getAnswerList, getResumeData, useSurveyJSModel } from 'util/surveyJsUtils' // eslint-disable-line max-len
+import { getResumeData, getSurveyJsAnswerList, useSurveyJSModel } from 'util/surveyJsUtils' // eslint-disable-line max-len
 import { useNavigate } from 'react-router-dom'
 import { StudyEnrollContext } from './StudyEnrollRouter'
 
@@ -34,7 +34,7 @@ export default function PreEnrollView({ enrollContext }: { enrollContext: StudyE
     const qualified = surveyModel.getCalculatedValueByName(ENROLLMENT_QUALIFIED_VARIABLE).value
     const responseDto = {
       resumeData: getResumeData(surveyModel, null),
-      fullData: JSON.stringify(getAnswerList(surveyModel)),
+      fullData: JSON.stringify(getSurveyJsAnswerList(surveyModel)),
       creatingParticipantId: null,
       surveyId: survey.id,
       studyEnvironmentId: studyEnv.id,

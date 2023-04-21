@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.transaction.annotation.Transactional;
 
 public class EmailServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -42,6 +43,7 @@ public class EmailServiceTests extends BaseSpringBootTest {
     private ApplicationRoutingPaths routingPaths;
 
     @Test
+    @Transactional
     public void testEmailBuilding() {
         Profile profile = Profile.builder()
                 .familyName("tester")
@@ -79,6 +81,7 @@ public class EmailServiceTests extends BaseSpringBootTest {
     }
 
     @Test
+    @Transactional
     public void testEmailSendOrSkip() {
         // set up an enrollee and valid notification config
         Environment env = new MockEnvironment().withProperty(EmailService.SENDGRID_API_KEY_VAR, "fake");

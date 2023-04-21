@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.model.workflow.DataChangeRecord;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
@@ -12,6 +13,7 @@ import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
+import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import bio.terra.pearl.core.service.workflow.EventService;
 import java.util.*;
 import org.springframework.stereotype.Service;
@@ -25,13 +27,15 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     private ParticipantTaskService participantTaskService;
     private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     private AnswerProcessingService answerProcessingService;
+    private DataChangeRecordService dataChangeRecordService;
     private EventService eventService;
 
     public SurveyResponseService(SurveyResponseDao dao, AnswerService answerService,
                                  EnrolleeService enrolleeService, SurveyService surveyService,
                                  ParticipantTaskService participantTaskService,
                                  StudyEnvironmentSurveyService studyEnvironmentSurveyService,
-                                 AnswerProcessingService answerProcessingService, EventService eventService) {
+                                 AnswerProcessingService answerProcessingService,
+                                 DataChangeRecordService dataChangeRecordService, EventService eventService) {
         super(dao);
         this.answerService = answerService;
         this.enrolleeService = enrolleeService;
@@ -39,6 +43,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         this.participantTaskService = participantTaskService;
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.answerProcessingService = answerProcessingService;
+        this.dataChangeRecordService = dataChangeRecordService;
         this.eventService = eventService;
     }
 
@@ -105,9 +110,9 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
      * Creates a survey response and fires appropriate downstream events. 
      */
     @Transactional
-    public HubResponse<SurveyResponse> submitResponse(SurveyResponse responseDto, UUID participantUserId,
-                                                       PortalParticipantUser ppUser,
-                                                       Enrollee enrollee, UUID taskId) {
+    public HubResponse<SurveyResponse> updateResponse(SurveyResponse responseDto, UUID participantUserId,
+                                                      PortalParticipantUser ppUser,
+                                                      Enrollee enrollee, UUID taskId) {
 
         ParticipantTask task = participantTaskService.authTaskToPortalParticipantUser(taskId, ppUser.getId()).get();
         Survey survey = surveyService.findByStableIdWithMappings(task.getTargetStableId(),
@@ -116,16 +121,14 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
 
         // find or create the SurveyResponse object to attach the snapshot
         SurveyResponse response = findOrCreateResponse(task, enrollee, participantUserId, responseDto);
-        createAnswers(response, responseDto.getAnswers(), survey, enrollee.getId(), participantUserId);
+        createOrUpdateAnswers(responseDto.getAnswers(), response, survey, ppUser);
 
         // process any answers that need to be propagated elsewhere to the data model
         answerProcessingService.processAllAnswerMappings(responseDto.getAnswers(),
                 survey.getAnswerMappings(), ppUser, participantUserId, enrollee.getId(), survey.getId());
 
         // now update the task status and response id
-        task.setStatus(responseDto.isComplete() ? TaskStatus.COMPLETE : TaskStatus.IN_PROGRESS);
-        task.setSurveyResponseId(response.getId());
-        participantTaskService.update(task);
+        updateTaskToResponse(task, response);
 
         EnrolleeSurveyEvent event = eventService.publishEnrolleeSurveyEvent(enrollee, response, ppUser);
         logger.info("SurveyReponse received -- enrollee: {}, surveyStabledId: {}", enrollee.getShortcode(), survey.getStableId());
@@ -143,15 +146,13 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                                                   UUID participantUserId, SurveyResponse responseDto) {
         UUID taskResponseId = task.getSurveyResponseId();
         Survey survey = surveyService.findByStableId(task.getTargetStableId(), task.getTargetAssignedVersion()).get();
-        SurveyResponse response = null;
+        SurveyResponse response;
         if (taskResponseId != null) {
             response = dao.find(taskResponseId).get();
-            if (response.isComplete() != response.isComplete()) {
-                response.setComplete(responseDto.isComplete());
-                // TODO - we should merge, rather than set, resumeData to enable simultaneous editing with page-saving
-                response.setResumeData(responseDto.getResumeData());
-                dao.update(response);
-            }
+            response.setComplete(responseDto.isComplete());
+            // to enable simultaneous editing with page-saving, update this to be a merge, rather than a set
+            response.setResumeData(responseDto.getResumeData());
+            dao.update(response);
         } else {
             SurveyResponse newResponse = SurveyResponse.builder()
                     .enrolleeId(enrollee.getId())
@@ -162,25 +163,76 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                     .build();
             response = dao.create(newResponse);
         }
+
         return response;
+    }
+
+    protected ParticipantTask updateTaskToResponse(ParticipantTask task, SurveyResponse response) {
+        task.setSurveyResponseId(response.getId());
+        task.setStatus(response.isComplete() ? TaskStatus.COMPLETE : TaskStatus.IN_PROGRESS);
+        return participantTaskService.update(task);
     }
 
     /** Creates and attaches the answers to the response. */
     @Transactional
-    protected List<Answer> createAnswers(SurveyResponse response, List<Answer> answers,
-                                         Survey survey, UUID enrolleeId, UUID participantUserId) {
-        List<Answer> newAnswers = new ArrayList<>();
-        for (Answer answer : answers) {
-            answer.setCreatingParticipantUserId(participantUserId);
-            answer.setSurveyResponseId(response.getId());
-            answer.setSurveyStableId(survey.getStableId());
-            answer.setSurveyVersion(survey.getVersion());
-            answer.setEnrolleeId(enrolleeId);
-            Answer savedAnswer = answerService.create(answer);
-            newAnswers.add(savedAnswer);
+    protected List<Answer> createOrUpdateAnswers(List<Answer> answers, SurveyResponse response,
+                                                 Survey survey, PortalParticipantUser ppUser) {
+        List<String> updatedStableIds = answers.stream().map(Answer::getQuestionStableId).toList();
+        // bulk-fetch any existingAnswers that will need to be updated
+        // note that we do not use any answer ids returned by the client -- we'd have to run a query on them anyway
+        // to confirm they were in fact associated with this user & response.  So it's easier to just ignore user-supplied ids and
+        // use the responseId (which we have already validated) and questionStableIds to get existing answers
+        List<Answer> existingAnswers = answerService.findAll(response.getId(), updatedStableIds);
+
+        // put the answers into a map by their questionStableId so we can quickly match them to the submitted answers
+        Map<String, Answer> existingAnswerMap = new HashMap<>();
+        for (Answer answer : existingAnswers) {
+            existingAnswerMap.put(answer.getQuestionStableId(), answer);
         }
-        response.getAnswers().addAll(newAnswers);
-        return newAnswers;
+        List<DataChangeRecord> changeRecords = new ArrayList<>();
+        List<Answer> updatedAnswers = answers.stream().map(answer -> {
+            Answer existing = existingAnswerMap.get(answer.getQuestionStableId());
+            if (existing != null) {
+                return updateAnswer(existing, answer, response, survey, ppUser, changeRecords);
+            }
+            return createAnswer(answer, response, survey, ppUser);
+        }).toList();
+        dataChangeRecordService.bulkCreate(changeRecords);
+        return updatedAnswers;
+    }
+
+    @Transactional
+    protected Answer updateAnswer(Answer existing, Answer updated, SurveyResponse response,
+                                  Survey survey, PortalParticipantUser ppUser, List<DataChangeRecord> changeRecords) {
+        if (existing.valuesEqual(updated)) {
+            // if the values are the same, don't bother with an update
+            return existing;
+        }
+        DataChangeRecord change = DataChangeRecord.builder()
+                .surveyId(survey.getId())
+                .enrolleeId(response.getEnrolleeId())
+                .operationId(response.getId())
+                .responsibleUserId(ppUser.getParticipantUserId())
+                .portalParticipantUserId(ppUser.getId())
+                .modelName(survey.getStableId())
+                .fieldName(existing.getQuestionStableId())
+                .oldValue(existing.valueAsString())
+                .newValue(updated.valueAsString()).build();
+        changeRecords.add(change);
+        existing.setSurveyVersion(survey.getVersion());
+        existing.copyValuesFrom(updated);
+        return answerService.update(existing);
+    }
+
+    @Transactional
+    protected Answer createAnswer(Answer answer, SurveyResponse response,
+                                  Survey survey, PortalParticipantUser ppUser) {
+        answer.setCreatingParticipantUserId(ppUser.getParticipantUserId());
+        answer.setSurveyResponseId(response.getId());
+        answer.setSurveyStableId(survey.getStableId());
+        answer.setSurveyVersion(survey.getVersion());
+        answer.setEnrolleeId(response.getEnrolleeId());
+        return answerService.create(answer);
     }
 
     @Override
@@ -193,6 +245,6 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         if (!survey.getStableId().equals(task.getTargetStableId())) {
             throw new IllegalArgumentException("submitted form does not match assigned task");
         }
-        // TODO check required fields
+        // This is where we'd want to check required fields if we want server-side validation of that
     }
 }

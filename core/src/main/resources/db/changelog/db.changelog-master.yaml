@@ -74,6 +74,9 @@ databaseChangeLog:
   - include:
       file: changesets/2023_04_13_in_progress_saving.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2023_04_15_in_progress_saving_2.yaml
+      relativeToChangelogFile: true
 
 
 

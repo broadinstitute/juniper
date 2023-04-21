@@ -74,7 +74,7 @@ public class AnswerProcessingService {
                                              PortalParticipantUser ppUser) {
         List<AnswerMapping> profileMappings = mappings.stream().filter(mapping ->
                 mapping.getTargetType().equals(AnswerMappingTargetType.PROFILE)).toList();
-        if (profileMappings.isEmpty()) {
+        if (profileMappings.isEmpty() || !hasTargetedChanges(profileMappings, answers, AnswerMappingTargetType.PROFILE)) {
             return new ObjectWithChangeLog<>(null, new ArrayList<>());
         }
         Profile profile = profileService.loadWithMailingAddress(ppUser.getProfileId()).get();
@@ -82,6 +82,18 @@ public class AnswerProcessingService {
                 profile, AnswerMappingTargetType.PROFILE);
         profileService.updateWithMailingAddress(profile);
         return profileChanges;
+    }
+
+    /**
+     * returns true if any answers in the list are specifically for the mapped fields.  Checking this first
+     * saves loading the entire participant profile on every submission
+     * */
+    public boolean hasTargetedChanges(List<AnswerMapping> mappings, List<Answer> answers,
+                                      AnswerMappingTargetType targetType) {
+        HashMap<String, AnswerMapping> fieldTargetMap = new HashMap<>();
+        mappings.stream().filter(mapping -> mapping.getTargetType().equals(targetType))
+                .forEach(mapping -> fieldTargetMap.put(mapping.getQuestionStableId(), mapping));
+        return answers.stream().anyMatch(answer -> fieldTargetMap.containsKey(answer.getQuestionStableId()));
     }
 
     /** returns the target object with the values from the snapshot mapped onto it.  Modifies the passed-in object */
