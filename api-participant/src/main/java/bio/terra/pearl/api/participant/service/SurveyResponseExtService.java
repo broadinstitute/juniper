@@ -59,7 +59,7 @@ public class SurveyResponseExtService {
     Enrollee enrollee =
         authUtilService.authParticipantUserToEnrollee(user.getId(), enrolleeShortcode);
     HubResponse result =
-        surveyResponseService.submitResponse(
+        surveyResponseService.updateResponse(
             responseDto, user.getId(), portalWithPortalUser.ppUser(), enrollee, taskId);
     return result;
   }
