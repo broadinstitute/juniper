@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: "in_progress_saving_2"
+      author: dbush
+      changes:
+        - createIndex:
+            tableName: answer
+            indexName: idx_answer_survey_response
+            columns:
+              - column:
+                  name: survey_response_id

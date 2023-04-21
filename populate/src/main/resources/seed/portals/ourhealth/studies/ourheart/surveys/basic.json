@@ -404,7 +404,10 @@
               {"text": "Khulna", "value": "khulna"},
               {"text": "Mymensingh", "value": "mymensingh"},
               {"text": "Rajshahi", "value": "rajshahi"},
+<<<<<<< HEAD
               {"text": "Sylhet", "value": "sylhet"},
+=======
+>>>>>>> development
               {"text": "Sylhet", "value": "sylhet"}
             ]
           },{
@@ -659,11 +662,11 @@
             "noneText": "None of the above",
             "choices": [
               {"text": "Africa (Nigeria, South Africa, Uganda)", "value": "africa"},
+              {"text": "Asia/Pacific Islands (Fiji, Indonesia, Malaysia, and/or Singapore)", "value":  "asiaPacific"},
               {"text": "Canada", "value": "canada"},
               {"text": "Caribbean (Guyana, Jamaica, Suriname, and Trinidad & Tobago)", "value": "carribean"},
               {"text": "Europe", "value": "europe"},
               {"text": "Middle East", "value": "middleEast"},
-              {"text": "Asia/Pacific Islands (Fiji, Indonesia, Malaysia, and/or Singapore)", "value":  "asiaPacific"},
               {"text": "Prefer not to answer", "value": "preferNoAnswer"}
             ]
           },{
@@ -696,8 +699,8 @@
             "title": "Which of the following best describes your US citizenship status?",
             "visibleIf": "{oh_oh_basic_citizenship} = 'usCitizen'",
             "choices": [
-              {"text": "I am a US citizen by birth.", "value": "unitedStatesBornCitizen"},
-              {"text": "I am a naturalized US citizen.", "value": "naturalizedUnitedStatesCitizen"},
+              {"text": "I am a US citizen by birth.", "value": "usBornCitizen"},
+              {"text": "I am a naturalized US citizen.", "value": "naturalizedUSCitizen"},
               {"text": "Prefer not to answer", "value": "preferNoAnswer"}
             ]
           },{

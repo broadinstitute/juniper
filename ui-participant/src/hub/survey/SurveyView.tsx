@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import Api, {
@@ -13,8 +13,9 @@ import Api, {
 
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import {
-  getAnswerList,
   getResumeData,
+  getSurveyJsAnswerList,
+  getUpdatedAnswers,
   makeSurveyJsData,
   PageNumberControl,
   useRoutablePageNumber,
@@ -27,17 +28,19 @@ import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { withErrorBoundary } from '../../util/ErrorBoundary'
 
 const TASK_ID_PARAM = 'taskId'
+const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
 
 /**
  * display a single survey form to a participant.
  */
-function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, taskId, isEditingPrevious }:
+function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, taskId, activeResponse }:
                          {
-                           form: ConsentForm, enrollee: Enrollee, taskId: string, isEditingPrevious: boolean,
+                           form: ConsentForm, enrollee: Enrollee, taskId: string, activeResponse?: SurveyResponse,
                            resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string
                          }) {
   const navigate = useNavigate()
   const { updateEnrollee } = useUser()
+  const prevSave = useRef(resumableData?.data ?? {})
 
   /** Submit the response to the server */
   const onComplete = () => {
@@ -47,7 +50,9 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
     const responseDto = {
       resumeData: getResumeData(surveyModel, enrollee.participantUserId),
       enrolleeId: enrollee.id,
-      answers: getAnswerList(surveyModel),
+      // submitting re-saves the entire form.  This is as insurance against any answers getting lost or misrepresented
+      // in the diffing process
+      answers: getSurveyJsAnswerList(surveyModel),
       creatingParticipantId: enrollee.participantUserId,
       surveyId: form.id,
       complete: true
@@ -72,13 +77,59 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
       alert('an error occurred')
     })
   }
-  const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData,
+
+  const { surveyModel, refreshSurvey, setSurveyModel } = useSurveyJSModel(form, resumableData,
     onComplete, pager, enrollee.profile)
 
-  if (isEditingPrevious && surveyModel) {
-    // we don't yet support editing prior answers
-    surveyModel.mode = 'display'
+  const saveDiff = () => {
+    // we use setSurveyModel to make sure we have the latest version of it, we're not updating it
+    setSurveyModel(freshSurveyModel => {
+      if (freshSurveyModel) {
+        const updatedAnswers = getUpdatedAnswers(prevSave.current as Record<string, object>, freshSurveyModel.data)
+        if (updatedAnswers.length < 1) {
+          // don't bother saving if there are no changes
+          return freshSurveyModel
+        }
+        const prevPrevSave = prevSave.current
+        prevSave.current = freshSurveyModel.data
+
+        const responseDto = {
+          resumeData: getResumeData(freshSurveyModel, enrollee.participantUserId),
+          enrolleeId: enrollee.id,
+          answers: updatedAnswers,
+          creatingParticipantId: enrollee.participantUserId,
+          surveyId: form.id,
+          complete: activeResponse?.complete ?? false
+        } as SurveyResponse
+        Api.submitSurveyResponse({
+          studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
+          version: form.version, response: responseDto, taskId
+        }).then(() => {
+          // no-op for now.  When we implement live-sync, it will be here.
+        }).catch(() => {
+          // if the operation fails, restore the state from before so the next diff operation will capture the changes
+          // that failed to save this time
+          prevSave.current = prevPrevSave
+        })
+      }
+      return freshSurveyModel
+    })
   }
+
+  useEffect(() => {
+    let timeoutHandle: number
+    // auto-save the survey at the specified interval
+    (function loop() {
+      timeoutHandle = window.setTimeout(() => {
+        saveDiff()
+        loop()
+      }, AUTO_SAVE_INTERVAL)
+    })()
+    return () => {
+      window.clearTimeout(timeoutHandle)
+    }
+  }, [])
+
   // f3f3f3 background is to match surveyJs "modern" theme
   return <div style={{ background: '#f3f3f3' }} className="survey-js-survey">
     <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">{form.name}</h1>
@@ -97,7 +148,7 @@ function PagedSurveyView({ form, activeResponse, enrollee, studyShortcode, taskI
 
   const pager = useRoutablePageNumber()
 
-  return <RawSurveyView enrollee={enrollee} form={form.survey} taskId={taskId} isEditingPrevious={!!activeResponse}
+  return <RawSurveyView enrollee={enrollee} form={form.survey} taskId={taskId} activeResponse={activeResponse}
     resumableData={resumableData} pager={pager} studyShortcode={studyShortcode}/>
 }
 

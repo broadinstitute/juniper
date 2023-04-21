@@ -13,8 +13,8 @@ import Api, {
 
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import {
-  getAnswerList,
   getResumeData,
+  getSurveyJsAnswerList,
   makeSurveyJsData,
   PageNumberControl,
   useRoutablePageNumber,
@@ -52,7 +52,7 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
     const responseDto = {
       resumeData: getResumeData(surveyModel, enrollee.participantUserId),
       enrolleeId: enrollee.id,
-      fullData: JSON.stringify(getAnswerList(surveyModel)),
+      fullData: JSON.stringify(getSurveyJsAnswerList(surveyModel)),
       creatingParticipantId: enrollee.participantUserId,
       consentFormId: form.id,
       // if the form doesn't export an explicit "consented" property, then the default is that they've consented
