@@ -8,8 +8,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 /**
- * logs a discrete change to a participant's persisted data, such as a change to their profile
- * Note that this does *not* log changes to survey answers--those are tracked via AnswerChangeRecord.
+ * logs a discrete change to a participant's persisted data, such as a change to their profile or a survey
  * This is mainly kept for auditing (HIPAA) and troubleshooting purposes.
  * To support application-level functionality (such as undo/redo)
  * more sophisticated mechanisms should likely be used.
@@ -25,8 +24,8 @@ public class DataChangeRecord extends BaseEntity {
     private UUID portalParticipantUserId; // id of the impacted portal participant user
     private UUID operationId; // unique id to group operations
     private UUID surveyId; // survey id of the form source of the change
-    private String modelName;
-    private String fieldName;
+    private String modelName; // either a class (like Profile) or a stableId of a survey
+    private String fieldName; // either a property of a class (like givenName) or a survey question stableId
     private String oldValue;
     private String newValue;
 }
