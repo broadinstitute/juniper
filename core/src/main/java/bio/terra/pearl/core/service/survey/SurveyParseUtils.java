@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 public class SurveyParseUtils {
+    public static final String SURVEY_JS_CHECKBOX_TYPE = "checkbox";
+    public static final String SURVEY_JS_SHOW_OTHER = "showOtherItem";
 /** recursively gets all questions from the given node */
     public static List<JsonNode> getAllQuestions(JsonNode containerElement) {
         List<JsonNode> elements = new ArrayList<>();
@@ -25,13 +27,15 @@ public class SurveyParseUtils {
         return elements;
     }
 
-    public static SurveyQuestionDefinition unmarshalSurveyQuestion(Survey survey, JsonNode question, Map<String, JsonNode> questionTemplates) {
+    public static SurveyQuestionDefinition unmarshalSurveyQuestion(Survey survey, JsonNode question,
+                                                                   Map<String, JsonNode> questionTemplates, int globalOrder) {
 
         SurveyQuestionDefinition definition = SurveyQuestionDefinition.builder()
                 .surveyId(survey.getId())
                 .surveyStableId(survey.getStableId())
                 .surveyVersion(survey.getVersion())
                 .questionStableId(question.get("name").asText())
+                .exportOrder(globalOrder)
                 .build();
 
         //The following fields may either be specified in the question itself,
@@ -42,6 +46,12 @@ public class SurveyParseUtils {
                 question;
 
         definition.setQuestionType(templatedQuestion.get("type").asText());
+        if (definition.getQuestionType().equals(SURVEY_JS_CHECKBOX_TYPE)) {
+            definition.setAllowMultiple(true);
+        }
+        if (templatedQuestion.has(SURVEY_JS_SHOW_OTHER)) {
+            definition.setAllowOtherDescription(templatedQuestion.get(SURVEY_JS_SHOW_OTHER).asBoolean());
+        }
 
         //For normal elements, we'll store the title in the question_text column
         //For HTML elements which don't have a title, we'll store the HTML instead

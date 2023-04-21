@@ -19,7 +19,10 @@ public class SurveyQuestionDefinition extends BaseEntity {
     private String questionStableId;
     private String questionText;
     private String questionType;
+    private boolean allowMultiple = false;
+    private boolean allowOtherDescription = false;
     private String choices;
     @Builder.Default
     private boolean required = false;
+    private Integer exportOrder; // orders the questions on the export spreadsheet
 }
