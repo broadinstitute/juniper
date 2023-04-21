@@ -130,8 +130,9 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
     }
   }, [])
 
-  return <div>
-    <h4 className="text-center mt-2">{form.name}</h4>
+  // f3f3f3 background is to match surveyJs "modern" theme
+  return <div style={{ background: '#f3f3f3' }} className="survey-js-survey">
+    <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">{form.name}</h1>
     {surveyModel && <SurveyComponent model={surveyModel}/>}
   </div>
 }
