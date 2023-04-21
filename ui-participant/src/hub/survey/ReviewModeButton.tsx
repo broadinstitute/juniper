@@ -6,14 +6,15 @@ import { faToggleOff, faToggleOn } from '@fortawesome/free-solid-svg-icons'
 
 /** button for facilitating quick review of survey contents without validation or visibility constraints */
 export default function SurveyReviewModeButton({ surveyModel }: { surveyModel: SurveyModel | null }) {
-  const [isReviewMode, setIsReviewMode] = useState(false)
+  const [isReviewMode, setIsReviewMode] = useState(!!surveyModel?.showInvisibleElements)
   const { envName } = getEnvSpec()
 
   const toggleSurveyVisibilityMode = () => {
     if (surveyModel) {
-      surveyModel.showInvisibleElements = !surveyModel.showInvisibleElements
-      surveyModel.checkErrorsMode = surveyModel.showInvisibleElements ? 'onComplete' : 'onNextPage'
-      setIsReviewMode(!isReviewMode)
+      const newMode = !isReviewMode
+      surveyModel.showInvisibleElements = newMode
+      surveyModel.checkErrorsMode = newMode ? 'onComplete' : 'onNextPage'
+      setIsReviewMode(newMode)
     }
   }
   if (envName === 'live') {
