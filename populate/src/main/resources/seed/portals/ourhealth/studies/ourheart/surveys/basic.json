@@ -352,7 +352,7 @@
             "visibleIf": "{oh_oh_basic_otherEthnicity} = 'yes'",
             "isRequired": true,
             "showNoneItem": true,
-            "noneValue": "none",
+            "noneValue": "notListed",
             "noneText": "Not listed",
             "hideNumber": true,
             "choices": [
@@ -652,18 +652,19 @@
             "name": "oh_oh_basic_settledOtherRegionDetail",
             "type": "checkbox",
             "title": "Have any generations of your family settled in any of the following regions? Check all that apply.",
+            "visibleIf": "{oh_oh_basic_settledOtherRegion} = 'yes'",
             "isRequired": true,
             "showNoneItem": true,
-            "noneValue": "preferNoAnswer",
-            "noneText": "Prefer not to answer",
+            "noneValue": "none",
+            "noneText": "None of the above",
             "choices": [
               {"text": "Africa (Nigeria, South Africa, Uganda)", "value": "africa"},
               {"text": "Canada", "value": "canada"},
               {"text": "Caribbean (Guyana, Jamaica, Suriname, and Trinidad & Tobago)", "value": "carribean"},
               {"text": "Europe", "value": "europe"},
-              {"text": "Fiji", "value": "fiji"},
               {"text": "Middle East", "value": "middleEast"},
-              {"text": "Asia/Pacific Islands (Fiji, Indonesia, Malaysia, and/or Singapore)", "value":  "asiaPacific"}
+              {"text": "Asia/Pacific Islands (Fiji, Indonesia, Malaysia, and/or Singapore)", "value":  "asiaPacific"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
             ]
           },{
             "name": "oh_oh_basic_continuousGenerations",
@@ -671,7 +672,7 @@
             "isRequired": true,
             "title": "We are interested in learning more about the South Asian Diaspora. Which of the following best applies to you?",
             "choices": [
-              {"text": "My great-grandparents or an older generation were the first to leave South Asia.", "value": "greatGrandparentsLeft"},
+              {"text": "My great-grandparents or an older generation were the first to leave South Asia.", "value": "greatGrandparentsOrOlderLeft"},
               {"text": "My grandparents were the first to leave South Asia.", "value": "grandparentsLeft"},
               {"text": "My parents were the first to leave South Asia.)", "value": "parentsLeft"},
               {"text": "I was the first to leave South Asia", "value": "firstToLeave"},
@@ -685,7 +686,7 @@
             "description": "This type of question helps us to ensure we are surveying a diverse group of South Asians in the US",
             "choices": [
               {"text": "US citizen", "value": "usCitizen"},
-              {"text": "Non-United States citizenship", "value": "nonUnitedStatesCitizenship"},
+              {"text": "Non-US citizenship", "value": "nonUSCitizenship"},
               {"text": "Prefer not to answer", "value": "preferNoAnswer"}
             ]
           },{
