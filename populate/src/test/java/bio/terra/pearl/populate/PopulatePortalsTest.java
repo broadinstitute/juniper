@@ -13,6 +13,10 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.service.export.EnrolleeExportService;
+import bio.terra.pearl.core.service.export.ExportFileFormat;
+import bio.terra.pearl.core.service.export.instance.ExportOptions;
+import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
@@ -24,11 +28,11 @@ import bio.terra.pearl.populate.service.PortalPopulator;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +60,8 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
     @Autowired
     private PortalEnvironmentService portalEnvironmentService;
     @Autowired
+    private EnrolleeExportService enrolleeExportService;
+    @Autowired
     private EnrolleeFactory enrolleeFactory;
 
     private void setUpEnvironments() throws IOException {
@@ -71,7 +77,7 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
      */
     @Test
     @Transactional
-    public void testPopulateOurHealth() throws IOException {
+    public void testPopulateOurHealth() throws Exception {
         setUpEnvironments();
         Portal portal = portalPopulator.populate(new FilePopulateContext("portals/ourhealth/portal.json"), true);
         Assertions.assertEquals("ourhealth", portal.getShortcode());
@@ -89,6 +95,17 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
                 .findFirst().get();
         checkOurhealthSurveys(jonas);
         checkOurhealthSiteContent(portal.getId());
+
+        ExportOptions options = new ExportOptions(false, false, ExportFileFormat.TSV, true);
+        List<ModuleExportInfo> moduleInfos = enrolleeExportService.generateModuleInfos(options, portal.getId(), sandboxEnvironmentId);
+        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(portal.getId(), sandboxEnvironmentId, moduleInfos);
+
+        assertThat(exportData, hasSize(3));
+        Map<String, String> jsalkMap = exportData.stream().filter(map -> "OHSALK".equals(map.get("enrollee.shortcode")))
+                .findFirst().get();
+        assertThat(jsalkMap.get("profile.mailingAddress.street1"), equalTo("123 Walnut Street"));
+        assertThat(jsalkMap.get("oh_oh_cardioHx.oh_oh_cardioHx_worriedHeartHealth"),
+                equalTo("Yes, specifically about my heart"));
 
         // now check that we can populate it again, to make sure we don't have deletion issues
         portalPopulator.populate(new FilePopulateContext("portals/ourhealth/portal.json"), true);

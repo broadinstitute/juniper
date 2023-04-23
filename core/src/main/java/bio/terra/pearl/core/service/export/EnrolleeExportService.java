@@ -5,6 +5,7 @@ import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.service.export.instance.ExportOptions;
 import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
@@ -46,8 +47,8 @@ public class EnrolleeExportService {
         this.objectMapper = objectMapper;
     }
 
-    public void export(UUID portalId, UUID studyEnvironmentId, OutputStream os) throws Exception {
-        List<ModuleExportInfo> moduleExportInfos = generateModuleInfos(portalId, studyEnvironmentId);
+    public void export(ExportOptions exportOptions, UUID portalId, UUID studyEnvironmentId, OutputStream os) throws Exception {
+        List<ModuleExportInfo> moduleExportInfos = generateModuleInfos(exportOptions, portalId, studyEnvironmentId);
         var enrolleeMaps = generateExportMaps(portalId, studyEnvironmentId, moduleExportInfos);
         TsvExporter exporter = new TsvExporter(moduleExportInfos, enrolleeMaps);
         exporter.export(os);
@@ -75,15 +76,15 @@ public class EnrolleeExportService {
     }
 
 
-    public List<ModuleExportInfo> generateModuleInfos(UUID portalId, UUID studyEnvironmentId) throws Exception {
+    public List<ModuleExportInfo> generateModuleInfos(ExportOptions exportOptions, UUID portalId, UUID studyEnvironmentId) throws Exception {
         List<ModuleExportInfo> moduleInfo = new ArrayList<>();
-        moduleInfo.add(new EnrolleeFormatter().getModuleExportInfo());
-        moduleInfo.add(new ProfileFormatter().getModuleExportInfo());
-        moduleInfo.addAll(generateSurveyModules(portalId, studyEnvironmentId));
+        moduleInfo.add(new EnrolleeFormatter().getModuleExportInfo(exportOptions));
+        moduleInfo.add(new ProfileFormatter().getModuleExportInfo(exportOptions));
+        moduleInfo.addAll(generateSurveyModules(exportOptions, portalId, studyEnvironmentId));
         return moduleInfo;
     }
 
-    protected List<ModuleExportInfo> generateSurveyModules(UUID portalId, UUID studyEnvironmentId) throws Exception {
+    protected List<ModuleExportInfo> generateSurveyModules(ExportOptions exportOptions, UUID portalId, UUID studyEnvironmentId) throws Exception {
         List<Survey> surveys = surveyDao.findByPortalIdNoContent(portalId);
         List<Survey> latestSurveys = new ArrayList<>();
         // for now, only worry about the latest version for exports
@@ -99,7 +100,7 @@ public class EnrolleeExportService {
         for (Survey survey : latestSurveys) {
             var surveyQuestionDefinitions = surveyQuestionDefinitionDao
                     .findAllBySurveyId(survey.getId());
-            moduleExportInfos.add(surveyFormatter.getModuleExportInfo(survey, surveyQuestionDefinitions));
+            moduleExportInfos.add(surveyFormatter.getModuleExportInfo(exportOptions, survey, surveyQuestionDefinitions));
         }
         return moduleExportInfos;
     }

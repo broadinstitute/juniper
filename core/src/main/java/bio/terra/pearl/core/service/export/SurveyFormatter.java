@@ -1,9 +1,11 @@
 package bio.terra.pearl.core.service.export;
 
 import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.service.export.instance.ExportOptions;
 import bio.terra.pearl.core.service.export.instance.ItemExportInfo;
 import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -54,11 +56,25 @@ public class SurveyFormatter implements ExportFormatter {
     }
 
     @Override
-    public String getColumnHeader(ModuleExportInfo moduleExportInfo, ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice) {
+    public String getColumnKey(ModuleExportInfo moduleExportInfo, ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice) {
         if (isOtherDescription) {
-            return itemExportInfo.getColumnKey() + OTHER_DESCRIPTION_KEY_SUFFIX;
+            return itemExportInfo.getBaseColumnKey() + OTHER_DESCRIPTION_KEY_SUFFIX;
         }
-        return itemExportInfo.getColumnKey();
+        return itemExportInfo.getBaseColumnKey();
+    }
+
+    @Override
+    public String getColumnHeader(ModuleExportInfo moduleExportInfo, ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice) {
+        String baseKey = itemExportInfo.getBaseColumnKey();
+        if (itemExportInfo.getQuestionStableId() != null) {
+            // for now, strip the prefixes to aid in readability.  Once we have multi-source surveys, we can revisit this.
+            String cleanStableId = stripStudyPrefixes(itemExportInfo.getQuestionStableId());
+            baseKey = ExportFormatUtils.getColumnKey(moduleExportInfo.getModuleName(), cleanStableId);
+        }
+        if (isOtherDescription) {
+            return baseKey + OTHER_DESCRIPTION_KEY_SUFFIX;
+        }
+        return baseKey;
     }
 
     @Override
@@ -70,21 +86,22 @@ public class SurveyFormatter implements ExportFormatter {
         return moduleNameHeader + ExportFormatUtils.camelToWordCase(itemExportInfo.getQuestionStableId());
     }
 
-    public ModuleExportInfo getModuleExportInfo(Survey survey, List<SurveyQuestionDefinition> questionDefs) throws JsonProcessingException {
+    public ModuleExportInfo getModuleExportInfo(ExportOptions exportOptions, Survey survey,
+                                                List<SurveyQuestionDefinition> questionDefs) throws JsonProcessingException {
         String moduleName = survey.getStableId();
         List<ItemExportInfo> itemExportInfos = new ArrayList<>();
         itemExportInfos.add(ItemExportInfo.builder()
-                .columnKey(ExportFormatUtils.getColumnKey(moduleName, "lastUpdated"))
+                .baseColumnKey(ExportFormatUtils.getColumnKey(moduleName, "lastUpdated"))
                 .propertyAccessor("lastUpdatedAt")
                 .build());
         itemExportInfos.add(ItemExportInfo.builder()
-                .columnKey(ExportFormatUtils.getColumnKey(moduleName, "complete"))
+                .baseColumnKey(ExportFormatUtils.getColumnKey(moduleName, "complete"))
                 .propertyAccessor("complete")
                 .build());
         List<SurveyQuestionDefinition> sortedDefs = new ArrayList<>(questionDefs);
         sortedDefs.sort(Comparator.comparing(SurveyQuestionDefinition::getExportOrder));
         for (SurveyQuestionDefinition questionDef : sortedDefs) {
-            itemExportInfos.add(getItemExportInfo(moduleName, questionDef));
+            itemExportInfos.add(getItemExportInfo(exportOptions, moduleName, questionDef));
         }
         return ModuleExportInfo.builder()
                 .moduleName(moduleName)
@@ -94,15 +111,25 @@ public class SurveyFormatter implements ExportFormatter {
                 .build();
     }
 
-    public ItemExportInfo getItemExportInfo(String moduleName, SurveyQuestionDefinition questionDef) throws JsonProcessingException {
+    protected String stripStudyPrefixes(String stableId) {
+        if (stableId.lastIndexOf("_") < 0) {
+            return stableId;
+        }
+        return stableId.substring(stableId.lastIndexOf('_') + 1);
+    }
+
+    public ItemExportInfo getItemExportInfo(ExportOptions exportOptions, String moduleName, SurveyQuestionDefinition questionDef)
+            throws JsonProcessingException {
         List<QuestionChoice> choices = new ArrayList<>();
         if (questionDef.getChoices() != null) {
-            choices = objectMapper.readValue(questionDef.getChoices(), choices.getClass());
-
+            choices = objectMapper.readValue(questionDef.getChoices(), new TypeReference<List<QuestionChoice>>(){});
         }
+        boolean splitOptions = exportOptions.splitOptionsIntoColumns() && choices.size() > 0 && questionDef.isAllowMultiple();
         return ItemExportInfo.builder()
-                .columnKey(ExportFormatUtils.getColumnKey(moduleName, questionDef.getQuestionStableId()))
+                .baseColumnKey(ExportFormatUtils.getColumnKey(moduleName, questionDef.getQuestionStableId()))
                 .questionStableId(questionDef.getQuestionStableId())
+                .stableIdsForOptions(exportOptions.stableIdsForOptions())
+                .splitOptionsIntoColumns(splitOptions)
                 .choices(choices)
                 .hasOtherDescription(questionDef.isAllowOtherDescription())
                 .build();
@@ -114,16 +141,16 @@ public class SurveyFormatter implements ExportFormatter {
         if (matchedAnswer == null) {
             return;
         }
-        valueMap.put(itemExportInfo.getColumnKey(), valueAsString(matchedAnswer, itemExportInfo.getChoices(),
+        valueMap.put(itemExportInfo.getBaseColumnKey(), valueAsString(matchedAnswer, itemExportInfo.getChoices(),
                 itemExportInfo.isStableIdsForOptions()));
         if (itemExportInfo.isHasOtherDescription() && matchedAnswer.getOtherDescription() != null) {
-            valueMap.put(itemExportInfo.getColumnKey() + OTHER_DESCRIPTION_KEY_SUFFIX, matchedAnswer.getOtherDescription());
+            valueMap.put(itemExportInfo.getBaseColumnKey() + OTHER_DESCRIPTION_KEY_SUFFIX, matchedAnswer.getOtherDescription());
         }
     }
 
     public String valueAsString(Answer answer, List<QuestionChoice> choices, boolean stableIdForOptions) {
         if (answer.getStringValue() != null) {
-            return formatChoiceValue(answer.getStringValue(), choices, stableIdForOptions, answer);
+            return formatStringValue(answer.getStringValue(), choices, stableIdForOptions, answer);
         } else if (answer.getBooleanValue() != null) {
             return answer.getBooleanValue() ? "true" : "false";
         } else if (answer.getNumberValue() != null) {
@@ -134,8 +161,8 @@ public class SurveyFormatter implements ExportFormatter {
         return "";
     }
 
-    public String formatChoiceValue(String value, List<QuestionChoice> choices, boolean stableIdForOptions, Answer answer) {
-        if (stableIdForOptions) {
+    public String formatStringValue(String value, List<QuestionChoice> choices, boolean stableIdForOptions, Answer answer) {
+        if (stableIdForOptions || choices == null || choices.isEmpty()) {
             return value;
         }
         QuestionChoice matchedChoice = choices.stream().filter(choice ->
@@ -156,7 +183,7 @@ public class SurveyFormatter implements ExportFormatter {
             // for now, the only object values we support are arrays of strings
             String[] answerArray = objectMapper.readValue(answer.getObjectValue(), String[].class);
 
-            return Arrays.stream(answerArray).map(ansValue -> formatChoiceValue(ansValue, choices, stableIdForOptions, answer))
+            return Arrays.stream(answerArray).map(ansValue -> formatStringValue(ansValue, choices, stableIdForOptions, answer))
                     .collect(Collectors.joining(", "));
         } catch (Exception e) {
             logger.warn("Error parsing answer object value enrollee: {}, question: {}, answer: {}",

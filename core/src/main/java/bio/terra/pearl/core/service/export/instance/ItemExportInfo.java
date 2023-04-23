@@ -15,6 +15,6 @@ public class ItemExportInfo {
     // for now, we support bean property accesses, or question stableId answer access
     private String propertyAccessor;
     private String questionStableId;
-    private String columnKey;
+    private String baseColumnKey;
     private List<QuestionChoice> choices = null;
 }

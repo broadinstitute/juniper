@@ -27,13 +27,14 @@ public class TsvExporter {
      */
     public void export(OutputStream os) throws IOException {
         PrintWriter printWriter = new PrintWriter(os);
+        List<String> columnKeys = getColumnKeys();
         List<String> headerRowValues = getHeaderRow();
         List<String> subHeaderRowValues = getSubHeaderRow();
 
         printWriter.println(getRowString(headerRowValues));
         printWriter.println(getRowString(subHeaderRowValues));
         for (Map<String, String> enrolleeMap : enrolleeMaps) {
-            List<String> rowValues = getRowValues(enrolleeMap, headerRowValues);
+            List<String> rowValues = getRowValues(enrolleeMap, columnKeys);
             String rowString = getRowString(rowValues);
             printWriter.println(rowString);
         }
@@ -41,7 +42,16 @@ public class TsvExporter {
         // do not close os -- that's the caller's responsibility
     }
 
-    /** gets the header row - uses getColumnHeader from ExportFormatter*/
+    /** gets the column keys - uses getColumnKey from ExportFormatter */
+    protected List<String> getColumnKeys() {
+        List<String> columnKeys = new ArrayList<>();
+        applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription) -> {
+            columnKeys.add(moduleExportInfo.getFormatter().getColumnKey(moduleExportInfo, itemExportInfo, isOtherDescription, null));
+        });
+        return columnKeys;
+    }
+
+    /** gets the header row - uses getColumnHeader from ExportFormatter */
     protected List<String> getHeaderRow() {
         List<String> headers = new ArrayList<>();
         applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription) -> {

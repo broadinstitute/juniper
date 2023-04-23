@@ -11,5 +11,5 @@ databaseChangeLog:
             tableName: survey_question_definition
             columns:
               - column: { name: allow_multiple , type: boolean, defaultValueBoolean: false, constraints: { nullable: false }}
-              - column: { name: allow_other_description , type: integer }
+              - column: { name: allow_other_description , type: boolean, defaultValueBoolean: false, constraints: { nullable: false }}
               - column: { name: export_order , type: integer }

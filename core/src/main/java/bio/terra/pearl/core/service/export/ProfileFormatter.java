@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.export;
 import bio.terra.pearl.core.model.participant.MailingAddress;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.survey.QuestionChoice;
+import bio.terra.pearl.core.service.export.instance.ExportOptions;
 import bio.terra.pearl.core.service.export.instance.ItemExportInfo;
 import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import java.util.List;
@@ -25,8 +26,13 @@ public class ProfileFormatter implements ExportFormatter {
     }
 
     @Override
+    public String getColumnKey(ModuleExportInfo moduleExportInfo, ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice) {
+        return itemExportInfo.getBaseColumnKey();
+    }
+
+    @Override
     public String getColumnHeader(ModuleExportInfo moduleExportInfo, ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice) {
-        return itemExportInfo.getColumnKey();
+        return itemExportInfo.getBaseColumnKey();
     }
 
     @Override
@@ -34,7 +40,7 @@ public class ProfileFormatter implements ExportFormatter {
         return ExportFormatUtils.camelToWordCase(itemExportInfo.getPropertyAccessor());
     }
 
-    public ModuleExportInfo getModuleExportInfo() throws Exception {
+    public ModuleExportInfo getModuleExportInfo(ExportOptions exportOptions) throws Exception {
         List<ItemExportInfo> itemInfo = ExportFormatUtils.getIncludedProperties(Profile.class, PROFILE_EXCLUDED_PROPERTIES)
                 .stream().map(propName -> ExportFormatUtils.getItemInfoForBeanProp(PROFILE_MODULE_NAME, propName))
                 .collect(Collectors.toList());

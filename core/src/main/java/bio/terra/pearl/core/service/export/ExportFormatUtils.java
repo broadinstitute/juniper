@@ -6,7 +6,7 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,7 +32,7 @@ public class ExportFormatUtils {
 
     public static String formatInstant(Instant instant) {
         return DateTimeFormatter.ofPattern(ANALYSIS_DATE_TIME_FORMAT)
-                .withZone(ZoneId.systemDefault()).format(instant);
+                .withZone(ZoneOffset.UTC).format(instant);
     }
 
     public static String formatForExport(Object value) {
@@ -73,13 +73,13 @@ public class ExportFormatUtils {
             // do nothing
         }
         String columnValue = ExportFormatUtils.formatForExport(value);
-        valueMap.put(itemExportInfo.getColumnKey(), columnValue);
+        valueMap.put(itemExportInfo.getBaseColumnKey(), columnValue);
     }
 
     public static ItemExportInfo getItemInfoForBeanProp(String moduleName, String propertyName) {
         return ItemExportInfo.builder()
                 .propertyAccessor(propertyName)
-                .columnKey(moduleName + COLUMN_NAME_DELIMITER + propertyName)
+                .baseColumnKey(moduleName + COLUMN_NAME_DELIMITER + propertyName)
                 .build();
     }
 

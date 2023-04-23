@@ -98,7 +98,7 @@ public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> imp
         //Unmarshal the questions into actual definitions that we can store in the DB.
         //If the question uses a template, resolve that.
         List<SurveyQuestionDefinition> questionDefinitions = new ArrayList<>();
-        for (int i = 0; i < questionDefinitions.size(); i++) {
+        for (int i = 0; i < questions.size(); i++) {
             JsonNode question = questions.get(i);
             questionDefinitions.add(SurveyParseUtils.unmarshalSurveyQuestion(survey, question,
                     questionTemplates, i));
