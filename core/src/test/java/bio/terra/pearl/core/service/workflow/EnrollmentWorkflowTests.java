@@ -59,7 +59,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         assertThat(enrollee.getShortcode(), notNullValue());
         assertThat(enrollee.getParticipantUserId(), equalTo(userBundle.user().getId()));
 
-        assertThat(enrolleeService.findByStudyEnvironmentAdminLoad(studyEnv.getId()), contains(enrollee));
+        assertThat(enrolleeService.findByStudyEnvironment(studyEnv.getId()), contains(enrollee));
 
         // Because the study environment had a consent attached, a consent task should be created on enrollment
         assertThat(enrollee.getParticipantTasks(), hasSize(1));

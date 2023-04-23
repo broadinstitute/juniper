@@ -1,22 +1,168 @@
 package bio.terra.pearl.core.service.export;
 
-import bio.terra.pearl.core.model.survey.Answer;
-import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.service.export.instance.ItemExportInfo;
+import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.*;
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class SurveyFormatter {
+public class SurveyFormatter implements ExportFormatter {
+    private static final Logger logger = LoggerFactory.getLogger(SurveyFormatter.class);
+    public static String OTHER_DESCRIPTION_KEY_SUFFIX = "_description";
+    private ObjectMapper objectMapper;
 
-    public static Map<String, String> formatAllResponses(List<SurveyResponse> responses,
-                                                       List<SurveyQuestionDefinition> definitions,
-                                                       List<Answer> answers) {
-        Map<String, SurveyQuestionDefinition> questionsByStableId = new HashMap<>();
-        for (SurveyQuestionDefinition questionDef : definitions) {
-            questionsByStableId.put(questionDef.getQuestionStableId(), questionDef);
+    public SurveyFormatter(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
+    @Override
+    public Map<String, String> toStringMap(EnrolleeExportData exportData, ModuleExportInfo moduleInfo) throws Exception {
+        Map<String, String> valueMap = new HashMap<>();
+        String surveyStableId = moduleInfo.getModuleName();
+        List<Answer> answers = exportData.getAnswers().stream().filter(ans ->
+            Objects.equals(ans.getSurveyStableId(), surveyStableId)
+        ).toList();
+        // map the answers by question stable id for easier access
+        Map<String, Answer> answerMap = new HashMap<>();
+        for (Answer answer : answers) {
+            answerMap.put(answer.getQuestionStableId(), answer);
         }
+        List<UUID> responseIds = answers.stream().map(Answer::getSurveyResponseId).distinct().toList();
+        if (responseIds.isEmpty()) {
+            return valueMap;
+        }
+        // for now, we only support exporting a single response per survey, so just grab the one that matches the first id
+        SurveyResponse matchedResponse = exportData.getResponses().stream().filter(response ->
+                response.getId().equals(responseIds.get(0))).findAny().orElse(null);
+        if (matchedResponse == null) {
+            return valueMap;
+        }
+        for (ItemExportInfo itemExportInfo : moduleInfo.getItems()) {
+            if (itemExportInfo.getPropertyAccessor() != null) {
+                // it's a property of the SurveyResponse
+                ExportFormatUtils.addPropertyForExport(matchedResponse, itemExportInfo, valueMap);
+            } else {
+                // it's an answer value
+                addAnswerToMap(moduleInfo, itemExportInfo, answerMap, valueMap);
+            }
+        }
+        return valueMap;
+    }
 
+    @Override
+    public String getColumnHeader(ModuleExportInfo moduleExportInfo, ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice) {
+        if (isOtherDescription) {
+            return itemExportInfo.getColumnKey() + OTHER_DESCRIPTION_KEY_SUFFIX;
+        }
+        return itemExportInfo.getColumnKey();
+    }
+
+    @Override
+    public String getColumnSubHeader(ModuleExportInfo moduleExportInfo, ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice) {
+        String moduleNameHeader = ExportFormatUtils.camelToWordCase(moduleExportInfo.getModuleName());
+        if (itemExportInfo.getPropertyAccessor() != null) {
+            return moduleNameHeader + ExportFormatUtils.camelToWordCase(itemExportInfo.getPropertyAccessor());
+        }
+        return moduleNameHeader + ExportFormatUtils.camelToWordCase(itemExportInfo.getQuestionStableId());
+    }
+
+    public ModuleExportInfo getModuleExportInfo(Survey survey, List<SurveyQuestionDefinition> questionDefs) throws JsonProcessingException {
+        String moduleName = survey.getStableId();
+        List<ItemExportInfo> itemExportInfos = new ArrayList<>();
+        itemExportInfos.add(ItemExportInfo.builder()
+                .columnKey(ExportFormatUtils.getColumnKey(moduleName, "lastUpdated"))
+                .propertyAccessor("lastUpdatedAt")
+                .build());
+        itemExportInfos.add(ItemExportInfo.builder()
+                .columnKey(ExportFormatUtils.getColumnKey(moduleName, "complete"))
+                .propertyAccessor("complete")
+                .build());
+        List<SurveyQuestionDefinition> sortedDefs = new ArrayList<>(questionDefs);
+        sortedDefs.sort(Comparator.comparing(SurveyQuestionDefinition::getExportOrder));
+        for (SurveyQuestionDefinition questionDef : sortedDefs) {
+            itemExportInfos.add(getItemExportInfo(moduleName, questionDef));
+        }
+        return ModuleExportInfo.builder()
+                .moduleName(moduleName)
+                .maxNumRepeats(1)
+                .items(itemExportInfos)
+                .formatter(this)
+                .build();
+    }
+
+    public ItemExportInfo getItemExportInfo(String moduleName, SurveyQuestionDefinition questionDef) throws JsonProcessingException {
+        List<QuestionChoice> choices = new ArrayList<>();
+        if (questionDef.getChoices() != null) {
+            choices = objectMapper.readValue(questionDef.getChoices(), choices.getClass());
+
+        }
+        return ItemExportInfo.builder()
+                .columnKey(ExportFormatUtils.getColumnKey(moduleName, questionDef.getQuestionStableId()))
+                .questionStableId(questionDef.getQuestionStableId())
+                .choices(choices)
+                .hasOtherDescription(questionDef.isAllowOtherDescription())
+                .build();
+    }
+
+    public void addAnswerToMap(ModuleExportInfo moduleInfo, ItemExportInfo itemExportInfo,
+                               Map<String, Answer> answerMap, Map<String, String> valueMap) {
+        Answer matchedAnswer = answerMap.get(itemExportInfo.getQuestionStableId());
+        if (matchedAnswer == null) {
+            return;
+        }
+        valueMap.put(itemExportInfo.getColumnKey(), valueAsString(matchedAnswer, itemExportInfo.getChoices(),
+                itemExportInfo.isStableIdsForOptions()));
+        if (itemExportInfo.isHasOtherDescription() && matchedAnswer.getOtherDescription() != null) {
+            valueMap.put(itemExportInfo.getColumnKey() + OTHER_DESCRIPTION_KEY_SUFFIX, matchedAnswer.getOtherDescription());
+        }
+    }
+
+    public String valueAsString(Answer answer, List<QuestionChoice> choices, boolean stableIdForOptions) {
+        if (answer.getStringValue() != null) {
+            return formatChoiceValue(answer.getStringValue(), choices, stableIdForOptions, answer);
+        } else if (answer.getBooleanValue() != null) {
+            return answer.getBooleanValue() ? "true" : "false";
+        } else if (answer.getNumberValue() != null) {
+            return answer.getNumberValue().toString();
+        } else if (answer.getObjectValue() != null) {
+            return formatObjectValue(answer.getStringValue(), choices, stableIdForOptions, answer);
+        }
+        return "";
+    }
+
+    public String formatChoiceValue(String value, List<QuestionChoice> choices, boolean stableIdForOptions, Answer answer) {
+        if (stableIdForOptions) {
+            return value;
+        }
+        QuestionChoice matchedChoice = choices.stream().filter(choice ->
+                Objects.equals(choice.stableId(), value)).findFirst().orElse(null);
+        if (matchedChoice == null) {
+            logger.warn("Unmatched answer option -  enrollee: {}, question: {}, answer: {}",
+                    answer.getEnrolleeId(), answer.getQuestionStableId(), answer.getId());
+            return value;
+        }
+        return matchedChoice.text();
+    }
+
+    public String formatObjectValue(String answerValue, List<QuestionChoice> choices, boolean stableIdForOptions, Answer answer) {
+        if (stableIdForOptions) {
+            return answerValue;
+        }
+        try {
+            // for now, the only object values we support are arrays of strings
+            String[] answerArray = objectMapper.readValue(answer.getObjectValue(), String[].class);
+
+            return Arrays.stream(answerArray).map(ansValue -> formatChoiceValue(ansValue, choices, stableIdForOptions, answer))
+                    .collect(Collectors.joining(", "));
+        } catch (Exception e) {
+            logger.warn("Error parsing answer object value enrollee: {}, question: {}, answer: {}",
+                    answer.getEnrolleeId(), answer.getQuestionStableId(), answer.getId());
+            return "<PARSE ERROR>";
+        }
     }
 
 

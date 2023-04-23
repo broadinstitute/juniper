@@ -83,7 +83,7 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
                         sEnv -> sEnv.getEnvironmentName().equals(EnvironmentName.sandbox))
                 .findFirst().get().getId();
 
-        List<Enrollee> enrollees = enrolleeService.findByStudyEnvironmentAdminLoad(sandboxEnvironmentId);
+        List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
         Assertions.assertEquals(3, enrollees.size());
         Enrollee jonas = enrollees.stream().filter(enrollee -> "OHSALK".equals(enrollee.getShortcode()))
                 .findFirst().get();
@@ -138,7 +138,7 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
                         sEnv -> sEnv.getEnvironmentName().equals(EnvironmentName.sandbox))
                 .findFirst().get().getId();
 
-        List<Enrollee> enrollees = enrolleeService.findByStudyEnvironmentAdminLoad(sandboxEnvironmentId);
+        List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
         Assertions.assertEquals(3, enrollees.size());
         Enrollee gertrude = enrollees.stream().filter(enrollee -> "HHGELI".equals(enrollee.getShortcode()))
                 .findFirst().get();
