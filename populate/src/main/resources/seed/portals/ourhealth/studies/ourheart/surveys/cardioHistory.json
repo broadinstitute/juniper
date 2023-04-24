@@ -70,7 +70,7 @@
               {
                 "type": "html",
                 "name": "oh_oh_cardioHx_heartHealthPerceptionSection",
-                "html": "<h2>Heart health perception</h2>"
+                "html": "<h2>Heart Health Perception</h2>"
               }
             ]
           },
@@ -166,7 +166,7 @@
               {
                 "type": "html",
                 "name": "oh_oh_cardioHx_heartDescription",
-                "html": "<h2>Heart and blood conditions</h2>"
+                "html": "<h2>Heart and Blood Conditions</h2>"
               }
             ]
           },
@@ -594,7 +594,7 @@
               {
                 "type": "html",
                 "name": "oh_oh_cardioHx_metabolicHeader",
-                "html": "<h2>Metabolic health conditions</h2>"
+                "html": "<h2>Metabolic Health Conditions</h2>"
               }
             ]
           },
@@ -739,7 +739,7 @@
               {
                 "type": "html",
                 "name": "oh_oh_cardioHx_womenHealthDescription",
-                "html": "<h2>Women’s health</h2>"
+                "html": "<h2>Women’s Health</h2>"
               }
             ]
           },
