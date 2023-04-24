@@ -26,6 +26,7 @@ import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { withErrorBoundary } from '../../util/ErrorBoundary'
+import SurveyReviewModeButton from './ReviewModeButton'
 
 const TASK_ID_PARAM = 'taskId'
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
@@ -132,10 +133,12 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
 
   // f3f3f3 background is to match surveyJs "modern" theme
   return <div style={{ background: '#f3f3f3' }} className="survey-js-survey">
+    <SurveyReviewModeButton surveyModel={surveyModel}/>
     <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">{form.name}</h1>
     {surveyModel && <SurveyComponent model={surveyModel}/>}
   </div>
 }
+
 
 /** handles paging the form */
 function PagedSurveyView({ form, activeResponse, enrollee, studyShortcode, taskId }:

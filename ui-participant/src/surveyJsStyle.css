@@ -30,3 +30,9 @@
   padding-top: 2em;
   margin-bottom: 0;
 }
+
+/* in "review mode" we don't want invisible elements to be greyed out --
+   they will still be fully hidden in regular mode */
+.sd-element--invisible {
+  opacity: 1;
+}
