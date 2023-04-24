@@ -29,7 +29,7 @@ public class ParticipantTask extends BaseEntity {
     private String targetStableId;
     private int targetAssignedVersion;
     private int taskOrder;
-    private boolean blocksHub;
+    private boolean blocksHub; // whether this task blocks the participant from doing optional tasks in the hub
     private UUID studyEnvironmentId;
     private UUID enrolleeId;
     private UUID portalParticipantUserId;
