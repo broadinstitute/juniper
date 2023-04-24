@@ -22,6 +22,9 @@ import { Survey as SurveyJSComponent } from 'survey-react-ui'
 import { Answer, Profile, SurveyJSForm, SurveyJsResumeData, UserResumeData } from 'api/api'
 import { useSearchParams } from 'react-router-dom'
 import { getSurveyElementList } from './pearlSurveyUtils'
+import _union from 'lodash/union'
+import _keys from 'lodash/keys'
+import _isEqual from 'lodash/isEqual'
 
 
 // See https://surveyjs.io/form-library/examples/control-data-entry-formats-with-input-masks/reactjs#content-code
@@ -210,7 +213,7 @@ export type SurveyJsItem = {
   displayValue: string
 }
 
-type ValueType = string | boolean | number | object | null
+export type SurveyJsValueType = string | boolean | number | object | null
 
 /** get resumeData suitable for including on a form response, current a map of userId -> data */
 export function getResumeData(surveyJSModel: SurveyModel, participantUserId: string | null): string {
@@ -222,7 +225,7 @@ export function getResumeData(surveyJSModel: SurveyModel, participantUserId: str
 }
 
 /** converts the given model into a list of answers, or an empty array if undefined */
-export function getAnswerList(surveyJSModel: SurveyModel): Answer[] {
+export function getSurveyJsAnswerList(surveyJSModel: SurveyModel): Answer[] {
   if (!surveyJSModel.data) {
     return []
   }
@@ -231,7 +234,7 @@ export function getAnswerList(surveyJSModel: SurveyModel): Answer[] {
     .filter(([key]) => {
       return surveyJSModel.getQuestionByName(key)?.getType() !== 'html'
     })
-    .map(([key, value]) => mapToAnswer(value as ValueType, key))
+    .map(([key, value]) => makeAnswer(value as SurveyJsValueType, key))
 }
 
 /** convert a list of answers and resumeData into the resume data format surveyJs expects */
@@ -239,7 +242,7 @@ export function makeSurveyJsData(resumeData: string | undefined, answers: Answer
   SurveyJsResumeData | null {
   answers = answers ?? []
   const answerHash = answers.reduce(
-    (hash: Record<string, ValueType>, answer: Answer) => {
+    (hash: Record<string, SurveyJsValueType>, answer: Answer) => {
       if (answer.objectValue) {
         hash[answer.questionStableId] = JSON.parse(answer.objectValue)
       } else {
@@ -260,16 +263,15 @@ export function makeSurveyJsData(resumeData: string | undefined, answers: Answer
 }
 
 /** return an Answer for the given value.  This should be updated to take some sort of questionType/dataType param */
-function mapToAnswer(value: ValueType, questionStableId: string): Answer {
+export function makeAnswer(value: SurveyJsValueType, questionStableId: string): Answer {
   const answer: Answer = { questionStableId }
   if (typeof value === 'string') {
     answer.stringValue = value
   } else if (typeof value == 'number') {
     answer.numberValue = value
   } else if (typeof value == 'boolean') {
-    // for now, we don't have a use case for booleans, so just convert them to strings
     answer.booleanValue = value
-  } else {
+  } else if (value) {
     answer.objectValue = JSON.stringify(value)
   }
   return answer
@@ -322,4 +324,13 @@ export function extractSurveyContent(survey: SurveyJSForm) {
 
 type PearlQuestion = Question & {
   questionTemplateName?: string
+}
+
+/** compares two surveyModel.data objects and returns a list of answers corresponding to updates */
+export function getUpdatedAnswers(original: Record<string, SurveyJsValueType>,
+  updated: Record<string, SurveyJsValueType>): Answer[] {
+  const allKeys = _union(_keys(original), _keys(updated))
+  const updatedAnswers = allKeys.filter(key => !_isEqual(original[key], updated[key]))
+    .map(key => makeAnswer(updated[key], key))
+  return updatedAnswers
 }

@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 public class MailingListContactServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -20,6 +21,7 @@ public class MailingListContactServiceTests extends BaseSpringBootTest {
     private MailingListContactFactory mailingListContactFactory;
 
     @Test
+    @Transactional
     public void testCrud() {
         var portalEnv = portalEnvironmentFactory.buildPersisted("testMailingListCrud");
         var portalEnv2 = portalEnvironmentFactory.buildPersisted("testMailingListCrud");

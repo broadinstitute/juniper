@@ -9,3 +9,24 @@
 .sjs_sp_container canvas {
   border: 1px dashed var(--border, #d6d6d6);
 }
+
+.sd-page__empty-header {
+  padding: 1em;
+}
+
+.survey-js-survey h2 {
+  padding-top: 1em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
+.survey-js-survey h2:last-child {
+  padding-top: 1em;
+  margin-bottom: 0em;
+  font-weight: 600;
+}
+
+.survey-js-survey .sd-html p:only-child {
+  padding-top: 2em;
+  margin-bottom: 0;
+}

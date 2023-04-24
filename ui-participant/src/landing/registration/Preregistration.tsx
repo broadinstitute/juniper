@@ -1,6 +1,6 @@
 import React from 'react'
 import Api, { PreregistrationResponse, Survey } from 'api/api'
-import { getAnswerList, getResumeData, useSurveyJSModel } from 'util/surveyJsUtils'
+import { getResumeData, getSurveyJsAnswerList, useSurveyJSModel } from 'util/surveyJsUtils'
 import { RegistrationContextT } from './PortalRegistrationRouter'
 import { useNavigate } from 'react-router-dom'
 
@@ -21,7 +21,7 @@ export default function PreRegistration({ registrationContext }: { registrationC
     }
     const responseDto = {
       resumeData: getResumeData(surveyModel, null),
-      fullData: JSON.stringify(getAnswerList(surveyModel)),
+      fullData: JSON.stringify(getSurveyJsAnswerList(surveyModel)),
       creatingParticipantId: null,
       surveyId: survey.id,
       qualified: surveyModel.getCalculatedValueByName('qualified').value

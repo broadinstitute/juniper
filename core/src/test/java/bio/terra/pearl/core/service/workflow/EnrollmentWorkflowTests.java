@@ -125,7 +125,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                         .complete(true)
                         .resumeData("stuff")
                         .build();
-        hubResponse = surveyResponseService.submitResponse(survResponseDto, userBundle.user().getId(), userBundle.ppUser(),
+        hubResponse = surveyResponseService.updateResponse(survResponseDto, userBundle.user().getId(), userBundle.ppUser(),
                 enrollee, surveyTasks.get(0).getId());
         List<ParticipantTask> updatedTasks = participantTaskService.findByEnrolleeId(enrollee.getId());
         assertThat(updatedTasks, containsInAnyOrder(hubResponse.getTasks().toArray()));

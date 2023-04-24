@@ -55,14 +55,24 @@
         "name": "page1",
         "elements": [
           {
-            "type": "html",
-            "name": "oh_oh_cardioHx_descriptionText",
-            "html": "<p>This survey asks questions about your Cardiometabolic Medical History. This is to better understand how it may affect\n    health.\n    It will take about 5-10 minutes to answer these questions. Please answer each question as honestly as possible.\n    Some of the questions may be sensitive. You can choose not to answer. There are no right or wrong answers to any of\n    the questions. It is important that you answer as many questions as you can. We are looking for your own answers,\n    not what you think your doctors, family, or friends want you to say.</p>\n\n<p>Do not feel like you have to spend a long time on each question. The first answer that comes to you is usually the\n    best one. If you are not sure how to answer a question, choose the best answer from the options given. The first few\n    questions ask about your perception of your heart health. </p>"
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "oh_oh_cardioHx_descriptionText",
+                "html": "<p>This survey asks questions about your Cardiometabolic Medical History. This is to better understand how it may affect health. It will take about 5-10 minutes to answer these questions. Please answer each question as honestly as possible. We are looking for your own answers, not what you think your doctors, family, or friends want you to say. Do not feel like you have to spend a long time on each question. The first answer that comes to you is usually the best one. </p>"
+              }
+            ]
           },
           {
-            "type": "html",
-            "name": "oh_oh_cardioHx_heartHealthPerceptionSection",
-            "html": "<h6>Heart health perception</h6>"
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "oh_oh_cardioHx_heartHealthPerceptionSection",
+                "html": "<h2>Heart health perception</h2>"
+              }
+            ]
           },
           {
             "name": "oh_oh_cardioHx_worriedHeartHealth",
@@ -151,9 +161,14 @@
         "name": "page2",
         "elements": [
           {
-            "type": "html",
-            "name": "oh_oh_cardioHx_heartDescription",
-            "html": "<h6>Heart and blood conditions:</h6>\n<p>The next few questions are about heart health issues. Heart health is very important when considering your overall\n    health. Answering these questions will help us get a more complete picture of your total health. </p>"
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "oh_oh_cardioHx_heartDescription",
+                "html": "<h2>Heart and blood conditions</h2>"
+              }
+            ]
           },
           {
             "name": "oh_oh_cardioHx_diagnosedHeartConditions",
@@ -574,9 +589,14 @@
       },{
         "elements": [
           {
-            "type": "html",
-            "name": "oh_oh_cardioHx_metabolicHeader",
-            "html": "<h6>Metabolic health conditions:</h6> \n\nThe next question is about metabolic health issues. Metabolic health is very important when considering your overall health. Answering this and any follow up questions will help us get a more complete picture of your total health. \n"
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "oh_oh_cardioHx_metabolicHeader",
+                "html": "<h2>Metabolic health conditions</h2>"
+              }
+            ]
           },
           {
             "name": "oh_oh_cardioHx_metabolicDiagnosis",
@@ -714,9 +734,14 @@
         "visibleIf": "{profile.sexAtBirth} = 'female'",
         "elements": [
           {
-            "type": "html",
-            "name": "oh_oh_cardioHx_womenHealthDescription",
-            "html": "<h6>Women’s Health</h6>\n<p>The next few questions are about women’s health issues. Women’s health is very important when considering your overall health. Answering these questions will help us get a more complete picture of your total health.</p>"
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "oh_oh_cardioHx_womenHealthDescription",
+                "html": "<h2>Women’s health</h2>"
+              }
+            ]
           },
           {
             "name": "oh_oh_cardioHx_ageFirstMenses",
