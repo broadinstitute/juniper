@@ -2,7 +2,6 @@ package bio.terra.pearl.api.admin.service;
 
 import bio.terra.pearl.core.service.datarepo.DataRepoExportService;
 import java.util.concurrent.TimeUnit;
-
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -57,9 +56,9 @@ public class ScheduledDataRepoExportService {
 
   @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 240, initialDelay = 1)
   @SchedulerLock(
-          name = "DataRepoExportService.ingestStudyEnvironmentDatasets",
-          lockAtMostFor = "10m",
-          lockAtLeastFor = "5m")
+      name = "DataRepoExportService.ingestStudyEnvironmentDatasets",
+      lockAtMostFor = "10m",
+      lockAtLeastFor = "5m")
   public void ingestStudyEnvironmentDatasets() {
     if (isTdrConfigured()) {
       logger.info("Ingesting datasets...");
