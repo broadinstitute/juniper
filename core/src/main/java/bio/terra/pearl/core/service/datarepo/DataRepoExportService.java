@@ -162,6 +162,7 @@ public class DataRepoExportService {
                             .studyEnvironmentId(job.getStudyEnvironmentId())
                             .datasetId(UUID.fromString(jobResult.get("id").toString()))
                             .datasetName(job.getDatasetName())
+                            .lastExported(Instant.ofEpochSecond(0))
                             .build();
 
                     datasetService.create(dataset);
