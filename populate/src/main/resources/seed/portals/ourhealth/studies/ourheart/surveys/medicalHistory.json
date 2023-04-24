@@ -8,45 +8,110 @@
   "showProgressBar": "bottom",
   "questionTemplates": [
     {
-      "name": "oh_oh_medHx_stillSeeingProvider",
-      "type": "radiogroup",
-      "title": "Are you still seeing a doctor or health care provider for this condition?",
-      "choices": [
-        {
-          "text": "Yes",
-          "value": "yes"
-        },
-        {
-          "text": "No",
-          "value": "no"
-        }
-      ]
-    },
-    {
       "name": "oh_oh_medHx_ageAboutAtDiagnosis",
-      "type": "radiogroup",
+      "type": "dropdown",
       "title": "About how old were you when you were first told you had this condition? ",
       "choices": [
-        {
-          "text": "Child (0-11)",
-          "value": "child"
-        },
-        {
-          "text": "Adolescent (12-17)",
-          "value": "adolescent"
-        },
-        {
-          "text": "Adult (18-64)",
-          "value": "adult"
-        },
-        {
-          "text": "Older adult (65-74)",
-          "value": "olderAdult"
-        },
-        {
-          "text": "Elderly (75+)",
-          "value": "elderly"
-        }
+        {"text": "0", "value": "0"},
+        {"text": "1", "value": "1"},
+        {"text": "2", "value": "2"},
+        {"text": "3", "value": "3"},
+        {"text": "4", "value": "4"},
+        {"text": "5", "value": "5"},
+        {"text": "6", "value": "6"},
+        {"text": "7", "value": "7"},
+        {"text": "8", "value": "8"},
+        {"text": "9", "value": "9"},
+        {"text": "10", "value": "10"},
+        {"text": "11", "value": "11"},
+        {"text": "12", "value": "12"},
+        {"text": "13", "value": "13"},
+        {"text": "14", "value": "14"},
+        {"text": "15", "value": "15"},
+        {"text": "16", "value": "16"},
+        {"text": "17", "value": "17"},
+        {"text": "18", "value": "18"},
+        {"text": "19", "value": "19"},
+        {"text": "20", "value": "20"},
+        {"text": "21", "value": "21"},
+        {"text": "22", "value": "22"},
+        {"text": "23", "value": "23"},
+        {"text": "24", "value": "24"},
+        {"text": "25", "value": "25"},
+        {"text": "26", "value": "26"},
+        {"text": "27", "value": "27"},
+        {"text": "28", "value": "28"},
+        {"text": "29", "value": "29"},
+        {"text": "30", "value": "30"},
+        {"text": "31", "value": "31"},
+        {"text": "32", "value": "32"},
+        {"text": "33", "value": "33"},
+        {"text": "34", "value": "34"},
+        {"text": "35", "value": "35"},
+        {"text": "36", "value": "36"},
+        {"text": "37", "value": "37"},
+        {"text": "38", "value": "38"},
+        {"text": "39", "value": "39"},
+        {"text": "40", "value": "40"},
+        {"text": "41", "value": "41"},
+        {"text": "42", "value": "42"},
+        {"text": "43", "value": "43"},
+        {"text": "44", "value": "44"},
+        {"text": "45", "value": "45"},
+        {"text": "46", "value": "46"},
+        {"text": "47", "value": "47"},
+        {"text": "48", "value": "48"},
+        {"text": "49", "value": "49"},
+        {"text": "50", "value": "50"},
+        {"text": "51", "value": "51"},
+        {"text": "52", "value": "52"},
+        {"text": "53", "value": "53"},
+        {"text": "54", "value": "54"},
+        {"text": "55", "value": "55"},
+        {"text": "56", "value": "56"},
+        {"text": "57", "value": "57"},
+        {"text": "58", "value": "58"},
+        {"text": "59", "value": "59"},
+        {"text": "60", "value": "60"},
+        {"text": "61", "value": "61"},
+        {"text": "62", "value": "62"},
+        {"text": "63", "value": "63"},
+        {"text": "64", "value": "64"},
+        {"text": "65", "value": "65"},
+        {"text": "66", "value": "66"},
+        {"text": "67", "value": "67"},
+        {"text": "68", "value": "68"},
+        {"text": "69", "value": "69"},
+        {"text": "70", "value": "70"},
+        {"text": "71", "value": "71"},
+        {"text": "72", "value": "72"},
+        {"text": "73", "value": "73"},
+        {"text": "74", "value": "74"},
+        {"text": "75", "value": "75"},
+        {"text": "76", "value": "76"},
+        {"text": "77", "value": "77"},
+        {"text": "78", "value": "78"},
+        {"text": "79", "value": "79"},
+        {"text": "80", "value": "80"},
+        {"text": "81", "value": "81"},
+        {"text": "82", "value": "82"},
+        {"text": "83", "value": "83"},
+        {"text": "84", "value": "84"},
+        {"text": "85", "value": "85"},
+        {"text": "86", "value": "86"},
+        {"text": "87", "value": "87"},
+        {"text": "88", "value": "88"},
+        {"text": "89", "value": "89"},
+        {"text": "90", "value": "90"},
+        {"text": "91", "value": "91"},
+        {"text": "92", "value": "92"},
+        {"text": "93", "value": "93"},
+        {"text": "94", "value": "94"},
+        {"text": "95", "value": "95"},
+        {"text": "96", "value": "96"},
+        {"text": "97", "value": "97"},
+        {"text": "98", "value": "98"},
+        {"text": "99", "value": "99"}
       ]
     }
   ],
@@ -174,10 +239,6 @@
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'bladderCancer'",
           "elements": [
             {
-              "name": "oh_oh_medHx_bladderCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_bladderCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -188,10 +249,6 @@
           "title": "Blood or soft tissue cancer",
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'bloodOrSoftTissueCancer'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_bloodOrSoftTissueCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_bloodOrSoftTissueCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -204,10 +261,6 @@
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'boneCancer'",
           "elements": [
             {
-              "name": "oh_oh_medHx_boneCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_boneCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -218,10 +271,6 @@
           "title": "Brain cancer",
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'brainCancer'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_brainCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_brainCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -234,10 +283,6 @@
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'breastCancer'",
           "elements": [
             {
-              "name": "oh_oh_medHx_breastCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_breastCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -248,10 +293,6 @@
           "title": "Cervical cancer",
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'cervicalCancer'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_cervicalCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_cervicalCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -264,10 +305,6 @@
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'colonRectalCancer'",
           "elements": [
             {
-              "name": "oh_oh_medHx_colonRectalCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_colonRectalCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -278,10 +315,6 @@
           "title": "Endocrine cancer",
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'endocrineCancer'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_endocrineCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_endocrineCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -294,10 +327,6 @@
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'endometrialCancer'",
           "elements": [
             {
-              "name": "oh_oh_medHx_endometrialCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_endometrialCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -308,10 +337,6 @@
           "title": "Esophageal cancer",
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'esophagealCancer'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_esophagealCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_esophagealCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -324,10 +349,6 @@
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'eyeCancer'",
           "elements": [
             {
-              "name": "oh_oh_medHx_eyeCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_eyeCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -338,10 +359,6 @@
           "title": "Head and neck cancer",
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'headAndNeckCancer'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_headAndNeckCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_headAndNeckCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -354,10 +371,6 @@
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'kidneyCancer'",
           "elements": [
             {
-              "name": "oh_oh_medHx_kidneyCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_kidneyCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -368,10 +381,6 @@
           "title": "Lung cancer",
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'lungCancer'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_lungCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_lungCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -384,10 +393,6 @@
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'ovarianCancer'",
           "elements": [
             {
-              "name": "oh_oh_medHx_ovarianCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_ovarianCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -398,10 +403,6 @@
           "title": "Pancreatic cancer",
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'pancreaticCancer'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_pancreaticCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_pancreaticCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -414,10 +415,6 @@
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'prostateCancer'",
           "elements": [
             {
-              "name": "oh_oh_medHx_prostateCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_prostateCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -428,10 +425,6 @@
           "title": "Skin cancer",
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'skinCancer'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_skinCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_skinCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -444,10 +437,6 @@
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'stomachCancer'",
           "elements": [
             {
-              "name": "oh_oh_medHx_stomachCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_stomachCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -458,10 +447,6 @@
           "title": "Thyroid cancer",
           "visibleIf": "{oh_oh_medHx_cancerTypes} contains 'thyroidCancer'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_thyroidCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_thyroidCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -477,10 +462,6 @@
               "name": "oh_oh_medHx_otherCancerDescription",
               "type": "text",
               "title": "What is the other cancer?"
-            },
-            {
-              "name": "oh_oh_medHx_otherCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
             },
             {
               "name": "oh_oh_medHx_otherCancerAgeAtDx",
@@ -531,10 +512,6 @@
           "visibleIf": "{oh_oh_medHx_digestiveConditionsDiagnoses} contains 'acidReflux'",
           "elements": [
             {
-              "name": "oh_oh_medHx_acidRefluxInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_acidRefluxAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -545,10 +522,6 @@
           "title": "Bowel Obstruction",
           "visibleIf": "{oh_oh_medHx_digestiveConditionsDiagnoses} contains 'bowelObstruction'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_bowelObstructionInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_bowelObstructionAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -561,10 +534,6 @@
           "visibleIf": "{oh_oh_medHx_digestiveConditionsDiagnoses} contains 'celiacDisease'",
           "elements": [
             {
-              "name": "oh_oh_medHx_celiacDiseaseInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_celiacDiseaseAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -575,10 +544,6 @@
           "title": "Colon polyps",
           "visibleIf": "{oh_oh_medHx_digestiveConditionsDiagnoses} contains 'colonPolyps'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_colonPolypsInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_colonPolypsAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -591,10 +556,6 @@
           "visibleIf": "{oh_oh_medHx_digestiveConditionsDiagnoses} contains 'crohnsDisease'",
           "elements": [
             {
-              "name": "oh_oh_medHx_crohnsDiseaseInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_crohnsDiseaseAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -605,10 +566,6 @@
           "title": "Diverticulosis/diverticulitis",
           "visibleIf": "{oh_oh_medHx_digestiveConditionsDiagnoses} contains 'diverticulosisDiverticulitis'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_diverticulosisDiverticulitisInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_diverticulosisDiverticulitisAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -621,10 +578,6 @@
           "visibleIf": "{oh_oh_medHx_digestiveConditionsDiagnoses} contains 'gallStones'",
           "elements": [
             {
-              "name": "oh_oh_medHx_gallStonesInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_gallStonesAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -635,10 +588,6 @@
           "title": "Hemorrhoids",
           "visibleIf": "{oh_oh_medHx_digestiveConditionsDiagnoses} contains 'hemorrhoids'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_hemorrhoidsInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_hemorrhoidsAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -651,10 +600,6 @@
           "visibleIf": "{oh_oh_medHx_digestiveConditionsDiagnoses} contains 'hernia'",
           "elements": [
             {
-              "name": "oh_oh_medHx_herniaInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_herniaAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -665,10 +610,6 @@
           "title": "Irritable bowel syndrome (IBS)",
           "visibleIf": "{oh_oh_medHx_digestiveConditionsDiagnoses} contains 'irritableBowelSyndrome'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_irritableBowelSyndromeInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_irritableBowelSyndromeAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -681,10 +622,6 @@
           "visibleIf": "{oh_oh_medHx_digestiveConditionsDiagnoses} contains 'liverCondition'",
           "elements": [
             {
-              "name": "oh_oh_medHx_liverConditionInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_liverConditionAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -695,10 +632,6 @@
           "title": "Pancreatitis",
           "visibleIf": "{oh_oh_medHx_digestiveConditionsDiagnoses} contains 'pancreatitis'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_pancreatitisInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_pancreatitisAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -711,10 +644,6 @@
           "visibleIf": "{oh_oh_medHx_digestiveConditionsDiagnoses} contains 'pepticUlcers'",
           "elements": [
             {
-              "name": "oh_oh_medHx_pepticUlcersInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_pepticUlcersAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -725,10 +654,6 @@
           "title": "Ulcerative colitis",
           "visibleIf": "{oh_oh_medHx_digestiveConditionsDiagnoses} contains 'ulcerativeColitis'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_ulcerativeColitisInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_ulcerativeColitisAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -744,10 +669,6 @@
               "name": "oh_oh_medHx_otherDigestiveConditionDescription",
               "type": "text",
               "title": "What is the other condition?"
-            },
-            {
-              "name": "oh_oh_medHx_otherDigestiveConditionInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
             },
             {
               "name": "oh_oh_medHx_otherDigestiveConditionAgeAtDx",
@@ -788,10 +709,6 @@
           "visibleIf": "{oh_oh_medHx_kidneyDiagnosedConditions} contains 'acuteKidneyDiseaseWithNoCurrentDialysis'",
           "elements": [
             {
-              "name": "oh_oh_medHx_acuteKidneyDiseaseWithNoCurrentDialysisInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_acuteKidneyDiseaseWithNoCurrentDialysisAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -802,10 +719,6 @@
           "title": "Kidney disease with dialysis",
           "visibleIf": "{oh_oh_medHx_kidneyDiagnosedConditions} contains 'kidneyDiseaseWithDialysis'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_kidneyDiseaseWithDialysisInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_kidneyDiseaseWithDialysisAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -818,10 +731,6 @@
           "visibleIf": "{oh_oh_medHx_kidneyDiagnosedConditions} contains 'kidneyDiseaseWithoutDialysis'",
           "elements": [
             {
-              "name": "oh_oh_medHx_kidneyDiseaseWithoutDialysisInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_kidneyDiseaseWithoutDialysisAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -832,10 +741,6 @@
           "title": "Kidney stones",
           "visibleIf": "{oh_oh_medHx_kidneyDiagnosedConditions} contains 'kidneyStones'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_kidneyStonesInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_kidneyStonesAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -851,10 +756,6 @@
               "name": "oh_oh_medHx_otherKidneyDescription",
               "type": "text",
               "title": "What is the other kidney condition?"
-            },
-            {
-              "name": "oh_oh_medHx_otherKidneyConditionInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
             },
             {
               "name": "oh_oh_medHx_otherKidneyConditionAgeAtDx",
@@ -910,10 +811,6 @@
           "visibleIf": "{oh_oh_medHx_endocrineDiagnosedConditions} contains 'hyperthyroidism'",
           "elements": [
             {
-              "name": "oh_oh_medHx_hyperthyroidismInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_hyperthyroidismAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -924,10 +821,6 @@
           "title": "Hypothyroidism",
           "visibleIf": "{oh_oh_medHx_endocrineDiagnosedConditions} contains 'hypothyroidism'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_hypothyroidismInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_hypothyroidismAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -940,10 +833,6 @@
           "visibleIf": "{oh_oh_medHx_endocrineDiagnosedConditions} contains 'type1Diabetes'",
           "elements": [
             {
-              "name": "oh_oh_medHx_type1DiabetesInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_type1DiabetesAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -954,10 +843,6 @@
           "title": "Type 2 Diabetes",
           "visibleIf": "{oh_oh_medHx_endocrineDiagnosedConditions} contains 'type2Diabetes'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_type2DiabetesInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_type2DiabetesAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -970,10 +855,6 @@
           "visibleIf": "{oh_oh_medHx_endocrineDiagnosedConditions} contains 'otherUnknownDiabetes'",
           "elements": [
             {
-              "name": "oh_oh_medHx_otherUnknownDiabetesInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_otherUnknownDiabetesAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -984,10 +865,6 @@
           "title": "Other/Unknown thyroid condition",
           "visibleIf": "{oh_oh_medHx_endocrineDiagnosedConditions} contains 'otherUnknownThyroidCondition'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_otherUnknownThyroidConditionInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_otherUnknownThyroidConditionAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1003,10 +880,6 @@
               "name": "oh_oh_medHx_otherHormoneEndocrineConditionDescription",
               "type": "text",
               "title": "What is the other hormone/endocrine condition?"
-            },
-            {
-              "name": "oh_oh_medHx_otherHormoneEndocrineConditionInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
             },
             {
               "name": "oh_oh_medHx_otherHormoneEndocrineConditionAgeAtDx",
@@ -1052,11 +925,7 @@
           "title": "Alcohol use disorder",
           "visibleIf": "{oh_oh_medHx_mentalHealthDxConditions} contains 'alcoholUse'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_alcoholUseInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
+                        {
               "name": "oh_oh_medHx_alcoholUseAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1067,10 +936,6 @@
           "title": "Anxiety reaction/panic disorder",
           "visibleIf": "{oh_oh_medHx_mentalHealthDxConditions} contains 'anxietyReactionPanic'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_anxietyReactionPanicInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_anxietyReactionPanicAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1083,10 +948,6 @@
           "visibleIf": "{oh_oh_medHx_mentalHealthDxConditions} contains 'adhd'",
           "elements": [
             {
-              "name": "oh_oh_medHx_adhdInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_adhdAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1097,10 +958,6 @@
           "title": "Autism spectrum disorder",
           "visibleIf": "{oh_oh_medHx_mentalHealthDxConditions} contains 'autismSpectrum'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_autismSpectrumInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_autismSpectrumAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1113,10 +970,6 @@
           "visibleIf": "{oh_oh_medHx_mentalHealthDxConditions} contains 'bipolar'",
           "elements": [
             {
-              "name": "oh_oh_medHx_bipolarInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_bipolarAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1127,10 +980,6 @@
           "title": "Depression",
           "visibleIf": "{oh_oh_medHx_mentalHealthDxConditions} contains 'depression'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_depressionInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_depressionAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1143,11 +992,6 @@
           "visibleIf": "{oh_oh_medHx_mentalHealthDxConditions} contains 'drugUse'",
           "elements": [
             {
-              "name": "oh_oh_medHx_drugUseInTreatment",
-
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_drugUseAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1158,10 +1002,6 @@
           "title": "Eating disorder",
           "visibleIf": "{oh_oh_medHx_mentalHealthDxConditions} contains 'eatingDisorder'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_eatingDisorderInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_eatingDisorderAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1174,10 +1014,6 @@
           "visibleIf": "{oh_oh_medHx_mentalHealthDxConditions} contains 'ptsd'",
           "elements": [
             {
-              "name": "oh_oh_medHx_ptsdInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_ptsdAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1188,11 +1024,7 @@
           "title": "Schizophrenia",
           "visibleIf": "{oh_oh_medHx_mentalHealthDxConditions} contains 'schizophrenia'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_schizophreniaInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
+                        {
               "name": "oh_oh_medHx_schizophreniaAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1207,10 +1039,6 @@
               "name": "oh_oh_medHx_otherMentalHealthDescription",
               "type": "text",
               "title": "What is the other condition?"
-            },
-            {
-              "name": "oh_oh_medHx_otherMentalHealthInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
             },
             {
               "name": "oh_oh_medHx_otherMentalHealthAgeAtDx",
@@ -1250,10 +1078,6 @@
           "visibleIf": "{oh_oh_medHx_diagnosedLungConditions} contains 'asthma'",
           "elements": [
             {
-              "name": "oh_oh_medHx_asthmaInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_asthmaAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1265,10 +1089,6 @@
           "visibleIf": "{oh_oh_medHx_diagnosedLungConditions} contains 'chronicLungDisease'",
           "elements": [
             {
-              "name": "oh_oh_medHx_chronicLungDiseaseInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_chronicLungDiseaseAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1279,10 +1099,6 @@
           "title": "Sleep Apnea",
           "visibleIf": "{oh_oh_medHx_diagnosedLungConditions} contains 'sleepApnea'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_sleepApneaInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_sleepApneaAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1298,10 +1114,6 @@
               "name": "oh_oh_medHx_otherLungDescription",
               "type": "text",
               "title": "What is the other condition?"
-            },
-            {
-              "name": "oh_oh_medHx_otherLungInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
             },
             {
               "name": "oh_oh_medHx_otherLungAgeAtDx",
@@ -1349,10 +1161,6 @@
           "visibleIf": "{oh_oh_medHx_boneJointDiagnosedConditions} contains 'carpalTunnelSyndrome'",
           "elements": [
             {
-              "name": "oh_oh_medHx_carpalTunnelSyndromeInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_carpalTunnelSyndromeAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1363,10 +1171,6 @@
           "title": "Fibromyalgia",
           "visibleIf": "{oh_oh_medHx_boneJointDiagnosedConditions} contains 'fibromyalgia'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_fibromyalgiaInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_fibromyalgiaAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1379,10 +1183,6 @@
           "visibleIf": "{oh_oh_medHx_boneJointDiagnosedConditions} contains 'fracturesInTheLast5Years'",
           "elements": [
             {
-              "name": "oh_oh_medHx_fracturesInTheLast5YearsInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_fracturesInTheLast5YearsAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1393,10 +1193,6 @@
           "title": "Gout",
           "visibleIf": "{oh_oh_medHx_boneJointDiagnosedConditions} contains 'gout'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_goutInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_goutAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1409,10 +1205,6 @@
           "visibleIf": "{oh_oh_medHx_boneJointDiagnosedConditions} contains 'osteoarthritis'",
           "elements": [
             {
-              "name": "oh_oh_medHx_osteoarthritisInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_osteoarthritisAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1423,10 +1215,6 @@
           "title": "Osteoporosis",
           "visibleIf": "{oh_oh_medHx_boneJointDiagnosedConditions} contains 'osteoporosis'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_osteoporosisInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_osteoporosisAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1439,10 +1227,6 @@
           "visibleIf": "{oh_oh_medHx_boneJointDiagnosedConditions} contains 'pseudogout'",
           "elements": [
             {
-              "name": "oh_oh_medHx_pseudogoutInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_pseudogoutAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1453,10 +1237,6 @@
           "title": "Rheumatoid arthritis",
           "visibleIf": "{oh_oh_medHx_boneJointDiagnosedConditions} contains 'rheumatoidArthritis'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_rheumatoidArthritisInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_rheumatoidArthritisAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1469,10 +1249,6 @@
           "visibleIf": "{oh_oh_medHx_boneJointDiagnosedConditions} contains 'spineMuscleOrBoneDisordersNonCancer'",
           "elements": [
             {
-              "name": "oh_oh_medHx_spineMuscleOrBoneDisordersNonCancerInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_spineMuscleOrBoneDisordersNonCancerAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1484,10 +1260,6 @@
           "visibleIf": "{oh_oh_medHx_boneJointDiagnosedConditions} contains 'systemicLupus'",
           "elements": [
             {
-              "name": "oh_oh_medHx_systemicLupusInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_systemicLupusAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1498,10 +1270,6 @@
           "title": "Other arthritis",
           "visibleIf": "{oh_oh_medHx_boneJointDiagnosedConditions} contains 'otherArthritis'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_otherArthritisInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_otherArthritisAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1517,10 +1285,6 @@
               "name": "oh_oh_medHx_otherBoneJointOrMuscleConditionDescription",
               "type": "text",
               "title": "What is the other condition?"
-            },
-            {
-              "name": "oh_oh_medHx_otherBoneJointOrMuscleConditionInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
             },
             {
               "name": "oh_oh_medHx_otherBoneJointOrMuscleConditionAgeAtDx",
@@ -1576,10 +1340,6 @@
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'chickenpox'",
           "elements": [
             {
-              "name": "oh_oh_medHx_chickenpoxInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_chickenpoxAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1590,10 +1350,6 @@
           "title": "Chikungunya",
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'chikungunya'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_chikungunyaInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_chikungunyaAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1606,10 +1362,6 @@
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'chronicSinusInfections'",
           "elements": [
             {
-              "name": "oh_oh_medHx_chronicSinusInfectionsInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_chronicSinusInfectionsAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1620,10 +1372,6 @@
           "title": "COVID-19",
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'covid19'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_covid19InTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_covid19AgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1636,11 +1384,6 @@
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'dengueFever'",
           "elements": [
             {
-              "name": "oh_oh_medHx_dengueFeverInTreatment",
-
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_dengueFeverAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1651,10 +1394,6 @@
           "title": "Hepatitis A",
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'hepatitisA'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_hepatitisAInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_hepatitisAAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1667,10 +1406,6 @@
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'hepatitisB'",
           "elements": [
             {
-              "name": "oh_oh_medHx_hepatitisBInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_hepatitisBAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1681,10 +1416,6 @@
           "title": "Hepatitis C",
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'hepatitisC'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_hepatitisCInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_hepatitisCAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1697,10 +1428,6 @@
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'hivAids'",
           "elements": [
             {
-              "name": "oh_oh_medHx_hivAidsInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_hivAidsAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1711,10 +1438,6 @@
           "title": "Lyme disease",
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'lymeDisease'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_lymeDiseaseInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_lymeDiseaseAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1727,10 +1450,6 @@
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'malaria'",
           "elements": [
             {
-              "name": "oh_oh_medHx_malariaInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_malariaAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1741,10 +1460,6 @@
           "title": "Recurrent urinary tract infections (uti)/bladder infections",
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'recurrentUrinaryTractInfections'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_recurrentUrinaryTractInfectionsInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_recurrentUrinaryTractInfectionsAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1757,10 +1472,6 @@
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'reoccurringYeastInfection'",
           "elements": [
             {
-              "name": "oh_oh_medHx_reoccurringYeastInfectionInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_reoccurringYeastInfectionAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1771,10 +1482,6 @@
           "title": "Severe acute respiratory syndrome (SARS)",
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'sars'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_sarsInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_sarsAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1787,10 +1494,6 @@
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'sexuallyTransmittedInfections'",
           "elements": [
             {
-              "name": "oh_oh_medHx_sexuallyTransmittedInfectionsInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_sexuallyTransmittedInfectionsAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1801,10 +1504,6 @@
           "title": "Shingles",
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'shingles'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_shinglesInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_shinglesAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1817,10 +1516,6 @@
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'tuberculosis'",
           "elements": [
             {
-              "name": "oh_oh_medHx_tuberculosisInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_tuberculosisAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1832,10 +1527,6 @@
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'westNileVirus'",
           "elements": [
             {
-              "name": "oh_oh_medHx_westNileVirusInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_westNileVirusAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1846,10 +1537,6 @@
           "title": "Zika virus",
           "visibleIf": "{oh_oh_medHx_infectiousDiseasedDiagnosed} contains 'zikaVirus'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_zikaVirusInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_zikaVirusAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1865,10 +1552,6 @@
               "name": "oh_oh_medHx_otherInfectiousDescription",
               "type": "text",
               "title": "What is the other condition?"
-            },
-            {
-              "name": "oh_oh_medHx_otherInfectiousInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
             },
             {
               "name": "oh_oh_medHx_otherInfectiousAgeAtDx",
@@ -1913,10 +1596,6 @@
           "visibleIf": "{oh_oh_medHx_nervousSystemDx} contains 'cerebralPalsy'",
           "elements": [
             {
-              "name": "oh_oh_medHx_cerebralPalsyInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_cerebralPalsyAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1927,10 +1606,6 @@
           "title": "Dementia",
           "visibleIf": "{oh_oh_medHx_nervousSystemDx} contains 'dementia'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_dementiaInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_dementiaAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1943,10 +1618,6 @@
           "visibleIf": "{oh_oh_medHx_nervousSystemDx} contains 'epilepsyOrSeizure'",
           "elements": [
             {
-              "name": "oh_oh_medHx_epilepsyOrSeizureInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_epilepsyOrSeizureAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1957,10 +1628,6 @@
           "title": "Insomnia",
           "visibleIf": "{oh_oh_medHx_nervousSystemDx} contains 'insomnia'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_insomniaInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_insomniaAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -1973,10 +1640,6 @@
           "visibleIf": "{oh_oh_medHx_nervousSystemDx} contains 'migraineHeadaches'",
           "elements": [
             {
-              "name": "oh_oh_medHx_migraineHeadachesInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_migraineHeadachesAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -1987,10 +1650,6 @@
           "title": "Multiple sclerosis",
           "visibleIf": "{oh_oh_medHx_nervousSystemDx} contains 'multipleSclerosis'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_multipleSclerosisInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_multipleSclerosisAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -2003,10 +1662,6 @@
           "visibleIf": "{oh_oh_medHx_nervousSystemDx} contains 'muscularDystrophy'",
           "elements": [
             {
-              "name": "oh_oh_medHx_muscularDystrophyInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_muscularDystrophyAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -2018,10 +1673,6 @@
           "visibleIf": "{oh_oh_medHx_nervousSystemDx} contains 'neuropathy'",
           "elements": [
             {
-              "name": "oh_oh_medHx_neuropathyInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_neuropathyAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -2032,10 +1683,6 @@
           "title": "Parkinson’s disease",
           "visibleIf": "{oh_oh_medHx_nervousSystemDx} contains 'parkinsonsDisease'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_parkinsonsDiseaseInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_parkinsonsDiseaseAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -2051,10 +1698,6 @@
               "name": "oh_oh_medHx_otherNervousSystemDx",
               "type": "text",
               "title": "What is the other brain or nervous system condition?"
-            },
-            {
-              "name": "oh_oh_medHx_otherNervousInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
             },
             {
               "name": "oh_oh_medHx_otherNervousAgeAtDx",
@@ -2095,10 +1738,6 @@
           "visibleIf": "{oh_oh_medHx_hearingEyeDiagnosed} contains 'blindnessAllCauses'",
           "elements": [
             {
-              "name": "oh_oh_medHx_blindnessAllCausesInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_blindnessAllCausesAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -2109,10 +1748,6 @@
           "title": "Cataracts",
           "visibleIf": "{oh_oh_medHx_hearingEyeDiagnosed} contains 'cataracts'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_cataractsInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_cataractsAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -2125,10 +1760,6 @@
           "visibleIf": "{oh_oh_medHx_hearingEyeDiagnosed} contains 'glaucoma'",
           "elements": [
             {
-              "name": "oh_oh_medHx_glaucomaInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_glaucomaAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -2140,10 +1771,6 @@
           "visibleIf": "{oh_oh_medHx_hearingEyeDiagnosed} contains 'macularDegeneration'",
           "elements": [
             {
-              "name": "oh_oh_medHx_macularDegenerationInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
-            {
               "name": "oh_oh_medHx_macularDegenerationAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
@@ -2154,10 +1781,6 @@
           "title": "Severe hearing loss or partial deafness in one or both ears",
           "visibleIf": "{oh_oh_medHx_hearingEyeDiagnosed} contains 'severeHearingLoss'",
           "elements": [
-            {
-              "name": "oh_oh_medHx_severeHearingLossInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
-            },
             {
               "name": "oh_oh_medHx_severeHearingLossAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
@@ -2173,10 +1796,6 @@
               "name": "oh_oh_medHx_otherHearingEyeDescription",
               "type": "text",
               "title": "What is the other hearing or eye condition?"
-            },
-            {
-              "name": "oh_oh_medHx_otherHearingEyeInTreatment",
-              "questionTemplateName": "oh_oh_medHx_stillSeeingProvider"
             },
             {
               "name": "oh_oh_medHx_otherHearingEyeAgeAtDx",
