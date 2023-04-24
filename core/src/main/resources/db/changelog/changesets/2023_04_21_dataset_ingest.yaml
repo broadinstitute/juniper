@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: "dataset_ingest"
+      author: mbemis
+      changes:
+        - renameTable:
+            newTableName:  data_repo_job
+            oldTableName:  create_dataset_job
+        - addColumn:
+            tableName: data_repo_job
+            columns:
+              - column: { name: job_type, type: text }
+        - addColumn:
+            tableName: dataset
+            columns:
+              - column: { name: last_exported, type: datetime, constraints: { nullable: false }, defaultValueDate: "1970-01-01T00:00:00" }

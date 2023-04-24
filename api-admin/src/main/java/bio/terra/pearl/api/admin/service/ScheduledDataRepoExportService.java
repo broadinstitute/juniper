@@ -2,6 +2,7 @@ package bio.terra.pearl.api.admin.service;
 
 import bio.terra.pearl.core.service.datarepo.DataRepoExportService;
 import java.util.concurrent.TimeUnit;
+
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,12 +40,12 @@ public class ScheduledDataRepoExportService {
     that it shouldn't be a problem if the first round of ingest is delayed due to a missing
     dataset: by the next round, it should be ready.
   */
-  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 60, initialDelay = 5)
+  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 60, initialDelay = 1)
   @SchedulerLock(
       name = "DataRepoExportService.createDatasetsForStudyEnvironments",
       lockAtMostFor = "10m",
       lockAtLeastFor = "5m")
-  public void initializeStudyEnvironmentDatasets() {
+  public void createStudyEnvironmentDatasets() {
     if (isTdrConfigured()) {
       logger.info("Creating datasets...");
       dataRepoExportService.createDatasetsForStudyEnvironments();
@@ -54,15 +55,30 @@ public class ScheduledDataRepoExportService {
     }
   }
 
+  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 240, initialDelay = 1)
+  @SchedulerLock(
+          name = "DataRepoExportService.ingestStudyEnvironmentDatasets",
+          lockAtMostFor = "10m",
+          lockAtLeastFor = "5m")
+  public void ingestStudyEnvironmentDatasets() {
+    if (isTdrConfigured()) {
+      logger.info("Ingesting datasets...");
+      dataRepoExportService.ingestDatasets();
+    } else {
+      logger.error(
+          "Error: Skipping TDR dataset ingest, as TDR has not been configured for this environment.");
+    }
+  }
+
   @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 10, initialDelay = 0)
   @SchedulerLock(
-      name = "DataRepoExportService.pollRunningCreateDatasetJobs",
+      name = "DataRepoExportService.pollRunningJobs",
       lockAtMostFor = "5m",
-      lockAtLeastFor = "2m")
-  public void pollRunningInitializeJobs() {
+      lockAtLeastFor = "1m")
+  public void pollRunningJobs() {
     if (isTdrConfigured()) {
-      logger.info("Polling running TDR dataset creation jobs...");
-      dataRepoExportService.pollRunningCreateDatasetJobs();
+      logger.info("Polling running TDR jobs...");
+      dataRepoExportService.pollRunningJobs();
     } else {
       logger.error(
           "Error: Skipping TDR job polling, as TDR has not been configured for this environment.");
