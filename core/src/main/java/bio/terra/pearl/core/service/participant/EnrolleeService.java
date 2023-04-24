@@ -81,7 +81,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.findByProfileId(ppUser.getProfileId());
     }
 
-    public List<Enrollee> findByStudyEnvironmentAdminLoad(UUID studyEnvironmentId) {
+    public List<Enrollee> findByStudyEnvironment(UUID studyEnvironmentId) {
         return dao.findByStudyEnvironmentId(studyEnvironmentId);
     }
 

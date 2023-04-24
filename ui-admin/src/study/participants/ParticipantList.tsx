@@ -4,7 +4,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
 import { Link } from 'react-router-dom'
-import { StudyEnvContextT } from '../StudyEnvironmentRouter'
+import { getExportDataBrowserPath, StudyEnvContextT } from '../StudyEnvironmentRouter'
 import {
   ColumnDef,
   flexRender,
@@ -16,6 +16,7 @@ import {
 import { ColumnVisibilityControl, IndeterminateCheckbox, sortableTableHeader } from '../../util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
+import ExportDataControl from './export/ExportDataControl'
 
 
 /** Shows a list of (for now) enrollees */
@@ -96,9 +97,15 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
         <h5>Participants</h5>
         <LoadingSpinner isLoading={isLoading}>
           <div className="d-flex align-items-center justify-content-between">
-            <div>
-              {Object.keys(rowSelection).length} of{' '}
-              {table.getPreFilteredRowModel().rows.length} selected
+            <div className="d-flex align-items-center">
+              <span className="me-2">
+                {Object.keys(rowSelection).length} of{' '}
+                {table.getPreFilteredRowModel().rows.length} selected
+              </span>
+              <Link to={getExportDataBrowserPath(currentEnvPath)} className="mx-2">Export preview</Link>
+              <span className="px-1">|</span>
+              <ExportDataControl studyEnvContext={studyEnvContext}/>
+
             </div>
             <ColumnVisibilityControl table={table}/>
           </div>
