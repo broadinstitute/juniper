@@ -34,7 +34,7 @@ public class DatasetService extends CrudService<Dataset, DatasetDao> {
     }
 
     public void updateLastExported(UUID id, Instant lastExported) {
-        dao.updatedLastExported(id, lastExported);
+        dao.updateLastExported(id, lastExported);
     }
 
     public Optional<Dataset> findByDataRepoId(UUID dataRepoId) {
