@@ -498,7 +498,7 @@
             {
               "type": "html",
               "name": "oh_oh_medHx_digestiveDescription",
-              "html": "<h2>Digestive conditions</h2>"
+              "html": "<h2>Digestive Conditions</h2>"
             }
           ]
         },
@@ -765,7 +765,7 @@
             {
               "type": "html",
               "name": "oh_oh_medHx_kidneyDescription",
-              "html": "<h2>Kidney conditions</h2>"
+              "html": "<h2>Kidney Conditions</h2>"
             }
           ]
         },
@@ -873,7 +873,7 @@
             {
               "name": "oh_oh_medHx_endocrineDescription",
               "type": "html",
-              "html": "<h2>Hormone/endocrine conditions</h2>"
+              "html": "<h2>Hormone/Endocrine Conditions</h2>"
             }
           ]
         },
@@ -1024,7 +1024,7 @@
             {
               "type": "html",
               "name": "oh_oh_medHx_mentalHealthDescription",
-              "html": "<h2>Mental health and substance use conditions</h2>"
+              "html": "<h2>Mental Health and Substance Use Conditions</h2>"
             }
           ]
         },
@@ -1319,7 +1319,7 @@
             {
               "type": "html",
               "name": "oh_oh_medHx_boneJointDiagnosedDescription",
-              "html": "<h2>Bone, joint and muscle conditions</h2>"
+              "html": "<h2>Bone, Joint and Muscle Conditions</h2>"
             }
           ]
         },
@@ -1538,7 +1538,7 @@
             {
               "type": "html",
               "name": "oh_oh_medHx_infectiousDiagnosedDescription",
-              "html": "<h2>Infectious diseases</h2>"
+              "html": "<h2>Infectious Diseases</h2>"
             }
           ]
         },
@@ -1885,7 +1885,7 @@
             {
               "type": "html",
               "name": "oh_oh_medHx_nervousDiagnosedDescription",
-              "html": "<h2>Brain and nervous system conditions</h2>"
+              "html": "<h2>Brain and Nervous System Conditions</h2>"
             }
           ]
         },
@@ -2071,7 +2071,7 @@
             {
               "type": "html",
               "name": "oh_oh_medHx_hearingEyeDiagnosedDescription",
-              "html": "<h2>Hearing and eye conditions</h2>"
+              "html": "<h2>Hearing and Eye Conditions</h2>"
             }
           ]
         },

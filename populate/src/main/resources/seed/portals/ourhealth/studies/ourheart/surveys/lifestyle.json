@@ -21,7 +21,7 @@
           {
             "type": "html",
             "name": "oh_oh_lifestyleVigorousActivityIntro",
-            "html": "<h2>Vigorous activity</h2><p>Vigorous physical activities refer to activities that take hard physical effort and make you breathe much harder than normal. Think only about those physical activities that you did for at least 10 minutes at a time.</p>"
+            "html": "<h2>Vigorous Activity</h2><p>Vigorous physical activities refer to activities that take hard physical effort and make you breathe much harder than normal. Think only about those physical activities that you did for at least 10 minutes at a time.</p>"
           }
         ]
       },{
@@ -76,7 +76,7 @@
           {
             "type": "html",
             "name": "oh_oh_lifestyleModertateActivityIntro",
-            "html": "<h2>Moderate activity</h2><p>Moderate physical activities refer to activities that take moderate physical effort and make you breathe somewhat harder than normal. Think only about those physical activities that you did for at least 10 minutes at a time. </p>"
+            "html": "<h2>Moderate Activity</h2><p>Moderate physical activities refer to activities that take moderate physical effort and make you breathe somewhat harder than normal. Think only about those physical activities that you did for at least 10 minutes at a time. </p>"
           }
         ]
       },{
