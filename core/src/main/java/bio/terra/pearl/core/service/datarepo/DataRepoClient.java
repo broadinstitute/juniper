@@ -48,6 +48,12 @@ public class DataRepoClient {
         return response;
     }
 
+    /* TDR on Azure currently only supports appends during dataset ingest. As a result, this will only
+        ever add rows to the dataset. Once more advanced update strategies are available, we can
+        switch this over to either MERGE or REPLACE, depending on our needs.
+        In a future PR, we will tackle short-term handling of this until those strategies are available,
+        most likely by deleting the dataset tables and recreating them each time.
+     */
     public JobModel ingestDataset(UUID datasetId, String tableName) throws ApiException {
         DatasetsApi datasetsApi = getDatasetsApi();
 
@@ -63,6 +69,7 @@ public class DataRepoClient {
                 //TODO: Probably want to ingest data via file, not array (otherwise this payload will be massive).
                 //Need mechanism to write TDR ingest files to an Azure storage container and point TDR to that
                 .format(IngestRequestModel.FormatEnum.ARRAY)
+                .updateStrategy(IngestRequestModel.UpdateStrategyEnum.APPEND) //This is the default, and the only available option on Azure right now
                 .records(List.of(records));
 
         return datasetsApi.ingestDataset(datasetId, request);

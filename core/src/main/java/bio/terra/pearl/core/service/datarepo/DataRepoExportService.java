@@ -104,7 +104,6 @@ public class DataRepoExportService {
     }
 
     public void ingestDatasets() {
-        //TODO: do in sql query instead
         List<Dataset> outdatedDatasets = datasetDao.findAll().stream().filter(dataset -> dataset.getLastUpdatedAt().isBefore(Instant.now().minus(4, ChronoUnit.HOURS))).toList();
 
         logger.info("Found {} study environments requiring dataset ingest", outdatedDatasets.size());
