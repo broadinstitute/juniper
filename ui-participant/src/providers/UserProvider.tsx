@@ -109,6 +109,10 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   }
 
   useEffect(() => {
+    auth.events.addUserLoaded(user => {
+      localStorage.setItem(OAUTH_ACCRESS_TOKEN_KEY, user.access_token)
+    })
+
     // Recover state for a signed-in user (internal) that we might have lost due to a full page load
     const oauthAccessToken = localStorage.getItem(OAUTH_ACCRESS_TOKEN_KEY)
     const internalLogintoken = localStorage.getItem(INTERNAL_LOGIN_TOKEN_KEY)

@@ -29,9 +29,7 @@ export const getOidcConfig = (b2cTenantName: string, b2cClientId: string, b2cPol
     stateStore: new WebStorageStateStore({ store: window.localStorage }),
     userStore: new WebStorageStateStore({ store: window.localStorage }),
     automaticSilentRenew: true,
-    // Leo's setCookie interval is currently 5 min, set refresh auth then 5 min 30 seconds to gurantee that setCookie's
-    // token won't expire between 2 setCookie api calls
-    accessTokenExpiringNotificationTimeInSeconds: 330,
+    accessTokenExpiringNotificationTimeInSeconds: 300,
     includeIdTokenInSilentRenew: true,
     extraQueryParams: { access_type: 'offline' },
     // from https://github.com/authts/react-oidc-context/blob/f175dcba6ab09871b027d6a2f2224a17712b67c5/src/AuthProvider.tsx#L20-L30
