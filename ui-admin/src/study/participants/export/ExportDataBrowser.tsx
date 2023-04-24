@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
-import Api, { EnrolleeSearchResult, ExportData } from '../../../api/api'
-import LoadingSpinner from '../../../util/LoadingSpinner'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import Api, { ExportData } from 'api/api'
+import LoadingSpinner from 'util/LoadingSpinner'
 import {
   ColumnDef, flexRender,
   getCoreRowModel,
@@ -10,7 +10,9 @@ import {
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
-import { sortableTableHeader } from '../../../util/tableUtils'
+import { sortableTableHeader } from 'util/tableUtils'
+import { Store } from 'react-notifications-component'
+import { failureNotification } from 'util/notifications'
 
 const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
   const [data, setData] = useState<ExportData | null>(null)
@@ -23,7 +25,7 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
     if (!data) {
       return []
     }
-    const enrolleeCols = data.valueMaps.map((valueMap, index) => ({
+    const enrolleeCols = data.valueMaps.map(valueMap => ({
       id: valueMap['enrollee.shortcode'],
       header: valueMap['enrollee.shortcode'],
       accessorFn: (d: string) => valueMap[d]
@@ -64,10 +66,15 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
       studyEnvContext.currentEnv.environmentName, { fileFormat: 'JSON' }).then(result => {
       setData(result)
       setIsLoading(false)
+    }).catch(() => {
+      setIsLoading(false)
+      Store.addNotification(failureNotification(`Error loading participant export data`))
     })
   }, [])
-  return <LoadingSpinner isLoading={isLoading}>
-    <table className="table table-striped">
+  return <div className="container-fluid py-3">
+    <h1 className="h3">Data export preview</h1>
+    <LoadingSpinner isLoading={isLoading}/>
+    {!isLoading && <table className="table table-striped">
       <thead>
         <tr>
           {table.getFlatHeaders().map(header => sortableTableHeader(header))}
@@ -88,8 +95,8 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
           )
         })}
       </tbody>
-    </table>
-  </LoadingSpinner>
+    </table>}
+  </div>
 }
 
 export default ExportDataBrowser

@@ -40,7 +40,7 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
 
         String actual = SurveyParseUtils.unmarshalSurveyQuestionChoices(questionNode);
         String expected = """
-                {"noneOfThese":"None of these","cardiacBypassSurgery":"Cardiac bypass surgery","cardiacStentPlacement":"Cardiac stent placement"}""";
+               [{"stableId":"cardiacStentPlacement","text":"Cardiac stent placement"},{"stableId":"cardiacBypassSurgery","text":"Cardiac bypass surgery"},{"stableId":"noneOfThese","text":"None of these"}]""";
 
         Assertions.assertEquals(expected, actual);
     }
@@ -120,7 +120,7 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
 
         String actual = SurveyParseUtils.unmarshalSurveyQuestionChoices(questionNode);
         String expected = """
-                {"noneOfThese":"None of these","cardiacBypassSurgery":"Cardiac bypass surgery","cardiacStentPlacement":"Cardiac stent placement"}""";
+                [{"stableId":"cardiacStentPlacement","text":"Cardiac stent placement"},{"stableId":"cardiacBypassSurgery","text":"Cardiac bypass surgery"},{"stableId":"noneOfThese","text":"None of these"}]""";
 
         Assertions.assertEquals(expected, actual);
     }
@@ -140,7 +140,7 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
 
         String actual = SurveyParseUtils.unmarshalSurveyQuestionChoices(questionNode);
         String expected = """
-                {"bar":"bar","foo":"foo","baz":"baz"}""";
+                [{"stableId":"foo","text":"foo"},{"stableId":"bar","text":"bar"},{"stableId":"baz","text":"baz"}]""";
 
         Assertions.assertEquals(expected, actual);
     }

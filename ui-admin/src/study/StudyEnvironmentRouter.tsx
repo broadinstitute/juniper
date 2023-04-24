@@ -83,6 +83,6 @@ export const notificationConfigPath = (config: NotificationConfig, currentEnvPat
   return `${currentEnvPath}/notificationConfigs/${config.id}`
 }
 
-export function getExportDataBrowserPath(currentEnvPath: string) {
+export const getExportDataBrowserPath = (currentEnvPath: string) => {
   return `${currentEnvPath}/export/dataBrowser`
 }

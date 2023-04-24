@@ -4,7 +4,6 @@ import ParticipantList from './ParticipantList'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import EnrolleeLoader from './EnrolleeLoader'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
-import ExportDataBrowser from './export/ExportDataBrowser'
 
 /** routes to list or individual enrollee view as appropriate */
 export default function ParticipantsRouter({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {

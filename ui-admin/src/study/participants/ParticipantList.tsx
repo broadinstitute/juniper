@@ -4,7 +4,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
 import { Link } from 'react-router-dom'
-import { StudyEnvContextT } from '../StudyEnvironmentRouter'
+import { getExportDataBrowserPath, StudyEnvContextT } from '../StudyEnvironmentRouter'
 import {
   ColumnDef,
   flexRender,
@@ -102,6 +102,8 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
                 {Object.keys(rowSelection).length} of{' '}
                 {table.getPreFilteredRowModel().rows.length} selected
               </span>
+              <Link to={getExportDataBrowserPath(currentEnvPath)} className="mx-2">Export preview</Link>
+              <span className="px-1">|</span>
               <ExportDataControl studyEnvContext={studyEnvContext}/>
 
             </div>

@@ -1,30 +1,22 @@
 import React, { useState } from 'react'
-import { getExportDataBrowserPath, StudyEnvContextT } from '../../StudyEnvironmentRouter'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faColumns, faDownload } from '@fortawesome/free-solid-svg-icons'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Modal from 'react-bootstrap/Modal'
-import LoadingSpinner from '../../../util/LoadingSpinner'
-import { useNavigate } from 'react-router-dom'
+import LoadingSpinner from 'util/LoadingSpinner'
 
 const ExportDataControl = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
   const [show, setShow] = useState(false)
-  const [isDownload, setIsDownload] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const navigate = useNavigate()
+  const [isLoading] = useState(false)
 
   const doExport = () => {
-    if (!isDownload) {
-      navigate(getExportDataBrowserPath(studyEnvContext.currentEnvPath))
-      return
-    }
+    alert('not yet implemented')
   }
   return <>
     <button className="btn btn-secondary" onClick={() => setShow(!show)} aria-label="show or hide export modal">
-      Export <FontAwesomeIcon icon={faDownload} className="fa-lg"/>
+      Download
     </button>
     <Modal show={show} onHide={() => setShow(false)}>
       <Modal.Header closeButton>
-        <Modal.Title>Export enrollee data</Modal.Title>
+        <Modal.Title>Export enrollee data - {studyEnvContext.study.name}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         (Some export options will go here)
