@@ -2,6 +2,8 @@ package bio.terra.pearl.core.service.export;
 
 import bio.terra.pearl.core.model.participant.MailingAddress;
 import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.service.export.formatters.ProfileFormatter;
+import bio.terra.pearl.core.service.export.instance.ExportOptions;
 import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import java.time.LocalDate;
 import java.util.Map;
@@ -21,7 +23,7 @@ public class ProfileFormatterTests {
                         .city("Boston")
                         .build())
                 .build();
-        ModuleExportInfo moduleExportInfo = new ProfileFormatter().getModuleExportInfo();
+        ModuleExportInfo moduleExportInfo = new ProfileFormatter().getModuleExportInfo(new ExportOptions());
         EnrolleeExportData exportData = new EnrolleeExportData(null, profile, null, null, null);
         Map<String, String> enrolleeMap = moduleExportInfo.toStringMap(exportData);
 
@@ -36,7 +38,7 @@ public class ProfileFormatterTests {
         Profile profile = Profile.builder()
                 .familyName("Tester")
                 .build();
-        ModuleExportInfo moduleExportInfo = new ProfileFormatter().getModuleExportInfo();
+        ModuleExportInfo moduleExportInfo = new ProfileFormatter().getModuleExportInfo(new ExportOptions());
         EnrolleeExportData exportData = new EnrolleeExportData(null, profile, null, null, null);
         Map<String, String> enrolleeMap = moduleExportInfo.toStringMap(exportData);
 

@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.export;
+package bio.terra.pearl.core.service.export.formatters;
 
 import bio.terra.pearl.core.service.export.instance.ItemExportInfo;
 import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;

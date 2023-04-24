@@ -5,6 +5,9 @@ import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.service.export.formatters.EnrolleeFormatter;
+import bio.terra.pearl.core.service.export.formatters.ProfileFormatter;
+import bio.terra.pearl.core.service.export.formatters.SurveyFormatter;
 import bio.terra.pearl.core.service.export.instance.ExportOptions;
 import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -12,6 +15,7 @@ import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.*;
 import org.slf4j.Logger;
@@ -47,10 +51,23 @@ public class EnrolleeExportService {
         this.objectMapper = objectMapper;
     }
 
+    public String exportAsString(ExportOptions exportOptions, UUID portalId, UUID studyEnvironmentId) throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        export(exportOptions, portalId, studyEnvironmentId, baos);
+        baos.close();
+        return baos.toString();
+    }
+
     public void export(ExportOptions exportOptions, UUID portalId, UUID studyEnvironmentId, OutputStream os) throws Exception {
         List<ModuleExportInfo> moduleExportInfos = generateModuleInfos(exportOptions, portalId, studyEnvironmentId);
         var enrolleeMaps = generateExportMaps(portalId, studyEnvironmentId, moduleExportInfos);
-        TsvExporter exporter = new TsvExporter(moduleExportInfos, enrolleeMaps);
+        BaseExporter exporter = null;
+        // once we have more exporters, we'll want some sort of factory pattern here
+        if (exportOptions.fileFormat().equals(ExportFileFormat.JSON)) {
+            exporter = new JsonExporter(moduleExportInfos, enrolleeMaps, objectMapper);
+        } else {
+            exporter = new TsvExporter(moduleExportInfos, enrolleeMaps);
+        }
         exporter.export(os);
     }
 

@@ -1,6 +1,7 @@
-package bio.terra.pearl.core.service.export;
+package bio.terra.pearl.core.service.export.formatters;
 
 import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.instance.ExportOptions;
 import bio.terra.pearl.core.service.export.instance.ItemExportInfo;
 import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
@@ -81,9 +82,9 @@ public class SurveyFormatter implements ExportFormatter {
     public String getColumnSubHeader(ModuleExportInfo moduleExportInfo, ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice) {
         String moduleNameHeader = ExportFormatUtils.camelToWordCase(moduleExportInfo.getModuleName());
         if (itemExportInfo.getPropertyAccessor() != null) {
-            return moduleNameHeader + ExportFormatUtils.camelToWordCase(itemExportInfo.getPropertyAccessor());
+            return ExportFormatUtils.camelToWordCase(itemExportInfo.getPropertyAccessor());
         }
-        return moduleNameHeader + ExportFormatUtils.camelToWordCase(itemExportInfo.getQuestionStableId());
+        return ExportFormatUtils.camelToWordCase(stripStudyPrefixes(itemExportInfo.getQuestionStableId()));
     }
 
     public ModuleExportInfo getModuleExportInfo(ExportOptions exportOptions, Survey survey,

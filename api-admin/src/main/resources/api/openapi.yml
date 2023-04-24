@@ -272,7 +272,24 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/export/data:
+    post:
+      summary: Gets the export data as a tsv string
+      tags: [ export ]
+      operationId: exportData
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: false
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: export data
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/mailingList:
     get:
       summary: Gets the mailing list for the environment

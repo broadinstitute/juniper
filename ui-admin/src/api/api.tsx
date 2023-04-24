@@ -357,6 +357,19 @@ export type VersionedConfigChange = {
   documentChange: VersionedEntityChange
 }
 
+export type ExportOptions = {
+  fileFormat: string,
+  splitOptionsIntoColumns?: boolean,
+  stableIdsForOptions?: boolean,
+  onlyIncludeMostRecent?: boolean
+}
+
+export type ExportData = {
+  columnKeys: string[],
+  headerRowValues: string[],
+  subHeaderRowValues: string[],
+  valueMaps: Record<string, string>[]
+}
 
 let bearerToken: string | null = null
 export const API_ROOT = process.env.REACT_APP_API_ROOT
@@ -571,6 +584,17 @@ export default {
       method: 'POST',
       headers: this.getInitHeaders(),
       body: JSON.stringify(enrolleeRuleData)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async exportEnrollees(portalShortcode: string, studyShortcode: string, envName: string, exportOptions: ExportOptions):
+    Promise<ExportData> {
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/data`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(exportOptions)
     })
     return await this.processJsonResponse(response)
   },

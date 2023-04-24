@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service.export.instance;
 
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
-import bio.terra.pearl.core.service.export.ExportFormatter;
+import bio.terra.pearl.core.service.export.formatters.ExportFormatter;
 import java.util.List;
 import java.util.Map;
 import lombok.Builder;
