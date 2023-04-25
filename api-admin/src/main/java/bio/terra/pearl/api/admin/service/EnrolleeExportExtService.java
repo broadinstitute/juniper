@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
 import bio.terra.pearl.core.service.export.instance.ExportOptions;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import java.io.OutputStream;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,18 +25,19 @@ public class EnrolleeExportExtService {
     this.enrolleeExportService = enrolleeExportService;
   }
 
-  public String exportAsString(
+  public void export(
       ExportOptions options,
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
+      OutputStream os,
       AdminUser user) {
     Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
     StudyEnvironment studyEnv =
         studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
     try {
-      return enrolleeExportService.exportAsString(options, portal.getId(), studyEnv.getId());
+      enrolleeExportService.export(options, portal.getId(), studyEnv.getId(), os);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

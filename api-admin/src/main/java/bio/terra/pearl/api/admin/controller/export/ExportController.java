@@ -7,7 +7,11 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.export.instance.ExportOptions;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.ByteArrayOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -17,21 +21,24 @@ public class ExportController implements ExportApi {
   private HttpServletRequest request;
   private EnrolleeExportExtService enrolleeExportExtService;
   private ObjectMapper objectMapper;
+  private HttpServletResponse response;
 
   public ExportController(
       AuthUtilService authUtilService,
       HttpServletRequest request,
       EnrolleeExportExtService enrolleeExportExtService,
-      ObjectMapper objectMapper) {
+      ObjectMapper objectMapper,
+      HttpServletResponse response) {
     this.authUtilService = authUtilService;
     this.request = request;
     this.enrolleeExportExtService = enrolleeExportExtService;
     this.objectMapper = objectMapper;
+    this.response = response;
   }
 
   /** just gets the export as a row TSV string, with no accompanying data dictionary */
   @Override
-  public ResponseEntity<Object> exportData(
+  public ResponseEntity<Resource> exportData(
       String portalShortcode, String studyShortcode, String envName, Object body) {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
@@ -41,9 +48,9 @@ public class ExportController implements ExportApi {
       exportOptions = objectMapper.convertValue(body, ExportOptions.class);
     }
 
-    String export =
-        enrolleeExportExtService.exportAsString(
-            exportOptions, portalShortcode, studyShortcode, environmentName, user);
-    return ResponseEntity.ok(export);
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    enrolleeExportExtService.export(
+        exportOptions, portalShortcode, studyShortcode, environmentName, baos, user);
+    return ResponseEntity.ok().body(new ByteArrayResource(baos.toByteArray()));
   }
 }

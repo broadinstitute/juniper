@@ -599,6 +599,8 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  getEnrolleeExportUrl(portalShortcode: string, studyShortcode: string, envName: string, exportOptions: ExportOptions)
+
   async fetchMailingList(portalShortcode: string, envName: string): Promise<MailingListContact[]> {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList`
     const response = await fetch(url, this.getGetInit())

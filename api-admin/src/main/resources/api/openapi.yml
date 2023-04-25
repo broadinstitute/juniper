@@ -287,7 +287,7 @@ paths:
       responses:
         '200':
           description: export data
-          content: { application/json: { schema: { type: object } } }
+          content: { text/plain: { schema: { type: string, format: binary } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/mailingList:
