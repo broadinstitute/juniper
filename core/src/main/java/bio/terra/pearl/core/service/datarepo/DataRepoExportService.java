@@ -142,8 +142,8 @@ public class DataRepoExportService {
         //For each running job, query TDR for the latest status
         for(DataRepoJob job : runningJobs) {
             switch(job.getJobType()) {
-                case CREATE -> pollAndUpdateCreateJobStatus(job);
-                case INGEST -> pollAndUpdateIngestJobStatus(job);
+                case CREATE_DATASET -> pollAndUpdateCreateJobStatus(job);
+                case INGEST_DATASET -> pollAndUpdateIngestJobStatus(job);
                 default -> logger.error("Unknown job type '{}' for TDR job {}.", job.getJobType(), job.getTdrJobId());
             }
         }
