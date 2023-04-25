@@ -85,7 +85,7 @@ public class SurveyTaskDispatcher {
                 .enrolleeId(enrollee.getId())
                 .portalParticipantUserId(portalParticipantUser.getId())
                 .studyEnvironmentId(enrollee.getStudyEnvironmentId())
-                .blocksHub(false) // for now, no surveys block the hub
+                .blocksHub(studySurvey.isRequired())
                 .taskOrder(studySurvey.getSurveyOrder())
                 .targetStableId(survey.getStableId())
                 .targetAssignedVersion(survey.getVersion())

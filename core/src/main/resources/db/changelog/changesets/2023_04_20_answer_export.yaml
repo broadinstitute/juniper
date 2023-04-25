@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: "answer_export"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: answer
+            columns:
+              - column: { name: other_description , type: text }
+        - addColumn:
+            tableName: survey_question_definition
+            columns:
+              - column: { name: allow_multiple , type: boolean, defaultValueBoolean: false, constraints: { nullable: false }}
+              - column: { name: allow_other_description , type: boolean, defaultValueBoolean: false, constraints: { nullable: false }}
+              - column: { name: export_order , type: integer }

@@ -4,7 +4,8 @@ public enum AnswerType {
     STRING,
     NUMBER,
     BOOLEAN,
-    OBJECT;
+    OBJECT,
+    NONE; // for descriptive questions
 
     public static AnswerType forValue(Object value) {
         if (String.class.isInstance(value)) {

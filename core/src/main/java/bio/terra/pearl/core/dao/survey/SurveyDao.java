@@ -28,6 +28,16 @@ public class SurveyDao extends BaseVersionedJdbiDao<Survey> {
         return findAllByProperty("portal_id", portalId);
     }
 
+    /** omits the content from the return object to save space/fetch time */
+    public List<Survey> findByPortalIdNoContent(UUID portalId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select id, name, version, stable_id from survey where portal_id = :portalId;")
+                        .bind("portalId", portalId)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
     @Override
     protected Class<Survey> getClazz() {
         return Survey.class;

@@ -673,8 +673,8 @@
             "choices": [
               {"text": "My great-grandparents or an older generation were the first to leave South Asia.", "value": "greatGrandparentsOrOlderLeft"},
               {"text": "My grandparents were the first to leave South Asia.", "value": "grandparentsLeft"},
-              {"text": "My parents were the first to leave South Asia.)", "value": "parentsLeft"},
-              {"text": "I was the first to leave South Asia", "value": "firstToLeave"},
+              {"text": "My parents were the first to leave South Asia.", "value": "parentsLeft"},
+              {"text": "I was the first to leave South Asia.", "value": "firstToLeave"},
               {"text": "Prefer not to answer", "value": "preferNoAnswer"}
             ]
           },{

@@ -12,19 +12,19 @@ export type StatusDisplayInfo = {
 
 const statusDisplayMap: Record<string, StatusDisplayInfo> = {
   'COMPLETE': {
-    icon: <FontAwesomeIcon icon={faCheck} className="fa-lg" style={{ color: 'rgb(122, 152, 188)' }} />,
+    icon: <FontAwesomeIcon icon={faCheck} className="fa-lg" style={{ color: 'rgb(122, 152, 188)' }}/>,
     statusDisplay: 'Complete'
   },
   'IN_PROGRESS': {
-    icon: <FontAwesomeIcon icon={faCircleHalfStroke} style={{ color: 'rgb(129, 172, 82)' }} />,
+    icon: <FontAwesomeIcon icon={faCircleHalfStroke} style={{ color: 'rgb(129, 172, 82)' }}/>,
     statusDisplay: 'In Progress'
   },
   'NEW': {
-    icon: <FontAwesomeIcon icon={faCircle} style={{ color: '#777' }} />,
+    icon: <FontAwesomeIcon icon={faCircle} style={{ color: '#777' }}/>,
     statusDisplay: 'Not Started'
   },
   'REJECTED': {
-    icon: <FontAwesomeIcon icon={faCircleXmark} style={{ color: '#777' }} />,
+    icon: <FontAwesomeIcon icon={faCircleXmark} style={{ color: '#777' }}/>,
     statusDisplay: 'Declined'
   }
 }
@@ -50,7 +50,7 @@ export default function TaskLink({ task, studyShortcode, enrollee }:
       <div className="detail">
         {isAccessible
           ? statusDisplayMap[task.status].icon
-          : <FontAwesomeIcon icon={faLock} style={{ color: 'rgb(203, 203, 203)' }} />}
+          : <FontAwesomeIcon icon={faLock} style={{ color: 'rgb(203, 203, 203)' }}/>}
       </div>
       <div className="flex-grow-1 ms-3">
         {isAccessible
@@ -78,9 +78,16 @@ export function getTaskPath(task: ParticipantTask, enrolleeShortcode: string, st
   return ''
 }
 
-/** is the task actionable by the user? for now, just looks at whether they've consented */
+/** is the task actionable by the user? the rules are:
+ * consent forms are always actionable.
+ * nothing else is actionable until consent
+ * non-required tasks are not actionable until all required tasks are cleared */
 export function isTaskAccessible(task: ParticipantTask, enrollee: Enrollee) {
-  return task.taskType === 'CONSENT' || enrollee.consented
+  const hasRequiredTasks = enrollee.participantTasks.some(task => task.blocksHub && task.status !== 'COMPLETE')
+  return task.taskType === 'CONSENT' || (
+    enrollee.consented &&
+    (!hasRequiredTasks || task.blocksHub)
+  )
 }
 
 /** is the task ready to be worked on (not done or rejected) */
