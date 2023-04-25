@@ -77,7 +77,22 @@
             {
               "type": "html",
               "name": "consentPage5",
-              "html": "<h2 class='h5'>If you take part in this research study, how will we protect your privacy?</h2><p>Federal law requires Mass General Brigham to protect the privacy of health information and related information that identifies you. We refer to this information simply as “identifiable information.” The same federal laws that protect your health information will protect your research information.</p><p>In addition to Mass General Brigham researchers listed on this IRB application, the following people or groups may be able to see, use, and share your identifiable health information from the research:</p><ul><li>The Mass General Brigham IRB that oversees the project and the Mass General Brigham research quality improvement programs.</li><li>People from organizations that provide independent accreditation and oversight of hospitals and research.</li><li>People or organizations that we hire to do work for us, such as data storage companies, insurers, and lawyers, Federal and state agencies (such as the Food and Drug Administration, the Department of Health and Human Services, the National Institutes of Health, and other US or foreign government bodies that oversee or review research).</li></ul><p>We share your identifiable health information only when we must, and we ask anyone who receives it from us to protect your privacy.</p><h2 class='h5'>Your Privacy Rights</h2><p>You have the right not to sign this form that allows us to use and share your health information for research; however, if you don’t sign it, you can’t take part in this research study.</p><h2 class='h5'>Documentation of Consent</h2><p>This is what I agree to:</p><ol><li>You can perform (or work with others to perform) genomic or molecular tests on my saliva sample and store the sample(s) until this research study is complete.</li><li>You can store the answers that I provide in study surveys until this research study is complete.</li><li>You can study and share the results of the genomic or molecular tests, survey responses, and my health information with established public databases (e.g., NIH data portals) and with other qualified researchers in a manner that does not include my name, or any other information that could be used to readily identify me, to be used by other qualified researchers to perform future research studies, including studies that have not yet been designed, studies for diseases other than cancer, and studies that may be for commercial purposes.</li><li>You can use the results of studying my saliva sample and my health information for future research studies, including studies that have not yet been designed, studies for any disease, and/or studies that may be for commercial purposes.</li><li>You can contact me in the future for reasons related to this research study.</li></ol>"
+              "html": "<h2 class='h5'>If you take part in this research study, how will we protect your privacy?</h2><p>Federal law requires Mass General Brigham to protect the privacy of health information and related information that identifies you. We refer to this information simply as “identifiable information.” The same federal laws that protect your health information will protect your research information.</p><p>In addition to Mass General Brigham researchers listed on this IRB application, the following people or groups may be able to see, use, and share your identifiable health information from the research:</p><ul><li>The Mass General Brigham IRB that oversees the project and the Mass General Brigham research quality improvement programs.</li><li>People from organizations that provide independent accreditation and oversight of hospitals and research.</li><li>People or organizations that we hire to do work for us, such as data storage companies, insurers, and lawyers, Federal and state agencies (such as the Food and Drug Administration, the Department of Health and Human Services, the National Institutes of Health, and other US or foreign government bodies that oversee or review research).</li></ul><p>We share your identifiable health information only when we must, and we ask anyone who receives it from us to protect your privacy.</p><h2 class='h5'>Your Privacy Rights</h2><p>You have the right not to sign this form that allows us to use and share your health information for research; however, if you don’t sign it, you can’t take part in this research study.</p>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "page6",
+      "elements": [
+        {
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "consentPage6",
+              "html": "<h2 class='h5'>Documentation of Consent</h2><p>This is what I agree to:</p><ol><li>You can perform (or work with others to perform) genomic or molecular tests on my saliva sample and store the sample(s) until this research study is complete.</li><li>You can store the answers that I provide in study surveys until this research study is complete.</li><li>You can study and share the results of the genomic or molecular tests, survey responses, and my health information with established public databases (e.g., NIH data portals) and with other qualified researchers in a manner that does not include my name, or any other information that could be used to readily identify me, to be used by other qualified researchers to perform future research studies, including studies that have not yet been designed, studies for diseases other than cancer, and studies that may be for commercial purposes.</li><li>You can use the results of studying my saliva sample and my health information for future research studies, including studies that have not yet been designed, studies for any disease, and/or studies that may be for commercial purposes.</li><li>You can contact me in the future for reasons related to this research study.</li></ol>"
             }
           ]
         },
@@ -106,14 +121,14 @@
       ]
     },
     {
-      "name": "page6",
+      "name": "page7",
       "elements": [
         {
           "type": "panel",
           "elements": [
             {
               "type": "html",
-              "name": "consentPage6",
+              "name": "consentPage7",
               "html": "<h2 class='h5'>Statement of Person Giving Informed Consent and Authorization</h2><p>My full typed name below indicates:</p><ul><li>I have had enough time to read the consent and think about agreeing to participate in this study.</li><li>I have had all of my questions answered to my satisfaction.</li><li>I am willing to participate in this research study.</li><li>I have been told that my participation is voluntary and if I decide not to participate it will have no impact on my medical care.</li><li>I have been told that if I decide to participate now, I can decide to stop being in the study at any time. </li><li>I acknowledge that a copy of the signed consent form will be sent to my email address</li></ul>"
             }
           ]
