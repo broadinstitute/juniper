@@ -1,16 +1,16 @@
 package bio.terra.pearl.core.service.datarepo;
 
-import bio.terra.pearl.core.dao.datarepo.CreateDatasetJobDao;
-import bio.terra.pearl.core.model.datarepo.CreateDatasetJob;
+import bio.terra.pearl.core.dao.datarepo.DataRepoJobDao;
+import bio.terra.pearl.core.model.datarepo.DataRepoJob;
 import bio.terra.pearl.core.service.CrudService;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
-public class CreateDatasetJobService extends CrudService<CreateDatasetJob, CreateDatasetJobDao> {
+public class DataRepoJobService extends CrudService<DataRepoJob, DataRepoJobDao> {
 
-    public CreateDatasetJobService(CreateDatasetJobDao dao) {
+    public DataRepoJobService(DataRepoJobDao dao) {
         super(dao);
     }
 
