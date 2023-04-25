@@ -63,7 +63,7 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
     Api.exportEnrollees(
       studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
-      studyEnvContext.currentEnv.environmentName, { fileFormat: 'JSON' }).then(result => {
+      studyEnvContext.currentEnv.environmentName, { fileFormat: 'JSON', limit: 10 }).then(result => {
       setData(result)
       setIsLoading(false)
     }).catch(() => {
@@ -73,6 +73,9 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
   }, [])
   return <div className="container-fluid py-3">
     <h1 className="h3">Data export preview</h1>
+    <span className="text-muted fst-italic">
+      (Transposed for readability, the actual export has participants as rows)
+    </span>
     <LoadingSpinner isLoading={isLoading}/>
     {!isLoading && <table className="table table-striped">
       <thead>

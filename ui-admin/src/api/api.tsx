@@ -361,7 +361,8 @@ export type ExportOptions = {
   fileFormat: string,
   splitOptionsIntoColumns?: boolean,
   stableIdsForOptions?: boolean,
-  onlyIncludeMostRecent?: boolean
+  onlyIncludeMostRecent?: boolean,
+  limit?: number
 }
 
 export type ExportData = {
@@ -590,16 +591,20 @@ export default {
 
   async exportEnrollees(portalShortcode: string, studyShortcode: string, envName: string, exportOptions: ExportOptions):
     Promise<ExportData> {
+    const response = await this.exportEnrolleesRaw(portalShortcode, studyShortcode, envName, exportOptions)
+    return await this.processJsonResponse(response)
+  },
+
+  async exportEnrolleesRaw(portalShortcode: string, studyShortcode: string,
+    envName: string, exportOptions: ExportOptions):
+    Promise<Response> {
     const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/data`
-    const response = await fetch(url, {
+    return await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
       body: JSON.stringify(exportOptions)
     })
-    return await this.processJsonResponse(response)
   },
-
-  getEnrolleeExportUrl(portalShortcode: string, studyShortcode: string, envName: string, exportOptions: ExportOptions)
 
   async fetchMailingList(portalShortcode: string, envName: string): Promise<MailingListContact[]> {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList`

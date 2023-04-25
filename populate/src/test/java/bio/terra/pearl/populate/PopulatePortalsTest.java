@@ -96,9 +96,9 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
         checkOurhealthSurveys(jonas);
         checkOurhealthSiteContent(portal.getId());
 
-        ExportOptions options = new ExportOptions(false, false, ExportFileFormat.TSV, true);
+        ExportOptions options = new ExportOptions(false, false, ExportFileFormat.TSV, true, null);
         List<ModuleExportInfo> moduleInfos = enrolleeExportService.generateModuleInfos(options, portal.getId(), sandboxEnvironmentId);
-        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(portal.getId(), sandboxEnvironmentId, moduleInfos);
+        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(portal.getId(), sandboxEnvironmentId, moduleInfos, options.limit());
 
         assertThat(exportData, hasSize(3));
         Map<String, String> jsalkMap = exportData.stream().filter(map -> "OHSALK".equals(map.get("enrollee.shortcode")))
