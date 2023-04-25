@@ -430,7 +430,7 @@
           "name": "oh_oh_lifestyle_drinksInADay",
           "type": "radiogroup",
           "title": "On a typical day when you drink, how many drinks do you have?",
-          "visibleIf": "{oh_oh_lifestyle_drinkInLastYear} != 'never' and {oh_oh_lifestyle_drinkInLastYear} != 'preferNoAnswer' ",
+          "visibleIf": "{oh_oh_lifestyle_everHadADrink} = 'yes' and {oh_oh_lifestyle_drinkInLastYear} != 'never' and {oh_oh_lifestyle_drinkInLastYear} != 'preferNoAnswer' ",
           "choices": [
             {"text": "1 or 2", "value": "1or2"},
             {"text": "3 or 4", "value": "3or4"},
@@ -443,7 +443,7 @@
           "name": "oh_oh_lifestyle_sixDrinksInOccasion",
           "type": "radiogroup",
           "title": "How often did you have six or more drinks on one occasion in the past year?",
-          "visibleIf": "{oh_oh_lifestyle_drinkInLastYear} != 'never' and {oh_oh_lifestyle_drinkInLastYear} != 'preferNoAnswer' ",
+          "visibleIf": "{oh_oh_lifestyle_everHadADrink} = 'yes' and {oh_oh_lifestyle_drinkInLastYear} != 'never' and {oh_oh_lifestyle_drinkInLastYear} != 'preferNoAnswer' ",
           "choices": [
             {"text": "Less than monthly", "value": "lessThanMonthly"},
             {"text": "Monthly", "value": "monthly"},
@@ -472,6 +472,9 @@
           "title": "In your LIFETIME, which of the following substances have you ever used?",
           "showOtherItem": true,
           "otherText": "Other",
+          "otherPlaceholder": "Please specify",
+          "showNoneItem": true,
+          "noneText": "None",
           "otherPlaceholder": "Please specify",
           "choices": [
             {"text": "Marijuana (cannabis, pot, grass, hash, weed, bhaang, etc.)", "value": "marijuana"},
