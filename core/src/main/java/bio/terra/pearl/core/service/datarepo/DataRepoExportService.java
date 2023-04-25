@@ -95,7 +95,7 @@ public class DataRepoExportService {
                     .status(response.getJobStatus().getValue())
                     .datasetName(datasetName)
                     .tdrJobId(response.getId())
-                    .jobType(JobType.CREATE)
+                    .jobType(JobType.CREATE_DATASET)
                     .build();
 
             dataRepoJobService.create(job);
@@ -104,7 +104,7 @@ public class DataRepoExportService {
     }
 
     public void ingestDatasets() {
-        List<Dataset> outdatedDatasets = datasetDao.findAll().stream().filter(dataset -> dataset.getLastUpdatedAt().isBefore(Instant.now().minus(4, ChronoUnit.HOURS))).toList();
+        List<Dataset> outdatedDatasets = datasetDao.findAll().stream().filter(dataset -> dataset.getLastExported().isBefore(Instant.now().minus(4, ChronoUnit.HOURS))).toList();
 
         logger.info("Found {} study environments requiring dataset ingest", outdatedDatasets.size());
 
@@ -124,7 +124,7 @@ public class DataRepoExportService {
                     .status(ingestJob.getJobStatus().getValue())
                     .datasetName(studyEnvDataset.getDatasetName())
                     .tdrJobId(ingestJob.getId())
-                    .jobType(JobType.INGEST)
+                    .jobType(JobType.INGEST_DATASET)
                     .build();
 
             dataRepoJobService.create(job);
