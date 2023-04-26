@@ -12,13 +12,17 @@ export const CookieAlert = (props: CookieAlertProps) => {
   const { onDismiss } = props
   return (
     <Alert
-      className="mb-0"
+      className="mb-1"
       icon={faCookieBite}
       level="warning"
       role="alert"
       style={{
         position: 'fixed',
-        bottom: 0
+        bottom: 0,
+        left: '50%',
+        transform: 'translate(-50%, 0)',
+        width: 'calc(100vw - 1rem)',
+        maxWidth: 1122
       }}
       title="Cookies"
       onDismiss={onDismiss}
