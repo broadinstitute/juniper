@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState} from 'react'
-import {useNavigate, useParams, useSearchParams} from 'react-router-dom'
+import React, { useEffect, useRef, useState } from 'react'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import Api, {
   Enrollee,
@@ -11,7 +11,7 @@ import Api, {
   SurveyWithResponse
 } from 'api/api'
 
-import {Survey as SurveyComponent} from 'survey-react-ui'
+import { Survey as SurveyComponent } from 'survey-react-ui'
 import {
   getResumeData,
   getSurveyJsAnswerList,
@@ -21,13 +21,13 @@ import {
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
-import {HubUpdate} from 'hub/hubUpdates'
-import {usePortalEnv} from 'providers/PortalProvider'
-import {useUser} from 'providers/UserProvider'
-import {PageLoadingIndicator} from 'util/LoadingSpinner'
-import {withErrorBoundary} from '../../util/ErrorBoundary'
+import { HubUpdate } from 'hub/hubUpdates'
+import { usePortalEnv } from 'providers/PortalProvider'
+import { useUser } from 'providers/UserProvider'
+import { PageLoadingIndicator } from 'util/LoadingSpinner'
+import { withErrorBoundary } from '../../util/ErrorBoundary'
 import SurveyReviewModeButton from './ReviewModeButton'
-import {Markdown} from "../../landing/Markdown";
+import { Markdown } from '../../landing/Markdown'
 
 const TASK_ID_PARAM = 'taskId'
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
@@ -35,13 +35,13 @@ const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are c
 /**
  * display a single survey form to a participant.
  */
-function RawSurveyView({form, enrollee, resumableData, pager, studyShortcode, taskId, activeResponse}:
+function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, taskId, activeResponse }:
                          {
                            form: Survey, enrollee: Enrollee, taskId: string, activeResponse?: SurveyResponse,
                            resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string
                          }) {
   const navigate = useNavigate()
-  const {updateEnrollee} = useUser()
+  const { updateEnrollee } = useUser()
   const prevSave = useRef(resumableData?.data ?? {})
 
   /** Submit the response to the server */
@@ -73,14 +73,14 @@ function RawSurveyView({form, enrollee, resumableData, pager, studyShortcode, ta
           type: 'success'
         }
       }
-      navigate('/hub', {state: hubUpdate})
+      navigate('/hub', { state: hubUpdate })
     }).catch(() => {
       refreshSurvey(surveyModel, null)
       alert('an error occurred')
     })
   }
 
-  const {surveyModel, refreshSurvey, setSurveyModel} = useSurveyJSModel(form, resumableData,
+  const { surveyModel, refreshSurvey, setSurveyModel } = useSurveyJSModel(form, resumableData,
     onComplete, pager, enrollee.profile)
 
   const saveDiff = () => {
@@ -133,12 +133,12 @@ function RawSurveyView({form, enrollee, resumableData, pager, studyShortcode, ta
   }, [])
 
   // f3f3f3 background is to match surveyJs "modern" theme
-  return <div style={{background: '#f3f3f3'}} className="survey-js-survey">
+  return <div style={{ background: '#f3f3f3' }} className="survey-js-survey">
     <SurveyReviewModeButton surveyModel={surveyModel}/>
     <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">{form.name}</h1>
     {surveyModel && <SurveyComponent model={surveyModel}/>}
-    {form.footer && <div className="container col-md-6 p-3 ps-5 mb-4 text-muted
-    " style={{marginTop: '-60px'}}>
+    {form.footer && <div className="container p-3 mb-4 text-muted
+    " style={{ marginTop: '-60px', maxWidth: '600px' }}>
       <Markdown>{form.footer}</Markdown>
     </div>}
   </div>
@@ -146,7 +146,7 @@ function RawSurveyView({form, enrollee, resumableData, pager, studyShortcode, ta
 
 
 /** handles paging the form */
-function PagedSurveyView({form, activeResponse, enrollee, studyShortcode, taskId}:
+function PagedSurveyView({ form, activeResponse, enrollee, studyShortcode, taskId }:
                            {
                              form: StudyEnvironmentSurvey, activeResponse?: SurveyResponse, enrollee: Enrollee,
                              studyShortcode: string, taskId: string
@@ -157,13 +157,13 @@ function PagedSurveyView({form, activeResponse, enrollee, studyShortcode, taskId
   const pager = useRoutablePageNumber()
 
   return <RawSurveyView enrollee={enrollee} form={form.survey} taskId={taskId} activeResponse={activeResponse}
-                        resumableData={resumableData} pager={pager} studyShortcode={studyShortcode}/>
+    resumableData={resumableData} pager={pager} studyShortcode={studyShortcode}/>
 }
 
 /** handles loading the survey form and responses from the server */
 function SurveyView() {
-  const {portal} = usePortalEnv()
-  const {enrollees} = useUser()
+  const { portal } = usePortalEnv()
+  const { enrollees } = useUser()
   const [formAndResponses, setFormAndResponse] = useState<SurveyWithResponse | null>(null)
   const params = useParams()
   const stableId = params.stableId
@@ -186,8 +186,8 @@ function SurveyView() {
       .then(response => {
         setFormAndResponse(response)
       }).catch(() => {
-      alert('error loading survey form - please retry')
-    })
+        alert('error loading survey form - please retry')
+      })
   }, [])
 
   if (!formAndResponses) {

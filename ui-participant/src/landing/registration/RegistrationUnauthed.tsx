@@ -1,10 +1,10 @@
 import React from 'react'
-import {Survey as SurveyComponent} from 'survey-react-ui'
-import {useSurveyJSModel} from 'util/surveyJsUtils'
-import Api, {Survey} from 'api/api'
-import {RegistrationContextT} from './PortalRegistrationRouter'
-import {useUser} from '../../providers/UserProvider'
-import {useNavigate} from 'react-router-dom'
+import { Survey as SurveyComponent } from 'survey-react-ui'
+import { useSurveyJSModel } from 'util/surveyJsUtils'
+import Api, { Survey } from 'api/api'
+import { RegistrationContextT } from './PortalRegistrationRouter'
+import { useUser } from '../../providers/UserProvider'
+import { useNavigate } from 'react-router-dom'
 
 /** This registration survey is a hardcoded survey--will be deprecated soon */
 const registrationSurvey = {
@@ -44,15 +44,15 @@ const registrationSurveyModel: Survey = {
  * Show the registration page for internal-only login.  Currently deprecated -- use only in cases where
  * B2C is down, or for automation
  * */
-export default function RegistrationUnauthed({registrationContext, returnTo}: {
+export default function RegistrationUnauthed({ registrationContext, returnTo }: {
   registrationContext: RegistrationContextT,
   returnTo: string | null
 }) {
-  const {preRegResponseId} = registrationContext
+  const { preRegResponseId } = registrationContext
   // for now, assume registration surveys are a single page
-  const pager = {pageNumber: 0, updatePageNumber: () => 0}
-  const {surveyModel, refreshSurvey} = useSurveyJSModel(registrationSurveyModel, null, onComplete, pager)
-  const {loginUser} = useUser()
+  const pager = { pageNumber: 0, updatePageNumber: () => 0 }
+  const { surveyModel, refreshSurvey } = useSurveyJSModel(registrationSurveyModel, null, onComplete, pager)
+  const { loginUser } = useUser()
   const navigate = useNavigate()
 
   /** submit the response */
@@ -69,7 +69,7 @@ export default function RegistrationUnauthed({registrationContext, returnTo}: {
       preRegResponseId: preRegResponseId as string,
       fullData: registrationInfo
     }).then(response => {
-      loginUser({user: response.participantUser, enrollees: []}, response.participantUser.token)
+      loginUser({ user: response.participantUser, enrollees: [] }, response.participantUser.token)
       if (returnTo) {
         navigate(returnTo)
       }
