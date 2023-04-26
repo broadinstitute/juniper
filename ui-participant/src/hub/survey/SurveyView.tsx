@@ -147,9 +147,11 @@ function SurveyFooter({ survey, surveyModel }: { survey: Survey, surveyModel: Su
   if (!survey.footer || !surveyModel?.isLastPage) {
     return null
   }
-  return <div className="container p-3 mb-4 text-muted
-    " style={{ marginTop: '-60px', maxWidth: '600px' }}>
-    <Markdown>{survey.footer}</Markdown>
+  return <div className="p-3 mb-0 w-100 d-flex justify-content-center"
+    style={{ marginTop: '-60px', background: '#d6d6d6' }}>
+    <div style={{ maxWidth: '600px' }}>
+      <Markdown>{survey.footer}</Markdown>
+    </div>
   </div>
 }
 
