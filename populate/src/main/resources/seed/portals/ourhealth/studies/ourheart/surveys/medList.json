@@ -10,19 +10,34 @@
       {
         "elements": [
           {
-            "name": "oh_oh_medList_intro",
-            "type": "html",
-            "html": "The following section will ask you to select if you take commonly prescribed cardiac or metabolic medications. You may want to have your pill bottles or prescription list readily available. If you do not see your medication listed, you will be able to select it from a larger list on the following page. \n"
+            "type": "panel",
+            "elements": [
+              {
+                "name": "oh_oh_medList_intro",
+                "type": "html",
+                "html": "<p>The following section will ask you to select if you take commonly prescribed cardiac or metabolic medications. You may want to have your pill bottles or prescription list readily available. If you do not see your medication listed, you will be able to select it from a larger list on the following page.</p>"
+              },
+              {
+                "name": "oh_oh_medList_intro2",
+                "type": "html",
+                "html": "<p><b>We will first ask you questions about heart medications:</b> The following section will ask you to select if you take commonly prescribed cardiac or metabolic medications. You may want to have your pill bottles or prescription list readily available. If you do not see your medication listed, you will be able to select it from a larger list on the following page.</p>"
+              }
+            ]
           },
           {
-            "name": "oh_oh_medList_intro2",
-            "type": "html",
-            "html": "<b>We will first ask you questions about heart medications:</b>\n\nThe following section will ask you to select if you take commonly prescribed cardiac or metabolic medications. You may want to have your pill bottles or prescription list readily available. If you do not see your medication listed, you will be able to select it from a larger list on the following page. \n"
+            "type": "panel",
+            "elements": [
+              {
+                "name": "oh_oh_medList_categoryCholesterol",
+                "type": "html",
+                "html": "<h2>Category 1: Cholesterol Medications</h2>"
+              }
+            ]
           },
           {
             "name": "oh_oh_medList_statins",
             "type": "radiogroup",
-            "title": "Category: Cholesterol Medications - Statins: ",
+            "title": "Are you currently taking a statin? (Please select all that apply.)",
             "choices": [
               {
                 "text": "Atorvastatin",
@@ -233,7 +248,7 @@
           {
             "name": "oh_oh_medList_otherCholesterolMeds",
             "type": "checkbox",
-            "title": "Other cholesterol medications",
+            "title": "Are you currently taking any of these cholesterol medications? (Please select all that apply.)",
             "choices": [
               {
                 "text": "Ezetimibe",
@@ -265,14 +280,19 @@
       {
         "elements": [
           {
-            "name": "oh_oh_medList_cat2desc",
-            "type": "html",
-            "html": "<b>Category 2: Antiplatelet and Blood Thinning Medications</b>\n\nI am currently taking… [Select all that apply]\n"
+            "type": "panel",
+            "elements": [
+              {
+                "name": "oh_oh_medList_cat2desc",
+                "type": "html",
+                "html": "<h2>Category 2: Antiplatelet and Blood Thinning Medications</h2>"
+              }
+            ]
           },
           {
             "name": "oh_oh_medList_antiPlatelet",
             "type": "checkbox",
-            "title": "Antiplatelet medications",
+            "title": "Are you currently taking an antiplatelet medication? (Please select all that apply.)",
             "choices": [
               {
                 "text": "Aspirin",
@@ -302,7 +322,7 @@
           {
             "name": "oh_oh_medList_bloodThinners",
             "type": "checkbox",
-            "title": "Blood Thinners (Anticoagulants)",
+            "title": "Are you currently taking a blood thinner (anticoagulant)? (Please select all that apply.)",
             "choices": [
               {
                 "text": "Coumadin (Warfarin)",
@@ -346,15 +366,20 @@
       {
         "elements": [
           {
-            "name": "oh_oh_medList_cat3desc",
-            "type": "html",
-            "html": "<b>Category 3: Blood Pressure and Other Cardiac Medications</b>"
+            "type": "panel",
+            "elements": [
+              {
+                "name": "oh_oh_medList_cat3desc",
+                "type": "html",
+                "html": "<h2>Category 3: Blood Pressure and Other Cardiac Medications</h2>"
+              }
+            ]
           },
           {
             "name": "oh_oh_medList_bloodPressureMeds",
             "type": "checkbox",
-            "title": "Are you currently taking (please mark all that apply)",
-            "description": "Of note: if you are taking a combination pill, please select both elements below",
+            "title": "Are you currently taking any of these blood pressure medications? (Please select all that apply.)",
+            "description": "If you are taking a combination pill, please select both elements below.",
             "choices": [
               {
                 "text": "Metoprolol",
@@ -498,9 +523,19 @@
       {
         "elements": [
           {
+            "type": "panel",
+            "elements": [
+              {
+                "name": "oh_oh_medList_cat4desc",
+                "type": "html",
+                "html": "<h2>Category 4: Diabetes and Cardiometabolic Medications</h2>"
+              }
+            ]
+          },
+          {
             "name": "oh_oh_medList_cardioMetabolic",
             "type": "checkbox",
-            "title": "Category 4: Diabetes and Cardiometabolic Medications",
+            "title": "Are you currently taking any of these medications? (Please select all that apply.)",
             "choices": [
               {
                 "text": "Insulin (Daily Use)",
