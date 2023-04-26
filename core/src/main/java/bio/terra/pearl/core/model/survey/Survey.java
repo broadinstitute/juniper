@@ -22,5 +22,7 @@ public class Survey extends BaseEntity implements Versioned {
     private UUID portalId;
     @Builder.Default
     private List<AnswerMapping> answerMappings = new ArrayList<>();
+    // markdown to be displayed below every page of the survey
+    private String footer;
 }
 

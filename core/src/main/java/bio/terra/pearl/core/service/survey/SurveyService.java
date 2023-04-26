@@ -123,7 +123,6 @@ public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> imp
      * */
     @Transactional
     public Survey createNewVersion(AdminUser user, UUID portalId, Survey survey) {
-        // TODO check user permissions
         Survey newSurvey = new Survey();
         BeanUtils.copyProperties(survey, newSurvey, "id", "createdAt", "lastUpdatedAt");
         newSurvey.setPortalId(portalId);
