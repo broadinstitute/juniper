@@ -2,6 +2,7 @@
   "stableId": "oh_oh_basicInfo",
   "version": 1,
   "name": "The Basics",
+  "footer": "Resources used for this survey:\n * All of us\n * US2020 Census\n * NHANES\n * GeniUSS group (Gender Identity in U.S. Surveillance)\n * National Health Intervie Survey (NHIS)\n * Behavioral Risk Factor Surveillance System (BRFSS)\n * NHCHC\n * OurHealth",
   "answerMappings": [{
     "questionStableId": "oh_oh_basic_firstName", "targetType": "PROFILE", "targetField": "givenName", "mapType": "STRING_TO_STRING"
   },{

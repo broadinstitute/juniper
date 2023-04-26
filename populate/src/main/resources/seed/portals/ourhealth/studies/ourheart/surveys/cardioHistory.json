@@ -2,6 +2,7 @@
   "stableId": "oh_oh_cardioHx",
   "version": 1,
   "name": "Heart Health History",
+  "footer": "Resources used for this survey:\n * All of Us\nCalifornia Teacher’s Study (CTS)\n * Mike Honigberg, American Heart Association\n * OurHealth",
   "jsonContent": {
     "title": "OurHealth Medical History",
     "showProgressBar": "bottom",

@@ -2,6 +2,7 @@
   "stableId": "oh_oh_lifestyle",
   "version": 1,
   "name": "Lifestyle",
+  "footer": "Resources used for this survey:\n * Tobacco Use Supplement to the Current Population Survey (TUS-CPS)\n * American Thoracic Society Division of Lung Disease questionnaire (ATS – DLD – 78)",
   "jsonContent": {
     "showQuestionNumbers": "off",
     "showProgressBar": "bottom",
