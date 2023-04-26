@@ -168,6 +168,7 @@ export function useSurveyJSModel(
     newSurveyModel.setVariable('profile', profile)
 
     newSurveyModel.showTitle = false
+    newSurveyModel.widthMode = 'static'
     setSurveyModel(newSurveyModel)
   }
 
