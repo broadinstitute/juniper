@@ -167,6 +167,7 @@ export function useSurveyJSModel(
     newSurveyModel.currentPageNo = pageNumber
     newSurveyModel.setVariable('profile', profile)
 
+    newSurveyModel.focusFirstQuestionAutomatic = false
     newSurveyModel.showTitle = false
     newSurveyModel.widthMode = 'static'
     setSurveyModel(newSurveyModel)
