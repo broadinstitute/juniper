@@ -5,6 +5,7 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.EnrolleeExportExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.service.export.ExportFileFormat;
 import bio.terra.pearl.core.service.export.instance.ExportOptions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayOutputStream;
@@ -39,14 +40,24 @@ public class ExportController implements ExportApi {
   /** just gets the export as a row TSV string, with no accompanying data dictionary */
   @Override
   public ResponseEntity<Resource> exportData(
-      String portalShortcode, String studyShortcode, String envName, Object body) {
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      Boolean splitOptionsIntoColumns,
+      Boolean stableIdsForOptions,
+      Boolean includeOnlyMostRecent,
+      String fileFormat,
+      Integer limit) {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
 
-    ExportOptions exportOptions = new ExportOptions();
-    if (body != null) {
-      exportOptions = objectMapper.convertValue(body, ExportOptions.class);
-    }
+    ExportOptions exportOptions =
+        new ExportOptions(
+            splitOptionsIntoColumns != null ? splitOptionsIntoColumns : false,
+            stableIdsForOptions != null ? stableIdsForOptions : false,
+            includeOnlyMostRecent != null ? includeOnlyMostRecent : false,
+            fileFormat != null ? ExportFileFormat.valueOf(fileFormat) : ExportFileFormat.TSV,
+            limit);
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     enrolleeExportExtService.export(

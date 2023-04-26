@@ -589,21 +589,17 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async exportEnrollees(portalShortcode: string, studyShortcode: string, envName: string, exportOptions: ExportOptions):
-    Promise<ExportData> {
-    const response = await this.exportEnrolleesRaw(portalShortcode, studyShortcode, envName, exportOptions)
-    return await this.processJsonResponse(response)
-  },
-
-  async exportEnrolleesRaw(portalShortcode: string, studyShortcode: string,
+  exportEnrollees(portalShortcode: string, studyShortcode: string,
     envName: string, exportOptions: ExportOptions):
     Promise<Response> {
-    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/data`
-    return await fetch(url, {
-      method: 'POST',
-      headers: this.getInitHeaders(),
-      body: JSON.stringify(exportOptions)
-    })
+    const exportOptionsParams = exportOptions as Record<string, unknown>
+    let url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/data?`
+    const searchParams = new URLSearchParams()
+    for (const prop in exportOptionsParams) {
+      searchParams.set(prop, (exportOptionsParams[prop] as string | boolean).toString())
+    }
+    url += searchParams.toString()
+    return fetch(url,  this.getGetInit())
   },
 
   async fetchMailingList(portalShortcode: string, envName: string): Promise<MailingListContact[]> {

@@ -96,7 +96,7 @@ public class PopulatePortalsTest extends BaseSpringBootTest {
         checkOurhealthSurveys(jonas);
         checkOurhealthSiteContent(portal.getId());
 
-        ExportOptions options = new ExportOptions(false, false, ExportFileFormat.TSV, true, null);
+        ExportOptions options = new ExportOptions(false, false, true, ExportFileFormat.TSV, null);
         List<ModuleExportInfo> moduleInfos = enrolleeExportService.generateModuleInfos(options, portal.getId(), sandboxEnvironmentId);
         List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(portal.getId(), sandboxEnvironmentId, moduleInfos, options.limit());
 
