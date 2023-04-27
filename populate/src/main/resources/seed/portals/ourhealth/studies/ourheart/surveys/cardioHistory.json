@@ -597,13 +597,13 @@
             "type": "checkbox",
             "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply)",
             "choices": [
-              {"text": "Type 1 Diabetes", "value": "type1Diabetes"},
-              {"text": "Type 2 Diabetes", "value": "type2Diabetes"},
-              {"text": "Other/Unknown diabetes", "value": "otherUnknownDiabetes"},
+              {"text": "Diabetes - Type 1", "value": "diabetesType1"},
+              {"text": "Diabetes - Type 2", "value": "diabetesType2"},
+              {"text": "Gestational diabetes", "value": "diabetesGestational"},
+              {"text": "Prediabetes", "value": "prediabetes"},
               {"text": "Non-alcoholic Fatty Liver Disease (NAFLD/NASH)", "value": "nonAlcoholicFattyLiverDisease"},
               {"text": "Obesity", "value": "obesity"},
-              {"text": "Polycystic Ovarian Syndrome (PCOS)", "value": "polycysticOvarianSyndrome"},
-              {"text": "Prediabetes", "value": "prediabetes"}
+              {"text": "Polycystic Ovarian Syndrome (PCOS)", "value": "polycysticOvarianSyndrome"}
             ]
           },
           {
@@ -859,7 +859,7 @@
               {
                 "name": "oh_oh_cardioHx_ageAtEndOfFirstPregnancy",
                 "type": "radiogroup",
-                "title": "How old were you at the end of the first of these pregnancies? (Mike, AHA)",
+                "title": "How old were you at the end of the first of these pregnancies? (Honigberg, AHA)",
                 "choices": [
                   {
                     "text": "Less than 20",
@@ -894,7 +894,7 @@
               {
                 "name": "oh_oh_cardioHx_ageAtEndOfLastPregnancy",
                 "type": "radiogroup",
-                "title": "How old were you at the end of the last of these pregnancies? (Mike, AHA)",
+                "title": "How old were you at the end of the last of these pregnancies? (Honigberg, AHA)",
                 "choices": [
                   {
                     "text": "Less than 20",

@@ -26,6 +26,7 @@ import _union from 'lodash/union'
 import _keys from 'lodash/keys'
 import _isEqual from 'lodash/isEqual'
 
+const SURVEY_JS_OTHER_SUFFIX = '-Comment'
 
 // See https://surveyjs.io/form-library/examples/control-data-entry-formats-with-input-masks/reactjs#content-code
 widgets.inputmask(SurveyCore)
@@ -167,7 +168,9 @@ export function useSurveyJSModel(
     newSurveyModel.currentPageNo = pageNumber
     newSurveyModel.setVariable('profile', profile)
 
+    newSurveyModel.focusFirstQuestionAutomatic = false
     newSurveyModel.showTitle = false
+    newSurveyModel.widthMode = 'static'
     setSurveyModel(newSurveyModel)
   }
 
@@ -232,9 +235,9 @@ export function getSurveyJsAnswerList(surveyJSModel: SurveyModel): Answer[] {
   return Object.entries(surveyJSModel.data)
     // don't make answers for the descriptive sections
     .filter(([key]) => {
-      return surveyJSModel.getQuestionByName(key)?.getType() !== 'html'
+      return !key.endsWith(SURVEY_JS_OTHER_SUFFIX) && surveyJSModel.getQuestionByName(key)?.getType() !== 'html'
     })
-    .map(([key, value]) => makeAnswer(value as SurveyJsValueType, key))
+    .map(([key, value]) => makeAnswer(value as SurveyJsValueType, key, surveyJSModel.data))
 }
 
 /** convert a list of answers and resumeData into the resume data format surveyJs expects */
@@ -247,6 +250,9 @@ export function makeSurveyJsData(resumeData: string | undefined, answers: Answer
         hash[answer.questionStableId] = JSON.parse(answer.objectValue)
       } else {
         hash[answer.questionStableId] = answer.stringValue ?? answer.numberValue ?? null
+      }
+      if (answer.otherDescription) {
+        hash[answer.questionStableId + SURVEY_JS_OTHER_SUFFIX] = answer.otherDescription
       }
       return hash
     }, {})
@@ -263,7 +269,8 @@ export function makeSurveyJsData(resumeData: string | undefined, answers: Answer
 }
 
 /** return an Answer for the given value.  This should be updated to take some sort of questionType/dataType param */
-export function makeAnswer(value: SurveyJsValueType, questionStableId: string): Answer {
+export function makeAnswer(value: SurveyJsValueType, questionStableId: string,
+  surveyJsData: Record<string, SurveyJsValueType>): Answer {
   const answer: Answer = { questionStableId }
   if (typeof value === 'string') {
     answer.stringValue = value
@@ -273,6 +280,13 @@ export function makeAnswer(value: SurveyJsValueType, questionStableId: string): 
     answer.booleanValue = value
   } else if (value) {
     answer.objectValue = JSON.stringify(value)
+  }
+  if (surveyJsData[questionStableId + SURVEY_JS_OTHER_SUFFIX]) {
+    // surveyJS "other" descriptions are always strings
+    answer.otherDescription = surveyJsData[questionStableId + SURVEY_JS_OTHER_SUFFIX] as string
+  } else if (questionStableId.endsWith(SURVEY_JS_OTHER_SUFFIX)) {
+    const baseStableId = questionStableId.substring(0, questionStableId.lastIndexOf('-'))
+    return makeAnswer(surveyJsData[baseStableId], baseStableId, surveyJsData)
   }
   return answer
 }
@@ -330,7 +344,9 @@ type PearlQuestion = Question & {
 export function getUpdatedAnswers(original: Record<string, SurveyJsValueType>,
   updated: Record<string, SurveyJsValueType>): Answer[] {
   const allKeys = _union(_keys(original), _keys(updated))
-  const updatedAnswers = allKeys.filter(key => !_isEqual(original[key], updated[key]))
-    .map(key => makeAnswer(updated[key], key))
-  return updatedAnswers
+  const updatedKeys = allKeys.filter(key => !_isEqual(original[key], updated[key]))
+    .map(key => key.endsWith(SURVEY_JS_OTHER_SUFFIX) ? key.substring(0, key.lastIndexOf(SURVEY_JS_OTHER_SUFFIX)) : key)
+  const dedupedKeys = Array.from(new Set(updatedKeys).values())
+
+  return dedupedKeys.map(key => makeAnswer(updated[key], key, updated))
 }

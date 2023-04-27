@@ -252,7 +252,8 @@ export type Answer = {
   numberValue?: number,
   booleanValue?: boolean,
   objectValue?: string,
-  questionStableId: string
+  questionStableId: string,
+  otherDescription?: string
 }
 
 export type HubResponse = {

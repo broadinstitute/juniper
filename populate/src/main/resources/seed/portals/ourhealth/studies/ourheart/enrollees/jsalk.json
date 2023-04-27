@@ -22,7 +22,8 @@
         { "questionStableId": "oh_oh_cardioHx_worriedHeartHealth", "stringValue": "yesSpecificallyAboutMyHeart"},
         { "questionStableId": "oh_oh_cardioHx_diagnosedHeartConditions", "objectJsonValue": ["bleedingDisorder", "anemia"]}
       ],
-      "currentPageNo": 2
+      "currentPageNo": 2,
+      "complete": true
     }, {
       "surveyStableId": "oh_oh_basicInfo",
       "surveyVersion": 1,
