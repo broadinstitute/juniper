@@ -8,6 +8,7 @@ import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink
 import Api from 'api/api'
 import NotificationConfigTypeDisplay, { deliveryTypeDisplayMap } from './notifications/NotifcationConfigTypeDisplay'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
+import { useConfig } from '../providers/ConfigProvider'
 
 /** renders the main configuration page for a study environment */
 function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -20,13 +21,17 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
 
   const preEnrollSurvey = currentEnv.preEnrollSurvey
   const envConfig = currentEnv.studyEnvironmentConfig
+  const portalEnvConfig = portal.portalEnvironments.find(env => env.environmentName === currentEnv.environmentName)
+    ?.portalEnvironmentConfig
+  const zoneConfig = useConfig()
 
   return <div className="StudyContent container">
     <div className="row">
       <div className="col-12 p-3">
         <h4>{currentEnv.environmentName.toLowerCase()} environment</h4>
-        <a href={Api.getParticipantLink(portal.shortcode, currentEnv.environmentName)}
-          target="_blank">Participant view <FontAwesomeIcon icon={faExternalLink}/></a>
+        <a href={Api.getParticipantLink(portalEnvConfig, zoneConfig.participantUiHostname,
+          portal.shortcode, currentEnv.environmentName)}
+        target="_blank">Participant view <FontAwesomeIcon icon={faExternalLink}/></a>
         { currentEnv.studyEnvironmentConfig.initialized && <ul className="list-unstyled">
           <li className="bg-white my-3">
             <div style={contentHeaderStyle}>

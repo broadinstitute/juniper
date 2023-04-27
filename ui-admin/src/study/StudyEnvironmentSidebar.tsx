@@ -1,7 +1,7 @@
 import React from 'react'
 import { Study, StudyEnvironment } from 'api/api'
-import EnvironmentSelector from './EnvironmentSelector'
 import { Link, NavLink } from 'react-router-dom'
+import { studyParticipantsPath } from '../portal/PortalRouter'
 
 const sidebarLinkStyle = {
   color: '#fff'
@@ -9,7 +9,7 @@ const sidebarLinkStyle = {
 
 /** Sidebar for navigating around configuration of a study environment */
 function StudyEnvironmentSidebar({ portalShortcode, study, currentEnv, currentEnvPath, setShow }:
-                                   {portalShortcode: string, study: Study, currentEnv: StudyEnvironment | undefined,
+                                   {portalShortcode: string, study: Study, currentEnv: StudyEnvironment,
                                      currentEnvPath: string, setShow: (show: boolean) => void}) {
   /** returns a full path for the given link leaf */
   function getLinkPath(path: string): string {
@@ -21,17 +21,10 @@ function StudyEnvironmentSidebar({ portalShortcode, study, currentEnv, currentEn
 
   return <div className="StudySidebar d-flex flex-column flex-shrink-0 p-3 text-white">
     <h5>
-      <Link className="nav-link" to={`/${study.shortcode}`}>{study.name}</Link>
+      <Link className="nav-link" to={currentEnvPath}>{study.name} - { currentEnv.environmentName }</Link>
     </h5>
     <hr/>
     <ul className="nav nav-pills flex-column mb-auto">
-      <li>
-        <label className="form-label">Environment</label>
-        <EnvironmentSelector portalShortcode={portalShortcode} study={study} currentEnv={currentEnv}/>
-      </li>
-      <li>
-        <hr/>
-      </li>
       <li>
         <NavLink to={''} className="nav-link" onClick={() => setShow(false)}
           style={sidebarLinkStyle}>
@@ -39,27 +32,10 @@ function StudyEnvironmentSidebar({ portalShortcode, study, currentEnv, currentEn
         </NavLink>
       </li>
       <li>
-        <NavLink to={getLinkPath('participants')} className="nav-link" onClick={() => setShow(false)}
+        <NavLink to={studyParticipantsPath(portalShortcode, currentEnv.environmentName, study.shortcode)}
+          className="nav-link" onClick={() => setShow(false)}
           style={sidebarLinkStyle}>
           Participants
-        </NavLink>
-      </li>
-      <li>
-        <NavLink to={getLinkPath('users')} className="nav-link" onClick={() => setShow(false)}
-          style={sidebarLinkStyle}>
-          Users
-        </NavLink>
-      </li>
-      <li>
-        <NavLink to={getLinkPath('theme')} className="nav-link" onClick={() => setShow(false)}
-          style={sidebarLinkStyle}>
-          Theme
-        </NavLink>
-      </li>
-      <li>
-        <NavLink to={getLinkPath('advanced')} className="nav-link" onClick={() => setShow(false)}
-          style={sidebarLinkStyle}>
-          Advanced Options
         </NavLink>
       </li>
     </ul>

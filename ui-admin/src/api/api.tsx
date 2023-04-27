@@ -306,6 +306,10 @@ export type Config = {
   b2cTenantName: string,
   b2cClientId: string,
   b2cPolicyName: string,
+  participantUiHostname: string,
+  participantApiHostname: string,
+  adminUiHostname: string,
+  adminApiHostname: string
 }
 
 export type MailingListContact = {
@@ -372,10 +376,7 @@ export type ExportData = {
 }
 
 let bearerToken: string | null = null
-export const API_ROOT = process.env.REACT_APP_API_ROOT
-const participantRootPath = process.env.REACT_APP_PARTICIPANT_APP_ROOT
-const participantProtocol = process.env.REACT_APP_PARTICIPANT_APP_PROTOCOL
-
+export const API_ROOT = '/api'
 
 export default {
   getInitHeaders() {
@@ -623,9 +624,13 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  getParticipantLink(portalShortcode: string, envName: string): string {
-    const participantHost = `${envName}.${portalShortcode}.${participantRootPath}`
-    return `${participantProtocol}://${participantHost}`
+  getParticipantLink(portalEnvConfig: PortalEnvironmentConfig | undefined, uiHostname: string,
+    portalShortcode: string, envName: string): string {
+    if (portalEnvConfig?.participantHostname) {
+      return `https://${portalEnvConfig.participantHostname}`
+    }
+    const participantHost = `${envName}.${portalShortcode}.${uiHostname}`
+    return `https://${participantHost}`
   },
 
   setBearerToken(token: string | null) {

@@ -20,7 +20,6 @@ public class ApplicationRoutingPaths {
     private final String participantDashboardPath = "/hub";
 
     public ApplicationRoutingPaths(Environment env) {
-        // we don't want to defaul
         participantUiHostname = env.getProperty("env.hostnames.participantUi");
         participantApiHostname = env.getProperty("env.hostnames.participantApi");
         adminUiHostname = env.getProperty("env.hostnames.adminUi");
