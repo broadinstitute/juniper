@@ -819,7 +819,7 @@
         ]
       },
       {
-        "visibleIf": "{profile.sexAtBirth} = 'female'",
+        "visibleIf": "{profile.sexAtBirth} != 'male'",
         "elements": [
           {
             "type": "panel",
