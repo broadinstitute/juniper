@@ -731,7 +731,7 @@
           {
             "type": "panel",
             "title": "Diabetes - Type 1",
-            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'type1Diabetes'",
+            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'diabetesType1'",
             "elements": [
               {
                 "name": "oh_oh_cardioHx_type1DiabetesAgeAtDx",
@@ -742,7 +742,7 @@
           {
             "type": "panel",
             "title": "Diabetes - Type 2",
-            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'type2Diabetes'",
+            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'diabetesType2'",
             "elements": [
               {
                 "name": "oh_oh_cardioHx_type2DiabetesAgeAtDx",
