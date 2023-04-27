@@ -510,7 +510,7 @@
           {
             "type": "panel",
             "title": "Cardiac stent",
-            "visibleIf": "{oh_oh_cardioHx_coronaryDiseaseProcedure} contains 'cardiacStent'",
+            "visibleIf": "{oh_oh_cardioHx_coronaryDiseaseProcedure} contains 'cardiacStentPlacement'",
             "elements": [
               {
                 "name": "oh_oh_cardioHx_cardiacStentAgeAtDx",
@@ -521,7 +521,7 @@
           {
             "type": "panel",
             "title": "Cardiac bypass surgery",
-            "visibleIf": "{oh_oh_cardioHx_coronaryDiseaseProcedure} contains 'bypassSurgery'",
+            "visibleIf": "{oh_oh_cardioHx_coronaryDiseaseProcedure} contains 'cardiacBypassSurgery'",
             "elements": [
               {
                 "name": "oh_oh_cardioHx_bypassSurgeryAgeAtDx",
