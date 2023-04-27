@@ -83,11 +83,7 @@ class PublicApiControllerTest {
 
   @Test
   void testGetConfig() throws Exception {
-    var tenantName = "test-tenant";
-    var clientId = "1234-567-890";
-    var policyName = "B2C_1A_DDP_ADMIN_SIGNUP_SIGNIN";
     when(configExtService.getConfigMap()).thenReturn(Map.of("foo", "bar"));
-
     this.mockMvc
         .perform(get("/config"))
         .andExpect(status().isOk())
