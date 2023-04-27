@@ -9,3 +9,8 @@ export function instantToDefaultString(instant?: number) {
 export function dateToDefaultString(date: number) {
   return new Date(date).toLocaleDateString()
 }
+
+/** returns current date in ISO format, e.g. 2023-04-15 */
+export function currentIsoDate() {
+  return new Date().toISOString().substring(0, 10)
+}

@@ -60,7 +60,8 @@ public class EnrolleeExportService {
 
     public void export(ExportOptions exportOptions, UUID portalId, UUID studyEnvironmentId, OutputStream os) throws Exception {
         List<ModuleExportInfo> moduleExportInfos = generateModuleInfos(exportOptions, portalId, studyEnvironmentId);
-        var enrolleeMaps = generateExportMaps(portalId, studyEnvironmentId, moduleExportInfos);
+        var enrolleeMaps = generateExportMaps(portalId, studyEnvironmentId,
+                moduleExportInfos, exportOptions.limit());
         BaseExporter exporter = null;
         // once we have more exporters, we'll want some sort of factory pattern here
         if (exportOptions.fileFormat().equals(ExportFileFormat.JSON)) {
@@ -72,8 +73,16 @@ public class EnrolleeExportService {
     }
 
     public List<Map<String, String>> generateExportMaps(UUID portalId, UUID studyEnvironmentId,
-                                                   List<ModuleExportInfo> moduleExportInfos) throws Exception {
+                                                   List<ModuleExportInfo> moduleExportInfos, Integer limit) throws Exception {
         List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(studyEnvironmentId);
+        if (limit != null && enrollees.size() > 0) {
+            enrollees = enrollees.subList(0, Math.min(enrollees.size(), limit));
+        }
+        return generateExportMaps(enrollees, moduleExportInfos);
+    }
+
+    public List<Map<String, String>> generateExportMaps(List<Enrollee> enrollees,
+                                                        List<ModuleExportInfo> moduleExportInfos) throws Exception {
         List<EnrolleeExportData> enrolleeExportData = loadAllEnrolleesForExport(enrollees);
 
         List<Map<String, String>> exportMaps = new ArrayList<>();

@@ -23,6 +23,7 @@ import ExportDataControl from './export/ExportDataControl'
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
   const [participantList, setParticipantList] = useState<EnrolleeSearchResult[]>([])
+  const [showExportModal, setShowExportModal] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
@@ -104,8 +105,11 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
               </span>
               <Link to={getExportDataBrowserPath(currentEnvPath)} className="mx-2">Export preview</Link>
               <span className="px-1">|</span>
-              <ExportDataControl studyEnvContext={studyEnvContext}/>
-
+              <button className="btn btn-secondary" onClick={() => setShowExportModal(!showExportModal)}
+                aria-label="show or hide export modal">
+                Download
+              </button>
+              <ExportDataControl studyEnvContext={studyEnvContext} show={showExportModal} setShow={setShowExportModal}/>
             </div>
             <ColumnVisibilityControl table={table}/>
           </div>
