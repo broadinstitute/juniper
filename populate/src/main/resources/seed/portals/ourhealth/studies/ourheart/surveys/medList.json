@@ -37,7 +37,7 @@
           {
             "name": "oh_oh_medList_statins",
             "type": "radiogroup",
-            "title": "Are you currently taking a statin? (Please select all that apply.)",
+            "title": "Are you currently taking a statin?",
             "choices": [
               {
                 "text": "Atorvastatin",
