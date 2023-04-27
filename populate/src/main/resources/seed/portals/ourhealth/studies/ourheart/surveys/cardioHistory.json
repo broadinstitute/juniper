@@ -435,22 +435,22 @@
           },
           {
             "type": "panel",
-            "title": "Atrial fibrillation (Afib) or Atrial flutter",
-            "visibleIf": "{oh_oh_cardioHx_diagnosedHeartConditions} contains 'afibOrAtrialFlutter'",
+            "title": "Abnormal heart rhythm",
+            "visibleIf": "{oh_oh_cardioHx_diagnosedHeartConditions} contains 'otherAbnormalHeartRhythm'",
             "elements": [
               {
-                "name": "oh_oh_cardioHx_afibOrAtrialFlutterAgeAtDx",
+                "name": "oh_oh_cardioHx_otherAbnormalHeartRhythmAgeAtDx",
                 "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
               }
             ]
           },
           {
             "type": "panel",
-            "title": "Abnormal heart rhythm",
-            "visibleIf": "{oh_oh_cardioHx_diagnosedHeartConditions} contains 'otherAbnormalHeartRhythm'",
+            "title": "Atrial fibrillation (Afib) or Atrial flutter",
+            "visibleIf": "{oh_oh_cardioHx_diagnosedHeartConditions} contains 'afibOrAtrialFlutter'",
             "elements": [
               {
-                "name": "oh_oh_cardioHx_otherAbnormalHeartRhythmAgeAtDx",
+                "name": "oh_oh_cardioHx_afibOrAtrialFlutterAgeAtDx",
                 "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
               }
             ]
@@ -531,6 +531,17 @@
           },
           {
             "type": "panel",
+            "title": "Heart attack",
+            "visibleIf": "{oh_oh_cardioHx_diagnosedHeartConditions} contains 'heartAttack'",
+            "elements": [
+              {
+                "name": "oh_oh_cardioHx_heartAttackAgeAtDx",
+                "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
+              }
+            ]
+          },
+          {
+            "type": "panel",
             "title": "Heart failure",
             "visibleIf": "{oh_oh_cardioHx_diagnosedHeartConditions} contains 'heartFailure'",
             "elements": [
@@ -560,17 +571,6 @@
                     "value": "none"
                   }
                 ]
-              }
-            ]
-          },
-          {
-            "type": "panel",
-            "title": "Heart attack",
-            "visibleIf": "{oh_oh_cardioHx_diagnosedHeartConditions} contains 'heartAttack'",
-            "elements": [
-              {
-                "name": "oh_oh_cardioHx_heartAttackAgeAtDx",
-                "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
               }
             ]
           },
@@ -834,7 +834,7 @@
           {
             "name": "oh_oh_cardioHx_ageFirstMenses",
             "type": "radiogroup",
-            "title": "How old were you when you had your first menstrual period (menses)?",
+            "title": "How old were you when you had your first menstrual period (menses)? (Honigberg, AHA)",
             "choices": [
               {
                 "text": "9 or less",
@@ -877,7 +877,7 @@
           {
             "name": "oh_oh_cardioHx_regularPeriods",
             "type": "radiogroup",
-            "title": "During most of your life, were your periods regular; that is, did they occur about once a month? (Do not include any time when you were pregnant or taking birth control pills.)",
+            "title": "During most of your life, were your periods regular; that is, did they occur about once a month? (Do not include any time when you were pregnant or taking birth control pills.) (Honigberg, AHA)",
             "choices": [
               {
                 "text": "Yes",
@@ -896,7 +896,7 @@
           {
             "name": "oh_oh_cardioHx_everBeenPregnant",
             "type": "radiogroup",
-            "title": "Have you ever been pregnant? It is very important that we know about all of your pregnancies, including live births, stillbirths, miscarriages, tubals (ectopics), and abortions.",
+            "title": "Have you ever been pregnant? It is very important that we know about all of your pregnancies, including live births, stillbirths, miscarriages, tubals (ectopics), and abortions. (Honigberg, AHA)",
             "choices": [
               {
                 "text": "Yes",
@@ -915,7 +915,7 @@
               {
                 "name": "oh_oh_cardioHx_currentlyPregnant",
                 "type": "radiogroup",
-                "title": "Are you currently pregnant?",
+                "title": "Are you currently pregnant? (UKBB)",
                 "choices": [
                   {
                     "text": "No",
@@ -938,7 +938,7 @@
               {
                 "name": "oh_oh_cardioHx_numberOfPregnancies",
                 "type": "radiogroup",
-                "title": "How many times have you been pregnant?",
+                "title": "How many times have you been pregnant? (Honigberg, AHA)",
                 "choices": [
                   {
                     "text": "0",
@@ -1051,7 +1051,7 @@
               {
                 "name": "oh_oh_cardioHx_numberLiveBirths",
                 "type": "radiogroup",
-                "title": "How many live births did you have? (Live birth is the birth of a living baby) ",
+                "title": "How many live births did you have? (Live birth is the birth of a living baby) (Honigberg, AHA)",
                 "choices": [
                   {
                     "text": "None",
@@ -1124,7 +1124,7 @@
               {
                 "name": "oh_oh_cardioHx_menopausalSymptoms",
                 "type": "radiogroup",
-                "title": "Have you ever had menopausal symptoms, such as hot flashes or night sweats? (Your best guess.)",
+                "title": "Have you ever had menopausal symptoms, such as hot flashes or night sweats? (Your best guess.) (Honigberg, AHA)",
                 "choices": [
                   {
                     "text": "Yes",
@@ -1143,7 +1143,7 @@
               {
                 "name": "oh_oh_cardioHx_mensesStopped",
                 "type": "radiogroup",
-                "title": "Have your menstrual periods stopped permanently? ",
+                "title": "Have your menstrual periods stopped permanently? (CTS)",
                 "choices": [
                   {
                     "text": "No",
@@ -1167,7 +1167,7 @@
                 "name": "oh_oh_cardioHx_ageLastMenses",
                 "type": "text",
                 "visibleIf": "{oh_oh_cardioHx_mensesStopped} = 'yes'",
-                "title": "How old were you when you last had regular menstrual bleeding (a period)? (Your best guess)"
+                "title": "How old were you when you last had regular menstrual bleeding (a period)? (Your best guess) (Honigberg, AHA)"
               },
               {
                 "name": "oh_oh_cardioHx_mensesStopReason",
