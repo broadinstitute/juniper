@@ -11,14 +11,6 @@ const sidebarLinkStyle = {
 function StudyEnvironmentSidebar({ portalShortcode, study, currentEnv, currentEnvPath, setShow }:
                                    {portalShortcode: string, study: Study, currentEnv: StudyEnvironment,
                                      currentEnvPath: string, setShow: (show: boolean) => void}) {
-  /** returns a full path for the given link leaf */
-  function getLinkPath(path: string): string {
-    if (!currentEnvPath) {
-      return '#'
-    }
-    return `${currentEnvPath}/${path}`
-  }
-
   return <div className="StudySidebar d-flex flex-column flex-shrink-0 p-3 text-white">
     <h5>
       <Link className="nav-link" to={currentEnvPath}>{study.name} - { currentEnv.environmentName }</Link>
