@@ -2,7 +2,7 @@
   "stableId": "oh_oh_medHx",
   "version": 1,
   "name": "Other Medical History",
-  "footer": "Resources used for this survey:\n * All of Us\nCalifornia Teacher’s Study (CTS)\n * Mike Honigberg, American Heart Association\n * OurHealth",
+  "footer": "Resources used for this survey:\n * All of Us\n * California Teacher’s Study (CTS)\n * Mike Honigberg, American Heart Association\n * OurHealth",
   "jsonContent": {
   "title": "Other Medical History",
   "showQuestionNumbers": "off",
@@ -625,6 +625,17 @@
             {
               "name": "oh_oh_medHx_liverConditionAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
+            },
+            {
+              "name": "oh_oh_medHx_liverDiagnosedConditions",
+              "type": "checkbox",
+              "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply) ",
+              "choices": [
+                {"text": "Cirrhosis of the Liver/Liver Failure", "value": "cirrhosisOrLiverFailure"},
+                {"text": "Non-alcoholic Fatty Liver Disease (NAFLD/NASH)", "value": "nonAlcFattyLiverDisease"},
+                {"text": "Liver cancer", "value": "liverCancer"},
+                {"text": "Hepatitis", "value": "hepatitis"}
+              ]
             }
           ]
         },
@@ -824,39 +835,6 @@
           "elements": [
             {
               "name": "oh_oh_medHx_hypothyroidismAgeAtDx",
-              "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
-            }
-          ]
-        },
-        {
-          "type": "panel",
-          "title": "Type 1 Diabetes",
-          "visibleIf": "{oh_oh_medHx_endocrineDiagnosedConditions} contains 'type1Diabetes'",
-          "elements": [
-            {
-              "name": "oh_oh_medHx_type1DiabetesAgeAtDx",
-              "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
-            }
-          ]
-        },
-        {
-          "type": "panel",
-          "title": "Type 2 Diabetes",
-          "visibleIf": "{oh_oh_medHx_endocrineDiagnosedConditions} contains 'type2Diabetes'",
-          "elements": [
-            {
-              "name": "oh_oh_medHx_type2DiabetesAgeAtDx",
-              "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
-            }
-          ]
-        },
-        {
-          "type": "panel",
-          "title": "Other/Unknown diabetes",
-          "visibleIf": "{oh_oh_medHx_endocrineDiagnosedConditions} contains 'otherUnknownDiabetes'",
-          "elements": [
-            {
-              "name": "oh_oh_medHx_otherUnknownDiabetesAgeAtDx",
               "questionTemplateName": "oh_oh_medHx_ageAboutAtDiagnosis"
             }
           ]
