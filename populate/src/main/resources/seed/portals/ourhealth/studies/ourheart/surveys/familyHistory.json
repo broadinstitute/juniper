@@ -5,12 +5,6 @@
   "jsonContent": {
     "showQuestionNumbers": "off",
     "showProgressBar": "bottom",
-    "triggers": [
-      {
-        "type": "complete",
-        "expression": "{oh_oh_famHx_famKnowledge} = 'none'"
-      }
-    ],
     "questionTemplates": [
       {
         "name": "oh_oh_famHx_ageAtHeartAttack",
@@ -166,6 +160,7 @@
         ]
       },
       {
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [
           {
             "type": "panel",
@@ -539,6 +534,7 @@
           }
         ]
       },{
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [
           {
             "type": "panel",
@@ -723,6 +719,7 @@
           ]
         }]
       },{
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [
           {
             "type": "panel",
@@ -904,6 +901,7 @@
           ]
         }]
       },{
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [
           {
             "type": "panel",
@@ -1089,6 +1087,7 @@
           ]
         }]
       },{
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [{
           "type": "panel",
           "elements": [
@@ -1272,6 +1271,7 @@
           ]
         }]
       },{
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [{
           "type": "panel",
           "elements": [
@@ -1452,6 +1452,7 @@
           ]
         }]
       },{
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [{
           "type": "panel",
           "elements": [
