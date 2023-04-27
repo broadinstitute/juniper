@@ -36,7 +36,6 @@ then
     exit 1
 fi
 
-
 # General use vars
 declare -a required_tools=( az kubectl vault sleep jq )
 declare -r proj_name="d2p"
@@ -63,7 +62,11 @@ declare database_pw=""
 
 # Vault setup
 declare -r vault_addr="https://clotho.broadinstitute.org:8200"
-declare -r vault_path="secret/dsp/ddp/d2p/${target_environment}/postgres/admin-credential"
+case "${target_environment}" in
+ "prod") vault_path_op="suitable" ;;
+ *) vault_path_op="dsp" ;;
+esac
+declare -r vault_path="secret/${vault_path_op}/ddp/d2p/${target_environment}/postgres/admin-credential"
 
 # Default Vars - used if other values are not given on the command line
 declare -r subscription_default="385ed569-ca04-4b97-97b4-677c8479585e"
