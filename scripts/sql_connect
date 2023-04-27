@@ -124,8 +124,6 @@ function fetch_database_creds() {
     local -r -a vault_read_username_cmd=(vault read -field=username -address="${vault_addr}" "${vault_path}" )
     local -r -a vault_read_password_cmd=(vault read -field=password -address="${vault_addr}" "${vault_path}" )
 
-    log_info "${vault_path}"
-
     log_info "reading database username from vault "
     database_user=$( "${vault_read_username_cmd[@]}" )
     if ! "${vault_read_username_cmd[@]}" > /dev/null 2>&1 ;
