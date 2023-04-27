@@ -2,6 +2,7 @@
   "stableId": "oh_oh_famHx",
   "version": 1,
   "name": "Family History",
+  "footer": "Unless otherwise mentioned, all questions are sourced from the All of Us research study.",
   "jsonContent": {
     "showQuestionNumbers": "off",
     "showProgressBar": "bottom",

@@ -113,15 +113,13 @@ export type HtmlSection = {
 export type SurveyJSForm = {
   stableId: string,
   version: number,
-  content: string,
+  content: string
 }
 
 export type Survey = SurveyJSForm & {
   id: string,
   name: string,
-  allowParticipantCompletion: boolean,
-  allowMultipleResponses: boolean,
-  allowParticipantReedit: boolean
+  footer?: string
 }
 
 export type ConsentForm = SurveyJSForm & {
