@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
 import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
-import Api from 'api/api'
+import Api, { PortalEnvironmentConfig } from 'api/api'
 import NotificationConfigTypeDisplay, { deliveryTypeDisplayMap } from './notifications/NotifcationConfigTypeDisplay'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
 import { useConfig } from '../providers/ConfigProvider'
@@ -21,8 +21,8 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
 
   const preEnrollSurvey = currentEnv.preEnrollSurvey
   const envConfig = currentEnv.studyEnvironmentConfig
-  const portalEnvConfig = portal.portalEnvironments.find(env => env.environmentName === currentEnv.environmentName)
-    ?.portalEnvironmentConfig
+  const portalEnvConfig = portal.portalEnvironments
+    .find(env => env.environmentName === currentEnv.environmentName)?.portalEnvironmentConfig as PortalEnvironmentConfig
   const zoneConfig = useConfig()
 
   return <div className="StudyContent container">

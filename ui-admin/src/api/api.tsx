@@ -624,7 +624,7 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  getParticipantLink(portalEnvConfig: PortalEnvironmentConfig | undefined, uiHostname: string,
+  getParticipantLink(portalEnvConfig: PortalEnvironmentConfig, uiHostname: string,
     portalShortcode: string, envName: string): string {
     if (portalEnvConfig?.participantHostname) {
       return `https://${portalEnvConfig.participantHostname}`
