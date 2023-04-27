@@ -20,6 +20,7 @@ public class ConfigExtService {
   }
 
   public Map<String, String> getConfigMap() {
+    // no auth needed -- the config is all public information sent to the frontend
     return configMap;
   }
 
