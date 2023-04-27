@@ -62,16 +62,11 @@ declare database_pw=""
 
 # Vault setup
 declare -r vault_addr="https://clotho.broadinstitute.org:8200"
-declare -r vault_path_non_prod="secret/dsp/ddp/d2p/${target_environment}/postgres/admin-credential"
-declare -r vault_path_prod="secret/suitable/ddp/d2p/prod/postgres/admin-credential"
-declare vault_path=""
-
-if [ "${target_environment}" = "prod" ]
-then 
-    vault_path=$vault_path_prod
-else
-    vault_path=$vault_path_non_prod
-fi
+case "${target_environment}" in
+ "prod") vault_path_op="suitable" ;;
+ *) vault_path_op="dsp" ;;
+esac
+declare -r vault_path="secret/${vault_path_op}/ddp/d2p/${target_environment}/postgres/admin-credential"
 
 # Default Vars - used if other values are not given on the command line
 declare -r subscription_default="385ed569-ca04-4b97-97b4-677c8479585e"
@@ -128,6 +123,8 @@ function check_required_tools() {
 function fetch_database_creds() {
     local -r -a vault_read_username_cmd=(vault read -field=username -address="${vault_addr}" "${vault_path}" )
     local -r -a vault_read_password_cmd=(vault read -field=password -address="${vault_addr}" "${vault_path}" )
+
+    log_info "${vault_path}"
 
     log_info "reading database username from vault "
     database_user=$( "${vault_read_username_cmd[@]}" )
