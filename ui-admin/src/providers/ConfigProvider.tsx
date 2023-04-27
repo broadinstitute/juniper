@@ -5,7 +5,11 @@ import LoadingSpinner from 'util/LoadingSpinner'
 const uninitializedConfig = {
   b2cTenantName: 'uninitialized',
   b2cClientId: 'uninitialized',
-  b2cPolicyName: 'uninitialized'
+  b2cPolicyName: 'uninitialized',
+  participantUiHostname: 'uninitialized',
+  participantApiHostname: 'uninitialized',
+  adminUiHostname: 'uninitialized',
+  adminApiHostname: 'uninitialized'
 }
 
 const ConfigContext = React.createContext<Config>(uninitializedConfig)

@@ -4,10 +4,11 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import bio.terra.pearl.api.admin.config.B2CConfiguration;
 import bio.terra.pearl.api.admin.config.VersionConfiguration;
 import bio.terra.pearl.api.admin.model.SystemStatus;
+import bio.terra.pearl.api.admin.service.ConfigExtService;
 import bio.terra.pearl.api.admin.service.StatusService;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -21,7 +22,7 @@ class PublicApiControllerTest {
 
   @Autowired private MockMvc mockMvc;
 
-  @MockBean private B2CConfiguration b2CConfiguration;
+  @MockBean private ConfigExtService configExtService;
 
   @MockBean private StatusService statusService;
 
@@ -82,18 +83,10 @@ class PublicApiControllerTest {
 
   @Test
   void testGetConfig() throws Exception {
-    var tenantName = "test-tenant";
-    var clientId = "1234-567-890";
-    var policyName = "B2C_1A_DDP_ADMIN_SIGNUP_SIGNIN";
-    when(b2CConfiguration.tenantName()).thenReturn(tenantName);
-    when(b2CConfiguration.clientId()).thenReturn(clientId);
-    when(b2CConfiguration.policyName()).thenReturn(policyName);
-
+    when(configExtService.getConfigMap()).thenReturn(Map.of("foo", "bar"));
     this.mockMvc
         .perform(get("/config"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.b2cTenantName").value(tenantName))
-        .andExpect(jsonPath("$.b2cClientId").value(clientId))
-        .andExpect(jsonPath("$.b2cPolicyName").value(policyName));
+        .andExpect(jsonPath("$.foo").value("bar"));
   }
 }
