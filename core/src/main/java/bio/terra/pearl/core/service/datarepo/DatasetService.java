@@ -5,7 +5,10 @@ import bio.terra.datarepo.model.JobModel;
 import bio.terra.pearl.core.dao.datarepo.DatasetDao;
 import bio.terra.pearl.core.model.datarepo.Dataset;
 import bio.terra.pearl.core.service.CrudService;
+
+import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -28,6 +31,14 @@ public class DatasetService extends CrudService<Dataset, DatasetDao> {
         } catch (ApiException e) {
             logger.error("Unable to delete dataset {}. Error: {}", dataset.getDatasetId(), e.getMessage());
         }
+    }
+
+    public void updateLastExported(UUID id, Instant lastExported) {
+        dao.updateLastExported(id, lastExported);
+    }
+
+    public Optional<Dataset> findByDataRepoId(UUID dataRepoId) {
+        return dao.findByDataRepoId(dataRepoId);
     }
 
     public void deleteByStudyEnvironmentId(UUID studyEnvId) {

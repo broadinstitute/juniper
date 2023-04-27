@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter
@@ -16,4 +17,5 @@ public class Dataset extends BaseEntity {
     private UUID studyEnvironmentId;
     private UUID datasetId;
     private String datasetName;
+    private Instant lastExported;
 }

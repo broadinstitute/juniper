@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.datarepo;
 
+import bio.terra.datarepo.api.DatasetsApi;
 import bio.terra.datarepo.api.JobsApi;
 import bio.terra.datarepo.api.RepositoryApi;
 import bio.terra.datarepo.api.UnauthenticatedApi;
@@ -28,11 +29,13 @@ public class DataRepoClient {
 
     //Dataset APIs
     public JobModel createDataset(UUID spendProfileId, String datasetName) throws ApiException {
-        RepositoryApi repositoryApi = getRepositoryApi();
+        DatasetsApi datasetsApi = getDatasetsApi();
 
         //TODO: AR-229. Placeholder schema for now, need to determine mapping of survey schema to TDR schema.
         DatasetSpecificationModel schema = new DatasetSpecificationModel()
-                .tables(List.of(new TableModel().name("my_table").columns(List.of(new ColumnModel().name("my_column").datatype(TableDataType.STRING)))));
+                .tables(List.of(new TableModel().name("enrollee").columns(List.of(
+                        new ColumnModel().name("shortcode").datatype(TableDataType.STRING)
+                ))));
 
         DatasetRequestModel dataset = new DatasetRequestModel()
                 .name(datasetName)
@@ -40,30 +43,42 @@ public class DataRepoClient {
                 .defaultProfileId(spendProfileId)
                 .schema(schema);
 
-        JobModel response = repositoryApi.createDataset(dataset);
+        JobModel response = datasetsApi.createDataset(dataset);
 
         return response;
     }
 
+    /* TDR on Azure currently only supports appends during dataset ingest. As a result, this will only
+        ever add rows to the dataset. Once more advanced update strategies are available, we can
+        switch this over to either MERGE or REPLACE, depending on our needs.
+        In a future PR, we will tackle short-term handling of this until those strategies are available,
+        most likely by deleting the dataset tables and recreating them each time.
+     */
     public JobModel ingestDataset(UUID datasetId, String tableName) throws ApiException {
-        RepositoryApi repositoryApi = getRepositoryApi();
+        DatasetsApi datasetsApi = getDatasetsApi();
 
         Map<String, Object> records = new HashMap<>();
+
+        //TODO: Once we have the TSV prepared for export, we can either convert it into a TDR array model (short term solution),
+        // or upload it to an Azure storage container elsewhere and point to that URL here. For now, just add a new row each time
+        // to see that the flow is working.
+        records.put("shortcode", "TESTUSER");
 
         IngestRequestModel request = new IngestRequestModel()
                 .table(tableName)
                 //TODO: Probably want to ingest data via file, not array (otherwise this payload will be massive).
                 //Need mechanism to write TDR ingest files to an Azure storage container and point TDR to that
                 .format(IngestRequestModel.FormatEnum.ARRAY)
+                .updateStrategy(IngestRequestModel.UpdateStrategyEnum.APPEND) //This is the default, and the only available option on Azure right now
                 .records(List.of(records));
 
-        return repositoryApi.ingestDataset(datasetId, request);
+        return datasetsApi.ingestDataset(datasetId, request);
     }
 
     public JobModel deleteDataset(UUID datasetId) throws ApiException {
-        RepositoryApi repositoryApi = getRepositoryApi();
+        DatasetsApi datasetsApi = getDatasetsApi();
 
-        return repositoryApi.deleteDataset(datasetId);
+        return datasetsApi.deleteDataset(datasetId);
     }
 
     //Job APIs
@@ -87,7 +102,7 @@ public class DataRepoClient {
     }
 
     //TDR API objects
-    private RepositoryApi getRepositoryApi() { return new RepositoryApi(getApiClient()); }
+    private DatasetsApi getDatasetsApi() { return new DatasetsApi(getApiClient()); }
     private JobsApi getJobsApi() { return new JobsApi(getApiClient()); }
     private UnauthenticatedApi getUnauthenticatedApi() { return new UnauthenticatedApi(getApiClient()); }
 

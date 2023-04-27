@@ -12,9 +12,10 @@ import java.util.UUID;
 @Getter
 @Setter @ToString
 @SuperBuilder @NoArgsConstructor
-public class CreateDatasetJob extends BaseEntity {
+public class DataRepoJob extends BaseEntity {
     private UUID studyEnvironmentId;
     private String tdrJobId;
     private String datasetName;
     private String status;
+    private JobType jobType;
 }

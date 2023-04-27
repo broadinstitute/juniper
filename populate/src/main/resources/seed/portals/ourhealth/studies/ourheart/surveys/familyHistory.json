@@ -2,15 +2,10 @@
   "stableId": "oh_oh_famHx",
   "version": 1,
   "name": "Family History",
+  "footer": "Unless otherwise mentioned, all questions are sourced from the All of Us research study.",
   "jsonContent": {
     "showQuestionNumbers": "off",
     "showProgressBar": "bottom",
-    "triggers": [
-      {
-        "type": "complete",
-        "expression": "{oh_oh_famHx_famKnowledge} = 'none'"
-      }
-    ],
     "questionTemplates": [
       {
         "name": "oh_oh_famHx_ageAtHeartAttack",
@@ -166,6 +161,7 @@
         ]
       },
       {
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [
           {
             "type": "panel",
@@ -173,7 +169,7 @@
               {
                 "type": "html",
                 "name": "oh_oh_famHx_conditionIntro",
-                "html": "<h2>Family Cardiac Health</h2><p>Please indicate if ANY of your parents, grandparents, brothers, sisters, and/or children have had any of the following. Think only of the people you are related to by blood. (please select all that apply)</p>"
+                "html": "<h2>Family Cardiac Health</h2><p>Please indicate if ANY of your parents, grandparents, brothers, sisters, and/or children have had any of the following. Think only of the people you are related to by blood. (Please select all that apply. If none of these apply, please skip.)</p>"
               }
             ]
           },
@@ -539,6 +535,7 @@
           }
         ]
       },{
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [
           {
             "type": "panel",
@@ -723,6 +720,7 @@
           ]
         }]
       },{
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [
           {
             "type": "panel",
@@ -904,6 +902,7 @@
           ]
         }]
       },{
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [
           {
             "type": "panel",
@@ -911,7 +910,7 @@
               {
                 "type": "html",
                 "name": "siblingConditionsDescription",
-                "html": "<h2>Your Sibling’s Health</h2><p>Please indicate if your brothers and/or sisters [people with the same mother and/or father as you] has ever been diagnosed with the following health conditions and/or health events. Think only of those people you are related to by blood. If you have more than one brother or sister, check the box if any of your brothers or sisters have the condition (select all that apply)</p>"
+                "html": "<h2>Your Sibling’s Health</h2><p>Please indicate if your brothers and/or sisters [people with the same mother and/or father as you] has ever been diagnosed with the following health conditions and/or health events. Think only of those people you are related to by blood. If you have multiple siblings, please check the box if any sibling has the condition (select all that apply)</p>"
               }
             ]
           },{
@@ -1089,6 +1088,7 @@
           ]
         }]
       },{
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [{
           "type": "panel",
           "elements": [
@@ -1272,6 +1272,7 @@
           ]
         }]
       },{
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [{
           "type": "panel",
           "elements": [
@@ -1452,6 +1453,7 @@
           ]
         }]
       },{
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [{
           "type": "panel",
           "elements": [

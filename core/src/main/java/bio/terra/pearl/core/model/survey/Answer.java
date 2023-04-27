@@ -69,12 +69,14 @@ public class Answer extends BaseEntity {
         numberValue = answer.numberValue;
         objectValue = answer.objectValue;
         answerType = answer.answerType;
+        otherDescription = answer.otherDescription;
     }
 
     public boolean valuesEqual(Answer answer) {
         return Objects.equals(booleanValue, answer.booleanValue) &&
                 Objects.equals(stringValue, answer.stringValue) &&
                 Objects.equals(numberValue, answer.numberValue) &&
-                Objects.equals(objectValue, answer.objectValue);
+                Objects.equals(objectValue, answer.objectValue) &&
+                Objects.equals(otherDescription, answer.otherDescription);
     }
 }

@@ -33,7 +33,6 @@ public class ConsentFormService extends ImmutableEntityService<ConsentForm, Cons
 
     @Transactional
     public ConsentForm createNewVersion(AdminUser adminUser, UUID portalId, ConsentForm consentForm) {
-        // TODO check user permissions
         ConsentForm newConsent = new ConsentForm();
         BeanUtils.copyProperties(consentForm, newConsent, "id", "version", "createdAt", "lastUpdatedAt");
         newConsent.setPortalId(portalId);

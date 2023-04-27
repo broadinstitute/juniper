@@ -37,10 +37,7 @@ const registrationSurveyModel: Survey = {
   name: 'Registration',
   stableId: 'pearlDefaultRegistration',
   version: 1,
-  content: JSON.stringify(registrationSurvey),
-  allowParticipantCompletion: true,
-  allowMultipleResponses: false,
-  allowParticipantReedit: false
+  content: JSON.stringify(registrationSurvey)
 }
 
 /**

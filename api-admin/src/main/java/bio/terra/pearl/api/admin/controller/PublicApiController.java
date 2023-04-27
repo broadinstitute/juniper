@@ -1,12 +1,11 @@
 package bio.terra.pearl.api.admin.controller;
 
 import bio.terra.pearl.api.admin.api.PublicApi;
-import bio.terra.pearl.api.admin.config.B2CConfiguration;
 import bio.terra.pearl.api.admin.config.VersionConfiguration;
 import bio.terra.pearl.api.admin.model.SystemStatus;
 import bio.terra.pearl.api.admin.model.VersionProperties;
+import bio.terra.pearl.api.admin.service.ConfigExtService;
 import bio.terra.pearl.api.admin.service.StatusService;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,18 +16,18 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class PublicApiController implements PublicApi {
-  private final B2CConfiguration b2CConfiguration;
   private final StatusService statusService;
   private final VersionConfiguration versionConfiguration;
+  private ConfigExtService configExtService;
 
   @Autowired
   public PublicApiController(
-      B2CConfiguration b2CConfiguration,
       StatusService statusService,
-      VersionConfiguration versionConfiguration) {
-    this.b2CConfiguration = b2CConfiguration;
+      VersionConfiguration versionConfiguration,
+      ConfigExtService configExtService) {
     this.statusService = statusService;
     this.versionConfiguration = versionConfiguration;
+    this.configExtService = configExtService;
   }
 
   @Override
@@ -51,13 +50,13 @@ public class PublicApiController implements PublicApi {
 
   @Override
   public ResponseEntity<Object> getConfig() {
-    var config = buildConfigMap();
+    var config = configExtService.getConfigMap();
     return ResponseEntity.ok(config);
   }
 
   @GetMapping(value = "/config.json")
   public ModelAndView getConfigJson() {
-    var config = buildConfigMap();
+    var config = configExtService.getConfigMap();
     return new ModelAndView("config.json").addAllObjects(config);
   }
 
@@ -75,12 +74,5 @@ public class PublicApiController implements PublicApi {
   @GetMapping(value = {"/{x:[\\w\\-]+}", "/{x:^(?!api$).*$}/*/{y:[\\w\\-]+}"})
   public String getIndex(HttpServletRequest request) {
     return "forward:/";
-  }
-
-  private Map<String, String> buildConfigMap() {
-    return Map.of(
-        "b2cTenantName", b2CConfiguration.tenantName(),
-        "b2cClientId", b2CConfiguration.clientId(),
-        "b2cPolicyName", b2CConfiguration.policyName());
   }
 }
