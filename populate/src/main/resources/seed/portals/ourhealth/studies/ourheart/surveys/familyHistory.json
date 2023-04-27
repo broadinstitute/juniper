@@ -745,6 +745,7 @@
             {"text": "Brain cancer", "value": "brainCancer"},
             {"text": "Breast cancer", "value": "breastCancer"},
             {"text": "Colon cancer/Rectal cancer", "value": "colonCancerRectalCancer"},
+            {"text": "Endocrine cancer", "value": "endocrineCancer"},
             {"text": "Esophageal cancer", "value": "esophagealCancer"},
             {"text": "Eye cancer", "value": "eyeCancer"},
             {"text": "Head and neck cancer", "value": "headAndNeckCancer"},
