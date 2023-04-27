@@ -14,14 +14,19 @@ import bio.terra.pearl.core.model.datarepo.Dataset;
 import bio.terra.pearl.core.model.datarepo.JobType;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.service.azure.AzureBlobStorageClient;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetCreationException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetNotFoundException;
 import bio.terra.pearl.core.service.exception.StudyNotFoundException;
+import bio.terra.pearl.core.service.export.EnrolleeExportService;
+import bio.terra.pearl.core.service.export.ExportFileFormat;
+import bio.terra.pearl.core.service.export.instance.ExportOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
@@ -35,9 +40,11 @@ public class DataRepoExportService {
     private static final Logger logger = LoggerFactory.getLogger(DataRepoExportService.class);
 
     Environment env;
+    AzureBlobStorageClient azureBlobStorageClient;
     DataRepoJobService dataRepoJobService;
     DatasetService datasetService;
     DataRepoClient dataRepoClient;
+    EnrolleeExportService enrolleeExportService;
     AnswerDao answerDao;
     DataRepoJobDao dataRepoJobDao;
     DatasetDao datasetDao;
@@ -46,9 +53,11 @@ public class DataRepoExportService {
     StudyDao studyDao;
 
     public DataRepoExportService(Environment env,
+                                 AzureBlobStorageClient azureBlobStorageClient,
                                  DataRepoClient dataRepoClient,
                                  DataRepoJobService dataRepoJobService,
                                  DatasetService datasetService,
+                                 EnrolleeExportService enrolleeExportService,
                                  AnswerDao answerDao,
                                  DataRepoJobDao dataRepoJobDao,
                                  DatasetDao datasetDao,
@@ -56,8 +65,10 @@ public class DataRepoExportService {
                                  StudyDao studyDao,
                                  StudyEnvironmentDao studyEnvironmentDao) {
         this.env = env;
+        this.azureBlobStorageClient = azureBlobStorageClient;
         this.dataRepoClient = dataRepoClient;
         this.dataRepoJobService = dataRepoJobService;
+        this.enrolleeExportService = enrolleeExportService;
         this.answerDao = answerDao;
         this.dataRepoJobDao = dataRepoJobDao;
         this.datasetService = datasetService;
@@ -65,6 +76,26 @@ public class DataRepoExportService {
         this.enrolleeDao = enrolleeDao;
         this.studyDao = studyDao;
         this.studyEnvironmentDao = studyEnvironmentDao;
+    }
+
+    public void createStuff() {
+        ExportOptions exportOptions = new ExportOptions(false, false, ExportFileFormat.TSV, false);
+
+        String fileName = "7f2004f2-ad42-4dcb-bb05-e753cdf1d341" + "_" + System.currentTimeMillis();
+
+        StudyEnvironment studyEnv = studyEnvironmentDao.find(UUID.fromString("7f2004f2-ad42-4dcb-bb05-e753cdf1d341")).get(); //todo: get
+        String exportData;
+        try {
+            exportData = enrolleeExportService.exportAsString(exportOptions, null, studyEnv.getId());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            azureBlobStorageClient.uploadBlob(fileName, exportData);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void createDatasetsForStudyEnvironments() {
