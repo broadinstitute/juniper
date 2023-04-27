@@ -74,7 +74,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     auth.events.addUserLoaded(user => {
       const token = user.id_token as string
       Api.setBearerToken(token)
-      Api.tokenLogin(token).then(user => {
+      Api.refreshLogin(token).then(user => {
         user.token = token
         loginUser(user)
         setIsLoading(false)
