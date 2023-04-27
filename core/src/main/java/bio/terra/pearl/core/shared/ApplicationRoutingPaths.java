@@ -29,7 +29,6 @@ public class ApplicationRoutingPaths {
     public String getParticipantBaseUrl(PortalEnvironment portalEnv, String portalShortcode) {
         String participantHostname = portalEnv.getPortalEnvironmentConfig().getParticipantHostname();
         if (participantHostname == null) {
-            // TODO read from environment variable once Mike adds support for it
             participantHostname = portalShortcode + "." + getParticipantUiHostname();
         }
 

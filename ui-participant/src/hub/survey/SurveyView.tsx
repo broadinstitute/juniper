@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import Api, {
-  ConsentForm,
   Enrollee,
   Portal,
   StudyEnvironmentSurvey,
+  Survey,
   SurveyJsResumeData,
   SurveyResponse,
   SurveyWithResponse
@@ -27,6 +27,8 @@ import { useUser } from 'providers/UserProvider'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { withErrorBoundary } from '../../util/ErrorBoundary'
 import SurveyReviewModeButton from './ReviewModeButton'
+import { Markdown } from '../../landing/Markdown'
+import { SurveyModel } from 'survey-core'
 
 const TASK_ID_PARAM = 'taskId'
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
@@ -36,7 +38,7 @@ const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are c
  */
 function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, taskId, activeResponse }:
                          {
-                           form: ConsentForm, enrollee: Enrollee, taskId: string, activeResponse?: SurveyResponse,
+                           form: Survey, enrollee: Enrollee, taskId: string, activeResponse?: SurveyResponse,
                            resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string
                          }) {
   const navigate = useNavigate()
@@ -136,6 +138,20 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
     <SurveyReviewModeButton surveyModel={surveyModel}/>
     <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">{form.name}</h1>
     {surveyModel && <SurveyComponent model={surveyModel}/>}
+    <SurveyFooter survey={form} surveyModel={surveyModel}/>
+  </div>
+}
+
+/** renders the foot for the survey, if it exists and we are on the last page */
+function SurveyFooter({ survey, surveyModel }: { survey: Survey, surveyModel: SurveyModel | null }) {
+  if (!survey.footer || !surveyModel?.isLastPage) {
+    return null
+  }
+  return <div className="p-3 mb-0 w-100 d-flex justify-content-center"
+    style={{ background: '#d6d6d6' }}>
+    <div style={{ maxWidth: '600px' }}>
+      <Markdown>{survey.footer}</Markdown>
+    </div>
   </div>
 }
 

@@ -2,15 +2,10 @@
   "stableId": "oh_oh_famHx",
   "version": 1,
   "name": "Family History",
+  "footer": "Unless otherwise mentioned, all questions are sourced from the All of Us research study.",
   "jsonContent": {
     "showQuestionNumbers": "off",
     "showProgressBar": "bottom",
-    "triggers": [
-      {
-        "type": "complete",
-        "expression": "{oh_oh_famHx_famKnowledge} = 'none'"
-      }
-    ],
     "questionTemplates": [
       {
         "name": "oh_oh_famHx_ageAtHeartAttack",
@@ -166,6 +161,7 @@
         ]
       },
       {
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [
           {
             "type": "panel",
@@ -539,6 +535,7 @@
           }
         ]
       },{
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [
           {
             "type": "panel",
@@ -723,6 +720,7 @@
           ]
         }]
       },{
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [
           {
             "type": "panel",
@@ -904,6 +902,7 @@
           ]
         }]
       },{
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [
           {
             "type": "panel",
@@ -1089,6 +1088,7 @@
           ]
         }]
       },{
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [{
           "type": "panel",
           "elements": [
@@ -1272,6 +1272,7 @@
           ]
         }]
       },{
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [{
           "type": "panel",
           "elements": [
@@ -1452,6 +1453,7 @@
           ]
         }]
       },{
+        "visibleIf": "{oh_oh_famHx_famKnowledge} != 'none'",
         "elements": [{
           "type": "panel",
           "elements": [

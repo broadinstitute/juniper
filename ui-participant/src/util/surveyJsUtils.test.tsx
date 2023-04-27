@@ -203,6 +203,22 @@ test('testGetUpdatedAnswersStringUpdated', () => {
   expect(updatedAnswers).toEqual([{ questionStableId: 'foo', stringValue: 'baz' }])
 })
 
+test('testGetUpdatedAnswersOtherAdded', () => {
+  const updatedAnswers = getUpdatedAnswers({ 'foo': 'bar' }, { 'foo': 'baz', 'foo-Comment': 'blah' })
+  expect(updatedAnswers).toEqual([{ questionStableId: 'foo', stringValue: 'baz', otherDescription: 'blah' }])
+})
+
+test('testGetUpdatedAnswersOtherRemoved', () => {
+  const updatedAnswers = getUpdatedAnswers({ 'foo': 'bar', 'foo-Comment': 'blah' }, { 'foo': 'baz' })
+  expect(updatedAnswers).toEqual([{ questionStableId: 'foo', stringValue: 'baz' }])
+})
+
+test('testGetUpdatedAnswersOtherChanged', () => {
+  const updatedAnswers = getUpdatedAnswers({ 'foo': 'bar', 'foo-Comment': 'blah' },
+    { 'foo': 'baz', 'foo-Comment': 'blah2' })
+  expect(updatedAnswers).toEqual([{ questionStableId: 'foo', stringValue: 'baz', otherDescription: 'blah2' }])
+})
+
 test('testGetUpdatedAnswersBooleanNew', () => {
   const updatedAnswers = getUpdatedAnswers({}, { 'foo': false })
   expect(updatedAnswers).toEqual([{ questionStableId: 'foo', booleanValue: false }])
