@@ -18,7 +18,7 @@ function StudyEnvironmentSidebar({ portalShortcode, study, currentEnv, currentEn
     <hr/>
     <ul className="nav nav-pills flex-column mb-auto">
       <li>
-        <NavLink to={''} className="nav-link" onClick={() => setShow(false)}
+        <NavLink to={currentEnvPath} className="nav-link" onClick={() => setShow(false)}
           style={sidebarLinkStyle}>
           Content
         </NavLink>
