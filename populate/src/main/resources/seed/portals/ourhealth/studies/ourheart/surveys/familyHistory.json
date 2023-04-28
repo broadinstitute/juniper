@@ -12,7 +12,7 @@
         "type": "dropdown",
         "title": "How old was this person when the heart attack occurred?",
         "choices": [
-          { "text": "Don't know", "value": "unknown" },
+          { "text": "I don't know", "value": "unknown" },
           {"text": "0", "value": "0"},
           {"text": "1", "value": "1"},
           {"text": "2", "value": "2"},
