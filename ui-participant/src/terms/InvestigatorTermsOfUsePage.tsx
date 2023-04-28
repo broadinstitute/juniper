@@ -21,31 +21,36 @@ const InvestigatorTermsOfUse = () => {
         <br />
         Investigator Terms of Use
       </h1>
-      <p>Effective Date: May 4, 2023</p>
+      <p>Effective Date: April 28, 2023</p>
 
       <p>
         Please read these Terms of Use (these <strong>“Terms”</strong>)
         carefully, as they constitute a binding contract between you, an
         investigator or other researcher (<strong>“you”</strong> or{' '}
         <strong>“your”</strong>) and The Broad Institute, Inc. (
-        <strong>“Broad,”</strong>
-        <strong>“we,”</strong> <strong>“us,”</strong> or <strong>“our”</strong>
-        ). These Terms of Use (<strong>“Terms”</strong>) apply to your use of
-        the Juniper study administrator platform (collectively, the{' '}
-        <strong>“Platform”</strong>). By using or accessing the Platform, you
-        agree to be bound by these Terms. If you do not agree to these Terms,
-        you may not access or use the Platform. We reserve the right to change
-        or otherwise modify these Terms at any time. All changes are effective
-        immediately when we post them, and apply to all access to and use of the
-        Platform thereafter. We may also notify you by sending an email
-        notification to the address associated with your Account (as defined
-        below) or providing notice through our Platform. Your continued access
-        or use of the Platform after receiving notice of any update,
-        modification or other change to these Terms signifies your acceptance
-        thereof.
+        <strong>“Broad,”</strong> <strong>“we,”</strong> <strong>“us,”</strong>{' '}
+        or <strong>“our”</strong>).
+      </p>
+      <p>
+        These Terms of Use (<strong>“Terms”</strong>) apply to your use of the
+        Juniper Platform, which can be accessed by our website{' '}
+        <a href="https://juniper.terra.bio">juniper.terra.bio</a> (collectively,
+        the <strong>“Platform”</strong>). By clicking “I accept” or by using or
+        accessing the Platform, you agree to be bound by these Terms. If you do
+        not agree to these Terms, you may not access or use the Platform.{' '}
+      </p>
+      <p>
+        We reserve the right to change or otherwise modify these Terms at any
+        time. All changes are effective immediately when we post them, and apply
+        to all access to and use of the Platform thereafter. We may also notify
+        you by sending an email notification to the address associated with your
+        Account (as defined below) or providing notice through our Platform.
+        Your continued access or use of the Platform after receiving notice of
+        any update, modification or other change to these Terms signifies your
+        acceptance thereof.
       </p>
 
-      <SectionHeading>General Overview of the Platform</SectionHeading>
+      <SectionHeading>1. General Overview of the Platform</SectionHeading>
       <p>
         We have developed the Platform to enable you to connect with users
         participating in certain research projects (each, a{' '}
@@ -54,7 +59,7 @@ const InvestigatorTermsOfUse = () => {
       </p>
 
       <SectionHeading>
-        Creating an Account; Accessing the Platform
+        2. Creating an Account; Accessing the Platform
       </SectionHeading>
       <p>
         To access and use certain features of the Platform, you might need to
@@ -70,7 +75,7 @@ const InvestigatorTermsOfUse = () => {
         please sign out of your Account at the end of each session.
       </p>
 
-      <SectionHeading>Privacy</SectionHeading>
+      <SectionHeading>3. Privacy</SectionHeading>
       <p>
         Broad understands the importance of confidentiality and privacy
         regarding your information. Please see our{' '}
@@ -82,7 +87,7 @@ const InvestigatorTermsOfUse = () => {
         case, in compliance with our Privacy Policy.
       </p>
 
-      <SectionHeading>Communication Preferences</SectionHeading>
+      <SectionHeading>4. Communication Preferences</SectionHeading>
       <p>
         By creating an Account, you also consent to receive electronic
         communications from Broad (e.g., via email, text message, or by posting
@@ -94,7 +99,7 @@ const InvestigatorTermsOfUse = () => {
         communications be in writing.
       </p>
 
-      <SectionHeading>Relationship Between You and Broad</SectionHeading>
+      <SectionHeading>5. Relationship Between You and Broad</SectionHeading>
       <p>
         You acknowledge that you are an independent contractor, and that no
         agency, partnership, joint venture or employee-employer relationship is
@@ -114,7 +119,7 @@ const InvestigatorTermsOfUse = () => {
         other person’s rights or any law.
       </p>
 
-      <SectionHeading>Proprietary Rights</SectionHeading>
+      <SectionHeading>6. Proprietary Rights</SectionHeading>
       <p>
         All original content, materials, features and functionality (including
         text, information, images, photos, graphics, artworks, logos, videos,
@@ -153,7 +158,7 @@ const InvestigatorTermsOfUse = () => {
         them, and you are not entitled to receive any compensation.
       </p>
 
-      <SectionHeading>Uploaded Information and User Content</SectionHeading>
+      <SectionHeading>7. Uploaded Information and User Content</SectionHeading>
       <p>
         The Platform may contain medical and other information about
         participants in the Research Projects (
@@ -186,7 +191,7 @@ const InvestigatorTermsOfUse = () => {
         Research Projects.
       </p>
 
-      <SectionHeading>Prohibited Uses</SectionHeading>
+      <SectionHeading>8. Prohibited Uses</SectionHeading>
       <p>
         We want to make sure the Platform is a safe place for us and our users.
         For this reason, we need to have certain rules about the use of the
@@ -225,7 +230,7 @@ const InvestigatorTermsOfUse = () => {
       </p>
 
       <SectionHeading>
-        Broad is Not Responsible for Third-Party Content
+        9. Broad is Not Responsible for Third-Party Content
       </SectionHeading>
       <p>
         The Platform may contain links to third-party web sites, products, and
@@ -243,7 +248,7 @@ const InvestigatorTermsOfUse = () => {
         subject to the terms and conditions of use for such offerings.
       </p>
 
-      <SectionHeading>Disclaimer of Warranties</SectionHeading>
+      <SectionHeading>10. Disclaimer of Warranties</SectionHeading>
       <p>
         We provide the Platform on an ‘as is’ and ‘as available’ basis without
         any promises or representations, expressed or implied. For example, we
@@ -256,7 +261,7 @@ const InvestigatorTermsOfUse = () => {
         to the Platform.
       </p>
 
-      <SectionHeading>Limitation of Liability</SectionHeading>
+      <SectionHeading>11. Limitation of Liability</SectionHeading>
       <p>THIS SECTION LIMITS THE DAMAGE YOU CAN RECOVER FROM US.</p>
       <p>
         NOTWITHSTANDING THE FAILURE OF ESSENTIAL PURPOSE OF ANY LIMITED REMEDY
@@ -283,7 +288,7 @@ const InvestigatorTermsOfUse = () => {
         of the Platform exceed $100.
       </p>
 
-      <SectionHeading>Termination</SectionHeading>
+      <SectionHeading>12. Termination</SectionHeading>
       <p>
         These Terms are effective unless and until terminated by either you or
         Broad. You may terminate these Terms at any time, provided that you
@@ -301,7 +306,7 @@ const InvestigatorTermsOfUse = () => {
         and purpose of these Terms shall survive termination.
       </p>
 
-      <SectionHeading>General</SectionHeading>
+      <SectionHeading>13. General</SectionHeading>
       <p>
         These Terms, including the Privacy Policy and other policies
         incorporated herein, constitute the entire and only agreement between
@@ -324,7 +329,7 @@ const InvestigatorTermsOfUse = () => {
         in no way defines or explains any section or provision hereof.
       </p>
 
-      <SectionHeading>Contact Us</SectionHeading>
+      <SectionHeading>14. Contact Us</SectionHeading>
       <p>
         If you have any questions regarding our Platform or these Terms, you can
         contact us at{' '}

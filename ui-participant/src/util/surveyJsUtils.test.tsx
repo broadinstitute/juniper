@@ -19,6 +19,18 @@ import {
   generateThreePageSurvey
 } from '../test-utils/test-survey-factory'
 import { Model } from 'survey-core'
+import { usePortalEnv } from 'providers/PortalProvider'
+
+jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
+
+beforeEach(() => {
+  // @ts-expect-error TS doesn't realize this function is mocked
+  usePortalEnv.mockReturnValue({
+    portalEnv: {
+      environmentName: 'sandbox'
+    }
+  })
+})
 
 /** does nothing except render a survey using the hooks from surveyJSUtils */
 function PlainSurveyComponent({ formModel, profile }: { formModel: SurveyJSForm, profile?: Profile }) {
@@ -268,5 +280,3 @@ test('testGetUpdatedAnswersNumberUnchanged', () => {
   const updatedAnswers = getUpdatedAnswers({ 'foo': 4 }, { 'foo': 4 })
   expect(updatedAnswers).toEqual([])
 })
-
-

@@ -1,8 +1,8 @@
 {
   "stableId": "oh_oh_cardioHx",
   "version": 1,
-  "name": "Heart Health History",
-  "footer": "Resources used for this survey:\n * All of Us\nCalifornia Teacher’s Study (CTS)\n * Mike Honigberg, American Heart Association\n * OurHealth",
+  "name": "Cardiometabolic Medical History",
+  "footer": "Resources used for this survey:\n * All of Us\n * California Teacher’s Study (CTS)\n * Mike Honigberg, American Heart Association\n * OurHealth",
   "jsonContent": {
     "title": "OurHealth Medical History",
     "showProgressBar": "bottom",
@@ -12,6 +12,113 @@
         "name": "oh_oh_cardioHx_ageAboutAtDiagnosis",
         "type": "dropdown",
         "title": "About how old were you when you were first told you had this condition? ",
+        "choices": [
+          {"text": "0", "value": "0"},
+          {"text": "1", "value": "1"},
+          {"text": "2", "value": "2"},
+          {"text": "3", "value": "3"},
+          {"text": "4", "value": "4"},
+          {"text": "5", "value": "5"},
+          {"text": "6", "value": "6"},
+          {"text": "7", "value": "7"},
+          {"text": "8", "value": "8"},
+          {"text": "9", "value": "9"},
+          {"text": "10", "value": "10"},
+          {"text": "11", "value": "11"},
+          {"text": "12", "value": "12"},
+          {"text": "13", "value": "13"},
+          {"text": "14", "value": "14"},
+          {"text": "15", "value": "15"},
+          {"text": "16", "value": "16"},
+          {"text": "17", "value": "17"},
+          {"text": "18", "value": "18"},
+          {"text": "19", "value": "19"},
+          {"text": "20", "value": "20"},
+          {"text": "21", "value": "21"},
+          {"text": "22", "value": "22"},
+          {"text": "23", "value": "23"},
+          {"text": "24", "value": "24"},
+          {"text": "25", "value": "25"},
+          {"text": "26", "value": "26"},
+          {"text": "27", "value": "27"},
+          {"text": "28", "value": "28"},
+          {"text": "29", "value": "29"},
+          {"text": "30", "value": "30"},
+          {"text": "31", "value": "31"},
+          {"text": "32", "value": "32"},
+          {"text": "33", "value": "33"},
+          {"text": "34", "value": "34"},
+          {"text": "35", "value": "35"},
+          {"text": "36", "value": "36"},
+          {"text": "37", "value": "37"},
+          {"text": "38", "value": "38"},
+          {"text": "39", "value": "39"},
+          {"text": "40", "value": "40"},
+          {"text": "41", "value": "41"},
+          {"text": "42", "value": "42"},
+          {"text": "43", "value": "43"},
+          {"text": "44", "value": "44"},
+          {"text": "45", "value": "45"},
+          {"text": "46", "value": "46"},
+          {"text": "47", "value": "47"},
+          {"text": "48", "value": "48"},
+          {"text": "49", "value": "49"},
+          {"text": "50", "value": "50"},
+          {"text": "51", "value": "51"},
+          {"text": "52", "value": "52"},
+          {"text": "53", "value": "53"},
+          {"text": "54", "value": "54"},
+          {"text": "55", "value": "55"},
+          {"text": "56", "value": "56"},
+          {"text": "57", "value": "57"},
+          {"text": "58", "value": "58"},
+          {"text": "59", "value": "59"},
+          {"text": "60", "value": "60"},
+          {"text": "61", "value": "61"},
+          {"text": "62", "value": "62"},
+          {"text": "63", "value": "63"},
+          {"text": "64", "value": "64"},
+          {"text": "65", "value": "65"},
+          {"text": "66", "value": "66"},
+          {"text": "67", "value": "67"},
+          {"text": "68", "value": "68"},
+          {"text": "69", "value": "69"},
+          {"text": "70", "value": "70"},
+          {"text": "71", "value": "71"},
+          {"text": "72", "value": "72"},
+          {"text": "73", "value": "73"},
+          {"text": "74", "value": "74"},
+          {"text": "75", "value": "75"},
+          {"text": "76", "value": "76"},
+          {"text": "77", "value": "77"},
+          {"text": "78", "value": "78"},
+          {"text": "79", "value": "79"},
+          {"text": "80", "value": "80"},
+          {"text": "81", "value": "81"},
+          {"text": "82", "value": "82"},
+          {"text": "83", "value": "83"},
+          {"text": "84", "value": "84"},
+          {"text": "85", "value": "85"},
+          {"text": "86", "value": "86"},
+          {"text": "87", "value": "87"},
+          {"text": "88", "value": "88"},
+          {"text": "89", "value": "89"},
+          {"text": "90", "value": "90"},
+          {"text": "91", "value": "91"},
+          {"text": "92", "value": "92"},
+          {"text": "93", "value": "93"},
+          {"text": "94", "value": "94"},
+          {"text": "95", "value": "95"},
+          {"text": "96", "value": "96"},
+          {"text": "97", "value": "97"},
+          {"text": "98", "value": "98"},
+          {"text": "99", "value": "99"}
+        ]
+      },
+      {
+        "name": "oh_oh_cardioHx_ageAboutAtProcedure",
+        "type": "dropdown",
+        "title": "About how old were you when you had this procedure? ",
         "choices": [
           {"text": "0", "value": "0"},
           {"text": "1", "value": "1"},
@@ -240,13 +347,16 @@
             "name": "oh_oh_cardioHx_diagnosedHeartConditions",
             "type": "checkbox",
             "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply) ",
+            "showNoneItem": true,
+            "noneValue": "none",
+            "noneText": "I have no heart or blood condition",
             "choices": [
               {
                 "text": "Anemia",
                 "value": "anemia"
               },
               {
-                "text": "Another abnormal heart rhythm",
+                "text": "Abnormal heart rhythm",
                 "value": "otherAbnormalHeartRhythm"
               },
               {
@@ -256,6 +366,10 @@
               {
                 "text": "Bleeding disorder",
                 "value": "bleedingDisorder"
+              },
+              {
+                "text": "Cardiac arrest",
+                "value": "cardiacArrest"
               },
               {
                 "text": "Coronary artery/coronary heart disease",
@@ -306,8 +420,12 @@
                 "value": "other"
               },
               {
-                "text": "I have no heart or blood condition",
-                "value": "none"
+                "text": "Don't know",
+                "value": "dontKnow"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
               }
             ]
           },
@@ -318,6 +436,17 @@
             "elements": [
               {
                 "name": "oh_oh_cardioHx_anemiaAgeAtDx",
+                "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "title": "Abnormal heart rhythm",
+            "visibleIf": "{oh_oh_cardioHx_diagnosedHeartConditions} contains 'otherAbnormalHeartRhythm'",
+            "elements": [
+              {
+                "name": "oh_oh_cardioHx_otherAbnormalHeartRhythmAgeAtDx",
                 "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
               }
             ]
@@ -335,17 +464,6 @@
           },
           {
             "type": "panel",
-            "title": "Another abnormal heart rhythm",
-            "visibleIf": "{oh_oh_cardioHx_diagnosedHeartConditions} contains 'otherAbnormalHeartRhythm'",
-            "elements": [
-              {
-                "name": "oh_oh_cardioHx_otherAbnormalHeartRhythmAgeAtDx",
-                "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
-              }
-            ]
-          },
-          {
-            "type": "panel",
             "title": "Bleeding disorder",
             "visibleIf": "{oh_oh_cardioHx_diagnosedHeartConditions} contains 'bleedingDisorder'",
             "elements": [
@@ -357,35 +475,12 @@
           },
           {
             "type": "panel",
-            "title": "Heart failure",
-            "visibleIf": "{oh_oh_cardioHx_diagnosedHeartConditions} contains 'heartFailure'",
+            "title": "Cardiac arrest",
+            "visibleIf": "{oh_oh_cardioHx_diagnosedHeartConditions} contains 'cardiacArrest'",
             "elements": [
               {
-                "name": "oh_oh_cardioHx_heartFailureAgeAtDx",
+                "name": "oh_oh_cardioHx_cardiacArrestAgeAtDx",
                 "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
-              },
-              {
-                "name": "oh_oh_cardioHx_heartFailureProcedures",
-                "type": "radiogroup",
-                "title": "Have you ever undergone any of the following:",
-                "choices": [
-                  {
-                    "text": "Heart transplant surgery",
-                    "value": "heartTransplantSurgery"
-                  },
-                  {
-                    "text": "Left ventricular assist device placement (temporary)",
-                    "value": "leftVentricularTemporary"
-                  },
-                  {
-                    "text": "Left ventricular assist device placement (I still have this)",
-                    "value": "leftVentricularPermanent"
-                  },
-                  {
-                    "text": "None of these",
-                    "value": "none"
-                  }
-                ]
               }
             ]
           },
@@ -422,22 +517,22 @@
           {
             "type": "panel",
             "title": "Cardiac stent",
-            "visibleIf": "{oh_oh_cardioHx_diagnosedHeartConditions} contains 'cardiacStent'",
+            "visibleIf": "{oh_oh_cardioHx_coronaryDiseaseProcedure} contains 'cardiacStentPlacement'",
             "elements": [
               {
                 "name": "oh_oh_cardioHx_cardiacStentAgeAtDx",
-                "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
+                "questionTemplateName": "oh_oh_cardioHx_ageAboutAtProcedure"
               }
             ]
           },
           {
             "type": "panel",
-            "title": "Coronary artery bypass surgery",
-            "visibleIf": "{oh_oh_cardioHx_diagnosedHeartConditions} contains 'bypassSurgery'",
+            "title": "Cardiac bypass surgery",
+            "visibleIf": "{oh_oh_cardioHx_coronaryDiseaseProcedure} contains 'cardiacBypassSurgery'",
             "elements": [
               {
                 "name": "oh_oh_cardioHx_bypassSurgeryAgeAtDx",
-                "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
+                "questionTemplateName": "oh_oh_cardioHx_ageAboutAtProcedure"
               }
             ]
           },
@@ -449,6 +544,40 @@
               {
                 "name": "oh_oh_cardioHx_heartAttackAgeAtDx",
                 "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "title": "Heart failure",
+            "visibleIf": "{oh_oh_cardioHx_diagnosedHeartConditions} contains 'heartFailure'",
+            "elements": [
+              {
+                "name": "oh_oh_cardioHx_heartFailureAgeAtDx",
+                "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
+              },
+              {
+                "name": "oh_oh_cardioHx_heartFailureProcedures",
+                "type": "radiogroup",
+                "title": "Have you ever undergone any of the following:",
+                "choices": [
+                  {
+                    "text": "Left ventricular assist device placement (temporary)",
+                    "value": "leftVentricularTemporary"
+                  },
+                  {
+                    "text": "Left ventricular assist device placement (I still have this)",
+                    "value": "leftVentricularPermanent"
+                  },
+                  {
+                    "text": "Heart transplant surgery",
+                    "value": "heartTransplantSurgery"
+                  },
+                  {
+                    "text": "None of these",
+                    "value": "none"
+                  }
+                ]
               }
             ]
           },
@@ -596,6 +725,9 @@
             "name": "oh_oh_cardioHx_metabolicDiagnosis",
             "type": "checkbox",
             "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply)",
+            "showNoneItem": true,
+            "noneValue": "none",
+            "noneText": "None of the above",
             "choices": [
               {"text": "Diabetes - Type 1", "value": "diabetesType1"},
               {"text": "Diabetes - Type 2", "value": "diabetesType2"},
@@ -603,13 +735,15 @@
               {"text": "Prediabetes", "value": "prediabetes"},
               {"text": "Non-alcoholic Fatty Liver Disease (NAFLD/NASH)", "value": "nonAlcoholicFattyLiverDisease"},
               {"text": "Obesity", "value": "obesity"},
-              {"text": "Polycystic Ovarian Syndrome (PCOS)", "value": "polycysticOvarianSyndrome"}
+              {"text": "Polycystic Ovarian Syndrome (PCOS)", "value": "polycysticOvarianSyndrome"},
+              {"text": "Don't know", "value": "dontKnow"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
             ]
           },
           {
             "type": "panel",
-            "title": "Type 1 Diabetes",
-            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'type1Diabetes'",
+            "title": "Diabetes - Type 1",
+            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'diabetesType1'",
             "elements": [
               {
                 "name": "oh_oh_cardioHx_type1DiabetesAgeAtDx",
@@ -619,8 +753,8 @@
           },
           {
             "type": "panel",
-            "title": "Type 2 Diabetes",
-            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'type2Diabetes'",
+            "title": "Diabetes - Type 2",
+            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'diabetesType2'",
             "elements": [
               {
                 "name": "oh_oh_cardioHx_type2DiabetesAgeAtDx",
@@ -630,11 +764,22 @@
           },
           {
             "type": "panel",
-            "title": "Other/Unknown diabetes",
-            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'otherUnknownDiabetes'",
+            "title": "Gestational Diabetes",
+            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'diabetesGestational'",
             "elements": [
               {
-                "name": "oh_oh_cardioHx_otherUnknownDiabetesAgeAtDx",
+                "name": "oh_oh_cardioHx_gestationalDiabetesAgeAtDx",
+                "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "title": "Prediabetes",
+            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'prediabetes'",
+            "elements": [
+              {
+                "name": "oh_oh_cardioHx_prediabetesAgeAtDx",
                 "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
               }
             ]
@@ -682,17 +827,6 @@
                 "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
               }
             ]
-          },
-          {
-            "type": "panel",
-            "title": "Prediabetes",
-            "visibleIf": "{oh_oh_cardioHx_metabolicDiagnosis} contains 'prediabetes'",
-            "elements": [
-              {
-                "name": "oh_oh_cardioHx_prediabetesAgeAtDx",
-                "questionTemplateName": "oh_oh_cardioHx_ageAboutAtDiagnosis"
-              }
-            ]
           }
         ]
       },
@@ -712,7 +846,7 @@
           {
             "name": "oh_oh_cardioHx_ageFirstMenses",
             "type": "radiogroup",
-            "title": "How old were you when you had your first menstrual period (menses)?",
+            "title": "How old were you when you had your first menstrual period (menses)? (Honigberg, AHA)",
             "choices": [
               {
                 "text": "9 or less",
@@ -749,13 +883,21 @@
               {
                 "text": "17 or older",
                 "value": "17OrOlder"
+              },
+              {
+                "text": "Don't know",
+                "value": "dontKnow"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
               }
             ]
           },
           {
             "name": "oh_oh_cardioHx_regularPeriods",
             "type": "radiogroup",
-            "title": "During most of your life, were your periods regular; that is, did they occur about once a month? (Do not include any time when you were pregnant or taking birth control pills.)",
+            "title": "During most of your life, were your periods regular; that is, did they occur about once a month? (Do not include any time when you were pregnant or taking birth control pills.) (Honigberg, AHA)",
             "choices": [
               {
                 "text": "Yes",
@@ -774,7 +916,7 @@
           {
             "name": "oh_oh_cardioHx_everBeenPregnant",
             "type": "radiogroup",
-            "title": "Have you ever been pregnant? It is very important that we know about all of your pregnancies, including live births, stillbirths, miscarriages, tubals (ectopics), and abortions.",
+            "title": "Have you ever been pregnant? It is very important that we know about all of your pregnancies, including live births, stillbirths, miscarriages, tubals (ectopics), and abortions. (Honigberg, AHA)",
             "choices": [
               {
                 "text": "Yes",
@@ -783,6 +925,14 @@
               {
                 "text": "No",
                 "value": "no"
+              },
+              {
+                "text": "Don't know",
+                "value": "dontKnow"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
               }
             ]
           },
@@ -816,7 +966,7 @@
               {
                 "name": "oh_oh_cardioHx_numberOfPregnancies",
                 "type": "radiogroup",
-                "title": "How many times have you been pregnant?",
+                "title": "How many times have you been pregnant? (Honigberg, AHA)",
                 "choices": [
                   {
                     "text": "0",
@@ -853,6 +1003,10 @@
                   {
                     "text": "8 or more",
                     "value": "8OrMore"
+                  },
+                  {
+                    "text": "Prefer not to answer",
+                    "value": "preferNoAnswer"
                   }
                 ]
               },
@@ -888,6 +1042,10 @@
                   {
                     "text": "45 or older",
                     "value": "45OrOlder"
+                  },
+                  {
+                    "text": "Prefer not to answer",
+                    "value": "preferNoAnswer"
                   }
                 ]
               },
@@ -923,13 +1081,17 @@
                   {
                     "text": "45 or older",
                     "value": "45OrOlder"
+                  },
+                  {
+                    "text": "Prefer not to answer",
+                    "value": "preferNoAnswer"
                   }
                 ]
               },
               {
                 "name": "oh_oh_cardioHx_numberLiveBirths",
                 "type": "radiogroup",
-                "title": "How many live births did you have? (Live birth is the birth of a living baby) ",
+                "title": "How many live births did you have? (Live birth is the birth of a living baby) (Honigberg, AHA)",
                 "choices": [
                   {
                     "text": "None",
@@ -966,12 +1128,19 @@
                   {
                     "text": "8 or more",
                     "value": "8OrMore"
+                  },
+                  {
+                    "text": "Prefer not to answer",
+                    "value": "preferNoAnswer"
                   }
                 ]
               },{
                 "name": "oh_oh_lifestyle_pregnancyConditions",
                 "type": "checkbox",
                 "title": "With any of these pregnancies, did a doctor or health care provider tell you that you had…?",
+                "showNoneItem": true,
+                "noneValue": "none",
+                "noneText": "None of the above",
                 "choices": [
                   {"text": "Gestational diabetes", "value": "gestationalDiabetes"},
                   {"text": "Gestational hypertension", "value": "gestationalHypertension"},
@@ -981,7 +1150,9 @@
                   {"text": "HELLP syndrome", "value": "hellpSyndrome"},
                   {"text": "Peripartum cardiomyopathy", "value": "peripartumCardiomyopathy"},
                   {"text": "Peripartum depression", "value": "peripartumDepression"},
-                  {"text": "Preterm labor", "value": "pretermLabor"}
+                  {"text": "Preterm labor", "value": "pretermLabor"},
+                  {"text": "Don't know", "value": "dontKnow"},
+                  {"text": "Prefer not to answer", "value": "preferNoAnswer"}
                 ]
               }
             ]
@@ -992,7 +1163,9 @@
             "title": "Have you gone through or are you currently going through menopause? (Both natural and/or medical)",
             "choices": [
               {"text": "Yes", "value": "yes"},
-              {"text": "No", "value": "no"}
+              {"text": "No", "value": "no"},
+              {"text": "Don't know", "value": "dontKnow"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
             ]
           },
           {
@@ -1002,7 +1175,7 @@
               {
                 "name": "oh_oh_cardioHx_menopausalSymptoms",
                 "type": "radiogroup",
-                "title": "Have you ever had menopausal symptoms, such as hot flashes or night sweats? (Your best guess.)",
+                "title": "Have you ever had menopausal symptoms, such as hot flashes or night sweats? (Your best guess.) (Honigberg, AHA)",
                 "choices": [
                   {
                     "text": "Yes",
@@ -1021,7 +1194,7 @@
               {
                 "name": "oh_oh_cardioHx_mensesStopped",
                 "type": "radiogroup",
-                "title": "Have your menstrual periods stopped permanently? ",
+                "title": "Have your menstrual periods stopped permanently? (CTS)",
                 "choices": [
                   {
                     "text": "No",
@@ -1038,6 +1211,10 @@
                   {
                     "text": "Not sure",
                     "value": "unsure"
+                  },
+                  {
+                    "text": "Prefer not to answer",
+                    "value": "preferNoAnswer"
                   }
                 ]
               },
@@ -1045,7 +1222,7 @@
                 "name": "oh_oh_cardioHx_ageLastMenses",
                 "type": "text",
                 "visibleIf": "{oh_oh_cardioHx_mensesStopped} = 'yes'",
-                "title": "How old were you when you last had regular menstrual bleeding (a period)? (Your best guess)"
+                "title": "How old were you when you last had regular menstrual bleeding (a period)? (Your best guess) (Honigberg, AHA)"
               },
               {
                 "name": "oh_oh_cardioHx_mensesStopReason",

@@ -2,7 +2,7 @@
   "stableId": "oh_oh_basicInfo",
   "version": 1,
   "name": "The Basics",
-  "footer": "Resources used for this survey:\n * All of us\n * US2020 Census\n * NHANES\n * GeniUSS group (Gender Identity in U.S. Surveillance)\n * National Health Interview Survey (NHIS)\n * Behavioral Risk Factor Surveillance System (BRFSS)\n * NHCHC\n * OurHealth",
+  "footer": "Resources used for this survey:\n * All of Us\n * US2020 Census\n * NHANES\n * GenIUSS group (Gender Identity in U.S. Surveillance)\n * National Health Interview Survey (NHIS)\n * Behavioral Risk Factor Surveillance System (BRFSS)\n * NHCHC\n * OurHealth",
   "answerMappings": [{
     "questionStableId": "oh_oh_basic_firstName", "targetType": "PROFILE", "targetField": "givenName", "mapType": "STRING_TO_STRING"
   },{
@@ -61,6 +61,13 @@
                 "size": 1
               }
             ]
+          },{
+            "name": "oh_oh_basic_dateOfBirth",
+            "type": "text",
+            "title": "Date of Birth",
+            "inputMask": "datetime",
+            "inputFormat": "mm/dd/yyyy",
+            "isRequired": true
           }, {
             "name": "oh_oh_basic_mghPatient",
             "type": "radiogroup",
@@ -75,13 +82,6 @@
                 "value": "no"
               }
             ]
-          },{
-            "name": "oh_oh_basic_dateOfBirth",
-            "type": "text",
-            "title": "Date of Birth",
-            "inputMask": "datetime",
-            "inputFormat": "mm/dd/yyyy",
-            "isRequired": true
           }, {
             "name": "oh_oh_basic_height",
             "type": "dropdown",
@@ -290,7 +290,7 @@
             "isRequired": true,
             "showOtherItem": true,
             "otherErrorText": "A description is required",
-            "otherText": "None of these describe me, and I’d like to write my own description (fill in the blank)",
+            "otherText": "None of these describe me, and I’d like to write my own description",
             "otherPlaceholder": "Please describe",
             "choices": [
               {"text": "Man", "value": "man"},
@@ -316,8 +316,8 @@
             ]
           }, {
             "name": "oh_oh_basic_sexualOrientationFollowUp",
-            "type": "radiogroup",
-            "title": "Are any of these a closer description of how you think of yourself? ",
+            "type": "checkbox",
+            "title": "Are any of these a closer description of how you think of yourself? (Check all that apply)",
             "visibleIf": "{oh_oh_basic_sexualOrientation} contains 'noneOfThese'",
             "showOtherItem": true,
             "otherErrorText": "A description is required",
@@ -370,7 +370,7 @@
             "title": "With which of the following South Asian nations do you or your family identify? Check all that apply.",
             "isRequired": true,
             "showOtherItem": true,
-            "otherText": "Other (fill in the blank)",
+            "otherText": "Other",
             "otherPlaceholder": "Please specify",
             "otherErrorText": "A description is required for choices of 'other'",
             "showNoneItem": true,
@@ -612,7 +612,7 @@
           }, {
             "name": "oh_oh_basic_zip",
             "type": "text",
-            "title": "ZIP code (5 digits)",
+            "title": "ZIP Code (5 digits)",
             "maxLength": 5,
             "size": "5",
             "inputType": "text",
@@ -620,7 +620,7 @@
           }, {
             "name": "oh_oh_basic_phoneNumber",
             "type": "text",
-            "title": "Preferred phone number",
+            "title": "Preferred Phone Number",
             "inputMask": "phone",
             "inputFormat": "999-999-9999",
             "isRequired": true
@@ -638,21 +638,9 @@
               }
             ]
           },{
-            "name": "oh_oh_basic_settledOtherRegion",
-            "type": "radiogroup",
-            "title": "Prior to coming to the USA, had you or your family settled (1 or more generations) in a different region of the world outside of South Asia?",
-            "description": "For instance, UK, South Africa, West Indies, Guyana, etc.,",
-            "isRequired": true,
-            "choices": [
-              {"text": "No", "value": "no"},
-              {"text": "Yes", "value": "yes"},
-              {"text": "Prefer not to answer", "value":  "preferNoAnswer"}
-            ]
-          },{
-            "name": "oh_oh_basic_settledOtherRegionDetail",
+            "name": "oh_oh_basic_settledOtherRegions",
             "type": "checkbox",
             "title": "Have any generations of your family settled in any of the following regions? Check all that apply.",
-            "visibleIf": "{oh_oh_basic_settledOtherRegion} = 'yes'",
             "isRequired": true,
             "showNoneItem": true,
             "noneValue": "none",
@@ -680,7 +668,7 @@
             ]
           },{
             "name": "oh_oh_basic_citizenship",
-            "type": "radiogroup",
+            "type": "checkbox",
             "isRequired": true,
             "title": "What is your citizenship status?",
             "description": "This type of question helps us to ensure we are surveying a diverse group of South Asians in the US",
@@ -694,10 +682,10 @@
             "type": "radiogroup",
             "isRequired": true,
             "title": "Which of the following best describes your US citizenship status?",
-            "visibleIf": "{oh_oh_basic_citizenship} = 'usCitizen'",
+            "visibleIf": "{oh_oh_basic_citizenship} contains 'usCitizen'",
             "choices": [
-              {"text": "I am a US citizen by birth.", "value": "usBornCitizen"},
-              {"text": "I am a naturalized US citizen.", "value": "naturalizedUSCitizen"},
+              {"text": "I am a US citizen by birth", "value": "usBornCitizen"},
+              {"text": "I am a naturalized US citizen", "value": "naturalizedUSCitizen"},
               {"text": "Prefer not to answer", "value": "preferNoAnswer"}
             ]
           },{
@@ -706,8 +694,8 @@
             "isRequired": true,
             "title": "When did you arrive the in the US?",
             "choices": [
-              {"text": "I was born in the US.", "value": "bornInTheUs"},
-              {"text": "I came to the US after I was born.", "value": "cameToTheUs"},
+              {"text": "I was born in the US", "value": "bornInTheUs"},
+              {"text": "I came to the US after I was born", "value": "cameToTheUs"},
               {"text": "Prefer not to answer", "value": "preferNoAnswer"}
             ]
           },{
@@ -985,7 +973,7 @@
           },{
             "name": "oh_oh_basic_householdIncome",
             "type": "radiogroup",
-            "title": "One of the things we're trying to understand is how people's income may affect their use of health services. Household income includes your income plus the income of all family members in your household for the last calendar year. Include all wages and other sources of income.\n\nWhat is your annual household income from all sources? ",
+            "title": "One of the things we're trying to understand is how people's income may affect their use of health services.\n\nWhat is your annual household income from all sources? Household income includes your income plus the income of all family members in your household for the last calendar year. Include all wages and other sources of income.",
             "isRequired": true,
             "choices": [
               {"text": "Less than $25,000", "value": "lessThan25k"},

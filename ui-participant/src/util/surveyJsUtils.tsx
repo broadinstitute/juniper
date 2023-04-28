@@ -25,6 +25,7 @@ import { getSurveyElementList } from './pearlSurveyUtils'
 import _union from 'lodash/union'
 import _keys from 'lodash/keys'
 import _isEqual from 'lodash/isEqual'
+import { usePortalEnv } from 'providers/PortalProvider'
 
 const SURVEY_JS_OTHER_SUFFIX = '-Comment'
 
@@ -134,6 +135,8 @@ export function useSurveyJSModel(
     extraCssClasses = {}
   } = opts
 
+  const { portalEnv } = usePortalEnv()
+
   const [surveyModel, setSurveyModel] = useState<SurveyModel | null>(null)
 
   /** hand a page change by updating state of both the surveyJS model and our internal state*/
@@ -171,6 +174,7 @@ export function useSurveyJSModel(
     newSurveyModel.focusFirstQuestionAutomatic = false
     newSurveyModel.showTitle = false
     newSurveyModel.widthMode = 'static'
+    newSurveyModel.setVariable('portalEnvironmentName', portalEnv.environmentName)
     setSurveyModel(newSurveyModel)
   }
 
