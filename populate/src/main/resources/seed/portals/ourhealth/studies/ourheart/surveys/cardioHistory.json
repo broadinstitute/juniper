@@ -915,7 +915,7 @@
               {
                 "name": "oh_oh_cardioHx_currentlyPregnant",
                 "type": "radiogroup",
-                "title": "Are you currently pregnant? (UKBB)",
+                "title": "Are you currently pregnant?",
                 "choices": [
                   {
                     "text": "No",
