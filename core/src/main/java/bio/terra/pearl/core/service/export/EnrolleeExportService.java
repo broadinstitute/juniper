@@ -15,7 +15,6 @@ import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.*;
 import org.slf4j.Logger;
@@ -25,14 +24,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class EnrolleeExportService {
     private static final Logger logger = LoggerFactory.getLogger(EnrolleeExportService.class);
-    private ProfileService profileService;
-    private AnswerDao answerDao;
-    private SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
-    private SurveyResponseService surveyResponseService;
-    private ParticipantTaskService participantTaskService;
-    private SurveyDao surveyDao;
-    private EnrolleeService enrolleeService;
-    private ObjectMapper objectMapper;
+    private final ProfileService profileService;
+    private final AnswerDao answerDao;
+    private final SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
+    private final SurveyResponseService surveyResponseService;
+    private final ParticipantTaskService participantTaskService;
+    private final SurveyDao surveyDao;
+    private final EnrolleeService enrolleeService;
+    private final ObjectMapper objectMapper;
 
     public EnrolleeExportService(ProfileService profileService,
                                  AnswerDao answerDao,
@@ -51,24 +50,11 @@ public class EnrolleeExportService {
         this.objectMapper = objectMapper;
     }
 
-    public String exportAsString(ExportOptions exportOptions, UUID portalId, UUID studyEnvironmentId) throws Exception {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        export(exportOptions, portalId, studyEnvironmentId, baos);
-        baos.close();
-        return baos.toString();
-    }
-
     public void export(ExportOptions exportOptions, UUID portalId, UUID studyEnvironmentId, OutputStream os) throws Exception {
         List<ModuleExportInfo> moduleExportInfos = generateModuleInfos(exportOptions, portalId, studyEnvironmentId);
         var enrolleeMaps = generateExportMaps(portalId, studyEnvironmentId,
                 moduleExportInfos, exportOptions.limit());
-        BaseExporter exporter = null;
-        // once we have more exporters, we'll want some sort of factory pattern here
-        if (exportOptions.fileFormat().equals(ExportFileFormat.JSON)) {
-            exporter = new JsonExporter(moduleExportInfos, enrolleeMaps, objectMapper);
-        } else {
-            exporter = new TsvExporter(moduleExportInfos, enrolleeMaps);
-        }
+        BaseExporter exporter = getExporter(exportOptions.fileFormat(), moduleExportInfos, enrolleeMaps);
         exporter.export(os);
     }
 
@@ -147,6 +133,16 @@ public class EnrolleeExportService {
                 participantTaskService.findByEnrolleeId(enrollee.getId()),
                 surveyResponseService.findByEnrolleeId(enrollee.getId())
         );
+    }
+
+    protected BaseExporter getExporter(ExportFileFormat fileFormat, List<ModuleExportInfo> moduleExportInfos,
+                                       List<Map<String, String>> enrolleeMaps) {
+        if (fileFormat.equals(ExportFileFormat.JSON)) {
+            return new JsonExporter(moduleExportInfos, enrolleeMaps, objectMapper);
+        } else if (fileFormat.equals(ExportFileFormat.EXCEL)) {
+            return new ExcelExporter(moduleExportInfos, enrolleeMaps);
+        }
+        return new TsvExporter(moduleExportInfos, enrolleeMaps);
     }
 
 

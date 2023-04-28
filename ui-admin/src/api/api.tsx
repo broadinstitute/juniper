@@ -603,6 +603,19 @@ export default {
     return fetch(url,  this.getGetInit())
   },
 
+  exportDictionary(portalShortcode: string, studyShortcode: string,
+    envName: string, exportOptions: ExportOptions):
+    Promise<Response> {
+    const exportOptionsParams = exportOptions as Record<string, unknown>
+    let url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/dictionary?`
+    const searchParams = new URLSearchParams()
+    for (const prop in exportOptionsParams) {
+      searchParams.set(prop, (exportOptionsParams[prop] as string | boolean).toString())
+    }
+    url += searchParams.toString()
+    return fetch(url,  this.getGetInit())
+  },
+
   async fetchMailingList(portalShortcode: string, envName: string): Promise<MailingListContact[]> {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList`
     const response = await fetch(url, this.getGetInit())

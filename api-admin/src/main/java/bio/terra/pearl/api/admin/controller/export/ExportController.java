@@ -64,4 +64,30 @@ public class ExportController implements ExportApi {
         exportOptions, portalShortcode, studyShortcode, environmentName, baos, user);
     return ResponseEntity.ok().body(new ByteArrayResource(baos.toByteArray()));
   }
+
+  /** gets a data dictionary for the environment */
+  @Override
+  public ResponseEntity<Resource> exportDictionary(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      Boolean splitOptionsIntoColumns,
+      Boolean stableIdsForOptions,
+      Boolean includeOnlyMostRecent,
+      String fileFormat) {
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    AdminUser user = authUtilService.requireAdminUser(request);
+    ExportOptions exportOptions =
+        new ExportOptions(
+            splitOptionsIntoColumns != null ? splitOptionsIntoColumns : false,
+            stableIdsForOptions != null ? stableIdsForOptions : false,
+            includeOnlyMostRecent != null ? includeOnlyMostRecent : false,
+            fileFormat != null ? ExportFileFormat.valueOf(fileFormat) : ExportFileFormat.TSV,
+            null);
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    enrolleeExportExtService.exportDictionary(
+        exportOptions, portalShortcode, studyShortcode, environmentName, baos, user);
+    return ResponseEntity.ok().body(new ByteArrayResource(baos.toByteArray()));
+  }
 }

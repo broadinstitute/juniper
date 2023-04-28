@@ -22,7 +22,6 @@ public class SurveyParseUtils {
 /** recursively gets all questions from the given node */
     public static List<JsonNode> getAllQuestions(JsonNode containerElement) {
         List<JsonNode> elements = new ArrayList<>();
-
         if(containerElement.has("elements")) {
             for(JsonNode element : containerElement.get("elements")) {
                 elements.addAll(getAllQuestions(element));

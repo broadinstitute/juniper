@@ -4,6 +4,8 @@ import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
 import Api from 'api/api'
 import { currentIsoDate } from 'util/timeUtils'
+import { failureNotification, successNotification } from 'util/notifications'
+import { Store } from 'react-notifications-component'
 
 const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext: StudyEnvContextT, show: boolean,
                            setShow:  React.Dispatch<React.SetStateAction<boolean>>}) => {
@@ -13,24 +15,43 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const doExport = () => {
-    setIsLoading(true)
-    const opts = {
+  const optionsFromState = () => {
+    return {
       onlyIncludeMostRecent,
       splitOptionsIntoColumns: !humanReadable,
       stableIdsForOptions: !humanReadable,
       fileFormat
     }
+  }
+
+  const saveLoadedData = async (response: Response, fileName: string) => {
+    if (!response.ok) {
+      Store.addNotification(failureNotification('Export failed'))
+      setIsLoading(false)
+      return
+    }
+    const blob = await response.blob()
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = fileName
+    a.click()
+    setIsLoading(false)
+  }
+
+  const doExport = () => {
+    setIsLoading(true)
     Api.exportEnrollees(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
-      studyEnvContext.currentEnv.environmentName, opts).then(result => {
-      result.blob().then(blob => {
-        const url = window.URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `${currentIsoDate()  }-enrollees.${fileFormat.toLowerCase()}`
-        a.click()
-        setIsLoading(false)
-      })
+      studyEnvContext.currentEnv.environmentName, optionsFromState()).then(response => {
+      saveLoadedData(response, `${currentIsoDate()  }-enrollees.${fileFormat.toLowerCase()}`)
+    })
+  }
+
+  const doDictionaryExport = () => {
+    setIsLoading(true)
+    Api.exportDictionary(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
+      studyEnvContext.currentEnv.environmentName, optionsFromState()).then(response => {
+      saveLoadedData(response, `${currentIsoDate()  }-DataDictionary.xlsx`)
     })
   }
   const humanReadableChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,7 +105,7 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
             Tab-delimited (.tsv)
           </label>
           <label>
-            <input type="radio" name="fileFormat" value="XSLX" checked={fileFormat == 'XSLX'}
+            <input type="radio" name="fileFormat" value="XLSX" checked={fileFormat == 'EXCEL'}
               onChange={fileFormatChanged} className="me-1" disabled={true}/>
             Excel (.xlsx)
           </label>
@@ -94,6 +115,7 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
     <Modal.Footer>
       <LoadingSpinner isLoading={isLoading}>
         <button className="btn btn-primary" onClick={doExport}>Download</button>
+        <button className="btn btn-secondary" onClick={doDictionaryExport}>Download dictionary (.xlsx)</button>
         <button className="btn btn-secondary" onClick={() => setShow(false)}>Cancel</button>
       </LoadingSpinner>
     </Modal.Footer>

@@ -91,14 +91,8 @@ public class SurveyFormatter implements ExportFormatter {
                                                 List<SurveyQuestionDefinition> questionDefs) throws JsonProcessingException {
         String moduleName = survey.getStableId();
         List<ItemExportInfo> itemExportInfos = new ArrayList<>();
-        itemExportInfos.add(ItemExportInfo.builder()
-                .baseColumnKey(ExportFormatUtils.getColumnKey(moduleName, "lastUpdated"))
-                .propertyAccessor("lastUpdatedAt")
-                .build());
-        itemExportInfos.add(ItemExportInfo.builder()
-                .baseColumnKey(ExportFormatUtils.getColumnKey(moduleName, "complete"))
-                .propertyAccessor("complete")
-                .build());
+        itemExportInfos.add(ExportFormatUtils.getItemInfoForBeanProp(moduleName, "lastUpdatedAt", SurveyResponse.class));
+        itemExportInfos.add(ExportFormatUtils.getItemInfoForBeanProp(moduleName, "complete", SurveyResponse.class));
         List<SurveyQuestionDefinition> sortedDefs = new ArrayList<>(questionDefs);
         sortedDefs.sort(Comparator.comparing(SurveyQuestionDefinition::getExportOrder));
         for (SurveyQuestionDefinition questionDef : sortedDefs) {
@@ -106,6 +100,7 @@ public class SurveyFormatter implements ExportFormatter {
         }
         return ModuleExportInfo.builder()
                 .moduleName(moduleName)
+                .displayName(survey.getName())
                 .maxNumRepeats(1)
                 .items(itemExportInfos)
                 .formatter(this)
@@ -132,6 +127,14 @@ public class SurveyFormatter implements ExportFormatter {
                 .stableIdsForOptions(exportOptions.stableIdsForOptions())
                 .splitOptionsIntoColumns(splitOptions)
                 .choices(choices)
+                /**
+                 * For now, all survey answers are exported as strings.  We will likely revisit this later, but this
+                 * gives much more robustness with respect to representing "prefer not to answer" than trying to convert
+                 * every possible value of a question to a number/date
+                 */
+                .dataType(DataValueExportType.STRING)
+                .questionType(questionDef.getQuestionType())
+                .questionText(questionDef.getQuestionText())
                 .hasOtherDescription(questionDef.isAllowOtherDescription())
                 .build();
     }
