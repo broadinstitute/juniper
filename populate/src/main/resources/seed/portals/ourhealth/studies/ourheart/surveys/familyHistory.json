@@ -826,7 +826,7 @@
           "noneValue": "noneOfAbove",
           "choices": [
             {"text": "Anemia", "value": "anemia"},
-            {"text": "Abnormal heart rhythm", "value": "anotherAbnormalHeartRhythm"},
+            {"text": "Abnormal heart rhythm", "value": "abnormalHeartRhythm"},
             {"text": "Atrial fibrillation (Afib) or Atrial flutter", "value": "atrialFibrillation"},
             {"text": "Bleeding disorder", "value": "bleedingDisorder"},
             {"text": "Coronary artery/coronary heart disease", "value": "coronaryDisease"},
@@ -1020,7 +1020,7 @@
               {
                 "type": "html",
                 "name": "siblingConditionsDescription",
-                "html": "<h2>Your Sibling’s Health</h2><p>Please indicate if your brothers and/or sisters [people with the same mother and/or father as you] has ever been diagnosed with the following health conditions and/or health events. Think only of those people you are related to by blood. If you have multiple siblings, please check the box if any sibling has the condition (Please select all that apply)</p>"
+                "html": "<h2>Your Sibling’s Health</h2><p>Please indicate if your brothers and/or sisters [people with the same mother and/or father as you] has ever been diagnosed with the following health conditions and/or health events. Think only of those people you are related to by blood. If you have more than one sibling, check the box if any of your siblings have the condition. (Please select all that apply)</p>"
               }
             ]
           },
@@ -1082,7 +1082,7 @@
               "noneValue": "noneOfAbove",
               "choices": [
                 {"text": "Anemia", "value": "anemia"},
-                {"text": "Abnormal heart rhythm", "value": "anotherAbnormalHeartRhythm"},
+                {"text": "Abnormal heart rhythm", "value": "abnormalHeartRhythm"},
                 {"text": "Atrial fibrillation (Afib) or Atrial flutter", "value": "atrialFibrillation"},
                 {"text": "Bleeding disorder", "value": "bleedingDisorder"},
                 {"text": "Coronary artery/coronary heart disease", "value": "coronaryDisease"},
@@ -1595,7 +1595,7 @@
               "noneValue": "noneOfAbove",
               "choices": [
                 {"text": "Anemia", "value": "anemia"},
-                {"text": "Abnormal heart rhythm", "value": "anotherAbnormalHeartRhythm"},
+                {"text": "Abnormal heart rhythm", "value": "abnormalHeartRhythm"},
                 {"text": "Atrial fibrillation (Afib) or Atrial flutter", "value": "atrialFibrillation"},
                 {"text": "Bleeding disorder", "value": "bleedingDisorder"},
                 {"text": "Coronary artery/coronary heart disease", "value": "coronaryDisease"},
@@ -1837,7 +1837,7 @@
           "noneValue": "noneOfAbove",
           "choices": [
             {"text": "Anemia", "value": "anemia"},
-            {"text": "Another abnormal heart rhythm", "value": "anotherAbnormalHeartRhythm"},
+            {"text": "Abnormal heart rhythm", "value": "abnormalHeartRhythm"},
             {"text": "Atrial fibrillation (Afib) or Atrial flutter", "value": "atrialFibrillation"},
             {"text": "Bleeding disorder", "value": "bleedingDisorder"},
             {"text": "Coronary artery/coronary heart disease", "value": "coronaryDisease"},
