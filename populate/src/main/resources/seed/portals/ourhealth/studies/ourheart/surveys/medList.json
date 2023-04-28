@@ -20,7 +20,7 @@
               {
                 "name": "oh_oh_medList_intro2",
                 "type": "html",
-                "html": "<p><b>We will first ask you questions about heart medications:</b> The following section will ask you to select if you take commonly prescribed cardiac or metabolic medications. You may want to have your pill bottles or prescription list readily available. If you do not see your medication listed, you will be able to select it from a larger list on the following page.</p>"
+                "html": "<p>We will first ask you questions about heart medications.</p>"
               }
             ]
           },
