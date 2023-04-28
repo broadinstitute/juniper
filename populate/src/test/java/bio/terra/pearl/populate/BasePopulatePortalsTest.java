@@ -16,10 +16,9 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Attempts to populate every portal in the seed path.
+ * We should have a test for populating every portal in the seed path.
  * Since the aim of the seed path is to have portals sufficient for a developer/demo-er to easily view
- * all aspects of product functionality.  So this test essentially confirms that a fresh development/demo
- * environment can be created with all functionality accessible.
+ * all aspects of product functionality.  This class has base functionality for implementing a test of populating a portal
  */
 public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     @Autowired
