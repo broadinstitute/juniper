@@ -905,6 +905,14 @@
               {
                 "text": "No",
                 "value": "no"
+              },
+              {
+                "text": "Don't know",
+                "value": "dontKnow"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
               }
             ]
           },
