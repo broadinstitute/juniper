@@ -21,28 +21,33 @@ const InvestigatorTermsOfUse = () => {
         <br />
         Investigator Terms of Use
       </h1>
-      <p>Effective Date: May 4, 2023</p>
+      <p>Effective Date: April 28, 2023</p>
 
       <p>
         Please read these Terms of Use (these <strong>“Terms”</strong>)
         carefully, as they constitute a binding contract between you, an
         investigator or other researcher (<strong>“you”</strong> or{' '}
         <strong>“your”</strong>) and The Broad Institute, Inc. (
-        <strong>“Broad,”</strong>
-        <strong>“we,”</strong> <strong>“us,”</strong> or <strong>“our”</strong>
-        ). These Terms of Use (<strong>“Terms”</strong>) apply to your use of
-        the Juniper study administrator platform (collectively, the{' '}
-        <strong>“Platform”</strong>). By using or accessing the Platform, you
-        agree to be bound by these Terms. If you do not agree to these Terms,
-        you may not access or use the Platform. We reserve the right to change
-        or otherwise modify these Terms at any time. All changes are effective
-        immediately when we post them, and apply to all access to and use of the
-        Platform thereafter. We may also notify you by sending an email
-        notification to the address associated with your Account (as defined
-        below) or providing notice through our Platform. Your continued access
-        or use of the Platform after receiving notice of any update,
-        modification or other change to these Terms signifies your acceptance
-        thereof.
+        <strong>“Broad,”</strong> <strong>“we,”</strong> <strong>“us,”</strong>{' '}
+        or <strong>“our”</strong>).
+      </p>
+      <p>
+        These Terms of Use (<strong>“Terms”</strong>) apply to your use of the
+        Juniper Platform, which can be accessed by our website{' '}
+        <a href="https://juniper.terra.bio">juniper.terra.bio</a> (collectively,
+        the <strong>“Platform”</strong>). By clicking “I accept” or by using or
+        accessing the Platform, you agree to be bound by these Terms. If you do
+        not agree to these Terms, you may not access or use the Platform.{' '}
+      </p>
+      <p>
+        We reserve the right to change or otherwise modify these Terms at any
+        time. All changes are effective immediately when we post them, and apply
+        to all access to and use of the Platform thereafter. We may also notify
+        you by sending an email notification to the address associated with your
+        Account (as defined below) or providing notice through our Platform.
+        Your continued access or use of the Platform after receiving notice of
+        any update, modification or other change to these Terms signifies your
+        acceptance thereof.
       </p>
 
       <SectionHeading>General Overview of the Platform</SectionHeading>
