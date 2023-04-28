@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -156,9 +157,11 @@ public class DataDictionaryExcelExporter extends ExcelExporter {
         }
         String optionText = "";
         if (!itemInfo.getChoices().isEmpty() && !itemInfo.isSplitOptionsIntoColumns()) {
-            optionText = itemInfo.getChoices().stream().map(opt ->
-                    opt.stableId() + " - " + opt.text()
-            ).collect(Collectors.joining("\n"));
+            if (isLargeNumericDropdown(itemInfo.getChoices())) {
+                optionText = renderNumericDropdownText(itemInfo.getChoices());
+            } else {
+                optionText = renderChoicesText(itemInfo.getChoices());
+            }
         }
         String header = surveyFormatter.getColumnHeader(moduleInfo, itemInfo, false, null);
         addRowToSheet(header, dataType, questionType, descriptionText, optionText);
@@ -173,6 +176,44 @@ public class DataDictionaryExcelExporter extends ExcelExporter {
             String otherHeader = surveyFormatter.getColumnHeader(moduleInfo, itemInfo, true, null);
             addRowToSheet(otherHeader, "text", "TEXT", "additional detail", null);
         }
+    }
+
+    /** fast and hacky way to avoid listing 100 numeric options in numeric dropdowns.
+     * eventually, we'll want this to be part of the question definition
+     * */
+    public boolean isLargeNumericDropdown(List<QuestionChoice> choices) {
+        if (choices.size() < 20) {
+            return false;
+        }
+        // only check the first 10 (skipping the first),
+        // it still counts as a number dropdown if it has an N/A or preferNotToAnswer at the end or beginning
+        for (QuestionChoice choice : choices.subList(1,10)) {
+            if (!NumberUtils.isParsable(choice.stableId())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public String renderChoicesText(List<QuestionChoice> choices) {
+        return choices.stream().map(opt ->
+                opt.stableId() + " - " + opt.text()
+        ).collect(Collectors.joining("\n"));
+    }
+
+    public String renderNumericDropdownText(List<QuestionChoice> choices) {
+        // only show the first three and last three
+        List<String> choiceStrings = choices.subList(0, 3).stream().map(choice -> renderSingleChoice(choice))
+                .collect(Collectors.toList());
+        choiceStrings.add(" ... ");
+        choiceStrings.addAll(
+                choices.subList(choices.size() - 3, choices.size()).stream().map(choice -> renderSingleChoice(choice)).toList()
+        );
+        return choiceStrings.stream().collect(Collectors.joining("\n"));
+    }
+
+    protected String renderSingleChoice(QuestionChoice choice) {
+        return choice.stableId() + " - " + choice.text();
     }
 
     protected SXSSFRow addRowToSheet(String variableName, String dataType, String questionType, String description, String options) {

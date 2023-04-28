@@ -4,7 +4,7 @@ import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.service.export.formatters.EnrolleeFormatter;
 import bio.terra.pearl.core.service.export.formatters.ProfileFormatter;
 import bio.terra.pearl.core.service.export.formatters.SurveyFormatter;
@@ -13,6 +13,7 @@ import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.participant.ProfileService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.OutputStream;
@@ -27,6 +28,7 @@ public class EnrolleeExportService {
     private final ProfileService profileService;
     private final AnswerDao answerDao;
     private final SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
+    private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     private final SurveyResponseService surveyResponseService;
     private final ParticipantTaskService participantTaskService;
     private final SurveyDao surveyDao;
@@ -36,13 +38,14 @@ public class EnrolleeExportService {
     public EnrolleeExportService(ProfileService profileService,
                                  AnswerDao answerDao,
                                  SurveyQuestionDefinitionDao surveyQuestionDefinitionDao,
-                                 SurveyResponseService surveyResponseService,
+                                 StudyEnvironmentSurveyService studyEnvironmentSurveyService, SurveyResponseService surveyResponseService,
                                  ParticipantTaskService participantTaskService,
                                  SurveyDao surveyDao,
                                  EnrolleeService enrolleeService, ObjectMapper objectMapper) {
         this.profileService = profileService;
         this.answerDao = answerDao;
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
+        this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.surveyResponseService = surveyResponseService;
         this.participantTaskService = participantTaskService;
         this.surveyDao = surveyDao;
@@ -97,22 +100,15 @@ public class EnrolleeExportService {
     }
 
     protected List<ModuleExportInfo> generateSurveyModules(ExportOptions exportOptions, UUID portalId, UUID studyEnvironmentId) throws Exception {
-        List<Survey> surveys = surveyDao.findByPortalIdNoContent(portalId);
-        List<Survey> latestSurveys = new ArrayList<>();
-        // for now, only worry about the latest version for exports
-        for (Survey survey : surveys) {
-            Survey matchedSurvey = latestSurveys.stream().filter(srv -> survey.getStableId().equals(srv.getStableId()))
-                    .findFirst().orElse(null);
-            if (matchedSurvey == null || matchedSurvey.getVersion() < survey.getVersion()) {
-                latestSurveys.add(survey);
-            }
-        }
+        // for now, only worry about the surveys currently configured for the environment
+        List<StudyEnvironmentSurvey> latestConfiguredSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(studyEnvironmentId);
+        latestConfiguredSurveys.sort(Comparator.comparing(StudyEnvironmentSurvey::getSurveyOrder));
         SurveyFormatter surveyFormatter = new SurveyFormatter(objectMapper);
         List<ModuleExportInfo> moduleExportInfos = new ArrayList<>();
-        for (Survey survey : latestSurveys) {
+        for (StudyEnvironmentSurvey configuredSurvey : latestConfiguredSurveys) {
             var surveyQuestionDefinitions = surveyQuestionDefinitionDao
-                    .findAllBySurveyId(survey.getId());
-            moduleExportInfos.add(surveyFormatter.getModuleExportInfo(exportOptions, survey, surveyQuestionDefinitions));
+                    .findAllBySurveyId(configuredSurvey.getSurvey().getId());
+            moduleExportInfos.add(surveyFormatter.getModuleExportInfo(exportOptions, configuredSurvey.getSurvey(), surveyQuestionDefinitions));
         }
         return moduleExportInfos;
     }

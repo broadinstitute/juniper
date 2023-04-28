@@ -4,7 +4,7 @@ import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
 import Api from 'api/api'
 import { currentIsoDate } from 'util/timeUtils'
-import { failureNotification, successNotification } from 'util/notifications'
+import { failureNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 
 const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext: StudyEnvContextT, show: boolean,
