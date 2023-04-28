@@ -419,6 +419,14 @@
               {
                 "text": "I have no heart or blood condition",
                 "value": "none"
+              },
+              {
+                "text": "Don't know",
+                "value": "dontKnow"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
               }
             ]
           },
@@ -725,7 +733,10 @@
               {"text": "Prediabetes", "value": "prediabetes"},
               {"text": "Non-alcoholic Fatty Liver Disease (NAFLD/NASH)", "value": "nonAlcoholicFattyLiverDisease"},
               {"text": "Obesity", "value": "obesity"},
-              {"text": "Polycystic Ovarian Syndrome (PCOS)", "value": "polycysticOvarianSyndrome"}
+              {"text": "Polycystic Ovarian Syndrome (PCOS)", "value": "polycysticOvarianSyndrome"},
+              {"text": "None of the above", "value": "none"},
+              {"text": "Don't know", "value": "dontKnow"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
             ]
           },
           {
@@ -871,6 +882,14 @@
               {
                 "text": "17 or older",
                 "value": "17OrOlder"
+              },
+              {
+                "text": "Don't know",
+                "value": "dontKnow"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
               }
             ]
           },
@@ -983,6 +1002,10 @@
                   {
                     "text": "8 or more",
                     "value": "8OrMore"
+                  },
+                  {
+                    "text": "Prefer not to answer",
+                    "value": "preferNoAnswer"
                   }
                 ]
               },
@@ -1018,6 +1041,10 @@
                   {
                     "text": "45 or older",
                     "value": "45OrOlder"
+                  },
+                  {
+                    "text": "Prefer not to answer",
+                    "value": "preferNoAnswer"
                   }
                 ]
               },
@@ -1053,6 +1080,10 @@
                   {
                     "text": "45 or older",
                     "value": "45OrOlder"
+                  },
+                  {
+                    "text": "Prefer not to answer",
+                    "value": "preferNoAnswer"
                   }
                 ]
               },
@@ -1096,6 +1127,10 @@
                   {
                     "text": "8 or more",
                     "value": "8OrMore"
+                  },
+                  {
+                    "text": "Prefer not to answer",
+                    "value": "preferNoAnswer"
                   }
                 ]
               },{
@@ -1111,7 +1146,10 @@
                   {"text": "HELLP syndrome", "value": "hellpSyndrome"},
                   {"text": "Peripartum cardiomyopathy", "value": "peripartumCardiomyopathy"},
                   {"text": "Peripartum depression", "value": "peripartumDepression"},
-                  {"text": "Preterm labor", "value": "pretermLabor"}
+                  {"text": "Preterm labor", "value": "pretermLabor"},
+                  {"text": "None of the above", "value": "none"},
+                  {"text": "Don't know", "value": "dontKnow"},
+                  {"text": "Prefer not to answer", "value": "preferNoAnswer"}
                 ]
               }
             ]
@@ -1122,7 +1160,9 @@
             "title": "Have you gone through or are you currently going through menopause? (Both natural and/or medical)",
             "choices": [
               {"text": "Yes", "value": "yes"},
-              {"text": "No", "value": "no"}
+              {"text": "No", "value": "no"},
+              {"text": "Don't know", "value": "dontKnow"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
             ]
           },
           {
@@ -1168,6 +1208,10 @@
                   {
                     "text": "Not sure",
                     "value": "unsure"
+                  },
+                  {
+                    "text": "Prefer not to answer",
+                    "value": "preferNoAnswer"
                   }
                 ]
               },
