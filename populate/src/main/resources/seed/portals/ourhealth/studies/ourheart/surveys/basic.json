@@ -357,8 +357,8 @@
             "noneText": "Not listed",
             "hideNumber": true,
             "choices": [
-              {"text": "White", "value": "white"},
-              {"text": "Black or African American", "value": "black"},
+              {"text": "African American/Black", "value": "black"},
+              {"text": "Caucasian/White", "value": "white"},
               {"text": "East or Southeast Asian", "value": "eastOrSoutheastAsian"},
               {"text": "Hispanic or Latino/a", "value": "hispanic"},
               {"text": "Native American (American Indian or Alaska Native)", "value": "nativeAmerican"},
