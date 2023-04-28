@@ -9,7 +9,6 @@ export const RedirectFromOAuth = () => {
 
   useEffect(() => {
     const handleRedirectFromOauth = async () => {
-      console.log('handleRedirectFromOauth', auth.user)
       if (auth.error) {
         alert(`Auth error: ${auth.error}`)
       }
