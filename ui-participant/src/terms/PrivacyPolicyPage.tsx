@@ -21,14 +21,14 @@ const PrivacyPolicy = () => {
         <br />
         Privacy Policy
       </h1>
-      <p>Last Updated: May 4, 2023</p>
+      <p>Last Updated: April 28, 2023</p>
 
       <p>
         The Broad Institute, Inc. (<strong>“Broad,”</strong>{' '}
         <strong>“we,”</strong> <strong>“us,”</strong> or <strong>“our”</strong>)
         values your privacy. This Privacy Policy (<strong>“Policy”</strong>)
         provides important information about how Broad collects and uses your
-        Personal Information when you access or use the Juniper platform (the{' '}
+        Personal Information when you access or use the Juniper Platform (the{' '}
         <strong>“Platform”</strong>). Please review this Policy, which is
         incorporated into and made part of the Terms of Use that apply to you:{' '}
         <Link to="/terms/participant">Participant Terms of Use</Link> or{' '}
@@ -101,12 +101,12 @@ const PrivacyPolicy = () => {
         “cookie,” which is a small piece of computer code that is placed on your
         computer or other device that can be used for various purposes, such as
         to recognize a user or to track their activities on a website. We
-        describe automated technologies in more detail below. We collect various
-        information through these automated technologies, including your Device
-        Information as described below, along with how you use our Platform,
-        such as the web pages you view, the links you click, the length of time
-        you spend visiting our Platform, and the web page or web site that led
-        you to our Platform.
+        describe automated technologies in more detail below. We may collect
+        various information through these automated technologies, including your
+        Device Information as described below, along with how you use our
+        Platform, such as the web pages you view, the links you click, the
+        length of time you spend visiting our Platform, and the web page or web
+        site that led you to our Platform.
       </p>
 
       <SectionHeading>What kind of information do we collect?</SectionHeading>
@@ -118,7 +118,7 @@ const PrivacyPolicy = () => {
           contact, or locate you. For example, your name, age, address, phone
           number, email address, clinical data, medical history, and treatment
           type are Personal Information we may collect through your use of the
-          Platform.
+          Platform once a user has consented to participate in a study.
         </li>
         <li>
           <strong>“Device Information”</strong> is information that relates to a
@@ -180,9 +180,7 @@ const PrivacyPolicy = () => {
         who disable cookies may not be able to use the Platform.
       </p>
       <p>
-        <strong>Tracking Technologies</strong>. We may use automated devices and
-        applications, such as Mixpanel, to evaluate usage of our Platform. We
-        also may use other analytics tools, including Google Analytics, to
+        <strong>Tracking Technologies</strong>. We use analytics tools to
         evaluate our Platform. We use these tools to help us improve our
         Platform, performance, and user experiences. We may also use third-party
         tracking technologies to detect malicious code or attacks on our
@@ -196,7 +194,7 @@ const PrivacyPolicy = () => {
         sends a message to websites requesting that they do not track the user.
         However, our Platform does not change its information collection in
         response to DNT browser settings or signals. For information about DNT,
-        visit <a href="www.allaboutdnt.org">www.allaboutdnt.org</a>.
+        visit <a href="https://www.allaboutdnt.org">www.allaboutdnt.org</a>.
       </p>
 
       <SectionHeading>How do we use your information?</SectionHeading>
@@ -394,7 +392,7 @@ const PrivacyPolicy = () => {
         Information than the laws where you live.
       </p>
 
-      <SectionHeading>Links to Third-Party Websites </SectionHeading>
+      <SectionHeading>Links to Third-Party Websites</SectionHeading>
       <p>
         Our Platform may reference or provide links to third-party websites.
         Other websites may also reference or link to our Platform. Because these
@@ -431,7 +429,7 @@ const PrivacyPolicy = () => {
         <li>Post the changes to the Policy on the Platform; and</li>
         <li>
           Endeavor to notify you of any material changes to the Policy through
-          the email address in their profile.
+          the email address in your profile.
         </li>
       </ul>
       <p>
