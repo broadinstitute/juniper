@@ -417,10 +417,6 @@
                 "value": "other"
               },
               {
-                "text": "I have no heart or blood condition",
-                "value": "none"
-              },
-              {
                 "text": "Don't know",
                 "value": "dontKnow"
               },
@@ -428,7 +424,10 @@
                 "text": "Prefer not to answer",
                 "value": "preferNoAnswer"
               }
-            ]
+            ],
+            "showNoneItem": true,
+            "noneValue": "none",
+            "noneText": "I have no heart or blood condition"
           },
           {
             "type": "panel",
@@ -734,10 +733,12 @@
               {"text": "Non-alcoholic Fatty Liver Disease (NAFLD/NASH)", "value": "nonAlcoholicFattyLiverDisease"},
               {"text": "Obesity", "value": "obesity"},
               {"text": "Polycystic Ovarian Syndrome (PCOS)", "value": "polycysticOvarianSyndrome"},
-              {"text": "None of the above", "value": "none"},
               {"text": "Don't know", "value": "dontKnow"},
               {"text": "Prefer not to answer", "value": "preferNoAnswer"}
-            ]
+            ],
+            "showNoneItem": true,
+            "noneValue": "none",
+            "noneText": "None of the above"
           },
           {
             "type": "panel",
@@ -1147,10 +1148,12 @@
                   {"text": "Peripartum cardiomyopathy", "value": "peripartumCardiomyopathy"},
                   {"text": "Peripartum depression", "value": "peripartumDepression"},
                   {"text": "Preterm labor", "value": "pretermLabor"},
-                  {"text": "None of the above", "value": "none"},
                   {"text": "Don't know", "value": "dontKnow"},
                   {"text": "Prefer not to answer", "value": "preferNoAnswer"}
-                ]
+                ],
+                "showNoneItem": true,
+                "noneValue": "none",
+                "noneText": "None of the above"
               }
             ]
           },
