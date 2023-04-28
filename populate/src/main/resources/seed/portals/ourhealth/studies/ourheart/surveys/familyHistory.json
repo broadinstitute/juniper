@@ -553,9 +553,6 @@
           "showOtherItem": true,
           "otherText": "Other cancer",
           "otherPlaceholder": "Please specify",
-          "showNoneItem": true,
-          "noneText": "None of the above",
-          "noneValue": "noneOfAbove",
           "choices": [
             {"text": "Bladder cancer", "value": "bladderCancer"},
             {"text": "Blood or soft tissue cancer", "value": "bloodOrSoftTissueCancer"},
@@ -793,9 +790,6 @@
           "showOtherItem": true,
           "otherText": "Other cancer",
           "otherPlaceholder": "Please specify",
-          "showNoneItem": true,
-          "noneText": "None of the above",
-          "noneValue": "noneOfAbove",
           "choices": [
             {"text": "Bladder cancer", "value": "bladderCancer"},
             {"text": "Blood or soft tissue cancer", "value": "bloodOrSoftTissueCancer"},
@@ -1001,7 +995,6 @@
           "noneValue": "noneOfAbove",
           "choices": [
             {"text": "Allergies", "value": "allergies"},
-            {"text": "Endometriosis", "value": "endometriosis"},
             {"text": "Fibroids", "value": "fibroids"},
             {"text": "Liver condition (e.g., cirrhosis)", "value": "liverCondition"},
             {"text": "Obesity", "value": "obesity"},
@@ -1046,9 +1039,6 @@
               "showOtherItem": true,
               "otherText": "Other cancer",
               "otherPlaceholder": "Please specify",
-              "showNoneItem": true,
-              "noneText": "None of the above",
-              "noneValue": "noneOfAbove",
               "choices": [
                 {"text": "Bladder cancer", "value": "bladderCancer"},
                 {"text": "Blood or soft tissue cancer", "value": "bloodOrSoftTissueCancer"},
@@ -1305,9 +1295,6 @@
               "showOtherItem": true,
               "otherText": "Other cancer",
               "otherPlaceholder": "Please specify",
-              "showNoneItem": true,
-              "noneText": "None of the above",
-              "noneValue": "noneOfAbove",
               "choices": [
                 {"text": "Bladder cancer", "value": "bladderCancer"},
                 {"text": "Blood or soft tissue cancer", "value": "bloodOrSoftTissueCancer"},
@@ -1562,9 +1549,6 @@
               "showOtherItem": true,
               "otherText": "Other cancer",
               "otherPlaceholder": "Please specify",
-              "showNoneItem": true,
-              "noneText": "None of the above",
-              "noneValue": "noneOfAbove",
               "choices": [
                 {"text": "Bladder cancer", "value": "bladderCancer"},
                 {"text": "Blood or soft tissue cancer", "value": "bloodOrSoftTissueCancer"},
@@ -1800,12 +1784,9 @@
           "showOtherItem": true,
           "otherText": "Other cancer",
           "otherPlaceholder": "Please specify",
-          "showNoneItem": true,
-          "noneText": "None of the above",
-          "noneValue": "noneOfAbove",
           "choices": [
             {"text": "Bladder cancer", "value": "bladderCancer"},
-            {"text": "Blood or soft tissue cancer", "value": "bloodOrSoftTissueCancer"},
+            {"text": "Blood or tissue cancer", "value": "bloodOrSoftTissueCancer"},
             {"text": "Bone cancer", "value": "boneCancer"},
             {"text": "Brain cancer", "value": "brainCancer"},
             {"text": "Breast cancer", "value": "breastCancer"},
