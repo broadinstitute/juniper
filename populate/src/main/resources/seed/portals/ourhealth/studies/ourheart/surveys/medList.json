@@ -632,7 +632,7 @@
           {
             "name": "oh_oh_medList_otherMeds",
             "type": "matrixdynamic",
-            "title": "List any additional medications below",
+            "title": "List any additional medications below.",
             "rowCount": 1,
             "addRowText": "Add medication",
             "columns": [
