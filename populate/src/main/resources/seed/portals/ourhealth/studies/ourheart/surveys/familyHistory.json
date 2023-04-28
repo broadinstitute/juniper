@@ -391,7 +391,7 @@
             "max": 50,
             "min": 1,
             "visibleIf": "{oh_oh_famHx_heartAttackStroke} contains 'mother'",
-            "title": "What was your mother's age at death?"
+            "title": "What was your mother's age at the time of this event?"
           },
           {
             "type": "text",
@@ -401,7 +401,7 @@
             "max": 50,
             "min": 1,
             "visibleIf": "{oh_oh_famHx_heartAttackStroke} contains 'father'",
-            "title": "What was your father's age at death?"
+            "title": "What was your father's age at the time of this event?"
           },
           {
             "type": "text",
@@ -411,7 +411,7 @@
             "max": 50,
             "min": 1,
             "visibleIf": "{oh_oh_famHx_heartAttackStroke} contains 'sibling'",
-            "title": "What was your sibling's age at death?"
+            "title": "What was your sibling's age at the time of this event?"
           },
           {
             "type": "text",
@@ -421,7 +421,7 @@
             "max": 50,
             "min": 1,
             "visibleIf": "{oh_oh_famHx_heartAttackStroke} contains 'grandparent'",
-            "title": "What was your grandparent's age at death?"
+            "title": "What was your grandparent's age at the time of this event?"
           },
           {
             "type": "text",
@@ -431,7 +431,7 @@
             "max": 50,
             "min": 1,
             "visibleIf": "{oh_oh_famHx_heartAttackStroke} contains 'child'",
-            "title": "What was your child's age at death?"
+            "title": "What was your child's age at the time of this event?"
           },
           {
             "type": "text",
@@ -441,7 +441,7 @@
             "max": 50,
             "min": 1,
             "visibleIf": "{oh_oh_famHx_heartAttackStroke} contains 'other'",
-            "title": "What was your other relative's age at death?"
+            "title": "What was your other relative's age at the time of this event?"
           },
           {
             "name": "oh_oh_famHx_stentOrBypass",
@@ -481,7 +481,7 @@
             "max": 50,
             "min": 1,
             "visibleIf": "{oh_oh_famHx_stentOrBypass} contains 'mother'",
-            "title": "What was your mother's age at death?"
+            "title": "What was your mother's age at the time of this event?"
           },
           {
             "type": "text",
@@ -491,7 +491,7 @@
             "max": 50,
             "min": 1,
             "visibleIf": "{oh_oh_famHx_stentOrBypass} contains 'father'",
-            "title": "What was your father's age at death?"
+            "title": "What was your father's age at the time of this event?"
           },
           {
             "type": "text",
@@ -501,7 +501,7 @@
             "max": 50,
             "min": 1,
             "visibleIf": "{oh_oh_famHx_stentOrBypass} contains 'sibling'",
-            "title": "What was your sibling's age at death?"
+            "title": "What was your sibling's age at the time of this event?"
           },
           {
             "type": "text",
@@ -511,7 +511,7 @@
             "max": 50,
             "min": 1,
             "visibleIf": "{oh_oh_famHx_stentOrBypass} contains 'grandparent'",
-            "title": "What was your grandparent's age at death?"
+            "title": "What was your grandparent's age at the time of this event?"
           },
           {
             "type": "text",
@@ -521,7 +521,7 @@
             "max": 50,
             "min": 1,
             "visibleIf": "{oh_oh_famHx_stentOrBypass} contains 'child'",
-            "title": "What was your child's age at death?"
+            "title": "What was your child's age at the time of this event?"
           },
           {
             "type": "text",
@@ -531,7 +531,7 @@
             "max": 50,
             "min": 1,
             "visibleIf": "{oh_oh_famHx_stentOrBypass} contains 'other'",
-            "title": "What was your other relative's age at death?"
+            "title": "What was your other relative's age at the time of this event?"
           }
         ]
       },{
@@ -543,7 +543,7 @@
               {
                 "type": "html",
                 "name": "motherConditionsDescription",
-                "html": "<h2>Your Mother’s Health</h2><p>Please indicate if your mother has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (please select all that apply)</p>"
+                "html": "<h2>Your Mother’s Health</h2><p>Please indicate if your mother has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (Please select all that apply)</p>"
               }
             ]
           },{
@@ -783,7 +783,7 @@
               {
                 "type": "html",
                 "name": "fatherConditionsDescription",
-                "html": "<h2>Your Father’s Health</h2><p>Please indicate if your father has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (please select all that apply)</p>"
+                "html": "<h2>Your Father’s Health</h2><p>Please indicate if your father has ever been diagnosed with the following health conditions and/or health events. Think only of the person you are related to by blood. (Please select all that apply)</p>"
               }
             ]
           },{
@@ -1770,7 +1770,6 @@
               "noneValue": "noneOfAbove",
               "choices": [
                 {"text": "Allergies", "value": "allergies"},
-                {"text": "Endometriosis", "value": "endometriosis"},
                 {"text": "Fibroids", "value": "fibroids"},
                 {"text": "Liver condition (e.g., cirrhosis)", "value": "liverCondition"},
                 {"text": "Obesity", "value": "obesity"},
