@@ -347,6 +347,9 @@
             "name": "oh_oh_cardioHx_diagnosedHeartConditions",
             "type": "checkbox",
             "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply) ",
+            "showNoneItem": true,
+            "noneValue": "none",
+            "noneText": "I have no heart or blood condition",
             "choices": [
               {
                 "text": "Anemia",
@@ -417,8 +420,12 @@
                 "value": "other"
               },
               {
-                "text": "I have no heart or blood condition",
-                "value": "none"
+                "text": "Don't know",
+                "value": "dontKnow"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
               }
             ]
           },
@@ -718,6 +725,9 @@
             "name": "oh_oh_cardioHx_metabolicDiagnosis",
             "type": "checkbox",
             "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply)",
+            "showNoneItem": true,
+            "noneValue": "none",
+            "noneText": "None of the above",
             "choices": [
               {"text": "Diabetes - Type 1", "value": "diabetesType1"},
               {"text": "Diabetes - Type 2", "value": "diabetesType2"},
@@ -725,7 +735,9 @@
               {"text": "Prediabetes", "value": "prediabetes"},
               {"text": "Non-alcoholic Fatty Liver Disease (NAFLD/NASH)", "value": "nonAlcoholicFattyLiverDisease"},
               {"text": "Obesity", "value": "obesity"},
-              {"text": "Polycystic Ovarian Syndrome (PCOS)", "value": "polycysticOvarianSyndrome"}
+              {"text": "Polycystic Ovarian Syndrome (PCOS)", "value": "polycysticOvarianSyndrome"},
+              {"text": "Don't know", "value": "dontKnow"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
             ]
           },
           {
@@ -871,6 +883,14 @@
               {
                 "text": "17 or older",
                 "value": "17OrOlder"
+              },
+              {
+                "text": "Don't know",
+                "value": "dontKnow"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
               }
             ]
           },
@@ -905,6 +925,14 @@
               {
                 "text": "No",
                 "value": "no"
+              },
+              {
+                "text": "Don't know",
+                "value": "dontKnow"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
               }
             ]
           },
@@ -915,7 +943,7 @@
               {
                 "name": "oh_oh_cardioHx_currentlyPregnant",
                 "type": "radiogroup",
-                "title": "Are you currently pregnant? (UKBB)",
+                "title": "Are you currently pregnant?",
                 "choices": [
                   {
                     "text": "No",
@@ -975,6 +1003,10 @@
                   {
                     "text": "8 or more",
                     "value": "8OrMore"
+                  },
+                  {
+                    "text": "Prefer not to answer",
+                    "value": "preferNoAnswer"
                   }
                 ]
               },
@@ -1010,6 +1042,10 @@
                   {
                     "text": "45 or older",
                     "value": "45OrOlder"
+                  },
+                  {
+                    "text": "Prefer not to answer",
+                    "value": "preferNoAnswer"
                   }
                 ]
               },
@@ -1045,6 +1081,10 @@
                   {
                     "text": "45 or older",
                     "value": "45OrOlder"
+                  },
+                  {
+                    "text": "Prefer not to answer",
+                    "value": "preferNoAnswer"
                   }
                 ]
               },
@@ -1088,12 +1128,19 @@
                   {
                     "text": "8 or more",
                     "value": "8OrMore"
+                  },
+                  {
+                    "text": "Prefer not to answer",
+                    "value": "preferNoAnswer"
                   }
                 ]
               },{
                 "name": "oh_oh_lifestyle_pregnancyConditions",
                 "type": "checkbox",
                 "title": "With any of these pregnancies, did a doctor or health care provider tell you that you had…?",
+                "showNoneItem": true,
+                "noneValue": "none",
+                "noneText": "None of the above",
                 "choices": [
                   {"text": "Gestational diabetes", "value": "gestationalDiabetes"},
                   {"text": "Gestational hypertension", "value": "gestationalHypertension"},
@@ -1103,7 +1150,9 @@
                   {"text": "HELLP syndrome", "value": "hellpSyndrome"},
                   {"text": "Peripartum cardiomyopathy", "value": "peripartumCardiomyopathy"},
                   {"text": "Peripartum depression", "value": "peripartumDepression"},
-                  {"text": "Preterm labor", "value": "pretermLabor"}
+                  {"text": "Preterm labor", "value": "pretermLabor"},
+                  {"text": "Don't know", "value": "dontKnow"},
+                  {"text": "Prefer not to answer", "value": "preferNoAnswer"}
                 ]
               }
             ]
@@ -1114,7 +1163,9 @@
             "title": "Have you gone through or are you currently going through menopause? (Both natural and/or medical)",
             "choices": [
               {"text": "Yes", "value": "yes"},
-              {"text": "No", "value": "no"}
+              {"text": "No", "value": "no"},
+              {"text": "Don't know", "value": "dontKnow"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
             ]
           },
           {
@@ -1160,6 +1211,10 @@
                   {
                     "text": "Not sure",
                     "value": "unsure"
+                  },
+                  {
+                    "text": "Prefer not to answer",
+                    "value": "preferNoAnswer"
                   }
                 ]
               },
