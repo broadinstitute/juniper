@@ -16,8 +16,13 @@
           "elements": [
             {
               "type": "html",
+              "name": "mgbLogo",
+              "html": "<img alt='Mass General Brigham logo' src='/api/public/portals/v1/ourhealth/env/{portalEnvironmentName}/siteImages/1/mgb_logo.svg' style='margin-top:2rem' />"
+            },
+            {
+              "type": "html",
               "name": "consentInfo1",
-              "html": "<h1 style='margin-top:2rem;'>Research Consent Form<br><span class='h6'>Collection of Samples and Health Information for Research</span></h1><p><span class='fw-bold'>Research Tissue Bank</span> <span class='fw-bold'>Version</span>: February 2022</p><dl class='p-3 border border-dark'><div><dt class='d-inline'>Protocol Title: </dt><dd class='d-inline'>OurHealth</dd></div><div><dt class='d-inline'>Principal Investigator: </dt><dd class='d-inline'>Pradeep Natarajan, MD, MMSc</dd></div><div><dt class='d-inline'>Broad Institute Responsible Investigator: </dt><dd class='d-inline'>Pradeep Natarajan, MD, MMSc</dd></div><div><dt class='d-inline'>Description of Subject Population: </dt><dd class='d-inline'>South Asian individuals living in United States</dd></div></dl>"
+              "html": "<h1 class='mt-4'>Research Consent Form<br><span class='h6'>Collection of Samples and Health Information for Research</span></h1><p><span class='fw-bold'>Research Tissue Bank</span> <span class='fw-bold'>Version</span>: February 2022</p><dl class='p-3 border border-dark'><div><dt class='d-inline'>Protocol Title: </dt><dd class='d-inline'>OurHealth</dd></div><div><dt class='d-inline'>Principal Investigator: </dt><dd class='d-inline'>Pradeep Natarajan, MD, MMSc</dd></div><div><dt class='d-inline'>Broad Institute Responsible Investigator: </dt><dd class='d-inline'>Pradeep Natarajan, MD, MMSc</dd></div><div><dt class='d-inline'>Description of Subject Population: </dt><dd class='d-inline'>South Asian individuals living in United States</dd></div></dl>"
             },
             {
               "type": "html",
