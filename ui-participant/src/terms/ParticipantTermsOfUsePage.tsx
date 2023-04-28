@@ -24,7 +24,7 @@ const ParticipantTermsOfUse = () => {
         OTHER URGENT SITUATION. IF YOU BELIEVE YOU MAY HAVE A MEDICAL EMERGENCY,
         CALL 911 OR YOUR LOCAL EMERGENCY MEDICAL SYSTEM IMMEDIATELY.
       </p>
-      <p>Effective Date: May 4, 2023</p>
+      <p>Effective Date: April 28, 2023</p>
 
       <p>
         Please read these Terms of Use (these <strong>“Terms”</strong>)
@@ -36,9 +36,11 @@ const ParticipantTermsOfUse = () => {
       </p>
       <p>
         These Terms of Use (<strong>“Terms”</strong>) apply to your use of the
-        Juniper platform (collectively, the <strong>“Platform”</strong>). By
-        using or accessing the Platform, you agree to be bound by these Terms.
-        If you do not agree to these Terms, you may not access or use the
+        Juniper Platform, which can be accessed by our website{' '}
+        <a href={window.location.origin}>{window.location.hostname}</a>{' '}
+        (collectively, the <strong>“Platform”</strong>). By clicking “I accept”
+        or by using or accessing the Platform, you agree to be bound by these
+        Terms. If you do not agree to these Terms, you may not access or use the
         Platform.
       </p>
       <p>
