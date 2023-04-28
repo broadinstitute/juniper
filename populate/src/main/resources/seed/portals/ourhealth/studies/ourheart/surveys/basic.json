@@ -668,7 +668,7 @@
             ]
           },{
             "name": "oh_oh_basic_citizenship",
-            "type": "radiogroup",
+            "type": "checkbox",
             "isRequired": true,
             "title": "What is your citizenship status?",
             "description": "This type of question helps us to ensure we are surveying a diverse group of South Asians in the US",
@@ -682,7 +682,7 @@
             "type": "radiogroup",
             "isRequired": true,
             "title": "Which of the following best describes your US citizenship status?",
-            "visibleIf": "{oh_oh_basic_citizenship} = 'usCitizen'",
+            "visibleIf": "{oh_oh_basic_citizenship} contains 'usCitizen'",
             "choices": [
               {"text": "I am a US citizen by birth", "value": "usBornCitizen"},
               {"text": "I am a naturalized US citizen", "value": "naturalizedUSCitizen"},
