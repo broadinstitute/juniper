@@ -54,7 +54,7 @@ const ParticipantTermsOfUse = () => {
         acceptance thereof.
       </p>
 
-      <SectionHeading>General Overview of the Platform</SectionHeading>
+      <SectionHeading>1. General Overview of the Platform</SectionHeading>
       <p>
         We have developed the Platform to enable users participating in certain
         clinical research projects (each, a <strong>“Research Project”</strong>)
@@ -72,7 +72,7 @@ const ParticipantTermsOfUse = () => {
       </p>
 
       <SectionHeading>
-        Creating an Account; Accessing the Platform
+        2. Creating an Account; Accessing the Platform
       </SectionHeading>
       <p>
         To access and use certain features of the Platform, you might need to
@@ -88,7 +88,7 @@ const ParticipantTermsOfUse = () => {
         please sign out of your Account at the end of each session.
       </p>
 
-      <SectionHeading>Privacy</SectionHeading>
+      <SectionHeading>3. Privacy</SectionHeading>
       <p>
         Broad understands the importance of confidentiality and privacy
         regarding your information. Please see our{' '}
@@ -100,7 +100,7 @@ const ParticipantTermsOfUse = () => {
         case, in compliance with our Privacy Policy.
       </p>
 
-      <SectionHeading>Communication Preferences</SectionHeading>
+      <SectionHeading>4. Communication Preferences</SectionHeading>
       <p>
         By creating an Account, you also consent to receive electronic
         communications from Broad (e.g., via email, text message, or by posting
@@ -117,7 +117,7 @@ const ParticipantTermsOfUse = () => {
       </p>
 
       <SectionHeading>
-        Are There Any Requirements To Be Able To Use The Platform?
+        5. Are There Any Requirements To Be Able To Use The Platform?
       </SectionHeading>
       <p>
         Yes, you must be at least 13 years of age in order to use the Platform.
@@ -141,7 +141,7 @@ const ParticipantTermsOfUse = () => {
         other person’s rights or any law.
       </p>
 
-      <SectionHeading>Proprietary Rights</SectionHeading>
+      <SectionHeading>6. Proprietary Rights</SectionHeading>
       <p>
         Broad grants you a limited right to use the Platform for your personal
         use. All original content, materials, features, and functionality
@@ -181,7 +181,7 @@ const ParticipantTermsOfUse = () => {
         them, and you are not entitled to receive any compensation.
       </p>
 
-      <SectionHeading>Uploaded Information And User Content</SectionHeading>
+      <SectionHeading>7. Uploaded Information And User Content</SectionHeading>
       <p>
         The Platform may contain medical and other information about
         participants in the Research Projects (
@@ -208,7 +208,7 @@ const ParticipantTermsOfUse = () => {
         Projects.
       </p>
 
-      <SectionHeading>Prohibited Uses</SectionHeading>
+      <SectionHeading>8. Prohibited Uses</SectionHeading>
       <p>
         We want to make sure the Platform is a safe place for us and our users.
         For this reason, we need to have certain rules about the use of the
@@ -247,7 +247,7 @@ const ParticipantTermsOfUse = () => {
       </p>
 
       <SectionHeading>
-        Broad Is Not Responsible For Third-Party Content
+        9. Broad Is Not Responsible For Third-Party Content
       </SectionHeading>
       <p>
         The Platform may contain links to third-party web sites, products, and
@@ -266,7 +266,7 @@ const ParticipantTermsOfUse = () => {
         terms and conditions of use for such offerings.
       </p>
 
-      <SectionHeading>Disclaimer Of Warranties</SectionHeading>
+      <SectionHeading>10. Disclaimer Of Warranties</SectionHeading>
       <p>
         We provide the Platform on an ‘as is’ and ‘as available’ basis without
         any promises or representations, expressed or implied. For example, we
@@ -281,7 +281,7 @@ const ParticipantTermsOfUse = () => {
         negligence.
       </p>
 
-      <SectionHeading>Limitation Of Liability</SectionHeading>
+      <SectionHeading>11. Limitation Of Liability</SectionHeading>
       <p>THIS SECTION LIMITS THE DAMAGE YOU CAN RECOVER FROM US. </p>
       <p>
         NOTWITHSTANDING THE FAILURE OF ESSENTIAL PURPOSE OF ANY LIMITED REMEDY
@@ -310,7 +310,7 @@ const ParticipantTermsOfUse = () => {
         from Broad’s negligence.
       </p>
 
-      <SectionHeading>Termination</SectionHeading>
+      <SectionHeading>12. Termination</SectionHeading>
       <p>
         These Terms are effective unless and until terminated by either you or
         Broad. You may terminate these Terms at any time, provided that you
@@ -328,7 +328,7 @@ const ParticipantTermsOfUse = () => {
         and purpose of these Terms shall survive termination.
       </p>
 
-      <SectionHeading>General</SectionHeading>
+      <SectionHeading>13. General</SectionHeading>
       <p>
         These Terms, including the Privacy Policy and other policies
         incorporated herein, constitute the entire and only agreement between
@@ -351,7 +351,7 @@ const ParticipantTermsOfUse = () => {
         in no way defines or explains any section or provision hereof.
       </p>
 
-      <SectionHeading>Contact Us</SectionHeading>
+      <SectionHeading>14. Contact Us</SectionHeading>
       <p>
         If you have any questions regarding our Platform or these Terms, you can
         contact us at{' '}
