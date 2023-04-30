@@ -4,6 +4,7 @@ import googleLogo from 'images/googleLogo.png'
 import Api, { AdminUser } from 'api/api'
 import { useUser } from 'user/UserProvider'
 import { useAuth } from 'react-oidc-context'
+import { useConfig } from 'providers/ConfigProvider'
 
 /** component for showing a login dialog that hides other content on the page */
 function Login() {
@@ -12,11 +13,14 @@ function Login() {
   const [showDevLogin, setShowDevLogin] = useState(false)
   const { loginUserUnauthed } = useUser()
   const auth = useAuth()
+  const config = useConfig()
 
   const signIn = async () => {
     const user = await auth.signinPopup()
     return user
   }
+  // dev login is prevented in non-localhost envs by the apache proxy, so don't bother showing the UI for it
+  const enableDevLogin = config.adminUiHostname.includes('localhost')
 
   /** log in with just an email, ignoring auth */
   function unauthedLogin(event: SyntheticEvent) {
@@ -52,7 +56,7 @@ function Login() {
         Login <img className="ms-3" style={{ maxHeight: '1em' }} src={microsoftLogo} alt="Microsoft logo"/>
         <img className="ms-1" style={{ maxHeight: '1em' }} src={googleLogo} alt="Google logo"/>
       </button>
-      <form onSubmit={unauthedLogin} className="d-flex flex-column justify-content-center">
+      {enableDevLogin && <form onSubmit={unauthedLogin} className="d-flex flex-column justify-content-center">
         <hr className="mt-2"/>
         <button type="button" className="btn btn-secondary text-white" onClick={() => setShowDevLogin(!showDevLogin)}>
           developer login
@@ -65,7 +69,7 @@ function Login() {
           <button type="submit" className="btn btn-secondary-outline border-white text-white mt-2 w-100">Log in</button>
         </div> }
         { isError && <div className="text-danger text-center">Login failed</div> }
-      </form>
+      </form> }
     </div>
   </div>
 }
