@@ -42,14 +42,14 @@ const CreateUserModal = ({ show, setShow, portals, userCreated }:
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
         <div className="py-2">
-          <div>
+          <div className="mb-3">
             <label className="form-label">
               Username
               <input type="email" value={newUser.username} className="form-control"
                 onChange={e => setNewUser({ ...newUser, username: e.target.value })}/>
             </label>
           </div>
-          { user.superuser && <div>
+          { user.superuser && <div className="mb-3">
             <span>Superuser</span><br/>
             <label className="me-3">
               <input type="radio" name="superuser" value="true" checked={newUser.superuser}
@@ -58,10 +58,7 @@ const CreateUserModal = ({ show, setShow, portals, userCreated }:
             </label>
             <label>
               <input type="radio" name="superuser" value="false" checked={!newUser.superuser} className="me-1"
-                onChange={() => setNewUser({
-                  ...newUser, portalShortcode: portals[0].shortcode,
-                  superuser: false
-                })}/> No
+                onChange={() => setNewUser({ ...newUser, portalShortcode: null, superuser: false })}/> No
             </label>
           </div> }
           { !newUser.superuser && <div>

@@ -15,8 +15,9 @@ public class AdminUserExtService {
   private AdminUserService adminUserService;
   private AuthUtilService authUtilService;
 
-  public AdminUserExtService(AdminUserService adminUserService) {
+  public AdminUserExtService(AdminUserService adminUserService, AuthUtilService authUtilService) {
     this.adminUserService = adminUserService;
+    this.authUtilService = authUtilService;
   }
 
   public Optional<AdminUser> get(UUID id, AdminUser operator) {
