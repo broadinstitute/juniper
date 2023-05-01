@@ -11,7 +11,9 @@ import lombok.Setter;
 @Getter @Builder
 public class ModuleExportInfo {
     private String moduleName;
+    private String displayName;
     @Setter
+    @Builder.Default
     private int maxNumRepeats = 1;
     private List<ItemExportInfo> items;
     private ExportFormatter formatter;

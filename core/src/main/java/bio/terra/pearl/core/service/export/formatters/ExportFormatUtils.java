@@ -4,6 +4,7 @@ import bio.terra.pearl.core.service.export.instance.ItemExportInfo;
 import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -22,6 +23,14 @@ public class ExportFormatUtils {
     public static final String ANALYSIS_DATE_TIME_FORMAT = "yyyy-MM-dd hh:mma";
     public static final String NULL_STRING = "";
     public static final String COLUMN_NAME_DELIMITER = ".";
+
+    public static final Map<Class, DataValueExportType> DATA_TYPE_MAP = Map.of(
+            String.class, DataValueExportType.STRING,
+            Double.class, DataValueExportType.NUMBER,
+            Integer.class, DataValueExportType.NUMBER,
+            LocalDate.class, DataValueExportType.DATE,
+            Instant.class, DataValueExportType.DATE_TIME
+    );
     public static String formatBoolean(Boolean bool) {
         return bool.toString();
     }
@@ -76,10 +85,20 @@ public class ExportFormatUtils {
         valueMap.put(itemExportInfo.getBaseColumnKey(), columnValue);
     }
 
-    public static ItemExportInfo getItemInfoForBeanProp(String moduleName, String propertyName) {
+    public static ItemExportInfo getItemInfoForBeanProp(String moduleName, String propertyName, Class beanClass) {
+        DataValueExportType dataType = DataValueExportType.STRING;
+        try {
+            BeanInfo info = Introspector.getBeanInfo(beanClass);
+            PropertyDescriptor descriptor = Arrays.stream(info.getPropertyDescriptors()).filter(pd -> pd.getName().equals(propertyName))
+                    .findFirst().get();
+            dataType = DATA_TYPE_MAP.getOrDefault(descriptor.getPropertyType(), DataValueExportType.STRING);
+        } catch (Exception e) {
+            // default is string
+        }
         return ItemExportInfo.builder()
                 .propertyAccessor(propertyName)
                 .baseColumnKey(moduleName + COLUMN_NAME_DELIMITER + propertyName)
+                .dataType(dataType)
                 .build();
     }
 

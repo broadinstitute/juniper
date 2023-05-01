@@ -34,6 +34,8 @@ dependencies {
     implementation 'com.auth0:java-jwt:4.2.2'
     implementation group: "bio.terra", name: "datarepo-client", version: "1.456.0-SNAPSHOT"
     implementation 'com.google.auth:google-auth-library-oauth2-http:1.4.0'
+    implementation 'org.apache.poi:poi:5.2.3'
+    implementation 'org.apache.poi:poi-ooxml:5.2.3'
 
     liquibaseRuntime 'org.liquibase:liquibase-core'
     liquibaseRuntime 'info.picocli:picocli:4.6.1'

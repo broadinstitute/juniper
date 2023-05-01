@@ -43,13 +43,14 @@ public class ProfileFormatter implements ExportFormatter {
 
     public ModuleExportInfo getModuleExportInfo(ExportOptions exportOptions) throws Exception {
         List<ItemExportInfo> itemInfo = ExportFormatUtils.getIncludedProperties(Profile.class, PROFILE_EXCLUDED_PROPERTIES)
-                .stream().map(propName -> ExportFormatUtils.getItemInfoForBeanProp(PROFILE_MODULE_NAME, propName))
+                .stream().map(propName -> ExportFormatUtils.getItemInfoForBeanProp(PROFILE_MODULE_NAME, propName, Profile.class))
                 .collect(Collectors.toList());
         itemInfo.addAll(ExportFormatUtils.getIncludedProperties(MailingAddress.class, MAILING_ADDRESS_EXCLUDED_PROPERTIES)
-                .stream().map(propName -> ExportFormatUtils.getItemInfoForBeanProp(PROFILE_MODULE_NAME, "mailingAddress." + propName))
+                .stream().map(propName -> ExportFormatUtils.getItemInfoForBeanProp(PROFILE_MODULE_NAME, "mailingAddress." + propName, Profile.class))
                 .toList());
         return ModuleExportInfo.builder()
                 .moduleName(PROFILE_MODULE_NAME)
+                .displayName("Enrollee profile")
                 .items(itemInfo)
                 .formatter(this)
                 .build();

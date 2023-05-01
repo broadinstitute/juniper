@@ -274,7 +274,7 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/export/data:
     get:
-      summary: Gets the export data as a tsv string
+      summary: Gets the export data in the specified format
       tags: [ export ]
       operationId: exportData
       parameters:
@@ -286,6 +286,25 @@ paths:
         - { name: onlyIncludeMostRecent, in: query, required: false, schema: { type: boolean, default: true } }
         - { name: fileFormat, in: query, required: false, schema: { type: string, default: "TSV" } }
         - { name: limit, in: query, required: false, schema: { type: integer } }
+      responses:
+        '200':
+          description: export data
+          content: { text/plain: { schema: { type: string, format: binary } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/export/dictionary:
+    get:
+      summary: Gets the export data dictionary
+      tags: [ export ]
+      operationId: exportDictionary
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: splitOptionsIntoColumns, in: query, required: false, schema: { type: boolean, default: false } }
+        - { name: stableIdsForOptions, in: query, required: false, schema: { type: boolean, default: false } }
+        - { name: onlyIncludeMostRecent, in: query, required: false, schema: { type: boolean, default: true } }
+        - { name: fileFormat, in: query, required: false, schema: { type: string, default: "TSV" } }
       responses:
         '200':
           description: export data

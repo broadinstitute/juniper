@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.export.formatters;
 
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.instance.ExportOptions;
@@ -37,10 +38,12 @@ public class EnrolleeFormatter implements ExportFormatter {
 
     public ModuleExportInfo getModuleExportInfo(ExportOptions exportOptions) throws Exception {
         List<ItemExportInfo> itemInfo = new ArrayList<>();
-        itemInfo.add(ExportFormatUtils.getItemInfoForBeanProp(ENROLLEE_MODULE_NAME, "shortcode"));
-        itemInfo.add(ExportFormatUtils.getItemInfoForBeanProp(ENROLLEE_MODULE_NAME, "consented"));
-        itemInfo.add(ExportFormatUtils.getItemInfoForBeanProp(ENROLLEE_MODULE_NAME, "createdAt"));
+        itemInfo.add(ExportFormatUtils.getItemInfoForBeanProp(ENROLLEE_MODULE_NAME, "shortcode", Enrollee.class));
+        itemInfo.add(ExportFormatUtils.getItemInfoForBeanProp(ENROLLEE_MODULE_NAME, "consented", Enrollee.class));
+        itemInfo.add(ExportFormatUtils.getItemInfoForBeanProp(ENROLLEE_MODULE_NAME, "createdAt", Enrollee.class));
         return ModuleExportInfo.builder()
+                .moduleName(ENROLLEE_MODULE_NAME)
+                .displayName("Enrollee")
                 .maxNumRepeats(1)
                 .items(itemInfo)
                 .formatter(this)

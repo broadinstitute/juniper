@@ -4,7 +4,7 @@ import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.service.export.formatters.EnrolleeFormatter;
 import bio.terra.pearl.core.service.export.formatters.ProfileFormatter;
 import bio.terra.pearl.core.service.export.formatters.SurveyFormatter;
@@ -13,9 +13,9 @@ import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.participant.ProfileService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.*;
 import org.slf4j.Logger;
@@ -25,25 +25,27 @@ import org.springframework.stereotype.Service;
 @Service
 public class EnrolleeExportService {
     private static final Logger logger = LoggerFactory.getLogger(EnrolleeExportService.class);
-    private ProfileService profileService;
-    private AnswerDao answerDao;
-    private SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
-    private SurveyResponseService surveyResponseService;
-    private ParticipantTaskService participantTaskService;
-    private SurveyDao surveyDao;
-    private EnrolleeService enrolleeService;
-    private ObjectMapper objectMapper;
+    private final ProfileService profileService;
+    private final AnswerDao answerDao;
+    private final SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
+    private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;
+    private final SurveyResponseService surveyResponseService;
+    private final ParticipantTaskService participantTaskService;
+    private final SurveyDao surveyDao;
+    private final EnrolleeService enrolleeService;
+    private final ObjectMapper objectMapper;
 
     public EnrolleeExportService(ProfileService profileService,
                                  AnswerDao answerDao,
                                  SurveyQuestionDefinitionDao surveyQuestionDefinitionDao,
-                                 SurveyResponseService surveyResponseService,
+                                 StudyEnvironmentSurveyService studyEnvironmentSurveyService, SurveyResponseService surveyResponseService,
                                  ParticipantTaskService participantTaskService,
                                  SurveyDao surveyDao,
                                  EnrolleeService enrolleeService, ObjectMapper objectMapper) {
         this.profileService = profileService;
         this.answerDao = answerDao;
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
+        this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.surveyResponseService = surveyResponseService;
         this.participantTaskService = participantTaskService;
         this.surveyDao = surveyDao;
@@ -51,24 +53,11 @@ public class EnrolleeExportService {
         this.objectMapper = objectMapper;
     }
 
-    public String exportAsString(ExportOptions exportOptions, UUID portalId, UUID studyEnvironmentId) throws Exception {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        export(exportOptions, portalId, studyEnvironmentId, baos);
-        baos.close();
-        return baos.toString();
-    }
-
     public void export(ExportOptions exportOptions, UUID portalId, UUID studyEnvironmentId, OutputStream os) throws Exception {
         List<ModuleExportInfo> moduleExportInfos = generateModuleInfos(exportOptions, portalId, studyEnvironmentId);
         var enrolleeMaps = generateExportMaps(portalId, studyEnvironmentId,
                 moduleExportInfos, exportOptions.limit());
-        BaseExporter exporter = null;
-        // once we have more exporters, we'll want some sort of factory pattern here
-        if (exportOptions.fileFormat().equals(ExportFileFormat.JSON)) {
-            exporter = new JsonExporter(moduleExportInfos, enrolleeMaps, objectMapper);
-        } else {
-            exporter = new TsvExporter(moduleExportInfos, enrolleeMaps);
-        }
+        BaseExporter exporter = getExporter(exportOptions.fileFormat(), moduleExportInfos, enrolleeMaps);
         exporter.export(os);
     }
 
@@ -111,22 +100,15 @@ public class EnrolleeExportService {
     }
 
     protected List<ModuleExportInfo> generateSurveyModules(ExportOptions exportOptions, UUID portalId, UUID studyEnvironmentId) throws Exception {
-        List<Survey> surveys = surveyDao.findByPortalIdNoContent(portalId);
-        List<Survey> latestSurveys = new ArrayList<>();
-        // for now, only worry about the latest version for exports
-        for (Survey survey : surveys) {
-            Survey matchedSurvey = latestSurveys.stream().filter(srv -> survey.getStableId().equals(srv.getStableId()))
-                    .findFirst().orElse(null);
-            if (matchedSurvey == null || matchedSurvey.getVersion() < survey.getVersion()) {
-                latestSurveys.add(survey);
-            }
-        }
+        // for now, only worry about the surveys currently configured for the environment
+        List<StudyEnvironmentSurvey> latestConfiguredSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(studyEnvironmentId);
+        latestConfiguredSurveys.sort(Comparator.comparing(StudyEnvironmentSurvey::getSurveyOrder));
         SurveyFormatter surveyFormatter = new SurveyFormatter(objectMapper);
         List<ModuleExportInfo> moduleExportInfos = new ArrayList<>();
-        for (Survey survey : latestSurveys) {
+        for (StudyEnvironmentSurvey configuredSurvey : latestConfiguredSurveys) {
             var surveyQuestionDefinitions = surveyQuestionDefinitionDao
-                    .findAllBySurveyId(survey.getId());
-            moduleExportInfos.add(surveyFormatter.getModuleExportInfo(exportOptions, survey, surveyQuestionDefinitions));
+                    .findAllBySurveyId(configuredSurvey.getSurvey().getId());
+            moduleExportInfos.add(surveyFormatter.getModuleExportInfo(exportOptions, configuredSurvey.getSurvey(), surveyQuestionDefinitions));
         }
         return moduleExportInfos;
     }
@@ -147,6 +129,16 @@ public class EnrolleeExportService {
                 participantTaskService.findByEnrolleeId(enrollee.getId()),
                 surveyResponseService.findByEnrolleeId(enrollee.getId())
         );
+    }
+
+    protected BaseExporter getExporter(ExportFileFormat fileFormat, List<ModuleExportInfo> moduleExportInfos,
+                                       List<Map<String, String>> enrolleeMaps) {
+        if (fileFormat.equals(ExportFileFormat.JSON)) {
+            return new JsonExporter(moduleExportInfos, enrolleeMaps, objectMapper);
+        } else if (fileFormat.equals(ExportFileFormat.EXCEL)) {
+            return new ExcelExporter(moduleExportInfos, enrolleeMaps);
+        }
+        return new TsvExporter(moduleExportInfos, enrolleeMaps);
     }
 
 
