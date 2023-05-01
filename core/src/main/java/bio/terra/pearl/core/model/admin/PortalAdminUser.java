@@ -18,4 +18,6 @@ public class PortalAdminUser extends BaseEntity {
     private UUID portalId;
     @Builder.Default
     private Set<Role> roles = new HashSet<>();
+    @Builder.Default
+    private Set<UUID> roleIds = new HashSet<>();
 }

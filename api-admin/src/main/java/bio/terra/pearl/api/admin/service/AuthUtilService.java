@@ -45,8 +45,25 @@ public class AuthUtilService {
     return userOpt.get();
   }
 
+  /**
+   * this will throw permission denied even if the portal doesn't exist, to avoid leaking
+   * information
+   */
+  public Portal authAdminToPortal(AdminUser user, String portalShortcode) {
+    Optional<Portal> portalOpt = portalService.findOneByShortcode(portalShortcode);
+    if (portalOpt.isPresent()) {
+      Portal portal = portalOpt.get();
+      if (portalService.checkAdminIsInPortal(user, portal.getId())) {
+        return portal;
+      }
+    }
+    throw new PermissionDeniedException(
+        "User %s does not have permissions on portal %s"
+            .formatted(user.getUsername(), portalShortcode));
+  }
+
   public Portal authUserToPortal(AdminUser user, String portalShortcode) {
-    return portalService.authAdminToPortal(user, portalShortcode);
+    return authAdminToPortal(user, portalShortcode);
   }
 
   public PortalStudy authUserToStudy(

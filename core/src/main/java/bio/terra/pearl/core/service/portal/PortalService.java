@@ -11,7 +11,6 @@ import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
-import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.notification.EmailTemplateService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
@@ -138,19 +137,6 @@ public class PortalService extends CrudService<Portal, PortalDao> {
             return dao.findAll();
         }
         return dao.findByAdminUserId(user.getId());
-    }
-
-    /** this will throw permission denied even if the portal doesn't exist, to avoid leaking information */
-    public Portal authAdminToPortal(AdminUser user, String portalShortcode) {
-        Optional<Portal> portalOpt = findOneByShortcode(portalShortcode);
-        if (portalOpt.isPresent()) {
-            Portal portal = portalOpt.get();
-            if (checkAdminIsInPortal(user, portal.getId())) {
-                return portal;
-            }
-        }
-        throw new PermissionDeniedException("User %s does not have permissions on portal %s"
-                .formatted(user.getUsername(), portalShortcode));
     }
 
     public boolean checkAdminIsInPortal(AdminUser user, UUID portalId) {

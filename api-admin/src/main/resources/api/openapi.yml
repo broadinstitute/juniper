@@ -367,6 +367,30 @@ paths:
           } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/adminUsers/v1:
+    get:
+      summary: Gets all admin users
+      tags: [ admin_user ]
+      operationId: getAll
+      responses:
+        '200':
+          description: List of admin users with portals and roles attached
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Creates a new admin user
+      tags: [ admin_user ]
+      operationId: create
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: the new user
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/adminUser/v1/{id}:
     get:
       summary: Gets an admin user

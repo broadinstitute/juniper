@@ -2,10 +2,7 @@ import React from 'react'
 import { Study, StudyEnvironment } from 'api/api'
 import { Link, NavLink } from 'react-router-dom'
 import { studyParticipantsPath } from '../portal/PortalRouter'
-
-const sidebarLinkStyle = {
-  color: '#fff'
-}
+import BaseSidebar, { sidebarLinkStyle } from 'navbar/BaseSidebar'
 
 /** Sidebar for navigating around configuration of a study environment */
 function StudyEnvironmentSidebar({ portalShortcode, study, currentEnv, currentEnvPath, setShow }:
@@ -31,6 +28,7 @@ function StudyEnvironmentSidebar({ portalShortcode, study, currentEnv, currentEn
         </NavLink>
       </li>
     </ul>
+    <BaseSidebar setShow={setShow}/>
   </div>
 }
 

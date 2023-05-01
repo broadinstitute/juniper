@@ -3,8 +3,19 @@ export type AdminUser = {
   token: string,
   superuser: boolean,
   portalPermissions: Record<string, string[]>,
-  isAnonymous: boolean
+  isAnonymous: boolean,
+  portalAdminUsers?: PortalAdminUser[]
 };
+
+export type NewUser = {
+  username: string,
+  superuser: boolean,
+  portalShortcode: string | null
+}
+
+export type PortalAdminUser = {
+  portalId: string
+}
 
 export type Study = {
   name: string,
@@ -78,6 +89,7 @@ export type PortalStudy = {
 }
 
 export type Portal = {
+  id?: string,
   name: string,
   shortcode: string,
   portalStudies: PortalStudy[],
@@ -606,6 +618,22 @@ export default {
   async fetchMailingList(portalShortcode: string, envName: string): Promise<MailingListContact[]> {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList`
     const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchUsers(): Promise<AdminUser[]> {
+    const url = `${API_ROOT}/adminUsers/v1`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async createUser(adminUser: NewUser): Promise<AdminUser> {
+    const url = `${API_ROOT}/adminUsers/v1`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(adminUser)
+    })
     return await this.processJsonResponse(response)
   },
 

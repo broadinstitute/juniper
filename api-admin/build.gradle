@@ -46,6 +46,8 @@ dependencies {
         exclude group: 'com.vaadin.external.google', module: 'android-json'
     }
     testImplementation 'org.mockito:mockito-inline'
+    // See https://stackoverflow.com/questions/5644011/multi-project-test-dependencies-with-gradle/60138176#60138176
+    testImplementation(testFixtures(project(":core")))
 }
 
 task copyWebApp(type: Copy) {

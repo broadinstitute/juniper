@@ -1,4 +1,5 @@
 import React, { Dispatch, SetStateAction, useState } from 'react'
+import BaseSidebar from './BaseSidebar'
 
 export type NavbarContextT = {
   breadCrumbs: React.ReactNode[],
@@ -23,8 +24,9 @@ export const NavbarContext = React.createContext<NavbarContextT>(emptyNavbarCont
 /** Provider for a navbar context (does not actually render the navbar) */
 export default function NavbarProvider({ children }: { children: React.ReactNode}) {
   const [breadCrumbs, setBreadCrumbs] = useState<React.ReactNode[]>([])
-  const [sidebarContent, setSidebarContent] = useState<React.ReactNode>(null)
   const [showSidebar, setShowSidebar] = useState(false)
+  const [sidebarContent, setSidebarContent] = useState<React.ReactNode>(<BaseSidebar setShow={setShowSidebar}/>)
+
 
   const navState: NavbarContextT = {
     breadCrumbs, setBreadCrumbs, sidebarContent, setSidebarContent, showSidebar, setShowSidebar
