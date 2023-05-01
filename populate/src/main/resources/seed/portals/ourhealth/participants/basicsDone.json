@@ -1,0 +1,18 @@
+{
+  "participantUser": {
+    "username": "basic@test.com"
+  },
+  "profile": {
+    "givenName": "Basic",
+    "familyName": "Done",
+    "contactEmail": "basic@test.com",
+    "sexAtBirth": "male",
+    "mailingAddress": {
+      "street1": "332 Spruce Street",
+      "city": "New York",
+      "state": "NY",
+      "country": "US",
+      "postalCode": "10006"
+    }
+  }
+}

@@ -23,7 +23,8 @@
       "participantUserFiles": [
         "participants/jsalk.json",
         "participants/newEnrollee.json",
-        "participants/consentedEnrollee.json"
+        "participants/consentedEnrollee.json",
+        "participants/basicsDone.json"
       ],
       "mailingListContacts": [
         {

@@ -64,7 +64,8 @@
       "enrolleeFiles": [
         "enrollees/jsalk.json",
         "enrollees/newEnrollee.json",
-        "enrollees/consentedEnrollee.json"
+        "enrollees/consentedEnrollee.json",
+        "enrollees/basicsDone.json"
       ],
       "preEnrollmentResponseDtos": [{
           "qualified": false,
