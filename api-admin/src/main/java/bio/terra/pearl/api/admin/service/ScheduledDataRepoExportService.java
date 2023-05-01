@@ -39,7 +39,7 @@ public class ScheduledDataRepoExportService {
     that it shouldn't be a problem if the first round of ingest is delayed due to a missing
     dataset: by the next round, it should be ready.
   */
-  //  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 60, initialDelay = 1)
+  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 60, initialDelay = 0)
   //  @SchedulerLock(
   //      name = "DataRepoExportService.createDatasetsForStudyEnvironments",
   //      lockAtMostFor = "10m",
@@ -54,7 +54,7 @@ public class ScheduledDataRepoExportService {
     }
   }
 
-  //  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 240, initialDelay = 1)
+  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 240, initialDelay = 0)
   //  @SchedulerLock(
   //      name = "DataRepoExportService.ingestStudyEnvironmentDatasets",
   //      lockAtMostFor = "10m",
@@ -69,7 +69,7 @@ public class ScheduledDataRepoExportService {
     }
   }
 
-  //  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 10, initialDelay = 0)
+  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 1, initialDelay = 0)
   //  @SchedulerLock(
   //      name = "DataRepoExportService.pollRunningJobs",
   //      lockAtMostFor = "5m",
@@ -82,12 +82,6 @@ public class ScheduledDataRepoExportService {
       logger.error(
           "Error: Skipping TDR job polling, as TDR has not been configured for this environment.");
     }
-  }
-
-  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 1, initialDelay = 0)
-  public void doStorageStuff() {
-    logger.info("Uploading TDR ingest file...");
-    dataRepoExportService.createStuff();
   }
 
   public boolean isTdrConfigured() {

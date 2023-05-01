@@ -78,22 +78,15 @@ public class DataRepoExportService {
         this.studyEnvironmentDao = studyEnvironmentDao;
     }
 
-    public void createStuff() {
+    public String uploadTsvToAzure(UUID studyEnvironmentId) {
         ExportOptions exportOptions = new ExportOptions(false, false, ExportFileFormat.TSV, false);
 
-        String fileName = "7f2004f2-ad42-4dcb-bb05-e753cdf1d341" + "_" + System.currentTimeMillis();
+        String fileName = studyEnvironmentId + "_" + System.currentTimeMillis() + ".csv";
 
-        StudyEnvironment studyEnv = studyEnvironmentDao.find(UUID.fromString("7f2004f2-ad42-4dcb-bb05-e753cdf1d341")).get(); //todo: get
-        String exportData;
         try {
-            exportData = enrolleeExportService.exportAsString(exportOptions, null, studyEnv.getId());
+            String exportData = enrolleeExportService.exportAsString(exportOptions, UUID.fromString("6a22e343-cc29-4e4e-8833-be4c55650ba4"), studyEnvironmentId);
+            return azureBlobStorageClient.uploadBlob(fileName, exportData);
         } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            azureBlobStorageClient.uploadBlob(fileName, exportData);
-        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -146,8 +139,16 @@ public class DataRepoExportService {
     }
 
     public void ingestDataForStudyEnvironment(Dataset studyEnvDataset) {
+
+        String azurePath = uploadTsvToAzure(studyEnvDataset.getStudyEnvironmentId());
+        UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
+
+        System.out.println("*****");
+        System.out.println(azurePath);
+        System.out.println("*****");
+
         try {
-            JobModel ingestJob = dataRepoClient.ingestDataset(studyEnvDataset.getDatasetId(), "enrollee");
+            JobModel ingestJob = dataRepoClient.ingestDataset(defaultSpendProfileId, studyEnvDataset.getDatasetId(), "enrollee", azurePath);
             logger.info("Ingest job returned with job ID {}", ingestJob.getId());
             //Store in DB
             DataRepoJob job = DataRepoJob.builder()

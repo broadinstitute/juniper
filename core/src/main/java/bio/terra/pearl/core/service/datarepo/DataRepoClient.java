@@ -54,23 +54,16 @@ public class DataRepoClient {
         In a future PR, we will tackle short-term handling of this until those strategies are available,
         most likely by deleting the dataset tables and recreating them each time.
      */
-    public JobModel ingestDataset(UUID datasetId, String tableName) throws ApiException {
+    public JobModel ingestDataset(UUID spendProfileId, UUID datasetId, String tableName, String blobSasUrl) throws ApiException {
         DatasetsApi datasetsApi = getDatasetsApi();
-
-        Map<String, Object> records = new HashMap<>();
-
-        //TODO: Once we have the TSV prepared for export, we can either convert it into a TDR array model (short term solution),
-        // or upload it to an Azure storage container elsewhere and point to that URL here. For now, just add a new row each time
-        // to see that the flow is working.
-        records.put("shortcode", "TESTUSER");
 
         IngestRequestModel request = new IngestRequestModel()
                 .table(tableName)
-                //TODO: Probably want to ingest data via file, not array (otherwise this payload will be massive).
-                //Need mechanism to write TDR ingest files to an Azure storage container and point TDR to that
-                .format(IngestRequestModel.FormatEnum.ARRAY)
+                .profileId(spendProfileId)
+                .format(IngestRequestModel.FormatEnum.CSV)
+                .csvSkipLeadingRows(1)
                 .updateStrategy(IngestRequestModel.UpdateStrategyEnum.APPEND) //This is the default, and the only available option on Azure right now
-                .records(List.of(records));
+                .path(blobSasUrl);
 
         return datasetsApi.ingestDataset(datasetId, request);
     }

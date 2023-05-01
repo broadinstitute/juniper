@@ -17,6 +17,7 @@ env:
     serviceAccountCreds: ${TDR_SA_CREDS:}
     storageAccountName: ${STORAGE_ACCOUNT_NAME:}
     storageAccountKey: ${STORAGE_ACCOUNT_KEY:}
+    storageContainerName: ${STORAGE_CONTAINER_NAME:}
     billingProfileId: ${BILLING_PROFILE_ID:550212cf-45dc-478f-9fe6-9b3290e2a1fe}
     deploymentZone: ${DEPLOYMENT_ZONE:}
   populate:
