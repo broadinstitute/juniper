@@ -1,3 +1,5 @@
+import { faUser } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Collapse } from 'bootstrap'
 import classNames from 'classnames'
 import React, { useEffect, useId, useRef } from 'react'
@@ -92,17 +94,54 @@ export default function Navbar(props: NavbarProps) {
               </li>
             </>
           )}
-          {!user.isAnonymous && <li className="nav-item dropdown">
-            <a className={classNames(navLinkClasses, 'dropdown-toggle')} href="#"
-              role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              {user.username}
-            </a>
-            <ul className="dropdown-menu">
-              <li><Link className="dropdown-item" to="/hub">Dashboard</Link></li>
-              <li><hr className="dropdown-divider" /></li>
-              <li><a className="dropdown-item" onClick={doLogout}>Log Out</a></li>
-            </ul>
-          </li>}
+          {!user.isAnonymous && (
+            <>
+              <li className="nav-item">
+                <Link
+                  className={classNames(
+                    'btn btn-lg btn-outline-primary',
+                    'd-flex justify-content-center',
+                    'ms-lg-3'
+                  )}
+                  to="/hub"
+                >
+                  Dashboard
+                </Link>
+              </li>
+              <li className="nav-item dropdown d-flex flex-column">
+                <button
+                  aria-expanded="false"
+                  aria-label={user.username}
+                  className={classNames(
+                    navLinkClasses,
+                    'btn btn-text dropdown-toggle text-start'
+                  )}
+                  data-bs-toggle="dropdown"
+                >
+                  <FontAwesomeIcon className="d-none d-lg-inline" icon={faUser} />
+                  <span className="d-lg-none">{user.username}</span>
+                </button>
+                <div className="dropdown-menu dropdown-menu-end">
+                  <p
+                    className="d-none d-lg-block"
+                    style={{
+                      padding: 'var(--bs-dropdown-item-padding-y) var(--bs-dropdown-item-padding-x)',
+                      margin: 0,
+                      fontWeight: 400,
+                      color: 'var(--bs-dropdown-link-color)',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    {user.username}
+                  </p>
+                  <hr className="dropdown-divider d-none d-lg-block" />
+                  <button className="dropdown-item" onClick={doLogout}>
+                    Log Out
+                  </button>
+                </div>
+              </li>
+            </>
+          )}
         </ul>
       </div>
     </div>
