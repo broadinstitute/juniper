@@ -60,7 +60,7 @@ public class DataRepoClient {
                 .table(tableName)
                 .profileId(spendProfileId)
                 .format(IngestRequestModel.FormatEnum.CSV)
-                .csvSkipLeadingRows(1)
+                .csvSkipLeadingRows(2) //TDR doesn't seem to honor this for some reason
                 .updateStrategy(IngestRequestModel.UpdateStrategyEnum.APPEND) //This is the default, and the only available option on Azure right now
                 .path(blobSasUrl);
 
