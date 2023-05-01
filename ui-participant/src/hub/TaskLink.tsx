@@ -81,13 +81,23 @@ export function getTaskPath(task: ParticipantTask, enrolleeShortcode: string, st
 /** is the task actionable by the user? the rules are:
  * consent forms are always actionable.
  * nothing else is actionable until consent
+ * required tasks must be done in-order
  * non-required tasks are not actionable until all required tasks are cleared */
 export function isTaskAccessible(task: ParticipantTask, enrollee: Enrollee) {
-  const hasRequiredTasks = enrollee.participantTasks.some(task => task.blocksHub && task.status !== 'COMPLETE')
-  return task.taskType === 'CONSENT' || (
-    enrollee.consented &&
-    (!hasRequiredTasks || task.blocksHub)
-  )
+  if (task.taskType === 'CONSENT') {
+    return true
+  }
+  const openConsents = enrollee.participantTasks
+    .filter(task => task.taskType === 'CONSENT' && task.status !== 'COMPLETE')
+  if (openConsents.length) {
+    return false
+  }
+  const openRequiredTasks = enrollee.participantTasks.filter(task => task.blocksHub && task.status !== 'COMPLETE')
+    .sort((a, b) => a.taskOrder - b.taskOrder)
+  if (openRequiredTasks.length) {
+    return task.id === openRequiredTasks[0].id
+  }
+  return true
 }
 
 /** is the task ready to be worked on (not done or rejected) */
