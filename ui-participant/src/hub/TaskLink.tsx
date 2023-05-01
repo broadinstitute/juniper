@@ -1,9 +1,9 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import { Enrollee, ParticipantTask } from 'api/api'
-import { faCheck, faCircleHalfStroke, faLock } from '@fortawesome/free-solid-svg-icons'
-import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {Link} from 'react-router-dom'
+import {Enrollee, ParticipantTask} from 'api/api'
+import {faCheck, faCircleHalfStroke, faLock} from '@fortawesome/free-solid-svg-icons'
+import {faCircle, faCircleXmark} from '@fortawesome/free-regular-svg-icons'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 
 export type StatusDisplayInfo = {
   icon: React.ReactNode,
@@ -12,19 +12,19 @@ export type StatusDisplayInfo = {
 
 const statusDisplayMap: Record<string, StatusDisplayInfo> = {
   'COMPLETE': {
-    icon: <FontAwesomeIcon icon={faCheck} className="fa-lg" style={{ color: 'rgb(122, 152, 188)' }}/>,
+    icon: <FontAwesomeIcon icon={faCheck} className="fa-lg" style={{color: 'rgb(122, 152, 188)'}}/>,
     statusDisplay: 'Complete'
   },
   'IN_PROGRESS': {
-    icon: <FontAwesomeIcon icon={faCircleHalfStroke} style={{ color: 'rgb(129, 172, 82)' }}/>,
+    icon: <FontAwesomeIcon icon={faCircleHalfStroke} style={{color: 'rgb(129, 172, 82)'}}/>,
     statusDisplay: 'In Progress'
   },
   'NEW': {
-    icon: <FontAwesomeIcon icon={faCircle} style={{ color: '#777' }}/>,
+    icon: <FontAwesomeIcon icon={faCircle} style={{color: '#777'}}/>,
     statusDisplay: 'Not Started'
   },
   'REJECTED': {
-    icon: <FontAwesomeIcon icon={faCircleXmark} style={{ color: '#777' }}/>,
+    icon: <FontAwesomeIcon icon={faCircleXmark} style={{color: '#777'}}/>,
     statusDisplay: 'Declined'
   }
 }
@@ -35,7 +35,7 @@ const statusDisplayMap: Record<string, StatusDisplayInfo> = {
  *  when we upgrade this UI to support i18n, we'll have to pull task titles by loading parts of the forms themselves,
  *  which do support i18n, and then loading from there.
  * */
-export default function TaskLink({ task, studyShortcode, enrollee }:
+export default function TaskLink({task, studyShortcode, enrollee}:
                                    { task: ParticipantTask, studyShortcode: string, enrollee: Enrollee }) {
   const isAccessible = isTaskAccessible(task, enrollee)
   const styleProps = {
@@ -50,7 +50,7 @@ export default function TaskLink({ task, studyShortcode, enrollee }:
       <div className="detail">
         {isAccessible
           ? statusDisplayMap[task.status].icon
-          : <FontAwesomeIcon icon={faLock} style={{ color: 'rgb(203, 203, 203)' }}/>}
+          : <FontAwesomeIcon icon={faLock} style={{color: 'rgb(203, 203, 203)'}}/>}
       </div>
       <div className="flex-grow-1 ms-3">
         {isAccessible
@@ -86,6 +86,11 @@ export function getTaskPath(task: ParticipantTask, enrolleeShortcode: string, st
 export function isTaskAccessible(task: ParticipantTask, enrollee: Enrollee) {
   if (task.taskType === 'CONSENT') {
     return true
+  }
+  const openConsents = enrollee.participantTasks
+    .filter(task => task.taskType === 'CONSENT' && task.status !== 'COMPLETE')
+  if (openConsents.length) {
+    return false
   }
   const openRequiredTasks = enrollee.participantTasks.filter(task => task.blocksHub && task.status !== 'COMPLETE')
     .sort((a, b) => a.taskOrder - b.taskOrder)
