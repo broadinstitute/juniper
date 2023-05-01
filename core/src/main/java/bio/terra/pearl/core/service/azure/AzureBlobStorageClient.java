@@ -27,17 +27,17 @@ public class AzureBlobStorageClient {
         this.env = env;
     }
 
-    public String uploadBlob(String blobName, String data) throws IOException {
-        String accountName = env.getProperty("env.tdr.storageAccountName");
-        String accountKey = env.getProperty("env.tdr.storageAccountKey");
+    public String uploadBlobAndSignUrl(String blobName, String data) {
+        BlockBlobClient blobClient = uploadBlob(blobName, data);
+        return getBlobSasUrl(blobClient);
+    }
+
+    public BlockBlobClient uploadBlob(String blobName, String data) {
         String containerName = env.getProperty("env.tdr.storageContainerName");
 
-        //Get a credential object to access the storage container
-        StorageSharedKeyCredential credential = new StorageSharedKeyCredential(accountName, accountKey);
+        StorageSharedKeyCredential credential = getStorageCredential();
 
-        //Create a BlobServiceClient object that wraps the service endpoint, credential and a request pipeline.
-        String storageClientEndpoint = String.format(Locale.ROOT, "https://%s.blob.core.windows.net", accountName);
-        BlobServiceClient storageClient = new BlobServiceClientBuilder().endpoint(storageClientEndpoint).credential(credential).buildClient();
+        BlobServiceClient storageClient = getStorageClient(credential);
 
         //Create a client that references the storage container
         BlobContainerClient blobContainerClient = storageClient.getBlobContainerClient(containerName);
@@ -45,17 +45,24 @@ public class AzureBlobStorageClient {
         //Create a client that references the to-be-created blob in the storage container
         BlockBlobClient blobClient = blobContainerClient.getBlobClient(blobName).getBlockBlobClient();
 
-        InputStream dataStream = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
+        //Upload the blob
+        try {
+            InputStream dataStream = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
+            blobClient.upload(dataStream, data.length());
+            dataStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        //Create the blob
-        blobClient.upload(dataStream, data.length());
+        return blobClient;
+    }
 
-        dataStream.close();
-
+    public String getBlobSasUrl(BlockBlobClient blobClient) {
         //Generate a SAS-signed URL that is good for 1 hour (ingest should be much quicker than this)
         //This will give read permission to TDR during ingest
         BlobSasPermission blobSasPermission = new BlobSasPermission().setReadPermission(true);
-        BlobServiceSasSignatureValues builder = new BlobServiceSasSignatureValues(OffsetDateTime.now().plusHours(1), blobSasPermission).setProtocol(SasProtocol.HTTPS_ONLY);
+        BlobServiceSasSignatureValues builder = new BlobServiceSasSignatureValues(OffsetDateTime.now().plusHours(1), blobSasPermission)
+                .setProtocol(SasProtocol.HTTPS_ONLY);
 
         //Return SAS-signed URL for the uploaded CSV
         return String.format("https://%s.blob.core.windows.net/%s/%s?%s",
@@ -64,4 +71,22 @@ public class AzureBlobStorageClient {
                 blobClient.getBlobName(),
                 blobClient.generateSas(builder));
     }
+
+    //Returns a credential object to interact with a storage account
+    public StorageSharedKeyCredential getStorageCredential() {
+        String accountName = env.getProperty("env.tdr.storageAccountName");
+        String accountKey = env.getProperty("env.tdr.storageAccountKey");
+
+        //Get a credential object to access the storage container
+        return new StorageSharedKeyCredential(accountName, accountKey);
+    }
+
+    public BlobServiceClient getStorageClient(StorageSharedKeyCredential credential) {
+        String accountName = env.getProperty("env.tdr.storageAccountName");
+
+        //Create a BlobServiceClient object that wraps the service endpoint, credential and a request pipeline.
+        String storageClientEndpoint = String.format(Locale.ROOT, "https://%s.blob.core.windows.net", accountName);
+        return new BlobServiceClientBuilder().endpoint(storageClientEndpoint).credential(credential).buildClient();
+    }
+
 }

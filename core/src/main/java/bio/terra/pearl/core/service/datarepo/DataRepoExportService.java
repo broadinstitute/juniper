@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
@@ -78,14 +77,14 @@ public class DataRepoExportService {
         this.studyEnvironmentDao = studyEnvironmentDao;
     }
 
-    public String uploadTsvToAzure(UUID studyEnvironmentId) {
+    public String uploadCsvToAzureStorage(UUID studyEnvironmentId) {
         ExportOptions exportOptions = new ExportOptions(false, false, ExportFileFormat.TSV, false);
 
         String blobName = studyEnvironmentId + "_" + Instant.now() + ".csv";
 
         try {
             String exportData = enrolleeExportService.exportAsString(exportOptions, UUID.fromString("6a22e343-cc29-4e4e-8833-be4c55650ba4"), studyEnvironmentId);
-            return azureBlobStorageClient.uploadBlob(blobName, exportData);
+            return azureBlobStorageClient.uploadBlobAndSignUrl(blobName, exportData);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -140,7 +139,7 @@ public class DataRepoExportService {
 
     public void ingestDataForStudyEnvironment(Dataset studyEnvDataset) {
         UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
-        String blobSasUrl = uploadTsvToAzure(studyEnvDataset.getStudyEnvironmentId());
+        String blobSasUrl = uploadCsvToAzureStorage(studyEnvDataset.getStudyEnvironmentId());
 
         try {
             JobModel ingestJob = dataRepoClient.ingestDataset(defaultSpendProfileId, studyEnvDataset.getDatasetId(), "enrollee", blobSasUrl);

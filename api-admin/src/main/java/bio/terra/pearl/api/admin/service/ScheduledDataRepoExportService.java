@@ -2,6 +2,7 @@ package bio.terra.pearl.api.admin.service;
 
 import bio.terra.pearl.core.service.datarepo.DataRepoExportService;
 import com.google.common.collect.ImmutableSet;
+import java.util.concurrent.TimeUnit;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -9,8 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class ScheduledDataRepoExportService {
@@ -87,9 +86,13 @@ public class ScheduledDataRepoExportService {
   }
 
   public boolean isTdrConfigured() {
-    final ImmutableSet<String> REQUIRED_TDR_ENV_VARS = ImmutableSet.of(
-            "serviceAccountCreds", "deploymentZone", "storageAccountName",
-            "storageAccountKey", "storageContainerName");
+    final ImmutableSet<String> REQUIRED_TDR_ENV_VARS =
+        ImmutableSet.of(
+            "serviceAccountCreds",
+            "deploymentZone",
+            "storageAccountName",
+            "storageAccountKey",
+            "storageContainerName");
 
     return REQUIRED_TDR_ENV_VARS.stream()
         .allMatch(
