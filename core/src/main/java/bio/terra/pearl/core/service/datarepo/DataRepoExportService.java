@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
@@ -132,7 +134,7 @@ public class DataRepoExportService {
     }
 
     public String uploadCsvToAzureStorage(UUID studyEnvironmentId) {
-        ExportOptions exportOptions = new ExportOptions(false, false, ExportFileFormat.TSV, false);
+        ExportOptions exportOptions = new ExportOptions(false, false, false, ExportFileFormat.TSV, null);
 
         String blobName = studyEnvironmentId + "_" + Instant.now() + ".csv";
 
@@ -141,10 +143,14 @@ public class DataRepoExportService {
         PortalStudy portalStudy = portalStudyDao.findByStudyId(studyEnv.getStudyId()).stream().findFirst().orElseThrow(() -> new NotFoundException("Portal study not found."));
 
         try {
-            String exportData = enrolleeExportService.exportAsString(exportOptions, portalStudy.getPortalId(), studyEnvironmentId);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            enrolleeExportService.export(exportOptions, portalStudy.getPortalId(), studyEnvironmentId, outputStream);
+            outputStream.close();
+
+            String exportData = outputStream.toString();
             return azureBlobStorageClient.uploadBlobAndSignUrl(blobName, exportData);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Could not export and upload CSV for TDR ingest. Error: " + e.getMessage());
         }
     }
 

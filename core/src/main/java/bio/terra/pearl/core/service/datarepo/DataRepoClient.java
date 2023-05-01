@@ -60,7 +60,7 @@ public class DataRepoClient {
                 .table(tableName)
                 .profileId(spendProfileId)
                 .format(IngestRequestModel.FormatEnum.CSV)
-                .csvSkipLeadingRows(2) //TDR doesn't seem to honor this for some reason
+                .csvSkipLeadingRows(3) //TDR might have an off-by-one bug? Need to skip 3 rows to ignore the column name and description rows
                 .updateStrategy(IngestRequestModel.UpdateStrategyEnum.APPEND) //This is the default, and the only available option on Azure right now
                 .path(blobSasUrl);
 

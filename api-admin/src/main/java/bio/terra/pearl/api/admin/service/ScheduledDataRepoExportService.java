@@ -40,7 +40,7 @@ public class ScheduledDataRepoExportService {
     that it shouldn't be a problem if the first round of ingest is delayed due to a missing
     dataset: by the next round, it should be ready.
   */
-  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 60, initialDelay = 1)
+  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 60, initialDelay = 0)
   @SchedulerLock(
       name = "DataRepoExportService.createDatasetsForStudyEnvironments",
       lockAtMostFor = "10m",
@@ -56,10 +56,10 @@ public class ScheduledDataRepoExportService {
   }
 
   @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 240, initialDelay = 0)
-  //  @SchedulerLock(
-  //      name = "DataRepoExportService.ingestStudyEnvironmentDatasets",
-  //      lockAtMostFor = "10m",
-  //      lockAtLeastFor = "5m")
+  @SchedulerLock(
+      name = "DataRepoExportService.ingestStudyEnvironmentDatasets",
+      lockAtMostFor = "10m",
+      lockAtLeastFor = "5m")
   public void ingestStudyEnvironmentDatasets() {
     if (isTdrConfigured()) {
       logger.info("Ingesting datasets...");
