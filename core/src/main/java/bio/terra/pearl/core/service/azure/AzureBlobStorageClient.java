@@ -51,7 +51,7 @@ public class AzureBlobStorageClient {
             blobClient.upload(dataStream, data.length());
             dataStream.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error uploading blob to Azure storage container. Error: " + e.getMessage());
         }
 
         return blobClient;

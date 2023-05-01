@@ -6,15 +6,19 @@ import bio.terra.datarepo.model.JobModel.JobStatusEnum;
 import bio.terra.pearl.core.dao.datarepo.DataRepoJobDao;
 import bio.terra.pearl.core.dao.datarepo.DatasetDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
+import bio.terra.pearl.core.dao.portal.PortalDao;
+import bio.terra.pearl.core.dao.study.PortalStudyDao;
 import bio.terra.pearl.core.dao.study.StudyDao;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.model.datarepo.DataRepoJob;
 import bio.terra.pearl.core.model.datarepo.Dataset;
 import bio.terra.pearl.core.model.datarepo.JobType;
+import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.azure.AzureBlobStorageClient;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetCreationException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetNotFoundException;
 import bio.terra.pearl.core.service.exception.StudyNotFoundException;
@@ -48,6 +52,7 @@ public class DataRepoExportService {
     DataRepoJobDao dataRepoJobDao;
     DatasetDao datasetDao;
     EnrolleeDao enrolleeDao;
+    PortalStudyDao portalStudyDao;
     StudyEnvironmentDao studyEnvironmentDao;
     StudyDao studyDao;
 
@@ -61,6 +66,7 @@ public class DataRepoExportService {
                                  DataRepoJobDao dataRepoJobDao,
                                  DatasetDao datasetDao,
                                  EnrolleeDao enrolleeDao,
+                                 PortalStudyDao portalStudyDao,
                                  StudyDao studyDao,
                                  StudyEnvironmentDao studyEnvironmentDao) {
         this.env = env;
@@ -73,21 +79,9 @@ public class DataRepoExportService {
         this.datasetService = datasetService;
         this.datasetDao = datasetDao;
         this.enrolleeDao = enrolleeDao;
+        this.portalStudyDao = portalStudyDao;
         this.studyDao = studyDao;
         this.studyEnvironmentDao = studyEnvironmentDao;
-    }
-
-    public String uploadCsvToAzureStorage(UUID studyEnvironmentId) {
-        ExportOptions exportOptions = new ExportOptions(false, false, ExportFileFormat.TSV, false);
-
-        String blobName = studyEnvironmentId + "_" + Instant.now() + ".csv";
-
-        try {
-            String exportData = enrolleeExportService.exportAsString(exportOptions, UUID.fromString("6a22e343-cc29-4e4e-8833-be4c55650ba4"), studyEnvironmentId);
-            return azureBlobStorageClient.uploadBlobAndSignUrl(blobName, exportData);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public void createDatasetsForStudyEnvironments() {
@@ -127,13 +121,30 @@ public class DataRepoExportService {
     }
 
     public void ingestDatasets() {
-        List<Dataset> outdatedDatasets = datasetDao.findAll().stream().filter(dataset -> dataset.getLastExported().isBefore(Instant.now().minus(4, ChronoUnit.HOURS))).toList();
+        List<Dataset> outdatedDatasets = datasetDao.findAll().stream().filter(dataset -> dataset.getLastExported().isBefore(Instant.now().minus(1, ChronoUnit.MINUTES))).toList();
 
         logger.info("Found {} study environments requiring dataset ingest", outdatedDatasets.size());
 
         for(Dataset dataset : outdatedDatasets) {
             logger.info("Ingesting data for study environment ID {}", dataset.getStudyEnvironmentId());
             ingestDataForStudyEnvironment(dataset);
+        }
+    }
+
+    public String uploadCsvToAzureStorage(UUID studyEnvironmentId) {
+        ExportOptions exportOptions = new ExportOptions(false, false, ExportFileFormat.TSV, false);
+
+        String blobName = studyEnvironmentId + "_" + Instant.now() + ".csv";
+
+        //Backtrack from studyEnvironmentId to get the portalId, so we can export the study environment data
+        StudyEnvironment studyEnv = studyEnvironmentDao.find(studyEnvironmentId).orElseThrow(() -> new NotFoundException("Study environment not found."));
+        PortalStudy portalStudy = portalStudyDao.findByStudyId(studyEnv.getStudyId()).stream().findFirst().orElseThrow(() -> new NotFoundException("Portal study not found."));
+
+        try {
+            String exportData = enrolleeExportService.exportAsString(exportOptions, portalStudy.getPortalId(), studyEnvironmentId);
+            return azureBlobStorageClient.uploadBlobAndSignUrl(blobName, exportData);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

@@ -55,11 +55,11 @@ public class ScheduledDataRepoExportService {
     }
   }
 
-  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 240, initialDelay = 1)
-  @SchedulerLock(
-      name = "DataRepoExportService.ingestStudyEnvironmentDatasets",
-      lockAtMostFor = "10m",
-      lockAtLeastFor = "5m")
+  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 240, initialDelay = 0)
+  //  @SchedulerLock(
+  //      name = "DataRepoExportService.ingestStudyEnvironmentDatasets",
+  //      lockAtMostFor = "10m",
+  //      lockAtLeastFor = "5m")
   public void ingestStudyEnvironmentDatasets() {
     if (isTdrConfigured()) {
       logger.info("Ingesting datasets...");
@@ -70,7 +70,7 @@ public class ScheduledDataRepoExportService {
     }
   }
 
-  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 10, initialDelay = 0)
+  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 1, initialDelay = 0)
   @SchedulerLock(
       name = "DataRepoExportService.pollRunningJobs",
       lockAtMostFor = "5m",
