@@ -53,10 +53,11 @@ public class AzureBlobStorageClient {
         dataStream.close();
 
         //Generate a SAS-signed URL that is good for 1 hour (ingest should be much quicker than this)
+        //This will give read permission to TDR during ingest
         BlobSasPermission blobSasPermission = new BlobSasPermission().setReadPermission(true);
         BlobServiceSasSignatureValues builder = new BlobServiceSasSignatureValues(OffsetDateTime.now().plusHours(1), blobSasPermission).setProtocol(SasProtocol.HTTPS_ONLY);
 
-        //Return SAS-signed URL for the uploaded TSV
+        //Return SAS-signed URL for the uploaded CSV
         return String.format("https://%s.blob.core.windows.net/%s/%s?%s",
                 blobClient.getAccountName(),
                 blobClient.getContainerName(),

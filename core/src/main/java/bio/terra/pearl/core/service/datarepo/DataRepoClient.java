@@ -2,7 +2,6 @@ package bio.terra.pearl.core.service.datarepo;
 
 import bio.terra.datarepo.api.DatasetsApi;
 import bio.terra.datarepo.api.JobsApi;
-import bio.terra.datarepo.api.RepositoryApi;
 import bio.terra.datarepo.api.UnauthenticatedApi;
 import bio.terra.datarepo.client.ApiException;
 import bio.terra.datarepo.model.*;

@@ -128,7 +128,7 @@ public class DataRepoExportService {
     }
 
     public void ingestDatasets() {
-        List<Dataset> outdatedDatasets = datasetDao.findAll().stream().filter(dataset -> dataset.getLastExported().isBefore(Instant.now().minus(4, ChronoUnit.MINUTES))).toList();
+        List<Dataset> outdatedDatasets = datasetDao.findAll().stream().filter(dataset -> dataset.getLastExported().isBefore(Instant.now().minus(4, ChronoUnit.HOURS))).toList();
 
         logger.info("Found {} study environments requiring dataset ingest", outdatedDatasets.size());
 
@@ -140,10 +140,10 @@ public class DataRepoExportService {
 
     public void ingestDataForStudyEnvironment(Dataset studyEnvDataset) {
         UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
-        String azurePath = uploadTsvToAzure(studyEnvDataset.getStudyEnvironmentId());
+        String blobSasUrl = uploadTsvToAzure(studyEnvDataset.getStudyEnvironmentId());
 
         try {
-            JobModel ingestJob = dataRepoClient.ingestDataset(defaultSpendProfileId, studyEnvDataset.getDatasetId(), "enrollee", azurePath);
+            JobModel ingestJob = dataRepoClient.ingestDataset(defaultSpendProfileId, studyEnvDataset.getDatasetId(), "enrollee", blobSasUrl);
             logger.info("Ingest job returned with job ID {}", ingestJob.getId());
             //Store in DB
             DataRepoJob job = DataRepoJob.builder()
