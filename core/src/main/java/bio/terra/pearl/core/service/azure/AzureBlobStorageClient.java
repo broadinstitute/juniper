@@ -27,7 +27,7 @@ public class AzureBlobStorageClient {
         this.env = env;
     }
 
-    public String uploadBlob(String fileName, String data) throws IOException {
+    public String uploadBlob(String blobName, String data) throws IOException {
         String accountName = env.getProperty("env.tdr.storageAccountName");
         String accountKey = env.getProperty("env.tdr.storageAccountKey");
         String containerName = env.getProperty("env.tdr.storageContainerName");
@@ -35,16 +35,15 @@ public class AzureBlobStorageClient {
         //Get a credential object to access the storage container
         StorageSharedKeyCredential credential = new StorageSharedKeyCredential(accountName, accountKey);
 
-        String storageClientEndpoint = String.format(Locale.ROOT, "https://%s.blob.core.windows.net", accountName);
-
         //Create a BlobServiceClient object that wraps the service endpoint, credential and a request pipeline.
+        String storageClientEndpoint = String.format(Locale.ROOT, "https://%s.blob.core.windows.net", accountName);
         BlobServiceClient storageClient = new BlobServiceClientBuilder().endpoint(storageClientEndpoint).credential(credential).buildClient();
 
         //Create a client that references the storage container
         BlobContainerClient blobContainerClient = storageClient.getBlobContainerClient(containerName);
 
         //Create a client that references the to-be-created blob in the storage container
-        BlockBlobClient blobClient = blobContainerClient.getBlobClient(fileName).getBlockBlobClient();
+        BlockBlobClient blobClient = blobContainerClient.getBlobClient(blobName).getBlockBlobClient();
 
         InputStream dataStream = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
 
@@ -58,7 +57,10 @@ public class AzureBlobStorageClient {
         BlobServiceSasSignatureValues builder = new BlobServiceSasSignatureValues(OffsetDateTime.now().plusHours(1), blobSasPermission).setProtocol(SasProtocol.HTTPS_ONLY);
 
         //Return SAS-signed URL for the uploaded TSV
-        String sasUrl = String.format("https://%s.blob.core.windows.net/%s/%s?%s",blobClient.getAccountName(), blobClient.getContainerName(), blobClient.getBlobName(), blobClient.generateSas(builder));
-        return sasUrl;
+        return String.format("https://%s.blob.core.windows.net/%s/%s?%s",
+                blobClient.getAccountName(),
+                blobClient.getContainerName(),
+                blobClient.getBlobName(),
+                blobClient.generateSas(builder));
     }
 }

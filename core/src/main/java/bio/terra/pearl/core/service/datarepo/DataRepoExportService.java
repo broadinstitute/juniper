@@ -81,11 +81,11 @@ public class DataRepoExportService {
     public String uploadTsvToAzure(UUID studyEnvironmentId) {
         ExportOptions exportOptions = new ExportOptions(false, false, ExportFileFormat.TSV, false);
 
-        String fileName = studyEnvironmentId + "_" + System.currentTimeMillis() + ".csv";
+        String blobName = studyEnvironmentId + "_" + Instant.now() + ".csv";
 
         try {
             String exportData = enrolleeExportService.exportAsString(exportOptions, UUID.fromString("6a22e343-cc29-4e4e-8833-be4c55650ba4"), studyEnvironmentId);
-            return azureBlobStorageClient.uploadBlob(fileName, exportData);
+            return azureBlobStorageClient.uploadBlob(blobName, exportData);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -128,7 +128,7 @@ public class DataRepoExportService {
     }
 
     public void ingestDatasets() {
-        List<Dataset> outdatedDatasets = datasetDao.findAll().stream().filter(dataset -> dataset.getLastExported().isBefore(Instant.now().minus(4, ChronoUnit.HOURS))).toList();
+        List<Dataset> outdatedDatasets = datasetDao.findAll().stream().filter(dataset -> dataset.getLastExported().isBefore(Instant.now().minus(4, ChronoUnit.MINUTES))).toList();
 
         logger.info("Found {} study environments requiring dataset ingest", outdatedDatasets.size());
 
@@ -139,13 +139,8 @@ public class DataRepoExportService {
     }
 
     public void ingestDataForStudyEnvironment(Dataset studyEnvDataset) {
-
-        String azurePath = uploadTsvToAzure(studyEnvDataset.getStudyEnvironmentId());
         UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
-
-        System.out.println("*****");
-        System.out.println(azurePath);
-        System.out.println("*****");
+        String azurePath = uploadTsvToAzure(studyEnvDataset.getStudyEnvironmentId());
 
         try {
             JobModel ingestJob = dataRepoClient.ingestDataset(defaultSpendProfileId, studyEnvDataset.getDatasetId(), "enrollee", azurePath);
