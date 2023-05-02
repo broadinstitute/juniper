@@ -71,7 +71,7 @@ const PortalUserList = ({ portal }: {portal: Portal}) => {
     <button className="btn-secondary btn" onClick={() => setShowCreateModal(true)}>
       <FontAwesomeIcon icon={faPlus}/> Create user
     </button>
-    {showCreateModal && <CreateUserModal show={showCreateModal} setShow={setShowCreateModal} portals={[portal]}
+    {showCreateModal && <CreateUserModal onDismiss={() => setShowCreateModal(false)} portals={[portal]}
       userCreated={handleUserCreated}/>}
     <LoadingSpinner isLoading={isLoading}>
       {basicTableLayout(table)}
