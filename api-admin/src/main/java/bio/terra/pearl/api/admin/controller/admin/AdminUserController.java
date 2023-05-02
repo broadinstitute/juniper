@@ -69,8 +69,8 @@ public class AdminUserController implements AdminUserApi {
     List<AdminUser> adminUsers = adminUserExtService.getAll(operator);
     for (AdminUser user : adminUsers) {
       /**
-       * don't send the token to the frontend. As this API crystallizes, we'll want a proper DTO type for this
-       * but for now, this saves the trouble of lots of nested mapping
+       * don't send the token to the frontend. As this API crystallizes, we'll want a proper DTO
+       * type for this but for now, this saves the trouble of lots of nested mapping
        */
       user.setToken(null);
     }
@@ -83,8 +83,8 @@ public class AdminUserController implements AdminUserApi {
     List<AdminUser> adminUsers = adminUserExtService.findByPortal(portalShortcode, operator);
     for (AdminUser user : adminUsers) {
       /**
-       * don't send the token to the frontend. As this API crystallizes, we'll want a proper DTO type for this
-       * but for now, this saves the trouble of lots of nested mapping
+       * don't send the token to the frontend. As this API crystallizes, we'll want a proper DTO
+       * type for this but for now, this saves the trouble of lots of nested mapping
        */
       user.setToken(null);
     }
