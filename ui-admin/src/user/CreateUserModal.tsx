@@ -1,21 +1,21 @@
 import React, { useState } from 'react'
 import { Modal } from 'react-bootstrap'
-import Api, { NewUser, Portal } from 'api/api'
+import Api, { NewAdminUser, Portal } from 'api/api'
 import { useUser } from './UserProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import Select from 'react-select'
 
-const CreateUserModal = ({ show, setShow, portals, userCreated }:
-                           {show: boolean, setShow: React.Dispatch<React.SetStateAction<boolean>>,
+const CreateUserModal = ({ onDismiss, portals, userCreated }:
+                           { onDismiss: () => void,
                              portals: Portal[], userCreated: () => void
                            }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [portalShortcode, setPortalShortcode] =
     useState<string | null>(portals.length > 0 ? portals[0].shortcode : null)
   const { user } = useUser()
-  const [newUser, setNewUser] = useState<NewUser>({ username: '', superuser: false, portalShortcode })
+  const [newUser, setNewUser] = useState<NewAdminUser>({ username: '', superuser: false, portalShortcode })
   const portalOpts = portals.map(portal => ({ label: portal.name, value: portal.shortcode }))
   const selectedPortalOpt = portalOpts.find(portalOpt => portalOpt.value === portalShortcode)
 
@@ -25,7 +25,7 @@ const CreateUserModal = ({ show, setShow, portals, userCreated }:
       const createdUser = await Api.createUser(newUser)
       Store.addNotification(successNotification(`${createdUser.username} created`))
       userCreated()
-      setShow(false)
+      onDismiss()
     } catch (e) {
       Store.addNotification(failureNotification('Error creating user'))
     }
@@ -35,7 +35,7 @@ const CreateUserModal = ({ show, setShow, portals, userCreated }:
   // mutliselect for users spanning multiple portals)
   const isUserValid = /^\S+@\S+\.\S+$/.test(newUser.username) && (newUser.superuser || newUser.portalShortcode)
 
-  return <Modal show={show} onHide={() => setShow(false)}>
+  return <Modal show={true} onHide={onDismiss}>
     <Modal.Header closeButton>
       <Modal.Title>Add admin user</Modal.Title>
     </Modal.Header>
@@ -74,7 +74,7 @@ const CreateUserModal = ({ show, setShow, portals, userCreated }:
     <Modal.Footer>
       <LoadingSpinner isLoading={isLoading}>
         <button className="btn btn-primary" onClick={createUser} disabled={!isUserValid}>Create</button>
-        <button className="btn btn-secondary" onClick={() => setShow(false)}>Cancel</button>
+        <button className="btn btn-secondary" onClick={onDismiss}>Cancel</button>
       </LoadingSpinner>
     </Modal.Footer>
   </Modal>

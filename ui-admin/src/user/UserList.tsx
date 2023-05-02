@@ -63,7 +63,7 @@ const UserList = () => {
     getSortedRowModel: getSortedRowModel()
   })
 
-  const loadUsers = async () => {
+  const loadAdminUsersAndPortals = async () => {
     setIsLoading(true)
     try {
       const result = await Promise.all(
@@ -79,18 +79,18 @@ const UserList = () => {
 
   const handleUserCreated = () => {
     // just reload everything
-    loadUsers()
+    loadAdminUsersAndPortals()
   }
 
   useEffect(() => {
-    loadUsers()
+    loadAdminUsersAndPortals()
   }, [])
   return <div className="container p-3">
     <h1 className="h4">All users </h1>
     <button className="btn-secondary btn" onClick={() => setShowCreateModal(true)}>
       <FontAwesomeIcon icon={faPlus}/> Create user
     </button>
-    {showCreateModal && <CreateUserModal show={showCreateModal} setShow={setShowCreateModal} portals={portals}
+    {showCreateModal && <CreateUserModal onDismiss={() => setShowCreateModal(false)} portals={portals}
       userCreated={handleUserCreated}/>}
     <LoadingSpinner isLoading={isLoading}>
       <table className="table table-striped">

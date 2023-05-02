@@ -83,7 +83,7 @@ public class AdminUserController implements AdminUserApi {
           "Created user must be either a superuser or associated with at least one portal");
     }
     AdminUser createdUser = adminUserExtService.create(newUser, operator);
-    return ResponseEntity.ok(createdUser);
+    return new ResponseEntity(createdUser, HttpStatus.CREATED);
   }
 
   // TODO: return something useful here... but what? PortalAdminUserRoles? Role names?
