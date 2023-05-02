@@ -4,7 +4,6 @@ import { StudyParams } from 'study/StudyRouter'
 
 import { Link, Route, Routes, useParams } from 'react-router-dom'
 import { NavBreadcrumb, SidebarContent } from '../navbar/AdminNavbar'
-import { NavbarContext } from '../navbar/NavbarProvider'
 import StudyEnvironmentSidebar from './StudyEnvironmentSidebar'
 import { PortalContext } from '../portal/PortalProvider'
 import SurveyView from './surveys/SurveyView'
@@ -23,7 +22,6 @@ export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, cur
 function StudyEnvironmentRouter({ study }: {study: Study}) {
   const params = useParams<StudyParams>()
   const envName: string | undefined = params.studyEnv
-  const navContext = useContext(NavbarContext)
   const portal = useContext(PortalContext).portal as Portal
 
   if (!envName) {
@@ -46,8 +44,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       <StudyEnvironmentSidebar study={study}
         portalShortcode={portal.shortcode}
         currentEnv={currentEnv}
-        currentEnvPath={currentEnvPath}
-        setShow={navContext.setShowSidebar}/>
+        currentEnvPath={currentEnvPath}/>
     </SidebarContent>
     <Routes>
       <Route path="surveys">
