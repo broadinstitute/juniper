@@ -7,6 +7,17 @@
   "logoPosition": "right",
   "showQuestionNumbers": "off",
   "showProgressBar": "bottom",
+  "calculatedValues": [
+    {
+      "name": "oh_oh_consent_signatureDate",
+      "expression": "currentDate()",
+      "includeIntoResult": true
+    },
+    {
+      "name": "formattedSignatureDate",
+      "expression": "formatDate({oh_oh_consent_signatureDate})"
+    }
+  ],
   "pages": [
     {
       "name": "infoPage",
@@ -165,13 +176,14 @@
           "title": "Full legal name"
         },
         {
-          "type": "text",
-          "isRequired": true,
-          "name": "oh_oh_consent_signatureDate",
-          "title": "Date/Time",
-          "inputType": "date",
-          "minValueExpression": "today()",
-          "maxValueExpression": "today()"
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "signatureDateDisplay",
+              "html": "<p style='padding-top:2rem;margin:0;'><span style='font-weight:600;'>Today's date</span>: {formattedSignatureDate}.</p>"
+            }
+          ]
         },
         {
           "type": "signaturepad",

@@ -26,6 +26,7 @@ import _union from 'lodash/union'
 import _keys from 'lodash/keys'
 import _isEqual from 'lodash/isEqual'
 import { usePortalEnv } from 'providers/PortalProvider'
+import './formatDate'
 
 const SURVEY_JS_OTHER_SUFFIX = '-Comment'
 
