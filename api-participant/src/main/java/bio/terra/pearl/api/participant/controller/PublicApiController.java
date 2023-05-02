@@ -110,8 +110,32 @@ public class PublicApiController implements PublicApi {
    * enable react router to handle all non-api, non-resource paths by routing everything else to the
    * index path. Adapted from
    * https://stackoverflow.com/questions/47689971/how-to-work-with-react-routers-and-spring-boot-controller
+   *
+   * <p>Spring now extremely disfavors suffix-matching, and disallows pattern-matching after **. So
+   * we've enabled up to 12 layers of route-nesting -- hopefully we don't need more. One option
+   * would be to re-enable legacy ant pattern matching, but the Spring docs suggest that, as ugly as
+   * the patterns below are, they are more secure and performant than a matcher like "** /foo" since
+   * the matcher can immediately make decisions based on number of segments. See
+   * https://github.com/spring-projects/spring-framework/issues/19112 and general discussion of
+   * PathPatternParser
    */
-  @GetMapping(value = {"/{x:[\\w\\-]+}", "/{x:^(?!api$).*$}/*/{y:[\\w\\-]+}"})
+  @GetMapping(
+      value = {
+        "/{x:[\\w\\-]+}",
+        "/{x:^(?!api$).*$}/{y:[\\w\\-]+}",
+        "/{x:^(?!api$).*$}/*/{y:[\\w\\-]+}",
+        "/{x:^(?!api$).*$}/*/*/{y:[\\w\\-]+}",
+        "/{x:^(?!api$).*$}/*/*/*/{y:[\\w\\-]+}",
+        "/{x:^(?!api$).*$}/*/*/*/*/{y:[\\w\\-]+}",
+        "/{x:^(?!api$).*$}/*/*/*/*/*/{y:[\\w\\-]+}",
+        "/{x:^(?!api$).*$}/*/*/*/*/*/*/{y:[\\w\\-]+}",
+        "/{x:^(?!api$).*$}/*/*/*/*/*/*/*/{y:[\\w\\-]+}",
+        "/{x:^(?!api$).*$}/*/*/*/*/*/*/*/*/{y:[\\w\\-]+}",
+        "/{x:^(?!api$).*$}/*/*/*/*/*/*/*/*/*/{y:[\\w\\-]+}",
+        "/{x:^(?!api$).*$}/*/*/*/*/*/*/*/*/*/*/{y:[\\w\\-]+}",
+        "/{x:^(?!api$).*$}/*/*/*/*/*/*/*/*/*/*/*/{y:[\\w\\-]+}",
+        "/{x:^(?!api$).*$}/*/*/*/*/*/*/*/*/*/*/*/*/{y:[\\w\\-]+}"
+      })
   public String getIndex(HttpServletRequest request) {
     return "forward:/";
   }
