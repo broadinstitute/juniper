@@ -39,9 +39,9 @@ function App() {
                           <Route path=":portalShortcode/*" element={<PortalProvider><PortalRouter/></PortalProvider>}/>
                           <Route index element={<PortalList/>}/>
                         </Route>
-                        <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
                         <Route path="*" element={<div>Unknown page</div>}/>
                       </Route>
+                      <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
                     </Routes>
                   </BrowserRouter>
                 </NavbarProvider>

@@ -16,7 +16,7 @@ export const getOidcConfig = (b2cTenantName: string, b2cClientId: string, b2cPol
      * getting an `access_token` back from B2C... even with a straight copy of what `authority` returns. So, while this
      * does mean an extra network call when loading the UI, for now, this is what works.
      */
-    // oidc-client-ts appends /v2.0/.well-known/openid-configuration, so can't use ?p={policy} here
+    // oidc-client-ts appends /.well-known/openid-configuration, so can't use ?p={policy} here
     authority:
       `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/${b2cPolicyName}/v2.0`,
     client_id: b2cClientId,
