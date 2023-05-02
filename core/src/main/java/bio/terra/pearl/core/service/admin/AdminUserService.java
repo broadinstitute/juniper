@@ -50,7 +50,7 @@ public class AdminUserService extends CrudService<AdminUser, AdminUserDao> {
         dao.delete(adminUserId);
     }
 
-    public List<AdminUser> findAllWithPortalsAndRoles() {
+    public List<AdminUser> findAllWithRoles() {
         List<AdminUser> adminUsers = dao.findAll();
         List<PortalAdminUser> portalAdminUsers = portalAdminUserService.findAll();
         List<PortalAdminUserRole> portalAdminUserRoles = portalAdminUserRoleService.findAll();
@@ -59,7 +59,7 @@ public class AdminUserService extends CrudService<AdminUser, AdminUserDao> {
         return adminUsers;
     }
 
-    public List<AdminUser> findAllWithRoles(UUID portalId) {
+    public List<AdminUser> findAllWithRolesByPortal(UUID portalId) {
         List<PortalAdminUser> portalAdminUsers = portalAdminUserService.findByPortal(portalId);
         List<AdminUser> adminUsers = dao.findAll(portalAdminUsers.stream().map(PortalAdminUser::getAdminUserId).toList());
         List<PortalAdminUserRole> portalAdminUserRoles = portalAdminUserRoleService

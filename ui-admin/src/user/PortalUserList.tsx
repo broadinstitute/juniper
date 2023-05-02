@@ -13,6 +13,8 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import CreateUserModal from './CreateUserModal'
+import { failureNotification } from '../util/notifications'
+import { Store } from 'react-notifications-component'
 
 const PortalUserList = ({ portal }: {portal: Portal}) => {
   const [users, setUsers] = useState<AdminUser[]>([])
@@ -48,10 +50,10 @@ const PortalUserList = ({ portal }: {portal: Portal}) => {
   const loadUsers = async () => {
     setIsLoading(true)
     try {
-      const result = await Api.fetchUsersByPortal(portal.shortcode)
+      const result = await Api.fetchAdminUsersByPortal(portal.shortcode)
       setUsers(result)
     } catch (e) {
-      alert(`error loading user list ${e}`)
+      Store.addNotification(failureNotification(`error loading user list`))
     }
     setIsLoading(false)
   }

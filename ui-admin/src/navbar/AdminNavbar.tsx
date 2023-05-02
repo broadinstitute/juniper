@@ -79,7 +79,7 @@ function AdminNavbar({ breadCrumbs, sidebarContent, showSidebar, setShowSidebar 
       color: '#f0f0f0',
       zIndex: 80
     }} ref={sidebarRef}>
-      { sidebarContent.map(content => <div>
+      { sidebarContent.map((content, index) => <div key={index}>
         {content}
         <hr/>
       </div>)}

@@ -110,12 +110,12 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
             .portalAdminUserId(savedPortalAdminUser.getId())
             .roleId(role.getId()).build());
 
-        List<AdminUser> users = adminUserService.findAllWithRoles(portal.getId());
+        List<AdminUser> users = adminUserService.findAllWithRolesByPortal(portal.getId());
         assertThat(users, hasSize(1));
         assertThat(users.get(0).getId(), equalTo(savedPortalUser.getId()));
         assertThat(users.get(0).getPortalAdminUsers(), hasSize(1));
 
-        List<AdminUser> emptyPortalUsers = adminUserService.findAllWithRoles(emptyPortal.getId());
+        List<AdminUser> emptyPortalUsers = adminUserService.findAllWithRolesByPortal(emptyPortal.getId());
         assertThat(emptyPortalUsers, hasSize(0));
     }
 }

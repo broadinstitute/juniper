@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.service.admin.AdminUserService;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
@@ -57,9 +58,7 @@ public class AuthUtilService {
         return portal;
       }
     }
-    throw new PermissionDeniedException(
-        "User %s does not have permissions on portal %s"
-            .formatted(user.getUsername(), portalShortcode));
+    throw new NotFoundException("Portal %s not found".formatted(portalShortcode));
   }
 
   public Portal authUserToPortal(AdminUser user, String portalShortcode) {

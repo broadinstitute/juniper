@@ -68,6 +68,8 @@ public class AdminUserController implements AdminUserApi {
     AdminUser operator = authUtilService.requireAdminUser(request);
     List<AdminUser> adminUsers = adminUserExtService.getAll(operator);
     for (AdminUser user : adminUsers) {
+      /** don't send the token to the frontend. As this API crystallizes, we'll want a proper DTO type for this
+       * but for now, this savs the trouble of lots of nested mapping */
       user.setToken(null);
     }
     return ResponseEntity.ok(adminUsers);
@@ -76,8 +78,10 @@ public class AdminUserController implements AdminUserApi {
   @Override
   public ResponseEntity<Object> getByPortal(String portalShortcode) {
     AdminUser operator = authUtilService.requireAdminUser(request);
-    List<AdminUser> adminUsers = adminUserExtService.getByPortal(portalShortcode, operator);
+    List<AdminUser> adminUsers = adminUserExtService.findByPortal(portalShortcode, operator);
     for (AdminUser user : adminUsers) {
+      /** don't send the token to the frontend. As this API crystallizes, we'll want a proper DTO type for this
+       * but for now, this savs the trouble of lots of nested mapping */
       user.setToken(null);
     }
     return ResponseEntity.ok(adminUsers);
@@ -93,7 +97,7 @@ public class AdminUserController implements AdminUserApi {
           "Created user must be either a superuser or associated with at least one portal");
     }
     AdminUser createdUser = adminUserExtService.create(newUser, operator);
-    return ResponseEntity.ok(createdUser);
+    return new ResponseEntity(createdUser, HttpStatus.CREATED);
   }
 
   // TODO: return something useful here... but what? PortalAdminUserRoles? Role names?
