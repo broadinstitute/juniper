@@ -92,3 +92,28 @@ export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
   </div>
 }
 
+/** helper function for simple table layouts */
+export function basicTableLayout<T>(table: Table<T>) {
+  return <table className="table table-striped">
+    <thead>
+      <tr>
+        {table.getFlatHeaders().map(header => sortableTableHeader(header))}
+      </tr>
+    </thead>
+    <tbody>
+      {table.getRowModel().rows.map(row => {
+        return (
+          <tr key={row.id}>
+            {row.getVisibleCells().map(cell => {
+              return (
+                <td key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              )
+            })}
+          </tr>
+        )
+      })}
+    </tbody>
+  </table>
+}

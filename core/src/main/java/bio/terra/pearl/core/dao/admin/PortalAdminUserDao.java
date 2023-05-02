@@ -23,6 +23,10 @@ public class PortalAdminUserDao extends BaseJdbiDao<PortalAdminUser> {
         return findByTwoProperties("portal_id", portalId, "admin_user_id", userId).isPresent();
     }
 
+    public List<PortalAdminUser> findByPortal(UUID portalId) {
+        return findAllByProperty("portal_id", portalId);
+    }
+
     public List<PortalAdminUser> findByUserId(UUID userId) {
         return findAllByProperty("admin_user_id", userId);
     }

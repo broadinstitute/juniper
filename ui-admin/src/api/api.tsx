@@ -621,8 +621,14 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async fetchUsers(): Promise<AdminUser[]> {
+  async fetchAdminUsers(): Promise<AdminUser[]> {
     const url = `${API_ROOT}/adminUsers/v1`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchAdminUsersByPortal(portalShortcode: string): Promise<AdminUser[]> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/adminUsers`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },

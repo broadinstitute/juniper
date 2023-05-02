@@ -4,13 +4,12 @@ import { LoadedPortalContextT } from './PortalProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
 import {
   ColumnDef,
-  flexRender,
   getCoreRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { IndeterminateCheckbox, sortableTableHeader } from '../util/tableUtils'
+import { basicTableLayout, IndeterminateCheckbox } from '../util/tableUtils'
 import { instantToDefaultString } from '../util/timeUtils'
 
 const columns: ColumnDef<MailingListContact>[] = [{
@@ -76,28 +75,7 @@ export default function MailingListView({ portalContext, portalEnv }:
         {Object.keys(rowSelection).length} of{' '}
         {table.getPreFilteredRowModel().rows.length} selected
       </div>
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            {table.getFlatHeaders().map(header => sortableTableHeader(header))}
-          </tr>
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map(row => {
-            return (
-              <tr key={row.id}>
-                {row.getVisibleCells().map(cell => {
-                  return (
-                    <td key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  )
-                })}
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+      {basicTableLayout(table)}
     </LoadingSpinner>
   </div>
 }

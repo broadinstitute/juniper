@@ -101,6 +101,19 @@ paths:
           content: { application/json: { schema: { type: object }}}
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/adminUsers:
+    get:
+      summary: Gets the admin users specific to this portal
+      tags: [ adminUser ]
+      operationId: getByPortal
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: List of admin users
+          content: { application/json: { schema: {type: object} } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/surveys/{stableId}/newVersion:
     post:
       summary: Saves the survey as a new version
