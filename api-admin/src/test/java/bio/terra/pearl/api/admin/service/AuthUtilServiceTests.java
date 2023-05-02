@@ -11,7 +11,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.admin.PortalAdminUserService;
-import bio.terra.pearl.core.service.exception.PermissionDeniedException;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.portal.PortalService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
     AdminUser user = adminUserFactory.buildPersisted("authAdminToPortalRejectsUsersNotInPortal");
     Portal portal = portalFactory.buildPersisted("authAdminToPortalRejectsUsersNotInPortal");
     Assertions.assertThrows(
-        PermissionDeniedException.class,
+        NotFoundException.class,
         () -> {
           authUtilService.authAdminToPortal(user, portal.getShortcode());
         });
@@ -48,7 +48,7 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
 
     // but still not the first
     Assertions.assertThrows(
-        PermissionDeniedException.class,
+        NotFoundException.class,
         () -> {
           authUtilService.authAdminToPortal(user, portal.getShortcode());
         });
@@ -59,7 +59,7 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
   public void authAdminToPortalRejectsNotFoundPortal() {
     AdminUser user = adminUserFactory.buildPersisted("authAdminToPortalRejectsNotFoundPortal");
     Assertions.assertThrows(
-        PermissionDeniedException.class,
+        NotFoundException.class,
         () -> {
           authUtilService.authAdminToPortal(user, "DOES_NOT_EXIST");
         });
