@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import Api, { Portal } from 'api/api'
 
 import LoadingSpinner from 'util/LoadingSpinner'
+import { portalParticipantsPath } from './PortalRouter'
 
 /** Shows a user the list of portals available to them */
 function PortalList() {
@@ -12,7 +13,7 @@ function PortalList() {
   useEffect(() => {
     Api.getPortals().then(result => {
       if (result.length === 1) {
-        navigate(`/${result[0].shortcode}`, { replace: true })
+        navigate(portalParticipantsPath(result[0].shortcode, 'live'), { replace: true })
       } else {
         setPortalList(result)
         setIsLoading(false)
@@ -26,8 +27,8 @@ function PortalList() {
       <h6 className="mt-3">Select a portal</h6>
       <LoadingSpinner isLoading={isLoading}>
         <ul>
-          { portalList.map((study, index) => <li key={index} className="mt-3">
-            <Link to={`/${study.shortcode}`}>{study.name}</Link>
+          { portalList.map((portal, index) => <li key={index} className="mt-3">
+            <Link to={portalParticipantsPath(portal.shortcode, 'live')}>{portal.name}</Link>
           </li>)}
         </ul>
 

@@ -11,6 +11,7 @@ import SiteContentView from './siteContent/SiteContentView'
 import PortalEnvConfigView from './PortalEnvConfigView'
 import PortalSidebar from './PortalSidebar'
 import PortalUserList from '../user/PortalUserList'
+import PortalParticipantsView from './PortalParticipantView'
 
 /** controls routes for within a portal */
 export default function PortalRouter() {
@@ -49,6 +50,7 @@ function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT
     </NavBreadcrumb>
     <Routes>
       <Route path="config" element={<PortalEnvConfigView portalEnv={portalEnv}/>}/>
+      <Route path="participants" element={<PortalParticipantsView portalEnv={portalEnv} portal={portal}/>}/>
       <Route path="siteContent" element={<SiteContentView portalEnv={portalEnv}/>}/>
       <Route path="diff/:sourceEnvName" element={<PortalEnvDiff portal={portal} portalEnv={portalEnv}/>}/>
       <Route path="mailingList" element={<MailingListView portalContext={portalContext}
@@ -86,4 +88,8 @@ export const studyParticipantsPath = (portalShortcode: string, envName: string, 
 
 export const studyContentPath = (portalShortcode: string, envName: string, studyShortcode: string) => {
   return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}`
+}
+
+export const portalParticipantsPath = (portalShortcode: string, envName: string) => {
+  return `/${portalShortcode}/env/${envName}/participants`
 }
