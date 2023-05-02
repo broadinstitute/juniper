@@ -117,7 +117,7 @@ public class PublicApiController implements PublicApi {
    * the patterns below are, they are more secure and performant than a matcher like "** /foo" since
    * the matcher can immediately make decisions based on number of segments. See
    * https://github.com/spring-projects/spring-framework/issues/19112 and general discussion of
-   * PathPatternParser</p>
+   * PathPatternParser
    */
   @GetMapping(
       value = {
