@@ -1,3 +1,9 @@
+/**
+ * A SurveyJS question that renders a multiple selection combobox.
+ * This provides similar functionality as the "tagbox" in https://github.com/surveyjs/custom-widgets.
+ * However, this virtualizes the options list to support mahy more
+ * options while remaining performant.
+ */
 import React from 'react'
 import { ElementFactory, Question, Serializer } from 'survey-core'
 import { ReactQuestionFactory, SurveyQuestionElementBase } from 'survey-react-ui'

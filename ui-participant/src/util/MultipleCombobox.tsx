@@ -34,7 +34,8 @@ export const MultipleComboBox = <ComboboxItem, >(props: MultipleComboboxProps<Co
   )
 
   // Store width of items in the combobox menu. This will be used to calculate
-  // the height of each item.
+  // the height of each item. The initial value of 548 is the input width on
+  // a window wide enough for the survey to reach its max width.
   const [itemWidth, setItemWidth] = useState(548)
 
   // Calculate height of each item.
