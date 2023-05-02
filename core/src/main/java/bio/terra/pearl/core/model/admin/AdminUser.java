@@ -2,6 +2,8 @@ package bio.terra.pearl.core.model.admin;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,4 +21,6 @@ public class AdminUser extends BaseEntity {
     private Instant lastLogin;
     @Builder.Default
     private boolean superuser = false;
+    @Builder.Default
+    private Set<PortalAdminUser> portalAdminUsers = new HashSet<>();
 }

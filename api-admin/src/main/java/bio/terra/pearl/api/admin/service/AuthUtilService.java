@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.service.admin.AdminUserService;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
@@ -45,8 +46,23 @@ public class AuthUtilService {
     return userOpt.get();
   }
 
+  /**
+   * this will throw permission denied even if the portal doesn't exist, to avoid leaking
+   * information
+   */
+  public Portal authAdminToPortal(AdminUser user, String portalShortcode) {
+    Optional<Portal> portalOpt = portalService.findOneByShortcode(portalShortcode);
+    if (portalOpt.isPresent()) {
+      Portal portal = portalOpt.get();
+      if (portalService.checkAdminIsInPortal(user, portal.getId())) {
+        return portal;
+      }
+    }
+    throw new NotFoundException("Portal %s not found".formatted(portalShortcode));
+  }
+
   public Portal authUserToPortal(AdminUser user, String portalShortcode) {
-    return portalService.authAdminToPortal(user, portalShortcode);
+    return authAdminToPortal(user, portalShortcode);
   }
 
   public PortalStudy authUserToStudy(

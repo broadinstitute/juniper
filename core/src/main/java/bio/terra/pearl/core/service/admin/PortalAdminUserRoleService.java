@@ -40,6 +40,10 @@ public class PortalAdminUserRoleService extends ImmutableEntityService<PortalAdm
         return dao.findByPortalAdminUserId(adminUserId);
     }
 
+    public List<PortalAdminUserRole> findAllByPortalAdminUserIds(List<UUID> portalAdminUserIds) {
+        return dao.findAllByPortalAdminUserIds(portalAdminUserIds);
+    }
+
     /**
      * Replaces the roles for the given admin user based on the given role names. Any roles that the admin user may have
      * previously had will be removed if they are not included in the list of role names.

@@ -1,10 +1,9 @@
-import React, { useEffect, useContext } from 'react'
+import React, { useContext } from 'react'
 import { NotificationConfig, Portal, Study, StudyEnvironment } from 'api/api'
 import { StudyParams } from 'study/StudyRouter'
 
 import { Link, Route, Routes, useParams } from 'react-router-dom'
-import { NavBreadcrumb } from '../navbar/AdminNavbar'
-import { NavbarContext } from '../navbar/NavbarProvider'
+import { NavBreadcrumb, SidebarContent } from '../navbar/AdminNavbar'
 import StudyEnvironmentSidebar from './StudyEnvironmentSidebar'
 import { PortalContext } from '../portal/PortalProvider'
 import SurveyView from './surveys/SurveyView'
@@ -23,7 +22,6 @@ export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, cur
 function StudyEnvironmentRouter({ study }: {study: Study}) {
   const params = useParams<StudyParams>()
   const envName: string | undefined = params.studyEnv
-  const navContext = useContext(NavbarContext)
   const portal = useContext(PortalContext).portal as Portal
 
   if (!envName) {
@@ -35,13 +33,6 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
   }
 
   const currentEnvPath = `/${portal.shortcode}/studies/${study.shortcode}/env/${currentEnv.environmentName}`
-  useEffect(() => {
-    navContext.setSidebarContent(<StudyEnvironmentSidebar study={study}
-      portalShortcode={portal.shortcode}
-      currentEnv={currentEnv}
-      currentEnvPath={currentEnvPath}
-      setShow={navContext.setShowSidebar}/>)
-  }, [])
 
   const studyEnvContext: StudyEnvContextT = { study, currentEnv, currentEnvPath, portal }
   return <div className="StudyView">
@@ -49,6 +40,12 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       <Link className="text-white" to={currentEnvPath}>
         {envName}</Link>
     </NavBreadcrumb>
+    <SidebarContent>
+      <StudyEnvironmentSidebar study={study}
+        portalShortcode={portal.shortcode}
+        currentEnv={currentEnv}
+        currentEnvPath={currentEnvPath}/>
+    </SidebarContent>
     <Routes>
       <Route path="surveys">
         <Route path=":surveyStableId">

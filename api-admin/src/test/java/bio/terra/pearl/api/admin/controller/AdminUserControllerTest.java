@@ -11,17 +11,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import bio.terra.pearl.api.admin.controller.admin.AdminUserController;
 import bio.terra.pearl.api.admin.model.AdminUserDto;
 import bio.terra.pearl.api.admin.model.RoleList;
+import bio.terra.pearl.api.admin.service.AdminUserExtService;
+import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.core.service.admin.PortalAdminUserRoleService;
+import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.exception.RoleNotFoundException;
 import bio.terra.pearl.core.service.exception.UserNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +46,9 @@ public class AdminUserControllerTest {
 
   @Autowired private ObjectMapper objectMapper;
 
-  @MockBean private AdminUserService mockAdminUserService;
-
   @MockBean private PortalAdminUserRoleService mockPortalAdminUserRoleService;
+  @MockBean private AdminUserExtService adminUserExtService;
+  @MockBean private AuthUtilService authUtilService;
 
   @Autowired private AdminUserController adminUserController;
 
@@ -64,13 +68,13 @@ public class AdminUserControllerTest {
 
   @Test
   public void testGetReturnsEmptyOptionalWhenAdminUserDoesNotExist() {
-    when(mockAdminUserService.find(any())).thenReturn(Optional.empty());
+    when(adminUserExtService.get(any(), any())).thenReturn(Optional.empty());
     UUID uuid = UUID.randomUUID();
 
     var result = adminUserController.get(uuid);
 
     assertThat(result, equalTo(ResponseEntity.notFound().build()));
-    verify(mockAdminUserService).find(uuid);
+    verify(adminUserExtService).get(uuid, null);
   }
 
   @Test
@@ -78,11 +82,25 @@ public class AdminUserControllerTest {
     var userId = UUID.randomUUID();
     var adminUser = AdminUser.builder().id(userId).username("tester").build();
     var expectedAdminUserDto = new AdminUserDto().id(userId).superuser(false).username("tester");
-    when(mockAdminUserService.find(userId)).thenReturn(Optional.of(adminUser));
-
+    when(adminUserExtService.get(userId, null)).thenReturn(Optional.of(adminUser));
     var response = adminUserController.get(userId);
 
     assertThat(response, equalTo(ResponseEntity.ok(expectedAdminUserDto)));
+  }
+
+  @Test
+  public void testGetAllErrorsIfAuthFails() {
+    var response = adminUserController.getAll();
+    when(authUtilService.requireAdminUser(any())).thenThrow(PermissionDeniedException.class);
+    Assertions.assertThrows(PermissionDeniedException.class, () -> adminUserController.getAll());
+  }
+
+  @Test
+  public void testGetByPortalErrorsIfAuthFails() {
+    var response = adminUserController.getAll();
+    when(authUtilService.requireAdminUser(any())).thenThrow(PermissionDeniedException.class);
+    Assertions.assertThrows(
+        PermissionDeniedException.class, () -> adminUserController.getByPortal("whatever"));
   }
 
   /*

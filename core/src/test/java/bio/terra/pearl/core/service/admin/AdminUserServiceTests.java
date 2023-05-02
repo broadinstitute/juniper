@@ -6,7 +6,12 @@ import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.admin.PermissionFactory;
 import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
 import bio.terra.pearl.core.factory.admin.RoleFactory;
+import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.admin.PortalAdminUser;
+import bio.terra.pearl.core.model.admin.PortalAdminUserRole;
+import bio.terra.pearl.core.model.admin.Role;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.CascadeProperty;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +36,10 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
     private RoleFactory roleFactory;
     @Autowired
     private PortalAdminUserFactory portalAdminUserFactory;
+    @Autowired
+    private PortalAdminUserService portalAdminUserService;
+    @Autowired
+    private PortalFactory portalFactory;
 
     @Test
     @Transactional
@@ -78,6 +87,35 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
         assertThat(loadedUser.portalPermissions().get(portalAdminUser.getPortalId()), hasItems(
                 "testLoadWithPerms.perm1", "testLoadWithPerms.perm2", "testLoadWithPerms.perm3"
         ) );
+    }
 
+    @Test
+    @Transactional
+    public void testGetByPortal() {
+        AdminUser savedPortalUser = adminUserService.create(adminUserFactory.builder("testGetByPortal").build());
+        AdminUser savedNonPortalUser = adminUserService.create(adminUserFactory.builder("testGetByPortal").build());
+        AdminUser savedOtherPortalUser = adminUserService.create(adminUserFactory.builder("testGetByPortal").build());
+        Portal portal = portalFactory.buildPersisted("testGetByPortal");
+        Portal otherPortal = portalFactory.buildPersisted("testGetByPortal");
+        Portal emptyPortal = portalFactory.buildPersisted("testGetByPortal");
+        Role role = roleFactory.buildPersisted("testGetByPortal");
+
+        var savedPortalAdminUser = portalAdminUserService.create(PortalAdminUser.builder()
+            .adminUserId(savedPortalUser.getId())
+            .portalId(portal.getId()).build());
+        portalAdminUserService.create(PortalAdminUser.builder()
+            .adminUserId(savedOtherPortalUser.getId())
+            .portalId(otherPortal.getId()).build());
+        portalAdminUserRoleService.create(PortalAdminUserRole.builder()
+            .portalAdminUserId(savedPortalAdminUser.getId())
+            .roleId(role.getId()).build());
+
+        List<AdminUser> users = adminUserService.findAllWithRolesByPortal(portal.getId());
+        assertThat(users, hasSize(1));
+        assertThat(users.get(0).getId(), equalTo(savedPortalUser.getId()));
+        assertThat(users.get(0).getPortalAdminUsers(), hasSize(1));
+
+        List<AdminUser> emptyPortalUsers = adminUserService.findAllWithRolesByPortal(emptyPortal.getId());
+        assertThat(emptyPortalUsers, hasSize(0));
     }
 }
