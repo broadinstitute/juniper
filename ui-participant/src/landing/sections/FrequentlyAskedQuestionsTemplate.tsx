@@ -99,7 +99,7 @@ const FrequentlyAskedQuestion = (props: FrequentlyAskedQuestionProps) => {
         {question}
       </button>
       <div ref={collapseRef} className="collapse px-0 px-sm-2 ms-2" id={idFor(question)}>
-        <Markdown className="fs-5" style={{ marginLeft: 20 }}>
+        <Markdown className="mb-3 fs-5" style={{ marginLeft: 20 }}>
           {answer}
         </Markdown>
       </div>
