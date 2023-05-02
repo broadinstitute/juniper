@@ -1,5 +1,5 @@
 import React from 'react'
-import { Portal, PortalEnvironment } from '../api/api'
+import { Portal, PortalEnvironment, StudyEnvironment } from '../api/api'
 import { StudyEnvContextT, studyEnvPath } from '../study/StudyEnvironmentRouter'
 import ParticipantList from '../study/participants/ParticipantList'
 
@@ -9,14 +9,14 @@ export default function PortalParticipantsView({ portal, portalEnv }: {portal: P
     <div className="col-12">
       {portal.portalStudies.map(portalStudy => {
         const studyEnv = portalStudy.study.studyEnvironments
-          .find(env => env.environmentName === portalEnv.environmentName)
+          .find(env => env.environmentName === portalEnv.environmentName) as StudyEnvironment
         const studyContext = {
           study: portalStudy.study,
           currentEnv: studyEnv,
           currentEnvPath: studyEnvPath(portal.shortcode, portalStudy.study.shortcode, portalEnv.environmentName),
           portal
-        } as StudyEnvContextT
-        return <ParticipantList studyEnvContext={studyContext}/>
+        }
+        return <ParticipantList studyEnvContext={studyContext} key={portalStudy.study.shortcode}/>
       })}
     </div>
   </div>
