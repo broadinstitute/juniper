@@ -95,6 +95,14 @@ public class AdminUserControllerTest {
     Assertions.assertThrows(PermissionDeniedException.class, () -> adminUserController.getAll());
   }
 
+  @Test
+  public void testGetByPortalErrorsIfAuthFails() {
+    var response = adminUserController.getAll();
+    when(authUtilService.requireAdminUser(any())).thenThrow(PermissionDeniedException.class);
+    Assertions.assertThrows(
+        PermissionDeniedException.class, () -> adminUserController.getByPortal("whatever"));
+  }
+
   /*
    * AdminUserController.setRoles
    */

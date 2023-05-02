@@ -32,6 +32,11 @@ public class AdminUserExtService {
         "User %s does not have permissions to list all users".formatted(operator.getUsername()));
   }
 
+  public List<AdminUser> getByPortal(String portalShortcode, AdminUser operator) {
+    Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
+    return adminUserService.findAllWithRoles(portal.getId());
+  }
+
   public AdminUser create(NewAdminUser newUserParams, AdminUser operator) {
     if (newUserParams.superuser && !operator.isSuperuser()) {
       throw new PermissionDeniedException(

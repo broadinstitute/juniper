@@ -5,10 +5,10 @@ import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUserRole;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.exception.UserNotFoundException;
-import org.springframework.stereotype.Service;
-
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
 
 @Service
 public class PortalAdminUserService extends ImmutableEntityService<PortalAdminUser, PortalAdminUserDao> {
@@ -19,6 +19,10 @@ public class PortalAdminUserService extends ImmutableEntityService<PortalAdminUs
                                   PortalAdminUserRoleService portalAdminUserRoleService) {
         super(portalAdminUserDao);
         this.portalAdminUserRoleService = portalAdminUserRoleService;
+    }
+
+    public List<PortalAdminUser> findByPortal(UUID portalId) {
+        return dao.findByPortal(portalId);
     }
 
     public Optional<PortalAdminUser> findOneWithRolesAndPermissions(UUID portalAdminUserId) {

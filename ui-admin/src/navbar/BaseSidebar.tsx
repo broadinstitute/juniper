@@ -1,21 +1,14 @@
 import React from 'react'
 import { useUser } from '../user/UserProvider'
-import { NavLink } from 'react-router-dom'
+import { SidebarNavLink } from './AdminNavbar'
 
-const BaseSidebar = ({ setShow }: {setShow: (show: boolean) => void}) => {
+const BaseSidebar = () => {
   const { user } = useUser()
   return <ul className="nav nav-pills flex-column mb-auto">
     {user.superuser && <li>
-      <NavLink to="/users" className="nav-link" onClick={() => setShow(false)}
-        style={sidebarLinkStyle}>
-        Users
-      </NavLink>
+      <SidebarNavLink to="/users">All users</SidebarNavLink>
     </li> }
   </ul>
 }
 
 export default BaseSidebar
-
-export const sidebarLinkStyle = {
-  color: '#fff'
-}

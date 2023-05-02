@@ -25,6 +25,10 @@ public class PortalAdminUserRoleDao extends BaseJdbiDao<PortalAdminUserRole> {
         return findAllByProperty("portal_admin_user_id", portalAdminUserId);
     }
 
+    public List<PortalAdminUserRole> findAllByPortalAdminUserIds(List<UUID> portalAdminUserIds) {
+        return findAllByPropertyCollection("portal_admin_user_id", portalAdminUserIds);
+    }
+
     public void deleteByPortalAdminUserId(UUID portalAdminUserId) {
         deleteByProperty("portal_admin_user_id", portalAdminUserId);
     }

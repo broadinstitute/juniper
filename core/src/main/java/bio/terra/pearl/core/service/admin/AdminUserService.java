@@ -54,17 +54,22 @@ public class AdminUserService extends CrudService<AdminUser, AdminUserDao> {
         List<AdminUser> adminUsers = dao.findAll();
         List<PortalAdminUser> portalAdminUsers = portalAdminUserService.findAll();
         List<PortalAdminUserRole> portalAdminUserRoles = portalAdminUserRoleService.findAll();
+        attachRoles(portalAdminUsers, portalAdminUserRoles);
+        attachPortalUsers(adminUsers, portalAdminUsers);
+        return adminUsers;
+    }
 
-        // map the portalAdmins by id for quick assigning of roles
-        Map<UUID, PortalAdminUser> portalUserIdMap = new HashMap<>();
-        for (PortalAdminUser portalAdminUser : portalAdminUsers) {
-            portalUserIdMap.put(portalAdminUser.getId(), portalAdminUser);
-        }
-        for (PortalAdminUserRole portalAdminUserRole : portalAdminUserRoles) {
-            portalUserIdMap.get(portalAdminUserRole.getPortalAdminUserId())
-                .getRoleIds().add(portalAdminUserRole.getRoleId());
-        }
+    public List<AdminUser> findAllWithRoles(UUID portalId) {
+        List<PortalAdminUser> portalAdminUsers = portalAdminUserService.findByPortal(portalId);
+        List<AdminUser> adminUsers = dao.findAll(portalAdminUsers.stream().map(PortalAdminUser::getAdminUserId).toList());
+        List<PortalAdminUserRole> portalAdminUserRoles = portalAdminUserRoleService
+            .findAllByPortalAdminUserIds(portalAdminUsers.stream().map(PortalAdminUser::getId).toList());
+        attachRoles(portalAdminUsers, portalAdminUserRoles);
+        attachPortalUsers(adminUsers, portalAdminUsers);
+        return adminUsers;
+    }
 
+    private void attachPortalUsers(List<AdminUser> adminUsers, List<PortalAdminUser> portalAdminUsers) {
         // map the users by id for quick assigning of portal admins
         Map<UUID, AdminUser> userIdMap = new HashMap<>();
         for (AdminUser user : adminUsers) {
@@ -74,6 +79,17 @@ public class AdminUserService extends CrudService<AdminUser, AdminUserDao> {
             userIdMap.get(portalAdminUser.getAdminUserId())
                 .getPortalAdminUsers().add(portalAdminUser);
         }
-        return adminUsers;
+    }
+
+    private void attachRoles(List<PortalAdminUser> portalAdminUsers, List<PortalAdminUserRole> portalAdminUserRoles) {
+        // map the portalAdmins by id for quick assigning of roles
+        Map<UUID, PortalAdminUser> portalUserIdMap = new HashMap<>();
+        for (PortalAdminUser portalAdminUser : portalAdminUsers) {
+            portalUserIdMap.put(portalAdminUser.getId(), portalAdminUser);
+        }
+        for (PortalAdminUserRole portalAdminUserRole : portalAdminUserRoles) {
+            portalUserIdMap.get(portalAdminUserRole.getPortalAdminUserId())
+                .getRoleIds().add(portalAdminUserRole.getRoleId());
+        }
     }
 }

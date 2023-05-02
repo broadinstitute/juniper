@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { UserContextT, useUser } from 'user/UserProvider'
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars'
 
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { NavbarContext, NavbarContextT } from './NavbarProvider'
 
 /** note we name this adminNavbar to avoid naming conflicts with bootstrap navbar */
@@ -79,9 +79,44 @@ function AdminNavbar({ breadCrumbs, sidebarContent, showSidebar, setShowSidebar 
       color: '#f0f0f0',
       zIndex: 80
     }} ref={sidebarRef}>
-      {sidebarContent}
+      { sidebarContent.map(content => <div>
+        {content}
+        <hr/>
+      </div>)}
     </div>}
   </>
+}
+
+/**
+ * Component for adding a sidebar item when a component is rendered.
+ * The content will be removed when the component is.
+ * This component does not render anything directly, but is still structured as a component rather than a pure hook
+ * so that order rendering will be in-order rather than reversed.  See https://github.com/facebook/react/issues/15281
+ * */
+export function SidebarContent({ children }: {children: React.ReactNode}) {
+  const navContext = useContext(NavbarContext)
+  useEffect(() => {
+    /** use the setState arg that takes a function to avoid race conditions */
+    navContext.setSidebarContent((oldContent: React.ReactNode[]) => {
+      return  [...oldContent, children]
+    })
+    /** return the function that will remove the breadcrumb */
+    return () => {
+      navContext.setSidebarContent((oldCrumbs: React.ReactNode[]) => {
+        return oldCrumbs.slice(0, -1)
+      })
+    }
+  }, [])
+  return null
+}
+
+/** renders a link in the sidebar with appropriate style and onClick handler to close the sidebar when clicked */
+export function SidebarNavLink({ to, children }: {to: string, children: React.ReactNode}) {
+  const { setShowSidebar } = useContext(NavbarContext)
+  return <NavLink to={to} className="nav-link" onClick={() => setShowSidebar(false)}
+    style={{ color: '#fff' }}>
+    {children}
+  </NavLink>
 }
 
 /**

@@ -4,23 +4,31 @@ import StudyRouter from '../study/StudyRouter'
 import PortalDashboard from './PortalDashboard'
 import { LoadedPortalContextT, PortalContext, PortalParams } from './PortalProvider'
 import MailingListView from './MailingListView'
-import { NavBreadcrumb } from '../navbar/AdminNavbar'
+import { NavBreadcrumb, SidebarContent } from '../navbar/AdminNavbar'
 import PortalEnvView from './PortalEnvView'
 import PortalEnvDiff from './publish/PortalEnvDiff'
 import SiteContentView from './siteContent/SiteContentView'
 import PortalEnvConfigView from './PortalEnvConfigView'
+import PortalSidebar from './PortalSidebar'
+import PortalUserList from '../user/PortalUserList'
 
 /** controls routes for within a portal */
 export default function PortalRouter() {
   const portalContext = useContext(PortalContext) as LoadedPortalContextT
-  return <Routes>
-    <Route path="studies">
-      <Route path=":studyShortcode/*" element={<StudyRouter portalContext={portalContext}/>}/>
-    </Route>
-    <Route path="env/:portalEnv/*" element={<PortalEnvRouter portalContext={portalContext}/>}/>
-    <Route index element={<PortalDashboard portal={portalContext.portal}/>}/>
-    <Route path="*" element={<div>Unmatched portal route</div>}/>
-  </Routes>
+  return <>
+    <SidebarContent>
+      <PortalSidebar portalShortcode={portalContext.portal.shortcode}/>
+    </SidebarContent>
+    <Routes>
+      <Route path="studies">
+        <Route path=":studyShortcode/*" element={<StudyRouter portalContext={portalContext}/>}/>
+      </Route>
+      <Route path="users" element={<PortalUserList portal={portalContext.portal}/>}/>
+      <Route path="env/:portalEnv/*" element={<PortalEnvRouter portalContext={portalContext}/>}/>
+      <Route index element={<PortalDashboard portal={portalContext.portal}/>}/>
+      <Route path="*" element={<div>Unmatched portal route</div>}/>
+    </Routes>
+  </>
 }
 
 /** controls routes within a portal environment, such as config, mailing list, etc... */
@@ -48,6 +56,10 @@ function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT
       <Route index element={<PortalEnvView portal={portal} portalEnv={portalEnv}/>}/>
     </Routes>
   </>
+}
+
+export const usersPath = (portalShortcode: string) => {
+  return `/${portalShortcode}/users`
 }
 
 /** gets absolute path to the portal mailing list page */

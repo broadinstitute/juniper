@@ -74,6 +74,16 @@ public class AdminUserController implements AdminUserApi {
   }
 
   @Override
+  public ResponseEntity<Object> getByPortal(String portalShortcode) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    List<AdminUser> adminUsers = adminUserExtService.getByPortal(portalShortcode, operator);
+    for (AdminUser user : adminUsers) {
+      user.setToken(null);
+    }
+    return ResponseEntity.ok(adminUsers);
+  }
+
+  @Override
   public ResponseEntity<Object> create(Object body) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     AdminUserExtService.NewAdminUser newUser =

@@ -6,40 +6,23 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import Api, { AdminUser, Portal, PortalAdminUser } from 'api/api'
+import Api, { AdminUser, Portal } from 'api/api'
 import { basicTableLayout } from 'util/tableUtils'
 import { instantToDefaultString } from 'util/timeUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import CreateUserModal from './CreateUserModal'
 
-const UserList = () => {
+const PortalUserList = ({ portal }: {portal: Portal}) => {
   const [users, setUsers] = useState<AdminUser[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [portals, setPortals] = React.useState<Portal[]>([])
-
-  const portalColumn = (portalAdminUsers?: PortalAdminUser[]) => {
-    if (!portalAdminUsers) {
-      return ''
-    }
-    return portalAdminUsers.map(portalAdminUser =>
-      portals.find(portal => portal.id === portalAdminUser.portalId)?.shortcode ?? '')
-  }
 
   const columns: ColumnDef<AdminUser>[] = useMemo(() => ([{
     header: 'Username',
     accessorKey: 'username'
-  }, {
-    header: 'Superuser',
-    accessorKey: 'superuser',
-    cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
-  }, {
-    header: 'Portals',
-    accessorKey: 'portalAdminUsers',
-    cell: info => portalColumn(info.getValue() as PortalAdminUser[])
   }, {
     header: 'Created',
     accessorKey: 'createdAt',
@@ -65,11 +48,8 @@ const UserList = () => {
   const loadUsers = async () => {
     setIsLoading(true)
     try {
-      const result = await Promise.all(
-        [Api.fetchUsers(), Api.getPortals()]
-      )
-      setUsers(result[0])
-      setPortals(result[1])
+      const result = await Api.fetchUsersByPortal(portal.shortcode)
+      setUsers(result)
     } catch (e) {
       alert(`error loading user list ${e}`)
     }
@@ -89,7 +69,7 @@ const UserList = () => {
     <button className="btn-secondary btn" onClick={() => setShowCreateModal(true)}>
       <FontAwesomeIcon icon={faPlus}/> Create user
     </button>
-    {showCreateModal && <CreateUserModal show={showCreateModal} setShow={setShowCreateModal} portals={portals}
+    {showCreateModal && <CreateUserModal show={showCreateModal} setShow={setShowCreateModal} portals={[portal]}
       userCreated={handleUserCreated}/>}
     <LoadingSpinner isLoading={isLoading}>
       {basicTableLayout(table)}
@@ -97,4 +77,4 @@ const UserList = () => {
   </div>
 }
 
-export default UserList
+export default PortalUserList
