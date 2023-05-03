@@ -84,8 +84,13 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
   useEffect(() => {
     const isAlreadyEnrolled = !!enrollees.find(rollee => rollee.studyEnvironmentId === studyEnv.id)
     if (isAlreadyEnrolled) {
-      alert('you are already enrolled in this study')
-      navigate('/hub', { replace: true })
+      const hubUpdate: HubUpdate = {
+        message: {
+          title: 'You are already enrolled in this study.',
+          type: 'info'
+        }
+      }
+      navigate('/hub', { replace: true, state: hubUpdate })
       return
     }
     if (mustProvidePassword) {
