@@ -25,9 +25,9 @@ public class SendgridClient {
 
   public void sendEmail(Mail mail) throws Exception {
     if (StringUtils.isEmpty(sendGridApiKey)) {
-      // we'll usually want to avoid sending emails from CI environments
+      // if there's no API key, (likely because we're in a CI environment), don't even attempt to send an email
       logger.info("Email send skipped: no sendgrid api provided");
-      return;
+      throw new UnsupportedOperationException("Attempted to send email without sendgrid key");
     }
     SendGrid sg = new SendGrid(sendGridApiKey);
     Request request = new Request();

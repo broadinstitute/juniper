@@ -18,12 +18,15 @@ public class ApplicationRoutingPaths {
     private final String adminUiHostname;
     @Getter
     private final String participantDashboardPath = "/hub";
+    @Getter
+    private final String supportEmailAddress;
 
     public ApplicationRoutingPaths(Environment env) {
         participantUiHostname = env.getProperty("env.hostnames.participantUi");
         participantApiHostname = env.getProperty("env.hostnames.participantApi");
         adminUiHostname = env.getProperty("env.hostnames.adminUi");
         adminApiHostname = env.getProperty("env.hostnames.adminApi");
+        supportEmailAddress = env.getProperty("env.email.supportEmailAddress");
     }
 
     public String getAdminBaseUrl() {

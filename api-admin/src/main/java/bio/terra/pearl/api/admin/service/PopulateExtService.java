@@ -6,10 +6,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
-import bio.terra.pearl.populate.service.BaseSeedPopulator;
-import bio.terra.pearl.populate.service.EnrolleePopulator;
-import bio.terra.pearl.populate.service.PortalPopulator;
-import bio.terra.pearl.populate.service.SurveyPopulator;
+import bio.terra.pearl.populate.service.*;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
@@ -23,22 +20,35 @@ public class PopulateExtService {
   private EnrolleePopulator enrolleePopulator;
   private SurveyPopulator surveyPopulator;
   private PortalPopulator portalPopulator;
+  private AdminConfigPopulator adminConfigPopulator;
 
   public PopulateExtService(
       BaseSeedPopulator baseSeedPopulator,
       EnrolleePopulator enrolleePopulator,
       SurveyPopulator surveyPopulator,
-      PortalPopulator portalPopulator) {
+      PortalPopulator portalPopulator,
+      AdminConfigPopulator adminConfigPopulator) {
     this.baseSeedPopulator = baseSeedPopulator;
     this.enrolleePopulator = enrolleePopulator;
     this.surveyPopulator = surveyPopulator;
     this.portalPopulator = portalPopulator;
+    this.adminConfigPopulator = adminConfigPopulator;
   }
 
   public BaseSeedPopulator.SetupStats populateBaseSeed(AdminUser user) {
     authorizeUser(user);
     try {
       return baseSeedPopulator.populate("");
+    } catch (IOException e) {
+      throw new IllegalArgumentException("populate failed", e);
+    }
+  }
+
+  public AdminConfigPopulator.AdminConfigStats populateAdminConfig(
+      AdminUser user, boolean overwrite) {
+    authorizeUser(user);
+    try {
+      return adminConfigPopulator.populate(overwrite);
     } catch (IOException e) {
       throw new IllegalArgumentException("populate failed", e);
     }

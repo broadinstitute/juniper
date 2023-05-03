@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class BaseSeedPopulator {
     private AdminUserPopulator adminUserPopulator;
     private EnvironmentPopulator environmentPopulator;
+    private AdminConfigPopulator adminConfigPopulator;
     private AdminUserService adminUserService;
     private EnvironmentService environmentService;
 
@@ -33,9 +34,10 @@ public class BaseSeedPopulator {
             Arrays.asList("environments/sandbox.json", "environments/irb.json", "environments/live.json");
 
     public BaseSeedPopulator(AdminUserPopulator adminUserPopulator, EnvironmentPopulator environmentPopulator,
-                             AdminUserService adminUserService, EnvironmentService environmentService) {
+                             AdminConfigPopulator adminConfigPopulator, AdminUserService adminUserService, EnvironmentService environmentService) {
         this.adminUserPopulator = adminUserPopulator;
         this.environmentPopulator = environmentPopulator;
+        this.adminConfigPopulator = adminConfigPopulator;
         this.adminUserService = adminUserService;
         this.environmentService = environmentService;
     }
@@ -48,9 +50,11 @@ public class BaseSeedPopulator {
         for (String file : ENVIRONMENTS_TO_POPULATE) {
             environmentPopulator.populate(new FilePopulateContext(file), false);
         }
+        var configStats = adminConfigPopulator.populate(true);
         return SetupStats.builder()
                 .numAdminUsers(adminUserService.count())
                 .numEnvironments(environmentService.count())
+                .adminConfigStats(configStats)
                 .build();
     }
 
@@ -62,5 +66,6 @@ public class BaseSeedPopulator {
     public static class SetupStats {
         private int numAdminUsers;
         private int numEnvironments;
+        private AdminConfigPopulator.AdminConfigStats adminConfigStats;
     }
 }

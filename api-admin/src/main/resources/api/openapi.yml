@@ -507,6 +507,22 @@ paths:
                 type: object
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/internal/v1/populate/adminConfig:
+    post:
+      summary: Populates admin config
+      tags: [ populate ]
+      operationId: populateAdminConfig
+      parameters:
+        - { name: overwrite, in: query, required: false, schema: { type: boolean } }
+      responses:
+        '201':
+          description: summary stats for the operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/internal/v1/populate/portal:
     post:
       summary: Populates

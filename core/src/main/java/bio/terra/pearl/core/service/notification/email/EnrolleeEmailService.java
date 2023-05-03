@@ -96,11 +96,17 @@ public class EnrolleeEmailService implements NotificationSender {
         buildAndSendEmail(contextInfo, ruleData);
     }
 
-    protected void buildAndSendEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData) throws Exception {
+    protected Mail buildAndSendEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData) throws Exception {
+        Mail mail = buildEmail(contextInfo, ruleData);
+        sendgridClient.sendEmail(mail);
+        return mail;
+    }
+
+    protected Mail buildEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData) {
         StringSubstitutor substitutor = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
         String fromAddress = contextInfo.portalEnv().getPortalEnvironmentConfig().getEmailSourceAddress();
         Mail mail = sendgridClient.buildEmail(contextInfo, ruleData.profile().getContactEmail(), fromAddress, substitutor);
-        sendgridClient.sendEmail(mail);
+        return mail;
     }
 
     public boolean shouldSendEmail(NotificationConfig config,

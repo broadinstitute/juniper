@@ -20,7 +20,8 @@ public class AdminEmailSubstitutor implements StringLookup {
                                      ApplicationRoutingPaths routingPaths) {
     this.routingPaths = routingPaths;
     valueMap = Map.of("adminUsername", adminUsername,
-        "loginLink", getLoginLink());
+        "loginLink", getLoginLink(),
+        "supportEmail", routingPaths.getSupportEmailAddress() == null ? "" : routingPaths.getSupportEmailAddress());
   }
 
   /** create a new substitutor.  the portalEnv must have the envConfig attached */

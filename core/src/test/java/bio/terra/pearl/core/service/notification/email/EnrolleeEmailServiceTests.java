@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.notification;
+package bio.terra.pearl.core.service.notification.email;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.notification.EmailTemplateFactory;
@@ -12,10 +12,8 @@ import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
-import bio.terra.pearl.core.service.notification.email.EnrolleeEmailService;
-import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
-import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import bio.terra.pearl.core.service.portal.PortalService;
+import bio.terra.pearl.core.service.notification.NotificationContextInfo;
+import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
@@ -24,8 +22,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.mock.env.MockEnvironment;
 import org.springframework.transaction.annotation.Transactional;
 
 public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
@@ -43,10 +39,15 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
     private EmailTemplateFactory emailTemplateFactory;
     @Autowired
     private ApplicationRoutingPaths routingPaths;
+    @Autowired
+    private SendgridClient sendgridClient;
+    @Autowired
+    private EnrolleeEmailService enrolleeEmailService;
+
 
     @Test
     @Transactional
-    public void testEmailBuilding() {
+    public void testEmailBuilding() throws Exception {
         Profile profile = Profile.builder()
                 .familyName("tester")
                 .givenName("given")
@@ -63,32 +64,17 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
                     .body("family name ${profile.familyName}")
                     .subject("Welcome ${profile.givenName}").build();
 
-
-        Environment env = new MockEnvironment().withProperty(EnrolleeEmailService.EMAIL_REDIRECT_VAR, "");
-        EnrolleeEmailService enrolleeEmailService = new EnrolleeEmailService(env, notificationService, null, null,
-                studyService, null, routingPaths);
         var contextInfo = new NotificationContextInfo(portal, portalEnv, null, emailTemplate);
         Mail email = enrolleeEmailService.buildEmail(contextInfo, ruleData);
         assertThat(email.personalization.get(0).getTos().get(0).getEmail(), equalTo("test@test.com"));
         assertThat(email.content.get(0).getValue(), equalTo("family name tester"));
         assertThat(email.from.getEmail(), equalTo("info@portal.org"));
         assertThat(email.getSubject(), equalTo("Welcome given"));
-
-        // now test that the to address is replaced if configured
-        Environment devEnv = new MockEnvironment().withProperty(EnrolleeEmailService.EMAIL_REDIRECT_VAR, "developer@broad.org");
-        EnrolleeEmailService devEnrolleeEmailService = new EnrolleeEmailService(devEnv, notificationService, null, null,
-                studyService, null, routingPaths);
-        Mail devEmail = devEnrolleeEmailService.buildEmail(contextInfo, ruleData);
-        assertThat(devEmail.personalization.get(0).getTos().get(0).getEmail(), equalTo("developer@broad.org"));
     }
 
     @Test
     @Transactional
     public void testEmailSendOrSkip() {
-        // set up an enrollee and valid notification config
-        Environment env = new MockEnvironment().withProperty(EnrolleeEmailService.SENDGRID_API_KEY_VAR, "fake");
-        EnrolleeEmailService enrolleeEmailService = new FakeEnrolleeEmailService(env, notificationService, null, null,
-                null, null);
         EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser("testShouldNotSendEmail");
         EmailTemplate emailTemplate = emailTemplateFactory.buildPersisted("testShouldNotSendEmail", enrolleeBundle.portalId());
         NotificationConfig config = notificationConfigFactory.buildPersisted(NotificationConfig.builder()
@@ -107,7 +93,8 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
         var contextInfo = new NotificationContextInfo(null, null, null, null);
         enrolleeEmailService.processNotification(notification, config, ruleData, contextInfo);
         Notification updatedNotification = notificationService.find(notification.getId()).get();
-        assertThat(updatedNotification.getDeliveryStatus(), equalTo(NotificationDeliveryStatus.SENT));
+        // The email send should fail due to sendgrid not being configured
+        assertThat(updatedNotification.getDeliveryStatus(), equalTo(NotificationDeliveryStatus.FAILED));
     }
 
     private void testDoNotSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, NotificationConfig config) {
@@ -118,29 +105,5 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
         Notification updatedNotification = notificationService.find(notification.getId()).get();
         assertThat(updatedNotification.getDeliveryStatus(), equalTo(NotificationDeliveryStatus.SKIPPED));
     }
-
-
-    /** email service that doesn't actually communicate with sendgrid */
-    protected class FakeEnrolleeEmailService extends EnrolleeEmailService {
-        public FakeEnrolleeEmailService(Environment env, NotificationService notificationService,
-                                        PortalEnvironmentService portalEnvService, PortalService portalService,
-                                        StudyService studyService, EmailTemplateService emailTemplateService) {
-            super(env, notificationService, portalEnvService, portalService, studyService, emailTemplateService, routingPaths);
-        }
-        @Override
-        protected void sendEmail(Mail mail) {
-            // do nothing
-        }
-        @Override
-        protected void buildAndSendEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData) {
-            // do nothing
-        }
-        @Override
-        public Mail buildEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData) {
-            return null;
-        }
-    }
-
-
 
 }

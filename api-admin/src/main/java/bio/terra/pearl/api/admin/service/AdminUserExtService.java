@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.notification.email.AdminEmailService;
+import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,7 +21,8 @@ public class AdminUserExtService {
   public AdminUserExtService(
       AdminUserService adminUserService,
       AuthUtilService authUtilService,
-      AdminEmailService adminEmailService) {
+      AdminEmailService adminEmailService,
+      EmailTemplateService emailTemplateService) {
     this.adminUserService = adminUserService;
     this.authUtilService = authUtilService;
     this.adminEmailService = adminEmailService;
@@ -60,7 +62,7 @@ public class AdminUserExtService {
       newUser.getPortalAdminUsers().add(paUser);
     }
     AdminUser newAdminUser = adminUserService.create(newUser);
-    adminEmailService.sendEmailAsync(AdminEmailService.WELCOME_TEMPLATE, null, newAdminUser);
+    adminEmailService.sendWelcomeEmail(null, newAdminUser);
     return newAdminUser;
   }
 

@@ -5,7 +5,6 @@ import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.notification.substitutors.AdminEmailSubstitutor;
-import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.sendgrid.Mail;
 import org.apache.commons.text.StringSubstitutor;
@@ -16,33 +15,25 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AdminEmailService {
+  private static final String WELCOME_EMAIL_TEMPLATE_STABLEID = "broad_admin_welcome";
+  private static final int WELCOME_EMAIL_TEMPLATE_VERSION = 1;
   private static final Logger logger = LoggerFactory.getLogger(EnrolleeEmailService.class);
-  private PortalService portalService;
+  private EmailTemplateService emailTemplateService;
   private ApplicationRoutingPaths routingPaths;
   private SendgridClient sendgridClient;
 
-  public static EmailTemplate WELCOME_TEMPLATE = EmailTemplate.builder()
-      .subject("Welcome to Juniper")
-      .body("""
-          Your Juniper account has been created.  ${loginLink} using your ${adminUsername}
-          email address.  From there, you can manage existing studies and create new ones.  If you
-          have any questions, please contact us at support@juniper.terra.bio
-          
-          Cheers,
-          The Juniper Team
-          """)
-      .build();
 
-  public AdminEmailService( PortalService portalService,
+
+  public AdminEmailService( EmailTemplateService emailTemplateService,
                            ApplicationRoutingPaths routingPaths, SendgridClient sendgridClient) {
-    this.portalService = portalService;
+    this.emailTemplateService = emailTemplateService;
     this.routingPaths = routingPaths;
     this.sendgridClient = sendgridClient;
   }
 
   @Async
-  public void sendEmailAsync(EmailTemplate template, Portal portal, AdminUser adminUser) {
-    NotificationContextInfo contextInfo = loadContextInfo(template, portal);
+  public void sendWelcomeEmail(Portal portal, AdminUser adminUser) {
+    NotificationContextInfo contextInfo = loadContextInfo(WELCOME_EMAIL_TEMPLATE_STABLEID, WELCOME_EMAIL_TEMPLATE_VERSION, portal);
     sendEmail(contextInfo, adminUser);
   }
 
@@ -63,8 +54,8 @@ public class AdminEmailService {
    * skips processing, checks, and logging, and just sends the email. Should only be used for debugging and
    * test emails, since we want all regular emails to be logged.
    * */
-  public void sendTestNotification(Portal portal, EmailTemplate template, String adminUsername) throws Exception {
-    NotificationContextInfo contextInfo = loadContextInfo(template, portal);
+  public void sendTestNotification(Portal portal, String templateStableId, int version, String adminUsername) throws Exception {
+    NotificationContextInfo contextInfo = loadContextInfo(templateStableId, version, portal);
     buildAndSendEmail(contextInfo, adminUsername);
   }
 
@@ -88,12 +79,13 @@ public class AdminEmailService {
    * loads the context information needed to send a notification (things not specific to a user)
    * for now, this is trivial, but later admin emails may contain other context
    */
-  public NotificationContextInfo loadContextInfo(EmailTemplate template, Portal portal) {
+  public NotificationContextInfo loadContextInfo(String templateStableId, int version, Portal portal) {
+    EmailTemplate emailTemplate = emailTemplateService.findByStableId(templateStableId, version).get();
     return new NotificationContextInfo(
         portal,
         null,
         null,
-        template
+        emailTemplate
     );
   }
 }
