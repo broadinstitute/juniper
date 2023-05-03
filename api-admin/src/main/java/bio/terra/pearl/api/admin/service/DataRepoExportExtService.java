@@ -47,7 +47,7 @@ public class DataRepoExportExtService {
       String studyShortcode,
       EnvironmentName environmentName,
       AdminUser user) {
-    Portal portal = authUtilService.authUserToPortal(user, portalShortcode); //??
+    Portal portal = authUtilService.authUserToPortal(user, portalShortcode); // ??
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
 
     StudyEnvironment studyEnv =

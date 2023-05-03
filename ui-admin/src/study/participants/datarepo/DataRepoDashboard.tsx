@@ -33,9 +33,9 @@ const DataRepoDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
   }, {
     header: 'Data Repo Job ID',
     accessorKey: 'tdrJobId',
-    cell: info => <Link to={
-      `https://jade.datarepo-dev.broadinstitute.org/activity?expandedJob=${info.getValue()}`
-    }>{info.getValue()}</Link>
+    cell: info => <a href={
+      `https://jade.datarepo-dev.broadinstitute.org/activity?expandedJob=${info.getValue()}`} target="_blank"
+    >{info.getValue()} <FontAwesomeIcon icon={faExternalLink}/></a>
   }, {
     id: 'status',
     header: 'Status',
