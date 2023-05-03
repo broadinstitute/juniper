@@ -21,6 +21,7 @@ import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { useCookiesAcknowledged } from './browserPersistentState'
 import { CookieAlert } from './CookieAlert'
+import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
@@ -107,6 +108,7 @@ function App() {
                   <AuthProvider {...getOidcConfig(config.b2cTenantName, config.b2cClientId, config.b2cPolicyName)}>
                     <UserProvider>
                       <Suspense fallback={<PageLoadingIndicator />}>
+                        <IdleStatusMonitor maxIdleSessionDuration={15 * 60 * 1000} idleWarningDuration={3 * 60 * 1000}/>
                         <Routes>
                           <Route path="/hub/*" element={<ProtectedRoute><HubRouter/></ProtectedRoute>}/>
                           <Route path="/studies/:studyShortcode">
