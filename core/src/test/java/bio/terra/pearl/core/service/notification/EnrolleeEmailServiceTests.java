@@ -12,6 +12,8 @@ import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
+import bio.terra.pearl.core.service.notification.email.EnrolleeEmailService;
+import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
@@ -26,7 +28,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.transaction.annotation.Transactional;
 
-public class EmailServiceTests extends BaseSpringBootTest {
+public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
     @Autowired
     private NotificationService notificationService;
     @Autowired
@@ -62,21 +64,21 @@ public class EmailServiceTests extends BaseSpringBootTest {
                     .subject("Welcome ${profile.givenName}").build();
 
 
-        Environment env = new MockEnvironment().withProperty(EmailService.EMAIL_REDIRECT_VAR, "");
-        EmailService emailService = new EmailService(env, notificationService, null, null,
+        Environment env = new MockEnvironment().withProperty(EnrolleeEmailService.EMAIL_REDIRECT_VAR, "");
+        EnrolleeEmailService enrolleeEmailService = new EnrolleeEmailService(env, notificationService, null, null,
                 studyService, null, routingPaths);
         var contextInfo = new NotificationContextInfo(portal, portalEnv, null, emailTemplate);
-        Mail email = emailService.buildEmail(contextInfo, ruleData);
+        Mail email = enrolleeEmailService.buildEmail(contextInfo, ruleData);
         assertThat(email.personalization.get(0).getTos().get(0).getEmail(), equalTo("test@test.com"));
         assertThat(email.content.get(0).getValue(), equalTo("family name tester"));
         assertThat(email.from.getEmail(), equalTo("info@portal.org"));
         assertThat(email.getSubject(), equalTo("Welcome given"));
 
         // now test that the to address is replaced if configured
-        Environment devEnv = new MockEnvironment().withProperty(EmailService.EMAIL_REDIRECT_VAR, "developer@broad.org");
-        EmailService devEmailService = new EmailService(devEnv, notificationService, null, null,
+        Environment devEnv = new MockEnvironment().withProperty(EnrolleeEmailService.EMAIL_REDIRECT_VAR, "developer@broad.org");
+        EnrolleeEmailService devEnrolleeEmailService = new EnrolleeEmailService(devEnv, notificationService, null, null,
                 studyService, null, routingPaths);
-        Mail devEmail = devEmailService.buildEmail(contextInfo, ruleData);
+        Mail devEmail = devEnrolleeEmailService.buildEmail(contextInfo, ruleData);
         assertThat(devEmail.personalization.get(0).getTos().get(0).getEmail(), equalTo("developer@broad.org"));
     }
 
@@ -84,8 +86,8 @@ public class EmailServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testEmailSendOrSkip() {
         // set up an enrollee and valid notification config
-        Environment env = new MockEnvironment().withProperty(EmailService.SENDGRID_API_KEY_VAR, "fake");
-        EmailService emailService = new FakeEmailService(env, notificationService, null, null,
+        Environment env = new MockEnvironment().withProperty(EnrolleeEmailService.SENDGRID_API_KEY_VAR, "fake");
+        EnrolleeEmailService enrolleeEmailService = new FakeEnrolleeEmailService(env, notificationService, null, null,
                 null, null);
         EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser("testShouldNotSendEmail");
         EmailTemplate emailTemplate = emailTemplateFactory.buildPersisted("testShouldNotSendEmail", enrolleeBundle.portalId());
@@ -95,34 +97,34 @@ public class EmailServiceTests extends BaseSpringBootTest {
                 .notificationType(NotificationType.EVENT),
                 enrolleeBundle.enrollee().getStudyEnvironmentId(), enrolleeBundle.portalParticipantUser().getPortalEnvironmentId());
 
-        testSendProfile(emailService, enrolleeBundle, config);
-        testDoNotSendProfile(emailService, enrolleeBundle, config);
+        testSendProfile(enrolleeEmailService, enrolleeBundle, config);
+        testDoNotSendProfile(enrolleeEmailService, enrolleeBundle, config);
     }
 
-    private void testSendProfile(EmailService emailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, NotificationConfig config) {
+    private void testSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, NotificationConfig config) {
         var notification = notificationFactory.buildPersisted(enrolleeBundle, config);
         var ruleData = new EnrolleeRuleData(enrolleeBundle.enrollee(), Profile.builder().build());
         var contextInfo = new NotificationContextInfo(null, null, null, null);
-        emailService.processNotification(notification, config, ruleData, contextInfo);
+        enrolleeEmailService.processNotification(notification, config, ruleData, contextInfo);
         Notification updatedNotification = notificationService.find(notification.getId()).get();
         assertThat(updatedNotification.getDeliveryStatus(), equalTo(NotificationDeliveryStatus.SENT));
     }
 
-    private void testDoNotSendProfile(EmailService emailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, NotificationConfig config) {
+    private void testDoNotSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, NotificationConfig config) {
         Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
         EnrolleeRuleData ruleData = new EnrolleeRuleData(enrolleeBundle.enrollee(), Profile.builder().doNotEmail(true).build());
         var contextInfo = new NotificationContextInfo(null, null, null, null);
-        emailService.processNotification(notification, config, ruleData, contextInfo);
+        enrolleeEmailService.processNotification(notification, config, ruleData, contextInfo);
         Notification updatedNotification = notificationService.find(notification.getId()).get();
         assertThat(updatedNotification.getDeliveryStatus(), equalTo(NotificationDeliveryStatus.SKIPPED));
     }
 
 
     /** email service that doesn't actually communicate with sendgrid */
-    protected class FakeEmailService extends EmailService {
-        public FakeEmailService(Environment env, NotificationService notificationService,
-                                PortalEnvironmentService portalEnvService, PortalService portalService,
-                                StudyService studyService, EmailTemplateService emailTemplateService) {
+    protected class FakeEnrolleeEmailService extends EnrolleeEmailService {
+        public FakeEnrolleeEmailService(Environment env, NotificationService notificationService,
+                                        PortalEnvironmentService portalEnvService, PortalService portalService,
+                                        StudyService studyService, EmailTemplateService emailTemplateService) {
             super(env, notificationService, portalEnvService, portalService, studyService, emailTemplateService, routingPaths);
         }
         @Override

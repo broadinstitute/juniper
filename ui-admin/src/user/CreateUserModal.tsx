@@ -44,9 +44,10 @@ const CreateUserModal = ({ onDismiss, portals, userCreated }:
         <div className="py-2">
           <div className="mb-3">
             <label className="form-label">
-              Username
+              Email
               <input type="email" value={newUser.username} className="form-control"
                 onChange={e => setNewUser({ ...newUser, username: e.target.value })}/>
+              <span className="form-text">Email must be a Microsoft- or Google-based account</span>
             </label>
           </div>
           { user.superuser && <div className="mb-3">

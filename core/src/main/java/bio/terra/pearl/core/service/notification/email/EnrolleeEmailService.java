@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.notification;
+package bio.terra.pearl.core.service.notification.email;
 
 import bio.terra.pearl.core.model.notification.Notification;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
@@ -6,48 +6,46 @@ import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
+import bio.terra.pearl.core.service.notification.NotificationContextInfo;
+import bio.terra.pearl.core.service.notification.NotificationSender;
+import bio.terra.pearl.core.service.notification.NotificationService;
+import bio.terra.pearl.core.service.notification.substitutors.EnrolleeEmailSubstitutor;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
-import com.sendgrid.*;
-import org.apache.commons.lang3.StringUtils;
+import com.sendgrid.Mail;
 import org.apache.commons.text.StringSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmailService implements NotificationSender {
-    private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
-    public static final String EMAIL_REDIRECT_VAR = "env.email.redirectAllTo";
-    public static final String SENDGRID_API_KEY_VAR = "env.email.sendgridApiKey";
-    private final String sendGridApiKey;
-    private String emailRedirectAddress = "";
+public class EnrolleeEmailService implements NotificationSender {
+    private static final Logger logger = LoggerFactory.getLogger(EnrolleeEmailService.class);
     private NotificationService notificationService;
     private PortalEnvironmentService portalEnvService;
     private PortalService portalService;
     private StudyService studyService;
     private EmailTemplateService emailTemplateService;
     private ApplicationRoutingPaths routingPaths;
+    private SendgridClient sendgridClient;
 
-    public EmailService(Environment env, NotificationService notificationService,
-                        PortalEnvironmentService portalEnvService, PortalService portalService,
-                        StudyService studyService, EmailTemplateService emailTemplateService,
-                        ApplicationRoutingPaths routingPaths) {
-        this.emailRedirectAddress = env.getProperty(EMAIL_REDIRECT_VAR, "");
-        this.sendGridApiKey = env.getProperty(SENDGRID_API_KEY_VAR, "");
+    public EnrolleeEmailService(NotificationService notificationService,
+                                PortalEnvironmentService portalEnvService, PortalService portalService,
+                                StudyService studyService, EmailTemplateService emailTemplateService,
+                                ApplicationRoutingPaths routingPaths, SendgridClient sendgridClient) {
         this.notificationService = notificationService;
         this.portalEnvService = portalEnvService;
         this.portalService = portalService;
         this.studyService = studyService;
         this.emailTemplateService = emailTemplateService;
         this.routingPaths = routingPaths;
+        this.sendgridClient = sendgridClient;
     }
 
     @Async
@@ -99,19 +97,10 @@ public class EmailService implements NotificationSender {
     }
 
     protected void buildAndSendEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData) throws Exception {
-        Mail mail = buildEmail(contextInfo, ruleData);
-        sendEmail(mail);
-    }
-
-
-    protected void sendEmail(Mail mail) throws Exception {
-        SendGrid sg = new SendGrid(sendGridApiKey);
-        Request request = new Request();
-
-        request.setMethod(Method.POST);
-        request.setEndpoint("mail/send");
-        request.setBody(mail.build());
-        sg.api(request);
+        StringSubstitutor substitutor = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
+        String fromAddress = contextInfo.portalEnv().getPortalEnvironmentConfig().getEmailSourceAddress();
+        Mail mail = sendgridClient.buildEmail(contextInfo, ruleData.profile().getContactEmail(), fromAddress, substitutor);
+        sendgridClient.sendEmail(mail);
     }
 
     public boolean shouldSendEmail(NotificationConfig config,
@@ -127,39 +116,12 @@ public class EmailService implements NotificationSender {
                     config.getId(), config.getPortalEnvironmentId());
             return false;
         }
-        if (StringUtils.isEmpty(sendGridApiKey)) {
-            // we'll usually want to avoid sending emails from CI environments
-            logger.info("Email send skipped: no sendgrid api provided");
-            return false;
-        }
         if (contextInfo == null) {
             // the environment hasn't finished populating yet, skip
             logger.info("Email send skipped: no environment context could be loaded");
             return false;
         }
         return true;
-    }
-
-    public Mail buildEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData) {
-        Email from = new Email(contextInfo.portalEnv().getPortalEnvironmentConfig().getEmailSourceAddress());
-        Email to = new Email(ruleData.profile().getContactEmail());
-
-        //Set the 'from' name on the email to the portal name
-        from.setName(contextInfo.portal().getName());
-
-        StringSubstitutor stringSubstitutor = EnrolleeEmailSubstitutor
-                .newSubstitutor(ruleData, contextInfo, routingPaths);
-        String subject = stringSubstitutor.replace(contextInfo.template().getSubject());
-        String contentString = stringSubstitutor.replace(contextInfo.template().getBody());
-
-        if (!StringUtils.isEmpty(emailRedirectAddress)) {
-            to =  new Email(emailRedirectAddress);
-            contentString = "<p><i>Redirected from " + ruleData.profile().getContactEmail()
-                    + "</i></p>" + contentString;
-        }
-
-        Content content = new Content("text/html", contentString);
-        return new Mail(from, subject, to, content);
     }
 
     /**

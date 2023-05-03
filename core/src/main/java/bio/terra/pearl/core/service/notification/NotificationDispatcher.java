@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.notification;
 
 import bio.terra.pearl.core.model.notification.*;
+import bio.terra.pearl.core.service.notification.email.EnrolleeEmailService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.RuleEvaluator;
 import bio.terra.pearl.core.service.workflow.DispatcherOrder;
@@ -22,10 +23,10 @@ public class NotificationDispatcher {
     private Map<NotificationDeliveryType, NotificationSender> senderMap;
 
     public NotificationDispatcher(NotificationConfigService notificationConfigService,
-                                  NotificationService notificationService, EmailService emailService) {
+                                  NotificationService notificationService, EnrolleeEmailService enrolleeEmailService) {
         this.notificationConfigService = notificationConfigService;
         this.notificationService = notificationService;
-        senderMap = Map.of(NotificationDeliveryType.EMAIL, emailService);
+        senderMap = Map.of(NotificationDeliveryType.EMAIL, enrolleeEmailService);
     }
 
     /** notifications could be triggered by just about anything, so listen to all enrollee events */

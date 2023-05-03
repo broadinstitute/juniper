@@ -26,6 +26,14 @@ public class ApplicationRoutingPaths {
         adminApiHostname = env.getProperty("env.hostnames.adminApi");
     }
 
+    public String getAdminBaseUrl() {
+        return "https://" + adminUiHostname;
+    }
+
+    public String getAdminPortalUrl(String portalShortcode) {
+        return "https://" + adminUiHostname + "/" + portalShortcode;
+    }
+
     public String getParticipantBaseUrl(PortalEnvironment portalEnv, String portalShortcode) {
         String participantHostname = portalEnv.getPortalEnvironmentConfig().getParticipantHostname();
         if (participantHostname == null) {

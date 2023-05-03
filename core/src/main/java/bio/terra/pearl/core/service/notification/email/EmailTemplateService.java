@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.notification;
+package bio.terra.pearl.core.service.notification.email;
 
 import bio.terra.pearl.core.dao.notification.EmailTemplateDao;
 import bio.terra.pearl.core.model.notification.EmailTemplate;

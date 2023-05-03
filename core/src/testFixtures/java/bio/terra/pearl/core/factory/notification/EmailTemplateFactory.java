@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.factory.notification;
 
 import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.service.notification.EmailTemplateService;
+import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import java.util.UUID;
 import org.apache.commons.lang3.RandomStringUtils;
