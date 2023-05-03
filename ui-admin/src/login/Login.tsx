@@ -4,6 +4,7 @@ import googleLogo from 'images/googleLogo.png'
 import Api, { AdminUser } from 'api/api'
 import { useUser } from 'user/UserProvider'
 import { useAuth } from 'react-oidc-context'
+import { Link } from 'react-router-dom'
 
 /** component for showing a login dialog that hides other content on the page */
 function Login() {
@@ -66,6 +67,11 @@ function Login() {
         </div> }
         { isError && <div className="text-danger text-center">Login failed</div> }
       </form>
+      <hr className="mt-2"/>
+      <div className="text-center">
+        <Link className="link-light" to="/terms">Terms of Use</Link> |{' '}
+        <Link className="link-light" to="/privacy">Privacy Policy</Link>
+      </div>
     </div>
   </div>
 }
