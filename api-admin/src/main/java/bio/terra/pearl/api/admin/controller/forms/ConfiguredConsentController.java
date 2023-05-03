@@ -42,8 +42,9 @@ public class ConfiguredConsentController implements ConfiguredConsentApi {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     StudyEnvironmentConsent configuredForm =
         objectMapper.convertValue(body, StudyEnvironmentConsent.class);
-    var savedConfig = consentFormExtService
-        .updateConfiguredConsent(portalShortcode, environmentName, configuredForm, adminUser);
+    var savedConfig =
+        consentFormExtService.updateConfiguredConsent(
+            portalShortcode, environmentName, configuredForm, adminUser);
     return ResponseEntity.ok(objectMapper.convertValue(savedConfig, ConfiguredConsentDto.class));
   }
 }

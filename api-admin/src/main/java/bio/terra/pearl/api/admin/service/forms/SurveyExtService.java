@@ -18,8 +18,10 @@ public class SurveyExtService {
   private SurveyService surveyService;
   private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
 
-  public SurveyExtService(AuthUtilService authUtilService, SurveyService surveyService,
-                          StudyEnvironmentSurveyService studyEnvironmentSurveyService) {
+  public SurveyExtService(
+      AuthUtilService authUtilService,
+      SurveyService surveyService,
+      StudyEnvironmentSurveyService studyEnvironmentSurveyService) {
     this.authUtilService = authUtilService;
     this.surveyService = surveyService;
     this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
@@ -30,16 +32,19 @@ public class SurveyExtService {
     return surveyService.createNewVersion(portal.getId(), survey);
   }
 
-  public StudyEnvironmentSurvey updateConfiguredSurvey(String portalShortcode,
-                                                         EnvironmentName envName,
-                                                         StudyEnvironmentSurvey updatedObj,
-                                                         AdminUser user) {
+  public StudyEnvironmentSurvey updateConfiguredSurvey(
+      String portalShortcode,
+      EnvironmentName envName,
+      StudyEnvironmentSurvey updatedObj,
+      AdminUser user) {
     authUtilService.authUserToPortal(user, portalShortcode);
     if (user.isSuperuser() || EnvironmentName.sandbox.equals(envName)) {
-      StudyEnvironmentSurvey existing = studyEnvironmentSurveyService.find(updatedObj.getId()).get();
+      StudyEnvironmentSurvey existing =
+          studyEnvironmentSurveyService.find(updatedObj.getId()).get();
       BeanUtils.copyProperties(updatedObj, existing);
       return studyEnvironmentSurveyService.update(existing);
     }
-    throw new PermissionDeniedException("You do not have permission to update the {} environment".formatted(envName));
+    throw new PermissionDeniedException(
+        "You do not have permission to update the {} environment".formatted(envName));
   }
 }

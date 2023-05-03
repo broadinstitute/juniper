@@ -18,26 +18,31 @@ public class ConsentFormExtService {
   private ConsentFormService consentFormService;
   private StudyEnvironmentConsentService studyEnvironmentConsentService;
 
-  public ConsentFormExtService(AuthUtilService authUtilService, ConsentFormService consentFormService) {
+  public ConsentFormExtService(
+      AuthUtilService authUtilService, ConsentFormService consentFormService) {
     this.authUtilService = authUtilService;
     this.consentFormService = consentFormService;
   }
 
-  public ConsentForm createNewVersion(String portalShortcode, ConsentForm consentForm, AdminUser user) {
+  public ConsentForm createNewVersion(
+      String portalShortcode, ConsentForm consentForm, AdminUser user) {
     Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
     return consentFormService.createNewVersion(portal.getId(), consentForm);
   }
 
-  public StudyEnvironmentConsent updateConfiguredConsent(String portalShortcode,
-                                                         EnvironmentName envName,
-                                                         StudyEnvironmentConsent updatedObj,
-                                                         AdminUser user) {
+  public StudyEnvironmentConsent updateConfiguredConsent(
+      String portalShortcode,
+      EnvironmentName envName,
+      StudyEnvironmentConsent updatedObj,
+      AdminUser user) {
     authUtilService.authUserToPortal(user, portalShortcode);
     if (user.isSuperuser() || EnvironmentName.sandbox.equals(envName)) {
-      StudyEnvironmentConsent existing = studyEnvironmentConsentService.find(updatedObj.getId()).get();
+      StudyEnvironmentConsent existing =
+          studyEnvironmentConsentService.find(updatedObj.getId()).get();
       BeanUtils.copyProperties(updatedObj, existing);
       return studyEnvironmentConsentService.update(existing);
     }
-    throw new PermissionDeniedException("You do not have permission to update the {} environment".formatted(envName));
+    throw new PermissionDeniedException(
+        "You do not have permission to update the {} environment".formatted(envName));
   }
 }

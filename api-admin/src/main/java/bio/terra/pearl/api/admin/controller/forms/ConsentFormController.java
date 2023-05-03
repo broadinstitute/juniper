@@ -38,9 +38,11 @@ public class ConsentFormController implements ConsentFormApi {
     }
     ConsentForm consentForm = objectMapper.convertValue(body, ConsentForm.class);
 
-    ConsentForm savedConsent = consentFormExtService.createNewVersion(portalShortcode, consentForm, adminUser);
+    ConsentForm savedConsent =
+        consentFormExtService.createNewVersion(portalShortcode, consentForm, adminUser);
 
-    VersionedFormDto savedConsentDto = objectMapper.convertValue(savedConsent, VersionedFormDto.class);
+    VersionedFormDto savedConsentDto =
+        objectMapper.convertValue(savedConsent, VersionedFormDto.class);
     return ResponseEntity.ok(savedConsentDto);
   }
 }

@@ -7,11 +7,9 @@ import bio.terra.pearl.api.admin.service.forms.SurveyExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
-import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -45,8 +43,9 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
     StudyEnvironmentSurvey configuredSurvey =
         objectMapper.convertValue(body, StudyEnvironmentSurvey.class);
 
-    StudyEnvironmentSurvey savedSes = surveyExtService
-        .updateConfiguredSurvey(portalShortcode, environmentName, configuredSurvey, adminUser);
+    StudyEnvironmentSurvey savedSes =
+        surveyExtService.updateConfiguredSurvey(
+            portalShortcode, environmentName, configuredSurvey, adminUser);
     return ResponseEntity.ok(objectMapper.convertValue(savedSes, ConfiguredSurveyDto.class));
   }
 }
