@@ -631,18 +631,8 @@
         "elements": [
           {
             "name": "oh_oh_medList_otherMeds",
-            "type": "matrixdynamic",
-            "title": "List any additional medications below.",
-            "rowCount": 1,
-            "addRowText": "Add medication",
-            "columns": [
-              {
-                "name": "medName",
-                "cellType": "text",
-                "title": "Medication name",
-                "isRequired": true
-              }
-            ]
+            "type": "medications",
+            "title": "List any additional medications below."
           }
         ]
       }

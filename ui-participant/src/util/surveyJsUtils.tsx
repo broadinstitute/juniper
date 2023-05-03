@@ -27,6 +27,8 @@ import _keys from 'lodash/keys'
 import _isEqual from 'lodash/isEqual'
 import { usePortalEnv } from 'providers/PortalProvider'
 import './formatDate'
+import './MultipleComboboxQuestion'
+import './MedicationsQuestion'
 
 const SURVEY_JS_OTHER_SUFFIX = '-Comment'
 
