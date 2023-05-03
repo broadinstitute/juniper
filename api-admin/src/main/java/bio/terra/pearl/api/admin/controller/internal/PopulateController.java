@@ -37,6 +37,13 @@ public class PopulateController implements PopulateApi {
   }
 
   @Override
+  public ResponseEntity<Object> populateAdminConfig(Boolean overwrite) {
+    AdminUser user = authUtilService.requireAdminUser(request);
+    var populatedObj = populateExtService.populateAdminConfig(user, Boolean.TRUE.equals(overwrite));
+    return ResponseEntity.ok(populatedObj);
+  }
+
+  @Override
   public ResponseEntity<Object> populatePortal(String filePathName, Boolean overwrite) {
     AdminUser user = authUtilService.requireAdminUser(request);
     var populatedObj =

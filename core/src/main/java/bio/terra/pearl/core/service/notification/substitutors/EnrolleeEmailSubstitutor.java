@@ -1,8 +1,9 @@
-package bio.terra.pearl.core.service.notification;
+package bio.terra.pearl.core.service.notification.substitutors;
 
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
+import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import java.util.Map;
@@ -15,7 +16,7 @@ import org.slf4j.LoggerFactory;
 /** handles template replacement.  Note that this class is not a Spring component since a separate instance should be created
  * for each email to be sent. */
 public class EnrolleeEmailSubstitutor implements StringLookup {
-    private static final Logger logger = LoggerFactory.getLogger(StringLookup.class);
+    private static final Logger logger = LoggerFactory.getLogger(EnrolleeEmailSubstitutor.class);
     private Map<String, Object> valueMap;
     private EnrolleeRuleData enrolleeRuleData;
     private NotificationContextInfo contextInfo;

@@ -11,7 +11,7 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.VersionedEntityService;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
-import bio.terra.pearl.core.service.notification.EmailTemplateService;
+import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
