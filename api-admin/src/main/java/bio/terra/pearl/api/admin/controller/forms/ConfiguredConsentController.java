@@ -1,4 +1,4 @@
-package bio.terra.pearl.api.admin.controller;
+package bio.terra.pearl.api.admin.controller.forms;
 
 import bio.terra.pearl.api.admin.api.ConfiguredConsentApi;
 import bio.terra.pearl.api.admin.model.ConfiguredConsentDto;

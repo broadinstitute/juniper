@@ -1,8 +1,10 @@
-package bio.terra.pearl.api.admin.controller;
+package bio.terra.pearl.api.admin.controller.forms;
 
 import bio.terra.pearl.api.admin.api.ConfiguredSurveyApi;
 import bio.terra.pearl.api.admin.model.ConfiguredSurveyDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.forms.SurveyExtService;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
@@ -18,17 +20,17 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
   private AuthUtilService requestService;
   private HttpServletRequest request;
   private ObjectMapper objectMapper;
-  private StudyEnvironmentSurveyService studyEnvSurveyService;
+  private SurveyExtService surveyExtService;
 
   public ConfiguredSurveyController(
       AuthUtilService requestService,
       HttpServletRequest request,
       ObjectMapper objectMapper,
-      StudyEnvironmentSurveyService studyEnvSurveyService) {
+      SurveyExtService surveyExtService) {
     this.requestService = requestService;
     this.request = request;
     this.objectMapper = objectMapper;
-    this.studyEnvSurveyService = studyEnvSurveyService;
+    this.surveyExtService = surveyExtService;
   }
 
   @Override
@@ -39,13 +41,12 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
       UUID configuredSurveyId,
       ConfiguredSurveyDto body) {
     AdminUser adminUser = requestService.requireAdminUser(request);
-    requestService.authUserToPortal(adminUser, portalShortcode);
-
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     StudyEnvironmentSurvey configuredSurvey =
         objectMapper.convertValue(body, StudyEnvironmentSurvey.class);
-    StudyEnvironmentSurvey existing = studyEnvSurveyService.find(configuredSurvey.getId()).get();
-    BeanUtils.copyProperties(body, existing);
-    StudyEnvironmentSurvey savedSes = studyEnvSurveyService.update(existing);
+
+    StudyEnvironmentSurvey savedSes = surveyExtService
+        .updateConfiguredSurvey(portalShortcode, environmentName, configuredSurvey, adminUser);
     return ResponseEntity.ok(objectMapper.convertValue(savedSes, ConfiguredSurveyDto.class));
   }
 }

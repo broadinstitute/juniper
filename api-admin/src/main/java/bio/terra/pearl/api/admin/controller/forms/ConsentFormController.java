@@ -1,32 +1,31 @@
-package bio.terra.pearl.api.admin.controller;
+package bio.terra.pearl.api.admin.controller.forms;
 
-import bio.terra.pearl.api.admin.api.SurveyApi;
+import bio.terra.pearl.api.admin.api.ConsentFormApi;
 import bio.terra.pearl.api.admin.model.VersionedFormDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.forms.ConsentFormExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.portal.Portal;
-import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.service.survey.SurveyService;
+import bio.terra.pearl.core.model.consent.ConsentForm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class SurveyController implements SurveyApi {
+public class ConsentFormController implements ConsentFormApi {
   private AuthUtilService requestService;
   private HttpServletRequest request;
-  private SurveyService surveyService;
+  private ConsentFormExtService consentFormExtService;
   private ObjectMapper objectMapper;
 
-  public SurveyController(
+  public ConsentFormController(
       AuthUtilService requestService,
       HttpServletRequest request,
-      SurveyService surveyService,
+      ConsentFormExtService consentFormExtService,
       ObjectMapper objectMapper) {
     this.requestService = requestService;
     this.request = request;
-    this.surveyService = surveyService;
+    this.consentFormExtService = consentFormExtService;
     this.objectMapper = objectMapper;
   }
 
@@ -34,16 +33,14 @@ public class SurveyController implements SurveyApi {
   public ResponseEntity<VersionedFormDto> newVersion(
       String portalShortcode, String stableId, VersionedFormDto body) {
     AdminUser adminUser = requestService.requireAdminUser(request);
-    Portal portal = requestService.authUserToPortal(adminUser, portalShortcode);
     if (!stableId.equals(body.getStableId())) {
-      throw new IllegalArgumentException("survey parameters don't match");
+      throw new IllegalArgumentException("form parameters don't match");
     }
-    Survey survey = objectMapper.convertValue(body, Survey.class);
+    ConsentForm consentForm = objectMapper.convertValue(body, ConsentForm.class);
 
-    Survey savedSurvey = surveyService.createNewVersion(adminUser, portal.getId(), survey);
+    ConsentForm savedConsent = consentFormExtService.createNewVersion(portalShortcode, consentForm, adminUser);
 
-    VersionedFormDto savedSurveyDto =
-        objectMapper.convertValue(savedSurvey, VersionedFormDto.class);
-    return ResponseEntity.ok(savedSurveyDto);
+    VersionedFormDto savedConsentDto = objectMapper.convertValue(savedConsent, VersionedFormDto.class);
+    return ResponseEntity.ok(savedConsentDto);
   }
 }
