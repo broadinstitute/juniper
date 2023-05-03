@@ -4,7 +4,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
 import { Link } from 'react-router-dom'
-import { getExportDataBrowserPath, StudyEnvContextT } from '../StudyEnvironmentRouter'
+import { getDataRepoDashboardPath, getExportDataBrowserPath, StudyEnvContextT } from '../StudyEnvironmentRouter'
 import {
   ColumnDef,
   flexRender,
@@ -109,6 +109,8 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
                 aria-label="show or hide export modal">
                 Download
               </button>
+              <span className="px-1">|</span>
+              <Link to={getDataRepoDashboardPath(currentEnvPath)} className="mx-2">Terra Data Repo</Link>
               <ExportDataControl studyEnvContext={studyEnvContext} show={showExportModal} setShow={setShowExportModal}/>
             </div>
             <ColumnVisibilityControl table={table}/>

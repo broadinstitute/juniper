@@ -578,6 +578,36 @@ paths:
                 type: object
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/datarepo/dataset:
+    get:
+      summary: Gets information about the Data Repo dataset
+      tags: [ datarepo ]
+      operationId: getDatasetForStudyEnvironment
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: dataset
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/datarepo/dataset/jobs:
+    get:
+      summary: Gets the job history for a study environment TDR dataset
+      tags: [ datarepo ]
+      operationId: getDatasetJobHistoryForStudyEnvironment
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: dataset job history
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
 components:
   responses:
     SystemStatusResponse:

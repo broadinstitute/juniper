@@ -34,10 +34,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class DataRepoExportService {
@@ -84,6 +81,14 @@ public class DataRepoExportService {
         this.portalStudyDao = portalStudyDao;
         this.studyDao = studyDao;
         this.studyEnvironmentDao = studyEnvironmentDao;
+    }
+
+    public Optional<Dataset> getDatasetForStudyEnvironment(UUID studyEnvironmentId) {
+        return datasetDao.findByStudyEnvironmentId(studyEnvironmentId).stream().findFirst(); //todo: better handling than findFirst
+    }
+
+    public List<DataRepoJob> getDatasetJobHistoryForStudyEnvironment(UUID studyEnvironmentId) {
+        return dataRepoJobDao.findByStudyEnvironmentId(studyEnvironmentId);
     }
 
     public void createDatasetsForStudyEnvironments() {

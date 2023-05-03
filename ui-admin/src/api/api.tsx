@@ -389,6 +389,29 @@ export type ExportData = {
   valueMaps: Record<string, string>[]
 }
 
+export type DatasetDetails = {
+  id: string,
+  createdAt: number,
+  lastUpdatedAt: number,
+  studyEnvironmentId: string,
+  datasetId: string,
+  datasetName: string,
+  lastExported: number
+
+}
+
+export type DatasetJobHistory = {
+  id: string,
+  createdAt: number,
+  lastUpdatedAt: number,
+  studyEnvironmentId: string,
+  tdrJobId: string,
+  datasetName: string,
+  status: string
+  jobType: string
+
+}
+
 let bearerToken: string | null = null
 export const API_ROOT = '/api'
 
@@ -626,6 +649,20 @@ export default {
       searchParams.set(prop, (exportOptionsParams[prop] as string | boolean).toString())
     }
     url += searchParams.toString()
+    return fetch(url,  this.getGetInit())
+  },
+
+  getDatasetForStudyEnvironment(portalShortcode: string, studyShortcode: string,
+    envName: string):
+      Promise<Response> {
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/dataset`
+    return fetch(url,  this.getGetInit())
+  },
+
+  getDatasetJobHistoryForStudyEnvironment(portalShortcode: string, studyShortcode: string,
+    envName: string):
+      Promise<Response> {
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/dataset/jobs`
     return fetch(url,  this.getGetInit())
   },
 

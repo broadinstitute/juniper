@@ -14,6 +14,7 @@ import ParticipantsRouter from './participants/ParticipantsRouter'
 import NotificationConfigView from './notifications/NotificationConfigView'
 import QuestionScratchbox from './surveys/editor/QuestionScratchbox'
 import ExportDataBrowser from './participants/export/ExportDataBrowser'
+import DataRepoDashboard from './participants/datarepo/DataRepoDashboard'
 
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
@@ -68,6 +69,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       </Route>
       <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
       <Route path="export/dataBrowser" element={<ExportDataBrowser studyEnvContext={studyEnvContext}/>}/>
+      <Route path="export/dataRepo" element={<DataRepoDashboard studyEnvContext={studyEnvContext}/>}/>
       <Route index element={<StudyContent studyEnvContext={studyEnvContext}/>}/>
       <Route path="*" element={<div>Unknown study environment page</div>}/>
     </Routes>
@@ -86,4 +88,8 @@ export const notificationConfigPath = (config: NotificationConfig, currentEnvPat
 
 export const getExportDataBrowserPath = (currentEnvPath: string) => {
   return `${currentEnvPath}/export/dataBrowser`
+}
+
+export const getDataRepoDashboardPath = (currentEnvPath: string) => {
+  return `${currentEnvPath}/export/dataRepo`
 }
