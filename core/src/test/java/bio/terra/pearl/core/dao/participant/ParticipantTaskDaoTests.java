@@ -1,12 +1,12 @@
 package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.notification.NotificationConfigFactory;
 import bio.terra.pearl.core.factory.notification.NotificationFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
-import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
+import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
+import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
@@ -16,12 +16,9 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
-import bio.terra.pearl.core.service.notification.NotificationService;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import java.time.Duration;
 import java.util.List;
-import org.apache.commons.lang3.RandomStringUtils;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Test;
@@ -35,7 +32,7 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testFindByStatusAndTime");
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testFindByStatusAndTime");
         var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTime", portalEnv, studyEnv);
-        ParticipantTask newTask1 = participantTaskService.create(taskForUser(enrolleeBundle, TaskStatus.NEW).build());
+        ParticipantTask newTask1 = participantTaskFactory.buildPersisted(enrolleeBundle, TaskStatus.NEW, TaskType.CONSENT);
 
         // check status filtering
         var tasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
@@ -80,10 +77,10 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
         var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
         var enrolleeBundle2 = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
 
-        ParticipantTask task1_1 = participantTaskService.create(taskForUser(enrolleeBundle, TaskStatus.NEW).build());
-        ParticipantTask task1_2 = participantTaskService.create(taskForUser(enrolleeBundle, TaskStatus.NEW).build());
-        ParticipantTask task1_3 = participantTaskService.create(taskForUser(enrolleeBundle, TaskStatus.COMPLETE).build());
-        ParticipantTask task2_1 = participantTaskService.create(taskForUser(enrolleeBundle2, TaskStatus.NEW).build());
+        ParticipantTask task1_1 = participantTaskFactory.buildPersisted(enrolleeBundle, TaskStatus.NEW, TaskType.CONSENT);
+        ParticipantTask task1_2 = participantTaskFactory.buildPersisted(enrolleeBundle, TaskStatus.NEW, TaskType.CONSENT);
+        ParticipantTask task1_3 = participantTaskFactory.buildPersisted(enrolleeBundle, TaskStatus.COMPLETE, TaskType.CONSENT);
+        ParticipantTask task2_1 = participantTaskFactory.buildPersisted(enrolleeBundle2, TaskStatus.NEW, TaskType.CONSENT);
 
         var enrolleeTasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), task1_1.getTaskType(),
                 Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(1), List.of(TaskStatus.NEW));
@@ -109,28 +106,14 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
         assertThat(tasksRecentNotification.get(0).getEnrolleeId(), equalTo(enrolleeBundle2.enrollee().getId())); // only the second enrollee's task should appear
     }
 
-    private ParticipantTask.ParticipantTaskBuilder taskForUser(EnrolleeFactory.EnrolleeBundle enrolleeBundle, TaskStatus status) {
-        return ParticipantTask.builder()
-                .status(status)
-                .enrolleeId(enrolleeBundle.enrollee().getId())
-                .taskType(TaskType.CONSENT)
-                .studyEnvironmentId(enrolleeBundle.enrollee().getStudyEnvironmentId())
-                .targetName(RandomStringUtils.randomAlphabetic(6))
-                .portalParticipantUserId(enrolleeBundle.portalParticipantUser().getId());
-    }
-
     @Autowired
     private ParticipantTaskDao participantTaskDao;
+    @Autowired
+    private ParticipantTaskFactory participantTaskFactory;
     @Autowired
     private StudyEnvironmentFactory studyEnvironmentFactory;
     @Autowired
     private PortalEnvironmentFactory portalEnvironmentFactory;
-    @Autowired
-    private ParticipantUserFactory participantUserFactory;
-    @Autowired
-    private NotificationService notificationService;
-    @Autowired
-    private EnrolleeService enrolleeService;
     @Autowired
     private ParticipantTaskService participantTaskService;
     @Autowired

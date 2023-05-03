@@ -22,8 +22,8 @@ public class ParticipantTaskQueryService {
     public List<ParticipantTaskDao.EnrolleeWithTasks> findByStatusAndTime(UUID studyEnvironmentId,
                                                                           TaskType taskType,
                                                                           Duration timeSinceCreation,
-                                                                          Duration timeSinceLastNotification,
                                                                           Duration maxTimeSinceCreation,
+                                                                          Duration timeSinceLastNotification,
                                                                           List<TaskStatus> statuses) {
         return participantTaskDao.findByStatusAndTime(studyEnvironmentId, taskType, timeSinceCreation, maxTimeSinceCreation,
                 timeSinceLastNotification, statuses);
