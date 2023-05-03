@@ -13,6 +13,7 @@ import PortalEnvPublishControl from './publish/PortalEnvPublishControl'
 import { faCogs } from '@fortawesome/free-solid-svg-icons/faCogs'
 import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons/faClipboardCheck'
 import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers'
+import { isSuperuser } from '../user/UserProvider'
 
 
 const ENVIRONMENT_ICON_MAP: Record<string, React.ReactNode> = {
@@ -29,7 +30,7 @@ export default function PortalEnvView({ portal, portalEnv }:
   return <div className="bg-white p-3 mb-2">
     <div className="d-flex align-items-baseline">
       <h3 className="h5 text-capitalize me-4">{envIcon} {portalEnv.environmentName}</h3>
-      <PortalEnvPublishControl portal={portal} destEnv={portalEnv}/>
+      { isSuperuser() && <PortalEnvPublishControl portal={portal} destEnv={portalEnv}/> }
     </div>
 
     <div className="ms-4 mt-3">

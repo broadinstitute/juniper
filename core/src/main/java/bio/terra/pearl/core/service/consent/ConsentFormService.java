@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.service.consent;
 
 import bio.terra.pearl.core.dao.consent.ConsentFormDao;
-import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.VersionedEntityService;
@@ -32,7 +31,7 @@ public class ConsentFormService extends ImmutableEntityService<ConsentForm, Cons
     }
 
     @Transactional
-    public ConsentForm createNewVersion(AdminUser adminUser, UUID portalId, ConsentForm consentForm) {
+    public ConsentForm createNewVersion(UUID portalId, ConsentForm consentForm) {
         ConsentForm newConsent = new ConsentForm();
         BeanUtils.copyProperties(consentForm, newConsent, "id", "version", "createdAt", "lastUpdatedAt");
         newConsent.setPortalId(portalId);
