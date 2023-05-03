@@ -84,12 +84,13 @@ const IdleWarningModal = ({ secondsUntilTimedOut, onDismiss }: {
 }) => {
   const minutes = Math.floor(secondsUntilTimedOut / 60)
   const seconds = secondsUntilTimedOut % 60
+  const timeRemaining = `${minutes}:${seconds.toString().padStart(2, '0')}`
   return <Modal show={true} onHide={onDismiss}>
     <Modal.Header>
       <Modal.Title>Your session is about to expire</Modal.Title>
     </Modal.Header>
     <Modal.Body>
-      <p>To maintain security and protect your data, you will be logged out in {minutes}:{seconds}.</p>
+      <p>To maintain security and protect your data, you will be logged out in {timeRemaining}.</p>
     </Modal.Body>
   </Modal>
 }
