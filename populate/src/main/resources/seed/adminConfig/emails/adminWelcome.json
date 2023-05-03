@@ -1,0 +1,7 @@
+{
+  "name": "New admin user",
+  "bodyPopulateFile": "adminWelcome.html",
+  "subject": "Welcome to Juniper!",
+  "stableId": "broad_admin_welcome",
+  "version": 1
+}

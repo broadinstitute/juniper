@@ -79,7 +79,7 @@ function ConsentView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
 
   const { portal, currentEnv, study } = studyEnvContext
   const [searchParams] = useSearchParams()
-  const isReadonly = searchParams.get('mode') === 'view'
+  const isReadOnly = searchParams.get('readOnly') === 'true'
 
   if (!consentStableId) {
     return <span>you need to specify the stableId of the consentForm</span>
@@ -89,7 +89,7 @@ function ConsentView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   if (!consent) {
     return <span>The consent {consentStableId} does not exist in this environment</span>
   }
-  return <RawConsentView portal={portal} study={study} currentEnv={currentEnv} consent={consent} readOnly={isReadonly}/>
+  return <RawConsentView portal={portal} study={study} currentEnv={currentEnv} consent={consent} readOnly={isReadOnly}/>
 }
 
 export default ConsentView

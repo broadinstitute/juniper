@@ -73,7 +73,7 @@ function SurveyView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
 
   const { portal, currentEnv, study } = studyEnvContext
   const [searchParams] = useSearchParams()
-  const isReadonly = searchParams.get('mode') === 'view'
+  const isReadOnly = searchParams.get('readOnly') === 'true'
 
   if (!surveyStableId) {
     return <span>you need to specify the stableId of the survey</span>
@@ -83,7 +83,7 @@ function SurveyView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   if (!survey) {
     return <span>The survey {surveyStableId} does not exist in this environment</span>
   }
-  return <RawSurveyView portal={portal} study={study} currentEnv={currentEnv} survey={survey} readOnly={isReadonly}/>
+  return <RawSurveyView portal={portal} study={study} currentEnv={currentEnv} survey={survey} readOnly={isReadOnly}/>
 }
 
 export default SurveyView

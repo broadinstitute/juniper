@@ -1,34 +1,34 @@
-package bio.terra.pearl.api.admin.controller;
+package bio.terra.pearl.api.admin.controller.forms;
 
 import bio.terra.pearl.api.admin.api.ConfiguredConsentApi;
 import bio.terra.pearl.api.admin.model.ConfiguredConsentDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.forms.ConsentFormExtService;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
-import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 @Controller
 public class ConfiguredConsentController implements ConfiguredConsentApi {
-  private AuthUtilService requestService;
+  private AuthUtilService authUtilService;
   private HttpServletRequest request;
   private ObjectMapper objectMapper;
-  private StudyEnvironmentConsentService studyEnvConsentService;
+  private ConsentFormExtService consentFormExtService;
 
   public ConfiguredConsentController(
-      AuthUtilService requestService,
+      AuthUtilService authUtilService,
       HttpServletRequest request,
       ObjectMapper objectMapper,
-      StudyEnvironmentConsentService studyEnvConsentService) {
-    this.requestService = requestService;
+      ConsentFormExtService consentFormExtService) {
     this.request = request;
     this.objectMapper = objectMapper;
-    this.studyEnvConsentService = studyEnvConsentService;
+    this.consentFormExtService = consentFormExtService;
+    this.authUtilService = authUtilService;
   }
 
   @Override
@@ -38,14 +38,13 @@ public class ConfiguredConsentController implements ConfiguredConsentApi {
       String envName,
       UUID configuredConsentId,
       ConfiguredConsentDto body) {
-    AdminUser adminUser = requestService.requireAdminUser(request);
-    requestService.authUserToPortal(adminUser, portalShortcode);
-
-    StudyEnvironmentConsent configuredSurvey =
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    StudyEnvironmentConsent configuredForm =
         objectMapper.convertValue(body, StudyEnvironmentConsent.class);
-    StudyEnvironmentConsent existing = studyEnvConsentService.find(configuredSurvey.getId()).get();
-    BeanUtils.copyProperties(body, existing);
-    StudyEnvironmentConsent savedConsent = studyEnvConsentService.update(existing);
-    return ResponseEntity.ok(objectMapper.convertValue(savedConsent, ConfiguredConsentDto.class));
+    var savedConfig =
+        consentFormExtService.updateConfiguredConsent(
+            portalShortcode, environmentName, configuredForm, adminUser);
+    return ResponseEntity.ok(objectMapper.convertValue(savedConfig, ConfiguredConsentDto.class));
   }
 }
