@@ -46,22 +46,25 @@ type IdleData = {
  */
 export const calculateIdleData = ({ currentTime, lastRecordedActivity, maxIdleSessionDuration, idleWarningDuration }: {
   currentTime: number,
-  lastRecordedActivity: number | undefined,
+  lastRecordedActivity: number,
   maxIdleSessionDuration: number,
   idleWarningDuration: number
 }): IdleData => {
-  const lastActiveTime = lastRecordedActivity ?? currentTime
-  const timeoutTime = lastActiveTime + maxIdleSessionDuration
+  const timeoutTime = lastRecordedActivity + maxIdleSessionDuration
 
-  const timedOut = currentTime > timeoutTime
-  const showCountdown = currentTime > (timeoutTime - idleWarningDuration)
-  const millisecondsUntilTimedOut = Math.max(0, timeoutTime - currentTime)
-  const secondsUntilTimedOut = Math.floor(millisecondsUntilTimedOut / 1000) + 1
+  const timedOut = currentTime >= timeoutTime
+  const showCountdown = currentTime >= (timeoutTime - idleWarningDuration)
+  const millisecondsUntilTimedOut = timeoutTime - currentTime
+  const secondsUntilTimedOut = Math.floor((millisecondsUntilTimedOut - 1) / 1000)
+  const millisecondsUntilNextSecond = millisecondsUntilTimedOut - secondsUntilTimedOut * 1000;
   const millisecondsUntilNextUpdate = showCountdown
-    ? Math.max(250, millisecondsUntilTimedOut - secondsUntilTimedOut * 1000)
+    ? Math.max(250, millisecondsUntilNextSecond)
     : Math.max(250, millisecondsUntilTimedOut - idleWarningDuration)
 
-  return { timedOut, showCountdown, secondsUntilTimedOut, millisecondsUntilNextUpdate }
+  // Now that we've done all the calculations, return a one-based secondsUntilTimedOut to make it more appropriate for
+  // display to the user
+  const displaySecondsUntilTimeout = Math.max(0, secondsUntilTimedOut + 1)
+  return { timedOut, showCountdown, secondsUntilTimedOut: displaySecondsUntilTimeout, millisecondsUntilNextUpdate }
 }
 
 export const IdleStatusMonitor = ({ maxIdleSessionDuration, idleWarningDuration }: {
@@ -102,10 +105,9 @@ const InactivityTimer = ({ maxIdleSessionDuration, idleWarningDuration, doSignOu
 }) => {
   const [idleModalVisible, setIdleModalVisible] = useState(false)
   const [currentTime, setNextUpdateDelay] = useCurrentTime()
-  const lastRecordedActivity = useRef<number>()
+  const lastRecordedActivity = useRef<number>(Date.now())
 
   const setLastActive = (lastActive: number) => lastRecordedActivity.current = lastActive
-  const clearLastActive = () => lastRecordedActivity.current = undefined
 
   const { timedOut, showCountdown, secondsUntilTimedOut, millisecondsUntilNextUpdate } = calculateIdleData({
     currentTime, lastRecordedActivity: lastRecordedActivity.current, maxIdleSessionDuration, idleWarningDuration
@@ -128,7 +130,6 @@ const InactivityTimer = ({ maxIdleSessionDuration, idleWarningDuration, doSignOu
 
   useEffect(() => {
     if (timedOut) {
-      clearLastActive()
       doSignOut()
     }
   }, [doSignOut, timedOut])
