@@ -56,9 +56,8 @@ export const calculateIdleData = ({ currentTime, lastRecordedActivity, maxIdleSe
   const showCountdown = currentTime >= (timeoutTime - idleWarningDuration)
   const millisecondsUntilTimedOut = timeoutTime - currentTime
   const secondsUntilTimedOut = Math.floor((millisecondsUntilTimedOut - 1) / 1000)
-  const millisecondsUntilNextSecond = millisecondsUntilTimedOut - secondsUntilTimedOut * 1000;
   const millisecondsUntilNextUpdate = showCountdown
-    ? Math.max(250, millisecondsUntilNextSecond)
+    ? Math.max(250, millisecondsUntilTimedOut - secondsUntilTimedOut * 1000)
     : Math.max(250, millisecondsUntilTimedOut - idleWarningDuration)
 
   // Now that we've done all the calculations, return a one-based secondsUntilTimedOut to make it more appropriate for
