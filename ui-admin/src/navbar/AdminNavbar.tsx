@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { UserContextT, useUser } from 'user/UserProvider'
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars'
 
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, NavLinkProps } from 'react-router-dom'
 import { NavbarContext, NavbarContextT } from './NavbarProvider'
 
 /** note we name this adminNavbar to avoid naming conflicts with bootstrap navbar */
@@ -69,21 +69,36 @@ function AdminNavbar({ breadCrumbs, sidebarContent, showSidebar, setShowSidebar 
         </div>
       </div>
     </nav>
-    {(showSidebar && sidebarContent) && <div style={{
-      position: 'absolute',
-      top: '56px',
-      backgroundColor: 'rgb(92, 101, 117)',
-      maxWidth: '280px',
-      minWidth: '280px',
-      height: 'calc(100% - 56px)',
-      color: '#f0f0f0',
-      zIndex: 80
-    }} ref={sidebarRef}>
-      { sidebarContent.map((content, index) => <div key={index}>
-        {content}
-        <hr/>
-      </div>)}
-    </div>}
+    {showSidebar && (
+      <div
+        ref={sidebarRef}
+        style={{
+          position: 'absolute',
+          top: '56px',
+          backgroundColor: 'rgb(92, 101, 117)',
+          maxWidth: '280px',
+          minWidth: '280px',
+          height: 'calc(100% - 56px)',
+          display: 'flex',
+          flexDirection: 'column',
+          color: '#f0f0f0',
+          zIndex: 80
+        }}
+      >
+        <div className="flex-grow-1">
+          {sidebarContent && sidebarContent.map((content, index) => (
+            <div key={index}>
+              {content}
+              <hr/>
+            </div>
+          ))}
+        </div>
+        <div className="p-3">
+          <SidebarNavLink to="/terms" style={{ display: 'inline' }}>Terms of Use</SidebarNavLink> |{' '}
+          <SidebarNavLink to="/privacy" style={{ display: 'inline' }}>Privacy Policy</SidebarNavLink>
+        </div>
+      </div>
+    )}
   </>
 }
 
@@ -111,12 +126,16 @@ export function SidebarContent({ children }: {children: React.ReactNode}) {
 }
 
 /** renders a link in the sidebar with appropriate style and onClick handler to close the sidebar when clicked */
-export function SidebarNavLink({ to, children }: {to: string, children: React.ReactNode}) {
+export function SidebarNavLink(props: NavLinkProps) {
   const { setShowSidebar } = useContext(NavbarContext)
-  return <NavLink to={to} className="nav-link" onClick={() => setShowSidebar(false)}
-    style={{ color: '#fff' }}>
-    {children}
-  </NavLink>
+  return (
+    <NavLink
+      {...props}
+      className="nav-link"
+      onClick={() => setShowSidebar(false)}
+      style={{ ...props.style, color: '#fff' }}
+    />
+  )
 }
 
 /**

@@ -20,6 +20,8 @@ import { getOidcConfig } from 'authConfig'
 import { AuthProvider } from 'react-oidc-context'
 import PortalRouter from './portal/PortalRouter'
 import UserList from './user/UserList'
+import InvestigatorTermsOfUsePage from './terms/InvestigatorTermsOfUsePage'
+import PrivacyPolicyPage from 'terms/PrivacyPolicyPage'
 
 
 /** container for the app including the router  */
@@ -35,12 +37,14 @@ function App() {
                 <NavbarProvider>
                   <BrowserRouter>
                     <Routes>
-                      <Route element={<ProtectedRoute/>}>
-                        <Route path="/" element={<PageFrame/>}>
+                      <Route path="/" element={<PageFrame/>}>
+                        <Route element={<ProtectedRoute/>}>
                           <Route path="users" element={<UserList/>}/>
                           <Route path=":portalShortcode/*" element={<PortalProvider><PortalRouter/></PortalProvider>}/>
                           <Route index element={<PortalList/>}/>
                         </Route>
+                        <Route path="privacy" element={<PrivacyPolicyPage />} />
+                        <Route path="terms" element={<InvestigatorTermsOfUsePage />} />
                         <Route path="*" element={<div>Unknown page</div>}/>
                       </Route>
                       <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
