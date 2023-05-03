@@ -172,10 +172,20 @@ a {
   }
 
   .sd-element--with-frame {
+    padding: 0 !important;
     box-shadow: none !important;
   }
 
-  .pagebreak {
-    page-break-before: always;
+  .sd-element--nested.sd-panel {
+    border: none !important;
+    padding: 0 !important;
+  }
+
+  .sd-page__row {
+    page-break-after: always;
+
+    &:last-child {
+      page-break-after: unset;
+    }
   }
 }

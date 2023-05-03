@@ -69,28 +69,11 @@ const usePrintableConsent = (args: UsePrintableConsentArgs) => {
 
       const surveyContent = extractSurveyContent(form)
 
-      const surveyModel = new Model({
-        ...surveyContent,
-        pages: [
-          {
-            name: 'allPages',
-            elements: surveyContent.pages
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              .flatMap((page: any, index: number) => [
-                {
-                  type: 'html',
-                  name: `page-${index}-break`,
-                  html: '<div class="pagebreak"></div>'
-                },
-                ...page.elements
-              ])
-              .slice(1)
-          }
-        ]
-      })
+      const surveyModel = new Model(surveyContent)
       surveyModel.data = resumableData?.data
 
       surveyModel.mode = 'display'
+      surveyModel.questionsOnPageMode = 'singlePage'
 
       surveyModel.focusFirstQuestionAutomatic = false
       surveyModel.showProgressBar = 'off'
