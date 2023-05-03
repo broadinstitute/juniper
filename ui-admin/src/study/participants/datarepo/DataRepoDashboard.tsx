@@ -28,14 +28,9 @@ const DataRepoDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
     id: 'select'
   }, {
     id: 'jobType',
-    header: 'Job Type',
-    accessorKey: 'jobType'
-  }, {
-    header: 'Data Repo Job ID',
-    accessorKey: 'tdrJobId',
-    cell: info => <a href={
-      `https://jade.datarepo-dev.broadinstitute.org/activity?expandedJob=${info.getValue()}`} target="_blank"
-    >{info.getValue()} <FontAwesomeIcon icon={faExternalLink}/></a>
+    header: 'Action',
+    accessorKey: 'jobType',
+    cell: info => info.getValue() === 'CREATE_DATASET' ? 'Dataset Created' : 'Data Exported'
   }, {
     id: 'status',
     header: 'Status',
@@ -50,6 +45,12 @@ const DataRepoDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
     header: 'Last Updated',
     accessorKey: 'lastUpdatedAt',
     cell: info => instantToDefaultString(info.getValue() as unknown as number)
+  }, {
+    header: 'Data Repo Job ID',
+    accessorKey: 'tdrJobId',
+    cell: info => <a href={
+      `https://jade.datarepo-dev.broadinstitute.org/activity?expandedJob=${info.getValue()}`} target="_blank"
+    >{info.getValue()} <FontAwesomeIcon icon={faExternalLink}/></a>
   }], [datasetJobHistory?.length])
 
   const table = useReactTable({
@@ -58,7 +59,6 @@ const DataRepoDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
     state: {
       sorting
     },
-    enableRowSelection: true,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
