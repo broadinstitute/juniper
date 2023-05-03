@@ -3,7 +3,6 @@ package bio.terra.pearl.core.service.survey;
 import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
-import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
@@ -122,7 +121,7 @@ public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> imp
      * new survey.
      * */
     @Transactional
-    public Survey createNewVersion(AdminUser user, UUID portalId, Survey survey) {
+    public Survey createNewVersion(UUID portalId, Survey survey) {
         Survey newSurvey = new Survey();
         BeanUtils.copyProperties(survey, newSurvey, "id", "createdAt", "lastUpdatedAt");
         newSurvey.setPortalId(portalId);

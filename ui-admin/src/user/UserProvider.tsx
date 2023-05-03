@@ -121,3 +121,8 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     </UserContext.Provider>
   )
 }
+
+/** true iff the logged in user is a superuser */
+export const isSuperuser = () => {
+  return !!useUser().user?.superuser
+}

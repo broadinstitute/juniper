@@ -4,6 +4,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.publishing.PortalEnvironmentChange;
+import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.publishing.PortalDiffService;
 import bio.terra.pearl.core.service.publishing.PortalUpdateService;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,9 @@ public class PortalPublishingExtService {
       PortalEnvironmentChange change,
       AdminUser user) {
     authUtilService.authUserToPortal(user, portalShortcode);
+    if (!user.isSuperuser()) {
+      throw new PermissionDeniedException("You do not have permission to update environments");
+    }
     try {
       return portalUpdateService.applyChanges(portalShortcode, destEnv, change, user);
     } catch (Exception e) {

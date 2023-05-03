@@ -1,12 +1,11 @@
-package bio.terra.pearl.api.admin.controller;
+package bio.terra.pearl.api.admin.controller.forms;
 
 import bio.terra.pearl.api.admin.api.ConsentFormApi;
 import bio.terra.pearl.api.admin.model.VersionedFormDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.forms.ConsentFormExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.consent.ConsentForm;
-import bio.terra.pearl.core.model.portal.Portal;
-import bio.terra.pearl.core.service.consent.ConsentFormService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -16,17 +15,17 @@ import org.springframework.stereotype.Controller;
 public class ConsentFormController implements ConsentFormApi {
   private AuthUtilService requestService;
   private HttpServletRequest request;
-  private ConsentFormService consentFormService;
+  private ConsentFormExtService consentFormExtService;
   private ObjectMapper objectMapper;
 
   public ConsentFormController(
       AuthUtilService requestService,
       HttpServletRequest request,
-      ConsentFormService consentFormService,
+      ConsentFormExtService consentFormExtService,
       ObjectMapper objectMapper) {
     this.requestService = requestService;
     this.request = request;
-    this.consentFormService = consentFormService;
+    this.consentFormExtService = consentFormExtService;
     this.objectMapper = objectMapper;
   }
 
@@ -34,14 +33,13 @@ public class ConsentFormController implements ConsentFormApi {
   public ResponseEntity<VersionedFormDto> newVersion(
       String portalShortcode, String stableId, VersionedFormDto body) {
     AdminUser adminUser = requestService.requireAdminUser(request);
-    Portal portal = requestService.authUserToPortal(adminUser, portalShortcode);
     if (!stableId.equals(body.getStableId())) {
       throw new IllegalArgumentException("form parameters don't match");
     }
     ConsentForm consentForm = objectMapper.convertValue(body, ConsentForm.class);
 
     ConsentForm savedConsent =
-        consentFormService.createNewVersion(adminUser, portal.getId(), consentForm);
+        consentFormExtService.createNewVersion(portalShortcode, consentForm, adminUser);
 
     VersionedFormDto savedConsentDto =
         objectMapper.convertValue(savedConsent, VersionedFormDto.class);

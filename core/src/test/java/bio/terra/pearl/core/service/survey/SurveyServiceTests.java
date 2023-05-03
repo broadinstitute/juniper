@@ -63,7 +63,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         String oldContent = survey.getContent();
         String newContent = String.format("{\"pages\":[],\"title\":\"%s\"}", RandomStringUtils.randomAlphabetic(6));
         survey.setContent(newContent);
-        Survey newSurvey = surveyService.createNewVersion(user, survey.getPortalId(), survey);
+        Survey newSurvey = surveyService.createNewVersion(survey.getPortalId(), survey);
 
         Assertions.assertNotEquals(newSurvey.getId(), survey.getId());
         // check version was incremented and content was modified

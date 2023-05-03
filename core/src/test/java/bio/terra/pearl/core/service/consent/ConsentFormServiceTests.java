@@ -39,7 +39,7 @@ public class ConsentFormServiceTests extends BaseSpringBootTest {
         String oldContent = survey.getContent();
         String newContent = "totally different " + RandomStringUtils.randomAlphabetic(6);
         survey.setContent(newContent);
-        ConsentForm newSurvey = consentFormService.createNewVersion(user, survey.getPortalId(), survey);
+        ConsentForm newSurvey = consentFormService.createNewVersion(survey.getPortalId(), survey);
 
         Assertions.assertNotEquals(newSurvey.getId(), survey.getId());
         // check version was incremented and content was modified

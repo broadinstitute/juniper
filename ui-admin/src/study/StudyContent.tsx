@@ -24,6 +24,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
   const portalEnvConfig = portal.portalEnvironments
     .find(env => env.environmentName === currentEnv.environmentName)?.portalEnvironmentConfig as PortalEnvironmentConfig
   const zoneConfig = useConfig()
+  const isReadOnlyEnv = !(currentEnv.environmentName === 'sandbox')
 
   return <div className="StudyContent container">
     <div className="row">
@@ -56,7 +57,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
             </div>
             <div className="flex-grow-1 p-3">
               { preEnrollSurvey && <ul className="list-unstyled"><li>
-                <Link to={`preEnroll/${preEnrollSurvey.stableId}`}>
+                <Link to={`preEnroll/${preEnrollSurvey.stableId}?readOnly=${isReadOnlyEnv}`}>
                   {preEnrollSurvey.name} <span className="detail">v{preEnrollSurvey.version}</span>
                 </Link>
               </li></ul>}
@@ -71,7 +72,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                 { currentEnv.configuredConsents.map(config => {
                   const consentForm = config.consentForm
                   return <li key={consentForm.stableId}>
-                    <Link to={`consentForms/${consentForm.stableId}`}>
+                    <Link to={`consentForms/${consentForm.stableId}?readOnly=${isReadOnlyEnv}`}>
                       {consentForm.name} <span className="detail">v{consentForm.version}</span>
                     </Link>
                   </li>
@@ -88,7 +89,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                 { currentEnv.configuredSurveys.map(surveyConfig => {
                   const survey = surveyConfig.survey
                   return <li className="p-1" key={survey.stableId}>
-                    <Link to={`surveys/${survey.stableId}`}>
+                    <Link to={`surveys/${survey.stableId}?readOnly=${isReadOnlyEnv}`}>
                       {survey.name} <span className="detail">v{survey.version}</span>
                     </Link>
                   </li>

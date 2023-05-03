@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
 
 import {  StudyParams } from 'study/StudyRouter'
@@ -15,8 +15,9 @@ export type SurveyParamsT = StudyParams & {
 }
 
 /** Preregistration editor.  This shares a LOT in common with SurveyView */
-function RawPreRegView({ portalShortcode, currentEnv, survey, studyShortcode }:
-                      {portalShortcode: string, currentEnv: StudyEnvironment, survey: Survey, studyShortcode: string}) {
+function RawPreRegView({ portalShortcode, currentEnv, survey, studyShortcode, readOnly }:
+                      {portalShortcode: string, currentEnv: StudyEnvironment, readOnly: boolean
+                        survey: Survey, studyShortcode: string}) {
   const [currentSurvey, setCurrentSurvey] = useState(survey)
 
   /** update the version */
@@ -44,7 +45,7 @@ function RawPreRegView({ portalShortcode, currentEnv, survey, studyShortcode }:
   }
 
   return <SurveyEditorView portalShortcode={portalShortcode} currentForm={currentSurvey}
-    createNewVersion={createNewVersion} changeVersion={changeVersion}/>
+    createNewVersion={createNewVersion} changeVersion={changeVersion} readOnly={readOnly}/>
 }
 
 /** Routable component that delegates rendering to the raw view */
@@ -53,7 +54,8 @@ function PreEnrollView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT})
   const surveyStableId: string | undefined = params.surveyStableId
 
   const { portal, currentEnv, study } = studyEnvContext
-
+  const [searchParams] = useSearchParams()
+  const readOnly = searchParams.get('readOnly') === 'true'
 
   if (!surveyStableId) {
     return <span>you need to specify both name and version of the prereg urvey</span>
@@ -63,7 +65,7 @@ function PreEnrollView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT})
     return <span>The survey {surveyStableId} does not exist on this study</span>
   }
   return <RawPreRegView portalShortcode={portal.shortcode} currentEnv={currentEnv}
-    survey={survey} studyShortcode={study.shortcode}/>
+    survey={survey} studyShortcode={study.shortcode} readOnly={readOnly}/>
 }
 
 export default PreEnrollView
