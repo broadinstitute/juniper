@@ -427,28 +427,21 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async fetchConsentAndResponses({ studyShortcode, stableId, version, enrolleeShortcode, taskId }: {
+  async fetchConsentAndResponses({ studyShortcode, stableId, version, enrolleeShortcode }: {
     studyShortcode: string, enrolleeShortcode: string,
-    stableId: string, version: number, taskId: string | null
+    stableId: string, version: number
   }): Promise<ConsentWithResponses> {
-    let url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}`
+    const url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}`
       + `/consents/${stableId}/${version}`
-    if (taskId) {
-      url = `${url}?taskId=${taskId}`
-    }
     const response = await fetch(url, { headers: this.getInitHeaders() })
     return await this.processJsonResponse(response)
   },
 
-  async submitConsentResponse({ studyShortcode, stableId, version, enrolleeShortcode, response, taskId }: {
-    studyShortcode: string, stableId: string, version: number, response: ConsentResponse, enrolleeShortcode: string,
-    taskId: string
+  async submitConsentResponse({ studyShortcode, stableId, version, enrolleeShortcode, response }: {
+    studyShortcode: string, stableId: string, version: number, response: ConsentResponse, enrolleeShortcode: string
   }): Promise<HubResponse> {
-    let url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}`
+    const url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}`
       + `/consents/${stableId}/${version}`
-    if (taskId) {
-      url = `${url}?taskId=${taskId}`
-    }
     const result = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),

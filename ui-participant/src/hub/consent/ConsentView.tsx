@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import Api, {
   Answer,
   ConsentForm,
@@ -25,15 +25,13 @@ import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
-const TASK_ID_PARAM = 'taskId'
-
 /**
  * display a single consent form to a participant.  The pageNumber argument can be specified to start at the given
  * page
  */
-function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, taskId, isEditingPrevious }:
+function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, isEditingPrevious }:
                           {
-                            form: ConsentForm, enrollee: Enrollee, taskId: string, isEditingPrevious: boolean
+                            form: ConsentForm, enrollee: Enrollee, isEditingPrevious: boolean
                             resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string
                           }) {
   const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData, onComplete, pager)
@@ -63,7 +61,7 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
 
     Api.submitConsentResponse({
       studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
-      version: form.version, response: responseDto, taskId
+      version: form.version, response: responseDto
     }).then(response => {
       response.enrollee.participantTasks = response.tasks
       updateEnrollee(response.enrollee)
@@ -90,9 +88,6 @@ function PagedConsentView({ form, responses, enrollee, studyShortcode }:
                               form: StudyEnvironmentConsent, responses: ConsentResponse[], enrollee: Enrollee,
                               studyShortcode: string
                             }) {
-  const [searchParams] = useSearchParams()
-  const taskId = searchParams.get(TASK_ID_PARAM) ?? ''
-
   const response = responses[0]
   let answers: Answer[] = []
   if (response?.fullData) {
@@ -102,7 +97,7 @@ function PagedConsentView({ form, responses, enrollee, studyShortcode }:
 
   const pager = useRoutablePageNumber()
 
-  return <RawConsentView enrollee={enrollee} form={form.consentForm} taskId={taskId}
+  return <RawConsentView enrollee={enrollee} form={form.consentForm}
     isEditingPrevious={!!response} resumableData={resumableData} pager={pager}
     studyShortcode={studyShortcode}/>
 }
@@ -124,7 +119,7 @@ export default function ConsentView() {
   useEffect(() => {
     Api.fetchConsentAndResponses({
       studyShortcode,
-      enrolleeShortcode: enrollee.shortcode, stableId, version, taskId: null
+      enrolleeShortcode: enrollee.shortcode, stableId, version
     })
       .then(response => {
         setFormAndResponses(response)
