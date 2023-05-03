@@ -24,8 +24,9 @@ public class DataRepoJobDao extends BaseMutableJdbiDao<DataRepoJob> {
         return findAllByProperty("status", status);
     }
 
-    public List<DataRepoJob> findByStudyEnvironmentId(UUID studyEnvId) {
-        return findAllByProperty("study_environment_id", studyEnvId);
+    //todo: probably not necessary to check by both properties, but while "create your own dataset" is in development this feels safer.
+    public List<DataRepoJob> findByStudyEnvironmentIdAndName(UUID studyEnvId, String datasetName) {
+        return findAllByTwoProperties("study_environment_id", studyEnvId, "dataset_name", datasetName);
     }
 
     public void updateJobStatus(UUID id, String newJobStatus) {

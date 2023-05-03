@@ -83,16 +83,15 @@ public class DataRepoExportService {
         this.studyEnvironmentDao = studyEnvironmentDao;
     }
 
-    public Optional<Dataset> getDatasetForStudyEnvironment(UUID studyEnvironmentId) {
-        return datasetDao.findByStudyEnvironmentId(studyEnvironmentId).stream().findFirst(); //todo: better handling than findFirst
+    public List<Dataset> getDatasetsForStudyEnvironment(UUID studyEnvironmentId) {
+        return datasetDao.findByStudyEnvironmentId(studyEnvironmentId);
     }
 
-    public List<DataRepoJob> getDatasetJobHistoryForStudyEnvironment(UUID studyEnvironmentId) {
-        return dataRepoJobDao.findByStudyEnvironmentId(studyEnvironmentId);
+    public List<DataRepoJob> getJobHistoryForDataset(UUID studyEnvironmentId, String datasetName) {
+        return dataRepoJobDao.findByStudyEnvironmentIdAndName(studyEnvironmentId, datasetName);
     }
 
     public void createDatasetsForStudyEnvironments() {
-        UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
         final String DEPLOYMENT_ZONE = env.getProperty("env.tdr.deploymentZone");
 
         List<StudyEnvironment> allStudyEnvs = studyEnvironmentDao.findAll();
@@ -107,24 +106,34 @@ public class DataRepoExportService {
 
             String datasetName = makeDatasetName(DEPLOYMENT_ZONE, study.getShortcode(), environmentName);
 
-            JobModel response;
-            try {
-                response = dataRepoClient.createDataset(defaultSpendProfileId, datasetName);
-            } catch (ApiException e) {
-                throw new DatasetCreationException(String.format("Unable to create TDR dataset for study environment %s. Error: %s", studyEnv.getStudyId(), e.getMessage()));
-            }
-
-            DataRepoJob job = DataRepoJob.builder()
-                    .studyEnvironmentId(studyEnv.getId())
-                    .status(response.getJobStatus().getValue())
-                    .datasetName(datasetName)
-                    .tdrJobId(response.getId())
-                    .jobType(JobType.CREATE_DATASET)
-                    .build();
-
-            dataRepoJobService.create(job);
+            createDataset(studyEnv, datasetName);
         }
 
+    }
+
+    public String createDataset(StudyEnvironment studyEnv, String datasetName) {
+        //TODO: JN-125: This default spend profile is temporary. Eventually, we will want to configure spend profiles
+        // on a per-study basis and store those in the Juniper DB.
+        UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
+
+        JobModel response;
+        try {
+            response = dataRepoClient.createDataset(defaultSpendProfileId, datasetName);
+        } catch (ApiException e) {
+            throw new DatasetCreationException(String.format("Unable to create TDR dataset for study environment %s. Error: %s", studyEnv.getStudyId(), e.getMessage()));
+        }
+
+        DataRepoJob job = DataRepoJob.builder()
+                .studyEnvironmentId(studyEnv.getId())
+                .status(response.getJobStatus().getValue())
+                .datasetName(datasetName)
+                .tdrJobId(response.getId())
+                .jobType(JobType.CREATE_DATASET)
+                .build();
+
+        dataRepoJobService.create(job);
+
+        return job.getTdrJobId();
     }
 
     public void ingestDatasets() {
@@ -215,6 +224,9 @@ public class DataRepoExportService {
 
                     datasetService.create(dataset);
                     dataRepoJobService.updateJobStatus(job.getId(), jobStatus.getValue());
+
+                    //TODO: make this official
+                    dataRepoClient.shareWithMbemis(dataset.getDatasetId());
                 }
                 case FAILED -> {
                     logger.warn("createDataset job ID {} has failed. Dataset {} failed to create.", job.getId(), job.getDatasetName());

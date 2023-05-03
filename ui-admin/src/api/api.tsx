@@ -652,17 +652,17 @@ export default {
     return fetch(url,  this.getGetInit())
   },
 
-  getDatasetForStudyEnvironment(portalShortcode: string, studyShortcode: string,
+  getDatasetsForStudyEnvironment(portalShortcode: string, studyShortcode: string,
     envName: string):
       Promise<Response> {
-    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/dataset`
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets`
     return fetch(url,  this.getGetInit())
   },
 
-  getDatasetJobHistoryForStudyEnvironment(portalShortcode: string, studyShortcode: string,
-    envName: string):
+  getJobHistoryForDataset(portalShortcode: string, studyShortcode: string,
+    envName: string, datasetName: string):
       Promise<Response> {
-    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/dataset/jobs`
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets/${datasetName}/jobs`
     return fetch(url,  this.getGetInit())
   },
 

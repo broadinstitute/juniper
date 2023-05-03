@@ -9,7 +9,6 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.datarepo.DataRepoExportService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,7 +27,7 @@ public class DataRepoExportExtService {
     this.studyEnvironmentService = studyEnvironmentService;
   }
 
-  public Optional<Dataset> getDatasetForStudyEnvironment(
+  public List<Dataset> getDatasetsForStudyEnvironment(
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
@@ -39,10 +38,25 @@ public class DataRepoExportExtService {
     StudyEnvironment studyEnv =
         studyEnvironmentService.findByStudy(studyShortcode, environmentName).get(); // todo get
 
-    return dataRepoExportService.getDatasetForStudyEnvironment(studyEnv.getId());
+    return dataRepoExportService.getDatasetsForStudyEnvironment(studyEnv.getId());
   }
 
-  public List<DataRepoJob> getDatasetJobHistoryForStudyEnvironment(
+  public List<DataRepoJob> getJobHistoryForDataset(
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName environmentName,
+      String datasetName,
+      AdminUser user) {
+    Portal portal = authUtilService.authUserToPortal(user, portalShortcode); // ??
+    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+
+    StudyEnvironment studyEnv =
+        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get(); // todo get
+
+    return dataRepoExportService.getJobHistoryForDataset(studyEnv.getId(), datasetName);
+  }
+
+  public String createDataset(
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
@@ -53,12 +67,13 @@ public class DataRepoExportExtService {
     StudyEnvironment studyEnv =
         studyEnvironmentService.findByStudy(studyShortcode, environmentName).get(); // todo get
 
-    return dataRepoExportService.getDatasetJobHistoryForStudyEnvironment(studyEnv.getId());
+    return dataRepoExportService.createDataset(
+        studyEnv,
+        "d2p_mbemis_"
+            + System.currentTimeMillis()
+            + "_"
+            + studyShortcode
+            + "_"
+            + environmentName.name());
   }
-
-  // View dataset details w/ job history
-
-  // For a study env, get dataset details with job history
-  // Link to dataset in Data Repo UI
-
 }

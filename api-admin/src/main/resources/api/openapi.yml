@@ -578,11 +578,11 @@ paths:
                 type: object
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/datarepo/dataset:
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/datarepo/datasets:
     get:
-      summary: Gets information about the Data Repo dataset
+      summary: Gets the list of datasets for the study environment
       tags: [ datarepo ]
-      operationId: getDatasetForStudyEnvironment
+      operationId: getDatasetsForStudyEnvironment
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
@@ -593,15 +593,30 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/datarepo/dataset/jobs:
-    get:
-      summary: Gets the job history for a study environment TDR dataset
+    post:
+      summary: Creates a new TDR dataset for the study environment
       tags: [ datarepo ]
-      operationId: getDatasetJobHistoryForStudyEnvironment
+      operationId: createDatasetForStudyEnvironment
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: tdr job id
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/datarepo/datasets/{datasetName}/jobs:
+    get:
+      summary: Gets the job history for a study environment TDR dataset
+      tags: [ datarepo ]
+      operationId: getJobHistoryForDataset
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: datasetName, in: path, required: true, schema: { type: string } }
       responses:
         '200':
           description: dataset job history

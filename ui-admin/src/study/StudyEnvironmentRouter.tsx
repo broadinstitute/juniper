@@ -14,7 +14,9 @@ import ParticipantsRouter from './participants/ParticipantsRouter'
 import NotificationConfigView from './notifications/NotificationConfigView'
 import QuestionScratchbox from './surveys/editor/QuestionScratchbox'
 import ExportDataBrowser from './participants/export/ExportDataBrowser'
-import DataRepoDashboard from './participants/datarepo/DataRepoDashboard'
+import DatasetDashboard from './participants/datarepo/DatasetDashboard'
+import DatasetList from "./participants/datarepo/DatasetList";
+import datasetDashboard from "./participants/datarepo/DatasetDashboard";
 
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
@@ -69,7 +71,8 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       </Route>
       <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
       <Route path="export/dataBrowser" element={<ExportDataBrowser studyEnvContext={studyEnvContext}/>}/>
-      <Route path="export/dataRepo" element={<DataRepoDashboard studyEnvContext={studyEnvContext}/>}/>
+      <Route path="export/dataRepo" element={<DatasetList studyEnvContext={studyEnvContext}/>}/>
+      <Route path="export/dataRepo/datasets/*" element={<DatasetDashboard studyEnvContext={studyEnvContext}/>}/>
       <Route index element={<StudyContent studyEnvContext={studyEnvContext}/>}/>
       <Route path="*" element={<div>Unknown study environment page</div>}/>
     </Routes>
@@ -90,6 +93,10 @@ export const getExportDataBrowserPath = (currentEnvPath: string) => {
   return `${currentEnvPath}/export/dataBrowser`
 }
 
-export const getDataRepoDashboardPath = (currentEnvPath: string) => {
+export const getDatasetListViewPath = (currentEnvPath: string) => {
   return `${currentEnvPath}/export/dataRepo`
+}
+
+export const getDatasetDashboardPath = (datasetId: string, currentEnvPath: string) => {
+  return `${currentEnvPath}/export/dataRepo/datasets/${datasetId}`
 }

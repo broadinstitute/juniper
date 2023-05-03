@@ -18,11 +18,12 @@ import {
 import { sortableTableHeader } from '../../../util/tableUtils'
 import { Link } from 'react-router-dom'
 
-const DataRepoDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
+const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
   const [datasetDetails, setDatasetDetails] = useState<DatasetDetails | null>(null)
   const [datasetJobHistory, setDatasetJobHistory] = useState<DatasetJobHistory[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [sorting, setSorting] = React.useState<SortingState>([])
+  const datasetName = 'd2p_mbemis_1683138642532_ourheart_sandbox'
 
   const columns = useMemo<ColumnDef<DatasetJobHistory, string>[]>(() => [{
     id: 'select'
@@ -73,7 +74,7 @@ const DataRepoDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
   const loadData = async () => {
     try {
       //Fetch dataset details
-      const datasetDetails = await Api.getDatasetForStudyEnvironment(
+      const datasetDetails = await Api.getDatasetsForStudyEnvironment(
         studyEnvContext.portal.shortcode,
         studyEnvContext.study.shortcode,
         studyEnvContext.currentEnv.environmentName)
@@ -81,10 +82,11 @@ const DataRepoDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
       setDatasetDetails(datasetDetailsResponse)
 
       //Fetch dataset job history
-      const datasetJobHistory = await Api.getDatasetJobHistoryForStudyEnvironment(
+      const datasetJobHistory = await Api.getJobHistoryForDataset(
         studyEnvContext.portal.shortcode,
         studyEnvContext.study.shortcode,
-        studyEnvContext.currentEnv.environmentName)
+        studyEnvContext.currentEnv.environmentName,
+          datasetName)
       const datasetJobHistoryResponse = await datasetJobHistory.json()
       setDatasetJobHistory(datasetJobHistoryResponse)
 
@@ -156,4 +158,4 @@ const DataRepoDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
   </div>
 }
 
-export default DataRepoDashboard
+export default DatasetDashboard
