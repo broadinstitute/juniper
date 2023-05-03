@@ -17,7 +17,8 @@ export const getOidcConfig = (
   b2cPolicyName: string = aadb2cPolicyName) => {
   const metadata = {
     authorization_endpoint: `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/${b2cPolicyName}/oauth2/v2.0/authorize`,
-    token_endpoint: `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/${b2cPolicyName}/oauth2/v2.0/token`
+    token_endpoint: `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/${b2cPolicyName}/oauth2/v2.0/token`,
+    end_session_endpoint: `https://${b2cTenantName}.b2clogin.com/${b2cTenantName}.onmicrosoft.com/${b2cPolicyName}/oauth2/v2.0/logout`
   }
 
   return {
@@ -25,6 +26,7 @@ export const getOidcConfig = (
     client_id: b2cClientId,
     popup_redirect_uri: `${window.origin}/redirect-from-oauth`,
     silent_redirect_uri: `${window.origin}/redirect-from-oauth-silent`,
+    post_logout_redirect_uri: window.origin,
     metadata,
     prompt: 'login',
     scope: `openid email ${b2cClientId}`,

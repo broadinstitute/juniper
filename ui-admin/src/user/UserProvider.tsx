@@ -58,9 +58,14 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const logoutUser = () => {
     setUserState(anonymousUser)
     Api.setBearerToken(null)
+    const oauthAccessToken = localStorage.getItem(OAUTH_ACCRESS_TOKEN_KEY)
     localStorage.removeItem(OAUTH_ACCRESS_TOKEN_KEY)
     localStorage.removeItem(INTERNAL_LOGIN_TOKEN_KEY)
-    window.location.href = '/'
+    if (oauthAccessToken) {
+      auth.signoutRedirect()
+    } else {
+      window.location.href = '/'
+    }
   }
 
   const userContext: UserContextT = {
