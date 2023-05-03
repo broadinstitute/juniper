@@ -17,7 +17,7 @@ public class ScheduledEnrolleeReminderService {
   }
 
   @Scheduled(
-      fixedDelay = 30 * 1000,
+      fixedDelay = 10 * 60 * 1000,
       initialDelay = 5 * 1000) // wait 10mins between executions, start after 5 seconds
   @SchedulerLock(
       name = "EnrolleeReminderService.sendTaskReminders",
