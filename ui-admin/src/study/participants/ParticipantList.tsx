@@ -95,7 +95,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   return <div className="ParticipantList container pt-2">
     <div className="row">
       <div className="col-12">
-        <h5>Participants</h5>
+        <h2 className="h5">{study.name} Participants</h2>
         <LoadingSpinner isLoading={isLoading}>
           <div className="d-flex align-items-center justify-content-between">
             <div className="d-flex align-items-center">
@@ -135,6 +135,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
               })}
             </tbody>
           </table>
+          { participantList.length === 0 && <span className="text-muted fst-italic">No participants</span>}
         </LoadingSpinner>
       </div>
     </div>

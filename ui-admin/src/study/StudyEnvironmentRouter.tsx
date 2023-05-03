@@ -32,7 +32,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
     return <span>invalid environment {envName}</span>
   }
 
-  const currentEnvPath = `/${portal.shortcode}/studies/${study.shortcode}/env/${currentEnv.environmentName}`
+  const currentEnvPath = studyEnvPath(portal.shortcode, study.shortcode, currentEnv.environmentName)
 
   const studyEnvContext: StudyEnvContextT = { study, currentEnv, currentEnvPath, portal }
   return <div className="StudyView">
@@ -75,6 +75,10 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
 }
 
 export default StudyEnvironmentRouter
+
+export const studyEnvPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
+  return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}`
+}
 
 export const notificationConfigPath = (config: NotificationConfig, currentEnvPath: string) => {
   return `${currentEnvPath}/notificationConfigs/${config.id}`
