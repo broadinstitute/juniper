@@ -14,9 +14,6 @@ import { useUser } from 'providers/UserProvider'
  * Also added some tests for the idle time calculations.
  */
 
-// const maxIdleSessionDuration = 1 * 20 * 1000
-// const idleWarningDuration = (1 * 20 * 1000) - 5000
-
 /**
  * @property timedOut whether the user's session should be closed due to inactivity
  * @property showCountdown whether an idle warning should be displayed to the user
@@ -103,10 +100,9 @@ const InactivityTimer = ({ maxIdleSessionDuration, idleWarningDuration, doSignOu
   doSignOut: () => void
 }) => {
   const [idleModalVisible, setIdleModalVisible] = useState(false)
+  const [signOutTriggered, setSignOutTriggered] = useState(false)
   const [currentTime, setNextUpdateDelay] = useCurrentTime()
   const lastRecordedActivity = useRef<number>(Date.now())
-
-  const setLastActive = (lastActive: number) => lastRecordedActivity.current = lastActive
 
   const { timedOut, showCountdown, secondsUntilTimedOut, millisecondsUntilNextUpdate } = calculateIdleData({
     currentTime, lastRecordedActivity: lastRecordedActivity.current, maxIdleSessionDuration, idleWarningDuration
@@ -114,7 +110,7 @@ const InactivityTimer = ({ maxIdleSessionDuration, idleWarningDuration, doSignOu
 
   useEffect(() => {
     const targetEvents = ['click', 'keydown']
-    const updateLastActive = () => setLastActive(Date.now())
+    const updateLastActive = () => lastRecordedActivity.current = Date.now()
 
     if (!lastRecordedActivity.current) {
       updateLastActive()
@@ -128,10 +124,11 @@ const InactivityTimer = ({ maxIdleSessionDuration, idleWarningDuration, doSignOu
   }, [])
 
   useEffect(() => {
-    if (timedOut) {
+    if (timedOut && !signOutTriggered) {
       doSignOut()
+      setSignOutTriggered(true)
     }
-  }, [doSignOut, timedOut])
+  }, [doSignOut, setSignOutTriggered, signOutTriggered, timedOut])
 
   if (idleModalVisible != showCountdown) {
     setIdleModalVisible(showCountdown)
@@ -160,7 +157,7 @@ export const useCurrentTime = (initialDelay = 250) => {
       }
     }
     poll()
-  }, [])
+  }, [setCurrentTime])
   return [currentTime, (delay: number) => { delayRef.current = delay }] as const
 }
 
