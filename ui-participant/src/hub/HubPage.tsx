@@ -40,7 +40,7 @@ export default function HubPage() {
           />
         )}
 
-        <div
+        <main
           className="hub-dashboard py-4 px-2 px-md-5 my-md-5 mx-auto shadow-sm"
           style={{ background: '#fff', maxWidth: 768 }}
         >
@@ -48,7 +48,7 @@ export default function HubPage() {
 
           {hasUnjoinedStudies && (
             <>
-              <h2 className="text-center">Studies you can join</h2>
+              <h1 className="text-center">Studies you can join</h1>
               <ul className="list-group">
                 {unjoinedStudies.map(portalStudy => <li key={portalStudy.study.shortcode} className="list-group-item">
                   <h6>{portalStudy.study.name}</h6>
@@ -57,7 +57,7 @@ export default function HubPage() {
               </ul>
             </>
           )}
-        </div>
+        </main>
       </div>
     </>
   )
@@ -181,7 +181,7 @@ function TaskGrouping({ title, tasks, enrollee, studyShortcode }: {
 }) {
   return (
     <>
-      <h3 className="fs-6 text-uppercase mb-0">{title}</h3>
+      <h2 className="fs-6 text-uppercase mb-0">{title}</h2>
       <ol className="list-unstyled p-0">
         {tasks.map(task => <li key={task.id}>
           <TaskLink task={task} key={task.id} studyShortcode={studyShortcode}
