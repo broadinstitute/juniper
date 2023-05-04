@@ -330,7 +330,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     }
 
     // from https://stackoverflow.com/questions/10310321/regex-for-converting-camelcase-to-camel-case-in-java
-    protected static String toSnakeCase(String camelCased) {
+    public static String toSnakeCase(String camelCased) {
         return camelCased.replaceAll("(.)(\\p{Upper})", "$1_$2").toLowerCase();
     }
 }

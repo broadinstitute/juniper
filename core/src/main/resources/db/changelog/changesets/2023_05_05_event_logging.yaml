@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: "eventlog"
+      author: dbush
+      changes:
+        - createTable:
+            tableName: log_event
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: event_type, type: text }
+              - column: { name: event_name, type: text }
+              - column: { name: event_source, type: text }
+              - column: { name: portal_shortcode, type: text }
+              - column: { name: study_shortcode, type: text }
+              - column: { name: environment_name, type: text }
+              - column: { name: enrollee_shortcode, type: text }
+              - column: { name: operator_id, type: uuid }
+              - column: { name: event_detail, type: text }
+              - column: { name: stack_trace, type: text }
+
+

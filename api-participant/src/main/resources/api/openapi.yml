@@ -46,7 +46,19 @@ paths:
         '200':
           description: Configuration information
           content: { application/json: { schema: { type: object } } }
-
+  /api/public/log/v1/log:
+    post:
+      summary: Logs an event
+      tags: [ logging ]
+      operationId: log
+      requestBody:
+        content: { application/json: { schema: { type: object }}}
+      responses:
+        '200':
+          description: the id of the generated event
+          content: { application/json: { schema: { type: string }}}
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}:
     get:
       summary: Gets the portal object

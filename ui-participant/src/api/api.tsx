@@ -273,6 +273,19 @@ export type Config = {
   b2cPolicyName: string,
 }
 
+export type LogEvent = {
+  id?: string,
+  eventType: 'ERROR' | 'ACCESS' | 'EVENT' | 'STATS'
+  eventName: string,
+  stackTrace?: string,
+  eventDetail?: string,
+  studyShortcode?: string,
+  portalShortcode?: string,
+  environmentName?: string,
+  enrolleeShortcode?: string,
+  operatorId?: string,
+}
+
 export type SectionConfig = Record<string, unknown>
 
 let bearerToken: string | null = null
@@ -546,6 +559,15 @@ export default {
       headers: this.getInitHeaders()
     })
     bearerToken = null
+  },
+
+  async log(logEvent: LogEvent): Promise<void> {
+    const url = `${API_ROOT}/public/log/v1/log`
+    await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(logEvent)
+    })
   }
 }
 
