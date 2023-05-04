@@ -128,7 +128,7 @@ const InactivityTimer = ({ maxIdleSessionDuration, idleWarningDuration, doSignOu
       doSignOut()
       setSignOutTriggered(true)
     }
-  }, [doSignOut, setSignOutTriggered, signOutTriggered, timedOut])
+  }, [doSignOut, signOutTriggered, timedOut])
 
   if (idleModalVisible != showCountdown) {
     setIdleModalVisible(showCountdown)
@@ -157,7 +157,7 @@ export const useCurrentTime = (initialDelay = 250) => {
       }
     }
     poll()
-  }, [setCurrentTime])
+  }, [])
   return [currentTime, (delay: number) => { delayRef.current = delay }] as const
 }
 
