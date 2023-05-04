@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.survey.ParsedPreRegResponse;
 import bio.terra.pearl.core.model.survey.PreregistrationResponse;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
@@ -13,6 +14,8 @@ import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,13 +38,15 @@ public class RegistrationService {
     private ParticipantUserService participantUserService;
     private PortalParticipantUserService portalParticipantUserService;
     private EventService eventService;
+    private ObjectMapper objectMapper;
 
     public RegistrationService(SurveyService surveyService,
                                PortalEnvironmentService portalEnvService,
                                PreregistrationResponseDao preregistrationResponseDao,
                                AnswerProcessingService answerProcessingService,
                                ParticipantUserService participantUserService,
-                               PortalParticipantUserService portalParticipantUserService, EventService eventService) {
+                               PortalParticipantUserService portalParticipantUserService,
+                               EventService eventService, ObjectMapper objectMapper) {
         this.surveyService = surveyService;
         this.portalEnvService = portalEnvService;
         this.preregistrationResponseDao = preregistrationResponseDao;
@@ -49,6 +54,7 @@ public class RegistrationService {
         this.participantUserService = participantUserService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.eventService = eventService;
+        this.objectMapper = objectMapper;
     }
 
     /** Creates a preregistration survey record for a user who is not signed in */
@@ -58,14 +64,14 @@ public class RegistrationService {
             EnvironmentName envName,
             String surveyStableId,
             Integer surveyVersion,
-            String fullData) {
+            ParsedPreRegResponse parsedResponse) throws JsonProcessingException {
         PreregistrationResponse response = new PreregistrationResponse();
         Survey survey = surveyService.findByStableId(surveyStableId, surveyVersion).get();
         PortalEnvironment portalEnv = portalEnvService.findOne(portalShortcode, envName).get();
 
         response.setSurveyId(survey.getId());
         response.setPortalEnvironmentId(portalEnv.getId());
-        response.setFullData(fullData);
+        response.setFullData(objectMapper.writeValueAsString(parsedResponse.getAnswers()));
         return preregistrationResponseDao.create(response);
     }
 

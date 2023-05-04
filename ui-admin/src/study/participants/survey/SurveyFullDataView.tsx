@@ -26,10 +26,10 @@ const ItemDisplay = ({ answer, surveyJsModel }: {answer: Answer, surveyJsModel: 
 }
 
 export const getDisplayValue = (answer: Answer, question: Question | QuestionWithChoices) => {
-  const answerValue = answer.stringValue ?? answer.numberValue ?? answer.objectValue
+  const answerValue = answer.stringValue ?? answer.numberValue ?? answer.objectValue ?? answer.booleanValue
   if (!question) {
     // if the answer represents a computedValue, we won't have a question for it
-    return answerValue
+    return answerValue?.toString()
   }
   let displayValue: React.ReactNode = answerValue
   if (question.choices) {
