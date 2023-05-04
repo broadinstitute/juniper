@@ -5,6 +5,7 @@ import { useUser } from '../providers/UserProvider'
 import { Enrollee, ParticipantTask, Portal, Study } from '../api/api'
 import TaskLink, { getTaskPath, isTaskAccessible, isTaskActive } from './TaskLink'
 import { Link, NavLink } from 'react-router-dom'
+import { DocumentTitle } from 'util/DocumentTitle'
 import { userHasJoinedPortalStudy } from 'util/enrolleeUtils'
 
 import { HubMessageAlert, useHubUpdate } from './hubUpdates'
@@ -21,41 +22,44 @@ export default function HubPage() {
   const unjoinedStudies = portal.portalStudies.filter(pStudy => !userHasJoinedPortalStudy(pStudy, enrollees))
   const hasUnjoinedStudies = unjoinedStudies.length > 0
   return (
-    <div
-      className="hub-dashboard-background flex-grow-1"
-      style={{ background: 'linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%' }}
-    >
-      {!!displayedHubMessage && (
-        <HubMessageAlert
-          message={displayedHubMessage}
-          className="mx-1 mx-md-auto my-1 my-md-5 shadow-sm"
-          role="alert"
-          style={{ maxWidth: 768 }}
-          onDismiss={() => {
-            setDisplayedHubMessage(undefined)
-          }}
-        />
-      )}
-
+    <>
+      <DocumentTitle title="Dashboard" />
       <div
-        className="hub-dashboard py-4 px-2 px-md-5 my-md-5 mx-auto shadow-sm"
-        style={{ background: '#fff', maxWidth: 768 }}
+        className="hub-dashboard-background flex-grow-1"
+        style={{ background: 'linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%' }}
       >
-        {enrollees.map(enrollee => <StudySection key={enrollee.id} enrollee={enrollee} portal={portal} />)}
-
-        {hasUnjoinedStudies && (
-          <>
-            <h2 className="text-center">Studies you can join</h2>
-            <ul className="list-group">
-              {unjoinedStudies.map(portalStudy => <li key={portalStudy.study.shortcode} className="list-group-item">
-                <h6>{portalStudy.study.name}</h6>
-                <NavLink to={`/studies/${portalStudy.study.shortcode}/join`}>Join</NavLink>
-              </li>)}
-            </ul>
-          </>
+        {!!displayedHubMessage && (
+          <HubMessageAlert
+            message={displayedHubMessage}
+            className="mx-1 mx-md-auto my-1 my-md-5 shadow-sm"
+            role="alert"
+            style={{ maxWidth: 768 }}
+            onDismiss={() => {
+              setDisplayedHubMessage(undefined)
+            }}
+          />
         )}
+
+        <div
+          className="hub-dashboard py-4 px-2 px-md-5 my-md-5 mx-auto shadow-sm"
+          style={{ background: '#fff', maxWidth: 768 }}
+        >
+          {enrollees.map(enrollee => <StudySection key={enrollee.id} enrollee={enrollee} portal={portal} />)}
+
+          {hasUnjoinedStudies && (
+            <>
+              <h2 className="text-center">Studies you can join</h2>
+              <ul className="list-group">
+                {unjoinedStudies.map(portalStudy => <li key={portalStudy.study.shortcode} className="list-group-item">
+                  <h6>{portalStudy.study.name}</h6>
+                  <NavLink to={`/studies/${portalStudy.study.shortcode}/join`}>Join</NavLink>
+                </li>)}
+              </ul>
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
