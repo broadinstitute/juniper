@@ -11,6 +11,11 @@ import { extractSurveyContent, makeSurveyJsData } from 'util/surveyJsUtils'
 
 import { enrolleeForStudy } from './ConsentView'
 
+/**
+ * If window.print is called immediately, some images might not have been loaded
+ * and won't be included in the printed output. This returns a promise that
+ * resolves after all images on the page have loaded.
+ */
 const waitForImages = () => new Promise(resolve => {
   const images = Array.from(document.querySelectorAll('img'))
   if (images.length === 0) {
