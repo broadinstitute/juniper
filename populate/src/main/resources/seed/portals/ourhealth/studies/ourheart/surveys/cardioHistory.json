@@ -846,7 +846,7 @@
           {
             "name": "oh_oh_cardioHx_ageFirstMenses",
             "type": "radiogroup",
-            "title": "How old were you when you had your first menstrual period (menses)? (Honigberg, AHA)",
+            "title": "How old were you when you had your first menstrual period (menses)?",
             "choices": [
               {
                 "text": "9 or less",
@@ -897,7 +897,7 @@
           {
             "name": "oh_oh_cardioHx_regularPeriods",
             "type": "radiogroup",
-            "title": "During most of your life, were your periods regular; that is, did they occur about once a month? (Do not include any time when you were pregnant or taking birth control pills.) (Honigberg, AHA)",
+            "title": "During most of your life, were your periods regular; that is, did they occur about once a month? (Do not include any time when you were pregnant or taking birth control pills.)",
             "choices": [
               {
                 "text": "Yes",
@@ -916,7 +916,7 @@
           {
             "name": "oh_oh_cardioHx_everBeenPregnant",
             "type": "radiogroup",
-            "title": "Have you ever been pregnant? It is very important that we know about all of your pregnancies, including live births, stillbirths, miscarriages, tubals (ectopics), and abortions. (Honigberg, AHA)",
+            "title": "Have you ever been pregnant? It is very important that we know about all of your pregnancies, including live births, stillbirths, miscarriages, tubals (ectopics), and abortions.",
             "choices": [
               {
                 "text": "Yes",
@@ -966,7 +966,7 @@
               {
                 "name": "oh_oh_cardioHx_numberOfPregnancies",
                 "type": "radiogroup",
-                "title": "How many times have you been pregnant? (Honigberg, AHA)",
+                "title": "How many times have you been pregnant?",
                 "choices": [
                   {
                     "text": "0",
@@ -1013,7 +1013,7 @@
               {
                 "name": "oh_oh_cardioHx_ageAtEndOfFirstPregnancy",
                 "type": "radiogroup",
-                "title": "How old were you at the end of the first of these pregnancies? (Honigberg, AHA)",
+                "title": "How old were you at the end of the first of these pregnancies?",
                 "choices": [
                   {
                     "text": "Less than 20",
@@ -1052,7 +1052,7 @@
               {
                 "name": "oh_oh_cardioHx_ageAtEndOfLastPregnancy",
                 "type": "radiogroup",
-                "title": "How old were you at the end of the last of these pregnancies? (Honigberg, AHA)",
+                "title": "How old were you at the end of the last of these pregnancies?",
                 "choices": [
                   {
                     "text": "Less than 20",
@@ -1091,7 +1091,7 @@
               {
                 "name": "oh_oh_cardioHx_numberLiveBirths",
                 "type": "radiogroup",
-                "title": "How many live births did you have? (Live birth is the birth of a living baby) (Honigberg, AHA)",
+                "title": "How many live births did you have? (Live birth is the birth of a living baby)",
                 "choices": [
                   {
                     "text": "None",
@@ -1175,7 +1175,7 @@
               {
                 "name": "oh_oh_cardioHx_menopausalSymptoms",
                 "type": "radiogroup",
-                "title": "Have you ever had menopausal symptoms, such as hot flashes or night sweats? (Your best guess.) (Honigberg, AHA)",
+                "title": "Have you ever had menopausal symptoms, such as hot flashes or night sweats? (Your best guess)",
                 "choices": [
                   {
                     "text": "Yes",
@@ -1222,7 +1222,7 @@
                 "name": "oh_oh_cardioHx_ageLastMenses",
                 "type": "text",
                 "visibleIf": "{oh_oh_cardioHx_mensesStopped} = 'yes'",
-                "title": "How old were you when you last had regular menstrual bleeding (a period)? (Your best guess) (Honigberg, AHA)"
+                "title": "How old were you when you last had regular menstrual bleeding (a period)? (Your best guess)"
               },
               {
                 "name": "oh_oh_cardioHx_mensesStopReason",
