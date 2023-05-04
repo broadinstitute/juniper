@@ -2,6 +2,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Navbar from '../Navbar'
 import ConsentView from './consent/ConsentView'
+import PrintConsentView from './consent/PrintConsentView'
 import HubPage from './HubPage'
 
 import SurveyView from './survey/SurveyView'
@@ -13,6 +14,10 @@ export default function HubRouter() {
     <Routes>
       <Route path="study/:studyShortcode/enrollee/:enrolleeShortcode/consent/:stableId/:version"
         element={<ConsentView/>}/>
+      <Route
+        path="study/:studyShortcode/enrollee/:enrolleeShortcode/consent/:stableId/:version/print"
+        element={<PrintConsentView/>}
+      />
       <Route path="study/:studyShortcode/enrollee/:enrolleeShortcode/survey/:stableId/:version"
         element={<SurveyView/>}/>
       <Route index element={<HubPage/>}/>
