@@ -1,8 +1,8 @@
 import classNames from 'classnames'
 import React from 'react'
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
-import {requireOptionalString, requirePlainObject, requireString} from 'util/validationUtils'
+import { requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
 
 type JoinButtonConfig = {
   type: 'join'
@@ -44,12 +44,12 @@ export const validateButtonConfig = (buttonConfig: unknown): ButtonConfig => {
   }
   const studyShortcode = requireOptionalString(config, 'studyShortcode', 'Invalid join button config')
   if (type === 'join') {
-    return {type, studyShortcode, text}
+    return { type, studyShortcode, text }
   } else if (type === 'mailingList') {
-    return {type, text}
+    return { type, text }
   } else {
     const href = requireString(config, 'href', 'Invalid link button config')
-    return {type, href, text}
+    return { type, href, text }
   }
 }
 
@@ -59,7 +59,7 @@ type ConfiguredButtonProps = {
 }
 
 export const ConfiguredLink = (props: ConfiguredButtonProps) => {
-  const {className, config} = props
+  const { className, config } = props
   if (config.type === 'join') {
     const to = config.studyShortcode ? `/studies/${config.studyShortcode}/join` : '/join'
     return <Link to={to} className={className}>{config.text}</Link>
@@ -74,7 +74,7 @@ export const ConfiguredLink = (props: ConfiguredButtonProps) => {
 
 /** renders a button from a ButtonConfig */
 export default function ConfiguredButton(props: ConfiguredButtonProps) {
-  const {className, config, ...otherProps} = props
+  const { className, config, ...otherProps } = props
   const buttonStyle = config.type === 'join' ? 'btn-primary' : 'btn-outline-primary'
   return (
     <ConfiguredLink
