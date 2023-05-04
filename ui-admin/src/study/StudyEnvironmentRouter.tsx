@@ -72,7 +72,8 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
       <Route path="export/dataBrowser" element={<ExportDataBrowser studyEnvContext={studyEnvContext}/>}/>
       <Route path="export/dataRepo" element={<DatasetList studyEnvContext={studyEnvContext}/>}/>
-      <Route path="export/dataRepo/datasets/*" element={<DatasetDashboard studyEnvContext={studyEnvContext}/>}/>
+      <Route path="export/dataRepo/datasets/:datasetName"
+        element={<DatasetDashboard studyEnvContext={studyEnvContext}/>}/>
       <Route index element={<StudyContent studyEnvContext={studyEnvContext}/>}/>
       <Route path="*" element={<div>Unknown study environment page</div>}/>
     </Routes>
@@ -97,6 +98,6 @@ export const getDatasetListViewPath = (currentEnvPath: string) => {
   return `${currentEnvPath}/export/dataRepo`
 }
 
-export const getDatasetDashboardPath = (datasetId: string, currentEnvPath: string) => {
-  return `${currentEnvPath}/export/dataRepo/datasets/${datasetId}`
+export const getDatasetDashboardPath = (datasetName: string, currentEnvPath: string) => {
+  return `${currentEnvPath}/export/dataRepo/datasets/${datasetName}`
 }

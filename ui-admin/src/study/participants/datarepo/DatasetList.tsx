@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import {getDatasetDashboardPath, getDatasetListViewPath, StudyEnvContextT} from 'study/StudyEnvironmentRouter'
+import { getDatasetDashboardPath, getDatasetListViewPath, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Api, { DatasetDetails, DatasetJobHistory } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
@@ -17,31 +17,37 @@ import {
 } from '@tanstack/react-table'
 import { sortableTableHeader } from '../../../util/tableUtils'
 import { Link } from 'react-router-dom'
-import DatasetDashboard from "./DatasetDashboard";
+import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
+import { useUser } from '../../../user/UserProvider'
 
 const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
   const { currentEnvPath } = studyEnvContext
   const [datasets, setDatasets] = useState<DatasetDetails[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [sorting, setSorting] = React.useState<SortingState>([])
+  const { user } = useUser()
 
   const columns = useMemo<ColumnDef<DatasetDetails, string>[]>(() => {
     return [{
       id: 'select'
     }, {
-      id: 'jobType',
-      header: 'Dataset ID',
-      accessorKey: 'datasetId',
+      id: 'datasetName',
+      header: 'Dataset Name',
+      accessorKey: 'datasetName',
       cell: info => <Link to={getDatasetDashboardPath(info.getValue() as unknown as string, currentEnvPath)}
-                          className="mx-2">{info.getValue() as unknown as string}</Link>
+        className="mx-2">{info.getValue() as unknown as string}</Link>
+    }, {
+      id: 'datasetId',
+      header: 'Dataset ID',
+      accessorKey: 'datasetId'
     }, {
       id: 'created',
-      header: 'Created',
+      header: 'Created Date',
       accessorKey: 'createdAt',
       cell: info => instantToDefaultString(info.getValue() as unknown as number)
     }, {
       id: 'lastUpdated',
-      header: 'Last Updated',
+      header: 'Last Export',
       accessorKey: 'lastExported',
       cell: info => instantToDefaultString(info.getValue() as unknown as number)
     }, {
@@ -50,7 +56,7 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
       cell: info => <a href={
         `https://jade.datarepo-dev.broadinstitute.org/datasets/${info.getValue()}`} target="_blank"
       >View in Terra Data Repo <FontAwesomeIcon icon={faExternalLink}/></a>
-    }];
+    }]
   }, [datasets?.length])
 
   const table = useReactTable({
@@ -91,6 +97,14 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
   }, [])
   return <div className="container-fluid py-3">
     <h1 className="h3">Study Environment Datasets</h1>
+    { user.superuser &&
+        <button className="btn btn-secondary" onClick={async () => await Api.createDatasetForStudyEnvironment(
+          studyEnvContext.portal.shortcode,
+          studyEnvContext.study.shortcode,
+          studyEnvContext.currentEnv.environmentName)}>
+          <FontAwesomeIcon icon={faPlus}/> Create new dataset
+        </button>
+    }
     <LoadingSpinner isLoading={isLoading}>
       <div className="col-12 p-3">
         <ul className="list-unstyled">

@@ -666,6 +666,17 @@ export default {
     return fetch(url,  this.getGetInit())
   },
 
+  async createDatasetForStudyEnvironment(portalShortcode: string, studyShortcode: string,
+    envName: string):
+      Promise<PortalEnvironment> {
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async fetchMailingList(portalShortcode: string, envName: string): Promise<MailingListContact[]> {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList`
     const response = await fetch(url, this.getGetInit())

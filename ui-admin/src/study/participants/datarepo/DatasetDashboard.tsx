@@ -16,14 +16,14 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import { sortableTableHeader } from '../../../util/tableUtils'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
   const [datasetDetails, setDatasetDetails] = useState<DatasetDetails | null>(null)
   const [datasetJobHistory, setDatasetJobHistory] = useState<DatasetJobHistory[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const datasetName = 'd2p_mbemis_1683138642532_ourheart_sandbox'
+  const datasetName = useParams().datasetName as string
 
   const columns = useMemo<ColumnDef<DatasetJobHistory, string>[]>(() => [{
     id: 'select'
@@ -79,14 +79,15 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
         studyEnvContext.study.shortcode,
         studyEnvContext.currentEnv.environmentName)
       const datasetDetailsResponse = await datasetDetails.json()
-      setDatasetDetails(datasetDetailsResponse)
+      setDatasetDetails(datasetDetailsResponse.find((dataset: { datasetName: string }) =>
+        dataset.datasetName === datasetName))
 
       //Fetch dataset job history
       const datasetJobHistory = await Api.getJobHistoryForDataset(
         studyEnvContext.portal.shortcode,
         studyEnvContext.study.shortcode,
         studyEnvContext.currentEnv.environmentName,
-          datasetName)
+        datasetName)
       const datasetJobHistoryResponse = await datasetJobHistory.json()
       setDatasetJobHistory(datasetJobHistoryResponse)
 
