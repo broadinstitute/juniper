@@ -44,7 +44,6 @@ public class ConsentResponseExtService {
       String portalShortcode,
       EnvironmentName envName,
       String enrolleeShortcode,
-      UUID taskId,
       ConsentResponseDto responseDto,
       UUID participantUserId) {
     PortalWithPortalUser portalWithPortalUser =
@@ -53,7 +52,7 @@ public class ConsentResponseExtService {
         authUtilService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
     HubResponse result =
         consentResponseService.submitResponse(
-            participantUserId, portalWithPortalUser.ppUser(), enrollee, taskId, responseDto);
+            participantUserId, portalWithPortalUser.ppUser(), enrollee, responseDto);
     return result;
   }
 }

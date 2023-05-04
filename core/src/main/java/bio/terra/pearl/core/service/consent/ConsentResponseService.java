@@ -62,7 +62,7 @@ public class ConsentResponseService extends ImmutableEntityService<ConsentRespon
      */
     @Transactional
     public HubResponse<ConsentResponse> submitResponse(UUID participantUserId, PortalParticipantUser ppUser,
-                                                       Enrollee enrollee, UUID taskId, ConsentResponseDto responseDto) {
+                                                       Enrollee enrollee, ConsentResponseDto responseDto) {
         ConsentForm responseForm = consentFormService.find(responseDto.getConsentFormId()).get();
         ParticipantTask task = participantTaskService
                 .findTaskForActivity(ppUser.getId(), enrollee.getStudyEnvironmentId(), responseForm.getStableId()).get();

@@ -9,7 +9,6 @@ import bio.terra.pearl.core.model.consent.ConsentWithResponses;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -39,14 +38,7 @@ public class ConsentResponseController implements ConsentResponseApi {
       String studyShortcode,
       String enrolleeShortcode,
       String stableId,
-      Integer version,
-      UUID taskId) {
-    /**
-     * for now, we ignore the taskId. Later, we might want to validate that the task is still valid
-     * before we return all the data so that the participant doesn't fill out an irrelevant form.
-     * Not validating the task also makes it easier to spot-check survey and consent UX without
-     * specific test users
-     */
+      Integer version) {
     ParticipantUser user = requestUtilService.requireUser(request);
     ConsentWithResponses consentWithResponses =
         consentResponseExtService.findWithResponses(
@@ -62,14 +54,13 @@ public class ConsentResponseController implements ConsentResponseApi {
       String enrolleeShortcode,
       String stableId,
       Integer version,
-      UUID taskId,
       Object body) {
     ParticipantUser user = requestUtilService.requireUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     ConsentResponseDto responseDto = objectMapper.convertValue(body, ConsentResponseDto.class);
     HubResponse response =
         consentResponseExtService.submitResponse(
-            portalShortcode, environmentName, enrolleeShortcode, taskId, responseDto, user.getId());
+            portalShortcode, environmentName, enrolleeShortcode, responseDto, user.getId());
     return ResponseEntity.ok(response);
   }
 }
