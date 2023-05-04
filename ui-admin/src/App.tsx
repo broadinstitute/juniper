@@ -22,6 +22,7 @@ import PortalRouter from './portal/PortalRouter'
 import UserList from './user/UserList'
 import InvestigatorTermsOfUsePage from './terms/InvestigatorTermsOfUsePage'
 import PrivacyPolicyPage from 'terms/PrivacyPolicyPage'
+import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
 
 
 /** container for the app including the router  */
@@ -33,6 +34,7 @@ function App() {
           <AuthProvider {...getOidcConfig(config.b2cTenantName, config.b2cClientId, config.b2cPolicyName)}>
             <UserProvider>
               <div className="App">
+                <IdleStatusMonitor maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={3 * 60 * 1000}/>
                 <ReactNotifications />
                 <NavbarProvider>
                   <BrowserRouter>

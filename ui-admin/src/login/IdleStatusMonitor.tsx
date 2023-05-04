@@ -1,5 +1,5 @@
 /*
- * ATTENTION! This IdleStatusMonitor is also copied to ui-admin. Soon (hopefully), we will have a way to share
+ * ATTENTION! This is a copy of IdleStatusMonitor from ui-participant. Soon (hopefully), we will have a way to share
  * code between these two modules. Until then, these MUST be kept in sync with each other.
  *
  * Note: UserProvider has a different path
@@ -7,7 +7,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import _ from 'lodash'
-import { useUser } from 'providers/UserProvider'
+import { useUser } from 'user/UserProvider'
 
 /*
  * This code was copied from Terra UI and modified to:
