@@ -108,7 +108,7 @@ function App() {
                   <AuthProvider {...getOidcConfig(config.b2cTenantName, config.b2cClientId, config.b2cPolicyName)}>
                     <UserProvider>
                       <Suspense fallback={<PageLoadingIndicator />}>
-                        <IdleStatusMonitor maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={3 * 60 * 1000}/>
+                        <IdleStatusMonitor maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={5 * 60 * 1000}/>
                         <Routes>
                           <Route path="/hub/*" element={<ProtectedRoute><HubRouter/></ProtectedRoute>}/>
                           <Route path="/studies/:studyShortcode">

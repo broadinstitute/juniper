@@ -34,7 +34,7 @@ function App() {
           <AuthProvider {...getOidcConfig(config.b2cTenantName, config.b2cClientId, config.b2cPolicyName)}>
             <UserProvider>
               <div className="App">
-                <IdleStatusMonitor maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={3 * 60 * 1000}/>
+                <IdleStatusMonitor maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={5 * 60 * 1000}/>
                 <ReactNotifications />
                 <NavbarProvider>
                   <BrowserRouter>
