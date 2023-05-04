@@ -168,11 +168,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 .resumeData(makeResumeData(responsePopDto.getCurrentPageNo(), enrollee.getParticipantUserId()))
                 .build();
         if (simulateSubmissions) {
-            ParticipantTask matchingTask = tasks.stream().filter(task ->
-                    task.getTargetStableId().equals(consentForm.getStableId())).findFirst().orElse(null);
-
             HubResponse<ConsentResponse> hubResponse = consentResponseService.submitResponse(enrollee.getParticipantUserId(),
-                    ppUser, enrollee, matchingTask.getId(), responseDto);
+                    ppUser, enrollee, responseDto);
             savedResponse = hubResponse.getResponse();
         } else {
             String fullData = objectMapper.writeValueAsString(responsePopDto.getAnswers());
