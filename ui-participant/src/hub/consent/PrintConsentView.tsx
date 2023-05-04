@@ -6,6 +6,7 @@ import { Survey as SurveyComponent } from 'survey-react-ui'
 import Api, { Answer, Enrollee } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
+import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { extractSurveyContent, makeSurveyJsData } from 'util/surveyJsUtils'
 
@@ -74,6 +75,7 @@ const usePrintableConsent = (args: UsePrintableConsentArgs) => {
       const surveyContent = extractSurveyContent(form)
 
       const surveyModel = new Model(surveyContent)
+      surveyModel.title = form.name
       surveyModel.data = resumableData?.data
 
       surveyModel.mode = 'display'
@@ -127,7 +129,12 @@ const PrintConsentView = () => {
   } else if (!surveyModel) {
     return null
   } else {
-    return <SurveyComponent model={surveyModel} />
+    return (
+      <>
+        <DocumentTitle title={surveyModel.title} />
+        <SurveyComponent model={surveyModel} />
+      </>
+    )
   }
 }
 

@@ -23,6 +23,7 @@ import {
 import { HubUpdate } from 'hub/hubUpdates'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
+import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
 /**
@@ -79,7 +80,12 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
   }
 
 
-  return surveyModel ? <SurveyComponent model={surveyModel} /> : null
+  return (
+    <>
+      <DocumentTitle title={form.name} />
+      {surveyModel ? <SurveyComponent model={surveyModel} /> : null}
+    </>
+  )
 }
 
 /** handles paging the form */

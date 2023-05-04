@@ -29,6 +29,7 @@ import { withErrorBoundary } from '../../util/ErrorBoundary'
 import SurveyReviewModeButton from './ReviewModeButton'
 import { Markdown } from '../../landing/Markdown'
 import { SurveyModel } from 'survey-core'
+import { DocumentTitle } from 'util/DocumentTitle'
 
 const TASK_ID_PARAM = 'taskId'
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
@@ -133,13 +134,18 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
     }
   }, [])
 
-  // f3f3f3 background is to match surveyJs "modern" theme
-  return <div style={{ background: '#f3f3f3' }} className="flex-grow-1 survey-js-survey">
-    <SurveyReviewModeButton surveyModel={surveyModel}/>
-    <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">{form.name}</h1>
-    {surveyModel && <SurveyComponent model={surveyModel}/>}
-    <SurveyFooter survey={form} surveyModel={surveyModel}/>
-  </div>
+  return (
+    <>
+      <DocumentTitle title={form.name} />
+      {/* f3f3f3 background is to match surveyJs "modern" theme */}
+      <div style={{ background: '#f3f3f3' }} className="flex-grow-1 survey-js-survey">
+        <SurveyReviewModeButton surveyModel={surveyModel}/>
+        <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">{form.name}</h1>
+        {surveyModel && <SurveyComponent model={surveyModel}/>}
+        <SurveyFooter survey={form} surveyModel={surveyModel}/>
+      </div>
+    </>
+  )
 }
 
 /** renders the foot for the survey, if it exists and we are on the last page */
