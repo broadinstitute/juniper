@@ -6,7 +6,7 @@ import { requireOptionalString, requirePlainObject, requireString } from 'util/v
 
 type JoinButtonConfig = {
   type: 'join'
-  studyShortcode: string
+  studyShortcode?: string
   text: string
 }
 
@@ -42,9 +42,8 @@ export const validateButtonConfig = (buttonConfig: unknown): ButtonConfig => {
   if (!(type === 'join' || type === 'mailingList' || type === 'internalLink' || type === undefined)) {
     throw new Error(`Invalid button type: "${type}"`)
   }
-
+  const studyShortcode = requireOptionalString(config, 'studyShortcode', 'Invalid join button config')
   if (type === 'join') {
-    const studyShortcode = requireString(config, 'studyShortcode', 'Invalid join button config')
     return { type, studyShortcode, text }
   } else if (type === 'mailingList') {
     return { type, text }

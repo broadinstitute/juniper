@@ -192,14 +192,14 @@ export type SurveyResponse = FormResponse & {
 export type PreregistrationResponse = FormResponse & {
   qualified: false,
   surveyId: string,
-  fullData: string
+  answers: Answer[]
 }
 
 export type PreEnrollmentResponse = FormResponse & {
   qualified: false,
   surveyId: string,
   studyEnvironmentId: string,
-  fullData: string
+  answers: Answer[]
 }
 
 export type Enrollee = {

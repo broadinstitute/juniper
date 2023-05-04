@@ -240,6 +240,7 @@ export type Answer = {
   stringValue: string,
   numberValue: number,
   objectValue: object,
+  booleanValue: boolean,
   questionStableId: string
 }
 

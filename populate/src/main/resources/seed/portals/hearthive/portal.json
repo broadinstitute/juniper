@@ -20,6 +20,9 @@
         "password": "broad_institute",
         "initialized": true
       },
+      "siteContentPopDto": {
+        "populateFileName": "siteContent.json"
+      },
       "preRegSurveyDto": {
         "populateFileName": "preRegistration.json"
       },

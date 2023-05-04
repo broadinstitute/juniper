@@ -21,7 +21,7 @@ export default function PreRegistration({ registrationContext }: { registrationC
     }
     const responseDto = {
       resumeData: getResumeData(surveyModel, null),
-      fullData: JSON.stringify(getSurveyJsAnswerList(surveyModel)),
+      answers: getSurveyJsAnswerList(surveyModel),
       creatingParticipantId: null,
       surveyId: survey.id,
       qualified: surveyModel.getCalculatedValueByName('qualified').value
