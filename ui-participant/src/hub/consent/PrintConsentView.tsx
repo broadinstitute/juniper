@@ -60,8 +60,7 @@ const usePrintableConsent = (args: UsePrintableConsentArgs) => {
         studyShortcode,
         enrolleeShortcode: enrollee.shortcode,
         stableId,
-        version,
-        taskId: null
+        version
       })
 
       const form = consentAndResponses.studyEnvironmentConsent.consentForm

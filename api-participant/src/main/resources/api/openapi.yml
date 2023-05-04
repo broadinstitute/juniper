@@ -178,7 +178,6 @@ paths:
         - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
         - { name: stableId, in: path, required: false, schema: { type: string } }
         - { name: version, in: path, required: true, schema: { type: integer } }
-        - { name: taskId, in: query, required: false, schema: { type: string, format: uuid } }
       responses:
         '200':
           description: consent form and past responses
@@ -196,7 +195,6 @@ paths:
         - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
         - { name: stableId, in: path, required: false, schema: { type: string } }
         - { name: version, in: path, required: true, schema: { type: integer } }
-        - { name: taskId, in: query, required: false, schema: { type: string, format: uuid } }
       requestBody:
         content:
           application/json:

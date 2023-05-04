@@ -108,7 +108,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                         .fullData("{\"items\": []}")
                         .build();
         consentResponseService.submitResponse(userBundle.user().getId(), userBundle.ppUser(),
-            enrollee, consentTask.getId(),  responseDto);
+            enrollee, responseDto);
 
         Enrollee refreshedEnrollee = enrolleeService.find(enrollee.getId()).get();
         assertThat(refreshedEnrollee.isConsented(), equalTo(true));
