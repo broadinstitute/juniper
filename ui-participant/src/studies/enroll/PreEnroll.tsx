@@ -34,7 +34,7 @@ export default function PreEnrollView({ enrollContext }: { enrollContext: StudyE
     const qualified = surveyModel.getCalculatedValueByName(ENROLLMENT_QUALIFIED_VARIABLE).value
     const responseDto = {
       resumeData: getResumeData(surveyModel, null),
-      fullData: JSON.stringify(getSurveyJsAnswerList(surveyModel)),
+      answers: getSurveyJsAnswerList(surveyModel),
       creatingParticipantId: null,
       surveyId: survey.id,
       studyEnvironmentId: studyEnv.id,
