@@ -3,6 +3,11 @@ package bio.terra.pearl.core.service;
 import bio.terra.pearl.core.dao.log.LogEventDao;
 import bio.terra.pearl.core.model.log.LogEvent;
 import bio.terra.pearl.core.model.log.LogEventType;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -11,20 +16,29 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoggingService {
   private LogEventDao logEventDao;
+  private ObjectMapper filteredEventMapper;
+
 
   private static final Logger loggingServiceLogger = LoggerFactory.getLogger(LoggingService.class);
 
-  public LoggingService(LogEventDao logEventDao) {
+  public LoggingService(LogEventDao logEventDao, ObjectMapper objectMapper) {
     this.logEventDao = logEventDao;
+    this.filteredEventMapper = new ObjectMapper();
+    filteredEventMapper.findAndRegisterModules();
+    SimpleBeanPropertyFilter theFilter = SimpleBeanPropertyFilter
+        .serializeAllExcept("eventDetail", "stackTrace");
+    FilterProvider filters = new SimpleFilterProvider()
+        .addFilter("propertyFilter", theFilter);
+    objectMapper.setFilterProvider(filters);
   }
 
   /** creates a log event and sends the non-sensitive fields to container logs */
-  public LogEvent createAndSend(LogEvent event) {
+  public LogEvent createAndSend(LogEvent event) throws JsonProcessingException {
     return createAndSend(event, loggingServiceLogger);
   }
 
   /** creates a log event and sends the non-sensitive fields to container logs, using the passed-in logger. */
-  public LogEvent createAndSend(LogEvent event, Logger logger) {
+  public LogEvent createAndSend(LogEvent event, Logger logger) throws JsonProcessingException {
     LogEvent createdEvent = logEventDao.create(event);
     String eventString = formatEventString(createdEvent);
     if (LogEventType.ERROR.equals(event.getEventType())) {
@@ -36,11 +50,7 @@ public class LoggingService {
   }
 
   // return as a string, with detail and trace fields omitted
-  public String formatEventString(LogEvent event) {
-    return """
-      id: {}, createdAt: {}, eventType: {}, eventName {}, eventSource: {}, portalShortcode: {}, 
-      studyShortcode: {}, environmentName: {}, enrolleeShortcode: {}, operatorId: {}
-      """.formatted(event.getId(), event.getCreatedAt(), event.getEventType(), event.getEventSource(), event.getPortalShortcode(),
-        event.getStudyShortcode(), event.getEnvironmentName(), event.getEnrolleeShortcode(), event.getOperatorId());
+  public String formatEventString(LogEvent event) throws JsonProcessingException {
+    return filteredEventMapper.writeValueAsString(event);
   }
 }

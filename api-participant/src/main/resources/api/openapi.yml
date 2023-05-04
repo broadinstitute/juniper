@@ -55,8 +55,8 @@ paths:
         content: { application/json: { schema: { type: object }}}
       responses:
         '200':
-          description: portal object
-          content: { application/json: { schema: { type: object }}}
+          description: the id of the generated event
+          content: { application/json: { schema: { type: string }}}
         '500':
           $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}:

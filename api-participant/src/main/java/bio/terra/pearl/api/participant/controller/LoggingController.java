@@ -4,6 +4,7 @@ import bio.terra.pearl.api.participant.api.LoggingApi;
 import bio.terra.pearl.core.model.log.LogEvent;
 import bio.terra.pearl.core.model.log.LogEventSource;
 import bio.terra.pearl.core.service.LoggingService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,11 +20,15 @@ public class LoggingController implements LoggingApi {
   }
 
   @Override
-  public ResponseEntity<Object> log(Object body) {
+  public ResponseEntity<String> log(Object body) {
     LogEvent logEvent = objectMapper.convertValue(body, LogEvent.class);
     logEvent.setEventSource(LogEventSource.PARTICIPANT_UI);
-    LogEvent created = loggingService.createAndSend(logEvent);
-    // return the id in case the UI wants to include it in troubleshooting guidance
-    return ResponseEntity.ok(created.getId());
+    try {
+      LogEvent created = loggingService.createAndSend(logEvent);
+      // return the id in case the UI wants to include it in troubleshooting guidance
+      return ResponseEntity.ok(created.getId().toString());
+    } catch (JsonProcessingException e) {
+      return ResponseEntity.unprocessableEntity().body(e.getMessage());
+    }
   }
 }
