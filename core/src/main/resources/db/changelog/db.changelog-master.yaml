@@ -86,6 +86,9 @@ databaseChangeLog:
   - include:
       file: changesets/2023_04_25_survey_footer.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2023_05_05_event_logging.yaml
+      relativeToChangelogFile: true
 
 
 
