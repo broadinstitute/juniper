@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.admin.service;
 
 import bio.terra.pearl.core.service.datarepo.DataRepoExportService;
+import com.google.common.collect.ImmutableSet;
 import java.util.concurrent.TimeUnit;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.lang3.StringUtils;
@@ -85,7 +86,16 @@ public class ScheduledDataRepoExportService {
   }
 
   public boolean isTdrConfigured() {
-    return StringUtils.isNotBlank(env.getProperty("env.tdr.serviceAccountCreds"))
-        && StringUtils.isNotBlank(env.getProperty("env.tdr.deploymentZone"));
+    final ImmutableSet<String> REQUIRED_TDR_ENV_VARS =
+        ImmutableSet.of(
+            "serviceAccountCreds",
+            "deploymentZone",
+            "storageAccountName",
+            "storageAccountKey",
+            "storageContainerName");
+
+    return REQUIRED_TDR_ENV_VARS.stream()
+        .allMatch(
+            envVar -> StringUtils.isNotBlank(env.getProperty(String.format("env.tdr.%s", envVar))));
   }
 }
