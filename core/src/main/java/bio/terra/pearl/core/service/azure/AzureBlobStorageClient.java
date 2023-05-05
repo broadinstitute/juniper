@@ -20,6 +20,11 @@ import java.util.Locale;
 @Component
 public class AzureBlobStorageClient {
 
+    /* Much of this was based on the Azure Java SDK sample repo linked in the official
+       Azure docs: https://learn.microsoft.com/en-us/java/api/overview/azure/storage?view=azure-java-stable
+       Sample repo: https://github.com/Azure/azure-sdk-for-java/blob/main/sdk/storage/azure-storage-blob/src/samples/java/com/azure/storage/blob/BasicExample.java
+     */
+
     private Environment env;
 
     @Autowired
