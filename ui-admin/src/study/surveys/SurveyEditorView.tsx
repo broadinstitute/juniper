@@ -43,6 +43,7 @@ export default function SurveyEditorView({
     }
     if (!user.superuser) {
       Store.addNotification(failureNotification('you do not have permissions to save surveys'))
+      return
     }
     surveyJSCreator.text = await createNewVersion(surveyJSCreator.text)
     setIsDirty(false)
