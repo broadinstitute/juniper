@@ -70,7 +70,7 @@ public class ScheduledDataRepoExportService {
     }
   }
 
-  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 1, initialDelay = 0)
+  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 10, initialDelay = 0)
   //  @SchedulerLock(
   //      name = "DataRepoExportService.pollRunningJobs",
   //      lockAtMostFor = "5m",

@@ -19,9 +19,12 @@ import { sortableTableHeader } from '../../../util/tableUtils'
 import { Link } from 'react-router-dom'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
 import { useUser } from '../../../user/UserProvider'
+import {faDownload} from "@fortawesome/free-solid-svg-icons";
+import CreateDatasetModal from "./CreateDatasetModal";
 
 const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
   const { currentEnvPath } = studyEnvContext
+  const [showCreateDatasetModal, setShowCreateDatasetModal] = useState(false)
   const [datasets, setDatasets] = useState<DatasetDetails[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -98,13 +101,20 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
   return <div className="container-fluid py-3">
     <h1 className="h3">Study Environment Datasets</h1>
     { user.superuser &&
-        <button className="btn btn-secondary" onClick={async () => await Api.createDatasetForStudyEnvironment(
-          studyEnvContext.portal.shortcode,
-          studyEnvContext.study.shortcode,
-          studyEnvContext.currentEnv.environmentName)}>
+        // <button className="btn btn-secondary" onClick={async () => await Api.createDatasetForStudyEnvironment(
+        //   studyEnvContext.portal.shortcode,
+        //   studyEnvContext.study.shortcode,
+        //   studyEnvContext.currentEnv.environmentName)}>
+        //   <FontAwesomeIcon icon={faPlus}/> Create new dataset
+        // </button>
+        <button className="btn btn-secondary" onClick={() => setShowCreateDatasetModal(!showCreateDatasetModal)}
+          aria-label="show or hide export modal">
           <FontAwesomeIcon icon={faPlus}/> Create new dataset
         </button>
     }
+    <CreateDatasetModal studyEnvContext={studyEnvContext}
+      show={showCreateDatasetModal}
+      setShow={setShowCreateDatasetModal}/>
     <LoadingSpinner isLoading={isLoading}>
       <div className="col-12 p-3">
         <ul className="list-unstyled">
