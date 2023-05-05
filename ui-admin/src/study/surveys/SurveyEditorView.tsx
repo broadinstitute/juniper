@@ -8,6 +8,9 @@ import { SurveyCreatorComponent } from 'survey-creator-react'
 import { useSurveyJSCreator } from '../../util/surveyJSUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons/faCaretDown'
+import { useUser } from '../../user/UserProvider'
+import { failureNotification } from '../../util/notifications'
+import { Store } from 'react-notifications-component'
 
 /** renders a survey for editing/viewing using the surveyJS editor */
 export default function SurveyEditorView({
@@ -20,6 +23,7 @@ export default function SurveyEditorView({
   const navigate = useNavigate()
   const [isDirty, setIsDirty] = useState(false)
   const [showVersionSelector, setShowVersionSelector] = useState(false)
+  const { user } = useUser()
 
   /** indicate the survey has been modified */
   const handleSurveyModification = useCallback(() => {
@@ -35,6 +39,10 @@ export default function SurveyEditorView({
   /** when save is pressed, call the handling function, and then update the survey with the response */
   async function handleSave() {
     if (!surveyJSCreator) {
+      return
+    }
+    if (!user.superuser) {
+      Store.addNotification(failureNotification('you do not have permissions to save surveys'))
       return
     }
     surveyJSCreator.text = await createNewVersion(surveyJSCreator.text)
