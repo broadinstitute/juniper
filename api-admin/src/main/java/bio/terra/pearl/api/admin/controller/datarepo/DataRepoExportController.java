@@ -56,19 +56,6 @@ public class DataRepoExportController implements DatarepoApi {
   }
 
   @Override
-  public ResponseEntity<Object> getJobHistoryForStudyEnvironment(
-      String portalShortcode, String studyShortcode, String envName) {
-    AdminUser user = authUtilService.requireAdminUser(request);
-    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-
-    List<DataRepoJob> jobHistory =
-        dataRepoExportExtService.getJobHistoryStudyEnvironment(
-            portalShortcode, studyShortcode, environmentName, user);
-
-    return ResponseEntity.ok().body(jobHistory);
-  }
-
-  @Override
   public ResponseEntity<Void> createDatasetForStudyEnvironment(
       String portalShortcode, String studyShortcode, String envName, DatasetName datasetName) {
     AdminUser user = authUtilService.requireAdminUser(request);

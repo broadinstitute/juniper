@@ -85,10 +85,6 @@ public class DataRepoExportService {
         return datasetDao.findByStudyEnvironmentId(studyEnvironmentId);
     }
 
-    public List<DataRepoJob> getJobHistoryForStudyEnvironment(UUID studyEnvironmentId) {
-        return dataRepoJobDao.findByStudyEnvironmentId(studyEnvironmentId);
-    }
-
     public List<DataRepoJob> getJobHistoryForDataset(UUID studyEnvironmentId, String datasetName) {
         return dataRepoJobDao.findByStudyEnvironmentIdAndName(studyEnvironmentId, datasetName);
     }

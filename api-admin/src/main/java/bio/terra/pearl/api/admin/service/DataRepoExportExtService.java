@@ -42,20 +42,6 @@ public class DataRepoExportExtService {
     return dataRepoExportService.getDatasetsForStudyEnvironment(studyEnv.getId());
   }
 
-  public List<DataRepoJob> getJobHistoryStudyEnvironment(
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName,
-      AdminUser user) {
-    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
-
-    StudyEnvironment studyEnv =
-        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
-
-    return dataRepoExportService.getJobHistoryForStudyEnvironment(studyEnv.getId());
-  }
-
   public List<DataRepoJob> getJobHistoryForDataset(
       String portalShortcode,
       String studyShortcode,

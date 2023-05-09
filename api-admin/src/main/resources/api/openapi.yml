@@ -641,21 +641,6 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/datarepo/jobs:
-    get:
-      summary: Gets the job history for a study environment
-      tags: [ datarepo ]
-      operationId: getJobHistoryForStudyEnvironment
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-      responses:
-        '200':
-          description: study env job history
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
 components:
   responses:
     SystemStatusResponse:

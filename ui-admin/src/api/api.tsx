@@ -659,13 +659,6 @@ export default {
     return fetch(url,  this.getGetInit())
   },
 
-  getJobHistoryForStudyEnvironment(portalShortcode: string, studyShortcode: string,
-    envName: string):
-      Promise<Response> {
-    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/jobs`
-    return fetch(url,  this.getGetInit())
-  },
-
   getJobHistoryForDataset(portalShortcode: string, studyShortcode: string,
     envName: string, datasetName: string):
       Promise<Response> {
