@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { getDatasetListViewPath, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Api, { DatasetDetails, DatasetJobHistory } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
+import { faExternalLink, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { instantToDefaultString } from '../../../util/timeUtils'
 import {
   ColumnDef,
@@ -19,6 +19,7 @@ import { sortableTableHeader } from '../../../util/tableUtils'
 import { Link, useParams } from 'react-router-dom'
 
 const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
+  const { currentEnvPath } = studyEnvContext
   const [datasetDetails, setDatasetDetails] = useState<DatasetDetails | null>(null)
   const [datasetJobHistory, setDatasetJobHistory] = useState<DatasetJobHistory[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -30,8 +31,7 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
   }, {
     id: 'jobType',
     header: 'Action',
-    accessorKey: 'jobType',
-    cell: info => info.getValue() === 'CREATE_DATASET' ? 'Dataset Created' : 'Data Exported'
+    accessorKey: 'jobType'
   }, {
     id: 'status',
     header: 'Status',
@@ -52,7 +52,7 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
     cell: info => <a href={
       `https://jade.datarepo-dev.broadinstitute.org/activity?expandedJob=${info.getValue()}`} target="_blank"
     >{info.getValue()} <FontAwesomeIcon icon={faExternalLink}/></a>
-  }], [datasetJobHistory?.length])
+  }], [datasetJobHistory])
 
   const table = useReactTable({
     data: datasetJobHistory,
@@ -74,7 +74,7 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
   const loadData = async () => {
     try {
       //Fetch dataset details
-      const datasetDetails = await Api.getDatasetsForStudyEnvironment(
+      const datasetDetails = await Api.listDatasetsForStudyEnvironment(
         studyEnvContext.portal.shortcode,
         studyEnvContext.study.shortcode,
         studyEnvContext.currentEnv.environmentName)
@@ -102,6 +102,9 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
   }, [])
   return <div className="container-fluid py-3">
     <h1 className="h3">Terra Data Repo</h1>
+    <Link to={getDatasetListViewPath(currentEnvPath)} className="mx-2">
+      <FontAwesomeIcon icon={faArrowLeft}/> Back to dataset list
+    </Link>
     <LoadingSpinner isLoading={isLoading}>
       <div className="col-12 p-3">
         <ul className="list-unstyled">

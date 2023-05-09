@@ -652,7 +652,7 @@ export default {
     return fetch(url,  this.getGetInit())
   },
 
-  getDatasetsForStudyEnvironment(portalShortcode: string, studyShortcode: string,
+  listDatasetsForStudyEnvironment(portalShortcode: string, studyShortcode: string,
     envName: string):
       Promise<Response> {
     const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets`

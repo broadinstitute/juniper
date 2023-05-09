@@ -59,7 +59,7 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
         `https://jade.datarepo-dev.broadinstitute.org/datasets/${info.getValue()}`} target="_blank"
       >View in Terra Data Repo <FontAwesomeIcon icon={faExternalLink}/></a>
     }]
-  }, [datasets?.length])
+  }, [datasets])
 
   const datasetTable = useReactTable({
     data: datasets,
@@ -80,7 +80,7 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
   const loadData = async () => {
     try {
       //Fetch datasets
-      const datasets = await Api.getDatasetsForStudyEnvironment(
+      const datasets = await Api.listDatasetsForStudyEnvironment(
         studyEnvContext.portal.shortcode,
         studyEnvContext.study.shortcode,
         studyEnvContext.currentEnv.environmentName)

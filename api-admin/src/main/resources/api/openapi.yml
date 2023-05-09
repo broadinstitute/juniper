@@ -609,22 +609,6 @@ paths:
           description: Accepted
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/datarepo/datasets/{datasetName}:
-    get:
-      summary: Gets the details for a specified dataset
-      tags: [ datarepo ]
-      operationId: getDatasetDetails
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: datasetName, in: path, required: true, schema: { type: string } }
-      responses:
-        '200':
-          description: dataset details
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/datarepo/datasets/{datasetName}/jobs:
     get:
       summary: Gets the job history for a study environment TDR dataset
