@@ -93,7 +93,7 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
 
       setIsLoading(false)
     } catch (e) {
-      Store.addNotification(failureNotification(`Error loading data repo`))
+      Store.addNotification(failureNotification(`Error loading dataset information`))
     }
   }
 

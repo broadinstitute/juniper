@@ -39,7 +39,7 @@ public class DataRepoExportExtService {
     StudyEnvironment studyEnv =
         studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
 
-    return dataRepoExportService.getDatasetsForStudyEnvironment(studyEnv.getId());
+    return dataRepoExportService.listDatasetsForStudyEnvironment(studyEnv.getId());
   }
 
   public List<DataRepoJob> getJobHistoryForDataset(

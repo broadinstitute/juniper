@@ -81,7 +81,7 @@ public class DataRepoExportService {
         this.studyEnvironmentDao = studyEnvironmentDao;
     }
 
-    public List<Dataset> getDatasetsForStudyEnvironment(UUID studyEnvironmentId) {
+    public List<Dataset> listDatasetsForStudyEnvironment(UUID studyEnvironmentId) {
         return datasetDao.findByStudyEnvironmentId(studyEnvironmentId);
     }
 
