@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Pearl Admin API
+  title: Juniper Admin API
   description: API for portal and study management
   version: 0.0.1
 paths:
@@ -601,10 +601,12 @@ paths:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/DatasetName' } } }
       responses:
-        '200':
-          description: tdr job id
-          content: { application/json: { schema: { type: object } } }
+        '202':
+          description: Accepted
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/datarepo/datasets/{datasetName}:
@@ -636,6 +638,21 @@ paths:
       responses:
         '200':
           description: dataset job history
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/datarepo/jobs:
+    get:
+      summary: Gets the job history for a study environment
+      tags: [ datarepo ]
+      operationId: getJobHistoryForStudyEnvironment
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: study env job history
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
@@ -735,6 +752,10 @@ components:
       required: [ roles ]
     PortalDto:
       type: object
+    DatasetName:
+      properties:
+        name:
+          type: string
     SystemStatus:
       required: [ ok, systems ]
       type: object

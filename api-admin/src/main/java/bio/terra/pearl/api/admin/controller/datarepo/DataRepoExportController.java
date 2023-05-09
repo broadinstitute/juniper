@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.admin.controller.datarepo;
 
 import bio.terra.pearl.api.admin.api.DatarepoApi;
+import bio.terra.pearl.api.admin.model.DatasetName;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.DataRepoExportExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -55,15 +56,27 @@ public class DataRepoExportController implements DatarepoApi {
   }
 
   @Override
-  public ResponseEntity<Object> createDatasetForStudyEnvironment(
+  public ResponseEntity<Object> getJobHistoryForStudyEnvironment(
       String portalShortcode, String studyShortcode, String envName) {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
 
-    String jobId =
-        dataRepoExportExtService.createDataset(
+    List<DataRepoJob> jobHistory =
+        dataRepoExportExtService.getJobHistoryStudyEnvironment(
             portalShortcode, studyShortcode, environmentName, user);
 
-    return ResponseEntity.ok().body(jobId);
+    return ResponseEntity.ok().body(jobHistory);
+  }
+
+  @Override
+  public ResponseEntity<Void> createDatasetForStudyEnvironment(
+      String portalShortcode, String studyShortcode, String envName, DatasetName datasetName) {
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    AdminUser user = authUtilService.requireAdminUser(request);
+
+    dataRepoExportExtService.createDataset(
+        portalShortcode, studyShortcode, environmentName, datasetName, user);
+
+    return ResponseEntity.accepted().build();
   }
 }

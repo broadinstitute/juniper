@@ -29,6 +29,10 @@ public class DataRepoJobDao extends BaseMutableJdbiDao<DataRepoJob> {
         return findAllByTwoProperties("study_environment_id", studyEnvId, "dataset_name", datasetName);
     }
 
+    public List<DataRepoJob> findByStudyEnvironmentId(UUID studyEnvId) {
+        return findAllByProperty("study_environment_id", studyEnvId);
+    }
+
     public void updateJobStatus(UUID id, String newJobStatus) {
         updateProperty(id, "status", newJobStatus);
     }

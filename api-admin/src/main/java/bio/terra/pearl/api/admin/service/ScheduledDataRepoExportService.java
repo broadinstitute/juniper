@@ -55,7 +55,7 @@ public class ScheduledDataRepoExportService {
     }
   }
 
-  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 30, initialDelay = 1)
+  //  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 30, initialDelay = 1)
   @SchedulerLock(
       name = "DataRepoExportService.ingestStudyEnvironmentDatasets",
       lockAtMostFor = "10m",

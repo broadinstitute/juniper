@@ -1,5 +1,6 @@
 package bio.terra.pearl.api.admin.service;
 
+import bio.terra.pearl.api.admin.model.DatasetName;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.datarepo.DataRepoJob;
@@ -41,6 +42,20 @@ public class DataRepoExportExtService {
     return dataRepoExportService.getDatasetsForStudyEnvironment(studyEnv.getId());
   }
 
+  public List<DataRepoJob> getJobHistoryStudyEnvironment(
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName environmentName,
+      AdminUser user) {
+    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
+    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+
+    StudyEnvironment studyEnv =
+        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get(); // todo get
+
+    return dataRepoExportService.getJobHistoryForStudyEnvironment(studyEnv.getId());
+  }
+
   public List<DataRepoJob> getJobHistoryForDataset(
       String portalShortcode,
       String studyShortcode,
@@ -56,10 +71,11 @@ public class DataRepoExportExtService {
     return dataRepoExportService.getJobHistoryForDataset(studyEnv.getId(), datasetName);
   }
 
-  public String createDataset(
+  public void createDataset(
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
+      DatasetName datasetName,
       AdminUser user) {
     Portal portal = authUtilService.authUserToPortal(user, portalShortcode); // ??
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
@@ -67,13 +83,6 @@ public class DataRepoExportExtService {
     StudyEnvironment studyEnv =
         studyEnvironmentService.findByStudy(studyShortcode, environmentName).get(); // todo get
 
-    return dataRepoExportService.createDataset(
-        studyEnv,
-        "d2p_mbemis_"
-            + System.currentTimeMillis()
-            + "_"
-            + studyShortcode
-            + "_"
-            + environmentName.name());
+    dataRepoExportService.createDataset(studyEnv, datasetName.getName());
   }
 }

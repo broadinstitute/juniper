@@ -659,6 +659,13 @@ export default {
     return fetch(url,  this.getGetInit())
   },
 
+  getJobHistoryForStudyEnvironment(portalShortcode: string, studyShortcode: string,
+    envName: string):
+      Promise<Response> {
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/jobs`
+    return fetch(url,  this.getGetInit())
+  },
+
   getJobHistoryForDataset(portalShortcode: string, studyShortcode: string,
     envName: string, datasetName: string):
       Promise<Response> {
@@ -667,14 +674,14 @@ export default {
   },
 
   async createDatasetForStudyEnvironment(portalShortcode: string, studyShortcode: string,
-    envName: string):
-      Promise<PortalEnvironment> {
+    envName: string, datasetName: { name: string }):
+      Promise<Response> {
     const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets`
-    const response = await fetch(url, {
+    return await fetch(url, {
       method: 'POST',
-      headers: this.getInitHeaders()
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(datasetName)
     })
-    return await this.processJsonResponse(response)
   },
 
   async fetchMailingList(portalShortcode: string, envName: string): Promise<MailingListContact[]> {

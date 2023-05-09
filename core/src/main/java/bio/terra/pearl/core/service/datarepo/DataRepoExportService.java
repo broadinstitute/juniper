@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.datarepo;
 
 import bio.terra.datarepo.client.ApiException;
+import bio.terra.datarepo.model.EnumerateDatasetModel;
 import bio.terra.datarepo.model.JobModel;
 import bio.terra.datarepo.model.JobModel.JobStatusEnum;
 import bio.terra.pearl.core.dao.datarepo.DataRepoJobDao;
@@ -87,6 +88,10 @@ public class DataRepoExportService {
         return datasetDao.findByStudyEnvironmentId(studyEnvironmentId);
     }
 
+    public List<DataRepoJob> getJobHistoryForStudyEnvironment(UUID studyEnvironmentId) {
+        return dataRepoJobDao.findByStudyEnvironmentId(studyEnvironmentId);
+    }
+
     public List<DataRepoJob> getJobHistoryForDataset(UUID studyEnvironmentId, String datasetName) {
         return dataRepoJobDao.findByStudyEnvironmentIdAndName(studyEnvironmentId, datasetName);
     }
@@ -111,7 +116,7 @@ public class DataRepoExportService {
 
     }
 
-    public String createDataset(StudyEnvironment studyEnv, String datasetName) {
+    public void createDataset(StudyEnvironment studyEnv, String datasetName) {
         //TODO: JN-125: This default spend profile is temporary. Eventually, we will want to configure spend profiles
         // on a per-study basis and store those in the Juniper DB.
         UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
@@ -132,8 +137,6 @@ public class DataRepoExportService {
                 .build();
 
         dataRepoJobService.create(job);
-
-        return job.getTdrJobId();
     }
 
     public void ingestDatasets() {

@@ -2,66 +2,19 @@ import React, { useState } from 'react'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
-import Api from 'api/api'
-import { currentIsoDate } from 'util/timeUtils'
-import { failureNotification } from 'util/notifications'
-import { Store } from 'react-notifications-component'
+import Api from '../../../api/api'
 
 const CreateDatasetModal = ({ studyEnvContext, show, setShow }: {studyEnvContext: StudyEnvContextT, show: boolean,
     setShow:  React.Dispatch<React.SetStateAction<boolean>>}) => {
-  const [humanReadable, setHumanReadable] = useState(true)
-  const [onlyIncludeMostRecent, setOnlyIncludeMostRecent] = useState(true)
-  const [fileFormat, setFileFormat] = useState('TSV')
-
   const [isLoading, setIsLoading] = useState(false)
-
-  const optionsFromState = () => {
-    return {
-      onlyIncludeMostRecent,
-      splitOptionsIntoColumns: !humanReadable,
-      stableIdsForOptions: !humanReadable,
-      fileFormat
-    }
-  }
-
-  const saveLoadedData = async (response: Response, fileName: string) => {
-    if (!response.ok) {
-      Store.addNotification(failureNotification('Export failed'))
-      setIsLoading(false)
-      return
-    }
-    const blob = await response.blob()
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = fileName
-    a.click()
+  const [datasetName, setDatasetName] = useState('')
+  const createDataset = () => {
+    setIsLoading(true)
+    Api.createDatasetForStudyEnvironment(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
+      studyEnvContext.currentEnv.environmentName, { name: datasetName })
+    setShow(false)
     setIsLoading(false)
-  }
-
-  const doExport = () => {
-    setIsLoading(true)
-    Api.exportEnrollees(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
-      studyEnvContext.currentEnv.environmentName, optionsFromState()).then(response => {
-      saveLoadedData(response, `${currentIsoDate()  }-enrollees.${fileFormat.toLowerCase()}`)
-    })
-  }
-
-  const doDictionaryExport = () => {
-    setIsLoading(true)
-    Api.exportDictionary(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
-      studyEnvContext.currentEnv.environmentName, optionsFromState()).then(response => {
-      saveLoadedData(response, `${currentIsoDate()  }-DataDictionary.xlsx`)
-    })
-  }
-  const humanReadableChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setHumanReadable(e.target.value === 'true')
-  }
-  const includeRecentChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOnlyIncludeMostRecent(e.target.value === 'true')
-  }
-  const fileFormatChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFileFormat(e.target.value)
+    setDatasetName('')
   }
 
   return <Modal show={show} onHide={() => setShow(false)}>
@@ -74,13 +27,14 @@ const CreateDatasetModal = ({ studyEnvContext, show, setShow }: {studyEnvContext
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
         <label className="form-label">
-              Dataset Name <input type="text" className="form-control" value={'foo'}/>
+              Dataset Name <input type="text" className="form-control" id="inputDatasetName" value={datasetName}
+            onChange={event => setDatasetName(event.target.value)}/>
         </label>
       </form>
     </Modal.Body>
     <Modal.Footer>
       <LoadingSpinner isLoading={isLoading}>
-        <button className="btn btn-primary" onClick={doExport}>Create</button>
+        <button className="btn btn-primary" onClick={createDataset}>Create</button>
         <button className="btn btn-secondary" onClick={() => setShow(false)}>Cancel</button>
       </LoadingSpinner>
     </Modal.Footer>
