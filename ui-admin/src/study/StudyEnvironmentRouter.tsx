@@ -15,7 +15,7 @@ import NotificationConfigView from './notifications/NotificationConfigView'
 import QuestionScratchbox from './surveys/editor/QuestionScratchbox'
 import ExportDataBrowser from './participants/export/ExportDataBrowser'
 import DatasetDashboard from './participants/datarepo/DatasetDashboard'
-import DatasetList from './participants/datarepo/DatasetList';
+import DatasetList from './participants/datarepo/DatasetList'
 
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
