@@ -26,6 +26,9 @@ public class ConsentFormExtService {
 
   public ConsentForm createNewVersion(
       String portalShortcode, ConsentForm consentForm, AdminUser user) {
+    if (!user.isSuperuser()) {
+      throw new PermissionDeniedException("You do not have permissions to perform this operation");
+    }
     Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
     return consentFormService.createNewVersion(portal.getId(), consentForm);
   }
