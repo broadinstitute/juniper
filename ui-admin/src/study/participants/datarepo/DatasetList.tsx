@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { getDatasetDashboardPath, getDatasetListViewPath, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import Api, { DatasetDetails, DatasetJobHistory } from 'api/api'
+import { getDatasetDashboardPath, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import Api, { DatasetDetails } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
@@ -19,17 +19,14 @@ import { sortableTableHeader } from '../../../util/tableUtils'
 import { Link } from 'react-router-dom'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
 import { useUser } from '../../../user/UserProvider'
-import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import CreateDatasetModal from './CreateDatasetModal'
 
 const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
   const { currentEnvPath } = studyEnvContext
   const [showCreateDatasetModal, setShowCreateDatasetModal] = useState(false)
   const [datasets, setDatasets] = useState<DatasetDetails[]>([])
-  const [jobs, setJobs] = useState<DatasetJobHistory[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [datasetsSorting, setDatasetsSorting] = React.useState<SortingState>([])
-  const [jobsSorting, setJobsSorting] = React.useState<SortingState>([])
   const { user } = useUser()
 
   const datasetColumns = useMemo<ColumnDef<DatasetDetails, string>[]>(() => {
@@ -75,40 +72,6 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
     getSortedRowModel: getSortedRowModel()
   })
 
-  const jobColumns = useMemo<ColumnDef<DatasetJobHistory, string>[]>(() => [{
-    id: 'selectjob'
-  }, {
-    id: 'datasetName',
-    header: 'Dataset Name',
-    accessorKey: 'datasetName'
-  }, {
-    id: 'status',
-    header: 'Status',
-    accessorKey: 'status'
-  }, {
-    id: 'created',
-    header: 'Created',
-    accessorKey: 'createdAt',
-    cell: info => instantToDefaultString(info.getValue() as unknown as number)
-  }, {
-    header: 'Data Repo Job ID',
-    accessorKey: 'tdrJobId',
-    cell: info => <a href={
-      `https://jade.datarepo-dev.broadinstitute.org/activity?expandedJob=${info.getValue()}`} target="_blank"
-    >{info.getValue()} <FontAwesomeIcon icon={faExternalLink}/></a>
-  }], [jobs?.length])
-
-  const jobTable = useReactTable({
-    data: jobs.filter(x => x.jobType === 'CREATE_DATASET'),
-    columns: jobColumns,
-    state: {
-      sorting: jobsSorting
-    },
-    onSortingChange: setJobsSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel()
-  })
-
   const contentHeaderStyle = {
     padding: '1em 0 0 1em',
     borderBottom: '1px solid #f6f6f6'
@@ -123,15 +86,6 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
         studyEnvContext.currentEnv.environmentName)
       const datasetsResponse = await datasets.json()
       setDatasets(datasetsResponse)
-
-      //Fetch jobs
-      const jobHistory = await Api.getJobHistoryForStudyEnvironment(
-        studyEnvContext.portal.shortcode,
-        studyEnvContext.study.shortcode,
-        studyEnvContext.currentEnv.environmentName)
-      const jobHistoryResponse = await jobHistory.json()
-      setJobs(jobHistoryResponse)
-
       setIsLoading(false)
     } catch (e) {
       Store.addNotification(failureNotification(`Error loading datasets`))
@@ -182,33 +136,6 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
               </tbody>
             </table>
           </li>
-          {/*<li className="bg-white my-3">*/}
-          {/*  <div style={contentHeaderStyle}>*/}
-          {/*    <h6>Dataset Creation History</h6>*/}
-          {/*  </div>*/}
-          {/*  <table className="table table-striped">*/}
-          {/*    <thead>*/}
-          {/*      <tr>*/}
-          {/*        {jobTable.getFlatHeaders().map(header => sortableTableHeader(header))}*/}
-          {/*      </tr>*/}
-          {/*    </thead>*/}
-          {/*    <tbody>*/}
-          {/*      {jobTable.getRowModel().rows.map(row => {*/}
-          {/*        return (*/}
-          {/*          <tr key={row.id}>*/}
-          {/*            {row.getVisibleCells().map(cell => {*/}
-          {/*              return (*/}
-          {/*                <td key={cell.id}>*/}
-          {/*                  {flexRender(cell.column.columnDef.cell, cell.getContext())}*/}
-          {/*                </td>*/}
-          {/*              )*/}
-          {/*            })}*/}
-          {/*          </tr>*/}
-          {/*        )*/}
-          {/*      })}*/}
-          {/*    </tbody>*/}
-          {/*  </table>*/}
-          {/*</li>*/}
         </ul>
       </div>
     </LoadingSpinner>

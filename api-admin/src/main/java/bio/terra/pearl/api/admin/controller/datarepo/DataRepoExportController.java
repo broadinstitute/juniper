@@ -30,13 +30,13 @@ public class DataRepoExportController implements DatarepoApi {
   }
 
   @Override
-  public ResponseEntity<Object> getDatasetsForStudyEnvironment(
+  public ResponseEntity<Object> listDatasetsForStudyEnvironment(
       String portalShortcode, String studyShortcode, String envName) {
-    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
     List<Dataset> datasets =
-        dataRepoExportExtService.getDatasetsForStudyEnvironment(
+        dataRepoExportExtService.listDatasetsForStudyEnvironment(
             portalShortcode, studyShortcode, environmentName, user);
 
     return ResponseEntity.ok().body(datasets);
@@ -45,8 +45,8 @@ public class DataRepoExportController implements DatarepoApi {
   @Override
   public ResponseEntity<Object> getJobHistoryForDataset(
       String portalShortcode, String studyShortcode, String envName, String datasetName) {
-    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
     List<DataRepoJob> jobHistory =
         dataRepoExportExtService.getJobHistoryForDataset(
@@ -58,8 +58,8 @@ public class DataRepoExportController implements DatarepoApi {
   @Override
   public ResponseEntity<Object> getJobHistoryForStudyEnvironment(
       String portalShortcode, String studyShortcode, String envName) {
-    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
     List<DataRepoJob> jobHistory =
         dataRepoExportExtService.getJobHistoryStudyEnvironment(
@@ -71,8 +71,8 @@ public class DataRepoExportController implements DatarepoApi {
   @Override
   public ResponseEntity<Void> createDatasetForStudyEnvironment(
       String portalShortcode, String studyShortcode, String envName, DatasetName datasetName) {
-    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
     dataRepoExportExtService.createDataset(
         portalShortcode, studyShortcode, environmentName, datasetName, user);

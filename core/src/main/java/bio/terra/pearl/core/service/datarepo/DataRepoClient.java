@@ -73,15 +73,6 @@ public class DataRepoClient {
         return datasetsApi.deleteDataset(datasetId);
     }
 
-    public PolicyResponse shareWithMbemis(UUID datasetId) throws ApiException {
-        DatasetsApi datasetsApi = getDatasetsApi();
-
-        PolicyMemberRequest request = new PolicyMemberRequest()
-                .email("mbemis.firecloud@gmail.com");
-
-        return datasetsApi.addDatasetPolicyMember(datasetId, "steward", request);
-    }
-
     //Job APIs
     public JobModel getJobStatus(String jobId) throws ApiException {
         JobsApi jobsApi = getJobsApi();

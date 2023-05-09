@@ -582,7 +582,7 @@ paths:
     get:
       summary: Gets the list of datasets for the study environment
       tags: [ datarepo ]
-      operationId: getDatasetsForStudyEnvironment
+      operationId: listDatasetsForStudyEnvironment
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }

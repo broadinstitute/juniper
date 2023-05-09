@@ -24,8 +24,6 @@ public class GoogleServiceAccountUtils {
             throw new RuntimeException("Error generating service account access token: " + e.getMessage());
         }
 
-        System.out.println(refreshedAccessToken.getTokenValue());
-
         return refreshedAccessToken;
     }
 

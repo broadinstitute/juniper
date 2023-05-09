@@ -28,7 +28,7 @@ public class DataRepoExportExtService {
     this.studyEnvironmentService = studyEnvironmentService;
   }
 
-  public List<Dataset> getDatasetsForStudyEnvironment(
+  public List<Dataset> listDatasetsForStudyEnvironment(
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
@@ -37,7 +37,7 @@ public class DataRepoExportExtService {
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
 
     StudyEnvironment studyEnv =
-        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get(); // todo get
+        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
 
     return dataRepoExportService.getDatasetsForStudyEnvironment(studyEnv.getId());
   }
@@ -51,7 +51,7 @@ public class DataRepoExportExtService {
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
 
     StudyEnvironment studyEnv =
-        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get(); // todo get
+        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
 
     return dataRepoExportService.getJobHistoryForStudyEnvironment(studyEnv.getId());
   }
@@ -62,11 +62,11 @@ public class DataRepoExportExtService {
       EnvironmentName environmentName,
       String datasetName,
       AdminUser user) {
-    Portal portal = authUtilService.authUserToPortal(user, portalShortcode); // ??
+    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
 
     StudyEnvironment studyEnv =
-        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get(); // todo get
+        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
 
     return dataRepoExportService.getJobHistoryForDataset(studyEnv.getId(), datasetName);
   }
@@ -77,11 +77,11 @@ public class DataRepoExportExtService {
       EnvironmentName environmentName,
       DatasetName datasetName,
       AdminUser user) {
-    Portal portal = authUtilService.authUserToPortal(user, portalShortcode); // ??
+    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
 
     StudyEnvironment studyEnv =
-        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get(); // todo get
+        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
 
     dataRepoExportService.createDataset(studyEnv, datasetName.getName());
   }

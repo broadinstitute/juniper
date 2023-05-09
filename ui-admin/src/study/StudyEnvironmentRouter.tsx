@@ -97,10 +97,6 @@ export const getDatasetListViewPath = (currentEnvPath: string) => {
   return `${currentEnvPath}/export/dataRepo/datasets`
 }
 
-export const getOrphanedDatasetListViewPath = (currentEnvPath: string) => {
-  return `${currentEnvPath}/export/dataRepo/orphans`
-}
-
 export const getDatasetDashboardPath = (datasetName: string, currentEnvPath: string) => {
   return `${currentEnvPath}/export/dataRepo/datasets/${datasetName}`
 }

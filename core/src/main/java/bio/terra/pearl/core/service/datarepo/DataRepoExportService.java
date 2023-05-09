@@ -1,13 +1,11 @@
 package bio.terra.pearl.core.service.datarepo;
 
 import bio.terra.datarepo.client.ApiException;
-import bio.terra.datarepo.model.EnumerateDatasetModel;
 import bio.terra.datarepo.model.JobModel;
 import bio.terra.datarepo.model.JobModel.JobStatusEnum;
 import bio.terra.pearl.core.dao.datarepo.DataRepoJobDao;
 import bio.terra.pearl.core.dao.datarepo.DatasetDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
-import bio.terra.pearl.core.dao.portal.PortalDao;
 import bio.terra.pearl.core.dao.study.PortalStudyDao;
 import bio.terra.pearl.core.dao.study.StudyDao;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
@@ -32,7 +30,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -227,9 +224,6 @@ public class DataRepoExportService {
 
                     datasetService.create(dataset);
                     dataRepoJobService.updateJobStatus(job.getId(), jobStatus.getValue());
-
-                    //TODO: make this official
-                    dataRepoClient.shareWithMbemis(dataset.getDatasetId());
                 }
                 case FAILED -> {
                     logger.warn("createDataset job ID {} has failed. Dataset {} failed to create.", job.getId(), job.getDatasetName());
