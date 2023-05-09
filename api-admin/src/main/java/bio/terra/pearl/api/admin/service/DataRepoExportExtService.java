@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.datarepo.Dataset;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.datarepo.DataRepoExportService;
+import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -63,6 +64,9 @@ public class DataRepoExportExtService {
       EnvironmentName environmentName,
       DatasetName datasetName,
       AdminUser user) {
+    if (!user.isSuperuser()) {
+      throw new PermissionDeniedException("You do not have permissions to perform this operation");
+    }
     Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
 
