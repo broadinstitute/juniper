@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -53,14 +54,16 @@ public class EnrolleeController implements EnrolleeApi {
   }
 
   @Override
-  public ResponseEntity<String> withdraw(
+  public ResponseEntity<Object> withdraw(
       String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     try {
       var withdrawn = enrolleeExtService.withdrawEnrollee(adminUser, enrolleeShortcode);
-      return ResponseEntity.ok(withdrawn.getId().toString());
+      return ResponseEntity.ok(new WithdrawnResponse(withdrawn.getId()));
     } catch (JsonProcessingException e) {
       return ResponseEntity.internalServerError().body(e.getMessage());
     }
   }
+
+  public record WithdrawnResponse(UUID withdrawnEnrolleeId) {}
 }

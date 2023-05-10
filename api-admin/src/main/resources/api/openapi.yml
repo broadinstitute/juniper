@@ -263,7 +263,7 @@ paths:
       responses:
         '200':
           description: withdrawnEnrollee id
-          content: { application/json: { schema: { type: string } } }
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/notifications:
