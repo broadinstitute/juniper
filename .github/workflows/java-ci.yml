@@ -54,7 +54,6 @@ jobs:
           arguments: build --info # if you need to see test failure full stacktraces, change this to `build --info`
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
-        working-directory: ${{ github.workspace }}/pearl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
