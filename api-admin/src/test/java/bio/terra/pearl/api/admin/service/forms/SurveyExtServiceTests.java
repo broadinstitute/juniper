@@ -1,6 +1,5 @@
-package bio.terra.pearl.api.admin.service;
+package bio.terra.pearl.api.admin.service.forms;
 
-import bio.terra.pearl.api.admin.service.forms.SurveyExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import org.junit.jupiter.api.Assertions;
