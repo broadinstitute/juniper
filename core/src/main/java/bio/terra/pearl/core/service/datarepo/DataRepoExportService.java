@@ -6,22 +6,32 @@ import bio.terra.datarepo.model.JobModel.JobStatusEnum;
 import bio.terra.pearl.core.dao.datarepo.DataRepoJobDao;
 import bio.terra.pearl.core.dao.datarepo.DatasetDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
+import bio.terra.pearl.core.dao.portal.PortalDao;
+import bio.terra.pearl.core.dao.study.PortalStudyDao;
 import bio.terra.pearl.core.dao.study.StudyDao;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.model.datarepo.DataRepoJob;
 import bio.terra.pearl.core.model.datarepo.Dataset;
 import bio.terra.pearl.core.model.datarepo.JobType;
+import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.service.azure.AzureBlobStorageClient;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetCreationException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetNotFoundException;
 import bio.terra.pearl.core.service.exception.StudyNotFoundException;
+import bio.terra.pearl.core.service.export.EnrolleeExportService;
+import bio.terra.pearl.core.service.export.ExportFileFormat;
+import bio.terra.pearl.core.service.export.instance.ExportOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
@@ -35,34 +45,43 @@ public class DataRepoExportService {
     private static final Logger logger = LoggerFactory.getLogger(DataRepoExportService.class);
 
     Environment env;
+    AzureBlobStorageClient azureBlobStorageClient;
     DataRepoJobService dataRepoJobService;
     DatasetService datasetService;
     DataRepoClient dataRepoClient;
+    EnrolleeExportService enrolleeExportService;
     AnswerDao answerDao;
     DataRepoJobDao dataRepoJobDao;
     DatasetDao datasetDao;
     EnrolleeDao enrolleeDao;
+    PortalStudyDao portalStudyDao;
     StudyEnvironmentDao studyEnvironmentDao;
     StudyDao studyDao;
 
     public DataRepoExportService(Environment env,
+                                 AzureBlobStorageClient azureBlobStorageClient,
                                  DataRepoClient dataRepoClient,
                                  DataRepoJobService dataRepoJobService,
                                  DatasetService datasetService,
+                                 EnrolleeExportService enrolleeExportService,
                                  AnswerDao answerDao,
                                  DataRepoJobDao dataRepoJobDao,
                                  DatasetDao datasetDao,
                                  EnrolleeDao enrolleeDao,
+                                 PortalStudyDao portalStudyDao,
                                  StudyDao studyDao,
                                  StudyEnvironmentDao studyEnvironmentDao) {
         this.env = env;
+        this.azureBlobStorageClient = azureBlobStorageClient;
         this.dataRepoClient = dataRepoClient;
         this.dataRepoJobService = dataRepoJobService;
+        this.enrolleeExportService = enrolleeExportService;
         this.answerDao = answerDao;
         this.dataRepoJobDao = dataRepoJobDao;
         this.datasetService = datasetService;
         this.datasetDao = datasetDao;
         this.enrolleeDao = enrolleeDao;
+        this.portalStudyDao = portalStudyDao;
         this.studyDao = studyDao;
         this.studyEnvironmentDao = studyEnvironmentDao;
     }
@@ -104,7 +123,7 @@ public class DataRepoExportService {
     }
 
     public void ingestDatasets() {
-        List<Dataset> outdatedDatasets = datasetDao.findAll().stream().filter(dataset -> dataset.getLastExported().isBefore(Instant.now().minus(4, ChronoUnit.HOURS))).toList();
+        List<Dataset> outdatedDatasets = datasetDao.findAll().stream().filter(dataset -> dataset.getLastExported().isBefore(Instant.now().minus(1, ChronoUnit.MINUTES))).toList();
 
         logger.info("Found {} study environments requiring dataset ingest", outdatedDatasets.size());
 
@@ -114,9 +133,33 @@ public class DataRepoExportService {
         }
     }
 
-    public void ingestDataForStudyEnvironment(Dataset studyEnvDataset) {
+    public String uploadCsvToAzureStorage(UUID studyEnvironmentId) {
+        ExportOptions exportOptions = new ExportOptions(false, false, false, ExportFileFormat.TSV, null);
+
+        String blobName = studyEnvironmentId + "_" + Instant.now() + ".csv";
+
+        //Backtrack from studyEnvironmentId to get the portalId, so we can export the study environment data
+        StudyEnvironment studyEnv = studyEnvironmentDao.find(studyEnvironmentId).orElseThrow(() -> new NotFoundException("Study environment not found."));
+        PortalStudy portalStudy = portalStudyDao.findByStudyId(studyEnv.getStudyId()).stream().findFirst().orElseThrow(() -> new NotFoundException("Portal study not found."));
+
         try {
-            JobModel ingestJob = dataRepoClient.ingestDataset(studyEnvDataset.getDatasetId(), "enrollee");
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            enrolleeExportService.export(exportOptions, portalStudy.getPortalId(), studyEnvironmentId, outputStream);
+            outputStream.close();
+
+            String exportData = outputStream.toString();
+            return azureBlobStorageClient.uploadBlobAndSignUrl(blobName, exportData);
+        } catch (Exception e) {
+            throw new RuntimeException("Could not export and upload CSV for TDR ingest. Error: " + e.getMessage());
+        }
+    }
+
+    public void ingestDataForStudyEnvironment(Dataset studyEnvDataset) {
+        UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
+        String blobSasUrl = uploadCsvToAzureStorage(studyEnvDataset.getStudyEnvironmentId());
+
+        try {
+            JobModel ingestJob = dataRepoClient.ingestDataset(defaultSpendProfileId, studyEnvDataset.getDatasetId(), "enrollee", blobSasUrl);
             logger.info("Ingest job returned with job ID {}", ingestJob.getId());
             //Store in DB
             DataRepoJob job = DataRepoJob.builder()

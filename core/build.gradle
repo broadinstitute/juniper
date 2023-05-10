@@ -36,6 +36,7 @@ dependencies {
     implementation 'com.google.auth:google-auth-library-oauth2-http:1.4.0'
     implementation 'org.apache.poi:poi:5.2.3'
     implementation 'org.apache.poi:poi-ooxml:5.2.3'
+    implementation 'com.azure:azure-storage-blob:12.22.0'
 
     liquibaseRuntime 'org.liquibase:liquibase-core'
     liquibaseRuntime 'info.picocli:picocli:4.6.1'
