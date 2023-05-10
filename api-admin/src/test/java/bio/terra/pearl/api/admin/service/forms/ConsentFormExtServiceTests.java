@@ -5,8 +5,8 @@ import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class SurveyExtServiceTests {
-  private SurveyExtService emptyService = new SurveyExtService(null, null, null);
+public class ConsentFormExtServiceTests {
+  private ConsentFormExtService emptyService = new ConsentFormExtService(null, null);
 
   @Test
   public void createNewVersionRequiresSuperuser() {
