@@ -32,8 +32,6 @@ public class Enrollee extends BaseEntity {
     private String shortcode;
     private boolean consented;
     @Builder.Default
-    private boolean withdrawn = false;
-    @Builder.Default
     private Set<SurveyResponse> surveyResponses = new HashSet<>();
     @Builder.Default
     private Set<ConsentResponse> consentResponses = new HashSet<>();

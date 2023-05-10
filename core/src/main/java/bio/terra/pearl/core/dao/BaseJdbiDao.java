@@ -214,7 +214,6 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
-
     protected Optional<T> findByTwoProperties(String column1Name, Object column1Value,
                                               String column2Name, Object column2Value) {
         return jdbi.withHandle(handle ->
@@ -238,7 +237,6 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
                         .list()
         );
     }
-
 
     protected List<T> findAllByProperty(String columnName, Object columnValue) {
         return jdbi.withHandle(handle ->

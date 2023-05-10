@@ -27,8 +27,7 @@ public class EnrolleeFactory {
     private PortalParticipantUserService portalParticipantUserService;
 
     public Enrollee.EnrolleeBuilder builder(String testName) {
-        return Enrollee.builder()
-                .withdrawn(false);
+        return Enrollee.builder();
     }
 
     public Enrollee.EnrolleeBuilder builderWithDependencies(String testName) {

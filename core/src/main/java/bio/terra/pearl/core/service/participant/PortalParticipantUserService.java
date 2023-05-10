@@ -69,6 +69,11 @@ public class PortalParticipantUserService extends ImmutableEntityService<PortalP
         return dao.findByPortalEnvironmentId(portalId);
     }
 
+    public List<PortalParticipantUser> findbyProfileId(UUID profileId) {
+        return dao.findByProfileId(profileId);
+    }
+
+    @Override @Transactional
     public void delete(UUID portalParticipantUserId, Set<CascadeProperty> cascades) {
         PortalParticipantUser ppUser = dao.find(portalParticipantUserId).get();
         preregistrationResponseDao.deleteByPortalParticipantUserId(portalParticipantUserId);
@@ -77,6 +82,14 @@ public class PortalParticipantUserService extends ImmutableEntityService<PortalP
 
         if (ppUser.getProfileId() != null) {
             profileService.delete(ppUser.getProfileId(), cascades);
+        }
+    }
+
+    @Transactional
+    public void deleteByParticipantUserId(UUID participantUserId) {
+        List<PortalParticipantUser> users = dao.findByParticipantUserId(participantUserId);
+        for(PortalParticipantUser ppUser : users) {
+            delete(ppUser.getId(), CascadeProperty.EMPTY_SET);
         }
     }
 

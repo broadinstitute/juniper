@@ -23,6 +23,13 @@ public class ParticipantUserService extends ImmutableEntityService<ParticipantUs
         this.portalParticipantUserService = portalParticipantUserService;
     }
 
+    @Transactional @Override
+    public void delete(UUID userId, Set<CascadeProperty> cascades) {
+        portalParticipantUserService.deleteByParticipantUserId(userId);
+        dao.delete(userId);
+    }
+
+    /** deletes users no longer attached to any portals */
     @Transactional
     public void deleteOrphans(List<UUID> userIds, Set<CascadeProperty> cascades) {
         userIds.stream().forEach(userId -> {
@@ -35,4 +42,5 @@ public class ParticipantUserService extends ImmutableEntityService<ParticipantUs
     public Optional<ParticipantUser> findOne(String username, EnvironmentName environmentName) {
         return dao.findOne(username, environmentName);
     }
+
 }

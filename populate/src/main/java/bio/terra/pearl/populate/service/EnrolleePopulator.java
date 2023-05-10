@@ -28,8 +28,8 @@ import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
-import bio.terra.pearl.populate.dto.EnrolleePopDto;
-import bio.terra.pearl.populate.dto.ParticipantTaskPopDto;
+import bio.terra.pearl.populate.dto.participant.EnrolleePopDto;
+import bio.terra.pearl.populate.dto.participant.ParticipantTaskPopDto;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
 import bio.terra.pearl.populate.dto.survey.AnswerPopDto;
@@ -58,6 +58,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     private AnswerProcessingService answerProcessingService;
     private EnrollmentService enrollmentService;
     private ProfileService profileService;
+    private WithdrawnEnrolleeService withdrawnEnrolleeService;
 
     public EnrolleePopulator(EnrolleeService enrolleeService,
                              StudyEnvironmentService studyEnvironmentService,
@@ -69,7 +70,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                              ParticipantTaskService participantTaskService,
                              NotificationConfigService notificationConfigService,
                              NotificationService notificationService, AnswerProcessingService answerProcessingService,
-                             EnrollmentService enrollmentService, ProfileService profileService) {
+                             EnrollmentService enrollmentService, ProfileService profileService,
+                             WithdrawnEnrolleeService withdrawnEnrolleeService) {
         this.portalParticipantUserService = portalParticipantUserService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.surveyService = surveyService;
@@ -85,6 +87,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         this.answerProcessingService = answerProcessingService;
         this.enrollmentService = enrollmentService;
         this.profileService = profileService;
+        this.withdrawnEnrolleeService = withdrawnEnrolleeService;
     }
 
     private void populateResponse(Enrollee enrollee, SurveyResponsePopDto responsePopDto,
@@ -305,6 +308,9 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         profile.setDoNotEmail(isDoNotEmail);
         profileService.update(profile);
 
+        if (popDto.isWithdrawn()) {
+            withdrawnEnrolleeService.withdrawEnrollee(enrollee);
+        }
         return enrollee;
     }
 

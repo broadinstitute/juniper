@@ -17,7 +17,8 @@ import EnrolleeNotifications from './EnrolleeNotifications'
 import DataChangeRecords from './DataChangeRecords'
 import EnrolleeProfile from './EnrolleeProfile'
 import ParticipantTaskView from './tasks/ParticipantTaskView'
-import ErrorBoundary from '../../util/ErrorBoundary'
+import ErrorBoundary from 'util/ErrorBoundary'
+import AdvancedOptions from './AdvancedOptions'
 
 export type SurveyWithResponsesT = {
   survey: StudyEnvironmentSurvey,
@@ -124,6 +125,9 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
               <li className="list-group-item subgroup">
                 <NavLink to="changeRecords" className={getLinkCssClasses}>Audit history</NavLink>
               </li>
+              <li className="list-group-item subgroup">
+                <NavLink to="advanced" className={getLinkCssClasses}>Advanced options</NavLink>
+              </li>
             </ul>
           </div>
           <div className="participantTabContent flex-grow-1 bg-white p-3">
@@ -151,6 +155,9 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                 }/>
                 <Route path="changeRecords" element={
                   <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext}/>
+                }/>
+                <Route path="advanced" element={
+                  <AdvancedOptions enrollee={enrollee} studyEnvContext={studyEnvContext}/>
                 }/>
                 <Route index element={<EnrolleeProfile enrollee={enrollee}/>}/>
                 <Route path="*" element={<div>unknown enrollee route</div>}/>

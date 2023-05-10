@@ -1,4 +1,4 @@
-package bio.terra.pearl.populate.dto;
+package bio.terra.pearl.populate.dto.participant;
 
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 

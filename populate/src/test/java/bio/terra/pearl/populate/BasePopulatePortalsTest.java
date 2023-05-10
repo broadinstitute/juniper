@@ -4,6 +4,7 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.service.export.DictionaryExportService;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
@@ -41,6 +42,8 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     protected EnrolleeFactory enrolleeFactory;
     @Autowired
     protected DictionaryExportService dictionaryExportService;
+    @Autowired
+    protected WithdrawnEnrolleeService withdrawnEnrolleeService;
 
     protected void setUpEnvironments() throws IOException {
         for (String fileName : BaseSeedPopulator.ENVIRONMENTS_TO_POPULATE) {
