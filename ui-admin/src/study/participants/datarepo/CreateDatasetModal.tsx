@@ -2,16 +2,23 @@ import React, { useState } from 'react'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
-import Api from '../../../api/api'
+import Api from 'api/api'
+import { failureNotification, successNotification } from 'util/notifications'
+import { Store } from 'react-notifications-component'
 
 const CreateDatasetModal = ({ studyEnvContext, show, setShow }: {studyEnvContext: StudyEnvContextT, show: boolean,
     setShow:  React.Dispatch<React.SetStateAction<boolean>>}) => {
   const [isLoading, setIsLoading] = useState(false)
   const [datasetName, setDatasetName] = useState('')
-  const createDataset = () => {
+  const createDataset = async () => {
     setIsLoading(true)
-    Api.createDatasetForStudyEnvironment(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
-      studyEnvContext.currentEnv.environmentName, { name: datasetName })
+    const response = await Api.createDatasetForStudyEnvironment(studyEnvContext.portal.shortcode,
+      studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName, { name: datasetName })
+    if (response.ok) {
+      Store.addNotification(successNotification(`${datasetName} created`))
+    } else {
+      Store.addNotification(failureNotification(`${datasetName} creation failed`))
+    }
     setShow(false)
     setIsLoading(false)
     setDatasetName('')
