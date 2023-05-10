@@ -1,9 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Enrollee, ParticipantTask } from 'api/api'
-import { faCheck, faCircleHalfStroke, faLock } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faCircleHalfStroke, faLock, faPrint } from '@fortawesome/free-solid-svg-icons'
 import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { hideVisually } from 'polished'
 
 export type StatusDisplayInfo = {
   icon: React.ReactNode,
@@ -57,6 +58,14 @@ export default function TaskLink({ task, studyShortcode, enrollee }:
           ? <Link to={getTaskPath(task, enrollee.shortcode, studyShortcode)}>{task.targetName}</Link>
           : task.targetName}
       </div>
+      {task.taskType === 'CONSENT' && task.status === 'COMPLETE' && (
+        <div className="ms-3">
+          <Link to={`${getTaskPath(task, enrollee.shortcode, studyShortcode)}/print`}>
+            <FontAwesomeIcon icon={faPrint} />
+            <span style={hideVisually()}>Print {task.targetName}</span>
+          </Link>
+        </div>
+      )}
       <div className="ms-3">
         {isAccessible
           ? statusDisplayMap[task.status].statusDisplay
