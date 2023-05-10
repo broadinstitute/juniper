@@ -53,6 +53,17 @@ jobs:
         with:
           arguments: build --info # if you need to see test failure full stacktraces, change this to `build --info`
 
+  sonarcloud:
+    name: SonarCloud
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   # Need to uncomment these in follow up PR, The new Trivy and Tag workflows need to exist on the development branch
   # before the following steps will work
 
@@ -70,7 +81,7 @@ jobs:
           workflow: Trivy
           token: ${{ secrets.BROADBOT_TOKEN }}
           ref: ${{ github.event.pull_request.head.ref }}
-  
+
   dispatch-tag:
     needs: [ build ]
     runs-on: ubuntu-latest
