@@ -14,6 +14,7 @@ import ParticipantsRouter from './participants/ParticipantsRouter'
 import NotificationConfigView from './notifications/NotificationConfigView'
 import QuestionScratchbox from './surveys/editor/QuestionScratchbox'
 import ExportDataBrowser from './participants/export/ExportDataBrowser'
+import StudyEnvStatsView from './StudyEnvStatsView'
 
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
@@ -67,6 +68,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
         <Route path="*" element={<div>Unknown prereg page</div>}/>
       </Route>
       <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
+      <Route path="stats" element={<StudyEnvStatsView studyEnvContext={studyEnvContext}/>}/>
       <Route path="export/dataBrowser" element={<ExportDataBrowser studyEnvContext={studyEnvContext}/>}/>
       <Route index element={<StudyContent studyEnvContext={studyEnvContext}/>}/>
       <Route path="*" element={<div>Unknown study environment page</div>}/>

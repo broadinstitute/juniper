@@ -70,7 +70,8 @@
         "enrollees/jsalk.json",
         "enrollees/newEnrollee.json",
         "enrollees/consentedEnrollee.json",
-        "enrollees/basicsDone.json"
+        "enrollees/basicsDone.json",
+        "enrollees/withdrawn.json"
       ],
       "preEnrollmentResponseDtos": [{
           "qualified": false,

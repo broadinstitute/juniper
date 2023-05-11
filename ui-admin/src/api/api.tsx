@@ -389,6 +389,11 @@ export type ExportData = {
   valueMaps: Record<string, string>[]
 }
 
+export type StudyEnvStats = {
+  enrolleeCount: number,
+  withdrawnCount: number
+}
+
 let bearerToken: string | null = null
 export const API_ROOT = '/api'
 
@@ -582,6 +587,14 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async withdrawEnrollee(portalShortcode: string, studyShortcode: string, envName: string,
+    enrolleeShortcode: string): Promise<object> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
+    }/enrollees/${enrolleeShortcode}/withdraw`
+    const response = await fetch(url, { method: 'POST', headers: this.getInitHeaders() })
+    return await this.processJsonResponse(response)
+  },
+
   async fetchEnrolleeChangeRecords(portalShortcode: string, studyShortcode: string, envName: string,
     enrolleeShortcode: string): Promise<DataChangeRecord[]> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
@@ -600,6 +613,13 @@ export default {
       headers: this.getInitHeaders(),
       body: JSON.stringify(enrolleeRuleData)
     })
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchStats(portalShortcode: string, studyShortcode: string, envName: string):
+    Promise<StudyEnvStats> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/stats`
+    const response = await fetch(url,  this.getGetInit())
     return await this.processJsonResponse(response)
   },
 

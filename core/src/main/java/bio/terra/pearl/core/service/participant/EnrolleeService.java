@@ -3,18 +3,15 @@ package bio.terra.pearl.core.service.participant;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
-import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
@@ -43,6 +40,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private PortalStudyService portalStudyService;
     private PortalService portalService;
     private DataChangeRecordService dataChangeRecordService;
+    private WithdrawnEnrolleeService withdrawnEnrolleeService;
+    private ParticipantUserService participantUserService;
 
 
     private SecureRandom secureRandom;
@@ -56,6 +55,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            NotificationService notificationService, PortalStudyService portalStudyService,
                            @Lazy PortalService portalService,
                            @Lazy DataChangeRecordService dataChangeRecordService,
+                           @Lazy WithdrawnEnrolleeService withdrawnEnrolleeService,
+                           @Lazy ParticipantUserService participantUserService,
                            SecureRandom secureRandom) {
         super(enrolleeDao);
         this.surveyResponseService = surveyResponseService;
@@ -67,6 +68,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.portalStudyService = portalStudyService;
         this.portalService = portalService;
         this.dataChangeRecordService = dataChangeRecordService;
+        this.withdrawnEnrolleeService = withdrawnEnrolleeService;
+        this.participantUserService = participantUserService;
         this.secureRandom = secureRandom;
     }
 
@@ -85,23 +88,10 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.findByStudyEnvironmentId(studyEnvironmentId);
     }
 
-    public Enrollee findWithAdminLoad(AdminUser adminUser, String shortcode) {
-        Enrollee enrollee = authAdminUserToEnrollee(adminUser, shortcode);
+    public Enrollee loadForAdminView(Enrollee enrollee) {
         return dao.loadForAdminView(enrollee);
     }
 
-
-    /** returns the enrollee if the user is authorized to access/modify it, throws an error otherwise */
-    public Enrollee authAdminUserToEnrollee(AdminUser user, String enrolleeShortcode) {
-        // find what portal(s) the enrollee is in, and then check that the adminUser is authorized in at least one
-        List<PortalStudy> portalStudies = portalStudyService.findByEnrollee(enrolleeShortcode);
-        List<UUID> portalIds = portalStudies.stream().map(PortalStudy::getPortalId).toList();
-        if (!portalService.checkAdminInAtLeastOnePortal(user, portalIds)) {
-            throw new PermissionDeniedException("User %s does not have permissions on enrollee %s or enrollee does not exist"
-                    .formatted(user.getUsername(), enrolleeShortcode));
-        }
-        return dao.findOneByShortcode(enrolleeShortcode).get();
-    }
 
     public List<EnrolleeSearchResult> search(String studyShortcode, EnvironmentName envName) {
         StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
@@ -122,12 +112,10 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         Enrollee enrollee = dao.find(enrolleeId).get();
         StudyEnvironment studyEnv = studyEnvironmentService.find(enrollee.getStudyEnvironmentId()).get();
         /**
-         * We should not generally delete withdrawn participants, since we need to preserve audit records.
-         * However, we allow deleting withdrawn participants because those may be test participants
-         * run through a live site to test live configurations.
+         * For production environments, we only allow deletion if a withdrawal record has already been preserved
          */
         if (studyEnv.getEnvironmentName().equals(EnvironmentName.live) &&
-            !enrollee.isWithdrawn()) {
+            !withdrawnEnrolleeService.isWithdrawn(enrollee.getShortcode())) {
             throw new UnsupportedOperationException("Cannot delete live, non-withdrawn participants");
         }
         participantTaskService.deleteByEnrolleeId(enrolleeId);
@@ -142,6 +130,9 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         dao.delete(enrolleeId);
         if (enrollee.getPreEnrollmentResponseId() != null) {
             preEnrollmentResponseDao.delete(enrollee.getPreEnrollmentResponseId());
+        }
+        if (cascades.contains(AllowedCascades.PARTICIPANT_USER)) {
+            participantUserService.delete(enrollee.getParticipantUserId(), CascadeProperty.EMPTY_SET);
         }
     }
 
@@ -191,5 +182,9 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
             throw new RuntimeException("Unable to generate unique shortcode");
         }
         return shortcode;
+    }
+
+    public enum AllowedCascades implements CascadeProperty {
+        PARTICIPANT_USER
     }
 }

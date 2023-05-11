@@ -58,6 +58,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
         checkOurhealthSiteContent(portal.getId());
         checkExportContent(portal.getId(), sandboxEnvironmentId);
         checkDataDictionary(portal.getId(), sandboxEnvironmentId);
+        checkWithdrawn();
 
         // now check that we can populate it again, to make sure we don't have deletion issues
         portalPopulator.populate(new FilePopulateContext("portals/ourhealth/portal.json"), true);
@@ -110,6 +111,12 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
         baos.close();
         // the output is excel, so for now just check that any bytes were written
         assertThat(baos.size(), greaterThan(10));
+    }
+
+    private void checkWithdrawn() throws Exception {
+        assertThat(withdrawnEnrolleeService.isWithdrawn("OHGONE"), is(true));
+        assertThat(enrolleeService.findOneByShortcode("OHGONE").isEmpty(), is(true));
+        assertThat(withdrawnEnrolleeService.isWithdrawn("OHSALK"), is(false));
     }
 
 }

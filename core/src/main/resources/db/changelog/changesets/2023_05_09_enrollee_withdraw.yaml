@@ -1,0 +1,21 @@
+databaseChangeLog:
+     -  changeSet:
+          id:  withdraw_enrollee
+          author:  dbush
+          changes:
+             - createTable:
+                  tableName: withdrawn_enrollee
+                  columns:
+                       - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+                       - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+                       - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+                       - column: { name: study_environment_id, type: uuid, constraints:
+                         { nullable: false, foreignKeyName: withdrawn_enrollee_study_env_id, references: study_environment(id) }
+                       }
+                       - column: { name: shortcode, type: text, constraints: { nullable: false }  }
+                       - column: { name: enrollee_data, type: text }
+                       - column: { name: user_data, type: text }
+             - dropColumn:
+                  tableName: enrollee
+                  columns:
+                       - column: { name: withdrawn }

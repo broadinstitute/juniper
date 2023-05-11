@@ -3,9 +3,10 @@ package bio.terra.pearl.api.admin.controller;
 import bio.terra.pearl.api.admin.api.StudyEnvironmentApi;
 import bio.terra.pearl.api.admin.model.StudyEnvironmentDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.StudyEnvironmentExtService;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -16,17 +17,17 @@ public class StudyEnvironmentController implements StudyEnvironmentApi {
   private AuthUtilService requestService;
   private HttpServletRequest request;
   private ObjectMapper objectMapper;
-  private StudyEnvironmentService studyEnvService;
+  private StudyEnvironmentExtService studyEnvExtService;
 
   public StudyEnvironmentController(
       AuthUtilService requestService,
       HttpServletRequest request,
       ObjectMapper objectMapper,
-      StudyEnvironmentService studyEnvService) {
+      StudyEnvironmentExtService studyEnvExtService) {
     this.requestService = requestService;
     this.request = request;
     this.objectMapper = objectMapper;
-    this.studyEnvService = studyEnvService;
+    this.studyEnvExtService = studyEnvExtService;
   }
 
   /** currently only supports updating the preEnroll survey id */
@@ -34,11 +35,18 @@ public class StudyEnvironmentController implements StudyEnvironmentApi {
   public ResponseEntity<StudyEnvironmentDto> patch(
       String portalShortcode, String studyShortcode, String envName, StudyEnvironmentDto body) {
     AdminUser adminUser = requestService.requireAdminUser(request);
-    requestService.authUserToPortal(adminUser, portalShortcode);
+    StudyEnvironment envUpdate = objectMapper.convertValue(body, StudyEnvironment.class);
+    StudyEnvironment savedEnv =
+        studyEnvExtService.update(adminUser, portalShortcode, studyShortcode, envUpdate);
+    return ResponseEntity.ok(objectMapper.convertValue(savedEnv, StudyEnvironmentDto.class));
+  }
 
-    StudyEnvironment existing = studyEnvService.find(body.getId()).get();
-    existing.setPreEnrollSurveyId(body.getPreEnrollSurveyId());
-    StudyEnvironment savedStudyEnv = studyEnvService.update(existing);
-    return ResponseEntity.ok(objectMapper.convertValue(savedStudyEnv, StudyEnvironmentDto.class));
+  @Override
+  public ResponseEntity<Object> stats(
+      String portalShortcode, String studyShortcode, String envName) {
+    AdminUser adminUser = requestService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    return ResponseEntity.ok(
+        studyEnvExtService.getStats(adminUser, portalShortcode, studyShortcode, environmentName));
   }
 }

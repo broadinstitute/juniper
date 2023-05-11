@@ -204,6 +204,21 @@ paths:
           content: { application/json: { schema: { $ref: '#/components/schemas/StudyEnvironmentDto' } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/stats:
+    get:
+      summary: Returns stats about the study environment
+      tags: [ studyEnvironment ]
+      operationId: stats
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: saved studyEnvironment object
+          content: { application/json: { schema: {type: object} } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees:
     get:
       summary: Searches for enrollees in an environment
@@ -232,6 +247,22 @@ paths:
       responses:
         '200':
           description: Enrollee object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/withdraw:
+    post:
+      summary: withdraws the given enrollee from the study
+      tags: [ enrollee ]
+      operationId: withdraw
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: withdrawnEnrollee id
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'

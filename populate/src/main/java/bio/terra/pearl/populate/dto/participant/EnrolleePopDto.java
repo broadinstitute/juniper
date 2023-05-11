@@ -1,4 +1,4 @@
-package bio.terra.pearl.populate.dto;
+package bio.terra.pearl.populate.dto.participant;
 
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
@@ -24,6 +24,8 @@ public class EnrolleePopDto extends Enrollee {
      * participant creation.
      * */
     private boolean simulateSubmissions = false;
+    /** if true, the enrollee will be withdrawn via the withdrawEnrollee method in WithdrawnEnrolleeService after creation */
+    private boolean withdrawn = false;
     private PreEnrollmentResponsePopDto preEnrollmentResponseDto;
 
     private Set<SurveyResponsePopDto> surveyResponseDtos = new HashSet<>();
