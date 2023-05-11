@@ -33,3 +33,8 @@ bin/
 
 # PyEnv environment files
 .env/
+
+# Sonar
+.scannerwork
+.sonar-token
+tmp/
