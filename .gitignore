@@ -37,3 +37,4 @@ bin/
 # Sonar
 .scannerwork
 .sonar-token
+tmp/
