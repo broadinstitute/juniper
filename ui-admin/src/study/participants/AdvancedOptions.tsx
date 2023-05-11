@@ -12,7 +12,8 @@ export default function AdvancedOptions({ enrollee, studyEnvContext }:
   const [shortcodeConfirm, setShortcodeConfirm] = useState('')
   const { user } = useUser()
   const navigate = useNavigate()
-  const canWithdraw = shortcodeConfirm === `withdraw ${enrollee.profile.contactEmail}`
+  const withdrawString = `withdraw ${enrollee.profile.givenName} ${enrollee.profile.familyName}`
+  const canWithdraw = shortcodeConfirm === withdrawString
   const doWithdraw = async () => {
     if (!user.superuser) {
       Store.addNotification(failureNotification('you are not authorized to withdraw participants'))
@@ -33,7 +34,7 @@ export default function AdvancedOptions({ enrollee, studyEnvContext }:
       <div>contact email: {enrollee.profile.contactEmail}</div>
       <div className="my-3">
         <label>
-          Confirm by typing &quot;withdraw {enrollee.profile.contactEmail}&quot; below.<br/>
+          Confirm by typing &quot;{withdrawString}&quot; below.<br/>
           <strong>Withdrawal is permanent!</strong>
           <input type="text" className="form-control" value={shortcodeConfirm}
             onChange={e => setShortcodeConfirm(e.target.value)}/>
