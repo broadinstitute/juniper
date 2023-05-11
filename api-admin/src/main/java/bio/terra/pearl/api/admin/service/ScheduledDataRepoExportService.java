@@ -17,6 +17,10 @@ public class ScheduledDataRepoExportService {
   private DataRepoExportService dataRepoExportService;
   private Environment env;
 
+  /* NOTE: Scheduled dataset creation and ingest was removed in https://github.com/broadinstitute/pearl/pull/367
+     If you'd like to restore that functionality, reference that PR so you don't have to re-write the code.
+   */
+
   public ScheduledDataRepoExportService(
       Environment env, DataRepoExportService dataRepoExportService) {
     this.env = env;
