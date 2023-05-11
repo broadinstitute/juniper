@@ -16,6 +16,7 @@
     "surveys/ourHealthConsent.json"
   ],
   "emailTemplateFiles": [
+    "emails/studyConsent.json",
     "emails/studyEnroll.json",
     "emails/consentReminder.json",
     "emails/surveyReminder.json"
@@ -50,6 +51,10 @@
         "notificationType": "EVENT",
         "eventType": "STUDY_ENROLLMENT",
         "populateFileName": "emails/studyEnroll.json"
+      },{
+        "notificationType": "EVENT",
+        "eventType": "STUDY_CONSENT",
+        "populateFileName": "emails/studyConsent.json"
       },{
         "notificationType": "TASK_REMINDER",
         "taskType": "CONSENT",
