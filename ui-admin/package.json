@@ -1,15 +1,13 @@
 {
-  "name": "ui-admin",
+  "name": "@juniper/ui-admin",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.0",
     "@fortawesome/free-solid-svg-icons": "^6.2.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@juniper/ui-core": "*",
     "@tanstack/react-table": "^8.8.2",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
     "bootstrap": "^5.2.0",
     "classnames": "^2.3.2",
     "html-react-parser": "^3.0.4",
@@ -24,25 +22,18 @@
     "react-notifications-component": "^4.0.1",
     "react-oidc-context": "^2.2.0",
     "react-router-dom": "^6.4.0",
-    "react-scripts": "5.0.1",
     "react-select": "^5.4.0",
     "survey-creator-react": "^1.9.75",
     "survey-react-ui": "^1.9.75",
     "surveyjs-widgets": "1.9.75",
-    "typescript": "^4.8.2",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
-    "@types/jest": "^27.5.2",
     "@types/lodash": "^4.14.185",
     "@types/marked": "^4.0.7",
-    "@types/node": "^16.11.56",
     "@types/react": "^18.0.18",
     "@types/react-dom": "^18.0.6",
-    "@types/react-table": "^7.7.12",
-    "eslint": "8.22.0",
-    "prettier": "^1.19.1",
-    "prettier-eslint": "^11.0.0"
+    "@types/react-table": "^7.7.12"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -17,7 +17,6 @@ dependencies {
     implementation 'bio.terra:terra-common-lib'
     implementation project(':core')
     implementation project(':populate')
-    implementation project(':ui-admin')
     implementation 'org.apache.commons:commons-dbcp2'
     implementation 'org.apache.commons:commons-text:1.10.0'
     implementation 'commons-beanutils:commons-beanutils:1.9.4'
@@ -58,7 +57,7 @@ task copyWebApp(type: Copy) {
 // for now, only jib depends on copyWebApp, so that a npm rebuild/install will not be triggered for
 // development redeploys.  this means to deploy locally with the static assets in place you'll
 // need to run the copyWebApp task yourself
-copyWebApp.dependsOn(':ui-admin:bundle')
+copyWebApp.dependsOn(rootProject.bundleAdminUI)
 jibDockerBuild.dependsOn('copyWebApp')
 
 

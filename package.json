@@ -1,0 +1,23 @@
+{
+  "name": "juniper",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "ui-core",
+    "ui-admin",
+    "ui-participant"
+  ],
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.11.58",
+    "eslint": "^8.23.0",
+    "prettier": "^1.19.1",
+    "prettier-eslint": "^11.0.0",
+    "react-scripts": "5.0.1",
+    "typescript": "^4.8.3",
+    "sass": "^1.59.2"
+  }
+}

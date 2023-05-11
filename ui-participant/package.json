@@ -1,5 +1,5 @@
 {
-  "name": "ui-participant",
+  "name": "@juniper/ui-participant",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -8,15 +8,8 @@
     "@fortawesome/free-regular-svg-icons": "6.2.x",
     "@fortawesome/free-solid-svg-icons": "6.2.x",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@juniper/ui-core": "*",
     "@tanstack/react-virtual": "^3.0.0-beta.54",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/bootstrap": "^5.2.6",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.11.58",
-    "@types/react": "^18.0.18",
-    "@types/react-dom": "^18.0.6",
     "bootstrap": "^5.2.1",
     "classnames": "^2.3.2",
     "downshift": "^7.6.0",
@@ -33,12 +26,18 @@
     "react-oidc-context": "^2.2.0",
     "react-router-dom": "^6.4.0",
     "react-router-hash-link": "^2.4.3",
-    "react-scripts": "5.0.1",
     "survey-core": "1.9.75",
     "survey-react-ui": "1.9.75",
     "surveyjs-widgets": "1.9.75",
-    "typescript": "^4.8.3",
     "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "@types/bootstrap": "^5.2.6",
+    "@types/lodash": "^4.14.184",
+    "@types/marked": "^4.0.7",
+    "@types/react": "^18.0.18",
+    "@types/react-dom": "^18.0.6",
+    "@types/react-router-hash-link": "^2.4.5"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -57,13 +56,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@types/lodash": "^4.14.184",
-    "@types/marked": "^4.0.7",
-    "@types/react-router-hash-link": "^2.4.5",
-    "eslint": "^8.23.0",
-    "sass": "^1.59.2"
   },
   "jest": {
     "moduleNameMapper": {
