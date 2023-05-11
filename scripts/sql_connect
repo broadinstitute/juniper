@@ -294,18 +294,18 @@ function exec_into_pod() {
 
 function init() {
     parse_args "$@"
-    #check_required_tools || exit 1
-    #fetch_database_creds
+    check_required_tools || exit 1
+    fetch_database_creds
 }
 
 function main() {
     init "$@"
-    #setup_k8s_enviornment || exit 1
+    setup_k8s_enviornment || exit 1
     # ( If any thing from this point forward fails script must cleanup )
-    #trap cleanup_k8s_enviornment SIGHUP SIGINT SIGQUIT
-    #read_user
-    #exec_into_pod
-    #cleanup_k8s_enviornment
+    trap cleanup_k8s_enviornment SIGHUP SIGINT SIGQUIT
+    read_user
+    exec_into_pod
+    cleanup_k8s_enviornment
 }
 
 main "$@"
