@@ -1,8 +1,8 @@
-name: Trivy
+name: Sonar
 on: workflow_dispatch
 
 jobs:
-  trivy:
+  sonar:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
