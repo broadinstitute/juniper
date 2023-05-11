@@ -18,15 +18,15 @@ dependencies {
     implementation 'org.apache.commons:commons-dbcp2'
     implementation 'org.apache.commons:commons-text:1.10.0'
     implementation 'commons-beanutils:commons-beanutils:1.9.4'
-    implementation 'org.springframework.boot:spring-boot-starter:2.7.10'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:2.7.10'
-    implementation 'org.springframework.boot:spring-boot-starter-web:2.7.10'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.yaml:snakeyaml:2.0'
     implementation 'org.springframework.retry:spring-retry'
     implementation 'javax.ws.rs:javax.ws.rs-api:2.1.1'
     implementation 'org.postgresql:postgresql'
     implementation 'org.yaml:snakeyaml:2.0'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:2.7.10'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'com.sendgrid:sendgrid-java:4.0.1'
 
     implementation 'com.auth0:java-jwt:4.2.2'
@@ -38,8 +38,7 @@ dependencies {
             'io.jsonwebtoken:jjwt-jackson:0.11.5' // or 'io.jsonwebtoken:jjwt-gson:0.11.5' for gson
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
-    testImplementation 'org.springframework.boot:spring-boot-test:2.7.10'
-    testImplementation('org.springframework.boot:spring-boot-starter-test:2.7.10') {
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
         // Fixes warning about multiple occurrences of JSONObject on the classpath
         exclude group: 'com.vaadin.external.google', module: 'android-json'
     }
