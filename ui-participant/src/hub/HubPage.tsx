@@ -185,7 +185,7 @@ function TaskGrouping({ title, tasks, enrollee, studyShortcode }: {
     <>
       <h2 className="fs-6 text-uppercase mb-0">{title}</h2>
       {hasLockedTasks && (
-        <p className="my-2">Some surveys may be locked until other required tasks are completed.</p>
+        <p className="my-2 text-muted">Some surveys are locked until other required tasks are completed.</p>
       )}
       <ol className="list-unstyled p-0">
         {tasks.map(task => <li key={task.id}>
