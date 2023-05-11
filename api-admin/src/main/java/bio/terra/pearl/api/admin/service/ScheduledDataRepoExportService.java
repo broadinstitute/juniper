@@ -17,6 +17,10 @@ public class ScheduledDataRepoExportService {
   private DataRepoExportService dataRepoExportService;
   private Environment env;
 
+  /* NOTE: Scheduled dataset creation and ingest was removed in https://github.com/broadinstitute/pearl/pull/367
+    If you'd like to restore that functionality, reference that PR so you don't have to re-write the code.
+  */
+
   public ScheduledDataRepoExportService(
       Environment env, DataRepoExportService dataRepoExportService) {
     this.env = env;
@@ -33,44 +37,7 @@ public class ScheduledDataRepoExportService {
     }
   }
 
-  /* Create any missing datasets every hour or so. There is one dataset per study
-    environment. By decoupling dataset creation from ingest, we don't have to worry
-    about handling large async saga transactions. If a dataset has not yet been created, ingest
-    will simply be skipped until the dataset is ready. These operations happen frequently enough
-    that it shouldn't be a problem if the first round of ingest is delayed due to a missing
-    dataset: by the next round, it should be ready.
-  */
-  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 60, initialDelay = 1)
-  @SchedulerLock(
-      name = "DataRepoExportService.createDatasetsForStudyEnvironments",
-      lockAtMostFor = "10m",
-      lockAtLeastFor = "5m")
-  public void createStudyEnvironmentDatasets() {
-    if (isTdrConfigured()) {
-      logger.info("Creating datasets...");
-      dataRepoExportService.createDatasetsForStudyEnvironments();
-    } else {
-      logger.error(
-          "Error: Skipping TDR dataset creation, as TDR has not been configured for this environment.");
-    }
-  }
-
-  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 240, initialDelay = 1)
-  @SchedulerLock(
-      name = "DataRepoExportService.ingestStudyEnvironmentDatasets",
-      lockAtMostFor = "10m",
-      lockAtLeastFor = "5m")
-  public void ingestStudyEnvironmentDatasets() {
-    if (isTdrConfigured()) {
-      logger.info("Ingesting datasets...");
-      dataRepoExportService.ingestDatasets();
-    } else {
-      logger.error(
-          "Error: Skipping TDR dataset ingest, as TDR has not been configured for this environment.");
-    }
-  }
-
-  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 10, initialDelay = 0)
+  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 5, initialDelay = 0)
   @SchedulerLock(
       name = "DataRepoExportService.pollRunningJobs",
       lockAtMostFor = "5m",
