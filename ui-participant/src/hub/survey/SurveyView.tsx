@@ -108,8 +108,13 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
         Api.submitSurveyResponse({
           studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
           version: form.version, response: responseDto, taskId
-        }).then(() => {
-          // no-op for now.  When we implement live-sync, it will be here.
+        }).then(response => {
+          const updatedEnrollee = {
+            ...response.enrollee,
+            participantTasks: response.tasks,
+            profile: response.profile
+          }
+          updateEnrollee(updatedEnrollee)
         }).catch(() => {
           // if the operation fails, restore the state from before so the next diff operation will capture the changes
           // that failed to save this time
