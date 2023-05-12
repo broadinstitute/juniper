@@ -12,19 +12,19 @@ set -o pipefail
 # DEBUG = 2
 declare -i desired_log_level=2
 declare -a valid_environment_targets=( dev prod )
-
-
+/
 function usage() {
     local -r usage="
     $0: connect to an Azure managed database instance with private networking through AKS cluster
 
-    Usage: $0 <Enviornment> <Database> <Subscription> <AKS Cluster> <Resource Group>
-    Where:  <Environment> is one of: ${valid_environment_targets[*]}
-            <Database> is an exisiting Azure managed database instance
-            <Subscription> is the Azure subscription which contains the AKS Cluster where the pod will be spun up
-            <AKS Cluster> is an exisitng AKS cluster with the correct virtual network peering links set up to the VNet and DNS Zone containing the database
+    Usage: $0 <Enviornment> -d <Database> -s <Subscription> -c <AKS Cluster> -r <Resource Group>
+    Where:  <Environment> is one of: ${valid_environment_targets[*]} (required and positional - must be first argument)
+            <Database> is an exisiting Azure managed database instance (optional)
+            <Subscription> is the Azure subscription which contains the AKS Cluster where the pod will be spun up (optional)
+            <AKS Cluster> is an exisitng AKS cluster with the correct virtual network peering links set up to the VNet and DNS Zone containing the database (optional)
                 -- see terraform-ap-deployment postgres terraform module for set up
-            <Resource Group> is an exisiting Azure Resource group which contains the AKS Cluster in which the pod will be spun up
+            <Resource Group> is an exisiting Azure Resource group which contains the AKS Cluster in which the pod will be spun up (optional)
+
     "
     echo "$usage"
 }
@@ -42,37 +42,42 @@ declare -r proj_name="d2p"
 declare -r target_environment="${1:?An environment must be specified as first argument}"
 
 # k8s vars
-declare -r k8s_namespace="${proj_name}-postgres-dev"
+declare -r k8s_namespace="${proj_name}-postgres-${target_environment}"
 declare -r k8s_pod_name="postgres"
 declare -r docker_image="postgres:12"
 # password is required but not important. can be anything
 declare postgres_password=$(openssl rand -base64 12)
 
-# azure vars
-declare subscription=""
-declare rg=""
-declare cluster=""
-declare user=""
-
 # database vars
-#default value. can be overwritten with command line flags
 declare database_name=""
 declare database_user=""
 declare database_pw=""
 
+# azure vars
+declare user=""
+declare subscription=""
+
+# Default azure vars - used if other values are not given on the command line
+declare -r subscription_default_dev="385ed569-ca04-4b97-97b4-677c8479585e"
+declare -r subscription_default_prod="0f1cfefa-9c30-4141-94fa-0c14e8ad9aa5"
+declare rg="ddp-aks-${target_environment}"
+declare cluster="ddp-aks-${target_environment}"
+declare database_name="d2p-${target_environment}-psqlflexibleserver"
+
+case "${target_environment}" in
+ "prod") 
+    vault_path_op="suitable" 
+    subscription=$subscription_default_prod
+    ;;
+ *) 
+    vault_path_op="dsp" 
+    subscription=$subscription_default_dev
+    ;;
+esac
+
 # Vault setup
 declare -r vault_addr="https://clotho.broadinstitute.org:8200"
-case "${target_environment}" in
- "prod") vault_path_op="suitable" ;;
- *) vault_path_op="dsp" ;;
-esac
 declare -r vault_path="secret/${vault_path_op}/ddp/d2p/${target_environment}/postgres/admin-credential"
-
-# Default Vars - used if other values are not given on the command line
-declare -r subscription_default="385ed569-ca04-4b97-97b4-677c8479585e"
-declare -r rg_default="ddp-aks-dev"
-declare -r cluster_default="ddp-aks-dev"
-declare -r database_name_default="d2p-dev-psqlflexibleserver"
 
 # Basic logging lib
 function log_debug() { _log_execute 'DEBUG' "$1"; }
@@ -102,12 +107,32 @@ function _log_msg() {
     echo "$timestamp [$2] $1"
 }
 
-# All arguments are positional. See Usage(). Will use defaults if values are not given
+# See Usage(). Will use defaults if values are not given
 function parse_args() {
-    database_name="${2:-$database_name_default}"
-    subscription="${3:-$subscription_default}"
-    cluster="${4:-$cluster_default}"
-    rg="${5:-$rg_default}"
+    shift
+    while getopts "d:s:c:r:" opt
+    do
+        case "${opt}" in
+            d)
+                database_name=$OPTARG
+                log_info "processing -d with ${OPTARG}"
+                ;;
+            s)
+                subscription="$OPTARG"
+                log_info "processing -s with ${OPTARG}"
+                ;;
+            c)
+                cluster="$OPTARG"
+                log_info "processing -c with ${OPTARG}"
+                ;;
+            r)
+                rg="$OPTARG"
+                log_info "processing -r with ${OPTARG}"
+                ;;
+            ?)
+                usage
+        esac
+    done
 }
 
 # Validate that all external tools used in this script are on user's PATH
@@ -144,7 +169,6 @@ function fetch_database_creds() {
     fi
     log_info "successfully read password from vault"
 }
-
 
 function set_subscription() {
     local -r -a set_account_cmd=(az account set --subscription "${subscription}")
