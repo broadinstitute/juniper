@@ -43,7 +43,9 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, responses }:
   return <div>
     <h6>{configSurvey.survey.name}</h6>
     <div>
-      <span className="fst-italic">completed {instantToDefaultString(lastResponse.createdAt)}</span>
+      <span className="fst-italic">
+        {lastResponse.complete ? 'Completed' : 'Last updated'} {instantToDefaultString(lastResponse.createdAt)}
+      </span>
       <button className="ms-5 btn btn-secondary" onClick={() => setIsEditing(!isEditing)}>
         {isEditing ? 'cancel' : 'update / edit'}
       </button>

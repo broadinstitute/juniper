@@ -228,6 +228,7 @@ export type ResponseSnapshot = {
 }
 
 export type SurveyResponse = {
+  complete: boolean,
   createdAt: number, // this is a java instant, so number of seconds since epoch start
   lastUpdatedAt: string,
   surveyId: string,
