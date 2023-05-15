@@ -28,13 +28,13 @@ public class DataRepoClient {
     }
 
     //Dataset APIs
-    public JobModel createDataset(UUID spendProfileId, String datasetName, Map<String, DataValueExportType> schemaMappings) throws ApiException {
+    public JobModel createDataset(UUID spendProfileId, String datasetName, Map<String, TableDataType> schemaMappings) throws ApiException {
         DatasetsApi datasetsApi = getDatasetsApi();
 
         List<ColumnModel> columns = new ArrayList<>();
 
         schemaMappings.forEach((columnName, columnDataType) ->
-                columns.add(new ColumnModel().name(columnName.substring(0, Math.min(columnName.length(), 63))).datatype(TableDataType.STRING).required(false))
+                columns.add(new ColumnModel().name(columnName).datatype(TableDataType.STRING).required(false))
         );
 
         DatasetSpecificationModel schema = new DatasetSpecificationModel()

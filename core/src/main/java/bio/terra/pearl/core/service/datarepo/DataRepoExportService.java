@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.datarepo;
 import bio.terra.datarepo.client.ApiException;
 import bio.terra.datarepo.model.JobModel;
 import bio.terra.datarepo.model.JobModel.JobStatusEnum;
+import bio.terra.datarepo.model.TableDataType;
 import bio.terra.pearl.core.dao.datarepo.DataRepoJobDao;
 import bio.terra.pearl.core.dao.datarepo.DatasetDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
@@ -93,7 +94,7 @@ public class DataRepoExportService {
         // on a per-study basis and store those in the Juniper DB.
         UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
 
-        Map<String, DataValueExportType> schemaMappings = generateDatasetSchema(studyEnv.getId());
+        Map<String, TableDataType> schemaMappings = generateDatasetSchema(studyEnv.getId());
 
         JobModel response;
         try {
@@ -158,14 +159,14 @@ public class DataRepoExportService {
         }
     }
 
-    public Map<String, DataValueExportType> generateDatasetSchema(UUID studyEnvironmentId) {
+    public Map<String, TableDataType> generateDatasetSchema(UUID studyEnvironmentId) {
         ExportOptions exportOptions = new ExportOptions(false, false, false, ExportFileFormat.TSV, null);
 
         //Backtrack from studyEnvironmentId to get the portalId, so we can export the study environment data
         StudyEnvironment studyEnv = studyEnvironmentDao.find(studyEnvironmentId).orElseThrow(() -> new NotFoundException("Study environment not found."));
         PortalStudy portalStudy = portalStudyDao.findByStudyId(studyEnv.getStudyId()).stream().findFirst().orElseThrow(() -> new NotFoundException("Portal study not found."));
 
-        Map<String, DataValueExportType> schemaMappings = new LinkedHashMap<>();
+        Map<String, TableDataType> schemaMappings = new LinkedHashMap<>();
 
         try {
             List<ModuleExportInfo> exportInfoList = enrolleeExportService.generateModuleInfos(exportOptions, portalStudy.getPortalId(), studyEnvironmentId);
@@ -177,11 +178,13 @@ public class DataRepoExportService {
                     if(itemExportInfo.getQuestionStableId() != null) {
                         columnName = itemExportInfo.getQuestionStableId();
                     } else {
-                        columnName = itemExportInfo.getBaseColumnKey().replace('.', '_');
+                        columnName = itemExportInfo.getBaseColumnKey();
                     }
 
-
-                    schemaMappings.put(columnName, itemExportInfo.getDataType());
+                    schemaMappings.put(
+                            DataRepoExportUtils.juniperToDataRepoColumnName(columnName),
+                            DataRepoExportUtils.juniperToDataRepoColumnType(itemExportInfo.getDataType())
+                    );
                 });
             }
         } catch (Exception e) {
