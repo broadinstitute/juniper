@@ -118,7 +118,7 @@ public class DataRepoExportService {
         ExportOptions exportOptions = new ExportOptions(false, false, false, ExportFileFormat.TSV, null);
 
         //Even though this is actually formatted as a TSV, TDR only accepts files ending in .csv or .json.
-        //Later on, we'll specify that the CSV delimiter is "\t", which will make it all work fine.
+        //In the DataRepoClient call, we specify that the CSV delimiter is "\t", which will make it all work fine.
         String blobName = datasetName + "_" + studyEnvironmentId + "_" + Instant.now() + ".csv";
 
         //Backtrack from studyEnvironmentId to get the portalId, so we can export the study environment data

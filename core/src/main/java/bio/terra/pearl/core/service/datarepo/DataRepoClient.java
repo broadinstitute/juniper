@@ -34,11 +34,11 @@ public class DataRepoClient {
         List<ColumnModel> columns = new ArrayList<>();
 
         schemaMappings.forEach((columnName, columnDataType) ->
-                columns.add(new ColumnModel().name(columnName).datatype(TableDataType.STRING).required(false))
+                columns.add(new ColumnModel().name(columnName).datatype(columnDataType).required(false))
         );
 
         DatasetSpecificationModel schema = new DatasetSpecificationModel()
-                .tables(List.of(new TableModel().name("enrollee").columns(columns))); //.primaryKey(List.of("enrollee_shortcode"))
+                .tables(List.of(new TableModel().name("enrollee").columns(columns)));
 
         DatasetRequestModel dataset = new DatasetRequestModel()
                 .name(datasetName)
