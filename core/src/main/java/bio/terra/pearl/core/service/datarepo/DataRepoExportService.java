@@ -175,6 +175,7 @@ public class DataRepoExportService {
                 exportInfo.getItems().forEach(itemExportInfo -> {
                     String columnName;
 
+                    //Profile fields don't have stable IDs, so we'll use the base column key instead
                     if(itemExportInfo.getQuestionStableId() != null) {
                         columnName = itemExportInfo.getQuestionStableId();
                     } else {
