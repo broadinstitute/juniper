@@ -2,6 +2,7 @@ package bio.terra.pearl.core.dao.datarepo;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.datarepo.DataRepoJob;
+import bio.terra.pearl.core.model.datarepo.Dataset;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,10 @@ public class DataRepoJobDao extends BaseMutableJdbiDao<DataRepoJob> {
 
     public List<DataRepoJob> findAllByStatus(String status) {
         return findAllByProperty("status", status);
+    }
+
+    public List<DataRepoJob> findByStudyEnvironmentIdAndName(UUID studyEnvId, String datasetName) {
+        return findAllByTwoProperties("study_environment_id", studyEnvId, "dataset_name", datasetName);
     }
 
     public void updateJobStatus(UUID id, String newJobStatus) {

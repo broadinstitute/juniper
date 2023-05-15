@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Pearl Admin API
+  title: Juniper Admin API
   description: API for portal and study management
   version: 0.0.1
 paths:

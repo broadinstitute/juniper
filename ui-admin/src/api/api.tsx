@@ -395,6 +395,27 @@ export type StudyEnvStats = {
   withdrawnCount: number
 }
 
+export type DatasetDetails = {
+  id: string,
+  createdAt: number,
+  lastUpdatedAt: number,
+  studyEnvironmentId: string,
+  datasetId: string,
+  datasetName: string,
+  lastExported: number
+}
+
+export type DatasetJobHistory = {
+  id: string,
+  createdAt: number,
+  lastUpdatedAt: number,
+  studyEnvironmentId: string,
+  tdrJobId: string,
+  datasetName: string,
+  status: string
+  jobType: string
+}
+
 let bearerToken: string | null = null
 export const API_ROOT = '/api'
 
@@ -648,6 +669,31 @@ export default {
     }
     url += searchParams.toString()
     return fetch(url,  this.getGetInit())
+  },
+
+  listDatasetsForStudyEnvironment(portalShortcode: string, studyShortcode: string,
+    envName: string):
+      Promise<Response> {
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets`
+    return fetch(url,  this.getGetInit())
+  },
+
+  getJobHistoryForDataset(portalShortcode: string, studyShortcode: string,
+    envName: string, datasetName: string):
+      Promise<Response> {
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets/${datasetName}/jobs`
+    return fetch(url,  this.getGetInit())
+  },
+
+  async createDatasetForStudyEnvironment(portalShortcode: string, studyShortcode: string,
+    envName: string, datasetName: { name: string }):
+      Promise<Response> {
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets`
+    return await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(datasetName)
+    })
   },
 
   async fetchMailingList(portalShortcode: string, envName: string): Promise<MailingListContact[]> {
