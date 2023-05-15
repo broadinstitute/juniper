@@ -15,6 +15,8 @@ import NotificationConfigView from './notifications/NotificationConfigView'
 import QuestionScratchbox from './surveys/editor/QuestionScratchbox'
 import ExportDataBrowser from './participants/export/ExportDataBrowser'
 import StudyEnvStatsView from './StudyEnvStatsView'
+import DatasetDashboard from './participants/datarepo/DatasetDashboard'
+import DatasetList from './participants/datarepo/DatasetList'
 
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
@@ -70,6 +72,9 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
       <Route path="stats" element={<StudyEnvStatsView studyEnvContext={studyEnvContext}/>}/>
       <Route path="export/dataBrowser" element={<ExportDataBrowser studyEnvContext={studyEnvContext}/>}/>
+      <Route path="export/dataRepo/datasets" element={<DatasetList studyEnvContext={studyEnvContext}/>}/>
+      <Route path="export/dataRepo/datasets/:datasetName"
+        element={<DatasetDashboard studyEnvContext={studyEnvContext}/>}/>
       <Route index element={<StudyContent studyEnvContext={studyEnvContext}/>}/>
       <Route path="*" element={<div>Unknown study environment page</div>}/>
     </Routes>
@@ -88,4 +93,12 @@ export const notificationConfigPath = (config: NotificationConfig, currentEnvPat
 
 export const getExportDataBrowserPath = (currentEnvPath: string) => {
   return `${currentEnvPath}/export/dataBrowser`
+}
+
+export const getDatasetListViewPath = (currentEnvPath: string) => {
+  return `${currentEnvPath}/export/dataRepo/datasets`
+}
+
+export const getDatasetDashboardPath = (datasetName: string, currentEnvPath: string) => {
+  return `${currentEnvPath}/export/dataRepo/datasets/${datasetName}`
 }
