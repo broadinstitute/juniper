@@ -74,16 +74,6 @@ public class DataRepoClient {
         return datasetsApi.ingestDataset(datasetId, request);
     }
 
-    public void shareWithMbemis(UUID datasetId) {
-        DatasetsApi datasetsApi = getDatasetsApi();
-
-        try {
-            datasetsApi.addDatasetPolicyMember(datasetId, "steward", new PolicyMemberRequest().email("mbemis.firecloud@gmail.com"));
-        } catch (ApiException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public JobModel deleteDataset(UUID datasetId) throws ApiException {
         DatasetsApi datasetsApi = getDatasetsApi();
 

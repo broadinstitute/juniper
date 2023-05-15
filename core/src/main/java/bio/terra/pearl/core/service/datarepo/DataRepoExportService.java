@@ -239,6 +239,8 @@ public class DataRepoExportService {
                         logger.info("Sharing dataset with Juniper dev team. If you're seeing this in prod, panic!");
                         dataRepoClient.shareWithJuniperDevs(dataset.getDatasetId());
                     }
+
+                    ingestDataForStudyEnvironment(dataset);
                 }
                 case FAILED -> {
                     logger.warn("createDataset job ID {} has failed. Dataset {} failed to create.", job.getId(), job.getDatasetName());
