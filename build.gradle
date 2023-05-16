@@ -1,0 +1,18 @@
+plugins {
+    id 'com.moowork.node' version '1.2.0'
+}
+
+apply plugin: 'base'
+apply plugin: 'com.moowork.node'
+
+task buildUICore(type: NpmTask, dependsOn: npmInstall) {
+    args = ['--workspace=ui-core', 'run', 'build']
+}
+
+task bundleAdminUI(type: NpmTask, dependsOn: [npmInstall, buildUICore]) {
+    args = ['--workspace=ui-admin', 'run', 'build']
+}
+
+task bundleParticipantUI(type: NpmTask, dependsOn: [npmInstall, buildUICore]) {
+    args = ['--workspace=ui-participant', 'run', 'build']
+}

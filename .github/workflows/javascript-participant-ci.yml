@@ -10,9 +10,6 @@ on:
 
 jobs:
   build:
-    defaults:
-      run:
-        working-directory: ui-participant
     runs-on: ubuntu-latest
 
     steps:
@@ -22,5 +19,6 @@ jobs:
         with:
           node-version: '16.x'
       - run: npm ci
-      - run: npm run build --if-present
-      - run: npm test
+      - run: npm -w ui-core run build
+      - run: npm -w ui-participant run build
+      - run: npm -w ui-participant test

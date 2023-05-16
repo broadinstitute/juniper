@@ -18,6 +18,10 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
+### UI package management ###
+/node_modules
+npm-debug.log*
+
 # Emacs backup files #
 *.*~
 

@@ -90,11 +90,11 @@ from the root project directory, run
 ##### Admin UI (ui-admin module)
 From the command line:
   ```
-  cd ui-admin
   npm install
-  REACT_APP_B2C_TENANT_NAME=ddpdevb2c REACT_APP_B2C_CLIENT_ID=$(vault read -field value secret/dsp/ddp/b2c/dev/application_id) npm start
+  npm -w ui-core run build
+  REACT_APP_B2C_TENANT_NAME=ddpdevb2c REACT_APP_B2C_CLIENT_ID=$(vault read -field value secret/dsp/ddp/b2c/dev/application_id) npm -w ui-admin start
   ```
-(note that you can just run `npm start` if you don't need to test B2C login functionality)
+(note that you can just run `npm -w ui-admin start` if you don't need to test B2C login functionality)
 Then go to `localhost:3000` 
 
 ##### Participant API (api-participant module)
@@ -104,11 +104,11 @@ In basic development mode, this will only serve the API, not the frontend assets
 ##### Participant UI (ui-participant module)
 * Participant UI:  From the command line:
   ```
-  cd ui-participant
   npm install
-  HTTPS=true npm start
+  npm -w ui-core run build
+  HTTPS=true npm -w ui-participant start
   ```
-(note that you can just run `npm start` if you don't need to test B2C login functionality)
+(note that you can just run `npm -w ui-participant start` if you don't need to test B2C login functionality)
 Then go to `sandbox.ourhealth.localhost:3001`
 (Notice how you need the environment name and portal name as subdomains)
 

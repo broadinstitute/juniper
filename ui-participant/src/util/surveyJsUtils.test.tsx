@@ -56,16 +56,17 @@ test('handles page numbers in initial url', () => {
 })
 
 test('updates urls on page navigation', async () => {
+  const user = userEvent.setup()
   const { RoutedComponent, router } = setupRouterTest(<PlainSurveyComponent formModel={generateThreePageSurvey()}/>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()
-  userEvent.click(screen.getByText('Next'))
+  await act(() => user.click(screen.getByText('Next')))
   expect(screen.getByText('You are on page2')).toBeInTheDocument()
   expect(router.state.location.search).toEqual('?page=2')
-  userEvent.click(screen.getByText('Next'))
+  await act(() => user.click(screen.getByText('Next')))
   expect(screen.getByText('You are on page3')).toBeInTheDocument()
   expect(router.state.location.search).toEqual('?page=3')
-  userEvent.click(screen.getByText('Previous'))
+  await act(() => user.click(screen.getByText('Previous')))
   expect(screen.getByText('You are on page2')).toBeInTheDocument()
   expect(router.state.location.search).toEqual('?page=2')
 
