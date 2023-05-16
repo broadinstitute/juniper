@@ -1,4 +1,4 @@
-import { WebStorageStateStore } from 'oidc-client-ts'
+import { UserManagerSettings, WebStorageStateStore } from 'oidc-client-ts'
 import { AuthProviderProps } from 'react-oidc-context'
 
 /**
@@ -7,9 +7,32 @@ import { AuthProviderProps } from 'react-oidc-context'
  *    visit: https://docs.microsoft.com/en-us/azure/active-directory-b2c/custom-policy-overview
  */
 
+export const getAuthProviderProps = (
+  b2cTenantName: string,
+  b2cClientId: string,
+  b2cPolicyName: string): AuthProviderProps => {
+  const oidcConfig = getOidcConfig(b2cTenantName, b2cClientId, b2cPolicyName)
+
+  // eslint-disable-next-line max-len
+  // from https://github.com/authts/react-oidc-context/blob/f175dcba6ab09871b027d6a2f2224a17712b67c5/src/AuthProvider.tsx#L20-L30
+  const onSigninCallback = () => {
+    window.history.replaceState(
+      {},
+      document.title,
+      window.location.pathname
+    )
+  }
+
+  return {
+    ...oidcConfig,
+    prompt: 'login',
+    onSigninCallback
+  }
+}
+
 // TODO: This is a modified copy of code from Terra UI. It could use some clean-up.
 /* eslint-disable camelcase, max-len */
-export const getOidcConfig = (b2cTenantName: string, b2cClientId: string, b2cPolicyName: string): AuthProviderProps => {
+export const getOidcConfig = (b2cTenantName: string, b2cClientId: string, b2cPolicyName: string): UserManagerSettings => {
   return {
     /*
      * oidc-client-ts uses `authority` to fetch `metadata`. For some reason providing `metadata` manually results in not
@@ -23,7 +46,6 @@ export const getOidcConfig = (b2cTenantName: string, b2cClientId: string, b2cPol
     redirect_uri: `${window.origin}/redirect-from-oauth`,
     popup_redirect_uri: `${window.origin}/redirect-from-oauth`,
     silent_redirect_uri: `${window.origin}/redirect-from-oauth-silent`,
-    prompt: 'login',
     scope: `openid email ${b2cClientId}`,
     loadUserInfo: false,
     stateStore: new WebStorageStateStore({ store: window.localStorage }),
@@ -31,15 +53,7 @@ export const getOidcConfig = (b2cTenantName: string, b2cClientId: string, b2cPol
     automaticSilentRenew: true,
     accessTokenExpiringNotificationTimeInSeconds: 300,
     includeIdTokenInSilentRenew: true,
-    extraQueryParams: { access_type: 'offline' },
-    // from https://github.com/authts/react-oidc-context/blob/f175dcba6ab09871b027d6a2f2224a17712b67c5/src/AuthProvider.tsx#L20-L30
-    onSigninCallback: () => {
-      window.history.replaceState(
-        {},
-        document.title,
-        window.location.pathname
-      )
-    }
+    extraQueryParams: { access_type: 'offline' }
   }
 }
 /* eslint-enable camelcase, max-len */

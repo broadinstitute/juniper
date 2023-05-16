@@ -37,51 +37,56 @@ export const RedirectFromOAuth = () => {
         navigate('/')
       }
 
-      if (auth.user && user.isAnonymous) {
-        // react-oidc-context's AuthProvider has done its thing, exchanging the OAuth code for a token.
-        // Now we need to:
-        //   * handle possible new user registration
-        //   * handle possible study enrollment
-        //   * navigate to the hub
-        // TODO: remember where the user was trying to go and navigate there instead of hard-coding /hub
-        const email = auth.user.profile.email as string
-        const accessToken = auth.user.access_token
-
-        // Register or login
-        const loginResult = auth.user.profile.newUser
-          ? await Api.register({ preRegResponseId, email, accessToken })
-          : await Api.tokenLogin(accessToken)
-        loginUser(loginResult, accessToken)
-
-        // Decide if there's a study that has either been explicitly selected or is implicit because it's the only one
-        const portalStudy = findReturnToStudy() || getSingleStudy() || null
-
-        // Enroll in the study if not already enrolled
-        if (portalStudy && !userHasJoinedPortalStudy(portalStudy, loginResult.enrollees)) {
-          try {
-            const response = await Api.createEnrollee({
-              studyShortcode: portalStudy.study.shortcode,
-              preEnrollResponseId
-            })
-            updateEnrollee(response.enrollee)
-            const hubUpdate: HubUpdate = {
-              message: {
-                title: 'Welcome to the study.',
-                detail: 'Please read and sign the consent form below to complete registration.',
-                type: 'info'
-              }
-            }
-            navigate('/hub', { replace: true, state: hubUpdate })
-          } catch {
-            alert('an error occurred, please try again, or contact support')
-          }
-        } else {
+      if (auth.user) {
+        if (!user.isAnonymous) {
+          // TODO: detect returning from change password and show a confirmation message
           navigate('/hub', { replace: true })
-        }
+        } else {
+          // react-oidc-context's AuthProvider has done its thing, exchanging the OAuth code for a token.
+          // Now we need to:
+          //   * handle possible new user registration
+          //   * handle possible study enrollment
+          //   * navigate to the hub
+          // TODO: remember where the user was trying to go and navigate there instead of hard-coding /hub
+          const email = auth.user.profile.email as string
+          const accessToken = auth.user.access_token
 
-        setPreRegResponseId(null)
-        setPreEnrollResponseId(null)
-        setReturnToStudy(null)
+          // Register or login
+          const loginResult = auth.user.profile.newUser
+            ? await Api.register({ preRegResponseId, email, accessToken })
+            : await Api.tokenLogin(accessToken)
+          loginUser(loginResult, accessToken)
+
+          // Decide if there's a study that has either been explicitly selected or is implicit because it's the only one
+          const portalStudy = findReturnToStudy() || getSingleStudy() || null
+
+          // Enroll in the study if not already enrolled
+          if (portalStudy && !userHasJoinedPortalStudy(portalStudy, loginResult.enrollees)) {
+            try {
+              const response = await Api.createEnrollee({
+                studyShortcode: portalStudy.study.shortcode,
+                preEnrollResponseId
+              })
+              updateEnrollee(response.enrollee)
+              const hubUpdate: HubUpdate = {
+                message: {
+                  title: 'Welcome to the study.',
+                  detail: 'Please read and sign the consent form below to complete registration.',
+                  type: 'info'
+                }
+              }
+              navigate('/hub', { replace: true, state: hubUpdate })
+            } catch {
+              alert('an error occurred, please try again, or contact support')
+            }
+          } else {
+            navigate('/hub', { replace: true })
+          }
+
+          setPreRegResponseId(null)
+          setPreEnrollResponseId(null)
+          setReturnToStudy(null)
+        }
       }
     }
 

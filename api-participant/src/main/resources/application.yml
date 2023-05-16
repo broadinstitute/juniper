@@ -19,6 +19,7 @@ env:
     tenantName: ${B2C_TENANT_NAME:missing_tenant_name}
     clientId: ${B2C_CLIENT_ID:missing_client_id}
     policyName: ${B2C_POLICY_NAME:missing_policy_name}
+    changePasswordPolicyName: ${B2C_CHANGE_PASSWORD_POLICY_NAME:missing_policy_name}
   email:
     sendgridApiKey: ${SENDGRID_API_KEY:}
     supportEmailAddress: ${SUPPORT_EMAIL_ADDRESS:support@juniper.terra.bio}
@@ -87,6 +88,7 @@ b2c:
   tenantName: ${env.b2c.tenantName}
   clientId: ${env.b2c.clientId}
   policyName: ${env.b2c.policyName}
+  changePasswordPolicyName: ${env.b2c.changePasswordPolicyName}
 
 javatemplate:
   ingress:

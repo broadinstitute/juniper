@@ -6,9 +6,12 @@ import React, { useEffect, useId, useRef } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
-import Api, { getImageUrl, isInternalAnchorLink, isInternalLink, NavbarItem } from 'api/api'
+import Api, { getEnvSpec, getImageUrl, isInternalAnchorLink, isInternalLink, NavbarItem } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
+import { useConfig } from 'providers/ConfigProvider'
+import { getOidcConfig } from 'authConfig'
+import { UserManager } from 'oidc-client-ts'
 
 const navLinkClasses = 'nav-link fs-5 ms-lg-3'
 
@@ -18,12 +21,24 @@ type NavbarProps = JSX.IntrinsicElements['nav']
 export default function Navbar(props: NavbarProps) {
   const portalEnv = usePortalEnv()
   const { localContent } = portalEnv
+  const config = useConfig()
   const { user, logoutUser } = useUser()
+  const envSpec = getEnvSpec()
   const navLinks = localContent.navbarItems
 
   const joinPath = portalEnv.portal.portalStudies.length === 1
     ? `/studies/${portalEnv.portal.portalStudies[0].study.shortcode}/join`
     : '/join'
+
+  /** invoke B2C change password flow */
+  function doChangePassword() {
+    const oidcConfig = getOidcConfig(config.b2cTenantName, config.b2cClientId, config.b2cChangePasswordPolicyName)
+    const userManager = new UserManager(oidcConfig)
+    userManager.signinRedirect({
+      redirectMethod: 'replace',
+      extraQueryParams: { portalShortcode: envSpec.shortcode as string }
+    })
+  }
 
   /** send a logout to the api then logout */
   function doLogout() {
@@ -135,6 +150,9 @@ export default function Navbar(props: NavbarProps) {
                     {user.username}
                   </p>
                   <hr className="dropdown-divider d-none d-lg-block" />
+                  <button className="dropdown-item" onClick={doChangePassword}>
+                    Change Password
+                  </button>
                   <button className="dropdown-item" onClick={doLogout}>
                     Log Out
                   </button>

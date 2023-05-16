@@ -71,6 +71,7 @@ Open the root folder in IntelliJ.
         * set environment variable: `B2C_TENANT_NAME=ddpdevb2c`
         * set environment variable: `B2C_CLIENT_ID=<<vault read -field value secret/dsp/ddp/b2c/dev/application_id>>`
         * set environment variable: `B2C_POLICY_NAME=B2C_1A_ddp_participant_signup_signin_dev`
+        * set environment variable: `B2C_CHANGE_PASSWORD_POLICY_NAME=B2C_1A_ddp_participant_change_password_dev`
         * disable launch optimization
         
          
