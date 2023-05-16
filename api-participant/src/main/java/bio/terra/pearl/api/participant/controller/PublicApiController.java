@@ -144,7 +144,8 @@ public class PublicApiController implements PublicApi {
     return Map.of(
         "b2cTenantName", b2CConfiguration.tenantName(),
         "b2cClientId", b2CConfiguration.clientId(),
-        "b2cPolicyName", b2CConfiguration.policyName());
+        "b2cPolicyName", b2CConfiguration.policyName(),
+        "b2cChangePasswordPolicyName", b2CConfiguration.changePasswordPolicyName());
   }
 
   private Optional<PortalEnvironmentDescriptor> getPortalDescriptorForRequest(

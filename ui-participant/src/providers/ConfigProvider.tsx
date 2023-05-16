@@ -5,7 +5,8 @@ import { PageLoadingIndicator } from 'util/LoadingSpinner'
 const uninitializedConfig = {
   b2cTenantName: 'uninitialized',
   b2cClientId: 'uninitialized',
-  b2cPolicyName: 'uninitialized'
+  b2cPolicyName: 'uninitialized',
+  b2cChangePasswordPolicyName: 'uninitialized'
 }
 
 const ConfigContext = React.createContext<Config>(uninitializedConfig)

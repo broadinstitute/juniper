@@ -8,7 +8,7 @@ import { isInternalLink, NavbarItemInternal } from 'api/api'
 import HtmlPageView from 'landing/sections/HtmlPageView'
 import PortalRegistrationRouter from 'landing/registration/PortalRegistrationRouter'
 import { AuthProvider } from 'react-oidc-context'
-import { getOidcConfig } from 'authConfig'
+import { getAuthProviderProps } from 'authConfig'
 import UserProvider from 'providers/UserProvider'
 import { ProtectedRoute } from 'login/ProtectedRoute'
 import { RedirectFromOAuth } from 'login/RedirectFromOAuth'
@@ -105,7 +105,9 @@ function App() {
             <ConfigProvider>
               <ConfigConsumer>
                 {config =>
-                  <AuthProvider {...getOidcConfig(config.b2cTenantName, config.b2cClientId, config.b2cPolicyName)}>
+                  <AuthProvider {
+                    ...getAuthProviderProps(config.b2cTenantName, config.b2cClientId, config.b2cPolicyName)
+                  }>
                     <UserProvider>
                       <Suspense fallback={<PageLoadingIndicator />}>
                         <IdleStatusMonitor maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={5 * 60 * 1000}/>
