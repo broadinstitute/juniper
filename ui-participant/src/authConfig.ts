@@ -7,6 +7,7 @@ import { AuthProviderProps } from 'react-oidc-context'
  *    visit: https://docs.microsoft.com/en-us/azure/active-directory-b2c/custom-policy-overview
  */
 
+/** Creates and returns props for an AuthProvider component based on B2C configuration values. */
 export const getAuthProviderProps = (
   b2cTenantName: string,
   b2cClientId: string,
@@ -30,7 +31,7 @@ export const getAuthProviderProps = (
   }
 }
 
-// TODO: This is a modified copy of code from Terra UI. It could use some clean-up.
+/** Creates and returns UserManagerSettings based on B2C configuration values. */
 /* eslint-disable camelcase, max-len */
 export const getOidcConfig = (b2cTenantName: string, b2cClientId: string, b2cPolicyName: string): UserManagerSettings => {
   return {
