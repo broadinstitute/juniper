@@ -42,8 +42,23 @@ public class EnrolleeFactory {
                 .studyEnvironmentId(studyEnv.getId());
     }
 
+    public Enrollee.EnrolleeBuilder builderWithDependencies(String testName, StudyEnvironment studyEnv) {
+        ParticipantUser participantUser = participantUserFactory.buildPersisted(
+            participantUserFactory.builder(testName)
+                .environmentName(studyEnv.getEnvironmentName()),
+            testName
+        );
+        return builder(testName)
+            .participantUserId(participantUser.getId())
+            .studyEnvironmentId(studyEnv.getId());
+    }
+
     public Enrollee buildPersisted(String testName) {
-        return enrolleeService.create(builderWithDependencies(testName).build());
+        return buildPersisted(builderWithDependencies(testName));
+    }
+
+    public Enrollee buildPersisted(Enrollee.EnrolleeBuilder builder) {
+        return enrolleeService.create(builder.build());
     }
 
     public Enrollee buildPersisted(String testName, UUID studyEnvironmentId, UUID participantUserId) {
@@ -52,6 +67,10 @@ public class EnrolleeFactory {
                 .participantUserId(participantUserId)
                 .build();
         return enrolleeService.create(enrollee);
+    }
+
+    public Enrollee buildPersisted(String testName, StudyEnvironment studyEnv) {
+        return enrolleeService.create(builderWithDependencies(testName, studyEnv).build());
     }
 
     public EnrolleeBundle buildWithPortalUser(String testName) {
