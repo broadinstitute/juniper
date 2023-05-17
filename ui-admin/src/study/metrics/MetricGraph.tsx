@@ -9,6 +9,8 @@ import { MetricInfo } from './StudyEnvMetricsView'
 import Plot from 'react-plotly.js'
 import { instantToDefaultString } from '../../util/timeUtils'
 
+const EXPORT_DELIMITER = '\t'
+
 /**
  * Shows a plot for a specified metric.  Handles fetching the raw metrics from the server, transforming them to
  * plotly traces, and then rendering a graph
@@ -34,10 +36,9 @@ export default function MetricGraph({ studyEnvContext, metricInfo }: {studyEnvCo
     if (!metricData) {
       return
     }
-    let dataString = 'name, subcategory, time\n'
+    let dataString = `${['name', 'subcategory', 'time'].join(EXPORT_DELIMITER)  }\n`
     dataString += metricData.map(metricDatum =>
-      `${metricInfo.name}, ${metricDatum.subcategory}, ${instantToDefaultString(metricDatum.time)
-        .replace(',', '')}`
+      [metricInfo.name, metricDatum.subcategory, instantToDefaultString(metricDatum.time)].join(EXPORT_DELIMITER)
     ).join('\n')
     navigator.clipboard.writeText(dataString)
   }
