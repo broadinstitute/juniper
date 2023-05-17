@@ -28,16 +28,19 @@ import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
-import bio.terra.pearl.populate.dto.participant.EnrolleePopDto;
-import bio.terra.pearl.populate.dto.participant.ParticipantTaskPopDto;
+import bio.terra.pearl.populate.dao.EnrolleePopulateDao;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
+import bio.terra.pearl.populate.dto.participant.EnrolleePopDto;
+import bio.terra.pearl.populate.dto.participant.ParticipantTaskPopDto;
 import bio.terra.pearl.populate.dto.survey.AnswerPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import org.springframework.stereotype.Service;
 
@@ -59,6 +62,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     private EnrollmentService enrollmentService;
     private ProfileService profileService;
     private WithdrawnEnrolleeService withdrawnEnrolleeService;
+    private EnrolleePopulateDao enrolleePopulateDao;
 
     public EnrolleePopulator(EnrolleeService enrolleeService,
                              StudyEnvironmentService studyEnvironmentService,
@@ -71,7 +75,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                              NotificationConfigService notificationConfigService,
                              NotificationService notificationService, AnswerProcessingService answerProcessingService,
                              EnrollmentService enrollmentService, ProfileService profileService,
-                             WithdrawnEnrolleeService withdrawnEnrolleeService) {
+                             WithdrawnEnrolleeService withdrawnEnrolleeService, EnrolleePopulateDao enrolleePopulateDao) {
         this.portalParticipantUserService = portalParticipantUserService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.surveyService = surveyService;
@@ -88,6 +92,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         this.enrollmentService = enrollmentService;
         this.profileService = profileService;
         this.withdrawnEnrolleeService = withdrawnEnrolleeService;
+        this.enrolleePopulateDao = enrolleePopulateDao;
     }
 
     private void populateResponse(Enrollee enrollee, SurveyResponsePopDto responsePopDto,
@@ -114,9 +119,17 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             HubResponse<SurveyResponse> hubResponse = surveyResponseService
                     .updateResponse(response, ppUser.getParticipantUserId(), ppUser, enrollee, task.getId());
             savedResponse = hubResponse.getResponse();
+            if (responsePopDto.getSubmittedHoursAgo() != null) {
+                Instant simulatedTime = Instant.now().minus(Duration.ofHours(responsePopDto.getSubmittedHoursAgo()));
+                enrolleePopulateDao.changeSurveyResponseTime(savedResponse.getId(), simulatedTime);
+                if (responsePopDto.isComplete()) {
+                    enrolleePopulateDao.changeTaskCompleteTime(task.getId(), simulatedTime);
+                }
+            }
         } else {
             savedResponse = surveyResponseService.create(response);
         }
+
         enrollee.getSurveyResponses().add(savedResponse);
     }
 
@@ -307,7 +320,10 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         profile = profileService.find(ppUser.getProfileId()).get();
         profile.setDoNotEmail(isDoNotEmail);
         profileService.update(profile);
-
+        if (popDto.getSubmittedHoursAgo() != null) {
+            Instant simulatedTime = Instant.now().minus(Duration.ofHours(popDto.getSubmittedHoursAgo()));
+            enrolleePopulateDao.changeEnrolleeCreationTime(enrollee.getId(), simulatedTime);
+        }
         if (popDto.isWithdrawn()) {
             withdrawnEnrolleeService.withdrawEnrollee(enrollee);
         }

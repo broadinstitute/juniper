@@ -390,9 +390,10 @@ export type ExportData = {
   valueMaps: Record<string, string>[]
 }
 
-export type StudyEnvStats = {
-  enrolleeCount: number,
-  withdrawnCount: number
+export type BasicMetricDatum = {
+  time: number,
+  name: string,
+  subcategory?: string
 }
 
 export type DatasetDetails = {
@@ -638,9 +639,9 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async fetchStats(portalShortcode: string, studyShortcode: string, envName: string):
-    Promise<StudyEnvStats> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/stats`
+  async fetchMetric(portalShortcode: string, studyShortcode: string, envName: string, metricName: string):
+    Promise<BasicMetricDatum[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/metrics/${metricName}`
     const response = await fetch(url,  this.getGetInit())
     return await this.processJsonResponse(response)
   },

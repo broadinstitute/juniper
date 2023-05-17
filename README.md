@@ -108,6 +108,8 @@ In basic development mode, this will only serve the API, not the frontend assets
   npm -w ui-core run build
   HTTPS=true npm -w ui-participant start
   ```
+If you encounter an error like "No package 'pixman-1' found" on npm install, you may need additional dependencies.
+If on OS X, try running `brew install pkg-config cairo pango libpng jpeg giflib librsvg pixman`
 (note that you can just run `npm -w ui-participant start` if you don't need to test B2C login functionality)
 Then go to `sandbox.ourhealth.localhost:3001`
 (Notice how you need the environment name and portal name as subdomains)

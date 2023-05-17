@@ -2,6 +2,7 @@
   "linkedUsername": "basic@test.com",
   "shortcode": "OHBASC",
   "simulateSubmissions": true,
+  "submittedHoursAgo": 3,
   "preEnrollmentResponseDto": {
     "qualified": true,
     "surveyStableId": "oh_oh_preenroll",
@@ -25,7 +26,8 @@
         {"questionStableId": "oh_oh_basic_mghPatient", "stringValue": "yes"}
       ],
       "currentPageNo": 1,
-      "complete": true
+      "complete": true,
+      "submittedHoursAgo": 3
     }
   ],
   "consentResponseDtos": [{

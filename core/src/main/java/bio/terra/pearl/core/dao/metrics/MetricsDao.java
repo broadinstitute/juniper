@@ -8,6 +8,11 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 import org.springframework.stereotype.Component;
 
+/**
+ * Returns lists of BasicMetricDatum for metrics queries
+ * The returned data from each query should be sorted ascending by the 'time' property of each datum.
+ * Because metrics are read-only -- there is only a DAO -- no need for a service yet
+ * */
 @Component
 public class MetricsDao {
   private Jdbi jdbi;
@@ -21,7 +26,10 @@ public class MetricsDao {
     return jdbi.withHandle(handle ->
         handle.createQuery("""
             select 'study_reg' as metric, '' as subcategory, created_at as time
-             from enrollee where study_environment_id = :studyEnvironmentId and %s;
+             from enrollee 
+             where study_environment_id = :studyEnvironmentId 
+             and %s
+             order by created_at asc;
              """.formatted(getTimeRangeQueryString("created_at", range)))
             .bind("studyEnvironmentId", studyEnvironmentId)
             .bindBean(range)
@@ -30,11 +38,16 @@ public class MetricsDao {
     );
   }
 
+  /** For now, the time returned is the time the enrollee was created (registration).  Eventually we'll want to
+   * return time-of-consent (which is complex, because consent may involve multiple tasks) */
   public List<BasicMetricDatum> studyConsentedEnrollees(UUID studyEnvironmentId, TimeRange range) {
     return jdbi.withHandle(handle ->
         handle.createQuery("""
             select 'study_consent' as metric, '' as subcategory, created_at as time
-             from enrollee where study_environment_id = :studyEnvironmentId and consented = true and %s;
+             from enrollee 
+             where study_environment_id = :studyEnvironmentId 
+             and consented = true and %s
+             order by created_at asc;
              """.formatted(getTimeRangeQueryString("created_at", range)))
             .bind("studyEnvironmentId", studyEnvironmentId)
             .bindBean(range)
@@ -46,12 +59,13 @@ public class MetricsDao {
   public List<BasicMetricDatum> studySurveyCompletions(UUID studyEnvironmentId, TimeRange range) {
     return jdbi.withHandle(handle ->
         handle.createQuery("""
-            select 'study_survey' as metric, targetStableId as subcategory, completed_at as time
+            select 'study_survey' as metric, target_stable_id as subcategory, completed_at as time
              from participant_task 
              where study_environment_id = :studyEnvironmentId 
              and task_type = 'SURVEY'
              and status = 'COMPLETE'
-             and %s;
+             and %s
+             order by completed_at asc;
              """.formatted(getTimeRangeQueryString("created_at", range)))
             .bind("studyEnvironmentId", studyEnvironmentId)
             .bindBean(range)
@@ -69,7 +83,8 @@ public class MetricsDao {
              and task_type = 'SURVEY'
              and status = 'COMPLETE'
              and blocks_hub = true 
-             and %s;
+             and %s
+             order by completed_at asc;
              """.formatted(getTimeRangeQueryString("created_at", range)))
             .bind("studyEnvironmentId", studyEnvironmentId)
             .bindBean(range)

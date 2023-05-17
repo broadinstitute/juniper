@@ -14,6 +14,7 @@ import { faCogs } from '@fortawesome/free-solid-svg-icons/faCogs'
 import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons/faClipboardCheck'
 import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers'
 import { isSuperuser } from '../user/UserProvider'
+import { studyEnvMetricsPath } from '../study/StudyEnvironmentRouter'
 
 
 const ENVIRONMENT_ICON_MAP: Record<string, React.ReactNode> = {
@@ -77,6 +78,7 @@ function StudyConfigView({ portal, study, envName }: {portal: Portal, study: Stu
     <span>{study.name}</span>
     <Link to={studyContentPath(portal.shortcode, envName, study.shortcode)} className="ms-3">Content</Link>
     <Link to={studyParticipantsPath(portal.shortcode, envName, study.shortcode)} className="ms-3">Participants</Link>
+    <Link to={studyEnvMetricsPath(portal.shortcode, envName, study.shortcode)} className="ms-3">Metrics</Link>
   </div>
 }
 

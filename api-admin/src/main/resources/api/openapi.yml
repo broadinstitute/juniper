@@ -234,6 +234,22 @@ paths:
           content: { application/json: { schema: {type: object} } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/metrics/{metricName}:
+    get:
+      summary: Loads the specified metric for the given study env
+      tags: [ metrics ]
+      operationId: metricByName
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: metricName, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: BasicMetricDatum objects
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}:
     get:
       summary: Finds an enrollee by shortcode
