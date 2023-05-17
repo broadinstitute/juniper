@@ -114,6 +114,38 @@ paths:
           content: { application/json: { schema: {type: object} } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/surveys/{stableId}/{version}:
+    get:
+      summary: gets the requested survey
+      tags: [ survey ]
+      operationId: get
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: true, schema: { type: string } }
+        - { name: version, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: survey object
+          content: { application/json: { schema: {type: object} } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/surveys/{stableId}:
+    post:
+      summary: creates the requested survey, will fail if the given stableId already exists
+      tags: [ survey ]
+      operationId: create
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: {type: object} } }
+      responses:
+        '200':
+          description: saved survey object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/surveys/{stableId}/newVersion:
     post:
       summary: Saves the survey as a new version
@@ -124,11 +156,11 @@ paths:
         - { name: stableId, in: path, required: true, schema: { type: string } }
       requestBody:
         required: true
-        content: { application/json: { schema: {$ref: '#/components/schemas/VersionedFormDto' } } }
+        content: { application/json: { schema: {type: object} } }
       responses:
         '200':
           description: saved survey object
-          content: { application/json: { schema: {$ref: '#/components/schemas/VersionedFormDto' } } }
+          content: { application/json: { schema: {type: object} } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys/{configSurveyId}:

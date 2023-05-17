@@ -1,12 +1,12 @@
 package bio.terra.pearl.api.admin.controller.forms;
 
 import bio.terra.pearl.api.admin.api.SurveyApi;
-import bio.terra.pearl.api.admin.model.VersionedFormDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.forms.SurveyExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.survey.Survey;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -30,16 +30,33 @@ public class SurveyController implements SurveyApi {
   }
 
   @Override
-  public ResponseEntity<VersionedFormDto> newVersion(
-      String portalShortcode, String stableId, VersionedFormDto body) {
+  public ResponseEntity<Object> get(String portalShortcode, String stableId, Integer version) {
     AdminUser adminUser = requestService.requireAdminUser(request);
-    if (!stableId.equals(body.getStableId())) {
+    Optional<Survey> surveyOpt =
+        surveyExtService.get(portalShortcode, stableId, version, adminUser);
+    return ResponseEntity.of(surveyOpt.map(survey -> survey));
+  }
+
+  @Override
+  public ResponseEntity<Object> create(String portalShortcode, String stableId, Object body) {
+    AdminUser adminUser = requestService.requireAdminUser(request);
+
+    Survey survey = objectMapper.convertValue(body, Survey.class);
+    if (!stableId.equals(survey.getStableId())) {
       throw new IllegalArgumentException("survey parameters don't match");
     }
+    Survey savedSurvey = surveyExtService.create(portalShortcode, survey, adminUser);
+    return ResponseEntity.ok(savedSurvey);
+  }
+
+  @Override
+  public ResponseEntity<Object> newVersion(String portalShortcode, String stableId, Object body) {
+    AdminUser adminUser = requestService.requireAdminUser(request);
     Survey survey = objectMapper.convertValue(body, Survey.class);
+    if (!stableId.equals(survey.getStableId())) {
+      throw new IllegalArgumentException("survey parameters don't match");
+    }
     Survey savedSurvey = surveyExtService.createNewVersion(portalShortcode, survey, adminUser);
-    VersionedFormDto savedSurveyDto =
-        objectMapper.convertValue(savedSurvey, VersionedFormDto.class);
-    return ResponseEntity.ok(savedSurveyDto);
+    return ResponseEntity.ok(savedSurvey);
   }
 }
