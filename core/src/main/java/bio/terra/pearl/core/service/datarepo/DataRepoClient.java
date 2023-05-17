@@ -73,6 +73,17 @@ public class DataRepoClient {
         return datasetsApi.deleteDataset(datasetId);
     }
 
+    //TODO: This is to be replaced by JN-133. This code should only ever be executed in dev.
+    public void shareWithJuniperDevs(UUID datasetId) {
+        DatasetsApi datasetsApi = getDatasetsApi();
+
+        try {
+            datasetsApi.addDatasetPolicyMember(datasetId, "steward", new PolicyMemberRequest().email("juniper-dev@dev.test.firecloud.org"));
+        } catch (ApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     //Job APIs
     public JobModel getJobStatus(String jobId) throws ApiException {
         JobsApi jobsApi = getJobsApi();

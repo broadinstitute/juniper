@@ -220,6 +220,16 @@ public class DataRepoExportService {
 
                     datasetService.create(dataset);
                     dataRepoJobService.updateJobStatus(job.getId(), jobStatus.getValue());
+
+                    //TODO: This is to be replaced by JN-133. This code should only ever be executed in dev.
+                    // The ultimate safeguard here is in Terra, where this would fail in production because
+                    // the juniper-dev managed group does not exist in Terra Prod. But this is an extra layer
+                    // of safety to be totally safe.
+                    String DEPLOYMENT_ZONE = env.getProperty("env.tdr.deploymentZone");
+                    if(!DEPLOYMENT_ZONE.equalsIgnoreCase("prod")) {
+                        logger.info("Sharing dataset with Juniper dev team. If you're seeing this in prod, panic!");
+                        dataRepoClient.shareWithJuniperDevs(dataset.getDatasetId());
+                    }
                 }
                 case FAILED -> {
                     logger.warn("createDataset job ID {} has failed. Dataset {} failed to create.", job.getId(), job.getDatasetName());
