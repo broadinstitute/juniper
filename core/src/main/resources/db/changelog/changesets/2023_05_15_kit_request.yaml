@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: kit_request
+      author: breilly
+      changes:
+        - createTable:
+            tableName: kit_request
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: enrollee_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: sample_kit_enrollee_id, references: enrollee(id) }
+              }
+              - column: { name: kit_type, type: text }
+              - column: { name: sent_to_address, type: text }
+              - column: { name: status, type: text }

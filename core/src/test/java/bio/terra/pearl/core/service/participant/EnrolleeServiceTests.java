@@ -34,7 +34,7 @@ public class EnrolleeServiceTests extends BaseSpringBootTest {
         Enrollee savedEnrollee = enrolleeService.create(enrollee);
         DaoTestUtils.assertGeneratedProperties(savedEnrollee);
         Assertions.assertNotNull(savedEnrollee.getShortcode());
-        Assertions.assertEquals(enrollee.getParticipantUserId(), enrollee.getParticipantUserId());
+        Assertions.assertEquals(enrollee.getParticipantUserId(), savedEnrollee.getParticipantUserId());
     }
 
     @Test

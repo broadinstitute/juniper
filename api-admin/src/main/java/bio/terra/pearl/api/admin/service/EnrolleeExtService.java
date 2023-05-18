@@ -2,12 +2,14 @@ package bio.terra.pearl.api.admin.service;
 
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.workflow.DataChangeRecord;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
+import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalService;
@@ -26,6 +28,7 @@ public class EnrolleeExtService {
   private PortalService portalService;
   private PortalStudyService portalStudyService;
   private DataChangeRecordService dataChangeRecordService;
+  private KitRequestService kitRequestService;
 
   public EnrolleeExtService(
       AuthUtilService authUtilService,
@@ -33,13 +36,15 @@ public class EnrolleeExtService {
       WithdrawnEnrolleeService withdrawnEnrolleeService,
       PortalService portalService,
       PortalStudyService portalStudyService,
-      DataChangeRecordService dataChangeRecordService) {
+      DataChangeRecordService dataChangeRecordService,
+      KitRequestService kitRequestService) {
     this.authUtilService = authUtilService;
     this.enrolleeService = enrolleeService;
     this.withdrawnEnrolleeService = withdrawnEnrolleeService;
     this.portalService = portalService;
     this.portalStudyService = portalStudyService;
     this.dataChangeRecordService = dataChangeRecordService;
+    this.kitRequestService = kitRequestService;
   }
 
   public List<EnrolleeSearchResult> search(
@@ -68,6 +73,11 @@ public class EnrolleeExtService {
     }
     Enrollee enrollee = authAdminUserToEnrollee(user, enroleeShortcode);
     return withdrawnEnrolleeService.withdrawEnrollee(enrollee);
+  }
+
+  public KitRequest requestKit(AdminUser user, String enrolleeShortcode, String kitType) throws JsonProcessingException {
+    Enrollee enrollee = authAdminUserToEnrollee(user, enrolleeShortcode);
+    return kitRequestService.requestKit(enrollee, kitType);
   }
 
   /**

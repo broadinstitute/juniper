@@ -149,7 +149,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
             enrollee.setShortcode(generateShortcode());
         }
         Enrollee savedEnrollee = dao.create(enrollee);
-        logger.info("Enrollee created.  id: {}, shortcode: {}, participantUserId", savedEnrollee.getId(),
+        logger.info("Enrollee created.  id: {}, shortcode: {}, participantUserId: {}", savedEnrollee.getId(),
                 savedEnrollee.getShortcode(), savedEnrollee.getParticipantUserId());
         return savedEnrollee;
     }
