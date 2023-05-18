@@ -13,6 +13,6 @@
   },
   "main": "./build/index.js",
   "scripts": {
-    "build": "NODE_ENV=production babel src --copy-files --extensions .js,.jsx,.ts,.tsx --out-dir build && tsc --declaration --emitDeclarationOnly"
+    "build": "NODE_ENV=production babel src --copy-files --delete-dir-on-start --extensions .js,.jsx,.ts,.tsx --out-dir build && tsc --declaration --emitDeclarationOnly"
   }
 }
