@@ -242,7 +242,7 @@ export default {
   async submitPreRegResponse({ surveyStableId, surveyVersion, preRegResponse }:
                                {
                                  surveyStableId: string, surveyVersion: number,
-                                 preRegResponse: PreregistrationResponse
+                                 preRegResponse: Partial<PreregistrationResponse>
                                }):
     Promise<PreregistrationResponse> {
     const url = `${baseEnvUrl(true)}/preReg/${surveyStableId}/${surveyVersion}`
@@ -271,7 +271,7 @@ export default {
   async submitPreEnrollResponse({ surveyStableId, surveyVersion, preEnrollResponse }:
                                   {
                                     surveyStableId: string, surveyVersion: number,
-                                    preEnrollResponse: PreEnrollmentResponse
+                                    preEnrollResponse: Partial<PreEnrollmentResponse>
                                   }):
     Promise<PreEnrollmentResponse> {
     const url = `${baseEnvUrl(true)}/preEnroll/${surveyStableId}/${surveyVersion}`

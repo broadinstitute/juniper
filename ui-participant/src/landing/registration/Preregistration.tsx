@@ -19,13 +19,12 @@ export default function PreRegistration({ registrationContext }: { registrationC
     if (!surveyModel) {
       return
     }
-    const responseDto = {
+    const responseDto: Partial<PreregistrationResponse> = {
       resumeData: getResumeData(surveyModel, null),
       answers: getSurveyJsAnswerList(surveyModel),
-      creatingParticipantId: null,
       surveyId: survey.id,
       qualified: surveyModel.getCalculatedValueByName('qualified').value
-    } as Omit<PreregistrationResponse, 'fullData'>
+    }
     const qualified = surveyModel.getCalculatedValueByName('qualified').value
     const preRegResponse = { ...responseDto, qualified } as PreregistrationResponse
     // submit the form even if it isn't eligible, so we can track stats on exclusions
