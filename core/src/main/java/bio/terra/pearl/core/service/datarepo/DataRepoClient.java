@@ -28,15 +28,15 @@ public class DataRepoClient {
     }
 
     //Dataset APIs
-    public JobModel createDataset(UUID spendProfileId, String datasetName, Map<String, TableDataType> schemaMappings) throws ApiException {
+    public JobModel createDataset(UUID spendProfileId, String datasetName, List<String> schemaMappings) throws ApiException {
         DatasetsApi datasetsApi = getDatasetsApi();
 
         List<ColumnModel> columns = new ArrayList<>();
 
         //TODO: Temporarily setting all column types of STRING. There seems to be an issue converting our DATETIME format
         //into a TDR DATETIME. This will be resolved in JN-381.
-        schemaMappings.forEach((columnName, columnDataType) ->
-                columns.add(new ColumnModel().name(columnName).datatype(TableDataType.STRING).required(false))
+        schemaMappings.forEach(columnKey ->
+                columns.add(new ColumnModel().name(columnKey).datatype(TableDataType.STRING).required(false))
         );
 
         DatasetSpecificationModel schema = new DatasetSpecificationModel()

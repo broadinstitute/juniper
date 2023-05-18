@@ -20,8 +20,7 @@ import bio.terra.pearl.core.service.azure.AzureBlobStorageClient;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetCreationException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetNotFoundException;
-import bio.terra.pearl.core.service.export.EnrolleeExportService;
-import bio.terra.pearl.core.service.export.ExportFileFormat;
+import bio.terra.pearl.core.service.export.*;
 import bio.terra.pearl.core.service.export.formatters.DataValueExportType;
 import bio.terra.pearl.core.service.export.instance.ExportOptions;
 import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
@@ -94,7 +93,7 @@ public class DataRepoExportService {
         // on a per-study basis and store those in the Juniper DB.
         UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
 
-        Map<String, TableDataType> schemaMappings = generateDatasetSchema(studyEnv.getId());
+        List<String> schemaMappings = generateDatasetSchema(studyEnv.getId());
 
         JobModel response;
         try {
@@ -159,40 +158,32 @@ public class DataRepoExportService {
         }
     }
 
-    public Map<String, TableDataType> generateDatasetSchema(UUID studyEnvironmentId) {
+    public List<String> generateDatasetSchema(UUID studyEnvironmentId) {
         ExportOptions exportOptions = new ExportOptions(false, false, false, ExportFileFormat.TSV, null);
 
         //Backtrack from studyEnvironmentId to get the portalId, so we can export the study environment data
         StudyEnvironment studyEnv = studyEnvironmentDao.find(studyEnvironmentId).orElseThrow(() -> new NotFoundException("Study environment not found."));
         PortalStudy portalStudy = portalStudyDao.findByStudyId(studyEnv.getStudyId()).stream().findFirst().orElseThrow(() -> new NotFoundException("Portal study not found."));
 
-        Map<String, TableDataType> schemaMappings = new LinkedHashMap<>();
+        List<String> columnKeys = new ArrayList<>();;
 
         try {
-            List<ModuleExportInfo> exportInfoList = enrolleeExportService.generateModuleInfos(exportOptions, portalStudy.getPortalId(), studyEnvironmentId);
+            List<ModuleExportInfo> moduleExportInfos = enrolleeExportService.generateModuleInfos(exportOptions, portalStudy.getPortalId(), studyEnvironmentId);
+            List<Map<String, String>> enrolleeMaps = enrolleeExportService.generateExportMaps(portalStudy.getPortalId(), studyEnvironmentId,
+                    moduleExportInfos, exportOptions.limit());
 
-            for(ModuleExportInfo exportInfo: exportInfoList) {
-                exportInfo.getItems().forEach(itemExportInfo -> {
-                    String columnName;
+            TsvExporter tsvExporter = new TsvExporter(moduleExportInfos, enrolleeMaps);
 
-                    //Profile fields don't have stable IDs, so we'll use the base column key instead
-                    if(itemExportInfo.getQuestionStableId() != null) {
-                        columnName = itemExportInfo.getQuestionStableId();
-                    } else {
-                        columnName = itemExportInfo.getBaseColumnKey();
-                    }
+            tsvExporter.applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription) -> {
+                columnKeys.add(moduleExportInfo.getFormatter().getColumnKey(moduleExportInfo, itemExportInfo, isOtherDescription, null));
+            });
 
-                    schemaMappings.put(
-                            DataRepoExportUtils.juniperToDataRepoColumnName(columnName),
-                            DataRepoExportUtils.juniperToDataRepoColumnType(itemExportInfo.getDataType())
-                    );
-                });
-            }
+            return columnKeys.stream().map(DataRepoExportUtils::juniperToDataRepoColumnName).toList();
         } catch (Exception e) {
             throw new RuntimeException("Could not generate dataset schema for study environment " + studyEnvironmentId + ". Error: " + e.getMessage());
         }
 
-        return schemaMappings;
+        return columnKeys;
     }
 
     public void pollRunningJobs() {
