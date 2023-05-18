@@ -1,10 +1,10 @@
 import {
-  ConsentForm,
   ConsentResponse,
+  Portal,
   PreEnrollmentResponse,
   PreregistrationResponse,
-  SiteContent,
-  Survey,
+  StudyEnvironmentConsent,
+  StudyEnvironmentSurvey,
   SurveyResponse
 } from '@juniper/ui-core'
 
@@ -18,11 +18,20 @@ export type {
   NavbarItem,
   NavbarItemInternal,
   NavbarItemInternalAnchor,
+  Portal,
+  PortalEnvironment,
+  PortalEnvironmentConfig,
+  PortalStudy,
   PreEnrollmentResponse,
   PreregistrationResponse,
   SectionConfig,
   SectionType,
   SiteContent,
+  Study,
+  StudyEnvironment,
+  StudyEnvironmentConfig,
+  StudyEnvironmentConsent,
+  StudyEnvironmentSurvey,
   Survey,
   SurveyResponse
 } from '@juniper/ui-core'
@@ -41,81 +50,9 @@ export type LoginResult = {
   enrollees: Enrollee[]
 }
 
-export type PortalEnvironmentParams = {
-  portalShortcode: string,
-  environmentName: string
-}
-
-export type Portal = {
-  name: string
-  portalEnvironments: PortalEnvironment[],
-  portalStudies: PortalStudy[],
-  shortcode: string
-}
-
-export type PortalEnvironment = PortalEnvironmentParams & {
-  siteContent: SiteContent,
-  preRegSurvey: Survey,
-  portalEnvironmentConfig: PortalEnvironmentConfig
-}
-
-export type PortalEnvironmentConfig = {
-  password: string,
-  passwordProtected: boolean,
-  allowRegistration: boolean
-}
-
-export type PortalStudy = {
-  study: Study,
-  studyEnvironments: StudyEnvironment[]
-}
-
-export type Study = {
-  name: string,
-  shortcode: string,
-  studyEnvironments: StudyEnvironment[]
-}
-
 export type SurveyJsResumeData = {
   currentPageNo: number,
   data: object
-}
-
-export type StudyEnvironment = {
-  id: string,
-  studyEnvironmentConfig: StudyEnvironmentConfig,
-  studyShortcode: string,
-  preEnrollSurvey: Survey,
-  environmentName: string
-}
-
-export type StudyEnvironmentConfig = {
-  acceptingEnrollment: boolean
-  initialized: boolean
-  passwordProtected: boolean
-  password: string
-}
-
-export type StudyEnvironmentSurvey = {
-  id: string,
-  surveyId: string,
-  survey: Survey,
-  surveyOrder: number,
-  allowAdminEdit: boolean,
-  allowParticipantStart: boolean,
-  allowParticipantReedit: boolean,
-  prepopulate: boolean
-}
-
-export type StudyEnvironmentConsent = {
-  id: string,
-  consentFormId: string,
-  consentForm: ConsentForm,
-  consentOrder: number,
-  allowAdminEdit: boolean,
-  allowParticipantStart: boolean,
-  allowParticipantReedit: boolean,
-  prepopulate: boolean
 }
 
 export type Enrollee = {

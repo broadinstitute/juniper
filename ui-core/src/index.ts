@@ -4,3 +4,5 @@ export { PrivacyPolicy } from './terms/PrivacyPolicy'
 
 export * from './types/forms'
 export * from './types/landingPageConfig'
+export * from './types/portal'
+export * from './types/study'
