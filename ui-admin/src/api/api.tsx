@@ -402,6 +402,7 @@ export type DatasetDetails = {
   studyEnvironmentId: string,
   datasetId: string,
   datasetName: string,
+  description: string,
   lastExported: number
 }
 
@@ -686,13 +687,13 @@ export default {
   },
 
   async createDatasetForStudyEnvironment(portalShortcode: string, studyShortcode: string,
-    envName: string, datasetName: { name: string }):
+    envName: string, createDataset: { name: string, description: string }):
       Promise<Response> {
     const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets`
     return await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
-      body: JSON.stringify(datasetName)
+      body: JSON.stringify(createDataset)
     })
   },
 

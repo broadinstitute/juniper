@@ -37,11 +37,11 @@ public class ScheduledDataRepoExportService {
     }
   }
 
-  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 5, initialDelay = 0)
+  @Scheduled(timeUnit = TimeUnit.SECONDS, fixedDelay = 5, initialDelay = 0)
   @SchedulerLock(
       name = "DataRepoExportService.pollRunningJobs",
-      lockAtMostFor = "5m",
-      lockAtLeastFor = "1m")
+      lockAtMostFor = "5s",
+      lockAtLeastFor = "1s")
   public void pollRunningJobs() {
     if (isTdrConfigured()) {
       logger.info("Polling running TDR jobs...");

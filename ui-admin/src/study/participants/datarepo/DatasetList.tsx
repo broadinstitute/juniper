@@ -27,18 +27,14 @@ const datasetColumns = (currentEnvPath: string): ColumnDef<DatasetDetails>[] => 
   cell: info => <Link to={getDatasetDashboardPath(info.getValue() as unknown as string, currentEnvPath)}
     className="mx-2">{info.getValue() as unknown as string}</Link>
 }, {
-  id: 'datasetUuid',
-  header: 'Dataset ID',
-  accessorKey: 'datasetId'
+  id: 'description',
+  header: 'Description',
+  accessorKey: 'description',
+  cell: info => info.getValue() ? info.getValue() : <em>N/A</em>
 }, {
   id: 'created',
-  header: 'Created Date',
+  header: 'Date Created',
   accessorKey: 'createdAt',
-  cell: info => instantToDefaultString(info.getValue() as unknown as number)
-}, {
-  id: 'lastUpdated',
-  header: 'Last Export',
-  accessorKey: 'lastExported',
   cell: info => instantToDefaultString(info.getValue() as unknown as number)
 }, {
   header: 'Terra Data Repo',

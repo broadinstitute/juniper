@@ -21,7 +21,8 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetCreationException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetNotFoundException;
 import bio.terra.pearl.core.service.export.*;
-import bio.terra.pearl.core.service.export.formatters.DataValueExportType;
+import bio.terra.pearl.core.service.export.EnrolleeExportService;
+import bio.terra.pearl.core.service.export.ExportFileFormat;
 import bio.terra.pearl.core.service.export.instance.ExportOptions;
 import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import org.slf4j.Logger;
@@ -88,7 +89,7 @@ public class DataRepoExportService {
         return dataRepoJobDao.findByStudyEnvironmentIdAndName(studyEnvironmentId, datasetName);
     }
 
-    public void createDataset(StudyEnvironment studyEnv, String datasetName) {
+    public void createDataset(StudyEnvironment studyEnv, String datasetName, String description) {
         //TODO: JN-125: This default spend profile is temporary. Eventually, we will want to configure spend profiles
         // on a per-study basis and store those in the Juniper DB.
         UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
@@ -97,7 +98,7 @@ public class DataRepoExportService {
 
         JobModel response;
         try {
-            response = dataRepoClient.createDataset(defaultSpendProfileId, datasetName, columnKeys);
+            response = dataRepoClient.createDataset(defaultSpendProfileId, datasetName, description, columnKeys);
         } catch (ApiException e) {
             throw new DatasetCreationException(String.format("Unable to create TDR dataset for study environment %s. Error: %s", studyEnv.getStudyId(), e.getMessage()));
         }
@@ -212,6 +213,7 @@ public class DataRepoExportService {
                     Dataset dataset = Dataset.builder()
                             .studyEnvironmentId(job.getStudyEnvironmentId())
                             .datasetId(UUID.fromString(jobResult.get("id").toString()))
+                            .description(jobResult.get("description").toString())
                             .datasetName(job.getDatasetName())
                             .lastExported(Instant.ofEpochSecond(0))
                             .build();
