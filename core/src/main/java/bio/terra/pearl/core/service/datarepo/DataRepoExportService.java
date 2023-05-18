@@ -103,6 +103,13 @@ public class DataRepoExportService {
             throw new DatasetCreationException(String.format("Unable to create TDR dataset for study environment %s. Error: %s", studyEnv.getStudyId(), e.getMessage()));
         }
 
+        Dataset dataset = Dataset.builder()
+                .status(response.getJobStatus().getValue())
+                .datasetName(datasetName)
+                .lastExported(Instant.ofEpochSecond(0))
+                .studyEnvironmentId(studyEnv.getId())
+                .build();
+
         DataRepoJob job = DataRepoJob.builder()
                 .studyEnvironmentId(studyEnv.getId())
                 .status(response.getJobStatus().getValue())
@@ -112,6 +119,7 @@ public class DataRepoExportService {
                 .build();
 
         dataRepoJobService.create(job);
+        datasetService.create(dataset);
     }
 
     public String uploadCsvToAzureStorage(UUID studyEnvironmentId, String datasetName) {
@@ -204,6 +212,7 @@ public class DataRepoExportService {
     private void pollAndUpdateCreateJobStatus(DataRepoJob job) {
         try {
             JobStatusEnum jobStatus = dataRepoClient.getJobStatus(job.getTdrJobId()).getJobStatus();
+            Dataset existingDataset = datasetDao.findByDatasetName(job.getDatasetName()).get();
 
             switch(jobStatus) {
                 case SUCCEEDED -> {
@@ -211,14 +220,16 @@ public class DataRepoExportService {
 
                     logger.info("createDataset job ID {} has succeeded. Dataset {} has been created.", job.getId(), job.getDatasetName());
                     Dataset dataset = Dataset.builder()
+                            .id(existingDataset.getId())
                             .studyEnvironmentId(job.getStudyEnvironmentId())
                             .datasetId(UUID.fromString(jobResult.get("id").toString()))
                             .description(jobResult.get("description").toString())
                             .datasetName(job.getDatasetName())
+                            .status(jobStatus.getValue())
                             .lastExported(Instant.ofEpochSecond(0))
                             .build();
 
-                    datasetService.create(dataset);
+                    datasetService.update(dataset);
                     dataRepoJobService.updateJobStatus(job.getId(), jobStatus.getValue());
 
                     //TODO: This is to be replaced by JN-133. This code should only ever be executed in dev.
@@ -235,6 +246,16 @@ public class DataRepoExportService {
                 }
                 case FAILED -> {
                     logger.warn("createDataset job ID {} has failed. Dataset {} failed to create.", job.getId(), job.getDatasetName());
+
+                    Dataset dataset = Dataset.builder()
+                            .id(existingDataset.getId())
+                            .studyEnvironmentId(job.getStudyEnvironmentId())
+                            .datasetName(job.getDatasetName())
+                            .status(jobStatus.getValue())
+                            .lastExported(Instant.ofEpochSecond(0))
+                            .build();
+
+                    datasetService.update(dataset);
                     dataRepoJobService.updateJobStatus(job.getId(), jobStatus.getValue());
                 }
                 case RUNNING -> logger.info("createDataset job ID {} is running.", job.getId());

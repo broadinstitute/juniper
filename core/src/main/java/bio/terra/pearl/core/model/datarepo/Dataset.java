@@ -18,5 +18,6 @@ public class Dataset extends BaseEntity {
     private UUID datasetId;
     private String datasetName;
     private String description;
+    private String status;
     private Instant lastExported;
 }

@@ -214,6 +214,7 @@ export type DatasetDetails = {
   datasetId: string,
   datasetName: string,
   description: string,
+  status: string,
   lastExported: number
 }
 
