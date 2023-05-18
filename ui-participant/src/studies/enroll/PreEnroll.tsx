@@ -32,14 +32,13 @@ export default function PreEnrollView({ enrollContext }: { enrollContext: StudyE
       return
     }
     const qualified = surveyModel.getCalculatedValueByName(ENROLLMENT_QUALIFIED_VARIABLE).value
-    const responseDto = {
+    const responseDto: Partial<PreEnrollmentResponse> = {
       resumeData: getResumeData(surveyModel, null),
       answers: getSurveyJsAnswerList(surveyModel),
-      creatingParticipantId: null,
       surveyId: survey.id,
       studyEnvironmentId: studyEnv.id,
       qualified
-    } as PreEnrollmentResponse
+    }
 
     // submit the form even if it isn't eligible, so we can track stats on exclusions
     Api.submitPreEnrollResponse({
