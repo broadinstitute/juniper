@@ -34,7 +34,7 @@ public class DataRepoClient {
         List<ColumnModel> columns = new ArrayList<>();
 
         //TODO: Temporarily setting all column types of STRING. There seems to be an issue converting our DATETIME format
-        //into a TDR DATETIME. This will be resolved in a followup ticket.
+        //into a TDR DATETIME. This will be resolved in JN-381.
         schemaMappings.forEach((columnName, columnDataType) ->
                 columns.add(new ColumnModel().name(columnName).datatype(TableDataType.STRING).required(false))
         );
