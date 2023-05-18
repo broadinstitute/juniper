@@ -39,7 +39,7 @@ export default function PreEnrollView({ enrollContext }: { enrollContext: StudyE
       surveyId: survey.id,
       studyEnvironmentId: studyEnv.id,
       qualified
-    } as PreEnrollmentResponse
+    } as Omit<PreEnrollmentResponse, 'fullData'>
 
     // submit the form even if it isn't eligible, so we can track stats on exclusions
     Api.submitPreEnrollResponse({
