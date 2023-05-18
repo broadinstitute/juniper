@@ -50,7 +50,7 @@ export type SurveyResponse = FormResponse & {
 export type PreregistrationResponse = FormResponse & {
   surveyId: string
   answers: Answer[]
-  fullData: string
+  fullData?: string
   qualified: boolean
 }
 
@@ -58,7 +58,7 @@ export type PreEnrollmentResponse = FormResponse & {
   surveyId: string
   studyEnvironmentId: string
   answers: Answer[]
-  fullData: string
+  fullData?: string
   qualified: boolean
 }
 
