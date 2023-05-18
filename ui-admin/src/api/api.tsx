@@ -1,15 +1,30 @@
-import { SiteContent } from '@juniper/ui-core'
+import {
+  ConsentForm,
+  SiteContent,
+  Survey,
+  ConsentResponse,
+  SurveyResponse,
+  PreregistrationResponse
+} from '@juniper/ui-core'
 
 export type {
-  SiteContent,
-  LocalSiteContent,
+  Answer,
+  ConsentForm,
+  ConsentResponse,
   HtmlPage,
   HtmlSection,
-  SectionConfig,
-  SectionType,
+  LocalSiteContent,
   NavbarItem,
   NavbarItemInternal,
-  NavbarItemInternalAnchor
+  NavbarItemInternalAnchor,
+  PreEnrollmentResponse,
+  PreregistrationResponse,
+  SectionConfig,
+  SectionType,
+  SiteContent,
+  Survey,
+  SurveyResponse,
+  VersionedForm
 } from '@juniper/ui-core'
 
 export type AdminUser = {
@@ -52,19 +67,6 @@ export type StudyEnvironment = {
   configuredConsents: StudyEnvironmentConsent[],
   notificationConfigs: NotificationConfig[]
 }
-
-export type VersionedForm = {
-  id: string,
-  name: string,
-  stableId: string,
-  version: number,
-  createdAt: string,
-  content: string
-}
-
-export type Survey = VersionedForm
-
-export type ConsentForm = VersionedForm
 
 export type StudyEnvironmentSurvey = {
   id: string,
@@ -159,50 +161,6 @@ export type MailingAddress = {
   state: string,
   country: string,
   postalCode: string
-}
-
-export type ResumableData = {
-  currentPageNo: number,
-  data: object
-}
-
-export type ResponseSnapshot = {
-  createdAt: string,
-  resumeData: string,
-  fullData: string
-}
-
-export type SurveyResponse = {
-  complete: boolean,
-  createdAt: number, // this is a java instant, so number of seconds since epoch start
-  lastUpdatedAt: string,
-  surveyId: string,
-  surveyStableId: string,
-  surveyVersion: string,
-  answers: Answer[]
-}
-
-export type Answer = {
-  stringValue: string,
-  numberValue: number,
-  objectValue: object,
-  booleanValue: boolean,
-  questionStableId: string
-}
-
-export type PreregistrationResponse = {
-  createdAt: string,
-  fullData: string,
-  surveyStableId: string,
-  surveyVersion: string
-}
-
-export type ConsentResponse = {
-  id: string,
-  createdAt: number,
-  consented: boolean,
-  consentFormId: string,
-  fullData: string
 }
 
 export type ParticipantTask = {

@@ -3,3 +3,4 @@ export { ParticipantTermsOfUse } from './terms/ParticipantTermsOfUse'
 export { PrivacyPolicy } from './terms/PrivacyPolicy'
 
 export * from './types/landingPageConfig'
+export * from './types/surveys'

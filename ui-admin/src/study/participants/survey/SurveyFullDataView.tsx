@@ -34,7 +34,7 @@ export const getDisplayValue = (answer: Answer, question: Question | QuestionWit
   let displayValue: React.ReactNode = answerValue
   if (question.choices) {
     if (answer.objectValue) {
-      const valueArray = JSON.parse(answerValue)
+      const valueArray = JSON.parse(answer.objectValue)
       const textArray = valueArray.map((value: string | number) => getTextForChoice(value, question))
       displayValue = JSON.stringify(textArray)
     } else {
@@ -43,12 +43,12 @@ export const getDisplayValue = (answer: Answer, question: Question | QuestionWit
   }
 
   if (answer.questionStableId.endsWith('signature')) {
-    displayValue = <img src={answerValue}/>
+    displayValue = <img src={answer.stringValue}/>
   }
   return displayValue
 }
 
-export const getTextForChoice = (value: string | number, question: Question) => {
+export const getTextForChoice = (value: string | number | boolean | undefined, question: Question) => {
   return question.choices.find((choice: ItemValue)  => choice.value === value)?.text ?? value
 }
 

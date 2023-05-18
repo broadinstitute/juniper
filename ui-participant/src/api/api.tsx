@@ -1,15 +1,30 @@
-import { SiteContent } from '@juniper/ui-core'
+import {
+  ConsentForm,
+  ConsentResponse,
+  PreEnrollmentResponse,
+  PreregistrationResponse,
+  SiteContent,
+  Survey,
+  SurveyResponse
+} from '@juniper/ui-core'
 
 export type {
-  SiteContent,
-  LocalSiteContent,
+  Answer,
+  ConsentForm,
+  ConsentResponse,
   HtmlPage,
   HtmlSection,
-  SectionConfig,
-  SectionType,
+  LocalSiteContent,
   NavbarItem,
   NavbarItemInternal,
-  NavbarItemInternalAnchor
+  NavbarItemInternalAnchor,
+  PreEnrollmentResponse,
+  PreregistrationResponse,
+  SectionConfig,
+  SectionType,
+  SiteContent,
+  Survey,
+  SurveyResponse
 } from '@juniper/ui-core'
 export {
   isInternalLink,
@@ -61,23 +76,6 @@ export type Study = {
   studyEnvironments: StudyEnvironment[]
 }
 
-export type SurveyJSForm = {
-  stableId: string,
-  version: number,
-  content: string
-}
-
-export type Survey = SurveyJSForm & {
-  id: string,
-  name: string,
-  footer?: string
-}
-
-export type ConsentForm = SurveyJSForm & {
-  id: string,
-  name: string
-}
-
 export type SurveyJsResumeData = {
   currentPageNo: number,
   data: object
@@ -118,39 +116,6 @@ export type StudyEnvironmentConsent = {
   allowParticipantStart: boolean,
   allowParticipantReedit: boolean,
   prepopulate: boolean
-}
-
-export type FormResponse = {
-  id?: string,
-  createdAt?: number,
-  enrolleeId?: string,
-  resumeData: string,
-  creatingParticipantUserId?: string,
-}
-
-export type ConsentResponse = FormResponse & {
-  consentFormId: string,
-  consented: boolean,
-  fullData: string
-}
-
-export type SurveyResponse = FormResponse & {
-  surveyId: string,
-  complete: boolean,
-  answers: Answer[]
-}
-
-export type PreregistrationResponse = FormResponse & {
-  qualified: false,
-  surveyId: string,
-  answers: Answer[]
-}
-
-export type PreEnrollmentResponse = FormResponse & {
-  qualified: false,
-  surveyId: string,
-  studyEnvironmentId: string,
-  answers: Answer[]
 }
 
 export type Enrollee = {
@@ -196,15 +161,6 @@ export type SurveyWithResponse = {
 
 export type UserResumeData = {
   currentPageNo: number
-}
-
-export type Answer = {
-  stringValue?: string,
-  numberValue?: number,
-  booleanValue?: boolean,
-  objectValue?: string,
-  questionStableId: string,
-  otherDescription?: string
 }
 
 export type HubResponse = {
