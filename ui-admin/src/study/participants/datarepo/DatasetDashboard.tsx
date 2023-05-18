@@ -120,7 +120,7 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
                   <label>Date Created:</label> { instantToDefaultString(datasetDetails?.createdAt) }
                   <br/>
                   <label>Description:</label> { datasetDetails?.description ?
-                    datasetDetails?.description : <em>N/A</em> }
+                    datasetDetails?.description : <span className="fst-italic">N/A</span> }
                 </div>
                 <br/>
                 <a href={`https://jade.datarepo-dev.broadinstitute.org/datasets/${datasetDetails?.datasetId}`}

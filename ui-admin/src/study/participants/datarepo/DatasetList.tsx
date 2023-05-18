@@ -30,7 +30,7 @@ const datasetColumns = (currentEnvPath: string): ColumnDef<DatasetDetails>[] => 
   id: 'description',
   header: 'Description',
   accessorKey: 'description',
-  cell: info => info.getValue() ? info.getValue() : <em>N/A</em>
+  cell: info => info.getValue() ? info.getValue() : <span className="fst-italic">N/A</span>
 }, {
   id: 'created',
   header: 'Date Created',
