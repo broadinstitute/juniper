@@ -1,9 +1,9 @@
 plugins {
-    id 'com.moowork.node' version '1.2.0'
+    id 'com.github.node-gradle.node' version '5.0.0'
 }
 
 apply plugin: 'base'
-apply plugin: 'com.moowork.node'
+apply plugin: 'com.github.node-gradle.node'
 
 task buildUICore(type: NpmTask, dependsOn: npmInstall) {
     args = ['--workspace=ui-core', 'run', 'build']
