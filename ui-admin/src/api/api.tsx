@@ -3,6 +3,7 @@ import {
   Survey,
   ConsentResponse,
   NotificationConfig,
+  ParticipantTask,
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
@@ -23,6 +24,7 @@ export type {
   NavbarItemInternal,
   NavbarItemInternalAnchor,
   NotificationConfig,
+  ParticipantTask,
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
@@ -100,16 +102,6 @@ export type MailingAddress = {
   state: string,
   country: string,
   postalCode: string
-}
-
-export type ParticipantTask = {
-  id: string,
-  completedAt?: number,
-  status: string,
-  taskType: string,
-  targetName: string,
-  taskOrder: number,
-  blocksHub: boolean,
 }
 
 export type Notification = {
