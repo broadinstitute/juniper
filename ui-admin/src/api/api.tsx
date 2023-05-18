@@ -1,3 +1,17 @@
+import { SiteContent } from '@juniper/ui-core'
+
+export type {
+  SiteContent,
+  LocalSiteContent,
+  HtmlPage,
+  HtmlSection,
+  SectionConfig,
+  SectionType,
+  NavbarItem,
+  NavbarItemInternal,
+  NavbarItemInternalAnchor
+} from '@juniper/ui-core'
+
 export type AdminUser = {
   username: string,
   token: string,
@@ -100,75 +114,6 @@ export type PortalEnvironment = {
   environmentName: string,
   portalEnvironmentConfig: PortalEnvironmentConfig,
   siteContent?: SiteContent
-}
-
-export type SiteContent = {
-  defaultLanguage: string,
-  localizedSiteContents: LocalSiteContent[],
-  stableId: string,
-  version: number
-}
-
-export type LocalSiteContent = {
-  language: string,
-  navbarItems: NavbarItem[],
-  landingPage: HtmlPage,
-  navLogoCleanFileName: string,
-  navLogoVersion: number,
-  footerSection?: HtmlSection
-  primaryBrandColor?: string
-}
-
-export type HtmlPage = {
-  title: string,
-  path: string,
-  sections: HtmlSection[]
-}
-
-export type NavbarItem = {
-  label: string,
-  externalLink?: string,
-  anchorLinkPath?: string,
-  itemType: string
-  htmlPage?: HtmlPage
-}
-
-export type NavbarItemInternal = NavbarItem & {
-  htmlPage: HtmlPage
-}
-
-export type NavbarItemInternalAnchor = NavbarItem & {
-  anchorLinkPath: string
-}
-
-/** type predicate for handling internal links */
-export function isInternalLink(navItem: NavbarItem): navItem is NavbarItemInternal {
-  return navItem.itemType === 'INTERNAL'
-}
-
-/** type predicate for handling internal anchor links */
-export function isInternalAnchorLink(navItem: NavbarItem): navItem is NavbarItemInternalAnchor {
-  return navItem.itemType === 'INTERNAL_ANCHOR'
-}
-
-export type SectionType =
-  | 'BANNER_IMAGE'
-  | 'FAQ'
-  | 'HERO_CENTERED'
-  | 'HERO_WITH_IMAGE'
-  | 'LINK_SECTIONS_FOOTER'
-  | 'PARTICIPATION_DETAIL'
-  | 'PHOTO_BLURB_GRID'
-  | 'RAW_HTML'
-  | 'SOCIAL_MEDIA'
-  | 'STEP_OVERVIEW'
-
-export type HtmlSection = {
-  id: string,
-  sectionType: SectionType,
-  anchorRef?: string,
-  rawContent?: string | null,
-  sectionConfig?: string | null
 }
 
 export type PortalEnvironmentConfig = {
