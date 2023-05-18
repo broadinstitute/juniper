@@ -93,11 +93,11 @@ public class DataRepoExportService {
         // on a per-study basis and store those in the Juniper DB.
         UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
 
-        List<String> schemaMappings = generateDatasetSchema(studyEnv.getId());
+        List<String> columnKeys = generateDatasetSchema(studyEnv.getId());
 
         JobModel response;
         try {
-            response = dataRepoClient.createDataset(defaultSpendProfileId, datasetName, schemaMappings);
+            response = dataRepoClient.createDataset(defaultSpendProfileId, datasetName, columnKeys);
         } catch (ApiException e) {
             throw new DatasetCreationException(String.format("Unable to create TDR dataset for study environment %s. Error: %s", studyEnv.getStudyId(), e.getMessage()));
         }
@@ -165,7 +165,7 @@ public class DataRepoExportService {
         StudyEnvironment studyEnv = studyEnvironmentDao.find(studyEnvironmentId).orElseThrow(() -> new NotFoundException("Study environment not found."));
         PortalStudy portalStudy = portalStudyDao.findByStudyId(studyEnv.getStudyId()).stream().findFirst().orElseThrow(() -> new NotFoundException("Portal study not found."));
 
-        List<String> columnKeys = new ArrayList<>();;
+        List<String> columnKeys = new ArrayList<>();
 
         try {
             List<ModuleExportInfo> moduleExportInfos = enrolleeExportService.generateModuleInfos(exportOptions, portalStudy.getPortalId(), studyEnvironmentId);
@@ -175,10 +175,8 @@ public class DataRepoExportService {
             TsvExporter tsvExporter = new TsvExporter(moduleExportInfos, enrolleeMaps);
 
             tsvExporter.applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription) -> {
-                columnKeys.add(moduleExportInfo.getFormatter().getColumnKey(moduleExportInfo, itemExportInfo, isOtherDescription, null));
+                columnKeys.add(DataRepoExportUtils.juniperToDataRepoColumnName(moduleExportInfo.getFormatter().getColumnKey(moduleExportInfo, itemExportInfo, isOtherDescription, null)));
             });
-
-            return columnKeys.stream().map(DataRepoExportUtils::juniperToDataRepoColumnName).toList();
         } catch (Exception e) {
             throw new RuntimeException("Could not generate dataset schema for study environment " + studyEnvironmentId + ". Error: " + e.getMessage());
         }
