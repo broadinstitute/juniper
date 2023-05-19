@@ -1,7 +1,7 @@
 package bio.terra.pearl.api.admin.controller.datarepo;
 
 import bio.terra.pearl.api.admin.api.DatarepoApi;
-import bio.terra.pearl.api.admin.model.DatasetName;
+import bio.terra.pearl.api.admin.model.CreateDataset;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.DataRepoExportExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -57,12 +57,12 @@ public class DataRepoExportController implements DatarepoApi {
 
   @Override
   public ResponseEntity<Void> createDatasetForStudyEnvironment(
-      String portalShortcode, String studyShortcode, String envName, DatasetName datasetName) {
+      String portalShortcode, String studyShortcode, String envName, CreateDataset createDataset) {
     AdminUser user = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
     dataRepoExportExtService.createDataset(
-        portalShortcode, studyShortcode, environmentName, datasetName, user);
+        portalShortcode, studyShortcode, environmentName, createDataset, user);
 
     return ResponseEntity.accepted().build();
   }

@@ -651,7 +651,7 @@ paths:
         - { name: envName, in: path, required: true, schema: { type: string } }
       requestBody:
         required: true
-        content: { application/json: { schema: { $ref: '#/components/schemas/DatasetName' } } }
+        content: { application/json: { schema: { $ref: '#/components/schemas/CreateDataset' } } }
       responses:
         '202':
           description: Accepted
@@ -769,9 +769,11 @@ components:
       required: [ roles ]
     PortalDto:
       type: object
-    DatasetName:
+    CreateDataset:
       properties:
         name:
+          type: string
+        description:
           type: string
     SystemStatus:
       required: [ ok, systems ]

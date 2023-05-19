@@ -117,9 +117,10 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
                   <br/>
                   <label>Dataset ID:</label> { datasetDetails?.datasetId }
                   <br/>
-                  <label>Created Date:</label> { instantToDefaultString(datasetDetails?.createdAt) }
+                  <label>Date Created:</label> { instantToDefaultString(datasetDetails?.createdAt) }
                   <br/>
-                  <label>Last Successful Export:</label> { instantToDefaultString(datasetDetails?.lastExported) }
+                  <label>Description:</label> { datasetDetails?.description ?
+                    datasetDetails?.description : <span className="fst-italic">N/A</span> }
                 </div>
                 <br/>
                 <a href={`https://jade.datarepo-dev.broadinstitute.org/datasets/${datasetDetails?.datasetId}`}

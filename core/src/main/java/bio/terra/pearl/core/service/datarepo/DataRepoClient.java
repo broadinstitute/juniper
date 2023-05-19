@@ -27,17 +27,19 @@ public class DataRepoClient {
     }
 
     //Dataset APIs
-    public JobModel createDataset(UUID spendProfileId, String datasetName) throws ApiException {
+    public JobModel createDataset(UUID spendProfileId, String datasetName, String description, List<String> columnKeys) throws ApiException {
         DatasetsApi datasetsApi = getDatasetsApi();
 
-        //TODO: AR-229. Placeholder schema for now, need to determine mapping of survey schema to TDR schema.
+        //TODO: Temporarily setting all column types of STRING. There seems to be an issue converting our DATETIME format
+        //into a TDR DATETIME. This will be resolved in JN-381.
+        List<ColumnModel> columns = columnKeys.stream().map(columnKey -> new ColumnModel().name(columnKey).datatype(TableDataType.STRING).required(false)).toList();
+
         DatasetSpecificationModel schema = new DatasetSpecificationModel()
-                .tables(List.of(new TableModel().name("enrollee").columns(List.of(
-                        new ColumnModel().name("shortcode").datatype(TableDataType.STRING)
-                ))));
+                .tables(List.of(new TableModel().name("enrollee").columns(columns)));
 
         DatasetRequestModel dataset = new DatasetRequestModel()
                 .name(datasetName)
+                .description(description)
                 .cloudPlatform(CloudPlatform.AZURE)
                 .defaultProfileId(spendProfileId)
                 .schema(schema);
@@ -60,6 +62,7 @@ public class DataRepoClient {
                 .table(tableName)
                 .profileId(spendProfileId)
                 .format(IngestRequestModel.FormatEnum.CSV)
+                .csvFieldDelimiter("\t")
                 .csvSkipLeadingRows(3) //TDR might have an off-by-one bug? Need to skip 3 rows to ignore the column name and description rows
                 .updateStrategy(IngestRequestModel.UpdateStrategyEnum.APPEND) //This is the default, and the only available option on Azure right now
                 .path(blobSasUrl);

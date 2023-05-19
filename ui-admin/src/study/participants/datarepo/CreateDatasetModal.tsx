@@ -10,10 +10,12 @@ const CreateDatasetModal = ({ studyEnvContext, show, setShow }: {studyEnvContext
     setShow:  React.Dispatch<React.SetStateAction<boolean>>}) => {
   const [isLoading, setIsLoading] = useState(false)
   const [datasetName, setDatasetName] = useState('')
+  const [datasetDescription, setDatasetDescription] = useState('')
   const createDataset = async () => {
     setIsLoading(true)
     const response = await Api.createDatasetForStudyEnvironment(studyEnvContext.portal.shortcode,
-      studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName, { name: datasetName })
+      studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName,
+      { name: datasetName, description: datasetDescription })
     if (response.ok) {
       Store.addNotification(successNotification(`${datasetName} created`))
     } else {
@@ -21,7 +23,11 @@ const CreateDatasetModal = ({ studyEnvContext, show, setShow }: {studyEnvContext
     }
     setShow(false)
     setIsLoading(false)
+    clearFields()
+  }
+  const clearFields = () => {
     setDatasetName('')
+    setDatasetDescription('')
   }
 
   return <Modal show={show} onHide={() => setShow(false)}>
@@ -37,6 +43,10 @@ const CreateDatasetModal = ({ studyEnvContext, show, setShow }: {studyEnvContext
           <input type="text" size={50} className="form-control" id="inputDatasetName" value={datasetName}
             onChange={event => setDatasetName(event.target.value)}/>
         </label>
+        <label className="form-label"> Description
+          <textarea rows={3} cols={50} value={datasetDescription}
+            onChange={event => setDatasetDescription(event.target.value)}/>
+        </label>
       </form>
     </Modal.Body>
     <Modal.Footer>
@@ -44,7 +54,7 @@ const CreateDatasetModal = ({ studyEnvContext, show, setShow }: {studyEnvContext
         <button className="btn btn-primary" onClick={createDataset}>Create</button>
         <button className="btn btn-secondary" onClick={() => {
           setShow(false)
-          setDatasetName('')
+          clearFields()
         }}>Cancel</button>
       </LoadingSpinner>
     </Modal.Footer>

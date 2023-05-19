@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.datarepo;
 import bio.terra.datarepo.client.ApiException;
 import bio.terra.datarepo.model.JobModel;
 import bio.terra.datarepo.model.JobModel.JobStatusEnum;
+import bio.terra.datarepo.model.TableDataType;
 import bio.terra.pearl.core.dao.datarepo.DataRepoJobDao;
 import bio.terra.pearl.core.dao.datarepo.DatasetDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
@@ -14,16 +15,16 @@ import bio.terra.pearl.core.model.datarepo.DataRepoJob;
 import bio.terra.pearl.core.model.datarepo.Dataset;
 import bio.terra.pearl.core.model.datarepo.JobType;
 import bio.terra.pearl.core.model.study.PortalStudy;
-import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.azure.AzureBlobStorageClient;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetCreationException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetNotFoundException;
-import bio.terra.pearl.core.service.exception.StudyNotFoundException;
+import bio.terra.pearl.core.service.export.*;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
 import bio.terra.pearl.core.service.export.instance.ExportOptions;
+import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -31,7 +32,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -89,34 +89,16 @@ public class DataRepoExportService {
         return dataRepoJobDao.findByStudyEnvironmentIdAndName(studyEnvironmentId, datasetName);
     }
 
-    public void createDatasetsForStudyEnvironments() {
-        final String DEPLOYMENT_ZONE = env.getProperty("env.tdr.deploymentZone");
-
-        List<StudyEnvironment> allStudyEnvs = studyEnvironmentDao.findAll();
-        List<UUID> studyEnvsWithDatasets = datasetDao.findAll().stream().map(Dataset::getStudyEnvironmentId).toList();
-        List<StudyEnvironment> studyEnvsWithoutDatasets = allStudyEnvs.stream().filter(studyEnv -> !studyEnvsWithDatasets.contains(studyEnv.getId())).toList();
-
-        logger.info("Found {} study environments requiring dataset creation.", studyEnvsWithoutDatasets.size());
-
-        for(StudyEnvironment studyEnv : studyEnvsWithoutDatasets) {
-            Study study = studyDao.find(studyEnv.getStudyId()).orElseThrow(() -> new StudyNotFoundException(studyEnv.getStudyId()));
-            String environmentName = studyEnv.getEnvironmentName().name();
-
-            String datasetName = makeDatasetName(DEPLOYMENT_ZONE, study.getShortcode(), environmentName);
-
-            createDataset(studyEnv, datasetName);
-        }
-
-    }
-
-    public void createDataset(StudyEnvironment studyEnv, String datasetName) {
+    public void createDataset(StudyEnvironment studyEnv, String datasetName, String description) {
         //TODO: JN-125: This default spend profile is temporary. Eventually, we will want to configure spend profiles
         // on a per-study basis and store those in the Juniper DB.
         UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
 
+        List<String> columnKeys = generateDatasetSchema(studyEnv.getId());
+
         JobModel response;
         try {
-            response = dataRepoClient.createDataset(defaultSpendProfileId, datasetName);
+            response = dataRepoClient.createDataset(defaultSpendProfileId, datasetName, description, columnKeys);
         } catch (ApiException e) {
             throw new DatasetCreationException(String.format("Unable to create TDR dataset for study environment %s. Error: %s", studyEnv.getStudyId(), e.getMessage()));
         }
@@ -132,21 +114,12 @@ public class DataRepoExportService {
         dataRepoJobService.create(job);
     }
 
-    public void ingestDatasets() {
-        List<Dataset> outdatedDatasets = datasetDao.findAll().stream().filter(dataset -> dataset.getLastExported().isBefore(Instant.now().minus(1, ChronoUnit.MINUTES))).toList();
-
-        logger.info("Found {} study environments requiring dataset ingest", outdatedDatasets.size());
-
-        for(Dataset dataset : outdatedDatasets) {
-            logger.info("Ingesting data for study environment ID {}", dataset.getStudyEnvironmentId());
-            ingestDataForStudyEnvironment(dataset);
-        }
-    }
-
-    public String uploadCsvToAzureStorage(UUID studyEnvironmentId) {
+    public String uploadCsvToAzureStorage(UUID studyEnvironmentId, String datasetName) {
         ExportOptions exportOptions = new ExportOptions(false, false, false, ExportFileFormat.TSV, null);
 
-        String blobName = studyEnvironmentId + "_" + Instant.now() + ".csv";
+        //Even though this is actually formatted as a TSV, TDR only accepts files ending in .csv or .json.
+        //In the DataRepoClient call, we specify that the CSV delimiter is "\t", which will make it all work fine.
+        String blobName = datasetName + "_" + studyEnvironmentId + "_" + Instant.now() + ".csv";
 
         //Backtrack from studyEnvironmentId to get the portalId, so we can export the study environment data
         StudyEnvironment studyEnv = studyEnvironmentDao.find(studyEnvironmentId).orElseThrow(() -> new NotFoundException("Study environment not found."));
@@ -166,7 +139,7 @@ public class DataRepoExportService {
 
     public void ingestDataForStudyEnvironment(Dataset studyEnvDataset) {
         UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
-        String blobSasUrl = uploadCsvToAzureStorage(studyEnvDataset.getStudyEnvironmentId());
+        String blobSasUrl = uploadCsvToAzureStorage(studyEnvDataset.getStudyEnvironmentId(), studyEnvDataset.getDatasetName());
 
         try {
             JobModel ingestJob = dataRepoClient.ingestDataset(defaultSpendProfileId, studyEnvDataset.getDatasetId(), "enrollee", blobSasUrl);
@@ -184,6 +157,32 @@ public class DataRepoExportService {
         } catch (ApiException e) {
             logger.error("Unable to ingest dataset {} for study env {}. Error: {}", studyEnvDataset.getDatasetId(), studyEnvDataset.getStudyEnvironmentId(), e.getMessage());
         }
+    }
+
+    public List<String> generateDatasetSchema(UUID studyEnvironmentId) {
+        ExportOptions exportOptions = new ExportOptions(false, false, false, ExportFileFormat.TSV, null);
+
+        //Backtrack from studyEnvironmentId to get the portalId, so we can export the study environment data
+        StudyEnvironment studyEnv = studyEnvironmentDao.find(studyEnvironmentId).orElseThrow(() -> new NotFoundException("Study environment not found."));
+        PortalStudy portalStudy = portalStudyDao.findByStudyId(studyEnv.getStudyId()).stream().findFirst().orElseThrow(() -> new NotFoundException("Portal study not found."));
+
+        List<String> columnKeys = new ArrayList<>();
+
+        try {
+            List<ModuleExportInfo> moduleExportInfos = enrolleeExportService.generateModuleInfos(exportOptions, portalStudy.getPortalId(), studyEnvironmentId);
+            List<Map<String, String>> enrolleeMaps = enrolleeExportService.generateExportMaps(portalStudy.getPortalId(), studyEnvironmentId,
+                    moduleExportInfos, exportOptions.limit());
+
+            TsvExporter tsvExporter = new TsvExporter(moduleExportInfos, enrolleeMaps);
+
+            tsvExporter.applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription) -> {
+                columnKeys.add(DataRepoExportUtils.juniperToDataRepoColumnName(moduleExportInfo.getFormatter().getColumnKey(moduleExportInfo, itemExportInfo, isOtherDescription, null)));
+            });
+        } catch (Exception e) {
+            throw new RuntimeException("Could not generate dataset schema for study environment " + studyEnvironmentId + ". Error: " + e.getMessage());
+        }
+
+        return columnKeys;
     }
 
     public void pollRunningJobs() {
@@ -214,6 +213,7 @@ public class DataRepoExportService {
                     Dataset dataset = Dataset.builder()
                             .studyEnvironmentId(job.getStudyEnvironmentId())
                             .datasetId(UUID.fromString(jobResult.get("id").toString()))
+                            .description(jobResult.get("description").toString())
                             .datasetName(job.getDatasetName())
                             .lastExported(Instant.ofEpochSecond(0))
                             .build();
@@ -230,6 +230,8 @@ public class DataRepoExportService {
                         logger.info("Sharing dataset with Juniper dev team. If you're seeing this in prod, panic!");
                         dataRepoClient.shareWithJuniperDevs(dataset.getDatasetId());
                     }
+
+                    ingestDataForStudyEnvironment(dataset);
                 }
                 case FAILED -> {
                     logger.warn("createDataset job ID {} has failed. Dataset {} failed to create.", job.getId(), job.getDatasetName());
