@@ -32,4 +32,5 @@ public class EnrolleePopDto extends Enrollee {
     private Set<ConsentResponsePopDto> consentResponseDtos = new HashSet<>();
     private Set<ParticipantTaskPopDto> participantTaskDtos = new HashSet<>();
     private List<NotificationPopDto> notifications = new ArrayList<>();
+    private Integer submittedHoursAgo;
 }

@@ -34,4 +34,12 @@ public class PortalParticipantUserFactory {
         return portalParticipantUserService.create(ppUser);
     }
 
+    /** creates a PortalParticipantUser for the given enrollee in the portalEnv */
+    public PortalParticipantUser buildPersisted(String testName, Enrollee enrollee, PortalEnvironment portalEnv) {
+        PortalParticipantUser ppUser = PortalParticipantUser.builder()
+            .participantUserId(enrollee.getParticipantUserId())
+            .portalEnvironmentId(portalEnv.getId()).build();
+        return portalParticipantUserService.create(ppUser);
+    }
+
 }

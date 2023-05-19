@@ -2,6 +2,7 @@
   "linkedUsername": "jsalk@test.com",
   "shortcode": "OHSALK",
   "simulateSubmissions": true,
+  "submittedHoursAgo": 52,
   "preEnrollmentResponseDto": {
     "qualified": true,
     "surveyStableId": "oh_oh_preenroll",
@@ -23,7 +24,19 @@
         { "questionStableId": "oh_oh_cardioHx_diagnosedHeartConditions", "objectJsonValue": ["bleedingDisorder", "anemia"]}
       ],
       "currentPageNo": 2,
-      "complete": true
+      "complete": true,
+      "submittedHoursAgo": 48
+    },
+    {
+      "surveyStableId": "oh_oh_mental",
+      "surveyVersion": 1,
+      "answerPopDtos": [
+        { "questionStableId": "oh_oh_mental_phq9Depressed", "stringValue": "0"},
+        { "questionStableId": "oh_oh_mental_phq9LostInterest", "stringValue": "1"}
+      ],
+      "currentPageNo": 1,
+      "complete": true,
+      "submittedHoursAgo": 48
     }, {
       "surveyStableId": "oh_oh_basicInfo",
       "surveyVersion": 1,
@@ -34,7 +47,8 @@
         {"questionStableId": "oh_oh_basic_mghPatient", "stringValue": "yes"}
       ],
       "currentPageNo": 1,
-      "complete": true
+      "complete": true,
+      "submittedHoursAgo": 48
     }
   ],
   "consentResponseDtos": [{

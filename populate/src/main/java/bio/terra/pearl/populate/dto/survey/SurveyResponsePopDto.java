@@ -13,4 +13,5 @@ public class SurveyResponsePopDto extends SurveyResponse {
     private int surveyVersion;
     private Set<AnswerPopDto> answerPopDtos;
     private Integer currentPageNo;
+    private Integer submittedHoursAgo;
 }

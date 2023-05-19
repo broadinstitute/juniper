@@ -2,6 +2,7 @@
   "linkedUsername": "consented@test.com",
   "shortcode": "OHSENT",
   "consented": true,
+  "submittedHoursAgo": 152,
   "preEnrollmentResponseDto": {
     "qualified": true,
     "surveyStableId": "oh_oh_preenroll",

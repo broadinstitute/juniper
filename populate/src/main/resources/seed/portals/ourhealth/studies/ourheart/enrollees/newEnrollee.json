@@ -1,6 +1,7 @@
 {
   "linkedUsername": "newbie@test.com",
   "shortcode": "OHNEWB",
+  "submittedHoursAgo": 152,
   "preEnrollmentResponseDto": {
     "qualified": true,
     "surveyStableId": "oh_oh_preenroll",

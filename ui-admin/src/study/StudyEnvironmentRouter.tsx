@@ -14,7 +14,7 @@ import ParticipantsRouter from './participants/ParticipantsRouter'
 import NotificationConfigView from './notifications/NotificationConfigView'
 import QuestionScratchbox from './surveys/editor/QuestionScratchbox'
 import ExportDataBrowser from './participants/export/ExportDataBrowser'
-import StudyEnvStatsView from './StudyEnvStatsView'
+import StudyEnvMetricsView from './metrics/StudyEnvMetricsView'
 import DatasetDashboard from './participants/datarepo/DatasetDashboard'
 import DatasetList from './participants/datarepo/DatasetList'
 
@@ -70,7 +70,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
         <Route path="*" element={<div>Unknown prereg page</div>}/>
       </Route>
       <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
-      <Route path="stats" element={<StudyEnvStatsView studyEnvContext={studyEnvContext}/>}/>
+      <Route path="metrics" element={<StudyEnvMetricsView studyEnvContext={studyEnvContext}/>}/>
       <Route path="export/dataBrowser" element={<ExportDataBrowser studyEnvContext={studyEnvContext}/>}/>
       <Route path="export/dataRepo/datasets" element={<DatasetList studyEnvContext={studyEnvContext}/>}/>
       <Route path="export/dataRepo/datasets/:datasetName"
@@ -93,6 +93,10 @@ export const notificationConfigPath = (config: NotificationConfig, currentEnvPat
 
 export const getExportDataBrowserPath = (currentEnvPath: string) => {
   return `${currentEnvPath}/export/dataBrowser`
+}
+
+export const studyEnvMetricsPath = (portalShortcode: string, envName: string, studyShortcode: string) => {
+  return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/metrics`
 }
 
 export const getDatasetListViewPath = (currentEnvPath: string) => {
