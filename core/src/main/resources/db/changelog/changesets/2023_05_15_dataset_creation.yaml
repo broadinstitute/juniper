@@ -9,4 +9,4 @@ databaseChangeLog:
         - addColumn:
             tableName: dataset
             columns:
-              - column: { name: status, type: text, constraints: { nullable: false }, defaultValue: "succeeded" }
+              - column: { name: status, type: text, constraints: { nullable: false }, defaultValue: "CREATED" }

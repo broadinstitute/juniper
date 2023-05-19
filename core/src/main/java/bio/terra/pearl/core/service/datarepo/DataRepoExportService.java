@@ -3,7 +3,6 @@ package bio.terra.pearl.core.service.datarepo;
 import bio.terra.datarepo.client.ApiException;
 import bio.terra.datarepo.model.JobModel;
 import bio.terra.datarepo.model.JobModel.JobStatusEnum;
-import bio.terra.datarepo.model.TableDataType;
 import bio.terra.pearl.core.dao.datarepo.DataRepoJobDao;
 import bio.terra.pearl.core.dao.datarepo.DatasetDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
@@ -13,6 +12,7 @@ import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.model.datarepo.DataRepoJob;
 import bio.terra.pearl.core.model.datarepo.Dataset;
+import bio.terra.pearl.core.model.datarepo.DatasetStatus;
 import bio.terra.pearl.core.model.datarepo.JobType;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -104,7 +104,7 @@ public class DataRepoExportService {
         }
 
         Dataset dataset = Dataset.builder()
-                .status(response.getJobStatus().getValue())
+                .status(DatasetStatus.CREATING)
                 .datasetName(datasetName)
                 .lastExported(Instant.ofEpochSecond(0))
                 .studyEnvironmentId(studyEnv.getId())
@@ -225,7 +225,7 @@ public class DataRepoExportService {
                             .datasetId(UUID.fromString(jobResult.get("id").toString()))
                             .description(jobResult.get("description").toString())
                             .datasetName(job.getDatasetName())
-                            .status(jobStatus.getValue())
+                            .status(DatasetStatus.CREATED)
                             .lastExported(Instant.ofEpochSecond(0))
                             .build();
 
@@ -251,7 +251,7 @@ public class DataRepoExportService {
                             .id(existingDataset.getId())
                             .studyEnvironmentId(job.getStudyEnvironmentId())
                             .datasetName(job.getDatasetName())
-                            .status(jobStatus.getValue())
+                            .status(DatasetStatus.FAILED)
                             .lastExported(Instant.ofEpochSecond(0))
                             .build();
 
