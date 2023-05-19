@@ -1,6 +1,6 @@
 package bio.terra.pearl.api.admin.service.forms;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -8,6 +8,7 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -61,40 +62,25 @@ public class SurveyExtServiceTests {
     AdminUser user = AdminUser.builder().superuser(false).build();
     Portal portal = Portal.builder().shortcode("testSurveyGet").id(UUID.randomUUID()).build();
     when(mockAuthUtilService.authUserToPortal(user, portal.getShortcode())).thenReturn(portal);
-    Survey matchedSurvey =
-        Survey.builder()
-            .stableId("testMatchedToPortal")
-            .version(1)
-            .portalId(portal.getId())
-            .build();
-    when(mockSurveyService.findByStableId(matchedSurvey.getStableId(), matchedSurvey.getVersion()))
-        .thenReturn(Optional.of(matchedSurvey));
-    Survey unmatchedSurvey =
-        Survey.builder()
-            .stableId("testMatchedToPortalUnmatched")
-            .version(1)
-            .portalId(UUID.randomUUID())
-            .build();
-    when(mockSurveyService.findByStableId(
-            unmatchedSurvey.getStableId(), unmatchedSurvey.getVersion()))
-        .thenReturn(Optional.of(unmatchedSurvey));
-
+    Survey matchedSurvey = configureMockSurvey("testMatchedToPortal", 1, portal.getId());
+    Survey unmatchedSurvey = configureMockSurvey("testUnmatchedToPortal", 1, UUID.randomUUID());
     assertThat(
-        surveyExtService
-            .get(
-                portal.getShortcode(),
-                matchedSurvey.getStableId(),
-                matchedSurvey.getVersion(),
-                user)
-            .isPresent(),
-        equalTo(true));
+        surveyExtService.get(
+            portal.getShortcode(), matchedSurvey.getStableId(), matchedSurvey.getVersion(), user),
+        notNullValue());
     Assertions.assertThrows(
-        PermissionDeniedException.class,
+        NotFoundException.class,
         () ->
             surveyExtService.get(
                 portal.getShortcode(),
                 unmatchedSurvey.getStableId(),
                 unmatchedSurvey.getVersion(),
                 user));
+  }
+
+  private Survey configureMockSurvey(String stableId, int version, UUID portalId) {
+    Survey survey = Survey.builder().stableId(stableId).version(1).portalId(portalId).build();
+    when(mockSurveyService.findByStableId(stableId, version)).thenReturn(Optional.of(survey));
+    return survey;
   }
 }

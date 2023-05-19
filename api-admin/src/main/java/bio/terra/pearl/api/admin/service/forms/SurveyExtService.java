@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -29,18 +30,9 @@ public class SurveyExtService {
     this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
   }
 
-  public Optional<Survey> get(
-      String portalShortcode, String stableId, int version, AdminUser adminUser) {
+  public Survey get(String portalShortcode, String stableId, int version, AdminUser adminUser) {
     Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
-    Optional<Survey> surveyOpt = surveyService.findByStableId(stableId, version);
-    if (surveyOpt.isEmpty()) {
-      return surveyOpt;
-    }
-    Survey survey = surveyOpt.get();
-    if (!portal.getId().equals(survey.getPortalId())) {
-      throw new PermissionDeniedException("You do not have permission to access this survey");
-    }
-    return surveyOpt;
+    return authSurveyToPortal(portal, stableId, version);
   }
 
   public Survey create(String portalShortcode, Survey survey, AdminUser adminUser) {
@@ -79,5 +71,18 @@ public class SurveyExtService {
     }
     throw new PermissionDeniedException(
         "You do not have permission to update the {} environment".formatted(envName));
+  }
+
+  /** confirms that the Survey is accessible from the given portal */
+  public Survey authSurveyToPortal(Portal portal, String stableId, int version) {
+    Optional<Survey> surveyOpt = surveyService.findByStableId(stableId, version);
+    if (surveyOpt.isEmpty()) {
+      throw new NotFoundException("No such survey exists in " + portal.getName());
+    }
+    Survey survey = surveyOpt.get();
+    if (!portal.getId().equals(survey.getPortalId())) {
+      throw new NotFoundException("No such survey exists in " + portal.getName());
+    }
+    return survey;
   }
 }
