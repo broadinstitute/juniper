@@ -308,9 +308,7 @@ paths:
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
-      requestBody:
-        required: true
-        content: { application/json: { schema: { $ref: '#/components/schemas/KitRequest' } } }
+        - { name: kitType, in: query, required: true, schema: { type: string } }
       responses:
         '200':
           description: Kit request
@@ -774,11 +772,6 @@ components:
     DatasetName:
       properties:
         name:
-          type: string
-    KitRequest:
-      type: object
-      properties:
-        kitType:
           type: string
     SystemStatus:
       required: [ ok, systems ]

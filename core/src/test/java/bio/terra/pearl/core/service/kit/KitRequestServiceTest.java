@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.kit;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.service.participant.ProfileService;
@@ -19,6 +20,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     @Transactional
     @Test
     public void testRequestKit() throws Exception {
+        var adminUser = adminUserFactory.buildPersisted("testCreatSampleKit");
         var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testRequestKit");
         var enrollee = enrolleeBundle.enrollee();
         var profile = enrollee.getProfile();
@@ -28,13 +30,16 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         profileService.update(profile);
         var expectedSentToAddress = "{\"firstName\":\"Alex\",\"lastName\":\"Tester\",\"street1\":null,\"street2\":null,\"city\":null,\"state\":null,\"postalCode\":null,\"country\":null,\"phoneNumber\":\"111-222-3333\"}";
 
-        var sampleKit = kitRequestService.requestKit(enrollee, "blood");
+        var sampleKit = kitRequestService.requestKit(adminUser, enrollee, "blood");
 
+        assertThat(sampleKit.getCreatingAdminUserId(), equalTo(adminUser.getId()));
         assertThat(sampleKit.getEnrolleeId(), equalTo(enrollee.getId()));
         assertThat(sampleKit.getSentToAddress(), equalTo(expectedSentToAddress));
         assertThat(sampleKit.getStatus(), equalTo(KitRequestStatus.CREATED));
     }
 
+    @Autowired
+    private AdminUserFactory adminUserFactory;
     @Autowired
     private EnrolleeFactory enrolleeFactory;
     @Autowired

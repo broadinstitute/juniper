@@ -72,11 +72,10 @@ public class EnrolleeController implements EnrolleeApi {
       String studyShortcode,
       String envName,
       String enrolleeShortcode,
-      bio.terra.pearl.api.admin.model.KitRequest kitRequest) {
+      String kitType) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     try {
-      KitRequest sampleKit =
-          enrolleeExtService.requestKit(adminUser, enrolleeShortcode, kitRequest.getKitType());
+      KitRequest sampleKit = enrolleeExtService.requestKit(adminUser, enrolleeShortcode, kitType);
       return ResponseEntity.ok(sampleKit);
     } catch (JsonProcessingException e) {
       return ResponseEntity.internalServerError().body(e.getMessage());

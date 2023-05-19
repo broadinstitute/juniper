@@ -11,6 +11,7 @@ import java.util.UUID;
 @Getter @Setter @SuperBuilder
 @NoArgsConstructor
 public class KitRequest extends BaseEntity {
+    private UUID creatingAdminUserId;
     private UUID enrolleeId;
     private String kitType;
     /**
