@@ -15,5 +15,8 @@
   "scripts": {
     "build": "NODE_ENV=production babel src --copy-files --extensions .js,.jsx,.ts,.tsx --out-dir build && tsc --declaration --emitDeclarationOnly",
     "start": "chokidar 'src/**/*' -c 'npm run build'"
+  },
+  "eslintConfig": {
+    "extends": "../.eslintrc.js"
   }
 }
