@@ -19,7 +19,8 @@ export function usePortalEnv(): PortalEnvContextT {
   }
   // the api guarantees the first environment and first localizedSiteContents returned are the correct ones
   const portalEnv = portal.portalEnvironments[0]
-  const localContent = portalEnv.siteContent.localizedSiteContents[0]
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const localContent = portalEnv.siteContent!.localizedSiteContents[0]
   return { portal, portalEnv, localContent }
 }
 
@@ -57,5 +58,3 @@ export default function PortalProvider({ children }: { children: React.ReactNode
     </PortalContext.Provider>}
   </>
 }
-
-

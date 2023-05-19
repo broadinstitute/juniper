@@ -26,6 +26,7 @@ test('renders a copy link', () => {
     }
   }
   const portal: Portal = {
+    id: '11111111-1111-1111-1111-111111111111',
     shortcode: 'foo',
     name: 'testPortal',
     portalStudies: [],

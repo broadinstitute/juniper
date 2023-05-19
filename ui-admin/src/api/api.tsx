@@ -1,8 +1,13 @@
 import {
   ConsentForm,
-  SiteContent,
   Survey,
   ConsentResponse,
+  NotificationConfig,
+  Portal,
+  PortalEnvironment,
+  PortalEnvironmentConfig,
+  StudyEnvironmentConsent,
+  StudyEnvironmentSurvey,
   SurveyResponse,
   PreregistrationResponse
 } from '@juniper/ui-core'
@@ -17,11 +22,21 @@ export type {
   NavbarItem,
   NavbarItemInternal,
   NavbarItemInternalAnchor,
+  NotificationConfig,
+  Portal,
+  PortalEnvironment,
+  PortalEnvironmentConfig,
+  PortalStudy,
   PreEnrollmentResponse,
   PreregistrationResponse,
   SectionConfig,
   SectionType,
   SiteContent,
+  Study,
+  StudyEnvironment,
+  StudyEnvironmentConfig,
+  StudyEnvironmentConsent,
+  StudyEnvironmentSurvey,
   Survey,
   SurveyResponse,
   VersionedForm
@@ -46,85 +61,9 @@ export type PortalAdminUser = {
   portalId: string
 }
 
-export type Study = {
-  name: string,
-  shortcode: string,
-  studyEnvironments: StudyEnvironment[]
-}
-
 export type StudyEnvironmentUpdate = {
   id: string,
   preEnrollSurveyId: string
-}
-
-export type StudyEnvironment = {
-  id: string,
-  environmentName: string,
-  studyEnvironmentConfig: StudyEnvironmentConfig,
-  preEnrollSurvey: Survey,
-  preEnrollSurveyId: string,
-  configuredSurveys: StudyEnvironmentSurvey[],
-  configuredConsents: StudyEnvironmentConsent[],
-  notificationConfigs: NotificationConfig[]
-}
-
-export type StudyEnvironmentSurvey = {
-  id: string,
-  surveyId: string,
-  survey: Survey,
-  recur: boolean,
-  recurrenceIntervalDays: number,
-  surveyOrder: number,
-  allowAdminEdit: boolean,
-  allowParticipantStart: boolean,
-  allowParticipantReedit: boolean,
-  prepopulate: boolean
-}
-
-export type StudyEnvironmentConsent = {
-  id: string,
-  consentFormId: string,
-  consentForm: ConsentForm,
-  consentOrder: number,
-  allowAdminEdit: boolean,
-  allowParticipantStart: boolean,
-  allowParticipantReedit: boolean,
-  prepopulate: boolean
-}
-
-export type StudyEnvironmentConfig = {
-  passwordProtected: boolean,
-  password: string,
-  acceptingEnrollment: boolean,
-  initialized: boolean
-}
-
-
-export type PortalStudy = {
-  study: Study
-}
-
-export type Portal = {
-  id?: string,
-  name: string,
-  shortcode: string,
-  portalStudies: PortalStudy[],
-  portalEnvironments: PortalEnvironment[]
-}
-
-export type PortalEnvironment = {
-  environmentName: string,
-  portalEnvironmentConfig: PortalEnvironmentConfig,
-  siteContent?: SiteContent
-}
-
-export type PortalEnvironmentConfig = {
-  acceptingRegistration: boolean,
-  password: string,
-  passwordProtected: boolean,
-  initialized: boolean
-  participantHostname?: string,
-  emailSourceAddress?: string
 }
 
 export type EnrolleeSearchResult = {
@@ -171,29 +110,6 @@ export type ParticipantTask = {
   targetName: string,
   taskOrder: number,
   blocksHub: boolean,
-}
-
-export type NotificationConfig = {
-  id: string,
-  studyEnvironmentId: string,
-  portalEnvironmentId: string,
-  active: boolean,
-  notificationType: string,
-  deliveryType: string,
-  rule: string,
-  eventType: string,
-  taskType: string,
-  taskTargetStableId: string,
-  afterMinutesIncomplete: number,
-  reminderIntervalMinutes: number,
-  maxNumReminders: number,
-  emailTemplateId: string,
-  emailTemplate: EmailTemplate
-}
-
-export type EmailTemplate = {
-  subject: string,
-  body: string
 }
 
 export type Notification = {
