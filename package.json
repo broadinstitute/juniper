@@ -5,7 +5,8 @@
   "workspaces": [
     "ui-core",
     "ui-admin",
-    "ui-participant"
+    "ui-participant",
+    "e2e-tests"
   ],
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",
