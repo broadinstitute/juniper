@@ -21,6 +21,8 @@ public class BaseSeedPopulator {
     private AdminUserPopulator adminUserPopulator;
     private EnvironmentPopulator environmentPopulator;
     private AdminConfigPopulator adminConfigPopulator;
+    private PermissionPopulator permissionPopulator;
+    private RolePopulator rolePopulator;
     private AdminUserService adminUserService;
     private EnvironmentService environmentService;
 
@@ -32,18 +34,32 @@ public class BaseSeedPopulator {
                     "adminUsers/mbemis.json");
     public static final List<String> ENVIRONMENTS_TO_POPULATE =
             Arrays.asList("environments/sandbox.json", "environments/irb.json", "environments/live.json");
+    public static final List<String> PERMISSIONS_TO_POPULATE =
+            Arrays.asList("permissions/manageStudyStaffPermission.json");
+    public static final List<String> ROLES_TO_POPULATE =
+            Arrays.asList("permissions/portalAdminRole.json");
 
     public BaseSeedPopulator(AdminUserPopulator adminUserPopulator, EnvironmentPopulator environmentPopulator,
-                             AdminConfigPopulator adminConfigPopulator, AdminUserService adminUserService, EnvironmentService environmentService) {
+                             AdminConfigPopulator adminConfigPopulator, PermissionPopulator permissionPopulator,
+                             RolePopulator rolePopulator, AdminUserService adminUserService,
+                             EnvironmentService environmentService) {
         this.adminUserPopulator = adminUserPopulator;
         this.environmentPopulator = environmentPopulator;
         this.adminConfigPopulator = adminConfigPopulator;
+        this.permissionPopulator = permissionPopulator;
+        this.rolePopulator = rolePopulator;
         this.adminUserService = adminUserService;
         this.environmentService = environmentService;
     }
 
     public SetupStats populate(String filePathName) throws IOException {
         // for now, we ignore the pathname
+        for (String file : PERMISSIONS_TO_POPULATE) {
+            permissionPopulator.populate(new FilePopulateContext(file), false);
+        }
+        for (String file : ROLES_TO_POPULATE) {
+            rolePopulator.populate(new FilePopulateContext(file), false);
+        }
         for (String file : ADMIN_USERS_TO_POPULATE) {
             adminUserPopulator.populate(new FilePopulateContext(file), false);
         }

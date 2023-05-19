@@ -1,0 +1,6 @@
+{
+  "name": "portal_admin",
+  "displayName": "Portal Administrator",
+  "description": "Manage administrator permissions",
+  "permissionNames": ["manageStudyStaff"]
+}
