@@ -1,56 +1,55 @@
 // Taken from https://github.com/DataBiosphere/terra-ui/blob/6ee212abfc572d75ba6e22b788cf11730219dbff/.eslintrc.js#L4
 
 module.exports = {
-  'env': {
-    'browser': true,
-    'es6': true
+  env: {
+    browser: true,
+    es6: true
   },
-  'extends': [
+  extends: [
     'eslint:recommended',
     'plugin:react/recommended',
     'plugin:jest/recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended'
   ],
-  'globals': {
+  globals: {
     module: true
   },
-  'parser': '@typescript-eslint/parser',
-  'parserOptions': {
-    'ecmaFeatures': {
-      'jsx': true
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true
     },
-    'ecmaVersion': 2018,
-    'sourceType': 'module'
+    ecmaVersion: 2018,
+    sourceType: 'module'
   },
-  'plugins': [
-    'react',
-    'jsx-a11y',
-    'import',
-    'jest'
-  ],
-  'rules': {
+  plugins: ['react', 'jsx-a11y', 'import', 'jest'],
+  rules: {
     'array-bracket-newline': ['warn', 'consistent'],
     'array-bracket-spacing': 'warn',
     'block-spacing': 'warn',
-    'brace-style': ['warn', '1tbs', { 'allowSingleLine': true }],
-    'camelcase': 'warn',
+    'brace-style': ['warn', '1tbs', { allowSingleLine: true }],
+    camelcase: 'warn',
     'comma-dangle': ['error', 'never'],
     'comma-spacing': 'warn',
     'comma-style': 'warn',
     'computed-property-spacing': 'warn',
-    'curly': ['warn', 'all'],
+    curly: ['warn', 'all'],
     'eol-last': 'warn',
     'func-call-spacing': 'warn',
-    // 'implicit-arrow-linebreak': 'warn',
-    'indent': ['warn', 2, {
-      'SwitchCase': 1, 'CallExpression': { 'arguments': 1 },
-      'ignoredNodes': ['TemplateLiteral']
-    }],
+    indent: [
+      'warn',
+      2,
+      {
+        SwitchCase: 1,
+        CallExpression: { arguments: 1 },
+        ignoredNodes: ['TemplateLiteral']
+      }
+    ],
     'key-spacing': 'warn',
     'keyword-spacing': 'warn',
     'lines-between-class-members': 'warn',
-    'max-len': ['error', { 'code': 120 }],
+    'max-len': ['error', { code: 120 }],
     'multiline-comment-style': 'off',
     'no-lonely-if': 'off',
     'no-multi-assign': 'warn',
@@ -59,15 +58,18 @@ module.exports = {
     'no-unneeded-ternary': 'warn',
     'no-whitespace-before-property': 'warn',
     'nonblock-statement-body-position': 'warn',
-    'object-curly-newline': ['warn', { 'multiline': true, 'consistent': true }],
+    'object-curly-newline': ['warn', { multiline: true, consistent: true }],
     'object-curly-spacing': ['warn', 'always'],
     'one-var': ['warn', 'never'],
     'padded-blocks': ['warn', 'never'],
-    'quotes': ['warn', 'single', { 'allowTemplateLiterals': true }],
+    quotes: ['warn', 'single', { allowTemplateLiterals: true }],
     'require-jsdoc': 'warn',
-    'semi': ['warn', 'never'],
+    semi: ['warn', 'never'],
     'space-before-blocks': 'warn',
-    'space-before-function-paren': ['warn', { 'anonymous': 'never', 'named': 'never', 'asyncArrow': 'always' }],
+    'space-before-function-paren': [
+      'warn',
+      { anonymous: 'never', named: 'never', asyncArrow: 'always' }
+    ],
     'space-in-parens': 'warn',
     'valid-jsdoc': 'off',
 
@@ -88,7 +90,7 @@ module.exports = {
     // React
     'react/prop-types': 'off',
     'react/jsx-key': 'off',
-    'react/jsx-curly-spacing': ['error', { 'when': 'never' }],
+    'react/jsx-curly-spacing': ['error', { when: 'never' }],
     'react/jsx-no-target-blank': 'off',
     //Jest
     'jest/no-disabled-tests': 'warn',
