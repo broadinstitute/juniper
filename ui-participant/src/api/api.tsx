@@ -1,3 +1,49 @@
+import {
+  ConsentResponse,
+  ParticipantTask,
+  Portal,
+  PreEnrollmentResponse,
+  PreregistrationResponse,
+  StudyEnvironmentConsent,
+  StudyEnvironmentSurvey,
+  SurveyResponse
+} from '@juniper/ui-core'
+
+export type {
+  Answer,
+  ConsentForm,
+  ConsentResponse,
+  HtmlPage,
+  HtmlSection,
+  LocalSiteContent,
+  NavbarItem,
+  NavbarItemInternal,
+  NavbarItemInternalAnchor,
+  ParticipantTask,
+  ParticipantTaskStatus,
+  ParticipantTaskType,
+  Portal,
+  PortalEnvironment,
+  PortalEnvironmentConfig,
+  PortalStudy,
+  PreEnrollmentResponse,
+  PreregistrationResponse,
+  SectionConfig,
+  SectionType,
+  SiteContent,
+  Study,
+  StudyEnvironment,
+  StudyEnvironmentConfig,
+  StudyEnvironmentConsent,
+  StudyEnvironmentSurvey,
+  Survey,
+  SurveyResponse
+} from '@juniper/ui-core'
+export {
+  isInternalLink,
+  isInternalAnchorLink
+} from '@juniper/ui-core'
+
 export type ParticipantUser = {
   username: string,
   token: string
@@ -8,198 +54,9 @@ export type LoginResult = {
   enrollees: Enrollee[]
 }
 
-export type PortalEnvironmentParams = {
-  portalShortcode: string,
-  environmentName: string
-}
-
-export type Portal = {
-  name: string
-  portalEnvironments: PortalEnvironment[],
-  portalStudies: PortalStudy[],
-  shortcode: string
-}
-
-export type PortalEnvironment = PortalEnvironmentParams & {
-  siteContent: SiteContent,
-  preRegSurvey: Survey,
-  portalEnvironmentConfig: PortalEnvironmentConfig
-}
-
-export type PortalEnvironmentConfig = {
-  password: string,
-  passwordProtected: boolean,
-  allowRegistration: boolean
-}
-
-export type PortalStudy = {
-  study: Study,
-  studyEnvironments: StudyEnvironment[]
-}
-
-export type Study = {
-  name: string,
-  shortcode: string,
-  studyEnvironments: StudyEnvironment[]
-}
-
-export type SiteContent = {
-  defaultLanguage: string,
-  localizedSiteContents: LocalSiteContent[],
-}
-
-export type LocalSiteContent = {
-  language: string,
-  navbarItems: NavbarItem[],
-  landingPage: HtmlPage,
-  navLogoCleanFileName: string,
-  navLogoVersion: number,
-  footerSection?: HtmlSection
-  primaryBrandColor?: string
-}
-
-export type HtmlPage = {
-  title: string,
-  path: string,
-  sections: HtmlSection[]
-}
-
-export type NavbarItem = {
-  label: string,
-  externalLink?: string,
-  anchorLinkPath?: string,
-  itemType: string
-  htmlPage?: HtmlPage
-}
-
-export type NavbarItemInternal = NavbarItem & {
-  htmlPage: HtmlPage
-}
-
-export type NavbarItemInternalAnchor = NavbarItem & {
-  anchorLinkPath: string
-}
-
-/** type predicate for handling internal links */
-export function isInternalLink(navItem: NavbarItem): navItem is NavbarItemInternal {
-  return navItem.itemType === 'INTERNAL'
-}
-
-/** type predicate for handling internal anchor links */
-export function isInternalAnchorLink(navItem: NavbarItem): navItem is NavbarItemInternalAnchor {
-  return navItem.itemType === 'INTERNAL_ANCHOR'
-}
-
-export type SectionType =
-  | 'BANNER_IMAGE'
-  | 'FAQ'
-  | 'HERO_CENTERED'
-  | 'HERO_WITH_IMAGE'
-  | 'LINK_SECTIONS_FOOTER'
-  | 'PARTICIPATION_DETAIL'
-  | 'PHOTO_BLURB_GRID'
-  | 'RAW_HTML'
-  | 'SOCIAL_MEDIA'
-  | 'STEP_OVERVIEW'
-
-export type HtmlSection = {
-  id: string,
-  sectionType: SectionType,
-  anchorRef?: string,
-  rawContent?: string | null,
-  sectionConfig?: string | null
-}
-
-export type SurveyJSForm = {
-  stableId: string,
-  version: number,
-  content: string
-}
-
-export type Survey = SurveyJSForm & {
-  id: string,
-  name: string,
-  footer?: string
-}
-
-export type ConsentForm = SurveyJSForm & {
-  id: string,
-  name: string
-}
-
 export type SurveyJsResumeData = {
   currentPageNo: number,
   data: object
-}
-
-export type StudyEnvironment = {
-  id: string,
-  studyEnvironmentConfig: StudyEnvironmentConfig,
-  studyShortcode: string,
-  preEnrollSurvey: Survey,
-  environmentName: string
-}
-
-export type StudyEnvironmentConfig = {
-  acceptingEnrollment: boolean
-  initialized: boolean
-  passwordProtected: boolean
-  password: string
-}
-
-export type StudyEnvironmentSurvey = {
-  id: string,
-  surveyId: string,
-  survey: Survey,
-  surveyOrder: number,
-  allowAdminEdit: boolean,
-  allowParticipantStart: boolean,
-  allowParticipantReedit: boolean,
-  prepopulate: boolean
-}
-
-export type StudyEnvironmentConsent = {
-  id: string,
-  consentFormId: string,
-  consentForm: ConsentForm,
-  consentOrder: number,
-  allowAdminEdit: boolean,
-  allowParticipantStart: boolean,
-  allowParticipantReedit: boolean,
-  prepopulate: boolean
-}
-
-export type FormResponse = {
-  id?: string,
-  createdAt?: number,
-  enrolleeId?: string,
-  resumeData: string,
-  creatingParticipantUserId?: string,
-}
-
-export type ConsentResponse = FormResponse & {
-  consentFormId: string,
-  consented: boolean,
-  fullData: string
-}
-
-export type SurveyResponse = FormResponse & {
-  surveyId: string,
-  complete: boolean,
-  answers: Answer[]
-}
-
-export type PreregistrationResponse = FormResponse & {
-  qualified: false,
-  surveyId: string,
-  answers: Answer[]
-}
-
-export type PreEnrollmentResponse = FormResponse & {
-  qualified: false,
-  surveyId: string,
-  studyEnvironmentId: string,
-  answers: Answer[]
 }
 
 export type Enrollee = {
@@ -214,18 +71,6 @@ export type Enrollee = {
 
 export type Profile = {
   sexAtBirth: string
-}
-
-export type ParticipantTask = {
-  id: string,
-  targetStableId: string,
-  targetAssignedVersion: number,
-  createdAt: number,
-  targetName: string,
-  taskType: string,
-  blocksHub: boolean,
-  taskOrder: number,
-  status: string
 }
 
 export type RegistrationResponse = {
@@ -245,15 +90,6 @@ export type SurveyWithResponse = {
 
 export type UserResumeData = {
   currentPageNo: number
-}
-
-export type Answer = {
-  stringValue?: string,
-  numberValue?: number,
-  booleanValue?: boolean,
-  objectValue?: string,
-  questionStableId: string,
-  otherDescription?: string
 }
 
 export type HubResponse = {
@@ -286,8 +122,6 @@ export type LogEvent = {
   enrolleeShortcode?: string,
   operatorId?: string,
 }
-
-export type SectionConfig = Record<string, unknown>
 
 let bearerToken: string | null = null
 const API_ROOT = `${process.env.REACT_APP_API_ROOT}`
@@ -337,7 +171,7 @@ export default {
   async submitPreRegResponse({ surveyStableId, surveyVersion, preRegResponse }:
                                {
                                  surveyStableId: string, surveyVersion: number,
-                                 preRegResponse: PreregistrationResponse
+                                 preRegResponse: Partial<PreregistrationResponse>
                                }):
     Promise<PreregistrationResponse> {
     const url = `${baseEnvUrl(true)}/preReg/${surveyStableId}/${surveyVersion}`
@@ -366,7 +200,7 @@ export default {
   async submitPreEnrollResponse({ surveyStableId, surveyVersion, preEnrollResponse }:
                                   {
                                     surveyStableId: string, surveyVersion: number,
-                                    preEnrollResponse: PreEnrollmentResponse
+                                    preEnrollResponse: Partial<PreEnrollmentResponse>
                                   }):
     Promise<PreEnrollmentResponse> {
     const url = `${baseEnvUrl(true)}/preEnroll/${surveyStableId}/${surveyVersion}`

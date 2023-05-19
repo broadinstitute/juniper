@@ -10,7 +10,7 @@ import RegistrationUnauthed from './RegistrationUnauthed'
 
 
 export type RegistrationContextT = {
-  preRegSurvey: Survey | null,
+  preRegSurvey?: Survey,
   preRegResponseId: string | null,
   updatePreRegResponseId: (newId: string | null) => void
 }
@@ -85,5 +85,3 @@ export default function PortalRegistrationRouter({
     <Route path="register" element={registrationComponent}/>
   </Routes>
 }
-
-

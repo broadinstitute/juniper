@@ -61,10 +61,11 @@ public class EnrolleeFactory {
         return enrolleeService.create(builder.build());
     }
 
-    public Enrollee buildPersisted(String testName, UUID studyEnvironmentId, UUID participantUserId) {
+    public Enrollee buildPersisted(String testName, UUID studyEnvironmentId, UUID participantUserId, UUID profileId) {
         Enrollee enrollee = Enrollee.builder()
                 .studyEnvironmentId(studyEnvironmentId)
                 .participantUserId(participantUserId)
+                .profileId(profileId)
                 .build();
         return enrolleeService.create(enrollee);
     }
@@ -85,7 +86,8 @@ public class EnrolleeFactory {
                 .participantUserId(user.getId())
                 .portalEnvironmentId(portalEnv.getId()).build();
         ppUser = portalParticipantUserService.create(ppUser);
-        Enrollee enrollee = buildPersisted(testName, studyEnv.getId(), user.getId());
+        Enrollee enrollee = buildPersisted(testName, studyEnv.getId(), user.getId(), ppUser.getProfileId());
+        enrollee.setProfile(ppUser.getProfile());
         return new EnrolleeBundle(enrollee, ppUser, portalEnv.getPortalId());
     }
 

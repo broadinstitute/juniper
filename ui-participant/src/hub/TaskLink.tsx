@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Enrollee, ParticipantTask } from 'api/api'
+import { Enrollee, ParticipantTask, ParticipantTaskStatus } from 'api/api'
 import { faCheck, faCircleHalfStroke, faLock, faPrint } from '@fortawesome/free-solid-svg-icons'
 import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -11,7 +11,7 @@ export type StatusDisplayInfo = {
   statusDisplay: string
 }
 
-const statusDisplayMap: Record<string, StatusDisplayInfo> = {
+const statusDisplayMap: Record<ParticipantTaskStatus, StatusDisplayInfo> = {
   'COMPLETE': {
     icon: <FontAwesomeIcon icon={faCheck} className="fa-lg" style={{ color: 'rgb(122, 152, 188)' }}/>,
     statusDisplay: 'Complete'

@@ -19,7 +19,7 @@ import 'inputmask/dist/inputmask/phone-codes/phone'
 // @ts-ignore
 import * as widgets from 'surveyjs-widgets'
 import { Survey as SurveyJSComponent } from 'survey-react-ui'
-import { Answer, Profile, SurveyJSForm, SurveyJsResumeData, UserResumeData } from 'api/api'
+import { Answer, ConsentForm, Profile, Survey, SurveyJsResumeData, UserResumeData } from 'api/api'
 import { useSearchParams } from 'react-router-dom'
 import { getSurveyElementList } from './pearlSurveyUtils'
 import _union from 'lodash/union'
@@ -127,7 +127,7 @@ type UseSurveyJsModelOpts = {
  * https://surveyjs.io/form-library/examples/survey-customcss/reactjs#content-docs for a list of available elements.
  */
 export function useSurveyJSModel(
-  form: SurveyJSForm,
+  form: ConsentForm | Survey,
   resumeData: SurveyJsResumeData | null,
   onComplete: () => void,
   pager: PageNumberControl,
@@ -299,7 +299,7 @@ export function makeAnswer(value: SurveyJsValueType, questionStableId: string,
 }
 
 /** transform the stored survey representation into what SurveyJS expects */
-export function extractSurveyContent(survey: SurveyJSForm) {
+export function extractSurveyContent(survey: ConsentForm | Survey) {
   const parsedSurvey = JSON.parse(survey.content)
   const questionTemplates = parsedSurvey.questionTemplates as Question[]
   Serializer.addProperty('survey', { name: 'questionTemplates', category: 'general' })

@@ -57,6 +57,9 @@
       "last 1 safari version"
     ]
   },
+  "eslintConfig": {
+    "extends": "../.eslintrc.js"
+  },
   "jest": {
     "moduleNameMapper": {
       "react-markdown": "<rootDir>/node_modules/react-markdown/react-markdown.min.js",

@@ -1,3 +1,49 @@
+import {
+  ConsentForm,
+  Survey,
+  ConsentResponse,
+  NotificationConfig,
+  ParticipantTask,
+  Portal,
+  PortalEnvironment,
+  PortalEnvironmentConfig,
+  StudyEnvironmentConsent,
+  StudyEnvironmentSurvey,
+  SurveyResponse,
+  PreregistrationResponse
+} from '@juniper/ui-core'
+
+export type {
+  Answer,
+  ConsentForm,
+  ConsentResponse,
+  HtmlPage,
+  HtmlSection,
+  LocalSiteContent,
+  NavbarItem,
+  NavbarItemInternal,
+  NavbarItemInternalAnchor,
+  NotificationConfig,
+  ParticipantTask,
+  Portal,
+  PortalEnvironment,
+  PortalEnvironmentConfig,
+  PortalStudy,
+  PreEnrollmentResponse,
+  PreregistrationResponse,
+  SectionConfig,
+  SectionType,
+  SiteContent,
+  Study,
+  StudyEnvironment,
+  StudyEnvironmentConfig,
+  StudyEnvironmentConsent,
+  StudyEnvironmentSurvey,
+  Survey,
+  SurveyResponse,
+  VersionedForm
+} from '@juniper/ui-core'
+
 export type AdminUser = {
   username: string,
   token: string,
@@ -17,167 +63,9 @@ export type PortalAdminUser = {
   portalId: string
 }
 
-export type Study = {
-  name: string,
-  shortcode: string,
-  studyEnvironments: StudyEnvironment[]
-}
-
 export type StudyEnvironmentUpdate = {
   id: string,
   preEnrollSurveyId: string
-}
-
-export type StudyEnvironment = {
-  id: string,
-  environmentName: string,
-  studyEnvironmentConfig: StudyEnvironmentConfig,
-  preEnrollSurvey: Survey,
-  preEnrollSurveyId: string,
-  configuredSurveys: StudyEnvironmentSurvey[],
-  configuredConsents: StudyEnvironmentConsent[],
-  notificationConfigs: NotificationConfig[]
-}
-
-export type VersionedForm = {
-  id: string,
-  name: string,
-  stableId: string,
-  version: number,
-  createdAt: string,
-  content: string
-}
-
-export type Survey = VersionedForm
-
-export type ConsentForm = VersionedForm
-
-export type StudyEnvironmentSurvey = {
-  id: string,
-  surveyId: string,
-  survey: Survey,
-  recur: boolean,
-  recurrenceIntervalDays: number,
-  surveyOrder: number,
-  allowAdminEdit: boolean,
-  allowParticipantStart: boolean,
-  allowParticipantReedit: boolean,
-  prepopulate: boolean
-}
-
-export type StudyEnvironmentConsent = {
-  id: string,
-  consentFormId: string,
-  consentForm: ConsentForm,
-  consentOrder: number,
-  allowAdminEdit: boolean,
-  allowParticipantStart: boolean,
-  allowParticipantReedit: boolean,
-  prepopulate: boolean
-}
-
-export type StudyEnvironmentConfig = {
-  passwordProtected: boolean,
-  password: string,
-  acceptingEnrollment: boolean,
-  initialized: boolean
-}
-
-
-export type PortalStudy = {
-  study: Study
-}
-
-export type Portal = {
-  id?: string,
-  name: string,
-  shortcode: string,
-  portalStudies: PortalStudy[],
-  portalEnvironments: PortalEnvironment[]
-}
-
-export type PortalEnvironment = {
-  environmentName: string,
-  portalEnvironmentConfig: PortalEnvironmentConfig,
-  siteContent?: SiteContent
-}
-
-export type SiteContent = {
-  defaultLanguage: string,
-  localizedSiteContents: LocalSiteContent[],
-  stableId: string,
-  version: number
-}
-
-export type LocalSiteContent = {
-  language: string,
-  navbarItems: NavbarItem[],
-  landingPage: HtmlPage,
-  navLogoCleanFileName: string,
-  navLogoVersion: number,
-  footerSection?: HtmlSection
-  primaryBrandColor?: string
-}
-
-export type HtmlPage = {
-  title: string,
-  path: string,
-  sections: HtmlSection[]
-}
-
-export type NavbarItem = {
-  label: string,
-  externalLink?: string,
-  anchorLinkPath?: string,
-  itemType: string
-  htmlPage?: HtmlPage
-}
-
-export type NavbarItemInternal = NavbarItem & {
-  htmlPage: HtmlPage
-}
-
-export type NavbarItemInternalAnchor = NavbarItem & {
-  anchorLinkPath: string
-}
-
-/** type predicate for handling internal links */
-export function isInternalLink(navItem: NavbarItem): navItem is NavbarItemInternal {
-  return navItem.itemType === 'INTERNAL'
-}
-
-/** type predicate for handling internal anchor links */
-export function isInternalAnchorLink(navItem: NavbarItem): navItem is NavbarItemInternalAnchor {
-  return navItem.itemType === 'INTERNAL_ANCHOR'
-}
-
-export type SectionType =
-  | 'BANNER_IMAGE'
-  | 'FAQ'
-  | 'HERO_CENTERED'
-  | 'HERO_WITH_IMAGE'
-  | 'LINK_SECTIONS_FOOTER'
-  | 'PARTICIPATION_DETAIL'
-  | 'PHOTO_BLURB_GRID'
-  | 'RAW_HTML'
-  | 'SOCIAL_MEDIA'
-  | 'STEP_OVERVIEW'
-
-export type HtmlSection = {
-  id: string,
-  sectionType: SectionType,
-  anchorRef?: string,
-  rawContent?: string | null,
-  sectionConfig?: string | null
-}
-
-export type PortalEnvironmentConfig = {
-  acceptingRegistration: boolean,
-  password: string,
-  passwordProtected: boolean,
-  initialized: boolean
-  participantHostname?: string,
-  emailSourceAddress?: string
 }
 
 export type EnrolleeSearchResult = {
@@ -214,83 +102,6 @@ export type MailingAddress = {
   state: string,
   country: string,
   postalCode: string
-}
-
-export type ResumableData = {
-  currentPageNo: number,
-  data: object
-}
-
-export type ResponseSnapshot = {
-  createdAt: string,
-  resumeData: string,
-  fullData: string
-}
-
-export type SurveyResponse = {
-  complete: boolean,
-  createdAt: number, // this is a java instant, so number of seconds since epoch start
-  lastUpdatedAt: string,
-  surveyId: string,
-  surveyStableId: string,
-  surveyVersion: string,
-  answers: Answer[]
-}
-
-export type Answer = {
-  stringValue: string,
-  numberValue: number,
-  objectValue: object,
-  booleanValue: boolean,
-  questionStableId: string
-}
-
-export type PreregistrationResponse = {
-  createdAt: string,
-  fullData: string,
-  surveyStableId: string,
-  surveyVersion: string
-}
-
-export type ConsentResponse = {
-  id: string,
-  createdAt: number,
-  consented: boolean,
-  consentFormId: string,
-  fullData: string
-}
-
-export type ParticipantTask = {
-  id: string,
-  completedAt?: number,
-  status: string,
-  taskType: string,
-  targetName: string,
-  taskOrder: number,
-  blocksHub: boolean,
-}
-
-export type NotificationConfig = {
-  id: string,
-  studyEnvironmentId: string,
-  portalEnvironmentId: string,
-  active: boolean,
-  notificationType: string,
-  deliveryType: string,
-  rule: string,
-  eventType: string,
-  taskType: string,
-  taskTargetStableId: string,
-  afterMinutesIncomplete: number,
-  reminderIntervalMinutes: number,
-  maxNumReminders: number,
-  emailTemplateId: string,
-  emailTemplate: EmailTemplate
-}
-
-export type EmailTemplate = {
-  subject: string,
-  body: string
 }
 
 export type Notification = {

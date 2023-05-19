@@ -27,7 +27,7 @@ export default function VersionSelector({ studyShortname, stableId, updateVersio
           { versionList.map(survey => {
             return <li key={survey.version}>
               <button className="btn btn-secondary" onClick={() => updateVersion(survey.version)}>
-                {survey.version} <span className="detail">({survey.createdAt?.substring(0, 16)})</span>
+                {survey.version} {/*<span className="detail">({survey.createdAt?.substring(0, 16)})</span>*/}
               </button>
             </li>
           })}
@@ -39,4 +39,3 @@ export default function VersionSelector({ studyShortname, stableId, updateVersio
     </Modal.Footer>
   </Modal>
 }
-
