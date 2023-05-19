@@ -1,5 +1,6 @@
 import {
   ConsentResponse,
+  ParticipantTask,
   Portal,
   PreEnrollmentResponse,
   PreregistrationResponse,
@@ -18,6 +19,9 @@ export type {
   NavbarItem,
   NavbarItemInternal,
   NavbarItemInternalAnchor,
+  ParticipantTask,
+  ParticipantTaskStatus,
+  ParticipantTaskType,
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
@@ -67,18 +71,6 @@ export type Enrollee = {
 
 export type Profile = {
   sexAtBirth: string
-}
-
-export type ParticipantTask = {
-  id: string,
-  targetStableId: string,
-  targetAssignedVersion: number,
-  createdAt: number,
-  targetName: string,
-  taskType: string,
-  blocksHub: boolean,
-  taskOrder: number,
-  status: string
 }
 
 export type RegistrationResponse = {
