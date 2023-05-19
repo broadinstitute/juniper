@@ -1,7 +1,6 @@
 package bio.terra.pearl.api.admin.controller.forms;
 
 import bio.terra.pearl.api.admin.api.SurveyApi;
-import bio.terra.pearl.api.admin.model.VersionedFormDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.forms.SurveyExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -30,16 +29,32 @@ public class SurveyController implements SurveyApi {
   }
 
   @Override
-  public ResponseEntity<VersionedFormDto> newVersion(
-      String portalShortcode, String stableId, VersionedFormDto body) {
+  public ResponseEntity<Object> get(String portalShortcode, String stableId, Integer version) {
     AdminUser adminUser = requestService.requireAdminUser(request);
-    if (!stableId.equals(body.getStableId())) {
+    Survey survey = surveyExtService.get(portalShortcode, stableId, version, adminUser);
+    return ResponseEntity.ok(survey);
+  }
+
+  @Override
+  public ResponseEntity<Object> create(String portalShortcode, String stableId, Object body) {
+    AdminUser adminUser = requestService.requireAdminUser(request);
+
+    Survey survey = objectMapper.convertValue(body, Survey.class);
+    if (!stableId.equals(survey.getStableId())) {
       throw new IllegalArgumentException("survey parameters don't match");
     }
+    Survey savedSurvey = surveyExtService.create(portalShortcode, survey, adminUser);
+    return ResponseEntity.ok(savedSurvey);
+  }
+
+  @Override
+  public ResponseEntity<Object> newVersion(String portalShortcode, String stableId, Object body) {
+    AdminUser adminUser = requestService.requireAdminUser(request);
     Survey survey = objectMapper.convertValue(body, Survey.class);
+    if (!stableId.equals(survey.getStableId())) {
+      throw new IllegalArgumentException("survey parameters don't match");
+    }
     Survey savedSurvey = surveyExtService.createNewVersion(portalShortcode, survey, adminUser);
-    VersionedFormDto savedSurveyDto =
-        objectMapper.convertValue(savedSurvey, VersionedFormDto.class);
-    return ResponseEntity.ok(savedSurveyDto);
+    return ResponseEntity.ok(savedSurvey);
   }
 }

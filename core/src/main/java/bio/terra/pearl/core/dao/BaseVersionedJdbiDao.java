@@ -2,6 +2,7 @@ package bio.terra.pearl.core.dao;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.Versioned;
+import java.util.List;
 import java.util.Optional;
 import org.jdbi.v3.core.Jdbi;
 
@@ -13,6 +14,10 @@ public abstract class BaseVersionedJdbiDao<T extends BaseEntity & Versioned> ext
 
     public Optional<T> findByStableId(String stableId, int version) {
         return findByTwoProperties("stable_id", stableId, "version", version);
+    }
+
+    public List<T> findByStableId(String stableId) {
+        return findAllByProperty("stable_id", stableId);
     }
 
     public int getNextVersion(String stableId) {
