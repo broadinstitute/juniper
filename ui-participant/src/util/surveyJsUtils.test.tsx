@@ -3,7 +3,7 @@ import React from 'react'
 import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
-import { Profile, SurveyJSForm } from 'api/api'
+import { ConsentForm, Profile, Survey } from 'api/api'
 
 import {
   extractSurveyContent,
@@ -33,7 +33,7 @@ beforeEach(() => {
 })
 
 /** does nothing except render a survey using the hooks from surveyJSUtils */
-function PlainSurveyComponent({ formModel, profile }: { formModel: SurveyJSForm, profile?: Profile }) {
+function PlainSurveyComponent({ formModel, profile }: { formModel: ConsentForm | Survey, profile?: Profile }) {
   const pager = useRoutablePageNumber()
   const { surveyModel } = useSurveyJSModel(formModel, null, () => 1, pager, profile)
 

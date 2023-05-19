@@ -93,6 +93,9 @@ databaseChangeLog:
       file: changesets/2023_05_09_enrollee_withdraw.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2023_05_15_kit_request.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2023_05_15_dataset_description.yaml
       relativeToChangelogFile: true
 

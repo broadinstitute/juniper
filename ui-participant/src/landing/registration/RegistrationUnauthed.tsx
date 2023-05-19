@@ -32,11 +32,14 @@ const registrationSurvey = {
   ]
 }
 
+const now = Date.now() / 1000
 const registrationSurveyModel: Survey = {
   id: '11111111-1111-1111-1111-111111111111',
   name: 'Registration',
   stableId: 'pearlDefaultRegistration',
   version: 1,
+  createdAt: now,
+  lastUpdatedAt: now,
   content: JSON.stringify(registrationSurvey)
 }
 

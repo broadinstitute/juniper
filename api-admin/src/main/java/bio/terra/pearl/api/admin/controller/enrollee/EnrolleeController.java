@@ -5,6 +5,7 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.EnrolleeExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.UUID;
@@ -60,6 +61,22 @@ public class EnrolleeController implements EnrolleeApi {
     try {
       var withdrawn = enrolleeExtService.withdrawEnrollee(adminUser, enrolleeShortcode);
       return ResponseEntity.ok(new WithdrawnResponse(withdrawn.getId()));
+    } catch (JsonProcessingException e) {
+      return ResponseEntity.internalServerError().body(e.getMessage());
+    }
+  }
+
+  @Override
+  public ResponseEntity<Object> requestKit(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String enrolleeShortcode,
+      String kitType) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    try {
+      KitRequest sampleKit = enrolleeExtService.requestKit(adminUser, enrolleeShortcode, kitType);
+      return ResponseEntity.ok(sampleKit);
     } catch (JsonProcessingException e) {
       return ResponseEntity.internalServerError().body(e.getMessage());
     }

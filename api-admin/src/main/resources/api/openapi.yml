@@ -298,6 +298,23 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/requestKit:
+    post:
+      summary: Request a sample kit for an enrollee
+      tags: [ enrollee ]
+      operationId: requestKit
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - { name: kitType, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Kit request
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/notificationConfigs/{configId}/test:
     post:
       summary: Sends a test notification for the given config and enrolleeRuleData
