@@ -115,8 +115,6 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
                 <div className="form-group-item">
                   <label>Dataset Name:</label> { datasetDetails?.datasetName }
                   <br/>
-                  <label>Dataset ID:</label> { datasetDetails?.datasetId }
-                  <br/>
                   <label>Description:</label> { datasetDetails?.description ?
                     datasetDetails?.description : <span className="fst-italic">N/A</span> }
                   <br/>
