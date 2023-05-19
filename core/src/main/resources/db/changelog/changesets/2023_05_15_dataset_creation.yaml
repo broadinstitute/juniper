@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: "dataset_creation"
+      author: mbemis
+      changes:
+        - dropNotNullConstraint:
+            columnName:  dataset_id
+            tableName:  dataset
+        - addColumn:
+            tableName: dataset
+            columns:
+              - column: { name: status, type: text, constraints: { nullable: false }, defaultValue: "CREATED" }

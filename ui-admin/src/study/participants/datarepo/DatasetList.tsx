@@ -5,7 +5,6 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
 import { instantToDefaultString } from '../../../util/timeUtils'
 import {
   ColumnDef,
@@ -37,11 +36,9 @@ const datasetColumns = (currentEnvPath: string): ColumnDef<DatasetDetails>[] => 
   accessorKey: 'createdAt',
   cell: info => instantToDefaultString(info.getValue() as unknown as number)
 }, {
-  header: 'Terra Data Repo',
-  accessorKey: 'datasetId',
-  cell: info => <a href={
-      `https://jade.datarepo-dev.broadinstitute.org/datasets/${info.getValue()}`} target="_blank"
-  >View in Terra Data Repo <FontAwesomeIcon icon={faExternalLink}/></a>
+  id: 'status',
+  header: 'Status',
+  accessorKey: 'status'
 }]
 
 const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
@@ -96,7 +93,8 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
     }
     <CreateDatasetModal studyEnvContext={studyEnvContext}
       show={showCreateDatasetModal}
-      setShow={setShowCreateDatasetModal}/>
+      setShow={setShowCreateDatasetModal}
+      loadDatasets={loadData}/>
     <LoadingSpinner isLoading={isLoading}>
       <div className="col-12 p-3">
         <ul className="list-unstyled">

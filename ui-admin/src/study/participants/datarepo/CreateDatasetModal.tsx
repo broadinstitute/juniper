@@ -6,8 +6,8 @@ import Api from 'api/api'
 import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 
-const CreateDatasetModal = ({ studyEnvContext, show, setShow }: {studyEnvContext: StudyEnvContextT, show: boolean,
-    setShow:  React.Dispatch<React.SetStateAction<boolean>>}) => {
+const CreateDatasetModal = ({ studyEnvContext, show, setShow, loadDatasets }: {studyEnvContext: StudyEnvContextT,
+  show: boolean, setShow:  React.Dispatch<React.SetStateAction<boolean>>, loadDatasets: () => void }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [datasetName, setDatasetName] = useState('')
   const [datasetDescription, setDatasetDescription] = useState('')
@@ -21,6 +21,7 @@ const CreateDatasetModal = ({ studyEnvContext, show, setShow }: {studyEnvContext
     } else {
       Store.addNotification(failureNotification(`${datasetName} creation failed`))
     }
+    loadDatasets()
     setShow(false)
     setIsLoading(false)
     clearFields()

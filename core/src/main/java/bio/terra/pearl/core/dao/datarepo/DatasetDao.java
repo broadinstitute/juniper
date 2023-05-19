@@ -29,6 +29,10 @@ public class DatasetDao extends BaseMutableJdbiDao<Dataset> {
         return findByProperty("dataset_id", dataRepoId);
     }
 
+    public Optional<Dataset> findByDatasetName(String datasetName) {
+        return findByProperty("dataset_name", datasetName);
+    }
+
     public void updateLastExported(UUID id, Instant lastExported) {
         updateProperty(id, "last_exported", lastExported);
     }
