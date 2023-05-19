@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "dataset_description"
+      author: mbemis
+      changes:
+        - addColumn:
+            tableName: dataset
+            columns:
+              - column: { name: description, type: text }

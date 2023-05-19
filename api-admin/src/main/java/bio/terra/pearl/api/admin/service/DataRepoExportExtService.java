@@ -1,6 +1,6 @@
 package bio.terra.pearl.api.admin.service;
 
-import bio.terra.pearl.api.admin.model.DatasetName;
+import bio.terra.pearl.api.admin.model.CreateDataset;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.datarepo.DataRepoJob;
@@ -62,7 +62,7 @@ public class DataRepoExportExtService {
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
-      DatasetName datasetName,
+      CreateDataset createDataset,
       AdminUser user) {
     if (!user.isSuperuser()) {
       throw new PermissionDeniedException("You do not have permissions to perform this operation");
@@ -73,6 +73,7 @@ public class DataRepoExportExtService {
     StudyEnvironment studyEnv =
         studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
 
-    dataRepoExportService.createDataset(studyEnv, datasetName.getName());
+    dataRepoExportService.createDataset(
+        studyEnv, createDataset.getName(), createDataset.getDescription());
   }
 }

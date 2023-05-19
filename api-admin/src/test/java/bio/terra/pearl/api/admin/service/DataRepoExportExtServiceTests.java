@@ -1,7 +1,7 @@
 package bio.terra.pearl.api.admin.service;
 
 import bio.terra.pearl.api.admin.MockAuthServiceAlwaysRejects;
-import bio.terra.pearl.api.admin.model.DatasetName;
+import bio.terra.pearl.api.admin.model.CreateDataset;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
@@ -43,7 +43,7 @@ public class DataRepoExportExtServiceTests {
                 "someportal",
                 "somestudy",
                 EnvironmentName.sandbox,
-                new DatasetName().name("somedataset"),
+                new CreateDataset().name("somedataset").description("a dataset"),
                 user));
   }
 }

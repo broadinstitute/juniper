@@ -5,7 +5,6 @@ import bio.terra.datarepo.api.JobsApi;
 import bio.terra.datarepo.api.UnauthenticatedApi;
 import bio.terra.datarepo.client.ApiException;
 import bio.terra.datarepo.model.*;
-import bio.terra.pearl.core.service.export.formatters.DataValueExportType;
 import bio.terra.pearl.core.shared.GoogleServiceAccountUtils;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -28,9 +27,8 @@ public class DataRepoClient {
     }
 
     //Dataset APIs
-    public JobModel createDataset(UUID spendProfileId, String datasetName, List<String> columnKeys) throws ApiException {
+    public JobModel createDataset(UUID spendProfileId, String datasetName, String description, List<String> columnKeys) throws ApiException {
         DatasetsApi datasetsApi = getDatasetsApi();
-
 
         //TODO: Temporarily setting all column types of STRING. There seems to be an issue converting our DATETIME format
         //into a TDR DATETIME. This will be resolved in JN-381.
@@ -41,6 +39,7 @@ public class DataRepoClient {
 
         DatasetRequestModel dataset = new DatasetRequestModel()
                 .name(datasetName)
+                .description(description)
                 .cloudPlatform(CloudPlatform.AZURE)
                 .defaultProfileId(spendProfileId)
                 .schema(schema);
