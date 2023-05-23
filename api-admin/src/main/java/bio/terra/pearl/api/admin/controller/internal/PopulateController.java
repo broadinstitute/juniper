@@ -86,7 +86,7 @@ public class PopulateController implements PopulateApi {
       String portalShortcode, String envName, String studyShortcode, Integer numEnrollees) {
     EnvironmentName environmentName = EnvironmentName.valueOf(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
-    populateExtService.populateEnrollees(
+    populateExtService.bulkPopulateEnrollees(
         portalShortcode, environmentName, studyShortcode, numEnrollees, user);
     return ResponseEntity.noContent().build();
   }

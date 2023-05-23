@@ -97,7 +97,7 @@ public class PopulateExtService {
     }
   }
 
-  public void populateEnrollees(
+  public void bulkPopulateEnrollees(
       String portalShortcode,
       EnvironmentName envName,
       String studyShortcode,
