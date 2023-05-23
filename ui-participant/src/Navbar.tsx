@@ -6,7 +6,7 @@ import React, { useEffect, useId, useRef } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
-import Api, { getEnvSpec, getImageUrl, isInternalAnchorLink, isInternalLink, NavbarItem } from 'api/api'
+import Api, { getEnvSpec, getImageUrl, NavbarItem } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { useConfig } from 'providers/ConfigProvider'
@@ -175,10 +175,10 @@ export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
     alert(`mailing list ${navLinkObj.label}`)
   }
 
-  if (isInternalLink(navLink)) {
+  if (navLink.itemType === 'INTERNAL') {
     // we require navbar links to be absolute rather than relative links
     return <NavLink to={`/${navLink.htmlPage.path}`} className={navLinkClasses}>{navLink.label}</NavLink>
-  } else if (isInternalAnchorLink(navLink)) {
+  } else if (navLink.itemType === 'INTERNAL_ANCHOR') {
     return <HashLink to={`/${navLink.anchorLinkPath}`} className={navLinkClasses}>{navLink.label}</HashLink>
   } else if (navLink.itemType === 'MAILING_LIST') {
     return <a role="button" className={navLinkClasses} onClick={() => mailingList(navLink)}>{navLink.label}</a>

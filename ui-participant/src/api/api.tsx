@@ -41,10 +41,6 @@ export type {
   Survey,
   SurveyResponse
 } from '@juniper/ui-core'
-export {
-  isInternalLink,
-  isInternalAnchorLink
-} from '@juniper/ui-core'
 
 export type ParticipantUser = {
   username: string,

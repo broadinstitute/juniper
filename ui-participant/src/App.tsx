@@ -4,7 +4,7 @@ import React, { CSSProperties, Suspense, lazy, useEffect } from 'react'
 import LandingPage from 'landing/LandingPage'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { usePortalEnv } from 'providers/PortalProvider'
-import { isInternalLink, NavbarItemInternal } from 'api/api'
+import { NavbarItem, NavbarItemInternal } from 'api/api'
 import HtmlPageView from 'landing/sections/HtmlPageView'
 import PortalRegistrationRouter from 'landing/registration/PortalRegistrationRouter'
 import { AuthProvider } from 'react-oidc-context'
@@ -79,9 +79,14 @@ function App() {
   let landingRoutes: JSX.Element[] = []
   if (localContent.navbarItems) {
     landingRoutes = localContent.navbarItems
-      .filter(isInternalLink)
-      .map((navItem: NavbarItemInternal, index: number) => <Route key={index} path={navItem.htmlPage.path}
-        element={<HtmlPageView page={navItem.htmlPage}/>}/>)
+      .filter((navItem: NavbarItem): navItem is NavbarItemInternal => navItem.itemType === 'INTERNAL')
+      .map((navItem: NavbarItemInternal, index: number) => (
+        <Route
+          key={index}
+          path={navItem.htmlPage.path}
+          element={<HtmlPageView page={navItem.htmlPage}/>}
+        />
+      ))
     landingRoutes.push(
       <Route index key="main" element={<HtmlPageView page={localContent.landingPage}/>}/>
     )

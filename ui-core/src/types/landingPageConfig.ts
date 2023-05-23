@@ -72,13 +72,3 @@ export type NavbarItemExternal = {
   label: string
   externalLink: string
 }
-
-/** type predicate for handling internal links */
-export const isInternalLink = (navItem: NavbarItem): navItem is NavbarItemInternal => {
-  return navItem.itemType === 'INTERNAL'
-}
-
-/** type predicate for handling internal anchor links */
-export const isInternalAnchorLink = (navItem: NavbarItem): navItem is NavbarItemInternalAnchor => {
-  return navItem.itemType === 'INTERNAL_ANCHOR'
-}
