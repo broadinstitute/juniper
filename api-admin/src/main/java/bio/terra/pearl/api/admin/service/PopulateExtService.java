@@ -106,9 +106,10 @@ public class PopulateExtService {
     authorizeUser(user);
 
     List<String> usernamesToLink =
-        portalParticipantUserPopulator.populateParticipants(
+        portalParticipantUserPopulator.bulkPopulateParticipants(
             portalShortcode, envName, studyShortcode, numEnrollees);
-    enrolleePopulator.populateEnrollees(portalShortcode, envName, studyShortcode, usernamesToLink);
+    enrolleePopulator.bulkPopulateEnrollees(
+        portalShortcode, envName, studyShortcode, usernamesToLink);
   }
 
   protected void authorizeUser(AdminUser user) {

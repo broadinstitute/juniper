@@ -1,8 +1,6 @@
 package bio.terra.pearl.populate.service;
 
-import bio.terra.pearl.core.dao.participant.PortalParticipantUserDao;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
@@ -10,7 +8,6 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import bio.terra.pearl.populate.dto.participant.EnrolleePopDto;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 
 import java.io.IOException;
@@ -78,7 +75,7 @@ public class PortalParticipantUserPopulator extends BasePopulator<PortalParticip
         return portalParticipantUserService.create(popDto);
     }
 
-    public List<String> populateParticipants(String portalShortcode, EnvironmentName envName, String studyShortcode, Integer numEnrollees) {
+    public List<String> bulkPopulateParticipants(String portalShortcode, EnvironmentName envName, String studyShortcode, Integer numEnrollees) {
         StudyPopulateContext context = new StudyPopulateContext("portals/" + portalShortcode + "/participants/seed.json", portalShortcode, studyShortcode, envName, new HashMap<>());
 
         List<String> populatedUsernames = new ArrayList<>();
@@ -98,8 +95,9 @@ public class PortalParticipantUserPopulator extends BasePopulator<PortalParticip
 
                 Profile profile = popDto.getProfile();
                 profile.setContactEmail(username);
-                profile.setGivenName(PopulateUtils.randomString(6));
-                profile.setFamilyName(PopulateUtils.randomString(5));
+                profile.setGivenName(PopulateUtils.randomString(7));
+                profile.setFamilyName(PopulateUtils.randomString(7));
+                profile.setBirthDate(PopulateUtils.generateRandomDate());
                 //do not attempt to send any emails to these users. it could easily eat up sendgrid quota
                 profile.setDoNotEmail(true);
                 profile.setDoNotEmailSolicit(true);
