@@ -1,6 +1,7 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.consent.ConsentResponseDto;
@@ -37,11 +38,15 @@ import bio.terra.pearl.populate.dto.survey.AnswerPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
+import bio.terra.pearl.populate.util.PopulateUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.IntStream;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -328,6 +333,26 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             withdrawnEnrolleeService.withdrawEnrollee(enrollee);
         }
         return enrollee;
+    }
+
+    public void populateEnrollees(String portalShortcode, EnvironmentName envName, String studyShortcode, List<String> usernamesToLink) {
+        StudyPopulateContext context = new StudyPopulateContext("portals/ourhealth/studies/ourheart/enrollees/seed.json", portalShortcode, studyShortcode, envName, new HashMap<>());
+
+        usernamesToLink.forEach(username -> {
+            try {
+                String fileString = filePopulateService.readFile(context.getRootFileName(), context);
+                EnrolleePopDto popDto = objectMapper.readValue(fileString, getDtoClazz());
+                popDto.setLinkedUsername(username);
+                popDto.setConsented(PopulateUtils.randomBoolean(95)); //95% chance an enrollee will be consented
+                popDto.setWithdrawn(PopulateUtils.randomBoolean(5)); //5% chance an enrollee will be withdrawn
+                popDto.setSubmittedHoursAgo(PopulateUtils.randomInteger(0, 480)); //add some jitter to when they joined, to make graphs/views more interesting
+                popDto.setShortcode(PopulateUtils.randomShortcode("OH"));
+
+                populateFromDto(popDto, context, false);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
 }

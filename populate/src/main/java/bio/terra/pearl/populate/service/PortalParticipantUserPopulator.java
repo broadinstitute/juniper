@@ -1,14 +1,24 @@
 package bio.terra.pearl.populate.service;
 
+import bio.terra.pearl.core.dao.participant.PortalParticipantUserDao;
+import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
+import bio.terra.pearl.populate.dto.participant.EnrolleePopDto;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
-import java.util.HashSet;
-import java.util.Optional;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.IntStream;
+
+import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
+import bio.terra.pearl.populate.util.PopulateUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -67,4 +77,39 @@ public class PortalParticipantUserPopulator extends BasePopulator<PortalParticip
     public PortalParticipantUser createNew(PortalParticipantUser popDto, PortalPopulateContext context, boolean overwrite) {
         return portalParticipantUserService.create(popDto);
     }
+
+    public List<String> populateParticipants(String portalShortcode, EnvironmentName envName, String studyShortcode, Integer numEnrollees) {
+        StudyPopulateContext context = new StudyPopulateContext("portals/ourhealth/participants/seed.json", portalShortcode, studyShortcode, envName, new HashMap<>());
+
+        List<String> populatedUsernames = new ArrayList<>();
+
+        IntStream.range(0, numEnrollees).forEach(i -> {
+            try {
+                String fileString = filePopulateService.readFile(context.getRootFileName(), context);
+                PortalParticipantUser popDto = objectMapper.readValue(fileString, getDtoClazz());
+                String username = PopulateUtils.generateEmail();
+                populatedUsernames.add(username);
+
+                popDto.setParticipantUserId(UUID.randomUUID());
+                ParticipantUser user = popDto.getParticipantUser();
+                user.setUsername(username);
+                popDto.setParticipantUser(user);
+
+                Profile profile = popDto.getProfile();
+                profile.setContactEmail(username);
+                profile.setGivenName(PopulateUtils.randomString(5));
+                profile.setFamilyName(PopulateUtils.randomString(5));
+                profile.setDoNotEmail(true); //do not attempt to send any emails to these users. it could easily eat up sendgrid quota
+                profile.setDoNotEmailSolicit(true); //do not attempt to send any emails to these users. it could easily eat up sendgrid quota
+                popDto.setProfile(profile);
+
+                populateFromDto(popDto, context, false);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        return populatedUsernames;
+    }
+
 }

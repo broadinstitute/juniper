@@ -80,4 +80,14 @@ public class PopulateController implements PopulateApi {
             Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
   }
+
+  @Override
+  public ResponseEntity<Void> bulkPopulateEnrollees(
+      String portalShortcode, String envName, String studyShortcode, Integer numEnrollees) {
+    EnvironmentName environmentName = EnvironmentName.valueOf(envName);
+    AdminUser user = authUtilService.requireAdminUser(request);
+    populateExtService.populateEnrollees(
+        portalShortcode, environmentName, studyShortcode, numEnrollees, user);
+    return ResponseEntity.noContent().build();
+  }
 }
