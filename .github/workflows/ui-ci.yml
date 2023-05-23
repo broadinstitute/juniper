@@ -24,4 +24,4 @@ jobs:
       - name: Build
         run: npm --workspaces run build
       - name: Run tests
-        run: npm --workspaces test --if-present
+        run: npm --workspace=ui-core --workspace=ui-admin --workspace=ui-participant test --if-present
