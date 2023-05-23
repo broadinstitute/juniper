@@ -1,6 +1,8 @@
 package bio.terra.pearl.core.model.notification;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +21,8 @@ public class Notification extends BaseEntity {
     private NotificationDeliveryStatus deliveryStatus;
     private NotificationDeliveryType deliveryType;
     private String sentTo;
+    // for now, this is not persisted
+    private Map<String, String> customMessages = new HashMap<>();
     @Builder.Default
     private int retries = 0;
 }

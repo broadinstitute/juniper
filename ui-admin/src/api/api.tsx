@@ -485,8 +485,31 @@ export default {
     return fetch(url,  this.getGetInit())
   },
 
-  listDatasetsForStudyEnvironment(portalShortcode: string, studyShortcode: string,
-    envName: string):
+  async findNotificationConfigsForStudyEnv(portalShortcode: string, studyShortcode: string, envName: string):
+    Promise<NotificationConfig[]> {
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/notificationConfigs`
+    const response = await fetch(url,  this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async sendAdHocNotification({portalShortcode, studyShortcode, envName, enrolleeShortcodes,
+                          customMessages, notificationConfigId}:
+                          {portalShortcode: string, studyShortcode: string, envName: string,
+                            enrolleeShortcodes: string[], customMessages: Record<string, string>,
+                            notificationConfigId: string}): Promise<Response> {
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/notifications/adhoc`
+    return await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify({
+        notificationConfigId,
+        enrolleeShortcodes,
+        customMessages
+      })
+    })
+  },
+
+  listDatasetsForStudyEnvironment(portalShortcode: string, studyShortcode: string, envName: string):
       Promise<Response> {
     const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets`
     return fetch(url,  this.getGetInit())

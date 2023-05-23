@@ -33,7 +33,7 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
     Assertions.assertThrows(
         NotFoundException.class,
         () -> {
-          authUtilService.authAdminToPortal(user, portal.getShortcode());
+          authUtilService.authUserToPortal(user, portal.getShortcode());
         });
 
     // now add the user to a second portal
@@ -41,7 +41,7 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
     portalAdminUserService.create(
         PortalAdminUser.builder().adminUserId(user.getId()).portalId(portal2.getId()).build());
     // confirm user can access second portal
-    Portal authedPortal = authUtilService.authAdminToPortal(user, portal2.getShortcode());
+    Portal authedPortal = authUtilService.authUserToPortal(user, portal2.getShortcode());
     assertThat(authedPortal.getId(), equalTo(portal2.getId()));
     assertThat(portalService.checkAdminIsInPortal(user, portal.getId()), equalTo(false));
     assertThat(portalService.checkAdminIsInPortal(user, portal2.getId()), equalTo(true));
@@ -50,7 +50,7 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
     Assertions.assertThrows(
         NotFoundException.class,
         () -> {
-          authUtilService.authAdminToPortal(user, portal.getShortcode());
+          authUtilService.authUserToPortal(user, portal.getShortcode());
         });
   }
 
@@ -61,7 +61,7 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
     Assertions.assertThrows(
         NotFoundException.class,
         () -> {
-          authUtilService.authAdminToPortal(user, "DOES_NOT_EXIST");
+          authUtilService.authUserToPortal(user, "DOES_NOT_EXIST");
         });
   }
 
@@ -72,6 +72,6 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
         adminUserFactory.buildPersisted(
             adminUserFactory.builder("authAdminToPortalAllowsSuperUser").superuser(true));
     Portal portal = portalFactory.buildPersisted("authAdminToPortalAllowsSuperUser");
-    assertThat(authUtilService.authAdminToPortal(user, portal.getShortcode()), notNullValue());
+    assertThat(authUtilService.authUserToPortal(user, portal.getShortcode()), notNullValue());
   }
 }
