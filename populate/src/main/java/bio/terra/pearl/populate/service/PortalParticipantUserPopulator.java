@@ -79,33 +79,38 @@ public class PortalParticipantUserPopulator extends BasePopulator<PortalParticip
     }
 
     public List<String> populateParticipants(String portalShortcode, EnvironmentName envName, String studyShortcode, Integer numEnrollees) {
-        StudyPopulateContext context = new StudyPopulateContext("portals/ourhealth/participants/seed.json", portalShortcode, studyShortcode, envName, new HashMap<>());
+        StudyPopulateContext context = new StudyPopulateContext("portals/" + portalShortcode + "/participants/seed.json", portalShortcode, studyShortcode, envName, new HashMap<>());
 
         List<String> populatedUsernames = new ArrayList<>();
 
         IntStream.range(0, numEnrollees).forEach(i -> {
             try {
                 String fileString = filePopulateService.readFile(context.getRootFileName(), context);
-                PortalParticipantUser popDto = objectMapper.readValue(fileString, getDtoClazz());
-                String username = PopulateUtils.generateEmail();
-                populatedUsernames.add(username);
 
+                PortalParticipantUser popDto = objectMapper.readValue(fileString, getDtoClazz());
                 popDto.setParticipantUserId(UUID.randomUUID());
+
+                String username = PopulateUtils.generateEmail();
+
                 ParticipantUser user = popDto.getParticipantUser();
                 user.setUsername(username);
                 popDto.setParticipantUser(user);
 
                 Profile profile = popDto.getProfile();
                 profile.setContactEmail(username);
-                profile.setGivenName(PopulateUtils.randomString(5));
+                profile.setGivenName(PopulateUtils.randomString(6));
                 profile.setFamilyName(PopulateUtils.randomString(5));
-                profile.setDoNotEmail(true); //do not attempt to send any emails to these users. it could easily eat up sendgrid quota
-                profile.setDoNotEmailSolicit(true); //do not attempt to send any emails to these users. it could easily eat up sendgrid quota
+                //do not attempt to send any emails to these users. it could easily eat up sendgrid quota
+                profile.setDoNotEmail(true);
+                profile.setDoNotEmailSolicit(true);
                 popDto.setProfile(profile);
 
                 populateFromDto(popDto, context, false);
+
+                //Collect the populated usernames so we know which ones to link enrollees to
+                populatedUsernames.add(username);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Unable to bulk populate participants due to error: " + e.getMessage());
             }
         });
 

@@ -336,7 +336,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     }
 
     public void populateEnrollees(String portalShortcode, EnvironmentName envName, String studyShortcode, List<String> usernamesToLink) {
-        StudyPopulateContext context = new StudyPopulateContext("portals/ourhealth/studies/ourheart/enrollees/seed.json", portalShortcode, studyShortcode, envName, new HashMap<>());
+        StudyPopulateContext context = new StudyPopulateContext("portals/" + portalShortcode + "/studies/" + studyShortcode + "/enrollees/seed.json", portalShortcode, studyShortcode, envName, new HashMap<>());
 
         usernamesToLink.forEach(username -> {
             try {
@@ -346,11 +346,11 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 popDto.setConsented(PopulateUtils.randomBoolean(95)); //95% chance an enrollee will be consented
                 popDto.setWithdrawn(PopulateUtils.randomBoolean(5)); //5% chance an enrollee will be withdrawn
                 popDto.setSubmittedHoursAgo(PopulateUtils.randomInteger(0, 480)); //add some jitter to when they joined, to make graphs/views more interesting
-                popDto.setShortcode(PopulateUtils.randomShortcode("OH"));
+                popDto.setShortcode(PopulateUtils.randomShortcode(""));
 
                 populateFromDto(popDto, context, false);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Unable to bulk populate enrollees due to error: " + e.getMessage());
             }
         });
     }
