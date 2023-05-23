@@ -19,6 +19,8 @@ export type {
   NavbarItem,
   NavbarItemInternal,
   NavbarItemInternalAnchor,
+  NavbarItemMailingList,
+  NavbarItemExternal,
   ParticipantTask,
   ParticipantTaskStatus,
   ParticipantTaskType,
