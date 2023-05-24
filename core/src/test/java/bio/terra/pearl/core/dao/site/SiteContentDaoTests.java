@@ -38,7 +38,7 @@ public class SiteContentDaoTests extends BaseSpringBootTest {
                 .sections(Arrays.asList(aboutUsSection)).build();
         NavbarItem navbarItem = NavbarItem.builder()
                 .htmlPage(aboutUsPage)
-                .label("About Us").build();
+                .text("About Us").build();
 
         LocalizedSiteContent lsc = LocalizedSiteContent.builder()
                 .language("en")
