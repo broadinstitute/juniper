@@ -172,18 +172,18 @@ export default function Navbar(props: NavbarProps) {
 export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
   /** will eventually popup a modal allowing email address entry */
   function mailingList(navLinkObj: NavbarItem) {
-    alert(`mailing list ${navLinkObj.label}`)
+    alert(`mailing list ${navLinkObj.text}`)
   }
 
   if (navLink.itemType === 'INTERNAL') {
     // we require navbar links to be absolute rather than relative links
-    return <NavLink to={`/${navLink.htmlPage.path}`} className={navLinkClasses}>{navLink.label}</NavLink>
+    return <NavLink to={`/${navLink.htmlPage.path}`} className={navLinkClasses}>{navLink.text}</NavLink>
   } else if (navLink.itemType === 'INTERNAL_ANCHOR') {
-    return <HashLink to={`/${navLink.anchorLinkPath}`} className={navLinkClasses}>{navLink.label}</HashLink>
+    return <HashLink to={navLink.href} className={navLinkClasses}>{navLink.text}</HashLink>
   } else if (navLink.itemType === 'MAILING_LIST') {
-    return <a role="button" className={navLinkClasses} onClick={() => mailingList(navLink)}>{navLink.label}</a>
+    return <a role="button" className={navLinkClasses} onClick={() => mailingList(navLink)}>{navLink.text}</a>
   } else if (navLink.itemType === 'EXTERNAL') {
-    return <a href={navLink.externalLink} className={navLinkClasses} target="_blank">{navLink.label}</a>
+    return <a href={navLink.href} className={navLinkClasses} target="_blank">{navLink.text}</a>
   }
   return <></>
 }
