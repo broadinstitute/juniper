@@ -7,12 +7,12 @@ import java.util.UUID;
 
 public class DatasetNotFoundException extends NotFoundException {
 
-    @Getter
-    private final UUID id;
-
     public DatasetNotFoundException(UUID id) {
         super("Dataset not found: %s".formatted(id));
-        this.id = id;
+    }
+
+    public DatasetNotFoundException(String datasetName) {
+        super("Dataset not found: %s".formatted(datasetName));
     }
 
 }

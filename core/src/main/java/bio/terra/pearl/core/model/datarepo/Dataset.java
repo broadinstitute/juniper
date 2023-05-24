@@ -15,7 +15,7 @@ import java.util.UUID;
 @SuperBuilder @NoArgsConstructor
 public class Dataset extends BaseEntity {
     private UUID studyEnvironmentId;
-    private UUID datasetId;
+    private UUID tdrDatasetId;
     private String datasetName;
     private String description;
     private DatasetStatus status;

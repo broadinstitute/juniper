@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: "refactor_tdr_tables"
+      author: mbemis
+      changes:
+        - renameColumn:
+            oldColumnName: dataset_id
+            newColumnName: tdr_dataset_id
+            tableName: dataset
+        - addColumn:
+            tableName: data_repo_job
+            columns:
+              - column: { name: dataset_id, type: uuid, constraints: { nullable: false } }
+        - addForeignKeyConstraint:
+            baseTableName: data_repo_job
+            baseColumnNames: dataset_id
+            constraintName: fk_dataset_job_dataset_id
+            referencedTableName: dataset
+            referencedColumnNames: id

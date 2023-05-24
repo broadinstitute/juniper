@@ -214,7 +214,7 @@ export type DatasetDetails = {
   createdAt: number,
   lastUpdatedAt: number,
   studyEnvironmentId: string,
-  datasetId: string,
+  tdrDatasetId: string,
   datasetName: string,
   description: string,
   status: string,
@@ -228,6 +228,7 @@ export type DatasetJobHistory = {
   studyEnvironmentId: string,
   tdrJobId: string,
   datasetName: string,
+  datasetId: string,
   status: string
   jobType: string
 }

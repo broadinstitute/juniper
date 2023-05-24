@@ -25,10 +25,6 @@ public class DatasetDao extends BaseMutableJdbiDao<Dataset> {
         return findAllByProperty("study_environment_id", studyEnvId);
     }
 
-    public Optional<Dataset> findByDataRepoId(UUID dataRepoId) {
-        return findByProperty("dataset_id", dataRepoId);
-    }
-
     public Optional<Dataset> findByDatasetName(String datasetName) {
         return findByProperty("dataset_name", datasetName);
     }
