@@ -44,28 +44,31 @@ export type SectionType =
   | 'SOCIAL_MEDIA'
   | 'STEP_OVERVIEW'
 
-export type NavbarItem = {
-  label: string
-  externalLink?: string
-  anchorLinkPath?: string
-  itemType: string
-  htmlPage?: HtmlPage
-}
+export type NavbarItem =
+  | NavbarItemInternal
+  | NavbarItemInternalAnchor
+  | NavbarItemMailingList
+  | NavbarItemExternal
 
-export type NavbarItemInternal = NavbarItem & {
+export type NavbarItemInternal = {
+  itemType: 'INTERNAL'
+  label: string
   htmlPage: HtmlPage
 }
 
-export type NavbarItemInternalAnchor = NavbarItem & {
+export type NavbarItemInternalAnchor = {
+  itemType: 'INTERNAL_ANCHOR'
+  label: string
   anchorLinkPath: string
 }
 
-/** type predicate for handling internal links */
-export const isInternalLink = (navItem: NavbarItem): navItem is NavbarItemInternal => {
-  return navItem.itemType === 'INTERNAL'
+export type NavbarItemMailingList = {
+  itemType: 'MAILING_LIST'
+  label: string
 }
 
-/** type predicate for handling internal anchor links */
-export const isInternalAnchorLink = (navItem: NavbarItem): navItem is NavbarItemInternalAnchor => {
-  return navItem.itemType === 'INTERNAL_ANCHOR'
+export type NavbarItemExternal = {
+  itemType: 'EXTERNAL'
+  label: string
+  externalLink: string
 }

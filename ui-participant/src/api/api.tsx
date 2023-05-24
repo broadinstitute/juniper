@@ -19,6 +19,8 @@ export type {
   NavbarItem,
   NavbarItemInternal,
   NavbarItemInternalAnchor,
+  NavbarItemMailingList,
+  NavbarItemExternal,
   ParticipantTask,
   ParticipantTaskStatus,
   ParticipantTaskType,
@@ -38,10 +40,6 @@ export type {
   StudyEnvironmentSurvey,
   Survey,
   SurveyResponse
-} from '@juniper/ui-core'
-export {
-  isInternalLink,
-  isInternalAnchorLink
 } from '@juniper/ui-core'
 
 export type ParticipantUser = {
