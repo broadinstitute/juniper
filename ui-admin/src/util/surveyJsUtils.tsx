@@ -22,7 +22,7 @@ type SurveyJsOptionConfig = {
  * This class serves as an interface between SurveyJS models and the rendering.  Ideally, all
  * invocations of SurveyJS functionality travel through here.
  * When modifying this file, think carefully about anything that should or shouldn't be ported over to the
- * ui-participant surveyJSUtils.  For now, we are keeping the admin and participant ui totally separate to support
+ * ui-participant surveyJsUtils.  For now, we are keeping the admin and participant ui totally separate to support
  * faster iteration on admin UI.  This decision should be continually re-evaluated.
  *
  * */
@@ -95,5 +95,3 @@ export const extractSurveyContent = (survey: Survey | ConsentForm) => {
 type PearlQuestion = Question & {
   questionTemplateName?: string
 }
-
-
