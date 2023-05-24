@@ -12,6 +12,7 @@ import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
@@ -78,9 +79,7 @@ public class PortalParticipantUserPopulator extends BasePopulator<PortalParticip
     public List<String> bulkPopulateParticipants(String portalShortcode, EnvironmentName envName, String studyShortcode, Integer numEnrollees) {
         StudyPopulateContext context = new StudyPopulateContext("portals/" + portalShortcode + "/participants/seed.json", portalShortcode, studyShortcode, envName, new HashMap<>());
 
-        List<String> populatedUsernames = new ArrayList<>();
-
-        IntStream.range(0, numEnrollees).forEach(i -> {
+        List<String> populatedUsernames = IntStream.range(0, numEnrollees).mapToObj(i -> {
             try {
                 String fileString = filePopulateService.readFile(context.getRootFileName(), context);
 
@@ -105,12 +104,11 @@ public class PortalParticipantUserPopulator extends BasePopulator<PortalParticip
 
                 populateFromDto(popDto, context, false);
 
-                //Collect the populated usernames so we know which ones to link enrollees to
-                populatedUsernames.add(username);
+                return username;
             } catch (IOException e) {
                 throw new RuntimeException("Unable to bulk populate participants due to error: " + e.getMessage());
             }
-        });
+        }).collect(Collectors.toList());
 
         return populatedUsernames;
     }
