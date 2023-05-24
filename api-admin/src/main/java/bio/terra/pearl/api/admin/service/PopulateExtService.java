@@ -12,6 +12,7 @@ import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,6 +21,7 @@ public class PopulateExtService {
   private EnrolleePopulator enrolleePopulator;
   private SurveyPopulator surveyPopulator;
   private PortalPopulator portalPopulator;
+  private PortalParticipantUserPopulator portalParticipantUserPopulator;
   private AdminConfigPopulator adminConfigPopulator;
 
   public PopulateExtService(
@@ -27,11 +29,13 @@ public class PopulateExtService {
       EnrolleePopulator enrolleePopulator,
       SurveyPopulator surveyPopulator,
       PortalPopulator portalPopulator,
+      PortalParticipantUserPopulator portalParticipantUserPopulator,
       AdminConfigPopulator adminConfigPopulator) {
     this.baseSeedPopulator = baseSeedPopulator;
     this.enrolleePopulator = enrolleePopulator;
     this.surveyPopulator = surveyPopulator;
     this.portalPopulator = portalPopulator;
+    this.portalParticipantUserPopulator = portalParticipantUserPopulator;
     this.adminConfigPopulator = adminConfigPopulator;
   }
 
@@ -91,6 +95,21 @@ public class PopulateExtService {
     } catch (IOException e) {
       throw new IllegalArgumentException("populate failed", e);
     }
+  }
+
+  public void bulkPopulateEnrollees(
+      String portalShortcode,
+      EnvironmentName envName,
+      String studyShortcode,
+      Integer numEnrollees,
+      AdminUser user) {
+    authorizeUser(user);
+
+    List<String> usernamesToLink =
+        portalParticipantUserPopulator.bulkPopulateParticipants(
+            portalShortcode, envName, studyShortcode, numEnrollees);
+    enrolleePopulator.bulkPopulateEnrollees(
+        portalShortcode, envName, studyShortcode, usernamesToLink);
   }
 
   protected void authorizeUser(AdminUser user) {
