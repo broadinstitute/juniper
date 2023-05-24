@@ -57,7 +57,7 @@ public class SiteContentDaoTests extends BaseSpringBootTest {
         LocalizedSiteContent loadedLocal = loadedContent.getLocalizedSiteContents().stream().findFirst().get();
         Assertions.assertEquals(1, loadedLocal.getNavbarItems().size());
         NavbarItem loadedItem = loadedLocal.getNavbarItems().get(0);
-        Assertions.assertEquals("About Us", loadedItem.getLabel());
+        Assertions.assertEquals("About Us", loadedItem.getText());
         HtmlPage loadedAboutUs = loadedItem.getHtmlPage();
         Assertions.assertEquals("About Us Title", loadedAboutUs.getTitle());
         Assertions.assertEquals("a great team", loadedAboutUs.getSections().get(0).getRawContent());
