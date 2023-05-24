@@ -11,7 +11,7 @@ export type ParticipantTask = {
   createdAt: number
 }
 
-export type ParticipantTaskStatus = 
+export type ParticipantTaskStatus =
   | 'NEW'
   | 'IN_PROGRESS'
   | 'COMPLETE'
