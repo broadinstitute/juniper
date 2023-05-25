@@ -5,6 +5,7 @@ import bio.terra.datarepo.api.JobsApi;
 import bio.terra.datarepo.api.UnauthenticatedApi;
 import bio.terra.datarepo.client.ApiException;
 import bio.terra.datarepo.model.*;
+import bio.terra.pearl.core.model.datarepo.DatasetTableDefinition;
 import bio.terra.pearl.core.shared.GoogleServiceAccountUtils;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -27,15 +28,25 @@ public class DataRepoClient {
     }
 
     //Dataset APIs
-    public JobModel createDataset(UUID spendProfileId, String datasetName, String description, List<String> columnKeys) throws ApiException {
+    public JobModel createDataset(UUID spendProfileId, String datasetName, String description, List<DatasetTableDefinition> tableDefinitions) throws ApiException {
         DatasetsApi datasetsApi = getDatasetsApi();
 
-        //TODO: Temporarily setting all column types of STRING. There seems to be an issue converting our DATETIME format
-        //into a TDR DATETIME. This will be resolved in JN-381.
-        List<ColumnModel> columns = columnKeys.stream().map(columnKey -> new ColumnModel().name(columnKey).datatype(TableDataType.STRING).required(false)).toList();
+        List<TableModel> tables = tableDefinitions.stream().map(tableDefinition -> {
+            List<ColumnModel> columns = tableDefinition.getColumns().entrySet().stream().map(columnDefinition -> {
+                String columnName = columnDefinition.getKey();
+                TableDataType columnType = columnDefinition.getValue();
+                boolean columnRequired = columnName.equalsIgnoreCase(tableDefinition.getPrimaryKey());
 
-        DatasetSpecificationModel schema = new DatasetSpecificationModel()
-                .tables(List.of(new TableModel().name("enrollee").columns(columns)));
+                return new ColumnModel()
+                        .name(columnName)
+                        .datatype(columnType)
+                        .required(columnRequired);
+            }).toList();
+
+            return new TableModel().name(tableDefinition.getTableName()).columns(columns).primaryKey(List.of(tableDefinition.getPrimaryKey()));
+        }).toList();
+
+        DatasetSpecificationModel schema = new DatasetSpecificationModel().tables(tables);
 
         DatasetRequestModel dataset = new DatasetRequestModel()
                 .name(datasetName)
@@ -44,9 +55,7 @@ public class DataRepoClient {
                 .defaultProfileId(spendProfileId)
                 .schema(schema);
 
-        JobModel response = datasetsApi.createDataset(dataset);
-
-        return response;
+        return datasetsApi.createDataset(dataset);
     }
 
     /* TDR on Azure currently only supports appends during dataset ingest. As a result, this will only
