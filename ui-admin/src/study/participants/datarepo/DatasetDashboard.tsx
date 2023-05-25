@@ -121,7 +121,7 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
                   <label>Date Created:</label> { instantToDefaultString(datasetDetails?.createdAt) }
                 </div>
                 <br/>
-                { datasetDetails?.status == 'CREATED' &&
+                { datasetDetails?.status == 'succeeded' &&
                   <a href={`https://jade.datarepo-dev.broadinstitute.org/datasets/${datasetDetails?.datasetId}`}
                     target="_blank">View dataset in Terra Data Repo <FontAwesomeIcon icon={faExternalLink}/></a>
                 }
