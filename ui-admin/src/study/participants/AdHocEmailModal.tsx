@@ -1,13 +1,14 @@
-import React, {useEffect, useState} from 'react'
-import {StudyEnvContextT} from "../StudyEnvironmentRouter";
-import Modal from "react-bootstrap/Modal";
-import LoadingSpinner from "util/LoadingSpinner";
-import Api, {NotificationConfig} from "api/api";
-import {failureNotification} from "util/notifications";
-import {Store} from "react-notifications-component";
+import React, { useEffect, useState } from 'react'
+import { StudyEnvContextT } from '../StudyEnvironmentRouter'
+import Modal from 'react-bootstrap/Modal'
+import LoadingSpinner from 'util/LoadingSpinner'
+import Api, { NotificationConfig } from 'api/api'
+import { failureNotification } from 'util/notifications'
+import { Store } from 'react-notifications-component'
 import Select from 'react-select'
 
-export default function AdHocEmailModal({enrolleeShortcodes, onDismiss, studyEnvContext}:
+/** modal for letting users send custom emails to seleted participants */
+export default function AdHocEmailModal({ enrolleeShortcodes, onDismiss, studyEnvContext }:
 {enrolleeShortcodes: string[], studyEnvContext: StudyEnvContextT, onDismiss: () => void}) {
   const [isLoading, setIsLoading] = useState(true)
   const [configs, setConfigs] = useState<NotificationConfig[]>([])
@@ -17,8 +18,8 @@ export default function AdHocEmailModal({enrolleeShortcodes, onDismiss, studyEnv
   useEffect(() => {
     Api.findNotificationConfigsForStudyEnv(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
       studyEnvContext.currentEnv.environmentName).then(result => {
-        setConfigs(result)
-        setIsLoading(false)
+      setConfigs(result)
+      setIsLoading(false)
     }).catch(() => {
       Store.addNotification(failureNotification('Could not load notification configs'))
     })
@@ -33,7 +34,7 @@ export default function AdHocEmailModal({enrolleeShortcodes, onDismiss, studyEnv
       studyShortcode: studyEnvContext.study.shortcode,
       envName: studyEnvContext.currentEnv.environmentName,
       enrolleeShortcodes,
-      customMessages: {adHocMessage, adHocSubject},
+      customMessages: { adHocMessage, adHocSubject },
       notificationConfigId: selectedConfig.id
     })
   }
@@ -49,9 +50,9 @@ export default function AdHocEmailModal({enrolleeShortcodes, onDismiss, studyEnv
       <form onSubmit={e => e.preventDefault()} className="py-3">
         <label>Email template:
           <Select options={configs} value={selectedConfig} onChange={opt => setSelectedConfig(opt)}
-                getOptionLabel={config => config.emailTemplate.name}
-                  getOptionValue={config => config.id}
-                  styles={{control: (baseStyles) => ({...baseStyles, width: '400px'})}}/>
+            getOptionLabel={config => config.emailTemplate.name}
+            getOptionValue={config => config.id}
+            styles={{ control: baseStyles => ({ ...baseStyles, width: '400px' }) }}/>
         </label>
         { selectedConfig?.notificationType === 'AD_HOC' &&
           <div className="py-3">

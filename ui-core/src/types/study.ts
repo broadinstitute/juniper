@@ -10,8 +10,8 @@ export type StudyEnvironment = {
   id: string
   environmentName: string
   studyEnvironmentConfig: StudyEnvironmentConfig
-  preEnrollSurvey: Survey
-  preEnrollSurveyId: string
+  preEnrollSurvey: Survey | null
+  preEnrollSurveyId: string | null
   configuredConsents: StudyEnvironmentConsent[]
   configuredSurveys: StudyEnvironmentSurvey[]
   notificationConfigs: NotificationConfig[]

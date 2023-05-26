@@ -19,10 +19,9 @@ import {
 } from '@tanstack/react-table'
 import { ColumnVisibilityControl, IndeterminateCheckbox, sortableTableHeader } from '../../util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import ExportDataControl from './export/ExportDataControl'
-import AdHocEmailModal from "./AdHocEmailModal";
-
+import AdHocEmailModal from './AdHocEmailModal'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -67,10 +66,6 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     header: 'Consented',
     accessorKey: 'enrollee.consented',
     cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
-  }, {
-    header: 'Withdrawn',
-    accessorKey: 'enrollee.withdrawn',
-    cell: info => info.getValue() ? <FontAwesomeIcon icon={faTimes}/> : ''
   }], [study.shortcode])
 
 
@@ -100,6 +95,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   }, [])
 
   const numSelected = Object.keys(rowSelection).length
+  const allowSendEmail = numSelected > 0
   const enrolleesSelected = Object.keys(rowSelection)
     .filter(key => rowSelection[key])
     .map(key => participantList[parseInt(key)].enrollee.shortcode)
@@ -133,13 +129,15 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
                 {table.getPreFilteredRowModel().rows.length} selected
               </span>
               <span className="me-2">
-                <button onClick={() => setShowEmailModal(true)} className="btn btn-secondary">
+                <button onClick={() => setShowEmailModal(allowSendEmail)}
+                  aria-disabled={!allowSendEmail} className="btn btn-secondary"
+                  title={allowSendEmail ? 'Send email' : 'Select at least one participant'}>
                   Send email
                 </button>
               </span>
               { showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
-                                                   studyEnvContext={studyEnvContext}
-                                                   onDismiss={() => setShowEmailModal(false)}/> }
+                studyEnvContext={studyEnvContext}
+                onDismiss={() => setShowEmailModal(false)}/> }
             </div>
           </div>
           <table className="table table-striped">

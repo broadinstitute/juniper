@@ -21,8 +21,9 @@ public class Notification extends BaseEntity {
     private NotificationDeliveryStatus deliveryStatus;
     private NotificationDeliveryType deliveryType;
     private String sentTo;
-    // for now, this is not persisted
-    private Map<String, String> customMessages = new HashMap<>();
+    private String customMessages;
+    @Builder.Default
+    private Map<String, String> customMessagesMap = new HashMap<>();
     @Builder.Default
     private int retries = 0;
 }

@@ -105,7 +105,7 @@ public class EnrolleeEmailService implements NotificationSender {
 
     protected Mail buildEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData, Notification notification) {
         StringSubstitutor substitutor = EnrolleeEmailSubstitutor
-            .newSubstitutor(ruleData, contextInfo, routingPaths, notification.getCustomMessages());
+            .newSubstitutor(ruleData, contextInfo, routingPaths, notification.getCustomMessagesMap());
         String fromAddress = contextInfo.portalEnvConfig().getEmailSourceAddress();
         Mail mail = sendgridClient.buildEmail(contextInfo, ruleData.profile().getContactEmail(), fromAddress, substitutor);
         return mail;

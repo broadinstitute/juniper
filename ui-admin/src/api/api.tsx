@@ -492,8 +492,10 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async sendAdHocNotification({portalShortcode, studyShortcode, envName, enrolleeShortcodes,
-                          customMessages, notificationConfigId}:
+  async sendAdHocNotification({
+    portalShortcode, studyShortcode, envName, enrolleeShortcodes,
+    customMessages, notificationConfigId
+  }:
                           {portalShortcode: string, studyShortcode: string, envName: string,
                             enrolleeShortcodes: string[], customMessages: Record<string, string>,
                             notificationConfigId: string}): Promise<Response> {

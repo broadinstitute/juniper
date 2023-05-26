@@ -61,7 +61,7 @@ function PreEnrollView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT})
     return <span>you need to specify both name and version of the prereg urvey</span>
   }
   const survey = currentEnv.preEnrollSurvey
-  if (survey.stableId != surveyStableId) {
+  if (survey?.stableId != surveyStableId) {
     return <span>The survey {surveyStableId} does not exist on this study</span>
   }
   return <RawPreRegView portalShortcode={portal.shortcode} currentEnv={currentEnv}

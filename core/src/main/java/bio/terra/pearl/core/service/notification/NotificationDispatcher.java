@@ -90,7 +90,7 @@ public class NotificationDispatcher {
                 .deliveryType(config.getDeliveryType())
                 .studyEnvironmentId(ruleData.enrollee().getStudyEnvironmentId())
                 .portalEnvironmentId(portalEnvId)
-                .customMessages(customMessages)
+                .customMessagesMap(customMessages)
                 .retries(0)
                 .build();
     }

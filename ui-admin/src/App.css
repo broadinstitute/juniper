@@ -13,6 +13,11 @@
   border: none;
 }
 
+.btn-secondary[aria-disabled="true"] {
+  color: #666;
+  font-style: italic;
+}
+
 .btn-secondary:focus, .btn-secondary:hover {
   background-color: transparent;
   color:#4D72AA;
