@@ -488,18 +488,20 @@ export default {
     return fetch(url,  this.getGetInit())
   },
 
-  listDatasetsForStudyEnvironment(portalShortcode: string, studyShortcode: string,
+  async listDatasetsForStudyEnvironment(portalShortcode: string, studyShortcode: string,
     envName: string):
-      Promise<Response> {
-    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets`
-    return fetch(url,  this.getGetInit())
+      Promise<DatasetDetails[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
   },
 
-  getJobHistoryForDataset(portalShortcode: string, studyShortcode: string,
+  async getJobHistoryForDataset(portalShortcode: string, studyShortcode: string,
     envName: string, datasetName: string):
-      Promise<Response> {
-    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets/${datasetName}/jobs`
-    return fetch(url,  this.getGetInit())
+      Promise<DatasetJobHistory[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets/${datasetName}/jobs`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
   },
 
   async createDatasetForStudyEnvironment(portalShortcode: string, studyShortcode: string,

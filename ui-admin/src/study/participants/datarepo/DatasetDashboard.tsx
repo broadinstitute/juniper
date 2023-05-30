@@ -46,7 +46,7 @@ const columns: ColumnDef<DatasetJobHistory>[] = [{
 
 const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
   const { currentEnvPath } = studyEnvContext
-  const [datasetDetails, setDatasetDetails] = useState<DatasetDetails | null>(null)
+  const [datasetDetails, setDatasetDetails] = useState<DatasetDetails | undefined>(undefined)
   const [datasetJobHistory, setDatasetJobHistory] = useState<DatasetJobHistory[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -70,29 +70,28 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
   }
 
   const loadData = async () => {
-    try {
-      //Fetch dataset details
-      const datasetDetails = await Api.listDatasetsForStudyEnvironment(
-        studyEnvContext.portal.shortcode,
-        studyEnvContext.study.shortcode,
-        studyEnvContext.currentEnv.environmentName)
-      const datasetDetailsResponse = await datasetDetails.json()
-      setDatasetDetails(datasetDetailsResponse.find((dataset: { datasetName: string }) =>
-        dataset.datasetName === datasetName))
+    //Fetch dataset details
+    await Api.listDatasetsForStudyEnvironment(
+      studyEnvContext.portal.shortcode,
+      studyEnvContext.study.shortcode,
+      studyEnvContext.currentEnv.environmentName).then(result => {
+      setDatasetDetails(result.find((dataset: { datasetName: string }) => dataset.datasetName === datasetName))
+    }).catch(e =>
+      Store.addNotification(failureNotification(`Error loading dataset: ${e.message}`))
+    )
 
-      //Fetch dataset job history
-      const datasetJobHistory = await Api.getJobHistoryForDataset(
-        studyEnvContext.portal.shortcode,
-        studyEnvContext.study.shortcode,
-        studyEnvContext.currentEnv.environmentName,
-        datasetName)
-      const datasetJobHistoryResponse = await datasetJobHistory.json()
-      setDatasetJobHistory(datasetJobHistoryResponse)
+    //Fetch dataset job history
+    await Api.getJobHistoryForDataset(
+      studyEnvContext.portal.shortcode,
+      studyEnvContext.study.shortcode,
+      studyEnvContext.currentEnv.environmentName,
+      datasetName).then(result => {
+      setDatasetJobHistory(result)
+    }).catch(e =>
+      Store.addNotification(failureNotification(`Error loading dataset job history: ${e.message}`))
+    )
 
-      setIsLoading(false)
-    } catch (e) {
-      Store.addNotification(failureNotification(`Error loading dataset information`))
-    }
+    setIsLoading(false)
   }
 
   useEffect(() => {
