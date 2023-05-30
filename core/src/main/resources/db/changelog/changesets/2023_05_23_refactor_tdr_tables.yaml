@@ -10,10 +10,6 @@ databaseChangeLog:
         - addColumn:
             tableName: data_repo_job
             columns:
-              - column: { name: dataset_id, type: uuid, constraints: { nullable: false } }
-        - addForeignKeyConstraint:
-            baseTableName: data_repo_job
-            baseColumnNames: dataset_id
-            constraintName: fk_dataset_job_dataset_id
-            referencedTableName: dataset
-            referencedColumnNames: id
+              - column: { name: dataset_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_dataset_job_dataset_id, references: dataset(id) }
+              }
