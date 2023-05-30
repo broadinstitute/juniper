@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: navbar_item
+      author: nwatts
+      changes:
+        - renameColumn:
+            tableName: navbar_item
+            oldColumnName: label
+            newColumnName: text
+        - dropColumn:
+            tableName: navbar_item
+            columns:
+              - column:
+                  name: external_link_url
+              - column:
+                  name: anchor_link_path
+        - addColumn:
+            tableName: navbar_item
+            columns:
+              - column:
+                  name: href
+                  type: text

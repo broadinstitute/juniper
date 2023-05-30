@@ -1,6 +1,6 @@
 {
   "itemType": "INTERNAL",
-  "label": "Scientific Background",
+  "text": "Scientific Background",
   "htmlPageDto": {
     "title": "Scientific Background",
     "path": "background",

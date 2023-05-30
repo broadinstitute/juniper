@@ -1,6 +1,6 @@
 {
   "itemType": "INTERNAL",
-  "label": "FAQ",
+  "text": "FAQ",
   "htmlPageDto": {
     "title": "FAQ",
     "path": "faq",

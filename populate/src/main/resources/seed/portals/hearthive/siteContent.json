@@ -26,7 +26,7 @@
     },
     "navbarItemDtos": [{
       "itemType": "INTERNAL",
-      "label": "Current research",
+      "text": "Current research",
       "htmlPageDto": {
         "path": "research",
         "title": "Heart Hive -- Current Research",

@@ -1,6 +1,6 @@
 {
   "itemType": "INTERNAL",
-  "label": "Participation",
+  "text": "Participation",
   "htmlPageDto": {
     "title": "Participation",
     "path": "participation",
