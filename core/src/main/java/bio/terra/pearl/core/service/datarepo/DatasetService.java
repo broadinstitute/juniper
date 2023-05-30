@@ -4,6 +4,7 @@ import bio.terra.datarepo.client.ApiException;
 import bio.terra.datarepo.model.JobModel;
 import bio.terra.pearl.core.dao.datarepo.DatasetDao;
 import bio.terra.pearl.core.model.datarepo.Dataset;
+import bio.terra.pearl.core.model.datarepo.DatasetStatus;
 import bio.terra.pearl.core.service.CrudService;
 
 import java.time.Instant;
@@ -33,8 +34,20 @@ public class DatasetService extends CrudService<Dataset, DatasetDao> {
         }
     }
 
+    public Optional<Dataset> findById(UUID datasetId) {
+        return dao.find(datasetId);
+    }
+
     public void updateLastExported(UUID id, Instant lastExported) {
         dao.updateLastExported(id, lastExported);
+    }
+
+    public void setTdrDatasetId(UUID datasetId, UUID tdrDatasetId) {
+        dao.setTdrDatasetId(datasetId, tdrDatasetId);
+    }
+
+    public void updateStatus(UUID id, DatasetStatus newStatus) {
+        dao.updateStatus(id, newStatus);
     }
 
     public void deleteByStudyEnvironmentId(UUID studyEnvId) {

@@ -151,26 +151,28 @@ public class DataRepoExportService {
         }
     }
 
-    public void ingestDataForStudyEnvironment(Dataset studyEnvDataset) {
+    public void ingestDataForStudyEnvironment(UUID datasetId) {
+        Dataset dataset = datasetService.findById(datasetId).get();
+
         UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
-        String blobSasUrl = uploadCsvToAzureStorage(studyEnvDataset.getStudyEnvironmentId(), studyEnvDataset.getId());
+        String blobSasUrl = uploadCsvToAzureStorage(dataset.getStudyEnvironmentId(), dataset.getId());
 
         try {
-            JobModel ingestJob = dataRepoClient.ingestDataset(defaultSpendProfileId, studyEnvDataset.getTdrDatasetId(), "enrollee", blobSasUrl);
+            JobModel ingestJob = dataRepoClient.ingestDataset(defaultSpendProfileId, dataset.getTdrDatasetId(), "enrollee", blobSasUrl);
             logger.info("Ingest job returned with job ID {}", ingestJob.getId());
             //Store in DB
             DataRepoJob job = DataRepoJob.builder()
-                    .studyEnvironmentId(studyEnvDataset.getStudyEnvironmentId())
+                    .studyEnvironmentId(dataset.getStudyEnvironmentId())
                     .status(ingestJob.getJobStatus().getValue())
-                    .datasetId(studyEnvDataset.getId())
-                    .datasetName(studyEnvDataset.getDatasetName())
+                    .datasetId(dataset.getId())
+                    .datasetName(dataset.getDatasetName())
                     .tdrJobId(ingestJob.getId())
                     .jobType(JobType.INGEST_DATASET)
                     .build();
 
             dataRepoJobService.create(job);
         } catch (ApiException e) {
-            logger.error("Unable to ingest dataset {} for study env {}. Error: {}", studyEnvDataset.getId(), studyEnvDataset.getStudyEnvironmentId(), e.getMessage());
+            logger.error("Unable to ingest dataset {} for study env {}. Error: {}", dataset.getId(), dataset.getStudyEnvironmentId(), e.getMessage());
         }
     }
 
@@ -223,19 +225,12 @@ public class DataRepoExportService {
             switch(jobStatus) {
                 case SUCCEEDED -> {
                     LinkedHashMap<String, Object> jobResult = (LinkedHashMap<String, Object>) dataRepoClient.getJobResult(job.getTdrJobId());
+                    UUID tdrDatasetId = UUID.fromString(jobResult.get("id").toString());
 
                     logger.info("createDataset job ID {} has succeeded. Dataset {} has been created.", job.getId(), job.getDatasetName());
-                    Dataset dataset = Dataset.builder()
-                            .id(job.getDatasetId())
-                            .studyEnvironmentId(job.getStudyEnvironmentId())
-                            .tdrDatasetId(UUID.fromString(jobResult.get("id").toString()))
-                            .description(jobResult.get("description").toString())
-                            .datasetName(job.getDatasetName())
-                            .status(DatasetStatus.CREATED)
-                            .lastExported(Instant.ofEpochSecond(0))
-                            .build();
 
-                    datasetService.update(dataset);
+                    datasetService.setTdrDatasetId(job.getDatasetId(), tdrDatasetId);
+                    datasetService.updateStatus(job.getDatasetId(), DatasetStatus.CREATED);
                     dataRepoJobService.updateJobStatus(job.getId(), jobStatus.getValue());
 
                     //TODO: This is to be replaced by JN-133. This code should only ever be executed in dev.
@@ -245,10 +240,10 @@ public class DataRepoExportService {
                     String DEPLOYMENT_ZONE = env.getProperty("env.tdr.deploymentZone");
                     if(!DEPLOYMENT_ZONE.equalsIgnoreCase("prod")) {
                         logger.info("Sharing dataset with Juniper dev team. If you're seeing this in prod, panic!");
-                        dataRepoClient.shareWithJuniperDevs(dataset.getTdrDatasetId());
+                        dataRepoClient.shareWithJuniperDevs(tdrDatasetId);
                     }
 
-                    ingestDataForStudyEnvironment(dataset);
+                    ingestDataForStudyEnvironment(job.getDatasetId());
                 }
                 case FAILED -> {
                     logger.warn("createDataset job ID {} has failed. Dataset {} failed to create.", job.getId(), job.getDatasetName());
