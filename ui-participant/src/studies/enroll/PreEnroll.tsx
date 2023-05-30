@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import Api, { PreEnrollmentResponse } from 'api/api'
+import Api, { PreEnrollmentResponse, Survey } from 'api/api'
 import { getResumeData, getSurveyJsAnswerList, useSurveyJSModel } from 'util/surveyJsUtils' // eslint-disable-line max-len
 import { useNavigate } from 'react-router-dom'
 import { StudyEnrollContext } from './StudyEnrollRouter'
@@ -11,9 +11,9 @@ import { StudyEnrollContext } from './StudyEnrollRouter'
 const ENROLLMENT_QUALIFIED_VARIABLE = 'qualified'
 
 /** Renders a pre-enrollment form, and handles submitting the user-inputted response */
-export default function PreEnrollView({ enrollContext }: { enrollContext: StudyEnrollContext }) {
+export default function PreEnrollView({ enrollContext, survey }:
+                                          { enrollContext: StudyEnrollContext, survey: Survey }) {
   const { studyEnv, updatePreEnrollResponseId } = enrollContext
-  const survey = studyEnv.preEnrollSurvey
   const navigate = useNavigate()
   // for now, we assume all pre-screeners are a single page
   const pager = { pageNumber: 0, updatePageNumber: () => 0 }
