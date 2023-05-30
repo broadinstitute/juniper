@@ -11,8 +11,6 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
     configuredConsents: [],
     configuredSurveys: [],
     notificationConfigs: [],
-    preEnrollSurvey: null,
-    preEnrollSurveyId: null,
     studyEnvironmentConfig: {
       initialized: true,
       password: '',

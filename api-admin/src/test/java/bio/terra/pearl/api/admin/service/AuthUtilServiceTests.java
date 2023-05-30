@@ -27,7 +27,7 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void authAdminToPortalRejectsUsersNotInPortal() {
+  public void authUserToPortalRejectsUsersNotInPortal() {
     AdminUser user = adminUserFactory.buildPersisted("authAdminToPortalRejectsUsersNotInPortal");
     Portal portal = portalFactory.buildPersisted("authAdminToPortalRejectsUsersNotInPortal");
     Assertions.assertThrows(
@@ -56,7 +56,7 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void authAdminToPortalRejectsNotFoundPortal() {
+  public void authUserToPortalRejectsNotFoundPortal() {
     AdminUser user = adminUserFactory.buildPersisted("authAdminToPortalRejectsNotFoundPortal");
     Assertions.assertThrows(
         NotFoundException.class,
@@ -67,7 +67,7 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void authAdminToPortalAllowsSuperUser() {
+  public void authUserToPortalAllowsSuperUser() {
     AdminUser user =
         adminUserFactory.buildPersisted(
             adminUserFactory.builder("authAdminToPortalAllowsSuperUser").superuser(true));
