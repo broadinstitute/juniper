@@ -8,6 +8,8 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
     'plugin:jest/recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended'
@@ -100,5 +102,17 @@ module.exports = {
     'jest/no-identical-title': 'error',
     //Reminds should be used upon asserting expectations on object's length property
     'jest/prefer-to-have-length': 'warn'
+  },
+  settings: {
+    'import/resolver': {
+      node: true,
+      typescript: {
+        project: [
+          'ui-admin/tsconfig.json',
+          'ui-core/tsconfig.json',
+          'ui-participant/tsconfig.json'
+        ]
+      }
+    }
   }
 }

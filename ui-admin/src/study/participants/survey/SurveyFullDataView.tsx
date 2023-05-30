@@ -1,7 +1,7 @@
 import React  from 'react'
 import { Answer, ConsentForm, Survey } from 'api/api'
 import { Model, Question, SurveyModel } from 'survey-core'
-import { extractSurveyContent } from 'util/surveyJSUtils'
+import { extractSurveyContent } from 'util/surveyJsUtils'
 
 /** renders every item in a survey response */
 export default function SurveyFullDataView({ answers, survey }: {answers: Answer[], survey: Survey | ConsentForm}) {

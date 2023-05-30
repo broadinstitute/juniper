@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { HtmlPage, NavbarItem, PortalEnvironment } from '../../api/api'
+import { HtmlPage, NavbarItemInternal, PortalEnvironment } from '../../api/api'
 
 const SiteContentView = ({ portalEnv }: {portalEnv: PortalEnvironment}) => {
   const selectedLanguage = 'en'
-  const [selectedNavItem, setSelectedNavItem] = useState<NavbarItem | null>(null)
+  const [selectedNavItem, setSelectedNavItem] = useState<NavbarItemInternal | null>(null)
 
   if (!portalEnv.siteContent) {
     return <div>no site content configured yet</div>
@@ -12,17 +12,19 @@ const SiteContentView = ({ portalEnv }: {portalEnv: PortalEnvironment}) => {
   if (!localContent) {
     return <div>no content for language {selectedLanguage}</div>
   }
-  const renderedTitle = selectedNavItem ? selectedNavItem.label : 'Landing page'
+  const renderedTitle = selectedNavItem ? selectedNavItem.text : 'Landing page'
   const pageToRender = selectedNavItem ? selectedNavItem.htmlPage : localContent.landingPage
 
   return <div className="container d-flex bg-white p-3">
     <ul className="list-group">
       <li className="list-group-item" onClick={() => setSelectedNavItem(null)}>Landing page</li>
-      {localContent.navbarItems.map(navItem => <li key={navItem.label} className="list-group-item" role="button"
-        onClick={() => setSelectedNavItem(navItem)}>
-        {navItem.label}
-      </li>
-      )}
+      {localContent.navbarItems
+        .filter((navItem): navItem is NavbarItemInternal => navItem.itemType === 'INTERNAL')
+        .map(navItem => <li key={navItem.text} className="list-group-item" role="button"
+          onClick={() => setSelectedNavItem(navItem)}>
+          {navItem.text}
+        </li>
+        )}
     </ul>
     <div className="ps-3">
       <h2 className="h5">{renderedTitle}</h2>

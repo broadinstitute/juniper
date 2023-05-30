@@ -5,7 +5,7 @@ import { VersionedForm } from 'api/api'
 import VersionSelector from './VersionSelector'
 
 import { SurveyCreatorComponent } from 'survey-creator-react'
-import { useSurveyJSCreator } from '../../util/surveyJSUtils'
+import { useSurveyJSCreator } from '../../util/surveyJsUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons/faCaretDown'
 import { useUser } from '../../user/UserProvider'

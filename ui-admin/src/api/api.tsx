@@ -23,6 +23,8 @@ export type {
   NavbarItem,
   NavbarItemInternal,
   NavbarItemInternalAnchor,
+  NavbarItemMailingList,
+  NavbarItemExternal,
   NotificationConfig,
   ParticipantTask,
   Portal,

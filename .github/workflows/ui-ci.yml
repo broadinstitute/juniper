@@ -1,0 +1,31 @@
+name: UI CI
+
+on:
+  push:
+    branches: [ development ]
+    paths-ignore: [ '*.md']
+  pull_request:
+    branches: [ '**' ]
+  merge_group:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build ui-core
+        run: npm --workspace=ui-core run build
+      - name: Lint
+        run: npm run lint
+      - name: Build admin/participant UIs
+        run: DISABLE_ESLINT_PLUGIN=true npm --workspace=ui-admin --workspace=ui-participant run build
+      - name: Run tests
+        run: npm --workspace=ui-core --workspace=ui-admin --workspace=ui-participant test

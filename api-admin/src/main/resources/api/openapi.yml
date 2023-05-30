@@ -707,6 +707,21 @@ paths:
                 type: object
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/internal/v1/populate/enrollee/{portalShortcode}/env/{envName}/study/{studyShortcode}/bulk:
+    post:
+      summary: Bulk populates enrollees in a given portal/study/env.
+      tags: [ populate ]
+      operationId: bulkPopulateEnrollees
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: numEnrollees, in: query, required: true, schema: { type: integer } }
+      responses:
+        '204':
+          description: No Content
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/datarepo/datasets:
     get:
       summary: Gets the list of datasets for the study environment
