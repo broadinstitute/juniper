@@ -18,7 +18,7 @@ public class KitRequest extends BaseEntity {
     private KitType kitType;
     /**
      * JSON blob of address data sent to DSM, collected from Profile/MailingAddress.
-     * TODO: decide if this should be separate fields, or maybe use the postgres jsonb type
+     * In the future, we might decide to store separate fields, or maybe use the postgres jsonb type.
      */
     private String sentToAddress;
     /**

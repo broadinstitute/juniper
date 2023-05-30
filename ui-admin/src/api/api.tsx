@@ -467,7 +467,7 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async fetchKitRequests(portalShortcode: string, studyShortcode: string, envName: string,
+  async fetchEnrolleeKitRequests(portalShortcode: string, studyShortcode: string, envName: string,
                          enrolleeShortcode: string): Promise<KitRequest[]> {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/kitRequests`

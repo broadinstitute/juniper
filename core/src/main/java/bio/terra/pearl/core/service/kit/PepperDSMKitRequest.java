@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter @Builder
-public class DataStudyManagerKitRequest {
+public class PepperDSMKitRequest {
     private String firstName;
     private String lastName;
     private String street1;
@@ -20,8 +20,8 @@ public class DataStudyManagerKitRequest {
     private boolean skipAddressValidation;
     private boolean uploadAnyway;
 
-    public static DataStudyManagerKitRequestBuilder builderWithAddress(PepperKitAddress address) {
-        return DataStudyManagerKitRequest.builder()
+    public static PepperDSMKitRequestBuilder builderWithAddress(PepperKitAddress address) {
+        return PepperDSMKitRequest.builder()
                 .firstName(address.getFirstName())
                 .lastName(address.getLastName())
                 .street1(address.getStreet1())

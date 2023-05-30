@@ -1,10 +1,12 @@
 package bio.terra.pearl.core.service.kit;
 
-import bio.terra.pearl.core.config.DataStudyManagerConfig;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -12,20 +14,20 @@ import reactor.core.publisher.Mono;
 import java.time.Instant;
 
 @Component
-public class DataStudyManagerClient {
-    private final DataStudyManagerConfig dataStudyManagerConfig;
+public class PepperDSMClient {
+    private final PepperDSMConfig pepperDSMConfig;
     private final WebClient webClient;
 
-    public DataStudyManagerClient(DataStudyManagerConfig dataStudyManagerConfig,
-                                  WebClient.Builder webClientBuilder) {
-        this.dataStudyManagerConfig = dataStudyManagerConfig;
+    public PepperDSMClient(PepperDSMConfig pepperDSMConfig,
+                           WebClient.Builder webClientBuilder) {
+        this.pepperDSMConfig = pepperDSMConfig;
         this.webClient = webClientBuilder
-                .baseUrl(this.dataStudyManagerConfig.getBasePath())
+                .baseUrl(this.pepperDSMConfig.getBasePath())
                 .build();
     }
 
     public String sendKitRequest(Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
-        var dataStudyManagerKitRequest = DataStudyManagerKitRequest.builderWithAddress(address)
+        var pepperDSMKitRequest = PepperDSMKitRequest.builderWithAddress(address)
                 .juniperKitId(kitRequest.getId().toString())
                 .juniperParticipantId(enrollee.getShortcode())
                 .build();
@@ -44,6 +46,19 @@ public class DataStudyManagerClient {
         var now = System.currentTimeMillis();
         return JWT.create()
                 .withExpiresAt(Instant.ofEpochMilli(now + fifteenMinutes))
-                .sign(Algorithm.HMAC256(dataStudyManagerConfig.getSecret()));
+                .sign(Algorithm.HMAC256(pepperDSMConfig.getSecret()));
+    }
+}
+
+@Component
+@Getter
+@Setter
+class PepperDSMConfig {
+    private String basePath;
+    private String secret;
+
+    public PepperDSMConfig(Environment environment) {
+        this.basePath = environment.getProperty("env.dsm.basePath");
+        this.secret = environment.getProperty("env.dsm.secret");
     }
 }

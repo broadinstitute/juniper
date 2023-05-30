@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import { Enrollee, KitRequest } from 'api/api'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
@@ -6,8 +6,9 @@ import { basicTableLayout } from 'util/tableUtils'
 import RequestKitModal from './RequestKitModal'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {instantToDefaultString} from "../../util/timeUtils";
+import { instantToDefaultString } from 'util/timeUtils'
 
+/** Component for rendering the address a kit was sent to based on JSON captured at the time of the kit request. */
 function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string }) {
   const address = JSON.parse(sentToAddressJson)
   return <div>
@@ -18,6 +19,25 @@ function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string })
   </div>
 }
 
+const columns: ColumnDef<KitRequest, string>[] = [{
+  header: 'Kit type',
+  accessorKey: 'kitType.displayName'
+}, {
+  header: 'Status',
+  accessorKey: 'status'
+}, {
+  header: 'Created',
+  accessorKey: 'createdAt',
+  accessorFn: data => instantToDefaultString(data.createdAt)
+}, {
+  header: 'Address',
+  cell: ({ row }) => <KitRequestAddress sentToAddressJson={row.original.sentToAddress}/>
+}, {
+  header: 'DSM Status',
+  accessorKey: 'dsmStatus'
+}]
+
+/** Shows a list of all kit requests for an enrollee. */
 export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
                                       {
                                         enrollee: Enrollee,
@@ -30,24 +50,6 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
     setShowRequestKitModal(false)
     onUpdate()
   }
-
-  const columns = useMemo<ColumnDef<KitRequest, string>[]>(() => [{
-    header: 'Kit type',
-    accessorKey: 'kitType.displayName'
-  }, {
-    header: 'Status',
-    accessorKey: 'status'
-  }, {
-    header: 'Created',
-    accessorKey: 'createdAt',
-    accessorFn: data => instantToDefaultString(data.createdAt)
-  }, {
-    header: 'Address',
-    cell: ({ row }) => <KitRequestAddress sentToAddressJson={row.original.sentToAddress}/>
-  }, {
-    header: 'DSM Status',
-    accessorKey: 'dsmStatus'
-  }], [enrollee.kitRequests])
 
   const table = useReactTable({
     data: enrollee.kitRequests || [],

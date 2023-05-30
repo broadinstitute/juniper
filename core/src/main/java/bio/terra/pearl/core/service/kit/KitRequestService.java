@@ -19,16 +19,16 @@ import java.util.Collection;
 
 @Service
 public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
-    private final DataStudyManagerClient dataStudyManagerClient;
+    private final PepperDSMClient pepperDSMClient;
     private final KitTypeDao kitTypeDao;
 
     public KitRequestService(KitRequestDao dao,
-                             DataStudyManagerClient dataStudyManagerClient,
+                             PepperDSMClient pepperDSMClient,
                              KitTypeDao kitTypeDao,
                              ProfileService profileService,
                              ObjectMapper objectMapper) {
         super(dao);
-        this.dataStudyManagerClient = dataStudyManagerClient;
+        this.pepperDSMClient = pepperDSMClient;
         this.kitTypeDao = kitTypeDao;
         this.profileService = profileService;
         this.objectMapper = objectMapper;
@@ -42,7 +42,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         var kitRequest = createKitRequest(adminUser, enrollee, pepperKitAddress, kitTypeName);
 
         // send kit request to DSM
-        var result = dataStudyManagerClient.sendKitRequest(enrollee, kitRequest, pepperKitAddress);
+        var result = pepperDSMClient.sendKitRequest(enrollee, kitRequest, pepperKitAddress);
 
         // save DSM response/status with Juniper KitRequest
         kitRequest.setDsmStatus(result);
