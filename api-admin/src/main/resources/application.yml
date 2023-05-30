@@ -20,6 +20,9 @@ env:
     storageContainerName: ${STORAGE_CONTAINER_NAME:}
     billingProfileId: ${BILLING_PROFILE_ID:550212cf-45dc-478f-9fe6-9b3290e2a1fe}
     deploymentZone: ${DEPLOYMENT_ZONE:}
+  dsm:
+    basePath: ${DSM_ADDRESS:https://dsm-dev.datadonationplatform.org/ddp}
+    secret: ${DSM_SECRET:}
   populate:
     populate-from-classpath: true
   b2c:

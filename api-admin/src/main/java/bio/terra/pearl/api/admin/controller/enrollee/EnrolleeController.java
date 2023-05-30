@@ -82,5 +82,13 @@ public class EnrolleeController implements EnrolleeApi {
     }
   }
 
+  @Override
+  public ResponseEntity<Object> getKitRequests(
+      String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    var kitRequests = enrolleeExtService.getKitRequests(adminUser, enrolleeShortcode);
+    return ResponseEntity.ok(kitRequests);
+  }
+
   public record WithdrawnResponse(UUID withdrawnEnrolleeId) {}
 }

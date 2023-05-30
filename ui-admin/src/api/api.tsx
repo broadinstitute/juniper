@@ -72,7 +72,8 @@ export type StudyEnvironmentUpdate = {
 
 export type EnrolleeSearchResult = {
   enrollee: Enrollee,
-  profile: Profile
+  profile: Profile,
+  hasKit: boolean
 }
 
 export type Enrollee = {
@@ -82,6 +83,7 @@ export type Enrollee = {
   preRegResponse?: PreregistrationResponse,
   preEnrollmentResponse?: PreregistrationResponse,
   participantTasks: ParticipantTask[],
+  kitRequests: KitRequest[],
   consented: boolean,
   profile: Profile
 }
@@ -127,6 +129,21 @@ export type DataChangeRecord = {
   newValue: string,
   responsibleUserId: string,
   responsibleAdminUserId: string
+}
+
+export type KitType = {
+  id: string,
+  name: string,
+  displayName: string,
+  description: string
+}
+
+export type KitRequest = {
+  id: string,
+  createdAt: number,
+  kitType: string,
+  sentToAddress: string,
+  status: string
 }
 
 export type Config = {
@@ -435,8 +452,31 @@ export default {
 
   async fetchEnrolleeChangeRecords(portalShortcode: string, studyShortcode: string, envName: string,
     enrolleeShortcode: string): Promise<DataChangeRecord[]> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
-    }/enrollees/${enrolleeShortcode}/changeRecords`
+    const url =
+      `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/changeRecords`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async createKitRequest(portalShortcode: string, studyShortcode: string, envName: string,
+                         enrolleeShortcode: string, kitType: string): Promise<string> {
+    const params = new URLSearchParams({ kitType })
+    const url =
+      `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit?${params}`
+    const response = await fetch(url, { method: 'POST', headers: this.getInitHeaders() })
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchKitRequests(portalShortcode: string, studyShortcode: string, envName: string,
+                         enrolleeShortcode: string): Promise<KitRequest[]> {
+    const url =
+      `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/kitRequests`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchKitTypes(portalShortcode: string, studyShortcode: string): Promise<KitType[]> {
+    const url = `${baseStudyUrl(portalShortcode, studyShortcode)}/kitTypes`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -600,6 +640,11 @@ export default {
 /** base api path for study-scoped api requests */
 function basePortalEnvUrl(portalShortcode: string, envName: string) {
   return `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}`
+}
+
+/** base api path for study-scoped api requests */
+function baseStudyUrl(portalShortcode: string, studyShortcode: string) {
+  return `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}`
 }
 
 /** base api path for study-scoped api requests */
