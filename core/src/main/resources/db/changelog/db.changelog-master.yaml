@@ -104,6 +104,9 @@ databaseChangeLog:
   - include:
       file: changesets/2023_05_23_refactor_tdr_tables.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2023_05_24_navbar_item.yaml
+      relativeToChangelogFile: true
 
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements

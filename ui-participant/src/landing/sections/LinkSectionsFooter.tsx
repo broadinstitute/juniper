@@ -55,7 +55,7 @@ const getIcon = (item: ButtonConfig) => {
 type LinkSectionsFooterProps = TemplateComponentProps<LinkSectionsFooterConfig>
 
 /** renders a footer-style section */
-export function LinkSectionsFooter(props: LinkSectionsFooterProps) {
+function LinkSectionsFooter(props: LinkSectionsFooterProps) {
   const { config } = props
 
   return <>

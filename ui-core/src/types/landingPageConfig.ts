@@ -52,23 +52,23 @@ export type NavbarItem =
 
 export type NavbarItemInternal = {
   itemType: 'INTERNAL'
-  label: string
+  text: string
   htmlPage: HtmlPage
 }
 
 export type NavbarItemInternalAnchor = {
   itemType: 'INTERNAL_ANCHOR'
-  label: string
-  anchorLinkPath: string
+  text: string
+  href: string
 }
 
 export type NavbarItemMailingList = {
   itemType: 'MAILING_LIST'
-  label: string
+  text: string
 }
 
 export type NavbarItemExternal = {
   itemType: 'EXTERNAL'
-  label: string
-  externalLink: string
+  text: string
+  href: string
 }

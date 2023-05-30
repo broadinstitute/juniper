@@ -12,13 +12,11 @@ import java.util.UUID;
 public class NavbarItem extends BaseEntity {
     private UUID localizedSiteContentId;
     private NavbarItemType itemType;
-    private String label;
+    private String text;
     private int itemOrder;
 
     private UUID htmlPageId; // for NavbarItemType INTERNAL
     private HtmlPage htmlPage; // for NavBarItemType INTERNAL
 
-    private String externalLinkUrl; // for NavBarItemType EXTERNAL
-
-    private String anchorLinkPath; // for NavBarItemType INTERNAL_ANCHOR
+    private String href; // for NavBarItemType EXTERNAL and INTERNAL_ANCHOR
 }
