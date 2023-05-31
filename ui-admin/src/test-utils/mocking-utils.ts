@@ -1,5 +1,5 @@
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { Enrollee } from 'api/api'
+import { DatasetDetails, Enrollee } from 'api/api'
 
 // as we add more tests, we'll want to parameterize this and turn it into a proper factory
 export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
@@ -20,6 +20,19 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
   },
   currentEnvPath: 'portalCode/studies/fakeStudy/env/sandbox'
 })
+
+export const mockDatasetDetails: (datasetName: string, status: string) => DatasetDetails =
+    (datasetName: string, status: string) => ({
+      createdAt: 0,
+      datasetName,
+      description: 'a successfully created dataset',
+      id: 'a-successful-id',
+      lastExported: 0,
+      lastUpdatedAt: 0,
+      status,
+      studyEnvironmentId: 'studyEnvId',
+      tdrDatasetId: 'a-fake-tdr-dataset-id'
+    })
 
 // as we add more tests, we'll want to parameterize this and turn it into a proper factory
 export const mockEnrollee: () => Enrollee = () => ({

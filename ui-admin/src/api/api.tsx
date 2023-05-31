@@ -214,7 +214,7 @@ export type DatasetDetails = {
   createdAt: number,
   lastUpdatedAt: number,
   studyEnvironmentId: string,
-  datasetId: string,
+  tdrDatasetId: string,
   datasetName: string,
   description: string,
   status: string,
@@ -228,6 +228,7 @@ export type DatasetJobHistory = {
   studyEnvironmentId: string,
   tdrJobId: string,
   datasetName: string,
+  datasetId: string,
   status: string
   jobType: string
 }
@@ -513,17 +514,20 @@ export default {
     })
   },
 
-  listDatasetsForStudyEnvironment(portalShortcode: string, studyShortcode: string, envName: string):
-      Promise<Response> {
-    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets`
-    return fetch(url,  this.getGetInit())
+  async listDatasetsForStudyEnvironment(portalShortcode: string, studyShortcode: string,
+    envName: string):
+      Promise<DatasetDetails[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
   },
 
-  getJobHistoryForDataset(portalShortcode: string, studyShortcode: string,
+  async getJobHistoryForDataset(portalShortcode: string, studyShortcode: string,
     envName: string, datasetName: string):
-      Promise<Response> {
-    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets/${datasetName}/jobs`
-    return fetch(url,  this.getGetInit())
+      Promise<DatasetJobHistory[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets/${datasetName}/jobs`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
   },
 
   async createDatasetForStudyEnvironment(portalShortcode: string, studyShortcode: string,
