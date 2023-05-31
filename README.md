@@ -1,5 +1,4 @@
 # Juniper
-*Note: the repo will move soon to reflect the Juniper name*
 
 ## Overview
 Arbor is intended to allow the collection and management of 3 distinct data types in the context of a research study: survey, genomic, and medical records.
