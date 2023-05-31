@@ -16,7 +16,17 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
       password: '',
       passwordProtected: false,
       acceptingEnrollment: true
-    }
+    }/*,
+    preEnrollSurveyId: 'surveyId',
+    preEnrollSurvey: {
+      id: 'surveyId',
+      stableId: 'surveyStableId',
+      version: 1,
+      name: 'pre-enroll survey',
+      createdAt: 1,
+      lastUpdatedAt: 1,
+      content: ''
+    }*/
   },
   currentEnvPath: 'portalCode/studies/fakeStudy/env/sandbox'
 })
@@ -44,5 +54,18 @@ export const mockEnrollee: () => Enrollee = () => ({
       postalCode: '02138',
       country: 'US'
     }
-  }
+  },
+  kitRequests: [{
+    id: 'kitRequestId',
+    createdAt: 1,
+    kitType: {
+      id: 'kitTypeId',
+      name: 'testKit',
+      displayName: 'Test kit',
+      description: 'Test sample collection kit'
+    },
+    sentToAddress: '{"firstName": "Jonas", "lastName": "Salk", "street1": "1234 Fake Street",' +
+      '"city": "Cambridge", "state": "MA", "postalCode": "02138", "country": "US"}',
+    status: 'CREATED'
+  }]
 })

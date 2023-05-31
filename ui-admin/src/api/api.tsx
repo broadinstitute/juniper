@@ -141,7 +141,7 @@ export type KitType = {
 export type KitRequest = {
   id: string,
   createdAt: number,
-  kitType: string,
+  kitType: KitType,
   sentToAddress: string,
   status: string
 }

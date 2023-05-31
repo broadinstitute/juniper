@@ -12,6 +12,7 @@ import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
+import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
@@ -42,6 +43,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private DataChangeRecordService dataChangeRecordService;
     private WithdrawnEnrolleeService withdrawnEnrolleeService;
     private ParticipantUserService participantUserService;
+    private KitRequestService kitRequestService;
 
 
     private SecureRandom secureRandom;
@@ -57,6 +59,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            @Lazy DataChangeRecordService dataChangeRecordService,
                            @Lazy WithdrawnEnrolleeService withdrawnEnrolleeService,
                            @Lazy ParticipantUserService participantUserService,
+                           KitRequestService kitRequestService,
                            SecureRandom secureRandom) {
         super(enrolleeDao);
         this.surveyResponseService = surveyResponseService;
@@ -70,6 +73,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.dataChangeRecordService = dataChangeRecordService;
         this.withdrawnEnrolleeService = withdrawnEnrolleeService;
         this.participantUserService = participantUserService;
+        this.kitRequestService = kitRequestService;
         this.secureRandom = secureRandom;
     }
 
@@ -143,6 +147,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     @Transactional
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId, Set<CascadeProperty> cascade) {
         for (Enrollee enrollee : dao.findByStudyEnvironmentId(studyEnvironmentId)) {
+            kitRequestService.deleteByEnrolleeId(enrollee.getId(), cascade);
             delete(enrollee.getId(), cascade);
         }
     }

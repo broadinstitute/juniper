@@ -9,6 +9,7 @@ import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.MailingAddress;
 import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,6 +17,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
@@ -53,6 +56,12 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
 
     public Collection<KitRequest> getKitRequests(AdminUser adminUser, Enrollee enrollee) {
         return dao.findByEnrollee(enrollee.getId());
+    }
+
+    public void deleteByEnrolleeId(UUID enrolleeId, Set<CascadeProperty> cascade) {
+        for (KitRequest kitRequest : dao.findByEnrollee(enrolleeId)) {
+            dao.delete(kitRequest.getId());
+        }
     }
 
     private KitRequest createKitRequest(
