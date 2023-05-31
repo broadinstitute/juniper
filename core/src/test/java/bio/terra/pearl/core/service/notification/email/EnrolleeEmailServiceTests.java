@@ -64,8 +64,8 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
                     .body("family name ${profile.familyName}")
                     .subject("Welcome ${profile.givenName}").build();
 
-        var contextInfo = new NotificationContextInfo(portal, portalEnv, null, emailTemplate);
-        Mail email = enrolleeEmailService.buildEmail(contextInfo, ruleData);
+        var contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvConfig, null, emailTemplate);
+        Mail email = enrolleeEmailService.buildEmail(contextInfo, ruleData, new Notification());
         assertThat(email.personalization.get(0).getTos().get(0).getEmail(), equalTo("test@test.com"));
         assertThat(email.content.get(0).getValue(), equalTo("family name tester"));
         assertThat(email.from.getEmail(), equalTo("info@portal.org"));
@@ -90,7 +90,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
     private void testSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, NotificationConfig config) {
         var notification = notificationFactory.buildPersisted(enrolleeBundle, config);
         var ruleData = new EnrolleeRuleData(enrolleeBundle.enrollee(), Profile.builder().build());
-        var contextInfo = new NotificationContextInfo(null, null, null, null);
+        var contextInfo = new NotificationContextInfo(null, null, null, null, null);
         enrolleeEmailService.processNotification(notification, config, ruleData, contextInfo);
         Notification updatedNotification = notificationService.find(notification.getId()).get();
         // The email send should fail due to sendgrid not being configured
@@ -100,7 +100,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
     private void testDoNotSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, NotificationConfig config) {
         Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
         EnrolleeRuleData ruleData = new EnrolleeRuleData(enrolleeBundle.enrollee(), Profile.builder().doNotEmail(true).build());
-        var contextInfo = new NotificationContextInfo(null, null, null, null);
+        var contextInfo = new NotificationContextInfo(null, null, null,null, null);
         enrolleeEmailService.processNotification(notification, config, ruleData, contextInfo);
         Notification updatedNotification = notificationService.find(notification.getId()).get();
         assertThat(updatedNotification.getDeliveryStatus(), equalTo(NotificationDeliveryStatus.SKIPPED));

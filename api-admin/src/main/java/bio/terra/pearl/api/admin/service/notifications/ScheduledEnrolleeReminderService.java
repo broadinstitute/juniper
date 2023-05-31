@@ -1,4 +1,4 @@
-package bio.terra.pearl.api.admin.service;
+package bio.terra.pearl.api.admin.service.notifications;
 
 import bio.terra.pearl.core.service.notification.EnrolleeReminderService;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;

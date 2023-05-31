@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useUser } from 'providers/UserProvider'
 import { Route, Routes, useNavigate, useParams } from 'react-router-dom'
 import { usePortalEnv } from 'providers/PortalProvider'
-import Api, { ParticipantUser, Portal, StudyEnvironment } from 'api/api'
+import Api, { ParticipantUser, Portal, StudyEnvironment, Survey } from 'api/api'
 import NavBar from '../../Navbar'
 import PreEnrollView from './PreEnroll'
 import StudyIneligible from './StudyIneligible'
@@ -123,6 +123,7 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
   const enrollContext: StudyEnrollContext = {
     studyShortcode, studyEnv, user, preEnrollResponseId, updatePreEnrollResponseId
   }
+  const hasPreEnroll = !!enrollContext.studyEnv.preEnrollSurvey
   return <>
     <NavBar/>
     {mustProvidePassword
@@ -134,7 +135,9 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
         />
       ) : (
         <Routes>
-          <Route path="preEnroll" element={<PreEnrollView enrollContext={enrollContext}/>}/>
+          {hasPreEnroll && <Route path="preEnroll" element={
+            <PreEnrollView enrollContext={enrollContext} survey={enrollContext.studyEnv.preEnrollSurvey as Survey}/>
+          }/>}
           <Route path="ineligible" element={<StudyIneligible portal={portal} studyName={studyName}/>}/>
           <Route path="register/*" element={<PortalRegistrationRouter portal={portal} returnTo={null}/>}/>
           <Route index element={<PageLoadingIndicator/>}/>

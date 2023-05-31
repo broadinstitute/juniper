@@ -56,7 +56,7 @@ public class NotificationDispatcher {
      * because of a new survey, it lets us have just 1 database operation per notification instead of 2
      * */
     protected void dispatchNotificationAsync(NotificationConfig config, EnrolleeRuleData enrolleeRuleData, UUID portalEnvId) {
-        Notification notification = initializeNotification(config, enrolleeRuleData, portalEnvId);
+        Notification notification = initializeNotification(config, enrolleeRuleData, portalEnvId, null);
         notification = notificationService.create(notification);
         senderMap.get(config.getDeliveryType())
                 .processNotificationAsync(notification, config, enrolleeRuleData);
@@ -64,10 +64,15 @@ public class NotificationDispatcher {
 
     public void dispatchNotification(NotificationConfig config, EnrolleeRuleData enrolleeRuleData,
                                      NotificationContextInfo notificationContextInfo) {
+        dispatchNotification(config, enrolleeRuleData, notificationContextInfo, Map.of());
+    }
+
+    public void dispatchNotification(NotificationConfig config, EnrolleeRuleData enrolleeRuleData,
+                                     NotificationContextInfo notificationContextInfo, Map<String, String> customMessages) {
         Notification notification = initializeNotification(config, enrolleeRuleData,
-                notificationContextInfo.portalEnv().getId());
+            notificationContextInfo.portalEnv().getId(), customMessages);
         senderMap.get(config.getDeliveryType())
-                .processNotification(notification, config, enrolleeRuleData, notificationContextInfo);
+            .processNotification(notification, config, enrolleeRuleData, notificationContextInfo);
     }
 
     public void dispatchTestNotification(NotificationConfig config, EnrolleeRuleData enrolleeRuleData) throws Exception {
@@ -75,7 +80,8 @@ public class NotificationDispatcher {
                 .sendTestNotification(config, enrolleeRuleData);
     }
 
-    public Notification initializeNotification(NotificationConfig config, EnrolleeRuleData ruleData, UUID portalEnvId) {
+    public Notification initializeNotification(NotificationConfig config, EnrolleeRuleData ruleData,
+                                               UUID portalEnvId, Map<String, String> customMessages) {
         return Notification.builder()
                 .enrolleeId(ruleData.enrollee().getId())
                 .participantUserId(ruleData.enrollee().getParticipantUserId())
@@ -84,6 +90,7 @@ public class NotificationDispatcher {
                 .deliveryType(config.getDeliveryType())
                 .studyEnvironmentId(ruleData.enrollee().getStudyEnvironmentId())
                 .portalEnvironmentId(portalEnvId)
+                .customMessagesMap(customMessages)
                 .retries(0)
                 .build();
     }

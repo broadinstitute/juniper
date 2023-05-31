@@ -83,7 +83,9 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                 <TaskSummary tasks={enrollee.participantTasks}/>
               </li>
               <li className="list-group-item">
-                <NavLink to="preRegistration" className={getLinkCssClasses}>PreEnrollment</NavLink>
+                { currentEnv.preEnrollSurvey && <NavLink to="preRegistration" className={getLinkCssClasses}>
+                  PreEnrollment
+                </NavLink> }
               </li>
               <li className="list-group-item subgroup">
                 Consents
@@ -135,10 +137,10 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
               <Routes>
                 <Route path="profile" element={<EnrolleeProfile enrollee={enrollee}/>}/>
                 <Route path="consents" element={<div>consents</div>}/>
-                <Route path="preRegistration" element={
+                { currentEnv.preEnrollSurvey && <Route path="preRegistration" element={
                   <PreEnrollmentView preEnrollSurvey={currentEnv.preEnrollSurvey}
                     preEnrollResponse={enrollee.preEnrollmentResponse}/>
-                }/>
+                }/> }
                 <Route path="surveys">
                   <Route path=":surveyStableId" element={<EnrolleeSurveyView enrollee={enrollee}
                     responseMap={responseMap}/>}/>

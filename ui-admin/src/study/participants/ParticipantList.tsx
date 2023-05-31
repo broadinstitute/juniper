@@ -19,15 +19,16 @@ import {
 } from '@tanstack/react-table'
 import { ColumnVisibilityControl, IndeterminateCheckbox, sortableTableHeader } from '../../util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import ExportDataControl from './export/ExportDataControl'
-
+import AdHocEmailModal from './AdHocEmailModal'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
   const [participantList, setParticipantList] = useState<EnrolleeSearchResult[]>([])
   const [showExportModal, setShowExportModal] = useState(false)
+  const [showEmailModal, setShowEmailModal] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
@@ -65,10 +66,6 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     header: 'Consented',
     accessorKey: 'enrollee.consented',
     cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
-  }, {
-    header: 'Withdrawn',
-    accessorKey: 'enrollee.withdrawn',
-    cell: info => info.getValue() ? <FontAwesomeIcon icon={faTimes}/> : ''
   }], [study.shortcode])
 
 
@@ -96,6 +93,13 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
       Store.addNotification(failureNotification(`Error loading participants`))
     })
   }, [])
+
+  const numSelected = Object.keys(rowSelection).length
+  const allowSendEmail = numSelected > 0
+  const enrolleesSelected = Object.keys(rowSelection)
+    .filter(key => rowSelection[key])
+    .map(key => participantList[parseInt(key)].enrollee.shortcode)
+
   return <div className="ParticipantList container pt-2">
     <div className="row">
       <div className="col-12">
@@ -103,10 +107,6 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
         <LoadingSpinner isLoading={isLoading}>
           <div className="d-flex align-items-center justify-content-between">
             <div className="d-flex align-items-center">
-              <span className="me-2">
-                {Object.keys(rowSelection).length} of{' '}
-                {table.getPreFilteredRowModel().rows.length} selected
-              </span>
               <Link to={studyEnvMetricsPath(portal.shortcode, currentEnv.environmentName, study.shortcode)}
                 className="mx-2">Metrics</Link>
               <span className="px-1">|</span>
@@ -121,6 +121,24 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
               <ExportDataControl studyEnvContext={studyEnvContext} show={showExportModal} setShow={setShowExportModal}/>
             </div>
             <ColumnVisibilityControl table={table}/>
+          </div>
+          <div>
+            <div className="d-flex align-items-center">
+              <span className="me-2">
+                {numSelected} of{' '}
+                {table.getPreFilteredRowModel().rows.length} selected
+              </span>
+              <span className="me-2">
+                <button onClick={() => setShowEmailModal(allowSendEmail)}
+                  aria-disabled={!allowSendEmail} className="btn btn-secondary"
+                  title={allowSendEmail ? 'Send email' : 'Select at least one participant'}>
+                  Send email
+                </button>
+              </span>
+              { showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
+                studyEnvContext={studyEnvContext}
+                onDismiss={() => setShowEmailModal(false)}/> }
+            </div>
           </div>
           <table className="table table-striped">
             <thead>
