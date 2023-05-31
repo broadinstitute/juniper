@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import Api, { Enrollee, KitType } from 'api/api'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import Select from "react-select";
+import Select from 'react-select'
 
+/** Renders a modal for an admin to submit a sample collection kit request. */
 export default function RequestKitModal({ enrollee, studyEnvContext, onDismiss, onSubmit }: {
     enrollee: Enrollee,
     studyEnvContext: StudyEnvContextT,
@@ -27,7 +28,7 @@ export default function RequestKitModal({ enrollee, studyEnvContext, onDismiss, 
 
   useEffect(() => {
     const loadKitTypes = async () => {
-      const fetchedKitTypes = await Api.fetchKitTypes(portal.shortcode, study.shortcode);
+      const fetchedKitTypes = await Api.fetchKitTypes(portal.shortcode, study.shortcode)
       setKitTypes(fetchedKitTypes)
       kitType || setKitType(fetchedKitTypes[0].name)
     }

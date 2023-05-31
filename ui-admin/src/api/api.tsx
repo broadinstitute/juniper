@@ -458,8 +458,13 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async createKitRequest(portalShortcode: string, studyShortcode: string, envName: string,
-                         enrolleeShortcode: string, kitType: string): Promise<string> {
+  async createKitRequest(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: string,
+    enrolleeShortcode: string,
+    kitType: string
+  ): Promise<string> {
     const params = new URLSearchParams({ kitType })
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit?${params}`
@@ -467,8 +472,12 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async fetchEnrolleeKitRequests(portalShortcode: string, studyShortcode: string, envName: string,
-                         enrolleeShortcode: string): Promise<KitRequest[]> {
+  async fetchEnrolleeKitRequests(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: string,
+    enrolleeShortcode: string
+  ): Promise<KitRequest[]> {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/kitRequests`
     const response = await fetch(url, this.getGetInit())

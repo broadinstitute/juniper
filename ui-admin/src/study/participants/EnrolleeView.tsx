@@ -19,7 +19,7 @@ import EnrolleeProfile from './EnrolleeProfile'
 import ParticipantTaskView from './tasks/ParticipantTaskView'
 import ErrorBoundary from 'util/ErrorBoundary'
 import AdvancedOptions from './AdvancedOptions'
-import KitRequests from "./KitRequests";
+import KitRequests from './KitRequests'
 
 export type SurveyWithResponsesT = {
   survey: StudyEnvironmentSurvey,
