@@ -3,7 +3,7 @@ import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
 import Api, { NotificationConfig } from 'api/api'
-import { failureNotification } from 'util/notifications'
+import {failureNotification, successNotification} from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import Select from 'react-select'
 
@@ -25,18 +25,24 @@ export default function AdHocEmailModal({ enrolleeShortcodes, onDismiss, studyEn
     })
   }, [])
 
-  const sendEmail = () => {
+  const sendEmail = async () => {
     if (!selectedConfig) {
       return
     }
-    Api.sendAdHocNotification({
-      portalShortcode: studyEnvContext.portal.shortcode,
-      studyShortcode: studyEnvContext.study.shortcode,
-      envName: studyEnvContext.currentEnv.environmentName,
-      enrolleeShortcodes,
-      customMessages: { adHocMessage, adHocSubject },
-      notificationConfigId: selectedConfig.id
-    })
+    try {
+      await Api.sendAdHocNotification({
+        portalShortcode: studyEnvContext.portal.shortcode,
+        studyShortcode: studyEnvContext.study.shortcode,
+        envName: studyEnvContext.currentEnv.environmentName,
+        enrolleeShortcodes,
+        customMessages: { adHocMessage, adHocSubject },
+        notificationConfigId: selectedConfig.id
+      })
+      Store.addNotification(successNotification('email sent'))
+    } catch (e) {
+      Store.addNotification(failureNotification('email send failed'))
+    }
+    onDismiss()
   }
 
   return <Modal onHide={onDismiss} show={true} className="modal-lg">

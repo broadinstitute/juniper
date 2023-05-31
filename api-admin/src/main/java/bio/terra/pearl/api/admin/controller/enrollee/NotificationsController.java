@@ -76,10 +76,7 @@ public class NotificationsController implements NotificationsApi {
     }
   }
 
-  /**
-   * send a one-off notification. If the body notificationConfig object has an id, the saved config
-   * will be used
-   */
+  /** send a one-off notification. */
   @Override
   public ResponseEntity<Object> adHoc(
       String portalShortcode, String studyShortcode, String envName, Object body) {
@@ -98,10 +95,7 @@ public class NotificationsController implements NotificationsApi {
     return ResponseEntity.ok(configUsed);
   }
 
-  /**
-   * object for specifying an adhoc notification. If notificationConfigId is specified, a saved
-   * config will be used otherwise the notificationConfig given will be created and then used
-   */
+  /** object for specifying an adhoc notification. */
   public record AdHocNotification(
       List<String> enrolleeShortcodes,
       UUID notificationConfigId,
