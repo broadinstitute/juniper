@@ -67,6 +67,6 @@ test('renders the dataset details', async () => {
     expect(screen.getByText('successful_dataset', { exact: false })).toBeInTheDocument()
     expect(screen.getByText('a successfully created dataset', { exact: false })).toBeInTheDocument()
     expect(screen.getByText('study.admin@test.com', { exact: false })).toBeInTheDocument()
-    expect(screen.getByText('5/31/2023', { exact: false })).toBeInTheDocument()
+    expect(screen.getByText('5/31/2023, 2:19:00 PM', { exact: false })).toBeInTheDocument()
   })
 })
