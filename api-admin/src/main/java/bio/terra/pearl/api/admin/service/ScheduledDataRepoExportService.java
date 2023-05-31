@@ -61,8 +61,13 @@ public class ScheduledDataRepoExportService {
             "storageAccountKey",
             "storageContainerName");
 
-    return REQUIRED_TDR_ENV_VARS.stream()
-        .allMatch(
-            envVar -> StringUtils.isNotBlank(env.getProperty(String.format("env.tdr.%s", envVar))));
+    //Kill-switch for TDR export
+    boolean tdrExportEnabled = env.getProperty("env.tdr.tdrExportEnabled", Boolean.class, false);
+
+    return tdrExportEnabled
+        && REQUIRED_TDR_ENV_VARS.stream()
+            .allMatch(
+                envVar ->
+                    StringUtils.isNotBlank(env.getProperty(String.format("env.tdr.%s", envVar))));
   }
 }
