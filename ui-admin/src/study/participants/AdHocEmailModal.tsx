@@ -3,7 +3,7 @@ import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
 import Api, { NotificationConfig } from 'api/api'
-import {failureNotification, successNotification} from 'util/notifications'
+import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import Select from 'react-select'
 
