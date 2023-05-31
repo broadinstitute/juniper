@@ -23,7 +23,8 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
 
 export const mockDatasetDetails: (datasetName: string, status: string) => DatasetDetails =
     (datasetName: string, status: string) => ({
-      createdAt: 0,
+      createdAt: 1685557140,
+      createdBy: 'study.admin@test.com',
       datasetName,
       description: 'a successfully created dataset',
       id: 'a-successful-id',

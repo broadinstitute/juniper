@@ -117,6 +117,8 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
                   <label>Description:</label> { datasetDetails?.description ?
                     datasetDetails?.description : <span className="fst-italic">N/A</span> }
                   <br/>
+                  <label>Created By:</label> { datasetDetails?.createdBy }
+                  <br/>
                   <label>Date Created:</label> { instantToDefaultString(datasetDetails?.createdAt) }
                 </div>
                 <br/>
