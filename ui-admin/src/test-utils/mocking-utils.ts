@@ -16,17 +16,7 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
       password: '',
       passwordProtected: false,
       acceptingEnrollment: true
-    }/*,
-    preEnrollSurveyId: 'surveyId',
-    preEnrollSurvey: {
-      id: 'surveyId',
-      stableId: 'surveyStableId',
-      version: 1,
-      name: 'pre-enroll survey',
-      createdAt: 1,
-      lastUpdatedAt: 1,
-      content: ''
-    }*/
+    }
   },
   currentEnvPath: 'portalCode/studies/fakeStudy/env/sandbox'
 })
@@ -64,8 +54,17 @@ export const mockEnrollee: () => Enrollee = () => ({
       displayName: 'Test kit',
       description: 'Test sample collection kit'
     },
-    sentToAddress: '{"firstName": "Jonas", "lastName": "Salk", "street1": "1234 Fake Street",' +
-      '"city": "Cambridge", "state": "MA", "postalCode": "02138", "country": "US"}',
+    // This is intentionally a little different from the enrollee's current mailing address to show that sentToAddress
+    // is a capture of the mailing address at the time the kit was sent.
+    sentToAddress: JSON.stringify({
+      firstName: 'Jonas',
+      lastName: 'Salk',
+      street1: '1234 Fake Street',
+      city: 'Cambridge',
+      state: 'MA',
+      postalCode: '02138',
+      country: 'US'
+    }),
     status: 'CREATED'
   }]
 })
