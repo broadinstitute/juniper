@@ -69,6 +69,9 @@ export type NotificationConfig = {
 export type EmailTemplate = {
   subject: string
   body: string
+  name: string
+  stableId: string
+  version: number
 }
 
 export {}

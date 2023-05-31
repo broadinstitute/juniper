@@ -62,7 +62,7 @@ public class EnrolleeEmailService implements NotificationSender {
         } else {
             notification.setSentTo(ruleData.profile().getContactEmail());
             try {
-                buildAndSendEmail(contextInfo, ruleData);
+                buildAndSendEmail(contextInfo, ruleData, notification);
                 logger.info("Email sent: config: {}, enrollee: {}", config.getId(),
                         ruleData.enrollee().getShortcode());
                 notification.setDeliveryStatus(NotificationDeliveryStatus.SENT);
@@ -93,18 +93,20 @@ public class EnrolleeEmailService implements NotificationSender {
     @Override
     public void sendTestNotification(NotificationConfig config, EnrolleeRuleData ruleData) throws Exception {
         NotificationContextInfo contextInfo = loadContextInfo(config);
-        buildAndSendEmail(contextInfo, ruleData);
+        buildAndSendEmail(contextInfo, ruleData, new Notification());
     }
 
-    protected Mail buildAndSendEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData) throws Exception {
-        Mail mail = buildEmail(contextInfo, ruleData);
+    protected Mail buildAndSendEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData,
+                                     Notification notification) throws Exception {
+        Mail mail = buildEmail(contextInfo, ruleData, notification);
         sendgridClient.sendEmail(mail);
         return mail;
     }
 
-    protected Mail buildEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData) {
-        StringSubstitutor substitutor = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
-        String fromAddress = contextInfo.portalEnv().getPortalEnvironmentConfig().getEmailSourceAddress();
+    protected Mail buildEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData, Notification notification) {
+        StringSubstitutor substitutor = EnrolleeEmailSubstitutor
+            .newSubstitutor(ruleData, contextInfo, routingPaths, notification.getCustomMessagesMap());
+        String fromAddress = contextInfo.portalEnvConfig().getEmailSourceAddress();
         Mail mail = sendgridClient.buildEmail(contextInfo, ruleData.profile().getContactEmail(), fromAddress, substitutor);
         return mail;
     }
@@ -150,6 +152,7 @@ public class EnrolleeEmailService implements NotificationSender {
         return new NotificationContextInfo(
                 portal,
                 portalEnvironment,
+                portalEnvironment.getPortalEnvironmentConfig(),
                 study,
                 emailTemplateService.find(config.getEmailTemplateId()).orElse(null)
         );

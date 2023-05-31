@@ -5,7 +5,8 @@ import Select from 'react-select'
 import TestEmailSender from './TestEmailSender'
 import { cloneDeep } from 'lodash'
 
-const configTypeOptions = [{ label: 'Event', value: 'EVENT' }, { label: 'Task reminder', value: 'TASK_REMINDER' }]
+const configTypeOptions = [{ label: 'Event', value: 'EVENT' }, { label: 'Task reminder', value: 'TASK_REMINDER' },
+  { label: 'Ad hoc', value: 'AD_HOC' }]
 const deliveryTypeOptions = [{ label: 'Email', value: 'EMAIL' }]
 const eventTypeOptions = [{ label: 'Study Enrollment', value: 'STUDY_ENROLLMENT' },
   { label: 'Study Consent', value: 'STUDY_CONSENT' }]

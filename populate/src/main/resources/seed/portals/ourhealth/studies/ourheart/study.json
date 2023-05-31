@@ -19,7 +19,8 @@
     "emails/studyConsent.json",
     "emails/studyEnroll.json",
     "emails/consentReminder.json",
-    "emails/surveyReminder.json"
+    "emails/surveyReminder.json",
+    "emails/adHoc.json"
   ],
   "studyEnvironmentDtos": [
     {
@@ -65,6 +66,9 @@
         "reminderIntervalMinutes": 10080,
         "maxNumReminders": 2,
         "populateFileName": "emails/surveyReminder.json"
+      },{
+        "notificationType": "AD_HOC",
+        "populateFileName": "emails/adHoc.json"
       }],
       "enrolleeFiles": [
         "enrollees/jsalk.json",

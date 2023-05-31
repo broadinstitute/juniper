@@ -12,7 +12,7 @@ const ENROLLMENT_QUALIFIED_VARIABLE = 'qualified'
 
 /** Renders a pre-enrollment form, and handles submitting the user-inputted response */
 export default function PreEnrollView({ enrollContext, survey }:
-                                          { enrollContext: StudyEnrollContext, survey: Survey }) {
+                                        { enrollContext: StudyEnrollContext, survey: Survey }) {
   const { studyEnv, updatePreEnrollResponseId } = enrollContext
   const navigate = useNavigate()
   // for now, we assume all pre-screeners are a single page

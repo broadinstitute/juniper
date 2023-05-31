@@ -85,6 +85,7 @@ public class AdminEmailService {
         portal,
         null,
         null,
+        null,
         emailTemplate
     );
   }

@@ -3,8 +3,10 @@ package bio.terra.pearl.api.admin.service;
 import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.common.iam.BearerTokenFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.PortalStudy;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
@@ -47,10 +49,10 @@ public class AuthUtilService {
   }
 
   /**
-   * this will throw permission denied even if the portal doesn't exist, to avoid leaking
-   * information
+   * this will throw not found if the portal doesn't exist or if the user does't have permission, to
+   * avoid leaking information
    */
-  public Portal authAdminToPortal(AdminUser user, String portalShortcode) {
+  public Portal authUserToPortal(AdminUser user, String portalShortcode) {
     Optional<Portal> portalOpt = portalService.findOneByShortcode(portalShortcode);
     if (portalOpt.isPresent()) {
       Portal portal = portalOpt.get();
@@ -59,10 +61,6 @@ public class AuthUtilService {
       }
     }
     throw new NotFoundException("Portal %s not found".formatted(portalShortcode));
-  }
-
-  public Portal authUserToPortal(AdminUser user, String portalShortcode) {
-    return authAdminToPortal(user, portalShortcode);
   }
 
   public PortalStudy authUserToStudy(
@@ -76,5 +74,12 @@ public class AuthUtilService {
               .formatted(user.getUsername(), studyShortcode));
     }
     return portalStudy.get();
+  }
+
+  public void checkEnrolleeInStudyEnv(Enrollee enrollee, StudyEnvironment studyEnvironment) {
+    if (!studyEnvironment.getId().equals(enrollee.getStudyEnvironmentId())) {
+      throw new PermissionDeniedException(
+          "Enrollee %s not accessible from study environment".formatted(enrollee.getShortcode()));
+    }
   }
 }

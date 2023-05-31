@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
+import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.text.StringSubstitutor;
@@ -17,34 +18,46 @@ import org.slf4j.LoggerFactory;
  * for each email to be sent. */
 public class EnrolleeEmailSubstitutor implements StringLookup {
     private static final Logger logger = LoggerFactory.getLogger(EnrolleeEmailSubstitutor.class);
-    private Map<String, Object> valueMap;
+    private final Map<String, Object> valueMap = new HashMap<>();
     private EnrolleeRuleData enrolleeRuleData;
     private NotificationContextInfo contextInfo;
     private final ApplicationRoutingPaths routingPaths;
 
     protected EnrolleeEmailSubstitutor(EnrolleeRuleData ruleData, NotificationContextInfo contextInfo,
-                                       ApplicationRoutingPaths routingPaths) {
+                                       ApplicationRoutingPaths routingPaths, Map<String, String> messages) {
         this.enrolleeRuleData = ruleData;
         this.contextInfo = contextInfo;
         this.routingPaths = routingPaths;
-        valueMap = Map.of("profile", enrolleeRuleData.profile(),
+        valueMap.putAll(Map.of("profile", enrolleeRuleData.profile(),
                 "portalEnv", contextInfo.portalEnv(),
                 "envConfig", contextInfo.portalEnv().getPortalEnvironmentConfig(),
                 "dashboardLink", getDashboardLink(contextInfo.portalEnv(),
                         contextInfo.portal(), contextInfo.study()),
                 "dashboardUrl", getDashboardUrl(contextInfo.portalEnv(), contextInfo.portal()),
+                "siteLink", getSiteLink(contextInfo.portalEnv(), contextInfo.portal()),
                 "siteImageBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portal().getShortcode()),
                 // providing a study isn't required, since emails might come from the portal, rather than a study
                 // but immutable map doesn't allow nulls
-                "study", contextInfo.study() != null ? contextInfo.study() : "");
+                "study", contextInfo.study() != null ? contextInfo.study() : ""));
+        if (messages != null) {
+            valueMap.putAll(messages);
+        }
     }
 
     /** create a new substitutor.  the portalEnv must have the envConfig attached */
     public static StringSubstitutor newSubstitutor(EnrolleeRuleData ruleData,
                                                    NotificationContextInfo contextInfo,
                                                    ApplicationRoutingPaths routingPaths) {
-        return new StringSubstitutor(new EnrolleeEmailSubstitutor(ruleData, contextInfo, routingPaths));
+        return new StringSubstitutor(new EnrolleeEmailSubstitutor(ruleData, contextInfo, routingPaths, null));
     }
+
+    public static StringSubstitutor newSubstitutor(EnrolleeRuleData ruleData,
+                                                   NotificationContextInfo contextInfo,
+                                                   ApplicationRoutingPaths routingPaths,
+                                                   Map<String, String> customMessages) {
+        return new StringSubstitutor(new EnrolleeEmailSubstitutor(ruleData, contextInfo, routingPaths, customMessages));
+    }
+
 
 
     @Override
@@ -57,6 +70,12 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         }
         return "";
     }
+
+    public String getSiteLink(PortalEnvironment portalEnv, Portal portal) {
+        String href = routingPaths.getParticipantBaseUrl(portalEnv, portal.getShortcode());
+        return String.format("<a rel=\"noopener\" href=\"%s\" target=\"_blank\">%s</a>", href, href);
+    }
+
 
     public String getDashboardLink(PortalEnvironment portalEnv, Portal portal, Study study) {
         String href = getDashboardUrl(portalEnv, portal);

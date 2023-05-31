@@ -83,7 +83,9 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                 <TaskSummary tasks={enrollee.participantTasks}/>
               </li>
               <li className="list-group-item">
-                <NavLink to="preRegistration" className={getLinkCssClasses}>PreEnrollment</NavLink>
+                { currentEnv.preEnrollSurvey && <NavLink to="preRegistration" className={getLinkCssClasses}>
+                  PreEnrollment
+                </NavLink> }
               </li>
               <li className="list-group-item subgroup">
                 Consents
