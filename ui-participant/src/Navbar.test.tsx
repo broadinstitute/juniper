@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import {
@@ -70,25 +69,18 @@ describe('CustomNavLink', () => {
 
   it('renders mailing list links', async () => {
     // Arrange
-    const user = userEvent.setup()
-
     const navbarItem: NavbarItemMailingList = {
       itemType: 'MAILING_LIST',
       text: 'Mailing list link'
     }
-
-    jest.spyOn(window, 'alert').mockImplementation(() => { /* noop */ })
 
     // Act
     render(<CustomNavLink navLink={navbarItem} />)
 
     // Assert
     const link = screen.getByText('Mailing list link')
-
-    // Act
-    await user.click(link)
-
-    // Assert
-    expect(window.alert).toHaveBeenCalled()
+    const modal = document.querySelector('.modal') as HTMLElement
+    expect(link).toHaveAttribute('data-bs-toggle', 'modal')
+    expect(link).toHaveAttribute('data-bs-target', `#${CSS.escape(modal.getAttribute('id') as string)}`)
   })
 })
