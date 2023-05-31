@@ -61,7 +61,7 @@ public class ScheduledDataRepoExportService {
             "storageAccountKey",
             "storageContainerName");
 
-    // Kill-switch for TDR export
+    // Global on/off switch for TDR export
     boolean tdrExportEnabled = env.getProperty("env.tdr.tdrExportEnabled", Boolean.class, false);
 
     return tdrExportEnabled
