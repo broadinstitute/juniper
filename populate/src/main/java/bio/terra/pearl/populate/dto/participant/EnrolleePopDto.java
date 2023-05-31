@@ -2,7 +2,7 @@ package bio.terra.pearl.populate.dto.participant;
 
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
-import bio.terra.pearl.populate.dto.kit.KitRequestDto;
+import bio.terra.pearl.populate.dto.kit.KitRequestPopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
@@ -34,5 +34,5 @@ public class EnrolleePopDto extends Enrollee {
     private Set<ParticipantTaskPopDto> participantTaskDtos = new HashSet<>();
     private List<NotificationPopDto> notifications = new ArrayList<>();
     private Integer submittedHoursAgo;
-    private Set<KitRequestDto> kitRequestDtos = new HashSet<>();
+    private Set<KitRequestPopDto> kitRequestDtos = new HashSet<>();
 }

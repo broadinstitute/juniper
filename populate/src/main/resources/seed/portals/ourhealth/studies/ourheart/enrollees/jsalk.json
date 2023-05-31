@@ -70,7 +70,28 @@
       "creatingAdminUsername": "staff@ourhealth.org",
       "kitTypeName": "saliva",
       "statusName": "CREATED",
-      "dsmStatus": "{\n  \"kitId\": \"11111111-2222-3333-4444-555555555555\",\n  \"labelDate\": \"2023-05-24\",\n  \"scanDate\": \"2023-05-24\",\n  \"receiveDate\": \"2023-05-24\",\n  \"scannedByEmail\": \"\",\n  \"receivedByEmail\": \"\",\n  \"labeledByEmail\": \"\",\n  \"deactivationDate\": \"\",\n  \"deactivatedBy\": \"\",\n  \"deactivationReason\": \"\",\n  \"trackingNumbers\": [],\n  \"returnTrackingNumber\": \"\",\n  \"errors\": [\n    {\n      \"errorDate\": \"2023-05-24\",\n      \"errorMessage\": \"\"\n    }\n  ],\n  \"discardDate\": \"2023-05-24\",\n  \"discardReason\": \"\"\n}\n"
+      "dsmStatusJson": {
+        "kitId": "11111111-2222-3333-4444-555555555555",
+        "labelDate": "2023-05-24",
+        "scanDate": "2023-05-24",
+        "receiveDate": "2023-05-24",
+        "scannedByEmail": "",
+        "receivedByEmail": "",
+        "labeledByEmail": "",
+        "deactivationDate": "",
+        "deactivatedBy": "",
+        "deactivationReason": "",
+        "trackingNumbers": [],
+        "returnTrackingNumber": "",
+        "errors": [
+          {
+            "errorDate": "2023-05-24",
+            "errorMessage": ""
+          }
+        ],
+        "discardDate": "2023-05-24",
+        "discardReason": ""
+      }
     }
   ]
 }

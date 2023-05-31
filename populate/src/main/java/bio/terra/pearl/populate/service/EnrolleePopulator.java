@@ -37,7 +37,7 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import bio.terra.pearl.populate.dao.EnrolleePopulateDao;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
-import bio.terra.pearl.populate.dto.kit.KitRequestDto;
+import bio.terra.pearl.populate.dto.kit.KitRequestPopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
 import bio.terra.pearl.populate.dto.participant.EnrolleePopDto;
 import bio.terra.pearl.populate.dto.participant.ParticipantTaskPopDto;
@@ -223,18 +223,18 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         participantTaskService.create(taskDto);
     }
 
-    private void populateKitRequest(Enrollee enrollee, Profile profile, KitRequestDto kitRequestDto) throws JsonProcessingException {
-        var adminUser = adminUserDao.findByUsername(kitRequestDto.getCreatingAdminUsername()).get();
-        var kitType = kitTypeDao.findByName(kitRequestDto.getKitTypeName()).get();
+    private void populateKitRequest(Enrollee enrollee, Profile profile, KitRequestPopDto kitRequestPopDto) throws JsonProcessingException {
+        var adminUser = adminUserDao.findByUsername(kitRequestPopDto.getCreatingAdminUsername()).get();
+        var kitType = kitTypeDao.findByName(kitRequestPopDto.getKitTypeName()).get();
         var sentToAddress = KitRequestService.makePepperKitAddress(profile);
-        var kitRequestStatus = KitRequestStatus.valueOf(kitRequestDto.getStatusName());
+        var kitRequestStatus = KitRequestStatus.valueOf(kitRequestPopDto.getStatusName());
         var kitRequest = KitRequest.builder()
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee.getId())
                 .kitTypeId(kitType.getId())
                 .sentToAddress(objectMapper.writeValueAsString(sentToAddress))
                 .status(kitRequestStatus)
-                .dsmStatus(kitRequestDto.getDsmStatus())
+                .dsmStatus(kitRequestPopDto.getDsmStatusJson().toString())
                 .dsmStatusFetchedAt(Instant.now())
                 .build();
         kitRequestDao.create(kitRequest);
@@ -344,8 +344,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             populateTask(enrollee, ppUser, taskDto);
         }
         var profileWithAddress = profileService.loadWithMailingAddress(profile.getId()).get();
-        for (KitRequestDto kitRequestDto : popDto.getKitRequestDtos()) {
-            populateKitRequest(enrollee, profileWithAddress, kitRequestDto);
+        for (KitRequestPopDto kitRequestPopDto : popDto.getKitRequestDtos()) {
+            populateKitRequest(enrollee, profileWithAddress, kitRequestPopDto);
         }
         populateNotifications(enrollee, popDto, attachedEnv.getId(), ppUser);
 
