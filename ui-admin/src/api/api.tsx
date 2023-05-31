@@ -513,19 +513,13 @@ export default {
       })
     })
   },
-  
+
   async listDatasetsForStudyEnvironment(portalShortcode: string, studyShortcode: string,
     envName: string):
       Promise<DatasetDetails[]> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
-  },
-
-  listDatasetsForStudyEnvironment(portalShortcode: string, studyShortcode: string, envName: string):
-      Promise<Response> {
-    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets`
-    return fetch(url,  this.getGetInit())
   },
 
   async getJobHistoryForDataset(portalShortcode: string, studyShortcode: string,
