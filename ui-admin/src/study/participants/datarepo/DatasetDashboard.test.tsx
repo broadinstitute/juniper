@@ -5,7 +5,7 @@ import DatasetDashboard from './DatasetDashboard'
 import { DatasetDetails, DatasetJobHistory } from 'api/api'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockDatasetDetails, mockStudyEnvContext } from 'test-utils/mocking-utils'
-import Router from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 jest.mock('api/api', () => ({
   listDatasetsForStudyEnvironment: () => {
@@ -32,7 +32,7 @@ test('renders a link to TDR if the dataset successful created', async () => {
   const studyEnvContext = mockStudyEnvContext()
 
   const { RoutedComponent } = setupRouterTest(<DatasetDashboard studyEnvContext={studyEnvContext}/>)
-  jest.spyOn(Router, 'useParams').mockReturnValue({ datasetName: 'successful_dataset' })
+  ;(useParams as jest.Mock).mockReturnValue({ datasetName: 'successful_dataset' })
   render(RoutedComponent)
   await waitFor(() => {
     expect(screen.getByText('successful_dataset', { exact: false })).toBeInTheDocument()
@@ -48,7 +48,7 @@ test('does not render a link to TDR if the dataset failed to create', async () =
   const studyEnvContext = mockStudyEnvContext()
 
   const { RoutedComponent } = setupRouterTest(<DatasetDashboard studyEnvContext={studyEnvContext}/>)
-  jest.spyOn(Router, 'useParams').mockReturnValue({ datasetName: 'failed_dataset' })
+  ;(useParams as jest.Mock).mockReturnValue({ datasetName: 'failed_dataset' })
   render(RoutedComponent)
   await waitFor(() => {
     expect(screen.getByText('failed_dataset', { exact: false })).toBeInTheDocument()
