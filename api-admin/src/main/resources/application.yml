@@ -22,7 +22,7 @@ env:
     deploymentZone: ${DEPLOYMENT_ZONE:}
   dsm:
     basePath: ${DSM_ADDRESS:https://dsm-dev.datadonationplatform.org/ddp}
-    secret: ${DSM_SECRET:}
+    secret: ${DSM_JWT_SIGNING_SECRET:}
   populate:
     populate-from-classpath: true
   b2c:
