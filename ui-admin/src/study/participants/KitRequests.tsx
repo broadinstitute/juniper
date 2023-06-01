@@ -7,6 +7,7 @@ import RequestKitModal from './RequestKitModal'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { instantToDefaultString } from 'util/timeUtils'
+import { useUser } from 'user/UserProvider'
 
 /** Component for rendering the address a kit was sent to based on JSON captured at the time of the kit request. */
 function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string }) {
@@ -44,6 +45,7 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
                                         studyEnvContext: StudyEnvContextT,
                                         onUpdate: () => void
                                       }) {
+  const { user } = useUser()
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
 
   const onSubmit = () => {
@@ -59,9 +61,11 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
 
   return <div>
     <h5>Kit requests</h5>
-    <button className='btn btn-secondary' onClick={() => setShowRequestKitModal(true)}>
-      <FontAwesomeIcon icon={faPlus}/> Create a kit request
-    </button>
+    { user.superuser &&
+      <button className='btn btn-secondary' onClick={() => setShowRequestKitModal(true)}>
+        <FontAwesomeIcon icon={faPlus}/> Create a kit request
+      </button>
+    }
     {showRequestKitModal && <RequestKitModal
       enrollee={enrollee}
       studyEnvContext={studyEnvContext}
