@@ -61,7 +61,7 @@ test('renders the dataset details', async () => {
   const studyEnvContext = mockStudyEnvContext()
 
   const { RoutedComponent } = setupRouterTest(<DatasetDashboard studyEnvContext={studyEnvContext}/>)
-  jest.spyOn(Router, 'useParams').mockReturnValue({ datasetName: 'successful_dataset' })
+  ;(useParams as jest.Mock).mockReturnValue({ datasetName: 'successful_dataset' })
   render(RoutedComponent)
   await waitFor(() => {
     expect(screen.getByText('successful_dataset', { exact: false })).toBeInTheDocument()
