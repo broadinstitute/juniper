@@ -23,6 +23,7 @@ public class BaseSeedPopulator {
     private AdminConfigPopulator adminConfigPopulator;
     private AdminUserService adminUserService;
     private EnvironmentService environmentService;
+    private KitTypePopulator kitTypePopulator;
 
     public static final List<String> ADMIN_USERS_TO_POPULATE =
             Arrays.asList("adminUsers/dbush.json", "adminUsers/breilly.json",
@@ -32,14 +33,18 @@ public class BaseSeedPopulator {
                     "adminUsers/mbemis.json");
     public static final List<String> ENVIRONMENTS_TO_POPULATE =
             Arrays.asList("environments/sandbox.json", "environments/irb.json", "environments/live.json");
+    public static final List<String> KIT_TYPES_TO_POPULATE =
+            List.of("kits/salivaKitType.json");
 
     public BaseSeedPopulator(AdminUserPopulator adminUserPopulator, EnvironmentPopulator environmentPopulator,
-                             AdminConfigPopulator adminConfigPopulator, AdminUserService adminUserService, EnvironmentService environmentService) {
+                             AdminConfigPopulator adminConfigPopulator, AdminUserService adminUserService,
+                             EnvironmentService environmentService, KitTypePopulator kitTypePopulator) {
         this.adminUserPopulator = adminUserPopulator;
         this.environmentPopulator = environmentPopulator;
         this.adminConfigPopulator = adminConfigPopulator;
         this.adminUserService = adminUserService;
         this.environmentService = environmentService;
+        this.kitTypePopulator = kitTypePopulator;
     }
 
     public SetupStats populate(String filePathName) throws IOException {
@@ -49,6 +54,9 @@ public class BaseSeedPopulator {
         }
         for (String file : ENVIRONMENTS_TO_POPULATE) {
             environmentPopulator.populate(new FilePopulateContext(file), false);
+        }
+        for (String file : KIT_TYPES_TO_POPULATE) {
+            kitTypePopulator.populate(new FilePopulateContext(file), false);
         }
         var configStats = adminConfigPopulator.populate(true);
         return SetupStats.builder()

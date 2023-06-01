@@ -39,6 +39,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
     @Transactional
     public void testPopulateOurHealth() throws Exception {
         setUpEnvironments();
+        setUpKitTypes();
         Portal portal = portalPopulator.populate(new FilePopulateContext("portals/ourhealth/portal.json"), true);
         Assertions.assertEquals("ourhealth", portal.getShortcode());
 

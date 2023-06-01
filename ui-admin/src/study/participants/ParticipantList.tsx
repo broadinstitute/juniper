@@ -66,6 +66,10 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     header: 'Consented',
     accessorKey: 'enrollee.consented',
     cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
+  }, {
+    header: 'Kit requested',
+    accessorKey: 'kitRequested',
+    cell: data => data.row.original.hasKit ? <FontAwesomeIcon icon={faCheck}/> : ''
   }], [study.shortcode])
 
 

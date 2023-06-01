@@ -2,6 +2,7 @@ package bio.terra.pearl.core.model.participant;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
+import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
@@ -37,4 +38,6 @@ public class Enrollee extends BaseEntity {
     private Set<ConsentResponse> consentResponses = new HashSet<>();
     @Builder.Default
     private Set<ParticipantTask> participantTasks = new HashSet<>();
+    @Builder.Default
+    private Set<KitRequest> kitRequests = new HashSet<>();
 }

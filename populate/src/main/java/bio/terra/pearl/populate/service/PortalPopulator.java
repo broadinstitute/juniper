@@ -150,6 +150,9 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
     protected Portal populateChildren(Portal portal, PortalPopDto popDto, FilePopulateContext context, boolean overwrite) throws IOException {
         PortalPopulateContext portalPopContext = new PortalPopulateContext(context, portal.getShortcode(), null);
 
+        for (AdminUserDto adminUserDto : popDto.getAdminUsers()) {
+            adminUserPopulator.populateForPortal(adminUserDto, portalPopContext, overwrite, portal);
+        }
         for (SiteImagePopDto imagePopDto : popDto.getSiteImageDtos()) {
             siteImagePopulator.populateFromDto(imagePopDto, portalPopContext, overwrite);
         }
@@ -167,9 +170,6 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
             populateStudy(studyFileName, portalPopContext, portal, overwrite);
         }
 
-        for (AdminUserDto adminUserDto : popDto.getAdminUsers()) {
-            adminUserPopulator.populateForPortal(adminUserDto, portalPopContext, overwrite, portal);
-        }
         return portal;
     }
 }
