@@ -66,7 +66,7 @@ test('renders the dataset details', async () => {
   await waitFor(() => {
     expect(screen.getByText('successful_dataset', { exact: false })).toBeInTheDocument()
     expect(screen.getByText('a successfully created dataset', { exact: false })).toBeInTheDocument()
-    expect(screen.getByText('study.admin@test.com', { exact: false })).toBeInTheDocument()
+    expect(screen.getByText('0b9ade05-f7e3-483e-b85a-43deac7505c0', { exact: false })).toBeInTheDocument()
     expect(screen.getByText('5/31/2023', { exact: false })).toBeInTheDocument()
   })
 })

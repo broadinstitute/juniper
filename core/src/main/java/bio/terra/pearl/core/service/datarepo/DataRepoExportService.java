@@ -112,7 +112,7 @@ public class DataRepoExportService {
                 .status(DatasetStatus.CREATING)
                 .datasetName(datasetName)
                 .description(description)
-                .createdBy(user.getUsername())
+                .createdBy(user.getId())
                 .lastExported(Instant.ofEpochSecond(0))
                 .studyEnvironmentId(studyEnv.getId())
                 .build();
