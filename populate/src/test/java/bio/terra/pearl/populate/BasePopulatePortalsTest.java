@@ -11,6 +11,7 @@ import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.service.BaseSeedPopulator;
 import bio.terra.pearl.populate.service.EnvironmentPopulator;
+import bio.terra.pearl.populate.service.KitTypePopulator;
 import bio.terra.pearl.populate.service.PortalPopulator;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import java.io.IOException;
@@ -44,10 +45,18 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     protected DictionaryExportService dictionaryExportService;
     @Autowired
     protected WithdrawnEnrolleeService withdrawnEnrolleeService;
+    @Autowired
+    protected KitTypePopulator kitTypePopulator;
 
     protected void setUpEnvironments() throws IOException {
         for (String fileName : BaseSeedPopulator.ENVIRONMENTS_TO_POPULATE) {
             environmentPopulator.populate(new FilePopulateContext(fileName), true);
+        }
+    }
+
+    protected void setUpKitTypes() throws IOException {
+        for (String file : BaseSeedPopulator.KIT_TYPES_TO_POPULATE) {
+            kitTypePopulator.populate(new FilePopulateContext(file), false);
         }
     }
 }

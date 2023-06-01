@@ -22,6 +22,7 @@
     "emails/surveyReminder.json",
     "emails/adHoc.json"
   ],
+  "kitTypeNames": [ "saliva" ],
   "studyEnvironmentDtos": [
     {
       "environmentName": "sandbox",

@@ -58,5 +58,27 @@ export const mockEnrollee: () => Enrollee = () => ({
       postalCode: '02138',
       country: 'US'
     }
-  }
+  },
+  kitRequests: [{
+    id: 'kitRequestId',
+    createdAt: 1,
+    kitType: {
+      id: 'kitTypeId',
+      name: 'testKit',
+      displayName: 'Test kit',
+      description: 'Test sample collection kit'
+    },
+    // This is intentionally a little different from the enrollee's current mailing address to show that sentToAddress
+    // is a capture of the mailing address at the time the kit was sent.
+    sentToAddress: JSON.stringify({
+      firstName: 'Jonas',
+      lastName: 'Salk',
+      street1: '1234 Fake Street',
+      city: 'Cambridge',
+      state: 'MA',
+      postalCode: '02138',
+      country: 'US'
+    }),
+    status: 'CREATED'
+  }]
 })

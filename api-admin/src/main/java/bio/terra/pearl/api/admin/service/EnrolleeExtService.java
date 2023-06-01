@@ -16,6 +16,7 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -75,10 +76,15 @@ public class EnrolleeExtService {
     return withdrawnEnrolleeService.withdrawEnrollee(enrollee);
   }
 
-  public KitRequest requestKit(AdminUser adminUser, String enrolleeShortcode, String kitType)
+  public KitRequest requestKit(AdminUser adminUser, String enrolleeShortcode, String kitTypeName)
       throws JsonProcessingException {
     Enrollee enrollee = authAdminUserToEnrollee(adminUser, enrolleeShortcode);
-    return kitRequestService.requestKit(adminUser, enrollee, kitType);
+    return kitRequestService.requestKit(adminUser, enrollee, kitTypeName);
+  }
+
+  public Collection<KitRequest> getKitRequests(AdminUser adminUser, String enrolleeShortcode) {
+    Enrollee enrollee = authAdminUserToEnrollee(adminUser, enrolleeShortcode);
+    return kitRequestService.getKitRequests(adminUser, enrollee);
   }
 
   /**
