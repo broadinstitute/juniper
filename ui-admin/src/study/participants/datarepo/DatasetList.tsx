@@ -66,18 +66,16 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
   }
 
   const loadData = async () => {
-    try {
-      //Fetch datasets
-      const datasets = await Api.listDatasetsForStudyEnvironment(
-        studyEnvContext.portal.shortcode,
-        studyEnvContext.study.shortcode,
-        studyEnvContext.currentEnv.environmentName)
-      const datasetsResponse = await datasets.json()
-      setDatasets(datasetsResponse)
-      setIsLoading(false)
-    } catch (e) {
-      Store.addNotification(failureNotification(`Error loading datasets`))
-    }
+    //Fetch datasets
+    await Api.listDatasetsForStudyEnvironment(
+      studyEnvContext.portal.shortcode,
+      studyEnvContext.study.shortcode,
+      studyEnvContext.currentEnv.environmentName).then(result => {
+      setDatasets(result)
+    }).catch(e =>
+      Store.addNotification(failureNotification(`Error loading datasets: ${e.message}`))
+    )
+    setIsLoading(false)
   }
 
   useEffect(() => {

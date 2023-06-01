@@ -8,13 +8,13 @@ import lombok.experimental.SuperBuilder;
  */
 @Getter @SuperBuilder
 public class PepperKitAddress {
-    String firstName;
-    String lastName;
-    String street1;
-    String street2;
-    String city;
-    String state;
-    String postalCode;
-    String country;
-    String phoneNumber;
+    private String firstName;
+    private String lastName;
+    private String street1;
+    private String street2;
+    private String city;
+    private String state;
+    private String postalCode;
+    private String country;
+    private String phoneNumber;
 }

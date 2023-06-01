@@ -218,6 +218,20 @@ paths:
           content: { application/json: { schema: { $ref: '#/components/schemas/ConfiguredConsentDto' } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/kitTypes:
+    get:
+      summary: Gets the kit types for a study
+      tags: [ study ]
+      operationId: getKitTypes
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: List of kit types
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}:
     patch:
       summary: Updates a study environment configuration
@@ -343,6 +357,22 @@ paths:
       responses:
         '200':
           description: List of DataChangeRecords
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/kitRequests:
+    get:
+      summary: List kit requests for an enrollee
+      tags: [ enrollee ]
+      operationId: getKitRequests
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Kit requests
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'

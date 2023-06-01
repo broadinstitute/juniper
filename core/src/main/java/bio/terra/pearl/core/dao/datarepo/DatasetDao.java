@@ -7,6 +7,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import bio.terra.pearl.core.model.datarepo.DatasetStatus;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
@@ -25,12 +27,16 @@ public class DatasetDao extends BaseMutableJdbiDao<Dataset> {
         return findAllByProperty("study_environment_id", studyEnvId);
     }
 
-    public Optional<Dataset> findByDataRepoId(UUID dataRepoId) {
-        return findByProperty("dataset_id", dataRepoId);
-    }
-
     public Optional<Dataset> findByDatasetName(String datasetName) {
         return findByProperty("dataset_name", datasetName);
+    }
+
+    public void updateStatus(UUID id, DatasetStatus newStatus) {
+        updateProperty(id, "status", newStatus);
+    }
+
+    public void setTdrDatasetId(UUID datasetId, UUID tdrDatasetId) {
+        updateProperty(datasetId, "tdr_dataset_id", tdrDatasetId);
     }
 
     public void updateLastExported(UUID id, Instant lastExported) {

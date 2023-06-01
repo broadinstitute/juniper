@@ -1,8 +1,11 @@
 package bio.terra.pearl.populate.service;
 
+import bio.terra.pearl.core.dao.kit.KitTypeDao;
+import bio.terra.pearl.core.dao.kit.StudyKitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
+import bio.terra.pearl.core.model.kit.StudyKitType;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
@@ -42,6 +45,8 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
     private PortalDiffService portalDiffService;
     private StudyUpdateService studyUpdateService;
     private PortalEnvironmentService portalEnvironmentService;
+    private KitTypeDao kitTypeDao;
+    private StudyKitTypeDao studyKitTypeDao;
 
     public StudyPopulator(StudyService studyService,
                           StudyEnvironmentService studyEnvService, EnrolleePopulator enrolleePopulator,
@@ -49,7 +54,9 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
                           ConsentFormPopulator consentFormPopulator,
                           EmailTemplatePopulator emailTemplatePopulator,
                           PreEnrollmentResponseDao preEnrollmentResponseDao,
-                          PortalDiffService portalDiffService, StudyUpdateService studyUpdateService) {
+                          PortalDiffService portalDiffService, StudyUpdateService studyUpdateService,
+                          PortalEnvironmentService portalEnvironmentService, KitTypeDao kitTypeDao,
+                          StudyKitTypeDao studyKitTypeDao) {
         this.studyService = studyService;
         this.studyEnvService = studyEnvService;
         this.enrolleePopulator = enrolleePopulator;
@@ -60,6 +67,9 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.portalDiffService = portalDiffService;
         this.studyUpdateService = studyUpdateService;
+        this.portalEnvironmentService = portalEnvironmentService;
+        this.kitTypeDao = kitTypeDao;
+        this.studyKitTypeDao = studyKitTypeDao;
     }
 
     /** takes a dto and hydrates it with already-populated objects (surveys, consents, etc...) */
@@ -146,6 +156,14 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
         }
         if (existingStudy == null) {
             existingStudy = studyService.create(popDto);
+        }
+
+        for (String kitTypeName : popDto.getKitTypeNames()) {
+            var kitType = kitTypeDao.findByName(kitTypeName).get();
+            studyKitTypeDao.create(StudyKitType.builder()
+                    .studyId(existingStudy.getId())
+                    .kitTypeId(kitType.getId())
+                    .build());
         }
 
         if (!overwrite) {

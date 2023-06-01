@@ -16,6 +16,7 @@ public class DataRepoJob extends BaseEntity {
     private UUID studyEnvironmentId;
     private String tdrJobId;
     private String datasetName;
+    private UUID datasetId;
     private String status;
     private JobType jobType;
 }

@@ -52,10 +52,9 @@ public class DataRepoExportExtService {
     Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
 
-    StudyEnvironment studyEnv =
-        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
+    Dataset dataset = dataRepoExportService.getDatasetByName(datasetName);
 
-    return dataRepoExportService.getJobHistoryForDataset(studyEnv.getId(), datasetName);
+    return dataRepoExportService.getJobHistoryForDataset(dataset.getId());
   }
 
   public void createDataset(
