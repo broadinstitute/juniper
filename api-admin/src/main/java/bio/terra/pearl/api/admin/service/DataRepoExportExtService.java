@@ -73,7 +73,7 @@ public class DataRepoExportExtService {
         studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
 
     dataRepoExportService.createDataset(
-        studyEnv, createDataset.getName(), createDataset.getDescription());
+        studyEnv, createDataset.getName(), createDataset.getDescription(), user);
   }
 
   public void deleteDataset(

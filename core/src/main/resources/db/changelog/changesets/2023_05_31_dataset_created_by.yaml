@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: "dataset_created_by"
+      author: mbemis
+      changes:
+        - addColumn:
+            tableName: dataset
+            columns:
+              - column: { name: created_by, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_dataset_created_by_user_id, references: admin_user(id) }
+              }

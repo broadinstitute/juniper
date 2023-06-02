@@ -1,6 +1,4 @@
-import _flatten from 'lodash/flatten'
 import _camelCase from 'lodash/camelCase'
-import { IPage, Question } from 'survey-core'
 
 /**
  * A set of utilities for processing "Pearl" surveys, which are currently defined as SurveyJS surveys but with
@@ -39,54 +37,6 @@ export type QuestionObj = {
 export type Choice = {
   text: string,
   value: string
-}
-
-/** these types are vague as we're still deciding how much custom stuff we need on top of SurveyJS */
-export type PearlSurvey = {
-  pages: IPage[],
-  questionTemplates: PearlQuestion[]
-}
-
-/** things that we need from SurveyJS elements to render the sheet view */
-export type ElementBase = {
-  name: string,
-  type?: string,
-  title?: string
-}
-
-/** Encompasses SurveyJS pages and panels. */
-export type ElementContainer = ElementBase & {
-  name: string,
-  elements: ElementBase[]
-}
-
-/**
- * We're extending SurveyJS to support templates -- the idea that a common question format may recur many times
- * in a survey, and so should only be coded once
- */
-export type PearlQuestion = Question & {
-  questionTemplateName?: string,
-  type: string
-}
-
-/** gets all the elements in a flat list */
-export function getSurveyElementList(surveyModel: PearlSurvey): ElementBase[] {
-  return _flatten(surveyModel.pages.map(page => {
-    return getContainerElementList(page, true)
-  }))
-}
-
-/** gets containers in a flat list */
-export function getContainerElementList(container: ElementContainer, isPage: boolean): ElementBase[] {
-  const containerEl = { ...container, type: isPage ? 'page' : 'panel' }
-  const containerChildren: (ElementBase | ElementBase[])[] = container.elements
-    .map((element: ElementBase | ElementContainer) => {
-      if ((element as ElementContainer).elements) {
-        return getContainerElementList(element as ElementContainer, false)
-      }
-      return element as ElementBase
-    })
-  return _flatten([containerEl, ...containerChildren])
 }
 
 /** renders a choice text into a stableId-suitable string */
@@ -181,4 +131,3 @@ export function questionFromRawText(rawText: string): QuestionObj {
   }
   return newQuestionObj
 }
-

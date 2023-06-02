@@ -3,12 +3,14 @@ import { useParams } from 'react-router-dom'
 import { Model } from 'survey-core'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 
+import { extractSurveyContent } from '@juniper/ui-core'
+
 import Api, { Answer, Enrollee } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
-import { extractSurveyContent, makeSurveyJsData } from 'util/surveyJsUtils'
+import { makeSurveyJsData } from 'util/surveyJsUtils'
 
 import { enrolleeForStudy } from './ConsentView'
 

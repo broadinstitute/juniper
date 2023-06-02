@@ -10,6 +10,7 @@ import bio.terra.pearl.core.dao.study.PortalStudyDao;
 import bio.terra.pearl.core.dao.study.StudyDao;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
+import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.datarepo.DataRepoJob;
 import bio.terra.pearl.core.model.datarepo.Dataset;
 import bio.terra.pearl.core.model.datarepo.DatasetStatus;
@@ -94,7 +95,7 @@ public class DataRepoExportService {
         return dataRepoJobDao.findByDatasetId(datasetId);
     }
 
-    public void createDataset(StudyEnvironment studyEnv, String datasetName, String description) {
+    public void createDataset(StudyEnvironment studyEnv, String datasetName, String description, AdminUser user) {
         //TODO: JN-125: This default spend profile is temporary. Eventually, we will want to configure spend profiles
         // on a per-study basis and store those in the Juniper DB.
         UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
@@ -112,6 +113,7 @@ public class DataRepoExportService {
                 .status(DatasetStatus.CREATING)
                 .datasetName(datasetName)
                 .description(description)
+                .createdBy(user.getId())
                 .lastExported(Instant.ofEpochSecond(0))
                 .studyEnvironmentId(studyEnv.getId())
                 .build();
