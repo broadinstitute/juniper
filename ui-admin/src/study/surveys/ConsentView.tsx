@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
 
 import {  StudyParams } from 'study/StudyRouter'
@@ -14,14 +14,23 @@ import Api, {
 
 import { failureNotification, successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
+import { useUser } from 'user/UserProvider'
 
 /** Handles logic for updating study environment surveys */
 function RawConsentView({ portal, study, currentEnv, consent, readOnly = false }:
                          {portal: Portal, study: Study, currentEnv: StudyEnvironment,
                            consent: ConsentForm, readOnly?: boolean}) {
+  const { user } = useUser()
+  const navigate = useNavigate()
+
   const [currentForm, setCurrentForm] = useState(consent)
   /** saves the survey as a new version */
-  async function createNewVersion(updatedTextContent: string): Promise<string> {
+  async function createNewVersion({ content: updatedTextContent }: { content: string }): Promise<void> {
+    if (!user.superuser) {
+      Store.addNotification(failureNotification('you do not have permissions to save surveys'))
+      return
+    }
+
     consent.content = updatedTextContent
     try {
       const updatedConsent = await Api.createNewConsentVersion(portal.shortcode, currentForm)
@@ -38,7 +47,6 @@ function RawConsentView({ portal, study, currentEnv, consent, readOnly = false }
     } catch (e) {
       Store.addNotification(failureNotification(`save failed`))
     }
-    return updatedTextContent
   }
 
   /** Syncs the survey with one from the server */
@@ -50,22 +58,14 @@ function RawConsentView({ portal, study, currentEnv, consent, readOnly = false }
     currentEnv.configuredConsents[configuredIndex] = updatedConfiguredConsent
   }
 
-  /** resets the survey to a previous version */
-  async function changeVersion(version: number) {
-    // setShowVersionSelector(false)
-    alert(`not implemented ${  version}`)
-    try {
-      // const updatedSurvey = await Api.updateConfiguredSurvey(portal.shortcode, currentEnv.environmentName,
-      //   currentSurvey.stableId, version)
-      // updateSurveyFromServer(updatedSurvey)
-      // Store.addNotification(successNotification(`Set to version ${updatedSurvey.version}`))
-    } catch (e) {
-      Store.addNotification(failureNotification(`update failed`))
-    }
-  }
-
-  return <SurveyEditorView portalShortcode={portal.shortcode} currentForm={currentForm} readOnly={readOnly}
-    createNewVersion={createNewVersion} changeVersion={changeVersion}/>
+  return (
+    <SurveyEditorView
+      currentForm={currentForm}
+      readOnly={readOnly}
+      onCancel={() => navigate('../../..')}
+      onSave={createNewVersion}
+    />
+  )
 }
 
 export type ConsentParamsT = StudyParams & {

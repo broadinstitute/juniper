@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
 
 import {  StudyParams } from 'study/StudyRouter'
@@ -8,6 +8,7 @@ import Api, { Portal, Study, StudyEnvironment, StudyEnvironmentSurvey, Survey } 
 
 import { failureNotification, successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
+import { useUser } from 'user/UserProvider'
 
 export type SurveyParamsT = StudyParams & {
   surveyStableId: string
@@ -17,9 +18,17 @@ export type SurveyParamsT = StudyParams & {
 function RawSurveyView({ portal, currentEnv, study, survey, readOnly = false }:
                       {portal: Portal, currentEnv: StudyEnvironment, study: Study,
                         survey: Survey, readOnly?: boolean}) {
+  const navigate = useNavigate()
+  const { user } = useUser()
+
   const [currentSurvey, setCurrentSurvey] = useState(survey)
   /** saves the survey as a new version */
-  async function createNewVersion(updatedTextContent: string): Promise<string> {
+  async function createNewVersion({ content: updatedTextContent }: { content: string }): Promise<void> {
+    if (!user.superuser) {
+      Store.addNotification(failureNotification('you do not have permissions to save surveys'))
+      return
+    }
+
     survey.content = updatedTextContent
     try {
       const updatedSurvey = await Api.createNewSurveyVersion(portal.shortcode, currentSurvey)
@@ -36,7 +45,6 @@ function RawSurveyView({ portal, currentEnv, study, survey, readOnly = false }:
     } catch (e) {
       Store.addNotification(failureNotification(`save failed`))
     }
-    return updatedTextContent
   }
 
   /** Syncs the survey with one from the server */
@@ -48,22 +56,14 @@ function RawSurveyView({ portal, currentEnv, study, survey, readOnly = false }:
     currentEnv.configuredSurveys[configuredSurveyIndex] = updatedConfiguredSurvey
   }
 
-  /** resets the survey to a previous version */
-  async function changeVersion(version: number) {
-    // setShowVersionSelector(false)
-    alert(`not implemented ${  version}`)
-    try {
-      // const updatedSurvey = await Api.updateConfiguredSurvey(portal.shortcode, currentEnv.environmentName,
-      //   currentSurvey.stableId, version)
-      // updateSurveyFromServer(updatedSurvey)
-      // Store.addNotification(successNotification(`Set to version ${updatedSurvey.version}`))
-    } catch (e) {
-      Store.addNotification(failureNotification(`update failed`))
-    }
-  }
-
-  return <SurveyEditorView portalShortcode={portal.shortcode} currentForm={currentSurvey} readOnly={readOnly}
-    createNewVersion={createNewVersion} changeVersion={changeVersion}/>
+  return (
+    <SurveyEditorView
+      currentForm={currentSurvey}
+      readOnly={readOnly}
+      onCancel={() => navigate('../../..')}
+      onSave={createNewVersion}
+    />
+  )
 }
 
 /** routable component for survey editing */
