@@ -56,3 +56,17 @@ test('does not render a link to TDR if the dataset failed to create', async () =
 
   expect(screen.queryByText('View dataset in Terra Data Repo')).not.toBeInTheDocument()
 })
+
+test('renders the dataset details', async () => {
+  const studyEnvContext = mockStudyEnvContext()
+
+  const { RoutedComponent } = setupRouterTest(<DatasetDashboard studyEnvContext={studyEnvContext}/>)
+  ;(useParams as jest.Mock).mockReturnValue({ datasetName: 'successful_dataset' })
+  render(RoutedComponent)
+  await waitFor(() => {
+    expect(screen.getByText('successful_dataset', { exact: false })).toBeInTheDocument()
+    expect(screen.getByText('a successfully created dataset', { exact: false })).toBeInTheDocument()
+    expect(screen.getByText('0b9ade05-f7e3-483e-b85a-43deac7505c0', { exact: false })).toBeInTheDocument()
+    expect(screen.getByText('5/31/2023', { exact: false })).toBeInTheDocument()
+  })
+})

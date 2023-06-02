@@ -111,15 +111,13 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
             </div>
             <div className="flex-grow-1 p-3">
               <div className="form-group">
-                <div className="form-group-item">
-                  <label>Dataset Name:</label> { datasetDetails?.datasetName }
-                  <br/>
-                  <label>Description:</label> { datasetDetails?.description ?
-                    datasetDetails?.description : <span className="fst-italic">N/A</span> }
-                  <br/>
-                  <label>Date Created:</label> { instantToDefaultString(datasetDetails?.createdAt) }
-                </div>
-                <br/>
+                <dl>
+                  <dt>Dataset Name</dt><dd>{ datasetDetails?.datasetName }</dd>
+                  <dt>Description</dt><dd>{ datasetDetails?.description ?
+                    datasetDetails?.description : <span className="fst-italic">N/A</span> }</dd>
+                  <dt>Created By</dt><dd>{ datasetDetails?.createdBy }</dd>
+                  <dt>Date Created</dt><dd>{ instantToDefaultString(datasetDetails?.createdAt) }</dd>
+                </dl>
                 { datasetDetails?.status == 'CREATED' &&
                   <a href={`https://jade.datarepo-dev.broadinstitute.org/datasets/${datasetDetails?.tdrDatasetId}`}
                     target="_blank">View dataset in Terra Data Repo <FontAwesomeIcon icon={faExternalLink}/></a>

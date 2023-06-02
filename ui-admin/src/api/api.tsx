@@ -229,6 +229,7 @@ export type BasicMetricDatum = {
 export type DatasetDetails = {
   id: string,
   createdAt: number,
+  createdBy: string,
   lastUpdatedAt: number,
   studyEnvironmentId: string,
   tdrDatasetId: string,

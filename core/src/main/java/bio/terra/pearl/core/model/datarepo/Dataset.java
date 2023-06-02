@@ -17,6 +17,7 @@ public class Dataset extends BaseEntity {
     private UUID studyEnvironmentId;
     private UUID tdrDatasetId;
     private String datasetName;
+    private UUID createdBy;
     private String description;
     private DatasetStatus status;
     private Instant lastExported;
