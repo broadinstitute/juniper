@@ -12,7 +12,7 @@ set -o pipefail
 # DEBUG = 2
 declare -i desired_log_level=2
 declare -a valid_environment_targets=( dev prod )
-/
+
 function usage() {
     local -r usage="
     $0: connect to an Azure managed database instance with private networking through AKS cluster
@@ -41,9 +41,14 @@ declare -a required_tools=( az kubectl vault sleep jq )
 declare -r proj_name="d2p"
 declare -r target_environment="${1:?An environment must be specified as first argument}"
 
+# azure vars
+declare user=""
+declare username=""
+declare subscription=""
+
 # k8s vars
-declare -r k8s_namespace="${proj_name}-postgres-${target_environment}"
-declare -r k8s_pod_name="postgres"
+declare k8s_namespace="${proj_name}-postgres-${target_environment}"
+declare k8s_pod_name="postgres"
 declare -r docker_image="postgres:12"
 # password is required but not important. can be anything
 declare postgres_password=$(openssl rand -base64 12)
@@ -52,10 +57,6 @@ declare postgres_password=$(openssl rand -base64 12)
 declare database_name=""
 declare database_user=""
 declare database_pw=""
-
-# azure vars
-declare user=""
-declare subscription=""
 
 # Default azure vars - used if other values are not given on the command line
 declare -r subscription_default_dev="385ed569-ca04-4b97-97b4-677c8479585e"
@@ -204,6 +205,16 @@ function change_namespace(){
 }
 
 function create_namespace() {
+    # First check if namespace already exists
+    local -r -a get_namespace_cmd=(kubectl get namespace "${k8s_namespace}")
+    if ! "${get_namespace_cmd[@]}" > /dev/null 2>&1 ;
+    then
+        log_info "namespace ${k8s_namespace} does not exist, creating"
+    else
+        log_info "namespace ${k8s_namespace} already exists, skipping creation"
+        change_namespace
+        return 0
+    fi
     local -r -a create_cmd=(kubectl create namespace "${k8s_namespace}")
     log_info "creating kubernetes namespace: ${k8s_namespace}"
     if ! "${create_cmd[@]}" ;
@@ -268,7 +279,15 @@ function cleanup_k8s_enviornment() {
 function read_user() {
     local -r -a read_user_cmd=(az ad signed-in-user show)
     local -r -a jq_cmd=(jq .displayName -r)
+    local -r -a jq_read_username_cmd=(jq .mail -r
+    )
     user=$( "${read_user_cmd[@]}" | "${jq_cmd[@]}" )
+    email=$( "${read_user_cmd[@]}" | "${jq_read_username_cmd[@]}" )
+    username=${email%%@*}
+    # update relevant k8s vars to include the username to avoid conflicts
+    k8s_pod_name="${k8s_pod_name}-${username}"
+    k8s_namespace="${k8s_namespace}-${username}"
+    
     if ! ("${read_user_cmd[@]}" | "${jq_cmd[@]}") > /dev/null 2>&1 ;
     then
         log_err "unable to read azure username...exiting"
@@ -281,7 +300,7 @@ function exec_into_pod() {
     #let pod spin up
     sleep 5
     log_info "$user connected to database $database_name"
-    local -r -a connect_cmd=(kubectl exec -it -n "${k8s_namespace}" postgres -- psql "host=$database_name.postgres.database.azure.com port=5432 dbname=postgres user=$database_user password=$database_pw sslmode=require")
+    local -r -a connect_cmd=(kubectl exec -it -n "${k8s_namespace}" "${k8s_pod_name}" -- psql "host=$database_name.postgres.database.azure.com port=5432 dbname=postgres user=$database_user password=$database_pw sslmode=require")
  
     log_info "running kubernetes pod ${k8s_pod_name} in ${k8s_namespace} namespace"
     if ! "${connect_cmd[@]}" ;
@@ -300,10 +319,10 @@ function init() {
 
 function main() {
     init "$@"
+    read_user
     setup_k8s_enviornment || exit 1
     # ( If any thing from this point forward fails script must cleanup )
     trap cleanup_k8s_enviornment SIGHUP SIGINT SIGQUIT
-    read_user
     exec_into_pod
     cleanup_k8s_enviornment
 }
