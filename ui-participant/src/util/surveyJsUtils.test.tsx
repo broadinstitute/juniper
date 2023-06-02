@@ -6,7 +6,6 @@ import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { ConsentForm, Profile, Survey } from 'api/api'
 
 import {
-  extractSurveyContent,
   getSurveyJsAnswerList,
   getUpdatedAnswers,
   useRoutablePageNumber,
@@ -15,7 +14,6 @@ import {
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import {
   generateSurvey,
-  generateTemplatedQuestionSurvey,
   generateThreePageSurvey
 } from '../test-utils/test-survey-factory'
 import { Model } from 'survey-core'
@@ -112,19 +110,6 @@ test('enables show on profile attributes', () => {
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()
   expect(screen.getByText('You have a sex of female')).toBeInTheDocument()
-})
-
-
-test('transforms models with question templates', () => {
-  const formModel = generateTemplatedQuestionSurvey()
-  const surveyModel = extractSurveyContent(formModel)
-  expect(surveyModel.pages).toHaveLength(2)
-  const firstTemplatedQuestion = surveyModel.pages[0].elements[1]
-  expect(firstTemplatedQuestion.name).toEqual('brotherFavoriteColor')
-  expect(firstTemplatedQuestion.title).toEqual('what is their favorite color?')
-  expect(firstTemplatedQuestion.choices).toHaveLength(2)
-  const secondTemplatedQuestion = surveyModel.pages[1].elements[1]
-  expect(secondTemplatedQuestion.name).toEqual('sisterFavoriteColor')
 })
 
 const sampleSurvey = {

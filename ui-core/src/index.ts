@@ -7,3 +7,5 @@ export * from './types/landingPageConfig'
 export * from './types/portal'
 export * from './types/study'
 export * from './types/task'
+
+export * from './surveyUtils'

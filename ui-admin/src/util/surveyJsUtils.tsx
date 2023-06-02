@@ -1,17 +1,11 @@
+import { marked } from 'marked'
 import { useState, useEffect } from 'react'
+import { SurveyModel } from 'survey-core'
+import { SurveyCreator } from 'survey-creator-react'
+
+import { extractSurveyContent } from '@juniper/ui-core'
 
 import { ConsentForm, Survey } from 'api/api'
-import { SurveyCreator } from 'survey-creator-react'
-import { Question, Serializer, SurveyModel } from 'survey-core'
-import { marked } from 'marked'
-import { getSurveyElementList } from './pearlSurveyUtils'
-// eslint-disable-next-line
-// @ts-ignore
-import * as widgets from 'surveyjs-widgets'
-import * as SurveyCore from 'survey-core'
-
-// See https://surveyjs.io/form-library/examples/control-data-entry-formats-with-input-masks/reactjs#content-code
-widgets.inputmask(SurveyCore)
 
 type SurveyJsOptionConfig = {
   html: string,
@@ -60,38 +54,4 @@ export function useSurveyJSCreator(survey: Survey | ConsentForm, onChange: () =>
   }, [])
 
   return { surveyJSCreator }
-}
-
-/** transform the stored survey representation into what SurveyJS expects */
-export const extractSurveyContent = (survey: Survey | ConsentForm) => {
-  const parsedSurvey = JSON.parse(survey.content)
-  const questionTemplates = parsedSurvey.questionTemplates as Question[]
-  Serializer.addProperty('survey', { name: 'questionTemplates', category: 'general' })
-  Serializer.addProperty('question', { name: 'questionTemplateName', category: 'general' })
-
-  if (questionTemplates) {
-    const elementList = getSurveyElementList(parsedSurvey)
-    elementList.forEach(q => {
-      const templateName = (q as PearlQuestion).questionTemplateName
-      if (templateName) {
-        const matchedTemplate = questionTemplates.find(qt => qt.name === templateName)
-        if (!matchedTemplate) {
-          // TODO this is an error we'd want to log in prod systems
-          if (process.env.NODE_ENV === 'development') {
-            alert(`unmatched template ${  templateName}`)
-          }
-          return
-        }
-        // create a new question object by merging the existing question into the template.
-        // any properties explicitly specified on the question will override those from the template
-        const mergedProps = Object.assign({}, matchedTemplate, q)
-        Object.assign(q, mergedProps)
-      }
-    })
-  }
-  return parsedSurvey
-}
-
-type PearlQuestion = Question & {
-  questionTemplateName?: string
 }
