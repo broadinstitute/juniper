@@ -42,7 +42,7 @@ public class PopulateExtService {
   public BaseSeedPopulator.SetupStats populateBaseSeed(AdminUser user) {
     authorizeUser(user);
     try {
-      return baseSeedPopulator.populate("");
+      return baseSeedPopulator.populate();
     } catch (IOException e) {
       throw new IllegalArgumentException("populate failed", e);
     }

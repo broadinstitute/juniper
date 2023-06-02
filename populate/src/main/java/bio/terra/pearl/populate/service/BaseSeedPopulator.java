@@ -13,8 +13,11 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.stereotype.Service;
 
 /**
- * Populates entities configs needed for a new server instance, including environments and admin users.
- * If those users/items exist, the will be updated, rather than duplicated.
+ * Populates entities configs needed for a server instance, including environments and admin users.
+ * If those users/items exist, they will be updated, rather than duplicated.
+ *
+ * this is intended to capture essential populate data -- it will be checked every time a server starts
+ * so avoid putting things in this file unless they are essential to server operations, and not customizable by users
  * */
 @Service
 public class BaseSeedPopulator {
@@ -47,7 +50,12 @@ public class BaseSeedPopulator {
         this.kitTypePopulator = kitTypePopulator;
     }
 
-    public SetupStats populate(String filePathName) throws IOException {
+    /**
+     * BE CAREFUL!!!
+     * This method runs every time a server instance starts.  So avoid things that might take a long time,
+     * or that might overwrite user-entered data
+     */
+    public SetupStats populate() throws IOException {
         // for now, we ignore the pathname
         for (String file : ADMIN_USERS_TO_POPULATE) {
             adminUserPopulator.populate(new FilePopulateContext(file), false);
@@ -58,6 +66,8 @@ public class BaseSeedPopulator {
         for (String file : KIT_TYPES_TO_POPULATE) {
             kitTypePopulator.populate(new FilePopulateContext(file), false);
         }
+        // overwrite is ok here -- we're not versioning admin emails (currently just the "here's the link to
+        // the admin tool" welcome email to ne study staff
         var configStats = adminConfigPopulator.populate(true);
         return SetupStats.builder()
                 .numAdminUsers(adminUserService.count())

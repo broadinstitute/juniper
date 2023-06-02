@@ -17,12 +17,8 @@ public class InitialPopulate {
   @Autowired private BaseSeedPopulator baseSeedPopulator;
 
   @EventListener(ApplicationReadyEvent.class)
-  public void populateSeedIfNeeded() throws IOException {
-    if (adminUserService.count() == 0) {
-      log.info("No admin users found, populating base");
-      baseSeedPopulator.populate("seed");
-    } else {
-      log.info("Existing admin users found, skipping seed populate");
-    }
+  public void populateSeed() throws IOException {
+    log.info("Refreshing base seed populate data");
+    baseSeedPopulator.populate();
   }
 }
