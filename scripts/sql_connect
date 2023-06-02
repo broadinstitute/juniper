@@ -17,7 +17,7 @@ function usage() {
     local -r usage="
     $0: connect to an Azure managed database instance with private networking through AKS cluster
 
-    Usage: $0 <Enviornment> -d <Database> -s <Subscription> -c <AKS Cluster> -r <Resource Group>
+    Usage: $0 <environment> -d <Database> -s <Subscription> -c <AKS Cluster> -r <Resource Group>
     Where:  <Environment> is one of: ${valid_environment_targets[*]} (required and positional - must be first argument)
             <Database> is an exisiting Azure managed database instance (optional)
             <Subscription> is the Azure subscription which contains the AKS Cluster where the pod will be spun up (optional)
@@ -260,7 +260,7 @@ function delete_postgres_pod() {
     log_info "successfully deleted pod"
 }
 
-function setup_k8s_enviornment() {
+function setup_k8s_environment() {
     set_subscription
     set_cluster
     # Create a temporary namespace with kubectl to spin up the postgres jump pod in
@@ -270,7 +270,7 @@ function setup_k8s_enviornment() {
 
 }
 
-function cleanup_k8s_enviornment() {
+function cleanup_k8s_environment() {
     # Once they are done cleanup - cleanup order matters, delete the jump pod first then the namespace
     delete_postgres_pod
     cleanup_namespace
@@ -320,11 +320,11 @@ function init() {
 function main() {
     init "$@"
     read_user
-    setup_k8s_enviornment || exit 1
+    setup_k8s_environment || exit 1
     # ( If any thing from this point forward fails script must cleanup )
-    trap cleanup_k8s_enviornment SIGHUP SIGINT SIGQUIT
+    trap cleanup_k8s_environment SIGHUP SIGINT SIGQUIT
     exec_into_pod
-    cleanup_k8s_enviornment
+    cleanup_k8s_environment
 }
 
 main "$@"
