@@ -58,13 +58,20 @@ export type SurveyJsResumeData = {
 }
 
 export type Enrollee = {
-  id: string,
-  participantUserId: string,
-  shortcode: string,
-  studyEnvironmentId: string,
-  participantTasks: ParticipantTask[],
-  consented: boolean,
+  id: string
+  consented: boolean
+  consentResponses: []
+  createdAt: number
+  kitRequests: []
+  lastUpdatedAt: number
+  participantTasks: ParticipantTask[]
+  participantUserId: string
+  preEnrollmentResponseId?: string
   profile: Profile
+  profileId: string
+  shortcode: string
+  studyEnvironmentId: string
+  surveyResponses: []
 }
 
 export type Profile = {
