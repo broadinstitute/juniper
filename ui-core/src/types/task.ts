@@ -12,6 +12,7 @@ export type ParticipantTask = {
   targetName: string
   targetStableId: string
   targetAssignedVersion: number
+  surveyResponseId: string
   taskOrder: number
 
   // Tasks have one of these fields, depending on the task type.

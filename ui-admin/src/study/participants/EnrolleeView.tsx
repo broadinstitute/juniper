@@ -47,7 +47,13 @@ export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
   const surveys = currentEnv.configuredSurveys
   const responseMap: ResponseMapT = {}
   surveys.forEach(configSurvey => {
-    const matchedResponses = enrollee.surveyResponses.filter(response => configSurvey.survey.id === response.surveyId)
+    // filter using the tasks, since those have the stableIds
+    // this is valid since it's currently enforced that all survey responses are done as part of a task,
+    const matchedResponseIds = enrollee.participantTasks
+      .filter(task => task.targetStableId === configSurvey.survey.stableId)
+      .map(task => task.surveyResponseId)
+    const matchedResponses = enrollee.surveyResponses
+      .filter(response => matchedResponseIds.includes(response.id as string))
     responseMap[configSurvey.survey.stableId] = { survey: configSurvey, responses: matchedResponses }
   })
 
