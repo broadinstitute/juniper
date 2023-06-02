@@ -62,7 +62,7 @@ test('does not render a Delete Dataset button for datasets in DELETING state', a
   const studyEnvContext = mockStudyEnvContext()
 
   const { RoutedComponent } = setupRouterTest(<DatasetDashboard studyEnvContext={studyEnvContext}/>)
-  jest.spyOn(Router, 'useParams').mockReturnValue({ datasetName: 'deleting_dataset' })
+  ;(useParams as jest.Mock).mockReturnValue({ datasetName: 'deleting_dataset' })
   render(RoutedComponent)
   await waitFor(() => {
     expect(screen.getByText('deleting_dataset', { exact: false })).toBeInTheDocument()
