@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DatasetService extends CrudService<Dataset, DatasetDao> {
 
-    DataRepoClient dataRepoClient;
+    private DataRepoClient dataRepoClient;
 
     public DatasetService(DatasetDao dao, DataRepoClient dataRepoClient) {
         super(dao);
