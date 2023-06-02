@@ -93,7 +93,7 @@ export function getTaskPath(task: ParticipantTask, enrolleeShortcode: string, st
  * required tasks must be done in-order
  * non-required tasks are not actionable until all required tasks are cleared */
 export function isTaskAccessible(task: ParticipantTask, enrollee: Enrollee) {
-  if (task.taskType === 'CONSENT') {
+  if (task.taskType === 'CONSENT' || task.status === 'COMPLETE') {
     return true
   }
   const openConsents = enrollee.participantTasks
