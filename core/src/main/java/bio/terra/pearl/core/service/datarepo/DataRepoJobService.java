@@ -21,4 +21,6 @@ public class DataRepoJobService extends CrudService<DataRepoJob, DataRepoJobDao>
     public void deleteByStudyEnvironmentId(UUID studyEnvId) {
         dao.deleteByStudyEnvironmentId(studyEnvId);
     }
+
+    public void deleteByDatasetId(UUID datasetId) { dao.deleteByDatasetId(datasetId); }
 }

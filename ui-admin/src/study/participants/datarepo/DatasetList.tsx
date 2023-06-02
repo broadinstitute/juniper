@@ -23,8 +23,12 @@ const datasetColumns = (currentEnvPath: string): ColumnDef<DatasetDetails>[] => 
   id: 'datasetName',
   header: 'Dataset Name',
   accessorKey: 'datasetName',
-  cell: info => <Link to={getDatasetDashboardPath(info.getValue() as unknown as string, currentEnvPath)}
-    className="mx-2">{info.getValue() as unknown as string}</Link>
+  cell: info => {
+    return info.row.original.status !== 'DELETING' ?
+      <Link to={getDatasetDashboardPath(info.getValue() as unknown as string, currentEnvPath)} className="mx-2">
+        {info.getValue() as unknown as string}
+      </Link> : <span className="mx-2">{info.getValue() as unknown as string}</span>
+  }
 }, {
   id: 'description',
   header: 'Description',

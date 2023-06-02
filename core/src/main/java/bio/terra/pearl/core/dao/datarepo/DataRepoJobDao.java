@@ -35,4 +35,8 @@ public class DataRepoJobDao extends BaseMutableJdbiDao<DataRepoJob> {
     public void deleteByStudyEnvironmentId(UUID studyEnvId) {
         deleteByProperty("study_environment_id", studyEnvId);
     }
+
+    public void deleteByDatasetId(UUID datasetId) {
+        deleteByProperty("dataset_id", datasetId);
+    }
 }

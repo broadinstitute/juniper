@@ -46,4 +46,14 @@ public class DataRepoExportExtServiceTests {
                 new CreateDataset().name("somedataset").description("a dataset"),
                 user));
   }
+
+  @Test
+  public void deleteDatasetRequiresSuperUser() {
+    AdminUser user = new AdminUser();
+    Assertions.assertThrows(
+        PermissionDeniedException.class,
+        () ->
+            emptyService.deleteDataset(
+                "someportal", "somestudy", EnvironmentName.sandbox, "somedataset", user));
+  }
 }

@@ -19,6 +19,7 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.azure.AzureBlobStorageClient;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetCreationException;
+import bio.terra.pearl.core.service.exception.datarepo.DatasetDeletionException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetNotFoundException;
 import bio.terra.pearl.core.service.export.*;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
@@ -110,6 +111,7 @@ public class DataRepoExportService {
         Dataset dataset = Dataset.builder()
                 .status(DatasetStatus.CREATING)
                 .datasetName(datasetName)
+                .description(description)
                 .lastExported(Instant.ofEpochSecond(0))
                 .studyEnvironmentId(studyEnv.getId())
                 .build();
@@ -126,6 +128,34 @@ public class DataRepoExportService {
                 .build();
 
         dataRepoJobService.create(job);
+    }
+
+    public void deleteDataset(StudyEnvironment studyEnv, String datasetName) {
+        Dataset dataset = datasetDao.findByDatasetName(datasetName).orElseThrow(() -> new DatasetNotFoundException("Dataset not found."));
+
+        List<DatasetStatus> deletableStatuses = List.of(DatasetStatus.CREATED, DatasetStatus.FAILED);
+        if(!deletableStatuses.contains(dataset.getStatus())) {
+            throw new DatasetDeletionException(String.format("Could not delete dataset %s. Dataset was in %s state, but must be in a terminal state.", datasetName, dataset.getStatus()));
+        }
+
+        JobModel response;
+        try {
+            response = dataRepoClient.deleteDataset(dataset.getTdrDatasetId());
+        } catch (ApiException e) {
+            throw new DatasetDeletionException(String.format("Could not delete dataset %s. TDR dataset failed to delete. Error: %s", datasetName, e.getMessage()));
+        }
+
+        DataRepoJob job = DataRepoJob.builder()
+                .studyEnvironmentId(studyEnv.getId())
+                .status(response.getJobStatus().getValue())
+                .datasetId(dataset.getId())
+                .datasetName(datasetName)
+                .tdrJobId(response.getId())
+                .jobType(JobType.DELETE_DATASET)
+                .build();
+
+        dataRepoJobService.create(job);
+        datasetService.updateStatus(dataset.getId(), DatasetStatus.DELETING);
     }
 
     public String uploadCsvToAzureStorage(UUID studyEnvironmentId, UUID datasetId) {
@@ -213,6 +243,7 @@ public class DataRepoExportService {
             switch(job.getJobType()) {
                 case CREATE_DATASET -> pollAndUpdateCreateJobStatus(job);
                 case INGEST_DATASET -> pollAndUpdateIngestJobStatus(job);
+                case DELETE_DATASET -> pollAndUpdateDeleteJobStatus(job);
                 default -> logger.error("Unknown job type '{}' for TDR job {}.", job.getJobType(), job.getTdrJobId());
             }
         }
@@ -283,6 +314,31 @@ public class DataRepoExportService {
                 }
                 case RUNNING -> logger.info("ingestDataset job ID {} is running.", job.getId());
                 default -> logger.warn("ingestDataset job ID {} has unrecognized job status: {}", job.getId(), job.getStatus());
+            }
+        } catch (ApiException e) {
+            logger.error("Unable to get TDR job status for job ID {}. Error: {}", job.getTdrJobId(), e.getMessage());
+        }
+    }
+
+    private void pollAndUpdateDeleteJobStatus(DataRepoJob job) {
+        try {
+            JobStatusEnum jobStatus = dataRepoClient.getJobStatus(job.getTdrJobId()).getJobStatus();
+
+            switch(jobStatus) {
+                case SUCCEEDED -> {
+                    Dataset dataset = datasetService.findById(job.getDatasetId()).orElseThrow(() -> new DatasetNotFoundException(job.getDatasetId()));
+
+                    logger.info("deleteDataset job ID {} has succeeded. Dataset {} successfully deleted.", job.getId(), job.getDatasetId());
+                    dataRepoJobService.updateJobStatus(job.getId(), jobStatus.getValue());
+                    dataRepoJobService.deleteByDatasetId(dataset.getId());
+                    datasetService.delete(dataset);
+                }
+                case FAILED -> {
+                    logger.warn("deleteDataset job ID {} has failed. Dataset {} failed to delete.", job.getId(), job.getDatasetId());
+                    dataRepoJobService.updateJobStatus(job.getId(), jobStatus.getValue());
+                }
+                case RUNNING -> logger.info("deleteDataset job ID {} is running.", job.getId());
+                default -> logger.warn("deleteDataset job ID {} has unrecognized job status: {}", job.getId(), job.getStatus());
             }
         } catch (ApiException e) {
             logger.error("Unable to get TDR job status for job ID {}. Error: {}", job.getTdrJobId(), e.getMessage());
