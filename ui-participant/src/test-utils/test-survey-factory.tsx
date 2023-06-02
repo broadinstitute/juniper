@@ -47,33 +47,3 @@ export function generateThreePageSurvey(overrideObj?: any): Survey { // eslint-d
   const survey = generateSurvey({ content: JSON.stringify(surveyContent) })
   return Object.assign(survey, overrideObj)
 }
-
-/** survey with question templates */
-export function generateTemplatedQuestionSurvey(overrideObj?: any) { // eslint-disable-line @typescript-eslint/no-explicit-any, max-len
-  const QUESTION_TEMPLATE_TEST_SURVEY = {
-    questionTemplates: [
-      {
-        type: 'radiogroup', title: 'what is their favorite color?', name: 'colorPicker',
-        choices: [{ text: 'Green', value: 'green' }, { text: 'Blue', value: 'blue' }]
-      }
-    ],
-    pages: [
-      {
-        elements: [
-          { type: 'html', html: '<span>Talk about your brother</span>' },
-          { name: 'brotherFavoriteColor', questionTemplateName: 'colorPicker' }
-        ]
-      },
-      {
-        elements: [
-          { type: 'html', html: '<span>Talk about your sister</span>' },
-          { name: 'sisterFavoriteColor', questionTemplateName: 'colorPicker' }
-        ]
-      }
-    ]
-  }
-  const survey = generateSurvey({
-    content: JSON.stringify(QUESTION_TEMPLATE_TEST_SURVEY)
-  })
-  return Object.assign(survey, overrideObj)
-}
