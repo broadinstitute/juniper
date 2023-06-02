@@ -25,9 +25,9 @@ const datasetColumns = (currentEnvPath: string): ColumnDef<DatasetDetails>[] => 
   accessorKey: 'datasetName',
   cell: info => {
     return info.row.original.status !== 'DELETING' ?
-      <Link to={getDatasetDashboardPath(info.getValue() as unknown as string, currentEnvPath)} className="mx-2">
+      <Link to={getDatasetDashboardPath(info.row.original.datasetName, currentEnvPath)} className="mx-2">
         {info.getValue() as unknown as string}
-      </Link> : <span className="mx-2">{info.getValue() as unknown as string}</span>
+      </Link> : <span className="mx-2">{info.row.original.datasetName}</span>
   }
 }, {
   id: 'description',
@@ -38,7 +38,7 @@ const datasetColumns = (currentEnvPath: string): ColumnDef<DatasetDetails>[] => 
   id: 'created',
   header: 'Date Created',
   accessorKey: 'createdAt',
-  cell: info => instantToDefaultString(info.getValue() as unknown as number)
+  cell: info => instantToDefaultString(info.row.original.createdAt)
 }, {
   id: 'status',
   header: 'Status',
