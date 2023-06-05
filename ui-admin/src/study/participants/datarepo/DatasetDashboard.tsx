@@ -5,7 +5,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faExternalLink, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faExternalLink, faArrowLeft, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { instantToDefaultString } from '../../../util/timeUtils'
 import {
   ColumnDef,
@@ -16,6 +16,8 @@ import {
 } from '@tanstack/react-table'
 import { basicTableLayout } from '../../../util/tableUtils'
 import { Link, useParams } from 'react-router-dom'
+import { useUser } from '../../../user/UserProvider'
+import DeleteDatasetModal from './DeleteDatasetModal'
 
 const columns: ColumnDef<DatasetJobHistory>[] = [{
   id: 'jobType',
@@ -46,11 +48,13 @@ const columns: ColumnDef<DatasetJobHistory>[] = [{
 
 const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
   const { currentEnvPath } = studyEnvContext
+  const [showDeleteDatasetModal, setShowDeleteDatasetModal] = useState(false)
   const [datasetDetails, setDatasetDetails] = useState<DatasetDetails | undefined>(undefined)
   const [datasetJobHistory, setDatasetJobHistory] = useState<DatasetJobHistory[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [sorting, setSorting] = React.useState<SortingState>([])
   const datasetName = useParams().datasetName as string
+  const { user } = useUser()
 
   const table = useReactTable({
     data: datasetJobHistory,
@@ -102,6 +106,17 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
     <Link to={getDatasetListViewPath(currentEnvPath)} className="mx-2">
       <FontAwesomeIcon icon={faArrowLeft}/> Back to dataset list
     </Link>
+    { user.superuser && datasetDetails?.status == 'CREATED' &&
+        <button className="btn btn-secondary" onClick={() => setShowDeleteDatasetModal(!showDeleteDatasetModal)}
+          aria-label="show or hide export modal">
+          <FontAwesomeIcon icon={faTrash}/> Delete dataset
+        </button>
+    }
+    <DeleteDatasetModal studyEnvContext={studyEnvContext}
+      show={showDeleteDatasetModal}
+      setShow={setShowDeleteDatasetModal}
+      datasetName={datasetName}
+      loadDatasets={loadData}/>
     <LoadingSpinner isLoading={isLoading}>
       <div className="col-12 p-3">
         <ul className="list-unstyled">

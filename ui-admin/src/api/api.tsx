@@ -591,6 +591,16 @@ export default {
     })
   },
 
+  async deleteDatasetForStudyEnvironment(portalShortcode: string, studyShortcode: string,
+    envName: string, datasetName: string):
+      Promise<Response> {
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets/${datasetName}`
+    return await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+  },
+
   async fetchMailingList(portalShortcode: string, envName: string): Promise<MailingListContact[]> {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList`
     const response = await fetch(url, this.getGetInit())

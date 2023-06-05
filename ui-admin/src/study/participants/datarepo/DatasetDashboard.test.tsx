@@ -11,8 +11,9 @@ jest.mock('api/api', () => ({
   listDatasetsForStudyEnvironment: () => {
     const successfulDatasetDetails = mockDatasetDetails('successful_dataset', 'CREATED')
     const failedDatasetDetails = mockDatasetDetails('failed_dataset', 'FAILED')
+    const deletingDatasetDetails = mockDatasetDetails('deleting_dataset', 'DELETING')
 
-    const datasetList: DatasetDetails[] = [successfulDatasetDetails, failedDatasetDetails]
+    const datasetList: DatasetDetails[] = [successfulDatasetDetails, failedDatasetDetails, deletingDatasetDetails]
 
     return Promise.resolve(datasetList)
   },
@@ -55,6 +56,19 @@ test('does not render a link to TDR if the dataset failed to create', async () =
   })
 
   expect(screen.queryByText('View dataset in Terra Data Repo')).not.toBeInTheDocument()
+})
+
+test('does not render a Delete Dataset button for datasets in DELETING state', async () => {
+  const studyEnvContext = mockStudyEnvContext()
+
+  const { RoutedComponent } = setupRouterTest(<DatasetDashboard studyEnvContext={studyEnvContext}/>)
+  ;(useParams as jest.Mock).mockReturnValue({ datasetName: 'deleting_dataset' })
+  render(RoutedComponent)
+  await waitFor(() => {
+    expect(screen.getByText('deleting_dataset', { exact: false })).toBeInTheDocument()
+  })
+
+  expect(screen.queryByText('Delete dataset')).not.toBeInTheDocument()
 })
 
 test('renders the dataset details', async () => {
