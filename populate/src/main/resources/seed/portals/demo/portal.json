@@ -1,0 +1,116 @@
+{
+  "name": "Juniper Heart Demo",
+  "shortcode": "demo",
+  "populateStudyFiles": [
+    "studies/heartdemo/study.json"
+  ],
+  "siteContentFiles": [
+    "siteContent/siteContent.json"
+  ],
+  "portalEnvironmentDtos": [
+    {
+      "environmentName": "sandbox",
+      "portalEnvironmentConfig": {
+        "acceptingRegistration": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": true,
+        "emailSourceAddress": "support@juniper.terra.bio"
+      },
+      "siteContentPopDto": {
+        "populateFileName": "siteContent/siteContent.json"
+      },
+      "participantUserFiles": [
+        "participants/jsalk.json",
+        "participants/newEnrollee.json",
+        "participants/consentedEnrollee.json",
+        "participants/basicsDone.json",
+        "participants/withdrawn.json"
+      ],
+      "mailingListContacts": [
+        {
+          "name": "Bob Mailer",
+          "email": "bobmailer@test.com"
+        },
+        {
+          "name": "Alice Messager",
+          "email": "alice@test.com"
+        }
+      ]
+    },{
+      "environmentName": "irb",
+      "portalEnvironmentConfig": {
+        "acceptingRegistration": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": false
+      }
+    },{
+      "environmentName": "live",
+      "portalEnvironmentConfig": {
+        "acceptingRegistration": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": false
+      }
+    }
+  ],
+  "adminUsers": [
+    {"username": "staff@heartdemo.org"}
+  ],
+  "siteImageDtos": [{
+    "populateFileName": "images/Banner-image.png"
+  }, {
+    "populateFileName": "images/family.png"
+  }, {
+    "populateFileName": "images/juniper-demo-logo.png"
+  }, {
+    "populateFileName": "images/discover.svg"
+  }, {
+    "populateFileName": "images/engage.svg"
+  }, {
+    "populateFileName": "images/anthony_philippakis.jpg"
+  }, {
+    "populateFileName": "images/consent_step.png"
+  }, {
+    "populateFileName": "images/survey_step.png"
+  }, {
+    "populateFileName": "images/saliva_step.png"
+  }, {
+    "populateFileName": "images/engagement_step.png"
+  }, {
+    "populateFileName": "images/infographic_risk.png"
+  }, {
+    "populateFileName": "images/risk_factors.png"
+  }, {
+    "populateFileName": "images/population_rates.png"
+  }, {
+    "populateFileName": "images/individual_rates.png"
+  }, {
+    "populateFileName": "images/people_laughing.jpg"
+  }, {
+    "populateFileName": "images/idea_bulb.png"
+  }, {
+    "populateFileName": "images/step_1.png"
+  }, {
+    "populateFileName": "images/step_2.png"
+  }, {
+    "populateFileName": "images/step_3.png"
+  }, {
+    "populateFileName": "images/step_4.png"
+  }, {
+    "populateFileName": "images/hands_banner.jpg"
+  }, {
+    "populateFileName": "images/scientists_banner.jpg"
+  }, {
+    "populateFileName": "images/logos/broad_logo.png"
+  }, {
+    "populateFileName": "images/logos/mgh_logo.png"
+  }, {
+    "populateFileName": "images/logos/mgb_logo.svg"
+  },{
+    "populateFileName": "images/globe_and_hearts.png"
+  }, {
+    "populateFileName": "images/favicon.ico"
+  }]
+}

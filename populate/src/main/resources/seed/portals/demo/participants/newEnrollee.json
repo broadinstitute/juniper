@@ -1,0 +1,17 @@
+{
+  "participantUser": {
+    "username": "newbie@test.com"
+  },
+  "profile": {
+    "givenName": "New",
+    "familyName": "Enrollee",
+    "contactEmail": "newbie@test.com",
+    "mailingAddress": {
+      "street1": "32 Walnut Street",
+      "city": "Belmont (OurHealth)",
+      "state": "MA",
+      "country": "US",
+      "postalCode": "02478"
+    }
+  }
+}

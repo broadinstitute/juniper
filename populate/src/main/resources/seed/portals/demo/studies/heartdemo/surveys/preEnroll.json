@@ -1,0 +1,93 @@
+{
+  "stableId": "hd_hd_preenroll",
+  "version": 1,
+  "name": "Pre-enroll",
+  "jsonContent": {
+    "title": "OurHealth pre-enroll",
+    "logoPosition": "right",
+    "showProgressBar": "bottom",
+    "showQuestionNumbers": "off",
+    "progressBarType": "requiredQuestions",
+    "completeText": "Submit",
+    "pages": [
+      {
+        "name": "page1",
+        "title": "Study Eligibility",
+        "description": "Thank you for your interest in participating in OurHealth. To get started, please answer these questions to make sure you’re eligible to participate. ",
+        "elements": [
+          {
+            "type": "radiogroup",
+            "name": "hd_hd_preenroll_southAsianAncestry",
+            "title": "I identify as having South Asian ancestry from one or more of these countries: Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, or Sri Lanka.",
+            "isRequired": true,
+            "choices": [
+              {
+                "value": "yes",
+                "text": "Yes"
+              },
+              {
+                "value": "no",
+                "text": "No"
+              }
+            ]
+          },
+          {
+            "type": "radiogroup",
+            "name": "hd_hd_preenroll_understandsEnglish",
+            "title": "I am comfortable reading or speaking English.",
+            "isRequired": true,
+            "choices": [
+              {
+                "value": "yes",
+                "text": "Yes"
+              },
+              {
+                "value": "no",
+                "text": "No"
+              }
+            ]
+          },
+          {
+            "type": "radiogroup",
+            "name": "hd_hd_preenroll_isAdult",
+            "title": "I am 18 years old or older.",
+            "isRequired": true,
+            "choices": [
+              {
+                "value": "yes",
+                "text": "Yes"
+              },
+              {
+                "value": "no",
+                "text": "No"
+              }
+            ]
+          },
+          {
+            "type": "radiogroup",
+            "name": "hd_hd_preenroll_livesInUS",
+            "title": "I live in the United States.",
+            "isRequired": true,
+            "choices": [
+              {
+                "value": "yes",
+                "text": "Yes"
+              },
+              {
+                "value": "no",
+                "text": "No"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "calculatedValues": [
+      {
+        "name": "qualified",
+        "expression": "{hd_hd_preenroll_southAsianAncestry} = 'yes' && {hd_hd_preenroll_understandsEnglish} = 'yes' && {hd_hd_preenroll_isAdult} = 'yes' && {hd_hd_preenroll_livesInUS} = 'yes'",
+        "includeIntoResult": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,1789 @@
+{
+  "stableId": "hd_hd_medHx",
+  "version": 1,
+  "name": "Other Medical History",
+  "footer": "Resources used for this survey:\n * All of Us\n * California Teacher’s Study (CTS)\n * Mike Honigberg, American Heart Association\n * OurHealth",
+  "jsonContent": {
+  "title": "Other Medical History",
+  "showQuestionNumbers": "off",
+  "showProgressBar": "bottom",
+  "questionTemplates": [
+    {
+      "name": "hd_hd_medHx_ageAboutAtDiagnosis",
+      "type": "dropdown",
+      "title": "About how old were you when you were first told you had this condition? ",
+      "choices": [
+        {"text": "0", "value": "0"},
+        {"text": "1", "value": "1"},
+        {"text": "2", "value": "2"},
+        {"text": "3", "value": "3"},
+        {"text": "4", "value": "4"},
+        {"text": "5", "value": "5"},
+        {"text": "6", "value": "6"},
+        {"text": "7", "value": "7"},
+        {"text": "8", "value": "8"},
+        {"text": "9", "value": "9"},
+        {"text": "10", "value": "10"},
+        {"text": "11", "value": "11"},
+        {"text": "12", "value": "12"},
+        {"text": "13", "value": "13"},
+        {"text": "14", "value": "14"},
+        {"text": "15", "value": "15"},
+        {"text": "16", "value": "16"},
+        {"text": "17", "value": "17"},
+        {"text": "18", "value": "18"},
+        {"text": "19", "value": "19"},
+        {"text": "20", "value": "20"},
+        {"text": "21", "value": "21"},
+        {"text": "22", "value": "22"},
+        {"text": "23", "value": "23"},
+        {"text": "24", "value": "24"},
+        {"text": "25", "value": "25"},
+        {"text": "26", "value": "26"},
+        {"text": "27", "value": "27"},
+        {"text": "28", "value": "28"},
+        {"text": "29", "value": "29"},
+        {"text": "30", "value": "30"},
+        {"text": "31", "value": "31"},
+        {"text": "32", "value": "32"},
+        {"text": "33", "value": "33"},
+        {"text": "34", "value": "34"},
+        {"text": "35", "value": "35"},
+        {"text": "36", "value": "36"},
+        {"text": "37", "value": "37"},
+        {"text": "38", "value": "38"},
+        {"text": "39", "value": "39"},
+        {"text": "40", "value": "40"},
+        {"text": "41", "value": "41"},
+        {"text": "42", "value": "42"},
+        {"text": "43", "value": "43"},
+        {"text": "44", "value": "44"},
+        {"text": "45", "value": "45"},
+        {"text": "46", "value": "46"},
+        {"text": "47", "value": "47"},
+        {"text": "48", "value": "48"},
+        {"text": "49", "value": "49"},
+        {"text": "50", "value": "50"},
+        {"text": "51", "value": "51"},
+        {"text": "52", "value": "52"},
+        {"text": "53", "value": "53"},
+        {"text": "54", "value": "54"},
+        {"text": "55", "value": "55"},
+        {"text": "56", "value": "56"},
+        {"text": "57", "value": "57"},
+        {"text": "58", "value": "58"},
+        {"text": "59", "value": "59"},
+        {"text": "60", "value": "60"},
+        {"text": "61", "value": "61"},
+        {"text": "62", "value": "62"},
+        {"text": "63", "value": "63"},
+        {"text": "64", "value": "64"},
+        {"text": "65", "value": "65"},
+        {"text": "66", "value": "66"},
+        {"text": "67", "value": "67"},
+        {"text": "68", "value": "68"},
+        {"text": "69", "value": "69"},
+        {"text": "70", "value": "70"},
+        {"text": "71", "value": "71"},
+        {"text": "72", "value": "72"},
+        {"text": "73", "value": "73"},
+        {"text": "74", "value": "74"},
+        {"text": "75", "value": "75"},
+        {"text": "76", "value": "76"},
+        {"text": "77", "value": "77"},
+        {"text": "78", "value": "78"},
+        {"text": "79", "value": "79"},
+        {"text": "80", "value": "80"},
+        {"text": "81", "value": "81"},
+        {"text": "82", "value": "82"},
+        {"text": "83", "value": "83"},
+        {"text": "84", "value": "84"},
+        {"text": "85", "value": "85"},
+        {"text": "86", "value": "86"},
+        {"text": "87", "value": "87"},
+        {"text": "88", "value": "88"},
+        {"text": "89", "value": "89"},
+        {"text": "90", "value": "90"},
+        {"text": "91", "value": "91"},
+        {"text": "92", "value": "92"},
+        {"text": "93", "value": "93"},
+        {"text": "94", "value": "94"},
+        {"text": "95", "value": "95"},
+        {"text": "96", "value": "96"},
+        {"text": "97", "value": "97"},
+        {"text": "98", "value": "98"},
+        {"text": "99", "value": "99"}
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "elements": [
+        {
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "hd_hd_medHx_overallDescription",
+              "html": "<p>This survey asks questions about Other Medical History. This is to better understand how it may affect health. It will take about 5-10 minutes to answer these questions. Please answer each question as honestly as possible. We are looking for your own answers, not what you think your doctors, family, or friends want you to say. Do not feel like you have to spend a long time on each question. The first answer that comes to you is usually the best one.</p>"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "hd_hd_medHx_cancerHealthDescription",
+              "html": "<h2>Cancer Conditions</h2>"
+            }
+          ]
+        },
+        {
+          "name": "hd_hd_medHx_cancerTypes",
+          "type": "checkbox",
+          "title": "Has a doctor or health care provider ever told you that you have or had any of the following cancers? (select all that apply) ",
+          "choices": [
+            {
+              "text": "Bladder cancer",
+              "value": "bladderCancer"
+            },
+            {
+              "text": "Blood or soft tissue cancer",
+              "value": "bloodOrSoftTissueCancer"
+            },
+            {
+              "text": "Bone cancer",
+              "value": "boneCancer"
+            },
+            {
+              "text": "Brain cancer",
+              "value": "brainCancer"
+            },
+            {
+              "text": "Breast cancer",
+              "value": "breastCancer"
+            },
+            {
+              "text": "Cervical cancer",
+              "value": "cervicalCancer"
+            },
+            {
+              "text": "Colon cancer/Rectal cancer",
+              "value": "colonRectalCancer"
+            },
+            {
+              "text": "Endocrine cancer",
+              "value": "endocrineCancer"
+            },
+            {
+              "text": "Endometrial cancer",
+              "value": "endometrialCancer"
+            },
+            {
+              "text": "Esophageal cancer",
+              "value": "esophagealCancer"
+            },
+            {
+              "text": "Eye cancer",
+              "value": "eyeCancer"
+            },
+            {
+              "text": "Head and neck cancer",
+              "value": "headAndNeckCancer"
+            },
+            {
+              "text": "Kidney cancer",
+              "value": "kidneyCancer"
+            },
+            {
+              "text": "Lung cancer",
+              "value": "lungCancer"
+            },
+            {
+              "text": "Ovarian cancer",
+              "value": "ovarianCancer"
+            },
+            {
+              "text": "Pancreatic cancer",
+              "value": "pancreaticCancer"
+            },
+            {
+              "text": "Prostate cancer",
+              "value": "prostateCancer"
+            },
+            {
+              "text": "Skin cancer",
+              "value": "skinCancer"
+            },
+            {
+              "text": "Stomach cancer",
+              "value": "stomachCancer"
+            },
+            {
+              "text": "Thyroid cancer",
+              "value": "thyroidCancer"
+            },
+            {
+              "text": "Other cancer",
+              "value": "other"
+            },
+            {
+              "text": "I do not have cancer",
+              "value": "none"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Bladder cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'bladderCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_bladderCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Blood or soft tissue cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'bloodOrSoftTissueCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_bloodOrSoftTissueCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Bone cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'boneCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_boneCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Brain cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'brainCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_brainCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Breast cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'breastCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_breastCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Cervical cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'cervicalCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_cervicalCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Colon cancer/Rectal cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'colonRectalCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_colonRectalCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Endocrine cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'endocrineCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_endocrineCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Endometrial cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'endometrialCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_endometrialCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Esophageal cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'esophagealCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_esophagealCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Eye cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'eyeCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_eyeCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Head and neck cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'headAndNeckCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_headAndNeckCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Kidney cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'kidneyCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_kidneyCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Lung cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'lungCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_lungCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Ovarian cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'ovarianCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_ovarianCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Pancreatic cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'pancreaticCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_pancreaticCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Prostate cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'prostateCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_prostateCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Skin cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'skinCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_skinCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Stomach cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'stomachCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_stomachCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Thyroid cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'thyroidCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_thyroidCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Other cancer",
+          "visibleIf": "{hd_hd_medHx_cancerTypes} contains 'other'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_otherCancerDescription",
+              "type": "text",
+              "title": "What is the other cancer?"
+            },
+            {
+              "name": "hd_hd_medHx_otherCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "elements": [
+        {
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "hd_hd_medHx_digestiveDescription",
+              "html": "<h2>Digestive Conditions</h2>"
+            }
+          ]
+        },
+        {
+          "name": "hd_hd_medHx_digestiveConditionsDiagnoses",
+          "type": "checkbox",
+          "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply) ",
+          "choices": [
+            {"text": "Acid reflux", "value": "acidReflux"},
+            {"text": "Bowel Obstruction", "value": "bowelObstruction"},
+            {"text": "Celiac disease", "value": "celiacDisease"},
+            {"text": "Colon polyps", "value": "colonPolyps"},
+            {"text": "Crohn’s disease", "value": "crohnsDisease"},
+            {"text": "Diverticulosis/diverticulitis", "value": "diverticulosisDiverticulitis"},
+            {"text": "Gallstones", "value": "gallStones"},
+            {"text": "Hemorrhoids", "value": "hemorrhoids"},
+            {"text": "Hernia", "value": "hernia"},
+            {"text": "Irritable bowel syndrome (IBS)", "value": "irritableBowelSyndrome"},
+            {"text": "Liver condition", "value": "liverCondition"},
+            {"text": "Pancreatitis", "value": "pancreatitis"},
+            {"text": "Peptic ulcers", "value": "pepticUlcers"},
+            {"text": "Ulcerative colitis", "value": "ulcerativeColitis"},
+            {"text": "Other digestive condition", "value": "otherDigestiveCondition"},
+            {"text": "I have no digestive condition", "value": "none"}
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Acid reflux",
+          "visibleIf": "{hd_hd_medHx_digestiveConditionsDiagnoses} contains 'acidReflux'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_acidRefluxAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Bowel Obstruction",
+          "visibleIf": "{hd_hd_medHx_digestiveConditionsDiagnoses} contains 'bowelObstruction'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_bowelObstructionAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Celiac disease",
+          "visibleIf": "{hd_hd_medHx_digestiveConditionsDiagnoses} contains 'celiacDisease'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_celiacDiseaseAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Colon polyps",
+          "visibleIf": "{hd_hd_medHx_digestiveConditionsDiagnoses} contains 'colonPolyps'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_colonPolypsAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Crohn’s disease",
+          "visibleIf": "{hd_hd_medHx_digestiveConditionsDiagnoses} contains 'crohnsDisease'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_crohnsDiseaseAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Diverticulosis/diverticulitis",
+          "visibleIf": "{hd_hd_medHx_digestiveConditionsDiagnoses} contains 'diverticulosisDiverticulitis'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_diverticulosisDiverticulitisAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Gallstones",
+          "visibleIf": "{hd_hd_medHx_digestiveConditionsDiagnoses} contains 'gallStones'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_gallStonesAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Hemorrhoids",
+          "visibleIf": "{hd_hd_medHx_digestiveConditionsDiagnoses} contains 'hemorrhoids'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_hemorrhoidsAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Hernia",
+          "visibleIf": "{hd_hd_medHx_digestiveConditionsDiagnoses} contains 'hernia'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_herniaAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Irritable bowel syndrome (IBS)",
+          "visibleIf": "{hd_hd_medHx_digestiveConditionsDiagnoses} contains 'irritableBowelSyndrome'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_irritableBowelSyndromeAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Liver condition",
+          "visibleIf": "{hd_hd_medHx_digestiveConditionsDiagnoses} contains 'liverCondition'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_liverConditionAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            },
+            {
+              "name": "hd_hd_medHx_liverDiagnosedConditions",
+              "type": "checkbox",
+              "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply) ",
+              "choices": [
+                {"text": "Cirrhosis of the Liver/Liver Failure", "value": "cirrhosisOrLiverFailure"},
+                {"text": "Non-alcoholic Fatty Liver Disease (NAFLD/NASH)", "value": "nonAlcFattyLiverDisease"},
+                {"text": "Liver cancer", "value": "liverCancer"},
+                {"text": "Hepatitis", "value": "hepatitis"}
+              ]
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Pancreatitis",
+          "visibleIf": "{hd_hd_medHx_digestiveConditionsDiagnoses} contains 'pancreatitis'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_pancreatitisAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Peptic ulcers",
+          "visibleIf": "{hd_hd_medHx_digestiveConditionsDiagnoses} contains 'pepticUlcers'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_pepticUlcersAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Ulcerative colitis",
+          "visibleIf": "{hd_hd_medHx_digestiveConditionsDiagnoses} contains 'ulcerativeColitis'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_ulcerativeColitisAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Other digestive condition",
+          "visibleIf": "{hd_hd_medHx_digestiveConditionsDiagnoses} contains 'otherDigestiveCondition'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_otherDigestiveConditionDescription",
+              "type": "text",
+              "title": "What is the other condition?"
+            },
+            {
+              "name": "hd_hd_medHx_otherDigestiveConditionAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "elements": [
+        {
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "hd_hd_medHx_kidneyDescription",
+              "html": "<h2>Kidney Conditions</h2>"
+            }
+          ]
+        },
+        {
+          "name": "hd_hd_medHx_kidneyDiagnosedConditions",
+          "type": "checkbox",
+          "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply) ",
+          "choices": [
+            {"text": "Acute kidney disease with no current dialysis", "value": "acuteKidneyDiseaseWithNoCurrentDialysis"},
+            {"text": "Kidney disease with dialysis", "value": "kidneyDiseaseWithDialysis"},
+            {"text": "Kidney disease without dialysis", "value": "kidneyDiseaseWithoutDialysis"},
+            {"text": "Kidney stones", "value": "kidneyStones"},
+            {"text": "Other kidney condition", "value": "otherKidneyCondition"},
+            {"text": "I have no kidney condition", "value": "iHaveNoKidneyCondition"}
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Acute kidney disease with no current dialysis",
+          "visibleIf": "{hd_hd_medHx_kidneyDiagnosedConditions} contains 'acuteKidneyDiseaseWithNoCurrentDialysis'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_acuteKidneyDiseaseWithNoCurrentDialysisAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Kidney disease with dialysis",
+          "visibleIf": "{hd_hd_medHx_kidneyDiagnosedConditions} contains 'kidneyDiseaseWithDialysis'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_kidneyDiseaseWithDialysisAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Kidney disease without dialysis",
+          "visibleIf": "{hd_hd_medHx_kidneyDiagnosedConditions} contains 'kidneyDiseaseWithoutDialysis'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_kidneyDiseaseWithoutDialysisAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Kidney stones",
+          "visibleIf": "{hd_hd_medHx_kidneyDiagnosedConditions} contains 'kidneyStones'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_kidneyStonesAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Other kidney condition",
+          "visibleIf": "{hd_hd_medHx_kidneyDiagnosedConditions} contains 'otherKidneyCondition'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_otherKidneyDescription",
+              "type": "text",
+              "title": "What is the other kidney condition?"
+            },
+            {
+              "name": "hd_hd_medHx_otherKidneyConditionAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "page5",
+      "elements": [
+        {
+          "type": "panel",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_endocrineDescription",
+              "type": "html",
+              "html": "<h2>Hormone/Endocrine Conditions</h2>"
+            }
+          ]
+        },
+        {
+          "name": "hd_hd_medHx_endocrineDiagnosedConditions",
+          "type": "checkbox",
+          "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply) ",
+          "choices": [
+            {
+              "text": "Hyperthyroidism",
+              "value": "hyperthyroidism"
+            },
+            {
+              "text": "Hypothyroidism",
+              "value": "hypothyroidism"
+            },
+            {
+              "text": "Other/Unknown thyroid condition",
+              "value": "otherUnknownThyroidCondition"
+            },
+            {
+              "text": "Other hormone/endocrine condition",
+              "value": "otherHormoneEndocrineCondition"
+            },
+            {
+              "text": "I have no hormone/endocrine condition",
+              "value": "iHaveNoHormoneEndocrineCondition"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Hyperthyroidism",
+          "visibleIf": "{hd_hd_medHx_endocrineDiagnosedConditions} contains 'hyperthyroidism'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_hyperthyroidismAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Hypothyroidism",
+          "visibleIf": "{hd_hd_medHx_endocrineDiagnosedConditions} contains 'hypothyroidism'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_hypothyroidismAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Other/Unknown thyroid condition",
+          "visibleIf": "{hd_hd_medHx_endocrineDiagnosedConditions} contains 'otherUnknownThyroidCondition'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_otherUnknownThyroidConditionAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Other hormone/endocrine condition",
+          "visibleIf": "{hd_hd_medHx_endocrineDiagnosedConditions} contains 'otherHormoneEndocrineCondition'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_otherHormoneEndocrineConditionDescription",
+              "type": "text",
+              "title": "What is the other hormone/endocrine condition?"
+            },
+            {
+              "name": "hd_hd_medHx_otherHormoneEndocrineConditionAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "elements": [
+        {
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "hd_hd_medHx_mentalHealthDescription",
+              "html": "<h2>Mental Health and Substance Use Conditions</h2>"
+            }
+          ]
+        },
+        {
+          "name": "hd_hd_medHx_mentalHealthDxConditions",
+          "type": "checkbox",
+          "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply) ",
+          "choices": [
+            {"text": "Alcohol use disorder", "value": "alcoholUse"},
+            {"text": "Anxiety reaction/panic disorder", "value": "anxietyReactionPanic"},
+            {"text": "Attention-deficit/hyperactivity disorder (ADHD)", "value": "adhd"},
+            {"text": "Autism spectrum disorder", "value": "autismSpectrum"},
+            {"text": "Bipolar disorder", "value": "bipolar"},
+            {"text": "Depression", "value": "depression"},
+            {"text": "Drug use disorder", "value": "drugUse"},
+            {"text": "Eating disorder", "value": "eatingDisorder"},
+            {"text": "Post-traumatic stress disorder (PTSD)", "value": "ptsd"},
+            {"text": "Schizophrenia", "value": "schizophrenia"},
+            {"text": "Other mental health or substance use condition", "value": "other"},
+            {"text": "I have no mental health or substance use condition", "value": "none"}
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Alcohol use disorder",
+          "visibleIf": "{hd_hd_medHx_mentalHealthDxConditions} contains 'alcoholUse'",
+          "elements": [
+                        {
+              "name": "hd_hd_medHx_alcoholUseAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Anxiety reaction/panic disorder",
+          "visibleIf": "{hd_hd_medHx_mentalHealthDxConditions} contains 'anxietyReactionPanic'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_anxietyReactionPanicAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Attention-deficit/hyperactivity disorder (ADHD)",
+          "visibleIf": "{hd_hd_medHx_mentalHealthDxConditions} contains 'adhd'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_adhdAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Autism spectrum disorder",
+          "visibleIf": "{hd_hd_medHx_mentalHealthDxConditions} contains 'autismSpectrum'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_autismSpectrumAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Bipolar disorder",
+          "visibleIf": "{hd_hd_medHx_mentalHealthDxConditions} contains 'bipolar'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_bipolarAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Depression",
+          "visibleIf": "{hd_hd_medHx_mentalHealthDxConditions} contains 'depression'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_depressionAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Drug use disorder",
+          "visibleIf": "{hd_hd_medHx_mentalHealthDxConditions} contains 'drugUse'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_drugUseAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Eating disorder",
+          "visibleIf": "{hd_hd_medHx_mentalHealthDxConditions} contains 'eatingDisorder'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_eatingDisorderAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Post-traumatic stress disorder (PTSD)",
+          "visibleIf": "{hd_hd_medHx_mentalHealthDxConditions} contains 'ptsd'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_ptsdAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Schizophrenia",
+          "visibleIf": "{hd_hd_medHx_mentalHealthDxConditions} contains 'schizophrenia'",
+          "elements": [
+                        {
+              "name": "hd_hd_medHx_schizophreniaAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Other mental health or substance use condition",
+          "visibleIf": "{hd_hd_medHx_mentalHealthDxConditions} contains 'other'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_otherMentalHealthDescription",
+              "type": "text",
+              "title": "What is the other condition?"
+            },
+            {
+              "name": "hd_hd_medHx_otherMentalHealthAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "elements": [
+        {
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "hd_hd_medHx_lungHealthDescription",
+              "html": "<h2>Lung Health</h2>"
+            }
+          ]
+        },
+        {
+          "name": "hd_hd_medHx_diagnosedLungConditions",
+          "type": "checkbox",
+          "title": "Has a doctor or health care provider ever told you that you have or had any of the following lung conditions? (select all that apply) ",
+          "choices": [
+            {"text": "Asthma", "value": "asthma"},
+            {"text": "Chronic Lung Disease", "value": "chronicLungDisease"},
+            {"text": "Sleep Apnea", "value": "sleepApnea"},
+            {"text": "Other lung condition", "value": "otherLung"},
+            {"text": "I have no lung condition", "value": "none"}
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Asthma",
+          "visibleIf": "{hd_hd_medHx_diagnosedLungConditions} contains 'asthma'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_asthmaAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Chronic Lung Disease",
+          "visibleIf": "{hd_hd_medHx_diagnosedLungConditions} contains 'chronicLungDisease'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_chronicLungDiseaseAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Sleep Apnea",
+          "visibleIf": "{hd_hd_medHx_diagnosedLungConditions} contains 'sleepApnea'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_sleepApneaAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Other lung condition",
+          "visibleIf": "{hd_hd_medHx_diagnosedLungConditions} contains 'otherLung'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_otherLungDescription",
+              "type": "text",
+              "title": "What is the other condition?"
+            },
+            {
+              "name": "hd_hd_medHx_otherLungAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "elements": [
+        {
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "hd_hd_medHx_boneJointDiagnosedDescription",
+              "html": "<h2>Bone, Joint and Muscle Conditions</h2>"
+            }
+          ]
+        },
+        {
+          "name": "hd_hd_medHx_boneJointDiagnosedConditions",
+          "type": "checkbox",
+          "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply) ",
+          "choices": [
+            {"text": "Carpal tunnel syndrome", "value": "carpalTunnelSyndrome"},
+            {"text": "Fibromyalgia", "value": "fibromyalgia"},
+            {"text": "Fractured/broken any bones in the last 5 years", "value": "fracturesInTheLast5Years"},
+            {"text": "Gout", "value": "gout"},
+            {"text": "Osteoarthritis", "value": "osteoarthritis"},
+            {"text": "Osteoporosis", "value": "osteoporosis"},
+            {"text": "Pseudogout", "value": "pseudogout"},
+            {"text": "Rheumatoid arthritis", "value": "rheumatoidArthritis"},
+            {"text": "Spine, muscle, or bone disorders (non-cancer)", "value": "spineMuscleOrBoneDisordersNonCancer"},
+            {"text": "Systemic lupus", "value": "systemicLupus"},
+            {"text": "Other arthritis, such as psoriatic arthritis and/or ankylosing spondylitis", "value": "otherArthritis"},
+            {"text": "Other bone, joint, or muscle condition", "value": "otherBoneJointOrMuscleCondition"},
+            {"text": "I have no bone, joint, or muscle condition", "value": "none"}
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Carpal tunnel syndrome",
+          "visibleIf": "{hd_hd_medHx_boneJointDiagnosedConditions} contains 'carpalTunnelSyndrome'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_carpalTunnelSyndromeAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Fibromyalgia",
+          "visibleIf": "{hd_hd_medHx_boneJointDiagnosedConditions} contains 'fibromyalgia'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_fibromyalgiaAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Fractured/broken any bones in the last 5 years",
+          "visibleIf": "{hd_hd_medHx_boneJointDiagnosedConditions} contains 'fracturesInTheLast5Years'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_fracturesInTheLast5YearsAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Gout",
+          "visibleIf": "{hd_hd_medHx_boneJointDiagnosedConditions} contains 'gout'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_goutAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Osteoarthritis",
+          "visibleIf": "{hd_hd_medHx_boneJointDiagnosedConditions} contains 'osteoarthritis'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_osteoarthritisAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Osteoporosis",
+          "visibleIf": "{hd_hd_medHx_boneJointDiagnosedConditions} contains 'osteoporosis'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_osteoporosisAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Pseudogout",
+          "visibleIf": "{hd_hd_medHx_boneJointDiagnosedConditions} contains 'pseudogout'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_pseudogoutAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Rheumatoid arthritis",
+          "visibleIf": "{hd_hd_medHx_boneJointDiagnosedConditions} contains 'rheumatoidArthritis'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_rheumatoidArthritisAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Spine, muscle, or bone disorders (non-cancer)",
+          "visibleIf": "{hd_hd_medHx_boneJointDiagnosedConditions} contains 'spineMuscleOrBoneDisordersNonCancer'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_spineMuscleOrBoneDisordersNonCancerAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Systemic lupus",
+          "visibleIf": "{hd_hd_medHx_boneJointDiagnosedConditions} contains 'systemicLupus'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_systemicLupusAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Other arthritis",
+          "visibleIf": "{hd_hd_medHx_boneJointDiagnosedConditions} contains 'otherArthritis'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_otherArthritisAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Other bone, joint, or muscle condition",
+          "visibleIf": "{hd_hd_medHx_boneJointDiagnosedConditions} contains 'otherBoneJointOrMuscleCondition'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_otherBoneJointOrMuscleConditionDescription",
+              "type": "text",
+              "title": "What is the other condition?"
+            },
+            {
+              "name": "hd_hd_medHx_otherBoneJointOrMuscleConditionAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "elements": [
+        {
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "hd_hd_medHx_infectiousDiagnosedDescription",
+              "html": "<h2>Infectious Diseases</h2>"
+            }
+          ]
+        },
+        {
+          "name": "hd_hd_medHx_infectiousDiseasedDiagnosed",
+          "type": "checkbox",
+          "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply) ",
+          "choices": [
+            {"text": "Chickenpox", "value": "chickenpox"},
+            {"text": "Chikungunya", "value": "chikungunya"},
+            {"text": "Chronic sinus infections", "value": "chronicSinusInfections"},
+            {"text": "COVID-19", "value": "covid19"},
+            {"text": "Dengue fever", "value": "dengueFever"},
+            {"text": "Hepatitis A", "value": "hepatitisA"},
+            {"text": "Hepatitis B", "value": "hepatitisB"},
+            {"text": "Hepatitis C", "value": "hepatitisC"},
+            {"text": "HIV/AIDS", "value": "hivAids"},
+            {"text": "Lyme disease", "value": "lymeDisease"},
+            {"text": "Malaria", "value": "malaria"},
+            {"text": "Recurrent urinary tract infections (uti)/bladder infections", "value": "recurrentUrinaryTractInfections"},
+            {"text": "Reoccurring yeast infection", "value": "reoccurringYeastInfection"},
+            {"text": "Severe acute respiratory syndrome (SARS)", "value": "sars"},
+            {"text": "Sexually transmitted infections (Gonorrhea, Syphilis, Chlamydia, HPV, or others)", "value": "sexuallyTransmittedInfections"},
+            {"text": "Shingles", "value": "shingles"},
+            {"text": "Tuberculosis", "value": "tuberculosis"},
+            {"text": "West Nile virus", "value": "westNileVirus"},
+            {"text": "Zika virus", "value": "zikaVirus"},
+            {"text": "Other infectious disease", "value": "other"},
+            {"text": "I have no infectious disease", "value": "none"}
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Chickenpox",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'chickenpox'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_chickenpoxAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Chikungunya",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'chikungunya'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_chikungunyaAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Chronic sinus infections",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'chronicSinusInfections'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_chronicSinusInfectionsAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "COVID-19",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'covid19'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_covid19AgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Dengue fever",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'dengueFever'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_dengueFeverAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Hepatitis A",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'hepatitisA'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_hepatitisAAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Hepatitis B",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'hepatitisB'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_hepatitisBAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Hepatitis C",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'hepatitisC'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_hepatitisCAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "HIV/AIDS",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'hivAids'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_hivAidsAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Lyme disease",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'lymeDisease'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_lymeDiseaseAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Malaria",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'malaria'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_malariaAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Recurrent urinary tract infections (uti)/bladder infections",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'recurrentUrinaryTractInfections'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_recurrentUrinaryTractInfectionsAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Reoccurring yeast infection",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'reoccurringYeastInfection'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_reoccurringYeastInfectionAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Severe acute respiratory syndrome (SARS)",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'sars'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_sarsAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Sexually transmitted infections (Gonorrhea, Syphilis, Chlamydia, HPV, or others)",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'sexuallyTransmittedInfections'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_sexuallyTransmittedInfectionsAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Shingles",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'shingles'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_shinglesAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Tuberculosis",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'tuberculosis'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_tuberculosisAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "West Nile virus",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'westNileVirus'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_westNileVirusAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Zika virus",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'zikaVirus'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_zikaVirusAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Other infectious disease",
+          "visibleIf": "{hd_hd_medHx_infectiousDiseasedDiagnosed} contains 'other'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_otherInfectiousDescription",
+              "type": "text",
+              "title": "What is the other condition?"
+            },
+            {
+              "name": "hd_hd_medHx_otherInfectiousAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        }
+      ]
+    },{
+      "elements": [
+        {
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "hd_hd_medHx_nervousDiagnosedDescription",
+              "html": "<h2>Brain and Nervous System Conditions</h2>"
+            }
+          ]
+        },
+        {
+          "name": "hd_hd_medHx_nervousSystemDx",
+          "type": "checkbox",
+          "title": "Has a doctor or health care provider ever told you that you have…? (select all that apply) ",
+          "choices": [
+            {"text": "Cerebral palsy", "value": "cerebralPalsy"},
+            {"text": "Dementia", "value": "dementia"},
+            {"text": "Epilepsy or seizure", "value": "epilepsyOrSeizure"},
+            {"text": "Insomnia", "value": "insomnia"},
+            {"text": "Migraine headaches", "value": "migraineHeadaches"},
+            {"text": "Multiple sclerosis", "value": "multipleSclerosis"},
+            {"text": "Muscular dystrophy (MD)", "value": "muscularDystrophy"},
+            {"text": "Neuropathy", "value": "neuropathy"},
+            {"text": "Parkinson’s disease", "value": "parkinsonsDisease"},
+            {"text": "Other brain or nervous system condition", "value": "other"},
+            {"text": "I have no brain or nervous system condition", "value": "none"}
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Cerebral palsy",
+          "visibleIf": "{hd_hd_medHx_nervousSystemDx} contains 'cerebralPalsy'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_cerebralPalsyAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Dementia",
+          "visibleIf": "{hd_hd_medHx_nervousSystemDx} contains 'dementia'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_dementiaAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Epilepsy or seizure",
+          "visibleIf": "{hd_hd_medHx_nervousSystemDx} contains 'epilepsyOrSeizure'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_epilepsyOrSeizureAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Insomnia",
+          "visibleIf": "{hd_hd_medHx_nervousSystemDx} contains 'insomnia'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_insomniaAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Migraine headaches",
+          "visibleIf": "{hd_hd_medHx_nervousSystemDx} contains 'migraineHeadaches'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_migraineHeadachesAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Multiple sclerosis",
+          "visibleIf": "{hd_hd_medHx_nervousSystemDx} contains 'multipleSclerosis'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_multipleSclerosisAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Muscular dystrophy (MD)",
+          "visibleIf": "{hd_hd_medHx_nervousSystemDx} contains 'muscularDystrophy'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_muscularDystrophyAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Neuropathy",
+          "visibleIf": "{hd_hd_medHx_nervousSystemDx} contains 'neuropathy'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_neuropathyAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Parkinson’s disease",
+          "visibleIf": "{hd_hd_medHx_nervousSystemDx} contains 'parkinsonsDisease'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_parkinsonsDiseaseAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Other brain or nervous system condition",
+          "visibleIf": "{hd_hd_medHx_nervousSystemDx} contains 'other'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_otherNervousSystemDx",
+              "type": "text",
+              "title": "What is the other brain or nervous system condition?"
+            },
+            {
+              "name": "hd_hd_medHx_otherNervousAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        }
+      ]
+    },{
+      "elements": [
+        {
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "hd_hd_medHx_hearingEyeDiagnosedDescription",
+              "html": "<h2>Hearing and Eye Conditions</h2>"
+            }
+          ]
+        },
+        {
+          "name": "hd_hd_medHx_hearingEyeDiagnosed",
+          "type": "checkbox",
+          "title": "Has a doctor or health care provider ever told you that you have any of the following hearing or vision problems? (select all that apply) ",
+          "choices": [
+            {"text": "Blindness, all causes", "value": "blindnessAllCauses"},
+            {"text": "Cataracts", "value": "cataracts"},
+            {"text": "Glaucoma", "value": "glaucoma"},
+            {"text": "Macular degeneration", "value": "macularDegeneration"},
+            {"text": "Severe hearing loss or partial deafness in one or both ears", "value": "severeHearingLoss"},
+            {"text": "Other hearing or eye condition", "value": "other"},
+            {"text": "I have no hearing or eye condition", "value": "none"}
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Blindness, all causes",
+          "visibleIf": "{hd_hd_medHx_hearingEyeDiagnosed} contains 'blindnessAllCauses'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_blindnessAllCausesAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Cataracts",
+          "visibleIf": "{hd_hd_medHx_hearingEyeDiagnosed} contains 'cataracts'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_cataractsAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Glaucoma",
+          "visibleIf": "{hd_hd_medHx_hearingEyeDiagnosed} contains 'glaucoma'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_glaucomaAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Macular degeneration",
+          "visibleIf": "{hd_hd_medHx_hearingEyeDiagnosed} contains 'macularDegeneration'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_macularDegenerationAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Severe hearing loss or partial deafness in one or both ears",
+          "visibleIf": "{hd_hd_medHx_hearingEyeDiagnosed} contains 'severeHearingLoss'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_severeHearingLossAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "title": "Other hearing or eye condition",
+          "visibleIf": "{hd_hd_medHx_hearingEyeDiagnosed} contains 'other'",
+          "elements": [
+            {
+              "name": "hd_hd_medHx_otherHearingEyeDescription",
+              "type": "text",
+              "title": "What is the other hearing or eye condition?"
+            },
+            {
+              "name": "hd_hd_medHx_otherHearingEyeAgeAtDx",
+              "questionTemplateName": "hd_hd_medHx_ageAboutAtDiagnosis"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+}
