@@ -9,4 +9,5 @@ import lombok.Setter;
 public class EnrolleeSearchResult {
     private Enrollee enrollee;
     private Profile profile;
+    private boolean hasKit;
 }

@@ -2,34 +2,46 @@ package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
+import bio.terra.pearl.core.dao.kit.KitRequestDao;
+import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
+import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.model.participant.Profile;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+
+import java.util.*;
+
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
-    private ProfileDao profileDao;
-    private SurveyResponseDao surveyResponseDao;
-    private ConsentResponseDao consentResponseDao;
-    private ParticipantTaskDao participantTaskDao;
-    private PreEnrollmentResponseDao preEnrollmentResponseDao;
+    private final ConsentResponseDao consentResponseDao;
+    private final KitRequestDao kitRequestDao;
+    private final KitTypeDao kitTypeDao;
+    private final ParticipantTaskDao participantTaskDao;
+    private final PreEnrollmentResponseDao preEnrollmentResponseDao;
+    private final ProfileDao profileDao;
+    private final SurveyResponseDao surveyResponseDao;
 
-    public EnrolleeDao(Jdbi jdbi, ProfileDao profileDao, SurveyResponseDao surveyResponseDao,
-                       ConsentResponseDao consentResponseDao, ParticipantTaskDao participantTaskDao,
-                       PreEnrollmentResponseDao preEnrollmentResponseDao) {
+    public EnrolleeDao(Jdbi jdbi,
+                       ConsentResponseDao consentResponseDao,
+                       KitRequestDao kitRequestDao,
+                       KitTypeDao kitTypeDao,
+                       ParticipantTaskDao participantTaskDao,
+                       PreEnrollmentResponseDao preEnrollmentResponseDao,
+                       ProfileDao profileDao,
+                       SurveyResponseDao surveyResponseDao) {
         super(jdbi);
-        this.profileDao = profileDao;
-        this.surveyResponseDao = surveyResponseDao;
         this.consentResponseDao = consentResponseDao;
+        this.kitRequestDao = kitRequestDao;
+        this.kitTypeDao = kitTypeDao;
         this.participantTaskDao = participantTaskDao;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
+        this.profileDao = profileDao;
+        this.surveyResponseDao = surveyResponseDao;
     }
 
     @Override
@@ -45,6 +57,9 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
         return findAllByProperty("study_environment_id", studyEnvironmentId);
     }
 
+    public List<Enrollee> findAllByShortcodes(List<String> shortcodes) {
+        return findAllByPropertyCollection("shortcode", shortcodes);
+    }
 
     public List<Enrollee> findByParticipantUserId(UUID userId) {
         return findAllByProperty("participant_user_id", userId);
@@ -80,16 +95,29 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
         if (enrollee.getPreEnrollmentResponseId() != null) {
             enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).get());
         }
+        enrollee.getKitRequests().addAll(kitRequestDao.findByEnrollee(enrollee.getId()));
+        var allKitTypes = kitTypeDao.findAll();
+        for (KitRequest kitRequest : enrollee.getKitRequests()) {
+            var kitType = allKitTypes.stream().filter((t -> t.getId().equals(kitRequest.getKitTypeId()))).findFirst().get();
+            kitRequest.setKitType(kitType);
+        }
         return enrollee;
     }
 
     public List<EnrolleeSearchResult> searchByStudyEnvironment(UUID studyEnvironmentId) {
         List<Enrollee> enrollees = findByStudyEnvironmentId(studyEnvironmentId);
+        Map<UUID, Boolean> hasKit = new HashMap<>();
+        for (Enrollee enrollee : enrollees) {
+            var kitRequests = kitRequestDao.findByEnrollee(enrollee.getId());
+            hasKit.put(enrollee.getId(), !kitRequests.isEmpty());
+        }
         List<UUID> profileIds = enrollees.stream().map(enrollee -> enrollee.getProfileId()).toList();
         List<Profile> profiles = profileDao.findAll(profileIds);
-        return enrollees.stream().map(enrollee -> EnrolleeSearchResult.builder().enrollee(enrollee)
+        return enrollees.stream().map(enrollee -> EnrolleeSearchResult.builder()
+                .enrollee(enrollee)
                 .profile(profiles.stream().filter(profile -> profile.getId().equals(enrollee.getProfileId()))
                         .findFirst().orElse(null))
+                .hasKit(hasKit.get(enrollee.getId()))
                 .build()).toList();
     }
 

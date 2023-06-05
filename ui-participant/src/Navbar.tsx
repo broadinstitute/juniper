@@ -7,6 +7,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
 import Api, { getEnvSpec, getImageUrl, NavbarItem } from 'api/api'
+import { MailingListModal } from 'landing/MailingListModal'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { useConfig } from 'providers/ConfigProvider'
@@ -166,24 +167,36 @@ export default function Navbar(props: NavbarProps) {
   </nav>
 }
 
+type MailingListNavLinkProps = JSX.IntrinsicElements['a']
+
+const MailingListNavLink = (props: MailingListNavLinkProps) => {
+  const modalId = useId()
+
+  return (
+    <>
+      <a
+        {...props}
+        data-bs-toggle="modal"
+        data-bs-target={`#${CSS.escape(modalId)}`}
+      />
+      <MailingListModal id={modalId} />
+    </>
+  )
+}
+
 /** renders a single navBarItem. This will likely get split out into subcomponents for each type as they are
  * implemented
  */
 export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
-  /** will eventually popup a modal allowing email address entry */
-  function mailingList(navLinkObj: NavbarItem) {
-    alert(`mailing list ${navLinkObj.label}`)
-  }
-
   if (navLink.itemType === 'INTERNAL') {
     // we require navbar links to be absolute rather than relative links
-    return <NavLink to={`/${navLink.htmlPage.path}`} className={navLinkClasses}>{navLink.label}</NavLink>
+    return <NavLink to={`/${navLink.htmlPage.path}`} className={navLinkClasses}>{navLink.text}</NavLink>
   } else if (navLink.itemType === 'INTERNAL_ANCHOR') {
-    return <HashLink to={`/${navLink.anchorLinkPath}`} className={navLinkClasses}>{navLink.label}</HashLink>
+    return <HashLink to={navLink.href} className={navLinkClasses}>{navLink.text}</HashLink>
   } else if (navLink.itemType === 'MAILING_LIST') {
-    return <a role="button" className={navLinkClasses} onClick={() => mailingList(navLink)}>{navLink.label}</a>
+    return <MailingListNavLink role="button" className={navLinkClasses}>{navLink.text}</MailingListNavLink>
   } else if (navLink.itemType === 'EXTERNAL') {
-    return <a href={navLink.externalLink} className={navLinkClasses} target="_blank">{navLink.label}</a>
+    return <a href={navLink.href} className={navLinkClasses} target="_blank">{navLink.text}</a>
   }
   return <></>
 }

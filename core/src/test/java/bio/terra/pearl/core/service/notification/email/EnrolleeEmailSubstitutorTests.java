@@ -36,7 +36,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
         PortalEnvironment portalEnv = portalEnvironmentFactory.builder("profileVariablesAreReplaced")
                 .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
         Portal portal = Portal.builder().build();
-        var contextInfo = new NotificationContextInfo(portal, portalEnv, null, null);
+        var contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvironmentConfig, null, null);
         StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
         assertThat(replacer.replace("name is ${profile.givenName}"), equalTo("name is tester"));
     }
@@ -52,7 +52,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
         PortalEnvironment portalEnv = portalEnvironmentFactory.builder("envConfigVariablesAreReplaced")
                 .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
         Portal portal = Portal.builder().build();
-        var contextInfo = new NotificationContextInfo(portal, portalEnv, null, null);
+        var contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvironmentConfig, null, null);
         StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
         assertThat(replacer.replace("host is ${envConfig.participantHostname}"),
                 equalTo("host is testHostName"));
@@ -70,7 +70,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
                 .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
         Study study = Study.builder().name("testStudyName").build();
         Portal portal = Portal.builder().build();
-        var contextInfo = new NotificationContextInfo(portal, portalEnv, study, null);
+        var contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvironmentConfig, study, null);
         StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
         assertThat(replacer.replace("welcome to ${study.name}"),
                 equalTo("welcome to testStudyName"));
@@ -88,7 +88,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
                 .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
         Portal portal = Portal.builder().name("PortalA").build();
 
-        var contextInfo = new NotificationContextInfo(portal, portalEnv, null, null);
+        var contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvironmentConfig, null, null);
         StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
         assertThat(replacer.replace("here's a dashboard link: ${dashboardLink}"),
                 equalTo("here's a dashboard link: <a href=\"https://irb.newstudy.org/hub\">Return to PortalA</a>"));
@@ -113,7 +113,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
                 .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
         Portal portal = Portal.builder().name("PortalA").shortcode("foo").build();
 
-        var contextInfo = new NotificationContextInfo(portal, portalEnv, null, null);
+        var contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvironmentConfig,null, null);
         StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
         assertThat(replacer.replace("here's an image: <img src=\"${siteImageBaseUrl}/1/ourhealth-logo.png\"/>"),
                 equalTo("here's an image: <img src=\"https://irb.newstudy.org/api/public/portals/v1/foo/env/irb/siteImages/1/ourhealth-logo.png\"/>"));

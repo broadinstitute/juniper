@@ -66,4 +66,16 @@ public class DataRepoExportController implements DatarepoApi {
 
     return ResponseEntity.accepted().build();
   }
+
+  @Override
+  public ResponseEntity<Void> deleteDataset(
+      String portalShortcode, String studyShortcode, String envName, String datasetName) {
+    AdminUser user = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+
+    dataRepoExportExtService.deleteDataset(
+        portalShortcode, studyShortcode, environmentName, datasetName, user);
+
+    return ResponseEntity.accepted().build();
+  }
 }

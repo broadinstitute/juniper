@@ -218,6 +218,20 @@ paths:
           content: { application/json: { schema: { $ref: '#/components/schemas/ConfiguredConsentDto' } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/kitTypes:
+    get:
+      summary: Gets the kit types for a study
+      tags: [ study ]
+      operationId: getKitTypes
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: List of kit types
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}:
     patch:
       summary: Updates a study environment configuration
@@ -346,6 +360,22 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/kitRequests:
+    get:
+      summary: List kit requests for an enrollee
+      tags: [ enrollee ]
+      operationId: getKitRequests
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Kit requests
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/requestKit:
     post:
       summary: Request a sample kit for an enrollee
@@ -360,6 +390,39 @@ paths:
       responses:
         '200':
           description: Kit request
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/notificationConfigs:
+    get:
+      summary: gets all the active notification configs for the environment
+      tags: [ notificationConfig ]
+      operationId: findByStudy
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: The notification configs
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/notifications/adhoc:
+    post:
+      summary: Send a one-off notification/message to one or more enrollees with a specified notification config
+      tags: [ notifications ]
+      operationId: adHoc
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: The notification config created/used for the notification
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
@@ -715,6 +778,21 @@ paths:
       requestBody:
         required: true
         content: { application/json: { schema: { $ref: '#/components/schemas/CreateDataset' } } }
+      responses:
+        '202':
+          description: Accepted
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/datarepo/datasets/{datasetName}:
+    delete:
+      summary: Deletes the specified TDR dataset
+      tags: [ datarepo ]
+      operationId: deleteDataset
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: datasetName, in: path, required: true, schema: { type: string } }
       responses:
         '202':
           description: Accepted

@@ -1,6 +1,6 @@
 {
   "itemType": "INTERNAL",
-  "label": "About Us",
+  "text": "About Us",
   "htmlPageDto": {
     "title": "About Us",
     "path": "aboutUs",

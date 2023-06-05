@@ -12,7 +12,7 @@ const SiteContentView = ({ portalEnv }: {portalEnv: PortalEnvironment}) => {
   if (!localContent) {
     return <div>no content for language {selectedLanguage}</div>
   }
-  const renderedTitle = selectedNavItem ? selectedNavItem.label : 'Landing page'
+  const renderedTitle = selectedNavItem ? selectedNavItem.text : 'Landing page'
   const pageToRender = selectedNavItem ? selectedNavItem.htmlPage : localContent.landingPage
 
   return <div className="container d-flex bg-white p-3">
@@ -20,9 +20,9 @@ const SiteContentView = ({ portalEnv }: {portalEnv: PortalEnvironment}) => {
       <li className="list-group-item" onClick={() => setSelectedNavItem(null)}>Landing page</li>
       {localContent.navbarItems
         .filter((navItem): navItem is NavbarItemInternal => navItem.itemType === 'INTERNAL')
-        .map(navItem => <li key={navItem.label} className="list-group-item" role="button"
+        .map(navItem => <li key={navItem.text} className="list-group-item" role="button"
           onClick={() => setSelectedNavItem(navItem)}>
-          {navItem.label}
+          {navItem.text}
         </li>
         )}
     </ul>

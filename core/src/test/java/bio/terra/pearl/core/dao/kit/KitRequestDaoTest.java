@@ -3,6 +3,7 @@ package bio.terra.pearl.core.dao.kit;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
+import bio.terra.pearl.core.factory.kit.KitTypeFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
@@ -24,11 +25,12 @@ public class KitRequestDaoTest extends BaseSpringBootTest {
     public void testCreatSampleKit() {
         var adminUser = adminUserFactory.buildPersisted("testCreatSampleKit");
         var enrollee = enrolleeFactory.buildPersisted("testCreatSampleKit");
+        var kitType = kitTypeFactory.buildPersisted("testCreatSampleKit");
 
         KitRequest kitRequest = KitRequest.builder()
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee.getId())
-                .kitType("blood")
+                .kitTypeId(kitType.getId())
                 .sentToAddress("{ firstName:\"Alex\", lastName:\"Jones\", street1:\"123 Fake Street\" }")
                 .status(KitRequestStatus.CREATED)
                 .build();
@@ -38,7 +40,7 @@ public class KitRequestDaoTest extends BaseSpringBootTest {
         DaoTestUtils.assertGeneratedProperties(savedKitRequest);
         assertThat(savedKitRequest.getCreatingAdminUserId(), equalTo(adminUser.getId()));
         assertThat(savedKitRequest.getEnrolleeId(), equalTo(enrollee.getId()));
-        assertThat(savedKitRequest.getKitType(), equalTo("blood"));
+        assertThat(savedKitRequest.getKitTypeId(), equalTo(kitType.getId()));
         assertThat(savedKitRequest, samePropertyValuesAs(kitRequest, "id", "createdAt", "lastUpdatedAt"));
         assertThat(savedKitRequest.getStatus(), equalTo(KitRequestStatus.CREATED));
     }
@@ -47,4 +49,6 @@ public class KitRequestDaoTest extends BaseSpringBootTest {
     private AdminUserFactory adminUserFactory;
     @Autowired
     private EnrolleeFactory enrolleeFactory;
+    @Autowired
+    private KitTypeFactory kitTypeFactory;
 }

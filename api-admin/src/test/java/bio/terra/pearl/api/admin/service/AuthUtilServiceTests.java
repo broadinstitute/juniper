@@ -27,13 +27,13 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void authAdminToPortalRejectsUsersNotInPortal() {
+  public void authUserToPortalRejectsUsersNotInPortal() {
     AdminUser user = adminUserFactory.buildPersisted("authAdminToPortalRejectsUsersNotInPortal");
     Portal portal = portalFactory.buildPersisted("authAdminToPortalRejectsUsersNotInPortal");
     Assertions.assertThrows(
         NotFoundException.class,
         () -> {
-          authUtilService.authAdminToPortal(user, portal.getShortcode());
+          authUtilService.authUserToPortal(user, portal.getShortcode());
         });
 
     // now add the user to a second portal
@@ -41,7 +41,7 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
     portalAdminUserService.create(
         PortalAdminUser.builder().adminUserId(user.getId()).portalId(portal2.getId()).build());
     // confirm user can access second portal
-    Portal authedPortal = authUtilService.authAdminToPortal(user, portal2.getShortcode());
+    Portal authedPortal = authUtilService.authUserToPortal(user, portal2.getShortcode());
     assertThat(authedPortal.getId(), equalTo(portal2.getId()));
     assertThat(portalService.checkAdminIsInPortal(user, portal.getId()), equalTo(false));
     assertThat(portalService.checkAdminIsInPortal(user, portal2.getId()), equalTo(true));
@@ -50,28 +50,28 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
     Assertions.assertThrows(
         NotFoundException.class,
         () -> {
-          authUtilService.authAdminToPortal(user, portal.getShortcode());
+          authUtilService.authUserToPortal(user, portal.getShortcode());
         });
   }
 
   @Test
   @Transactional
-  public void authAdminToPortalRejectsNotFoundPortal() {
+  public void authUserToPortalRejectsNotFoundPortal() {
     AdminUser user = adminUserFactory.buildPersisted("authAdminToPortalRejectsNotFoundPortal");
     Assertions.assertThrows(
         NotFoundException.class,
         () -> {
-          authUtilService.authAdminToPortal(user, "DOES_NOT_EXIST");
+          authUtilService.authUserToPortal(user, "DOES_NOT_EXIST");
         });
   }
 
   @Test
   @Transactional
-  public void authAdminToPortalAllowsSuperUser() {
+  public void authUserToPortalAllowsSuperUser() {
     AdminUser user =
         adminUserFactory.buildPersisted(
             adminUserFactory.builder("authAdminToPortalAllowsSuperUser").superuser(true));
     Portal portal = portalFactory.buildPersisted("authAdminToPortalAllowsSuperUser");
-    assertThat(authUtilService.authAdminToPortal(user, portal.getShortcode()), notNullValue());
+    assertThat(authUtilService.authUserToPortal(user, portal.getShortcode()), notNullValue());
   }
 }

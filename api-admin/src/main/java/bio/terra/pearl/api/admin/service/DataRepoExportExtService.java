@@ -52,10 +52,9 @@ public class DataRepoExportExtService {
     Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
 
-    StudyEnvironment studyEnv =
-        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
+    Dataset dataset = dataRepoExportService.getDatasetByName(datasetName);
 
-    return dataRepoExportService.getJobHistoryForDataset(studyEnv.getId(), datasetName);
+    return dataRepoExportService.getJobHistoryForDataset(dataset.getId());
   }
 
   public void createDataset(
@@ -74,6 +73,24 @@ public class DataRepoExportExtService {
         studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
 
     dataRepoExportService.createDataset(
-        studyEnv, createDataset.getName(), createDataset.getDescription());
+        studyEnv, createDataset.getName(), createDataset.getDescription(), user);
+  }
+
+  public void deleteDataset(
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName environmentName,
+      String datasetName,
+      AdminUser user) {
+    if (!user.isSuperuser()) {
+      throw new PermissionDeniedException("You do not have permissions to perform this operation");
+    }
+    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
+    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+
+    StudyEnvironment studyEnv =
+        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
+
+    dataRepoExportService.deleteDataset(studyEnv, datasetName);
   }
 }

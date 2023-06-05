@@ -19,6 +19,7 @@ import EnrolleeProfile from './EnrolleeProfile'
 import ParticipantTaskView from './tasks/ParticipantTaskView'
 import ErrorBoundary from 'util/ErrorBoundary'
 import AdvancedOptions from './AdvancedOptions'
+import KitRequests from './KitRequests'
 
 export type SurveyWithResponsesT = {
   survey: StudyEnvironmentSurvey,
@@ -34,8 +35,8 @@ export type ConsentWithResponsesT = {
 export type ConsentResponseMapT = {[stableId: string] : ConsentWithResponsesT}
 
 /** shows a master-detail view for an enrollee with sub views on surveys, tasks, etc... */
-export default function EnrolleeView({ enrollee, studyEnvContext }:
-{enrollee: Enrollee, studyEnvContext: StudyEnvContextT}) {
+export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
+{enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void}) {
   const { currentEnv } = studyEnvContext
 
   /** gets classes to apply to nav links */
@@ -83,7 +84,9 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                 <TaskSummary tasks={enrollee.participantTasks}/>
               </li>
               <li className="list-group-item">
-                <NavLink to="preRegistration" className={getLinkCssClasses}>PreEnrollment</NavLink>
+                { currentEnv.preEnrollSurvey && <NavLink to="preRegistration" className={getLinkCssClasses}>
+                  PreEnrollment
+                </NavLink> }
               </li>
               <li className="list-group-item subgroup">
                 Consents
@@ -126,6 +129,17 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                 <NavLink to="changeRecords" className={getLinkCssClasses}>Audit history</NavLink>
               </li>
               <li className="list-group-item subgroup">
+                <NavLink to="kitRequests" className={getLinkCssClasses}>
+                  Kit requests
+                  {
+                    enrollee.kitRequests.length > 0 &&
+                      <span className="badge align-middle bg-secondary ms-1 mb-1">
+                        {enrollee.kitRequests.length}
+                      </span>
+                  }
+                </NavLink>
+              </li>
+              <li className="list-group-item subgroup">
                 <NavLink to="advanced" className={getLinkCssClasses}>Advanced options</NavLink>
               </li>
             </ul>
@@ -135,10 +149,10 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
               <Routes>
                 <Route path="profile" element={<EnrolleeProfile enrollee={enrollee}/>}/>
                 <Route path="consents" element={<div>consents</div>}/>
-                <Route path="preRegistration" element={
+                { currentEnv.preEnrollSurvey && <Route path="preRegistration" element={
                   <PreEnrollmentView preEnrollSurvey={currentEnv.preEnrollSurvey}
                     preEnrollResponse={enrollee.preEnrollmentResponse}/>
-                }/>
+                }/> }
                 <Route path="surveys">
                   <Route path=":surveyStableId" element={<EnrolleeSurveyView enrollee={enrollee}
                     responseMap={responseMap}/>}/>
@@ -155,6 +169,9 @@ export default function EnrolleeView({ enrollee, studyEnvContext }:
                 }/>
                 <Route path="changeRecords" element={
                   <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext}/>
+                }/>
+                <Route path="kitRequests" element={
+                  <KitRequests enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>
                 }/>
                 <Route path="advanced" element={
                   <AdvancedOptions enrollee={enrollee} studyEnvContext={studyEnvContext}/>

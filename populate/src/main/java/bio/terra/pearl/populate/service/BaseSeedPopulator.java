@@ -23,6 +23,7 @@ public class BaseSeedPopulator {
     private AdminConfigPopulator adminConfigPopulator;
     private AdminUserService adminUserService;
     private EnvironmentService environmentService;
+    private KitTypePopulator kitTypePopulator;
 
     public static final List<String> ADMIN_USERS_TO_POPULATE =
             Arrays.asList("adminUsers/dbush.json", "adminUsers/breilly.json",
@@ -34,12 +35,14 @@ public class BaseSeedPopulator {
             Arrays.asList("environments/sandbox.json", "environments/irb.json", "environments/live.json");
 
     public BaseSeedPopulator(AdminUserPopulator adminUserPopulator, EnvironmentPopulator environmentPopulator,
-                             AdminConfigPopulator adminConfigPopulator, AdminUserService adminUserService, EnvironmentService environmentService) {
+                             AdminConfigPopulator adminConfigPopulator, AdminUserService adminUserService,
+                             EnvironmentService environmentService, KitTypePopulator kitTypePopulator) {
         this.adminUserPopulator = adminUserPopulator;
         this.environmentPopulator = environmentPopulator;
         this.adminConfigPopulator = adminConfigPopulator;
         this.adminUserService = adminUserService;
         this.environmentService = environmentService;
+        this.kitTypePopulator = kitTypePopulator;
     }
 
     public SetupStats populate(String filePathName) throws IOException {

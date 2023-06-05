@@ -23,6 +23,8 @@ export default function NotificationConfigTypeDisplay({ config }: {config?: Noti
     return <span>
       Reminder: {config.taskType} {config.taskTargetStableId}
     </span>
+  } else if (config.notificationType === 'AD_HOC') {
+    return <span>Ad-Hoc</span>
   }
   return <span>{config.taskType}</span>
 }

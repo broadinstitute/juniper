@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: kit_type
+      author: breilly
+      changes:
+        - createTable:
+            tableName: kit_type
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: name, type: text, constraints: { nullable: false, unique: true } }
+              - column: { name: display_name, type: text }
+              - column: { name: description, type: text }
+        - dropColumn:
+            tableName: kit_request
+            columns:
+              - column: { name: kit_type }
+        - addColumn:
+            tableName: kit_request
+            columns:
+              - column: { name: kit_type_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_kit_request_kit_type, references: kit_type(id)
+              } }
+              - column: { name: dsm_status, type: text }
+              - column: { name: dsm_status_fetched_at, type: datetime }
+        - createTable:
+            tableName: study_kit_type
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: study_id, type: uuid, constraints: {
+                 nullable: false, foreignKeyName: fk_study_kit_type_study, references: study(id)
+              } }
+              - column: { name: kit_type_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_study_kit_type_kit_type, references: kit_type(id)
+              } }

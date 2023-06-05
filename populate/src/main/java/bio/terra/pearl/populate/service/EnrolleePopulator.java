@@ -1,10 +1,15 @@
 package bio.terra.pearl.populate.service;
 
+import bio.terra.pearl.core.dao.admin.AdminUserDao;
+import bio.terra.pearl.core.dao.kit.KitRequestDao;
+import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.consent.ConsentResponseDto;
+import bio.terra.pearl.core.model.kit.KitRequest;
+import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
@@ -21,6 +26,7 @@ import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
+import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.participant.*;
@@ -31,6 +37,7 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import bio.terra.pearl.populate.dao.EnrolleePopulateDao;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
+import bio.terra.pearl.populate.dto.kit.KitRequestPopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
 import bio.terra.pearl.populate.dto.participant.EnrolleePopDto;
 import bio.terra.pearl.populate.dto.participant.ParticipantTaskPopDto;
@@ -66,6 +73,9 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     private ProfileService profileService;
     private WithdrawnEnrolleeService withdrawnEnrolleeService;
     private EnrolleePopulateDao enrolleePopulateDao;
+    private KitRequestDao kitRequestDao;
+    private KitTypeDao kitTypeDao;
+    private AdminUserDao adminUserDao;
 
     public EnrolleePopulator(EnrolleeService enrolleeService,
                              StudyEnvironmentService studyEnvironmentService,
@@ -78,7 +88,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                              NotificationConfigService notificationConfigService,
                              NotificationService notificationService, AnswerProcessingService answerProcessingService,
                              EnrollmentService enrollmentService, ProfileService profileService,
-                             WithdrawnEnrolleeService withdrawnEnrolleeService, EnrolleePopulateDao enrolleePopulateDao) {
+                             WithdrawnEnrolleeService withdrawnEnrolleeService, EnrolleePopulateDao enrolleePopulateDao,
+                             KitRequestDao kitRequestDao, KitTypeDao kitTypeDao, AdminUserDao adminUserDao) {
         this.portalParticipantUserService = portalParticipantUserService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.surveyService = surveyService;
@@ -96,6 +107,9 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         this.profileService = profileService;
         this.withdrawnEnrolleeService = withdrawnEnrolleeService;
         this.enrolleePopulateDao = enrolleePopulateDao;
+        this.kitRequestDao = kitRequestDao;
+        this.kitTypeDao = kitTypeDao;
+        this.adminUserDao = adminUserDao;
     }
 
     private void populateResponse(Enrollee enrollee, SurveyResponsePopDto responsePopDto,
@@ -209,6 +223,23 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         participantTaskService.create(taskDto);
     }
 
+    private void populateKitRequest(Enrollee enrollee, Profile profile, KitRequestPopDto kitRequestPopDto) throws JsonProcessingException {
+        var adminUser = adminUserDao.findByUsername(kitRequestPopDto.getCreatingAdminUsername()).get();
+        var kitType = kitTypeDao.findByName(kitRequestPopDto.getKitTypeName()).get();
+        var sentToAddress = KitRequestService.makePepperKitAddress(profile);
+        var kitRequestStatus = KitRequestStatus.valueOf(kitRequestPopDto.getStatusName());
+        var kitRequest = KitRequest.builder()
+                .creatingAdminUserId(adminUser.getId())
+                .enrolleeId(enrollee.getId())
+                .kitTypeId(kitType.getId())
+                .sentToAddress(objectMapper.writeValueAsString(sentToAddress))
+                .status(kitRequestStatus)
+                .dsmStatus(kitRequestPopDto.getDsmStatusJson().toString())
+                .dsmStatusFetchedAt(Instant.now())
+                .build();
+        kitRequestDao.create(kitRequest);
+    }
+
     private String getTargetName(TaskType taskType, String stableId, int version) {
         if (taskType.equals(TaskType.SURVEY)) {
             return surveyService.findByStableId(stableId, version).get().getName();
@@ -311,6 +342,10 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         }
         for (ParticipantTaskPopDto taskDto : popDto.getParticipantTaskDtos()) {
             populateTask(enrollee, ppUser, taskDto);
+        }
+        var profileWithAddress = profileService.loadWithMailingAddress(profile.getId()).get();
+        for (KitRequestPopDto kitRequestPopDto : popDto.getKitRequestDtos()) {
+            populateKitRequest(enrollee, profileWithAddress, kitRequestPopDto);
         }
         populateNotifications(enrollee, popDto, attachedEnv.getId(), ppUser);
 

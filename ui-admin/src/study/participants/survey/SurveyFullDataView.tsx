@@ -1,7 +1,9 @@
-import React  from 'react'
-import { Answer, ConsentForm, Survey } from 'api/api'
+import React from 'react'
 import { Model, Question, SurveyModel } from 'survey-core'
-import { extractSurveyContent } from 'util/surveyJsUtils'
+
+import { extractSurveyContent } from '@juniper/ui-core'
+
+import { Answer, ConsentForm, Survey } from 'api/api'
 
 /** renders every item in a survey response */
 export default function SurveyFullDataView({ answers, survey }: {answers: Answer[], survey: Survey | ConsentForm}) {

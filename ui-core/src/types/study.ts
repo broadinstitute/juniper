@@ -10,8 +10,8 @@ export type StudyEnvironment = {
   id: string
   environmentName: string
   studyEnvironmentConfig: StudyEnvironmentConfig
-  preEnrollSurvey: Survey
-  preEnrollSurveyId: string
+  preEnrollSurvey?: Survey
+  preEnrollSurveyId?: string
   configuredConsents: StudyEnvironmentConsent[]
   configuredSurveys: StudyEnvironmentSurvey[]
   notificationConfigs: NotificationConfig[]
@@ -69,6 +69,9 @@ export type NotificationConfig = {
 export type EmailTemplate = {
   subject: string
   body: string
+  name: string
+  stableId: string
+  version: number
 }
 
 export {}

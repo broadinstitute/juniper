@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
 
 import {  StudyParams } from 'study/StudyRouter'
@@ -8,6 +8,7 @@ import Api, { StudyEnvironment, Survey } from 'api/api'
 
 import { failureNotification, successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
+import { useUser } from 'user/UserProvider'
 
 export type SurveyParamsT = StudyParams & {
   surveyStableId: string,
@@ -18,16 +19,18 @@ export type SurveyParamsT = StudyParams & {
 function RawPreRegView({ portalShortcode, currentEnv, survey, studyShortcode, readOnly }:
                       {portalShortcode: string, currentEnv: StudyEnvironment, readOnly: boolean
                         survey: Survey, studyShortcode: string}) {
+  const { user } = useUser()
+  const navigate = useNavigate()
+
   const [currentSurvey, setCurrentSurvey] = useState(survey)
 
-  /** update the version */
-  async function changeVersion(version: number): Promise<string> {
-    throw `Not implemented ${version}`
-  }
-
-
   /** saves as a new version and updates the study environment accordingly */
-  async function createNewVersion(updatedContent: string): Promise<string> {
+  async function createNewVersion({ content: updatedContent }: { content: string }): Promise<void> {
+    if (!user.superuser) {
+      Store.addNotification(failureNotification('you do not have permissions to save surveys'))
+      return
+    }
+
     survey.content = updatedContent
     try {
       const updatedSurvey = await Api.createNewSurveyVersion(portalShortcode, currentSurvey)
@@ -41,11 +44,16 @@ function RawPreRegView({ portalShortcode, currentEnv, survey, studyShortcode, re
     } catch (e) {
       Store.addNotification(failureNotification(`Save failed`))
     }
-    return updatedContent
   }
 
-  return <SurveyEditorView portalShortcode={portalShortcode} currentForm={currentSurvey}
-    createNewVersion={createNewVersion} changeVersion={changeVersion} readOnly={readOnly}/>
+  return (
+    <SurveyEditorView
+      currentForm={currentSurvey}
+      readOnly={readOnly}
+      onCancel={() => navigate('../../..')}
+      onSave={createNewVersion}
+    />
+  )
 }
 
 /** Routable component that delegates rendering to the raw view */
@@ -61,7 +69,7 @@ function PreEnrollView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT})
     return <span>you need to specify both name and version of the prereg urvey</span>
   }
   const survey = currentEnv.preEnrollSurvey
-  if (survey.stableId != surveyStableId) {
+  if (survey?.stableId != surveyStableId) {
     return <span>The survey {surveyStableId} does not exist on this study</span>
   }
   return <RawPreRegView portalShortcode={portal.shortcode} currentEnv={currentEnv}

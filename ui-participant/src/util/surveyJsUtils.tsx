@@ -1,76 +1,20 @@
 import classNames from 'classnames'
-import { get, set, throttle } from 'lodash'
-import React, { useEffect, useState } from 'react'
-
-import * as SurveyCore from 'survey-core'
-import {
-  IQuestion,
-  Model,
-  Question,
-  QuestionCustomWidget,
-  QuestionSignaturePadModel,
-  Serializer,
-  StylesManager,
-  SurveyModel
-} from 'survey-core'
-import { micromark } from 'micromark'
-import 'inputmask/dist/inputmask/phone-codes/phone'
-// eslint-disable-next-line
-// @ts-ignore
-import * as widgets from 'surveyjs-widgets'
-import { Survey as SurveyJSComponent } from 'survey-react-ui'
-import { Answer, ConsentForm, Profile, Survey, SurveyJsResumeData, UserResumeData } from 'api/api'
-import { useSearchParams } from 'react-router-dom'
-import { getSurveyElementList } from './pearlSurveyUtils'
+import { get, set } from 'lodash'
 import _union from 'lodash/union'
 import _keys from 'lodash/keys'
 import _isEqual from 'lodash/isEqual'
+import { micromark } from 'micromark'
+import React, { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { Model, SurveyModel } from 'survey-core'
+import { Survey as SurveyJSComponent } from 'survey-react-ui'
+
+import { extractSurveyContent } from '@juniper/ui-core'
+
+import { Answer, ConsentForm, Profile, Survey, SurveyJsResumeData, UserResumeData } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
-import './formatDate'
-import './MultipleComboboxQuestion'
-import './MedicationsQuestion'
 
 const SURVEY_JS_OTHER_SUFFIX = '-Comment'
-
-// See https://surveyjs.io/form-library/examples/control-data-entry-formats-with-input-masks/reactjs#content-code
-widgets.inputmask(SurveyCore)
-
-// eslint-disable-next-line max-len
-// https://surveyjs.io/survey-creator/documentation/customize-question-types/create-custom-widgets#add-functionality-into-existing-question
-const autosizedSignaturePadWidget: Partial<QuestionCustomWidget> = {
-  name: 'autosized_signaturepad',
-  // SurveyJS calls this for every question to check if this widget should apply.
-  isFit: (question: IQuestion) => question.getType() === 'signaturepad',
-  // Extend default render, do not replace.
-  isDefaultRender: true,
-  afterRender: (question: QuestionSignaturePadModel, el: HTMLElement) => {
-    const resizeSignaturePad = throttle(() => {
-      const { width } = el.getBoundingClientRect()
-      question.signatureWidth = width
-    }, 150)
-
-    window.addEventListener('resize', resizeSignaturePad)
-    question.autosizedSignaturePadRemoveResizeListener = () => {
-      window.removeEventListener('resize', resizeSignaturePad)
-    }
-
-    const { width } = el.getBoundingClientRect()
-    question.signatureWidth = width
-
-    // If no signature has been entered, re-center "Sign here" placeholder.
-    if (!question.value) {
-      setTimeout(() => {
-        question.value = ''
-        question.clearValue()
-      }, 0)
-    }
-  },
-  willUnmount: (question: QuestionSignaturePadModel) => {
-    question.autosizedSignaturePadRemoveResizeListener?.()
-  }
-}
-
-SurveyCore.CustomWidgetCollection.Instance.add(autosizedSignaturePadWidget)
 
 const PAGE_NUMBER_PARAM_NAME = 'page'
 
@@ -150,7 +94,6 @@ export function useSurveyJSModel(
 
   /** syncs the surveyJS survey model with the given data/pageNumber */
   function refreshSurvey(refreshData: SurveyJsResumeData | null, pagerPageNumber: number | null) {
-    StylesManager.applyTheme('modern')
     const newSurveyModel = new Model(extractSurveyContent(form))
 
     Object.entries(extraCssClasses).forEach(([elementPath, className]) => {
@@ -296,55 +239,6 @@ export function makeAnswer(value: SurveyJsValueType, questionStableId: string,
     return makeAnswer(surveyJsData[baseStableId], baseStableId, surveyJsData)
   }
   return answer
-}
-
-/** transform the stored survey representation into what SurveyJS expects */
-export function extractSurveyContent(survey: ConsentForm | Survey) {
-  const parsedSurvey = JSON.parse(survey.content)
-  const questionTemplates = parsedSurvey.questionTemplates as Question[]
-  Serializer.addProperty('survey', { name: 'questionTemplates', category: 'general' })
-  Serializer.addProperty('question', { name: 'questionTemplateName', category: 'general' })
-  // we need a custom "none" value on some questions because some of our "none" are "prefer not to answer"
-  // see https://github.com/surveyjs/survey-library/issues/5459
-  Serializer.addProperty('selectbase', {
-    name: 'noneValue',
-    dependsOn: 'showNoneItem',
-    visibleIf: (obj: Question) => {
-      return obj.hasNone
-    },
-    nextToProperty: 'showNoneItem',
-    onGetValue: (obj: Question) => {
-      return !!obj && !!obj.noneItem ? obj.noneItem.value : 'none'
-    },
-    onSetValue: (obj: Question, val: string) => {
-      obj.noneItem.value = val
-    }
-  })
-  if (questionTemplates) {
-    const elementList = getSurveyElementList(parsedSurvey)
-    elementList.forEach(q => {
-      const templateName = (q as PearlQuestion).questionTemplateName
-      if (templateName) {
-        const matchedTemplate = questionTemplates.find(qt => qt.name === templateName)
-        if (!matchedTemplate) {
-          // TODO this is an error we'd want to log in prod systems
-          if (process.env.NODE_ENV === 'development') {
-            alert(`unmatched template ${templateName}`)
-          }
-          return
-        }
-        // create a new question object by merging the existing question into the template.
-        // any properties explicitly specified on the question will override those from the template
-        const mergedProps = Object.assign({}, matchedTemplate, q)
-        Object.assign(q, mergedProps)
-      }
-    })
-  }
-  return parsedSurvey
-}
-
-type PearlQuestion = Question & {
-  questionTemplateName?: string
 }
 
 /** compares two surveyModel.data objects and returns a list of answers corresponding to updates */

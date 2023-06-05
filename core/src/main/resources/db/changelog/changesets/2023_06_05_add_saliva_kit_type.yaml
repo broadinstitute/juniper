@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: saliva_kit_type
+      author: breilly
+      changes:
+        - insert:
+            tableName: kit_type
+            columns:
+              - column: { name: created_at, valueComputed: now() }
+              - column: { name: last_updated_at, valueComputed: now() }
+              - column: { name: name, value: "saliva" }
+              - column: { name: display_name, value: "Saliva" }
+              - column: { name: description, value: "Saliva sample collection kit" }

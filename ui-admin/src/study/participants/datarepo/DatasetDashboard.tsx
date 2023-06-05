@@ -5,7 +5,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faExternalLink, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faExternalLink, faArrowLeft, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { instantToDefaultString } from '../../../util/timeUtils'
 import {
   ColumnDef,
@@ -16,6 +16,8 @@ import {
 } from '@tanstack/react-table'
 import { basicTableLayout } from '../../../util/tableUtils'
 import { Link, useParams } from 'react-router-dom'
+import { useUser } from '../../../user/UserProvider'
+import DeleteDatasetModal from './DeleteDatasetModal'
 
 const columns: ColumnDef<DatasetJobHistory>[] = [{
   id: 'jobType',
@@ -46,11 +48,13 @@ const columns: ColumnDef<DatasetJobHistory>[] = [{
 
 const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
   const { currentEnvPath } = studyEnvContext
-  const [datasetDetails, setDatasetDetails] = useState<DatasetDetails | null>(null)
+  const [showDeleteDatasetModal, setShowDeleteDatasetModal] = useState(false)
+  const [datasetDetails, setDatasetDetails] = useState<DatasetDetails | undefined>(undefined)
   const [datasetJobHistory, setDatasetJobHistory] = useState<DatasetJobHistory[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [sorting, setSorting] = React.useState<SortingState>([])
   const datasetName = useParams().datasetName as string
+  const { user } = useUser()
 
   const table = useReactTable({
     data: datasetJobHistory,
@@ -70,29 +74,28 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
   }
 
   const loadData = async () => {
-    try {
-      //Fetch dataset details
-      const datasetDetails = await Api.listDatasetsForStudyEnvironment(
-        studyEnvContext.portal.shortcode,
-        studyEnvContext.study.shortcode,
-        studyEnvContext.currentEnv.environmentName)
-      const datasetDetailsResponse = await datasetDetails.json()
-      setDatasetDetails(datasetDetailsResponse.find((dataset: { datasetName: string }) =>
-        dataset.datasetName === datasetName))
+    //Fetch dataset details
+    await Api.listDatasetsForStudyEnvironment(
+      studyEnvContext.portal.shortcode,
+      studyEnvContext.study.shortcode,
+      studyEnvContext.currentEnv.environmentName).then(result => {
+      setDatasetDetails(result.find((dataset: { datasetName: string }) => dataset.datasetName === datasetName))
+    }).catch(e =>
+      Store.addNotification(failureNotification(`Error loading dataset: ${e.message}`))
+    )
 
-      //Fetch dataset job history
-      const datasetJobHistory = await Api.getJobHistoryForDataset(
-        studyEnvContext.portal.shortcode,
-        studyEnvContext.study.shortcode,
-        studyEnvContext.currentEnv.environmentName,
-        datasetName)
-      const datasetJobHistoryResponse = await datasetJobHistory.json()
-      setDatasetJobHistory(datasetJobHistoryResponse)
+    //Fetch dataset job history
+    await Api.getJobHistoryForDataset(
+      studyEnvContext.portal.shortcode,
+      studyEnvContext.study.shortcode,
+      studyEnvContext.currentEnv.environmentName,
+      datasetName).then(result => {
+      setDatasetJobHistory(result)
+    }).catch(e =>
+      Store.addNotification(failureNotification(`Error loading dataset job history: ${e.message}`))
+    )
 
-      setIsLoading(false)
-    } catch (e) {
-      Store.addNotification(failureNotification(`Error loading dataset information`))
-    }
+    setIsLoading(false)
   }
 
   useEffect(() => {
@@ -103,6 +106,17 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
     <Link to={getDatasetListViewPath(currentEnvPath)} className="mx-2">
       <FontAwesomeIcon icon={faArrowLeft}/> Back to dataset list
     </Link>
+    { user.superuser && datasetDetails?.status == 'CREATED' &&
+        <button className="btn btn-secondary" onClick={() => setShowDeleteDatasetModal(!showDeleteDatasetModal)}
+          aria-label="show or hide export modal">
+          <FontAwesomeIcon icon={faTrash}/> Delete dataset
+        </button>
+    }
+    <DeleteDatasetModal studyEnvContext={studyEnvContext}
+      show={showDeleteDatasetModal}
+      setShow={setShowDeleteDatasetModal}
+      datasetName={datasetName}
+      loadDatasets={loadData}/>
     <LoadingSpinner isLoading={isLoading}>
       <div className="col-12 p-3">
         <ul className="list-unstyled">
@@ -112,17 +126,15 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
             </div>
             <div className="flex-grow-1 p-3">
               <div className="form-group">
-                <div className="form-group-item">
-                  <label>Dataset Name:</label> { datasetDetails?.datasetName }
-                  <br/>
-                  <label>Description:</label> { datasetDetails?.description ?
-                    datasetDetails?.description : <span className="fst-italic">N/A</span> }
-                  <br/>
-                  <label>Date Created:</label> { instantToDefaultString(datasetDetails?.createdAt) }
-                </div>
-                <br/>
-                { datasetDetails?.status == 'succeeded' &&
-                  <a href={`https://jade.datarepo-dev.broadinstitute.org/datasets/${datasetDetails?.datasetId}`}
+                <dl>
+                  <dt>Dataset Name</dt><dd>{ datasetDetails?.datasetName }</dd>
+                  <dt>Description</dt><dd>{ datasetDetails?.description ?
+                    datasetDetails?.description : <span className="fst-italic">N/A</span> }</dd>
+                  <dt>Created By</dt><dd>{ datasetDetails?.createdBy }</dd>
+                  <dt>Date Created</dt><dd>{ instantToDefaultString(datasetDetails?.createdAt) }</dd>
+                </dl>
+                { datasetDetails?.status == 'CREATED' &&
+                  <a href={`https://jade.datarepo-dev.broadinstitute.org/datasets/${datasetDetails?.tdrDatasetId}`}
                     target="_blank">View dataset in Terra Data Repo <FontAwesomeIcon icon={faExternalLink}/></a>
                 }
               </div>

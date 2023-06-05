@@ -2,6 +2,8 @@ package bio.terra.pearl.api.admin.controller.enrollee;
 
 import bio.terra.pearl.api.admin.api.NotificationsApi;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.notifications.NotificationExtService;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.notification.Notification;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
@@ -13,6 +15,7 @@ import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +27,7 @@ public class NotificationsController implements NotificationsApi {
   private NotificationService notificationService;
   private NotificationConfigService notificationConfigService;
   private NotificationDispatcher notificationDispatcher;
+  private NotificationExtService notificationExtService;
   private EnrolleeService enrolleeService;
   private ObjectMapper objectMapper;
   private HttpServletRequest request;
@@ -33,6 +37,7 @@ public class NotificationsController implements NotificationsApi {
       NotificationService notificationService,
       NotificationConfigService notificationConfigService,
       NotificationDispatcher notificationDispatcher,
+      NotificationExtService notificationExtService,
       EnrolleeService enrolleeService,
       ObjectMapper objectMapper,
       HttpServletRequest request) {
@@ -40,6 +45,7 @@ public class NotificationsController implements NotificationsApi {
     this.notificationService = notificationService;
     this.notificationConfigService = notificationConfigService;
     this.notificationDispatcher = notificationDispatcher;
+    this.notificationExtService = notificationExtService;
     this.enrolleeService = enrolleeService;
     this.objectMapper = objectMapper;
     this.request = request;
@@ -69,4 +75,29 @@ public class NotificationsController implements NotificationsApi {
       return ResponseEntity.internalServerError().body(e);
     }
   }
+
+  /** send a one-off notification. */
+  @Override
+  public ResponseEntity<Object> adHoc(
+      String portalShortcode, String studyShortcode, String envName, Object body) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    AdHocNotification adHoc = objectMapper.convertValue(body, AdHocNotification.class);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    NotificationConfig configUsed =
+        notificationExtService.sendAdHoc(
+            adminUser,
+            portalShortcode,
+            studyShortcode,
+            environmentName,
+            adHoc.enrolleeShortcodes,
+            adHoc.customMessages,
+            adHoc.notificationConfigId);
+    return ResponseEntity.ok(configUsed);
+  }
+
+  /** object for specifying an adhoc notification. */
+  public record AdHocNotification(
+      List<String> enrolleeShortcodes,
+      UUID notificationConfigId,
+      Map<String, String> customMessages) {}
 }

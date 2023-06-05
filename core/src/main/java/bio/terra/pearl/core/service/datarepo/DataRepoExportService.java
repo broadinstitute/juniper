@@ -11,12 +11,14 @@ import bio.terra.pearl.core.dao.study.PortalStudyDao;
 import bio.terra.pearl.core.dao.study.StudyDao;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
+import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.datarepo.*;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.azure.AzureBlobStorageClient;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetCreationException;
+import bio.terra.pearl.core.service.exception.datarepo.DatasetDeletionException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetNotFoundException;
 import bio.terra.pearl.core.service.export.*;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
@@ -28,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
 import java.time.Instant;
@@ -84,11 +87,15 @@ public class DataRepoExportService {
         return datasetDao.findByStudyEnvironmentId(studyEnvironmentId);
     }
 
-    public List<DataRepoJob> getJobHistoryForDataset(UUID studyEnvironmentId, String datasetName) {
-        return dataRepoJobDao.findByStudyEnvironmentIdAndName(studyEnvironmentId, datasetName);
+    public Dataset getDatasetByName(String datasetName) {
+        return datasetDao.findByDatasetName(datasetName).orElseThrow(() -> new DatasetNotFoundException(datasetName));
     }
 
-    public void createDataset(StudyEnvironment studyEnv, String datasetName, String description) {
+    public List<DataRepoJob> getJobHistoryForDataset(UUID datasetId) {
+        return dataRepoJobDao.findByDatasetId(datasetId);
+    }
+
+    public void createDataset(StudyEnvironment studyEnv, String datasetName, String description, AdminUser user) {
         //TODO: JN-125: This default spend profile is temporary. Eventually, we will want to configure spend profiles
         // on a per-study basis and store those in the Juniper DB.
         UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
@@ -109,28 +116,61 @@ public class DataRepoExportService {
         Dataset dataset = Dataset.builder()
                 .status(DatasetStatus.CREATING)
                 .datasetName(datasetName)
+                .description(description)
+                .createdBy(user.getId())
                 .lastExported(Instant.ofEpochSecond(0))
                 .studyEnvironmentId(studyEnv.getId())
                 .build();
+
+        Dataset createdDataset = datasetService.create(dataset);
 
         DataRepoJob job = DataRepoJob.builder()
                 .studyEnvironmentId(studyEnv.getId())
                 .status(response.getJobStatus().getValue())
                 .datasetName(datasetName)
+                .datasetId(createdDataset.getId())
                 .tdrJobId(response.getId())
                 .jobType(JobType.CREATE_DATASET)
                 .build();
 
         dataRepoJobService.create(job);
-        datasetService.create(dataset);
     }
 
-    public String uploadCsvToAzureStorage(UUID studyEnvironmentId, String datasetName) {
+    @Transactional
+    public void deleteDataset(StudyEnvironment studyEnv, String datasetName) {
+        Dataset dataset = datasetDao.findByDatasetName(datasetName).orElseThrow(() -> new DatasetNotFoundException("Dataset not found."));
+
+        List<DatasetStatus> deletableStatuses = List.of(DatasetStatus.CREATED, DatasetStatus.FAILED);
+        if(!deletableStatuses.contains(dataset.getStatus())) {
+            throw new DatasetDeletionException(String.format("Could not delete dataset %s. Dataset was in %s state, but must be in a terminal state.", datasetName, dataset.getStatus()));
+        }
+
+        JobModel response;
+        try {
+            response = dataRepoClient.deleteDataset(dataset.getTdrDatasetId());
+        } catch (ApiException e) {
+            throw new DatasetDeletionException(String.format("Could not delete dataset %s. TDR dataset failed to delete. Error: %s", datasetName, e.getMessage()));
+        }
+
+        DataRepoJob job = DataRepoJob.builder()
+                .studyEnvironmentId(studyEnv.getId())
+                .status(response.getJobStatus().getValue())
+                .datasetId(dataset.getId())
+                .datasetName(datasetName)
+                .tdrJobId(response.getId())
+                .jobType(JobType.DELETE_DATASET)
+                .build();
+
+        dataRepoJobService.create(job);
+        datasetService.updateStatus(dataset.getId(), DatasetStatus.DELETING);
+    }
+
+    public String uploadCsvToAzureStorage(UUID studyEnvironmentId, UUID datasetId) {
         ExportOptions exportOptions = new ExportOptions(false, false, false, ExportFileFormat.TSV, null);
 
         //Even though this is actually formatted as a TSV, TDR only accepts files ending in .csv or .json.
         //In the DataRepoClient call, we specify that the CSV delimiter is "\t", which will make it all work fine.
-        String blobName = datasetName + "_" + studyEnvironmentId + "_" + Instant.now() + ".csv";
+        String blobName = datasetId.toString() + "_" + studyEnvironmentId + "_" + Instant.now() + ".csv";
 
         //Backtrack from studyEnvironmentId to get the portalId, so we can export the study environment data
         StudyEnvironment studyEnv = studyEnvironmentDao.find(studyEnvironmentId).orElseThrow(() -> new NotFoundException("Study environment not found."));
@@ -148,25 +188,28 @@ public class DataRepoExportService {
         }
     }
 
-    public void ingestDataForStudyEnvironment(Dataset studyEnvDataset) {
+    public void ingestDataForStudyEnvironment(UUID datasetId) {
+        Dataset dataset = datasetService.findById(datasetId).get();
+
         UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
-        String blobSasUrl = uploadCsvToAzureStorage(studyEnvDataset.getStudyEnvironmentId(), studyEnvDataset.getDatasetName());
+        String blobSasUrl = uploadCsvToAzureStorage(dataset.getStudyEnvironmentId(), dataset.getId());
 
         try {
-            JobModel ingestJob = dataRepoClient.ingestDataset(defaultSpendProfileId, studyEnvDataset.getDatasetId(), "enrollee", blobSasUrl);
+            JobModel ingestJob = dataRepoClient.ingestDataset(defaultSpendProfileId, dataset.getTdrDatasetId(), "enrollee", blobSasUrl);
             logger.info("Ingest job returned with job ID {}", ingestJob.getId());
             //Store in DB
             DataRepoJob job = DataRepoJob.builder()
-                    .studyEnvironmentId(studyEnvDataset.getStudyEnvironmentId())
+                    .studyEnvironmentId(dataset.getStudyEnvironmentId())
                     .status(ingestJob.getJobStatus().getValue())
-                    .datasetName(studyEnvDataset.getDatasetName())
+                    .datasetId(dataset.getId())
+                    .datasetName(dataset.getDatasetName())
                     .tdrJobId(ingestJob.getId())
                     .jobType(JobType.INGEST_DATASET)
                     .build();
 
             dataRepoJobService.create(job);
         } catch (ApiException e) {
-            logger.error("Unable to ingest dataset {} for study env {}. Error: {}", studyEnvDataset.getDatasetId(), studyEnvDataset.getStudyEnvironmentId(), e.getMessage());
+            logger.error("Unable to ingest dataset {} for study env {}. Error: {}", dataset.getId(), dataset.getStudyEnvironmentId(), e.getMessage());
         }
     }
 
@@ -208,6 +251,7 @@ public class DataRepoExportService {
             switch(job.getJobType()) {
                 case CREATE_DATASET -> pollAndUpdateCreateJobStatus(job);
                 case INGEST_DATASET -> pollAndUpdateIngestJobStatus(job);
+                case DELETE_DATASET -> pollAndUpdateDeleteJobStatus(job);
                 default -> logger.error("Unknown job type '{}' for TDR job {}.", job.getJobType(), job.getTdrJobId());
             }
         }
@@ -216,24 +260,16 @@ public class DataRepoExportService {
     private void pollAndUpdateCreateJobStatus(DataRepoJob job) {
         try {
             JobStatusEnum jobStatus = dataRepoClient.getJobStatus(job.getTdrJobId()).getJobStatus();
-            Dataset existingDataset = datasetDao.findByDatasetName(job.getDatasetName()).get();
 
             switch(jobStatus) {
                 case SUCCEEDED -> {
                     LinkedHashMap<String, Object> jobResult = (LinkedHashMap<String, Object>) dataRepoClient.getJobResult(job.getTdrJobId());
+                    UUID tdrDatasetId = UUID.fromString(jobResult.get("id").toString());
 
                     logger.info("createDataset job ID {} has succeeded. Dataset {} has been created.", job.getId(), job.getDatasetName());
-                    Dataset dataset = Dataset.builder()
-                            .id(existingDataset.getId())
-                            .studyEnvironmentId(job.getStudyEnvironmentId())
-                            .datasetId(UUID.fromString(jobResult.get("id").toString()))
-                            .description(jobResult.get("description").toString())
-                            .datasetName(job.getDatasetName())
-                            .status(DatasetStatus.CREATED)
-                            .lastExported(Instant.ofEpochSecond(0))
-                            .build();
 
-                    datasetService.update(dataset);
+                    datasetService.setTdrDatasetId(job.getDatasetId(), tdrDatasetId);
+                    datasetService.updateStatus(job.getDatasetId(), DatasetStatus.CREATED);
                     dataRepoJobService.updateJobStatus(job.getId(), jobStatus.getValue());
 
                     //TODO: This is to be replaced by JN-133. This code should only ever be executed in dev.
@@ -243,16 +279,16 @@ public class DataRepoExportService {
                     String DEPLOYMENT_ZONE = env.getProperty("env.tdr.deploymentZone");
                     if(!DEPLOYMENT_ZONE.equalsIgnoreCase("prod")) {
                         logger.info("Sharing dataset with Juniper dev team. If you're seeing this in prod, panic!");
-                        dataRepoClient.shareWithJuniperDevs(dataset.getDatasetId());
+                        dataRepoClient.shareWithJuniperDevs(tdrDatasetId);
                     }
 
-                    ingestDataForStudyEnvironment(dataset);
+                    ingestDataForStudyEnvironment(job.getDatasetId());
                 }
                 case FAILED -> {
                     logger.warn("createDataset job ID {} has failed. Dataset {} failed to create.", job.getId(), job.getDatasetName());
 
                     Dataset dataset = Dataset.builder()
-                            .id(existingDataset.getId())
+                            .id(job.getDatasetId())
                             .studyEnvironmentId(job.getStudyEnvironmentId())
                             .datasetName(job.getDatasetName())
                             .status(DatasetStatus.FAILED)
@@ -276,14 +312,9 @@ public class DataRepoExportService {
 
             switch(jobStatus) {
                 case SUCCEEDED -> {
-                    LinkedHashMap<String, Object> jobResult = (LinkedHashMap<String, Object>) dataRepoClient.getJobResult(job.getTdrJobId());
-                    UUID dataRepoId = UUID.fromString(jobResult.get("dataset_id").toString());
-
-                    Dataset dataset = datasetService.findByDataRepoId(dataRepoId).orElseThrow(() -> new DatasetNotFoundException(dataRepoId));
-
                     logger.info("ingestDataset job ID {} has succeeded. Dataset {} successfully ingested.", job.getId(), job.getDatasetName());
                     dataRepoJobService.updateJobStatus(job.getId(), jobStatus.getValue());
-                    datasetService.updateLastExported(dataset.getId(), Instant.now());
+                    datasetService.updateLastExported(job.getDatasetId(), Instant.now());
                 }
                 case FAILED -> {
                     logger.warn("ingestDataset job ID {} has failed. Dataset {} failed to ingest.", job.getId(), job.getDatasetName());
@@ -297,19 +328,37 @@ public class DataRepoExportService {
         }
     }
 
+    private void pollAndUpdateDeleteJobStatus(DataRepoJob job) {
+        try {
+            JobStatusEnum jobStatus = dataRepoClient.getJobStatus(job.getTdrJobId()).getJobStatus();
+
+            switch(jobStatus) {
+                case SUCCEEDED -> {
+                    Dataset dataset = datasetService.findById(job.getDatasetId()).orElseThrow(() -> new DatasetNotFoundException(job.getDatasetId()));
+
+                    logger.info("deleteDataset job ID {} has succeeded. Dataset {} successfully deleted.", job.getId(), job.getDatasetId());
+                    dataRepoJobService.updateJobStatus(job.getId(), jobStatus.getValue());
+                    dataRepoJobService.deleteByDatasetId(dataset.getId());
+                    datasetService.delete(dataset);
+                }
+                case FAILED -> {
+                    logger.warn("deleteDataset job ID {} has failed. Dataset {} failed to delete.", job.getId(), job.getDatasetId());
+                    dataRepoJobService.updateJobStatus(job.getId(), jobStatus.getValue());
+                }
+                case RUNNING -> logger.info("deleteDataset job ID {} is running.", job.getId());
+                default -> logger.warn("deleteDataset job ID {} has unrecognized job status: {}", job.getId(), job.getStatus());
+            }
+        } catch (ApiException e) {
+            logger.error("Unable to get TDR job status for job ID {}. Error: {}", job.getTdrJobId(), e.getMessage());
+        }
+    }
+
     public boolean getServiceStatus() {
         try {
             return dataRepoClient.getServiceStatus().isOk();
         } catch (ApiException e) {
             return false;
         }
-    }
-
-    public String makeDatasetName(String deploymentZone, String studyName, String environmentName) {
-        if(deploymentZone.equalsIgnoreCase("prod"))
-            return String.format("d2p_%s_%s", studyName, environmentName);
-        else
-            return String.format("d2p_%s_%s_%s", deploymentZone, studyName, environmentName);
     }
 
 }

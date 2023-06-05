@@ -8,7 +8,7 @@ import React from 'react'
 import { ElementFactory, Question, Serializer } from 'survey-core'
 import { ReactQuestionFactory, SurveyQuestionElementBase } from 'survey-react-ui'
 
-import { MultipleComboBox } from './MultipleCombobox'
+import { MultipleComboBox } from '../components/MultipleCombobox'
 
 const MultipleComboboxType = 'multiple-combobox'
 

@@ -1,5 +1,4 @@
 # Juniper
-*Note: the repo will move soon to reflect the Juniper name*
 
 ## Overview
 Arbor is intended to allow the collection and management of 3 distinct data types in the context of a research study: survey, genomic, and medical records.
@@ -64,6 +63,10 @@ Open the root folder in IntelliJ.
        * disable launch optimization
        * set environment variable: `REDIRECT_ALL_EMAILS_TO=<<your email address>>`
        * set environment variable: `TDR_SA_CREDS=<<vault read -field=sa-key.json.b64 secret/dsp/ddp/d2p/dev/d2p-tdr-sa>>`
+       * set environment variable: `B2C_TENANT_NAME=ddpdevb2c`
+       * set environment variable: `B2C_CLIENT_ID=<<vault read -field value secret/dsp/ddp/b2c/dev/application_id>>`
+       * set environment variable: `B2C_POLICY_NAME=B2C_1A_ddp_participant_signup_signin_dev`
+       * set environment variable: `DSM_JWT_SIGNING_SECRET=<<vault read -field jwt_signing_secret secret/dsp/ddp/d2p/dev/dsm>>`
      * ApiParticipantApp (in api-participant module)
         * set active profiles of "human-readable-logging" and "development"
         * set environment variable: `SENDGRID_API_KEY=<<vault read -field=api_key secret/dsp/ddp/d2p/dev/sendgrid>>`

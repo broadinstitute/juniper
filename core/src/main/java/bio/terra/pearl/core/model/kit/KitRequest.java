@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter @Setter @SuperBuilder
@@ -13,10 +14,11 @@ import java.util.UUID;
 public class KitRequest extends BaseEntity {
     private UUID creatingAdminUserId;
     private UUID enrolleeId;
-    private String kitType;
+    private UUID kitTypeId;
+    private KitType kitType;
     /**
      * JSON blob of address data sent to DSM, collected from Profile/MailingAddress.
-     * TODO: decide if this should be separate fields, or maybe use the postgres jsonb type
+     * In the future, we might decide to store separate fields, or maybe use the postgres jsonb type.
      */
     private String sentToAddress;
     /**
@@ -25,4 +27,9 @@ public class KitRequest extends BaseEntity {
      * happen in Pepper or if action is needed on the Juniper side.
      */
     private KitRequestStatus status;
+    /**
+     * JSON blob of status from DSM
+     */
+    private String dsmStatus;
+    private Instant dsmStatusFetchedAt;
 }

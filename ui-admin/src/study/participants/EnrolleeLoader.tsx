@@ -23,13 +23,17 @@ export default function EnrolleeLoader({ studyEnvContext }: {studyEnvContext: St
   const [enrollee, setEnrollee] = useState<Enrollee | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
+  const loadEnrollee = () => {
     Api.getEnrollee(portal.shortcode, study.shortcode, currentEnv.environmentName, enrolleeShortcode).then(result => {
       setEnrollee(result)
       setIsLoading(false)
     }).catch(() => {
       Store.addNotification(failureNotification(`Error loading participants`))
     })
+  }
+
+  useEffect(() => {
+    loadEnrollee()
   }, [enrolleeShortcode])
 
   return <LoadingSpinner isLoading={isLoading}>
@@ -37,6 +41,6 @@ export default function EnrolleeLoader({ studyEnvContext }: {studyEnvContext: St
       <Link className="text-white" to={`${currentEnvPath}/enrollees/${enrolleeShortcode}`}>
         {enrollee?.shortcode}</Link>
     </NavBreadcrumb>
-    <EnrolleeView enrollee={enrollee as Enrollee} studyEnvContext={studyEnvContext}/>
+    <EnrolleeView enrollee={enrollee as Enrollee} studyEnvContext={studyEnvContext} onUpdate={loadEnrollee}/>
   </LoadingSpinner>
 }
