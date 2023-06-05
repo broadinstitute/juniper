@@ -1,4 +1,4 @@
 rootProject.name = 'pearl'
 include('core', 'populate', 'api-admin', 'api-participant')
 
-gradle.ext.releaseVersion = '0.0.85'
+gradle.ext.releaseVersion = '0.2.13'
