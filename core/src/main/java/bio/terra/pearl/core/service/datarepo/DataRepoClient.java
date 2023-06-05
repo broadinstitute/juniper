@@ -5,7 +5,7 @@ import bio.terra.datarepo.api.JobsApi;
 import bio.terra.datarepo.api.UnauthenticatedApi;
 import bio.terra.datarepo.client.ApiException;
 import bio.terra.datarepo.model.*;
-import bio.terra.pearl.core.model.datarepo.DatasetTableDefinition;
+import bio.terra.pearl.core.model.datarepo.TdrTable;
 import bio.terra.pearl.core.shared.GoogleServiceAccountUtils;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -28,14 +28,14 @@ public class DataRepoClient {
     }
 
     //Dataset APIs
-    public JobModel createDataset(UUID spendProfileId, String datasetName, String description, List<DatasetTableDefinition> tableDefinitions) throws ApiException {
+    public JobModel createDataset(UUID spendProfileId, String datasetName, String description, Set<TdrTable> tableDefinitions) throws ApiException {
         DatasetsApi datasetsApi = getDatasetsApi();
 
         List<TableModel> tables = tableDefinitions.stream().map(tableDefinition -> {
-            List<ColumnModel> columns = tableDefinition.getColumns().entrySet().stream().map(columnDefinition -> {
-                String columnName = columnDefinition.getKey();
-                TableDataType columnType = columnDefinition.getValue();
-                boolean columnRequired = columnName.equalsIgnoreCase(tableDefinition.getPrimaryKey());
+            List<ColumnModel> columns = tableDefinition.columns().stream().map(columnDefinition -> {
+                String columnName = columnDefinition.columnName();
+                TableDataType columnType = columnDefinition.dataType();
+                boolean columnRequired = columnName.equalsIgnoreCase(tableDefinition.primaryKey());
 
                 return new ColumnModel()
                         .name(columnName)
@@ -43,7 +43,7 @@ public class DataRepoClient {
                         .required(columnRequired);
             }).toList();
 
-            return new TableModel().name(tableDefinition.getTableName()).columns(columns).primaryKey(List.of(tableDefinition.getPrimaryKey()));
+            return new TableModel().name(tableDefinition.tableName()).columns(columns).primaryKey(List.of(tableDefinition.primaryKey()));
         }).toList();
 
         DatasetSpecificationModel schema = new DatasetSpecificationModel().tables(tables);

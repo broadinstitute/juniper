@@ -100,11 +100,7 @@ public class DataRepoExportService {
         // on a per-study basis and store those in the Juniper DB.
         UUID defaultSpendProfileId = UUID.fromString(Objects.requireNonNull(env.getProperty("env.tdr.billingProfileId")));
 
-        List<DatasetTableDefinition> tableDefinitions = List.of(DatasetTableDefinition.builder()
-                .tableName("enrollee")
-                .primaryKey("enrollee_shortcode")
-                .columns(generateDatasetSchema(studyEnv.getId()))
-                .build());
+        Set<TdrTable> tableDefinitions = Set.of(new TdrTable("enrollee", "enrollee_shortcode", generateDatasetSchema(studyEnv.getId())));
 
         JobModel response;
         try {
@@ -213,14 +209,14 @@ public class DataRepoExportService {
         }
     }
 
-    public Map<String, TableDataType> generateDatasetSchema(UUID studyEnvironmentId) {
+    public Set<TdrColumn> generateDatasetSchema(UUID studyEnvironmentId) {
         ExportOptions exportOptions = new ExportOptions(false, false, false, ExportFileFormat.TSV, null);
 
         //Backtrack from studyEnvironmentId to get the portalId, so we can export the study environment data
         StudyEnvironment studyEnv = studyEnvironmentDao.find(studyEnvironmentId).orElseThrow(() -> new NotFoundException("Study environment not found."));
         PortalStudy portalStudy = portalStudyDao.findByStudyId(studyEnv.getStudyId()).stream().findFirst().orElseThrow(() -> new NotFoundException("Portal study not found."));
 
-        Map<String, TableDataType> columnKeys = new LinkedHashMap<>();
+        Set<TdrColumn> tdrColumns = new LinkedHashSet<>();
 
         try {
             List<ModuleExportInfo> moduleExportInfos = enrolleeExportService.generateModuleInfos(exportOptions, portalStudy.getPortalId(), studyEnvironmentId);
@@ -229,15 +225,16 @@ public class DataRepoExportService {
 
             TsvExporter tsvExporter = new TsvExporter(moduleExportInfos, enrolleeMaps);
 
-            tsvExporter.applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription) -> columnKeys.put(
+            tsvExporter.applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription) -> tdrColumns.add(new TdrColumn(
                     DataRepoExportUtils.juniperToDataRepoColumnName(moduleExportInfo.getFormatter().getColumnKey(moduleExportInfo, itemExportInfo, isOtherDescription, null)),
                     DataRepoExportUtils.juniperToDataRepoColumnType(itemExportInfo.getDataType())
+                )
             ));
         } catch (Exception e) {
             throw new RuntimeException("Could not generate dataset schema for study environment " + studyEnvironmentId + ". Error: " + e.getMessage());
         }
 
-        return columnKeys;
+        return tdrColumns;
     }
 
     public void pollRunningJobs() {
@@ -287,15 +284,7 @@ public class DataRepoExportService {
                 case FAILED -> {
                     logger.warn("createDataset job ID {} has failed. Dataset {} failed to create.", job.getId(), job.getDatasetName());
 
-                    Dataset dataset = Dataset.builder()
-                            .id(job.getDatasetId())
-                            .studyEnvironmentId(job.getStudyEnvironmentId())
-                            .datasetName(job.getDatasetName())
-                            .status(DatasetStatus.FAILED)
-                            .lastExported(Instant.ofEpochSecond(0))
-                            .build();
-
-                    datasetService.update(dataset);
+                    datasetService.updateStatus(job.getDatasetId(), DatasetStatus.FAILED);
                     dataRepoJobService.updateJobStatus(job.getId(), jobStatus.getValue());
                 }
                 case RUNNING -> logger.info("createDataset job ID {} is running.", job.getId());
