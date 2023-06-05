@@ -53,10 +53,4 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
             environmentPopulator.populate(new FilePopulateContext(fileName), true);
         }
     }
-
-    protected void setUpKitTypes() throws IOException {
-        for (String file : BaseSeedPopulator.KIT_TYPES_TO_POPULATE) {
-            kitTypePopulator.populate(new FilePopulateContext(file), false);
-        }
-    }
 }

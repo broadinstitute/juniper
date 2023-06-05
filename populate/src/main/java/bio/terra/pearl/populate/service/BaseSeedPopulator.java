@@ -33,8 +33,6 @@ public class BaseSeedPopulator {
                     "adminUsers/mbemis.json");
     public static final List<String> ENVIRONMENTS_TO_POPULATE =
             Arrays.asList("environments/sandbox.json", "environments/irb.json", "environments/live.json");
-    public static final List<String> KIT_TYPES_TO_POPULATE =
-            List.of("kits/salivaKitType.json");
 
     public BaseSeedPopulator(AdminUserPopulator adminUserPopulator, EnvironmentPopulator environmentPopulator,
                              AdminConfigPopulator adminConfigPopulator, AdminUserService adminUserService,
@@ -54,9 +52,6 @@ public class BaseSeedPopulator {
         }
         for (String file : ENVIRONMENTS_TO_POPULATE) {
             environmentPopulator.populate(new FilePopulateContext(file), false);
-        }
-        for (String file : KIT_TYPES_TO_POPULATE) {
-            kitTypePopulator.populate(new FilePopulateContext(file), false);
         }
         var configStats = adminConfigPopulator.populate(true);
         return SetupStats.builder()
