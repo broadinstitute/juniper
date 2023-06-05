@@ -8,8 +8,9 @@ public class DataRepoExportUtils {
     //Converts a Juniper column type into a Data Repo column type
     public static TableDataType juniperToDataRepoColumnType(DataValueExportType columnType) {
         return switch(columnType) {
+            //TODO: Properly format DATETIMEs instead of using STRING.
+            case DATE_TIME -> TableDataType.STRING;
             case DATE -> TableDataType.DATE;
-            case DATE_TIME -> TableDataType.DATETIME;
             case STRING -> TableDataType.STRING;
             case NUMBER -> TableDataType.INTEGER;
             case BOOLEAN -> TableDataType.BOOLEAN;
