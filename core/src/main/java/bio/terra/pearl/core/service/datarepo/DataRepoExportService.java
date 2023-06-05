@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
 import java.time.Instant;
@@ -132,6 +133,7 @@ public class DataRepoExportService {
         dataRepoJobService.create(job);
     }
 
+    @Transactional
     public void deleteDataset(StudyEnvironment studyEnv, String datasetName) {
         Dataset dataset = datasetDao.findByDatasetName(datasetName).orElseThrow(() -> new DatasetNotFoundException("Dataset not found."));
 
