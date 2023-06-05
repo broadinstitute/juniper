@@ -1,5 +1,6 @@
 package bio.terra.pearl.populate;
 
+import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
 import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
@@ -16,8 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.commons.lang3.RandomStringUtils;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.*;
 import org.jdbi.v3.core.Jdbi;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -34,13 +34,15 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
     @Autowired
     SurveyService surveyService;
     @Autowired
+    SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
+    @Autowired
     SurveyFactory surveyFactory;
     @Autowired
     PortalFactory portalFactory;
     @Autowired
     ObjectMapper objectMapper;
 
-    private List<String> tablesToTruncate = Arrays.asList("survey");
+    private List<String> tablesToTruncate = Arrays.asList("survey", "survey_question_definition");
 
     @BeforeAll
     public void cleanTables() {
@@ -62,6 +64,9 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
         Survey fetchedSurvey = surveyService.findByStableIdWithMappings("oh_oh_basicInfo", 1).get();
         // check that answer mappings populate too
         assertThat(fetchedSurvey.getAnswerMappings().size(), greaterThan(0));
+
+        var questionDefs = surveyQuestionDefinitionDao.findAllBySurveyId(fetchedSurvey.getId());
+        assertThat(questionDefs, hasSize(46));
     }
 
     @Test
