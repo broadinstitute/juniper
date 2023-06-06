@@ -2,10 +2,10 @@ import React, { useState } from 'react'
 import { SurveyModel } from 'survey-core'
 import { Survey as SurveyJSComponent } from 'survey-react-ui'
 
-import { extractSurveyContent, JuniperSurvey, Survey } from '@juniper/ui-core'
+import { extractSurveyContent, FormContent, Survey } from '@juniper/ui-core'
 
 type SurveyPreviewProps = {
-  survey: JuniperSurvey
+  survey: FormContent
 }
 
 export const SurveyPreview = (props: SurveyPreviewProps) => {

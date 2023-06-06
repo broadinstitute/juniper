@@ -1,38 +1,28 @@
 import './surveyjs'
 
-import { Question } from 'survey-core'
-
-import { ConsentForm, ElementBase, ElementContainer, JuniperQuestion, JuniperSurvey, Survey } from './types/forms'
+import { FormContent, FormElement, VersionedForm } from './types/forms'
 
 /** Gets a flattened list of the survey elements */
-export function getSurveyElementList(surveyModel: JuniperSurvey) {
-  return surveyModel.pages.map(page => {
-    return getContainerElementList(page as unknown as ElementContainer, true)
-  }).flat()
+function getFormElements(formContent: FormContent): FormElement[] {
+  return formContent.pages.flatMap(page => page.elements.flatMap(getFormQuestionsHelper))
 }
 
 /** Gets a flattened list of elements from a container (page or panel) */
-export function getContainerElementList(container: ElementContainer, isPage: boolean):
-  (ElementBase | ElementContainer | JuniperQuestion)[] {
-  const containerEl = { ...container, type: isPage ? 'page' : 'panel' }
-  const containerChildren = container.elements.map((element: (ElementBase | ElementContainer)) => {
-    if ((element as ElementContainer).elements) {
-      return getContainerElementList(element as ElementContainer, false)
-    }
-    return element
-  })
-  return [containerEl, ...containerChildren].flat()
+function getFormQuestionsHelper(element: FormElement): FormElement[] {
+  return ('type' in element && element.type === 'panel')
+    ? element.elements.flatMap(getFormQuestionsHelper)
+    : [element]
 }
 
 /** transform the stored survey representation into what SurveyJS expects */
-export function extractSurveyContent(survey: ConsentForm | Survey) {
-  const parsedSurvey = JSON.parse(survey.content)
-  const questionTemplates = parsedSurvey.questionTemplates as Question[]
+export function extractSurveyContent(form: VersionedForm) {
+  const parsedSurvey = JSON.parse(form.content) as FormContent
+  const questionTemplates = parsedSurvey.questionTemplates
   if (questionTemplates) {
-    const elementList = getSurveyElementList(parsedSurvey)
+    const elementList = getFormElements(parsedSurvey)
     elementList.forEach(q => {
-      const templateName = (q as JuniperQuestion).questionTemplateName
-      if (templateName) {
+      if ('questionTemplateName' in q) {
+        const templateName = q.questionTemplateName
         const matchedTemplate = questionTemplates.find(qt => qt.name === templateName)
         if (!matchedTemplate) {
           // TODO this is an error we'd want to log in prod systems

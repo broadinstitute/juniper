@@ -1,5 +1,5 @@
 import { extractSurveyContent } from './surveyUtils'
-import { VersionedForm } from './types/forms'
+import { RadiogroupQuestion, VersionedForm } from './types/forms'
 
 describe('extractSurveyContent', () => {
   it('transforms models with question templates', () => {
@@ -32,11 +32,11 @@ describe('extractSurveyContent', () => {
 
     const surveyModel = extractSurveyContent(survey as VersionedForm)
     expect(surveyModel.pages).toHaveLength(2)
-    const firstTemplatedQuestion = surveyModel.pages[0].elements[1]
+    const firstTemplatedQuestion = surveyModel.pages[0].elements[1] as RadiogroupQuestion
     expect(firstTemplatedQuestion.name).toEqual('brotherFavoriteColor')
     expect(firstTemplatedQuestion.title).toEqual('what is their favorite color?')
     expect(firstTemplatedQuestion.choices).toHaveLength(2)
-    const secondTemplatedQuestion = surveyModel.pages[1].elements[1]
+    const secondTemplatedQuestion = surveyModel.pages[1].elements[1] as RadiogroupQuestion
     expect(secondTemplatedQuestion.name).toEqual('sisterFavoriteColor')
   })
 })
