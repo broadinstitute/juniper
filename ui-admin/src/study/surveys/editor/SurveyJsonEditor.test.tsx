@@ -3,11 +3,11 @@ import userEvent from '@testing-library/user-event'
 import { cloneDeep } from 'lodash'
 import React from 'react'
 
+import { FormContent } from '@juniper/ui-core'
+
 import { SurveyJsonEditor } from './SurveyJsonEditor'
 
-// TODO: Types for survey config
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const survey: any = {
+const survey: FormContent = {
   title: 'Test survey',
   pages: [
     {

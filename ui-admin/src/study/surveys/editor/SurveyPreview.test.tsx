@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
+import { FormContent } from '@juniper/ui-core'
+
 import { SurveyPreview } from './SurveyPreview'
 
-// TODO: Types for survey config
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const survey: any = {
+const survey: FormContent = {
   title: 'Test survey',
   pages: [
     {
