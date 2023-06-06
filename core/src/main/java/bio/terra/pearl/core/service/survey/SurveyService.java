@@ -57,10 +57,8 @@ public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> imp
             AnswerMapping savedMapping = answerMappingDao.create(answerMapping);
             savedSurvey.getAnswerMappings().add(savedMapping);
         }
-
-        for(SurveyQuestionDefinition questionDefinition : getSurveyQuestionDefinitions(savedSurvey)) {
-            surveyQuestionDefinitionDao.create(questionDefinition);
-        }
+        List<SurveyQuestionDefinition> questionDefs = getSurveyQuestionDefinitions(savedSurvey);
+        surveyQuestionDefinitionDao.bulkCreate(questionDefs);
 
         return savedSurvey;
     }
