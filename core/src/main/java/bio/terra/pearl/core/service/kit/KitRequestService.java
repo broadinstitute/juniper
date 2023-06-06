@@ -105,12 +105,8 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      */
     @Transactional
     public PepperDSMKitStatus updateKitStatus(UUID kitId) {
-        // auth admin user
-        // find kit request
         var kitRequest = dao.find(kitId).orElseThrow(() -> new NotFoundException("Kit request not found"));
-        // fetch latest status
         var pepperDSMKitStatus = pepperDSMClient.fetchKitStatus(kitId);
-        // save latest status
         try {
             kitRequest.setDsmStatus(objectMapper.writeValueAsString(pepperDSMKitStatus));
             kitRequest.setDsmStatusFetchedAt(Instant.now());
@@ -131,19 +127,17 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     public void updateAllKitStatuses() {
         var studies = studyDao.findAll();
         for (Study study : studies) {
-            // find all in-flight kits
             var incompleteKits = dao.findIncompleteKits(study.getId());
 
-            // fetch statuses from DSM
             if (!incompleteKits.isEmpty()) {
                 var dsmKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getId());
                 var dsmStatusFetchedAt = Instant.now();
                 var dsmKitStatusByKitId = dsmKitStatuses.stream().collect(
                         Collectors.toMap(PepperDSMKitStatus::getKitId, Function.identity()));
+
                 // The set of kits returned from DSM may be different from the set of incomplete kits in Juniper, but
                 // we want to update the records in Juniper so those are the ones we want to iterate here.
                 for (KitRequest kit : incompleteKits) {
-                    // update each kit
                     var dsmKitStatus = dsmKitStatusByKitId.get(kit.getId().toString());
                     if (dsmKitStatus != null) {
                         saveKitStatus(kit, dsmKitStatus, dsmStatusFetchedAt);
