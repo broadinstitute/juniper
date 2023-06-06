@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { cloneDeep } from 'lodash'
 import React from 'react'
 
-import { FormContent } from '@juniper/ui-core'
+import { FormContent, Question } from '@juniper/ui-core'
 
 import { SurveyJsonEditor } from './SurveyJsonEditor'
 
@@ -62,7 +62,7 @@ describe('SurveyJsonEditor', () => {
 
     // Assert
     const expectedEditedSurvey = cloneDeep(survey)
-    expectedEditedSurvey.pages[0].elements[0].title = 'Given name'
+    ;(expectedEditedSurvey.pages[0].elements[0] as Question).title = 'Given name'
 
     expect(onChange).toHaveBeenCalledWith(true, expectedEditedSurvey)
   })
