@@ -55,7 +55,6 @@ a {
 
 .App {
   background-color: #ededed;
-  min-height: 100vh;
 }
 
 .App-study-list {
@@ -86,4 +85,10 @@ a {
   max-height: 90vh;
 }
 
-
+/* Have survey editor tabs fill page height */
+.SurveyEditor .tab-content,
+.SurveyEditor .tab-pane.active {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}

@@ -38,7 +38,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
   const currentEnvPath = studyEnvPath(portal.shortcode, study.shortcode, currentEnv.environmentName)
 
   const studyEnvContext: StudyEnvContextT = { study, currentEnv, currentEnvPath, portal }
-  return <div className="StudyView">
+  return <div className="StudyView d-flex flex-column flex-grow-1">
     <NavBreadcrumb>
       <Link className="text-white" to={currentEnvPath}>
         {envName}</Link>

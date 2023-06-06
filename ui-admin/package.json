@@ -12,7 +12,6 @@
     "classnames": "^2.3.2",
     "html-react-parser": "^3.0.4",
     "lodash": "^4.17.21",
-    "marked": "^4.1.0",
     "oidc-client-ts": "^2.2.0",
     "plotly.js": "^2.23.0",
     "query-string": "^7.1.1",
@@ -25,14 +24,12 @@
     "react-plotly.js": "^2.6.0",
     "react-router-dom": "^6.4.0",
     "react-select": "^5.4.0",
-    "survey-creator-react": "^1.9.75",
     "survey-react-ui": "^1.9.75",
     "surveyjs-widgets": "1.9.75",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.185",
-    "@types/marked": "^4.0.7",
     "@types/react": "^18.0.18",
     "@types/react-dom": "^18.0.6",
     "@types/react-plotly.js": "^2.6.0",
