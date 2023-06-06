@@ -67,7 +67,7 @@
   }],
   "kitRequestDtos": [
     {
-      "creatingAdminUsername": "staff@ourhealth.org",
+      "creatingAdminUsername": "staff@heartdemo.org",
       "kitTypeName": "saliva",
       "statusName": "CREATED",
       "dsmStatusJson": {
