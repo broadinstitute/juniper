@@ -1,12 +1,18 @@
 package bio.terra.pearl.core.service.kit;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 /**
  * Address fields included in the request to DSM when requesting a kit.
  */
-@Getter @SuperBuilder
+@Getter
+@SuperBuilder @NoArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class PepperKitAddress {
     private String firstName;
     private String lastName;
