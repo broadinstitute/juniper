@@ -15,12 +15,6 @@ public class KitRequestDao extends BaseMutableJdbiDao<KitRequest> {
         super(jdbi);
     }
 
-    private final String BASE_QUERY_BY_STUDY =
-            " select " + prefixedGetQueryColumns("kit") + " from " + tableName + " kit " +
-            " join enrollee on kit.enrollee_id = enrollee.id " +
-            " join study_environment on enrollee.study_environment_id = study_environment.id " +
-            " where study_environment.id = :studyEnvironmentId ";
-
     @Override
     protected Class<KitRequest> getClazz() { return KitRequest.class; }
 
