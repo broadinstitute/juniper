@@ -1,0 +1,734 @@
+{
+  "stableId": "hd_hd_lifestyle",
+  "version": 1,
+  "name": "Lifestyle",
+  "footer": "Resources used for this survey:\n * Tobacco Use Supplement to the Current Population Survey (TUS&#8209;CPS)\n * American Thoracic Society Division of Lung Disease questionnaire (ATS&nbsp;&#8209;&nbsp;DLD&nbsp;&#8209;&nbsp;78)\n * Million Veterans Program\n * Prostate, Lung, Colorectal, and Ovarian (PLCO) Cancer Screening Trial\n * Population Assessment of Tobacco and Health (PATH)\n * National Epidemiologic Survey on Alcohol and Related Conditions (NESARC)\n * Alcohol Use Disorders Identification Test (AUDIT&#8209;C)\n * NM ASSIST (NIDA-Modified Alcohol, Smoking, and Substance Involvement Screening Test)",
+  "jsonContent": {
+    "showQuestionNumbers": "off",
+    "showProgressBar": "bottom",
+    "questionTemplates": [
+      {
+        "name": "hd_hd_lifestyle_numberRange",
+        "type": "dropdown",
+        "choices": [
+          {"text": "I don't know", "value": "unknown"},
+          {"text": "Prefer not to answer", "value": "preferNoAnswer"},
+          {"text": "0", "value": "0"},
+          {"text": "1", "value": "1"},
+          {"text": "2", "value": "2"},
+          {"text": "3", "value": "3"},
+          {"text": "4", "value": "4"},
+          {"text": "5", "value": "5"},
+          {"text": "6", "value": "6"},
+          {"text": "7", "value": "7"},
+          {"text": "8", "value": "8"},
+          {"text": "9", "value": "9"},
+          {"text": "10", "value": "10"},
+          {"text": "11", "value": "11"},
+          {"text": "12", "value": "12"},
+          {"text": "13", "value": "13"},
+          {"text": "14", "value": "14"},
+          {"text": "15", "value": "15"},
+          {"text": "16", "value": "16"},
+          {"text": "17", "value": "17"},
+          {"text": "18", "value": "18"},
+          {"text": "19", "value": "19"},
+          {"text": "20", "value": "20"},
+          {"text": "21", "value": "21"},
+          {"text": "22", "value": "22"},
+          {"text": "23", "value": "23"},
+          {"text": "24", "value": "24"},
+          {"text": "25", "value": "25"},
+          {"text": "26", "value": "26"},
+          {"text": "27", "value": "27"},
+          {"text": "28", "value": "28"},
+          {"text": "29", "value": "29"},
+          {"text": "30", "value": "30"},
+          {"text": "31", "value": "31"},
+          {"text": "32", "value": "32"},
+          {"text": "33", "value": "33"},
+          {"text": "34", "value": "34"},
+          {"text": "35", "value": "35"},
+          {"text": "36", "value": "36"},
+          {"text": "37", "value": "37"},
+          {"text": "38", "value": "38"},
+          {"text": "39", "value": "39"},
+          {"text": "40", "value": "40"},
+          {"text": "41", "value": "41"},
+          {"text": "42", "value": "42"},
+          {"text": "43", "value": "43"},
+          {"text": "44", "value": "44"},
+          {"text": "45", "value": "45"},
+          {"text": "46", "value": "46"},
+          {"text": "47", "value": "47"},
+          {"text": "48", "value": "48"},
+          {"text": "49", "value": "49"},
+          {"text": "50", "value": "50"},
+          {"text": "51", "value": "51"},
+          {"text": "52", "value": "52"},
+          {"text": "53", "value": "53"},
+          {"text": "54", "value": "54"},
+          {"text": "55", "value": "55"},
+          {"text": "56", "value": "56"},
+          {"text": "57", "value": "57"},
+          {"text": "58", "value": "58"},
+          {"text": "59", "value": "59"},
+          {"text": "60", "value": "60"},
+          {"text": "61", "value": "61"},
+          {"text": "62", "value": "62"},
+          {"text": "63", "value": "63"},
+          {"text": "64", "value": "64"},
+          {"text": "65", "value": "65"},
+          {"text": "66", "value": "66"},
+          {"text": "67", "value": "67"},
+          {"text": "68", "value": "68"},
+          {"text": "69", "value": "69"},
+          {"text": "70", "value": "70"},
+          {"text": "71", "value": "71"},
+          {"text": "72", "value": "72"},
+          {"text": "73", "value": "73"},
+          {"text": "74", "value": "74"},
+          {"text": "75", "value": "75"},
+          {"text": "76", "value": "76"},
+          {"text": "77", "value": "77"},
+          {"text": "78", "value": "78"},
+          {"text": "79", "value": "79"},
+          {"text": "80", "value": "80"},
+          {"text": "81", "value": "81"},
+          {"text": "82", "value": "82"},
+          {"text": "83", "value": "83"},
+          {"text": "84", "value": "84"},
+          {"text": "85", "value": "85"},
+          {"text": "86", "value": "86"},
+          {"text": "87", "value": "87"},
+          {"text": "88", "value": "88"},
+          {"text": "89", "value": "89"},
+          {"text": "90", "value": "90"},
+          {"text": "91", "value": "91"},
+          {"text": "92", "value": "92"},
+          {"text": "93", "value": "93"},
+          {"text": "94", "value": "94"},
+          {"text": "95", "value": "95"},
+          {"text": "96", "value": "96"},
+          {"text": "97", "value": "97"},
+          {"text": "98", "value": "98"},
+          {"text": "99", "value": "99"}
+        ]
+      }
+    ],
+    "pages": [{
+      "elements": [{
+        "type": "panel",
+        "elements": [
+          {
+            "type": "html",
+            "name": "hd_hd_lifestyleIntro",
+            "html": "<p>This survey asks questions about your lifestyle. This is to better understand how it may affect health. It will take about 5-10 minutes to answer these questions. Please answer each question as honestly as possible. We are looking for your own answers, not what you think your doctors, family, or friends want you to say. Do not feel like you have to spend a long time on each question. The first answer that comes to you is usually the best one.</p>"
+          }
+        ]
+      }, {
+        "type": "panel",
+        "elements": [
+          {
+            "type": "html",
+            "name": "hd_hd_lifestyleVigorousActivityIntro",
+            "html": "<h2>Vigorous Activity</h2><p>Vigorous physical activities refer to activities that take hard physical effort and make you breathe much harder than normal. Think only about those physical activities that you did for at least 10 minutes at a time.</p>"
+          }
+        ]
+      },{
+        "name": "hd_hd_lifestyle_daysVigorousActivity",
+        "type": "radiogroup",
+        "title": "During the last 7 days, on how many days did you do vigorous physical activities like heavy lifting, digging, aerobics, or fast bicycling?",
+        "choices": [
+          {"text": "No vigorous physical activities", "value": "none"},
+          {"text": "1 day", "value": "1Day"},
+          {"text": "2 days", "value": "2Days"},
+          {"text": "3 days", "value": "3Days"},
+          {"text": "4 days", "value": "4Days"},
+          {"text": "5 days", "value": "5Days"},
+          {"text": "6 days", "value": "6Days"},
+          {"text": "7 days", "value": "7Days"}
+        ]
+      },{
+        "name": "hd_hd_lifestyle_vigorousActivityMinutes",
+        "type": "dropdown",
+        "visibleIf": "{hd_hd_lifestyle_daysVigorousActivity} != 'none'",
+        "title": "How many minutes did you usually spend doing vigorous physical activities on one of those days?",
+        "choices": [
+          {"text": "Don't know / not sure", "value": "dontKnowNotSure"},
+          {"text": "10", "value": "10"},
+          {"text": "15", "value": "15"},
+          {"text": "20", "value": "20"},
+          {"text": "25", "value": "25"},
+          {"text": "30", "value": "30"},
+          {"text": "35", "value": "35"},
+          {"text": "40", "value": "40"},
+          {"text": "45", "value": "45"},
+          {"text": "50", "value": "50"},
+          {"text": "55", "value": "55"},
+          {"text": "60", "value": "60"},
+          {"text": "70", "value": "70"},
+          {"text": "80", "value": "80"},
+          {"text": "90", "value": "90"},
+          {"text": "100", "value": "100"},
+          {"text": "120", "value": "120"},
+          {"text": "140", "value": "140"},
+          {"text": "160", "value": "160"},
+          {"text": "180", "value": "180"},
+          {"text": "200", "value": "200"},
+          {"text": "240", "value": "240"},
+          {"text": "280", "value": "280"},
+          {"text": "300+", "value": "300"}
+        ]
+      }, {
+        "type": "panel",
+        "elements": [
+          {
+            "type": "html",
+            "name": "hd_hd_lifestyleModertateActivityIntro",
+            "html": "<h2>Moderate Activity</h2><p>Moderate physical activities refer to activities that take moderate physical effort and make you breathe somewhat harder than normal. Think only about those physical activities that you did for at least 10 minutes at a time. </p>"
+          }
+        ]
+      },{
+        "name": "hd_hd_lifestyle_daysModerateActivities",
+        "type": "radiogroup",
+        "title": "During the last 7 days, on how many days did you do moderate physical activities like carrying light loads, bicycling at a regular pace, or doubles tennis? Please do not include walking.",
+        "choices": [
+          {"text": "No moderate physical activities", "value": "none"},
+          {"text": "1 day", "value": "1Day"},
+          {"text": "2 days", "value": "2Days"},
+          {"text": "3 days", "value": "3Days"},
+          {"text": "4 days", "value": "4Days"},
+          {"text": "5 days", "value": "5Days"},
+          {"text": "6 days", "value": "6Days"},
+          {"text": "7 days", "value": "7Days"}
+        ]
+      },{
+        "name": "hd_hd_lifestyle_moderateActivityMinutes",
+        "type": "dropdown",
+        "visibleIf": "{hd_hd_lifestyle_daysModerateActivities} != 'none'",
+        "title": "How many minutes did you usually spend doing moderate physical activities on one of those days?",
+        "choices": [
+          {"text": "Don't know / not sure", "value": "dontKnowNotSure"},
+          {"text": "10", "value": "10"},
+          {"text": "15", "value": "15"},
+          {"text": "20", "value": "20"},
+          {"text": "25", "value": "25"},
+          {"text": "30", "value": "30"},
+          {"text": "35", "value": "35"},
+          {"text": "40", "value": "40"},
+          {"text": "45", "value": "45"},
+          {"text": "50", "value": "50"},
+          {"text": "55", "value": "55"},
+          {"text": "60", "value": "60"},
+          {"text": "70", "value": "70"},
+          {"text": "80", "value": "80"},
+          {"text": "90", "value": "90"},
+          {"text": "100", "value": "100"},
+          {"text": "120", "value": "120"},
+          {"text": "140", "value": "140"},
+          {"text": "160", "value": "160"},
+          {"text": "180", "value": "180"},
+          {"text": "200", "value": "200"},
+          {"text": "240", "value": "240"},
+          {"text": "280", "value": "280"},
+          {"text": "300+", "value": "300"}
+        ]
+      },{
+        "type": "panel",
+        "elements": [
+          {
+            "type": "html",
+            "name": "hd_hd_lifestyleWalkingIntro",
+            "html": "<h2>Walking</h2><p>Think about the time you spent walking in the last 7 days. This includes at work and at home, walking to travel from place to place, and any other walking that you have done solely for recreation, sport, exercise, or leisure.</p>"
+          }
+        ]
+      },{
+        "name": "hd_hd_lifestyle_daysWalking",
+        "type": "radiogroup",
+        "title": "During the last 7 days, on how many days did you walk for at least 10 minutes at a time?",
+        "choices": [
+          {"text": "No walking", "value": "none"},
+          {"text": "1 day", "value": "1Day"},
+          {"text": "2 days", "value": "2Days"},
+          {"text": "3 days", "value": "3Days"},
+          {"text": "4 days", "value": "4Days"},
+          {"text": "5 days", "value": "5Days"},
+          {"text": "6 days", "value": "6Days"},
+          {"text": "7 days", "value": "7Days"}
+        ]
+      },{
+        "name": "hd_hd_lifestyle_minutesWalking",
+        "type": "dropdown",
+        "visibleIf": "{hd_hd_lifestyle_daysWalking} != 'none'",
+        "title": "How many minutes did you usually spend doing walking on one of those days?",
+        "choices": [
+          {"text": "Don't know / not sure", "value": "dontKnowNotSure"},
+          {"text": "10", "value": "10"},
+          {"text": "15", "value": "15"},
+          {"text": "20", "value": "20"},
+          {"text": "25", "value": "25"},
+          {"text": "30", "value": "30"},
+          {"text": "35", "value": "35"},
+          {"text": "40", "value": "40"},
+          {"text": "45", "value": "45"},
+          {"text": "50", "value": "50"},
+          {"text": "55", "value": "55"},
+          {"text": "60", "value": "60"},
+          {"text": "70", "value": "70"},
+          {"text": "80", "value": "80"},
+          {"text": "90", "value": "90"},
+          {"text": "100", "value": "100"},
+          {"text": "120", "value": "120"},
+          {"text": "140", "value": "140"},
+          {"text": "160", "value": "160"},
+          {"text": "180", "value": "180"},
+          {"text": "200", "value": "200"},
+          {"text": "240", "value": "240"},
+          {"text": "280", "value": "280"},
+          {"text": "300+", "value": "300"}
+        ]
+      },{
+        "type": "panel",
+        "elements": [
+          {
+            "type": "html",
+            "name": "hd_hd_lifestyleSittingIntro",
+            "html": "<h2>Sitting</h2><p>Think about the time you spent sitting in the last 7 days. Include time spent at work, at home, while doing course work, and during leisure time. This may include time spent sitting at a desk, visiting friends, reading, or sitting/lying down to watch television.</p>"
+          }
+        ]
+      },{
+        "name": "hd_hd_lifestyle_timeSitting",
+        "type": "dropdown",
+        "title": "During the last 7 days, how much time did you spend sitting on a weekday?",
+        "choices": [
+          {"text": "Don’t know / not sure", "value": "dontKnowNotSure"},
+          {"text": "less than 30 minutes", "value": "lessThan30Minutes"},
+          {"text": "30 minutes", "value": "30Minutes"},
+          {"text": "1 hour", "value": "1Hour"},
+          {"text": "90 minutes", "value": "90Minutes"},
+          {"text": "2 hours", "value": "2Hours"},
+          {"text": "3 hours", "value": "3Hours"},
+          {"text": "4 hours", "value": "4Hours"},
+          {"text": "5 hours", "value": "5Hours"},
+          {"text": "6 hours", "value": "6Hours"},
+          {"text": "7 hours", "value": "7Hours"},
+          {"text": "8 hours", "value": "8Hours"},
+          {"text": "9 hours", "value": "9Hours"},
+          {"text": "10 hours", "value": "10Hours"},
+          {"text": "11 hours", "value": "11Hours"},
+          {"text": "12 hours", "value": "12Hours"}
+        ]
+      }]
+    },{
+      "elements": [
+        {
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "hd_hd_lifestyleSmokingIntro",
+              "html": "<h2>Smoking Habits</h2><p>The next questions will ask about your smoking habits, including cigarettes, bidis, electronic nicotine products, hookah/shisha, and paan with tobacco products. This will help researchers better understand how smoking affects health. As always, your answers are private.</p>"
+            }
+          ]
+        },
+        {
+          "name": "hd_hd_lifestyle_smoke100cigs",
+          "type": "radiogroup",
+          "title": "Have you ever smoked the equivalent of at least 100 cigarettes in your life? Including bidis, hookah, or other forms of smoking? (There are 20 cigarettes in a pack.)",
+          "choices": [
+            {"text": "Yes", "value": "yes"},
+            {"text": "No", "value": "no"},
+            {"text": "Don’t know", "value": "dontKnow"},
+            {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+          ]
+        },{
+          "type": "panel",
+          "visibleIf": "{hd_hd_lifestyle_smoke100cigs} = 'yes'",
+          "elements": [{
+            "name": "hd_hd_lifestyle_smokingDays",
+            "type": "radiogroup",
+            "title": "Do you now smoke cigarettes every day, some days, or not at all?",
+            "choices": [
+              {"text": "Every day", "value": "everyDay"},
+              {"text": "Some days", "value": "someDays"},
+              {"text": "Not at all", "value": "notAtAll"},
+              {"text": "Don’t know", "value": "dontKnow"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "hd_hd_lifestyle_ageSmokingStart",
+            "questionTemplateName": "hd_hd_lifestyle_numberRange",
+            "title": "How old were you when you first started regular cigarette smoking?"
+          },{
+            "name": "hd_hd_lifestyle_attemptQuit",
+            "type": "radiogroup",
+            "title": "In the past, have you ever made a serious attempt to quit smoking? That is, have you stopped smoking for at least one day or longer because you were trying to quit?",
+            "choices": [
+              {"text": "Yes", "value": "yes"},
+              {"text": "No", "value": "no"},
+              {"text": "Don’t know", "value": "dontKnow"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "hd_hd_lifestyle_ageSmokingQuit",
+            "questionTemplateName": "hd_hd_lifestyle_numberRange",
+            "title": "If you have completely stopped smoking cigarettes, how old were you when you stopped?",
+            "visibleIf": "{hd_hd_lifestyle_attemptQuit} = 'yes'"
+          },{
+            "name": "hd_hd_lifestyle_numberYearsSmoking",
+            "questionTemplateName": "hd_hd_lifestyle_numberRange",
+            "title": "How many years have you or did you smoke cigarettes?"
+          },{
+            "name": "hd_hd_lifestyle_numberCigsDayNow",
+            "questionTemplateName": "hd_hd_lifestyle_numberRange",
+            "title": "On average, how many cigarettes do you smoke per day now? (There are 20 cigarettes in a pack.) "
+          },{
+            "name": "hd_hd_lifestyle_numberCigsDayLife",
+            "questionTemplateName": "hd_hd_lifestyle_numberRange",
+            "title": "On average, over the entire time that you smoked, how many cigarettes did you smoke each day? (There are 20 cigarettes in a pack.)"
+          },{
+            "name": "hd_hd_lifestyle_everSmokedBidi",
+            "type": "radiogroup",
+            "title": "Have you ever smoked a traditional “bidi” (“beedi”, “biri”), even one or two puffs?",
+            "choices": [
+              {"text": "Yes", "value": "yes"},
+              {"text": "No", "value": "no"},
+              {"text": "Don’t know", "value": "dontKnow"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "hd_hd_lifestyle_smokeBidiNow",
+            "type": "radiogroup",
+            "title": "Do you now smoke bidis… ",
+            "visibleIf": "{hd_hd_lifestyle_everSmokedBidi} = 'yes'",
+            "choices": [
+              {"text": "Every day", "value": "everyDay"},
+              {"text": "Some days", "value": "someDays"},
+              {"text": "Not at all", "value": "notAtAll"},
+              {"text": "Don’t know", "value": "dontKnow"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "hd_hd_lifestyle_eNicotineEver",
+            "type": "radiogroup",
+            "title": "Have you ever used an electronic nicotine product, even one or two times? (Electronic nicotine products include e-cigarettes, vape pens, hookah pens, personal vaporizers and mods, e-cigars, e-pipes, and e-hookahs.)",
+            "choices": [
+              {"text": "Yes", "value": "yes"},
+              {"text": "No", "value": "no"},
+              {"text": "Don’t know", "value": "dontKnow"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "hd_hd_lifestyle_eNicotineNow",
+            "type": "radiogroup",
+            "title": "Do you now use electronic nicotine products…",
+            "visibleIf": "{hd_hd_lifestyle_eNicotineEver} = 'yes'",
+            "choices": [
+              {"text": "Every day", "value": "everyDay"},
+              {"text": "Some days", "value": "someDays"},
+              {"text": "Not at all", "value": "notAtAll"},
+              {"text": "Don’t know", "value": "dontKnow"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "hd_hd_lifestyle_cigarEver",
+            "type": "radiogroup",
+            "title": "Have you ever smoked a traditional cigar, cigarillo, or filtered cigar, even one or two puffs?",
+            "choices": [
+              {"text": "Yes", "value": "yes"},
+              {"text": "No", "value": "no"},
+              {"text": "Don’t know", "value": "dontKnow"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "hd_hd_lifestyle_cigarNow",
+            "type": "radiogroup",
+            "title": "Do you now smoke a traditional cigar, cigarillo, or filtered cigar…",
+            "visibleIf": "{hd_hd_lifestyle_cigarEver} = 'yes'",
+            "choices": [
+              {"text": "Every day", "value": "everyDay"},
+              {"text": "Some days", "value": "someDays"},
+              {"text": "Not at all", "value": "notAtAll"},
+              {"text": "Don’t know", "value": "dontKnow"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "hd_hd_lifestyle_hookahEver",
+            "type": "radiogroup",
+            "title": "Have you ever smoked tobacco in a hookah or shisha, even one or two puffs?",
+            "choices": [
+              {"text": "Yes", "value": "yes"},
+              {"text": "No", "value": "no"},
+              {"text": "Don’t know", "value": "dontKnow"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "hd_hd_lifestyle_hookahNow",
+            "type": "radiogroup",
+            "title": "Do you now smoke tobacco in a hookah or shisha…",
+            "visibleIf": "{hd_hd_lifestyle_hookahEver} = 'yes'",
+            "choices": [
+              {"text": "Every day", "value": "everyDay"},
+              {"text": "Some days", "value": "someDays"},
+              {"text": "Not at all", "value": "notAtAll"},
+              {"text": "Don’t know", "value": "dontKnow"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "hd_hd_lifestyle_smokelessTobaccoEver",
+            "type": "radiogroup",
+            "title": "Have you ever used smokeless tobacco products, even one or two times? (Smokeless tobacco products include paan with tobacco products, dip, spit, and chewing tobacco.)",
+            "choices": [
+              {"text": "Yes", "value": "yes"},
+              {"text": "No", "value": "no"},
+              {"text": "Don’t know", "value": "dontKnow"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          },{
+            "name": "hd_hd_lifestyle_smokelessTobaccoNow",
+            "type": "radiogroup",
+            "title": "Do you now use smokeless tobacco products… ",
+            "visibleIf": "{hd_hd_lifestyle_smokelessTobaccoEver} = 'yes'",
+            "choices": [
+              {"text": "Every day", "value": "everyDay"},
+              {"text": "Some days", "value": "someDays"},
+              {"text": "Not at all", "value": "notAtAll"},
+              {"text": "Don’t know", "value": "dontKnow"},
+              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+            ]
+          }
+
+          ]
+        }
+      ]
+    },{
+      "elements": [
+        {
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "hd_hd_lifestyleDrinkingIntro",
+              "html": "<h2>Drinking Alcohol</h2><p>The next questions will ask about drinking alcohol. This includes coolers, beer, wine, champagne, liquor such as tequila, whiskey, rum, gin, vodka, scotch, or liqueurs, and also any other type of alcohol. This will help researchers better understand how alcohol affects health. As always, your answers are private.</p>"
+            }
+          ]
+        },
+        {
+          "name": "hd_hd_lifestyle_everHadADrink",
+          "type": "radiogroup",
+          "title": "In your entire life, have you had at least 1 drink of any kind of alcohol, not counting small tastes or sips? (By a “drink,” we mean a can or bottle of beer, a glass of wine or a wine cooler, a shot of liquor, or a mixed drink with liquor in it.)",
+          "choices": [
+            {"text": "Yes", "value": "yes"},
+            {"text": "No", "value": "no"},
+            {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+          ]
+        },{
+          "name": "hd_hd_lifestyle_drinkInLastYear",
+          "type": "radiogroup",
+          "title": "How often did you have a drink containing alcohol in the past year?",
+          "visibleIf": "{hd_hd_lifestyle_everHadADrink} = 'yes'",
+          "choices": [
+            {"text": "Never", "value": "never"},
+            {"text": "Monthly or less", "value": "monthlyOrLess"},
+            {"text": "Two to four times a month", "value": "twoToFourTimesAMonth"},
+            {"text": "Two to three times a week", "value": "twoToThreeTimesAWeek"},
+            {"text": "Four or more times a week", "value": "fourOrMoreTimesAWeek"},
+            {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+          ]
+        },{
+          "name": "hd_hd_lifestyle_drinksInADay",
+          "type": "radiogroup",
+          "title": "On a typical day when you drink, how many drinks do you have?",
+          "visibleIf": "{hd_hd_lifestyle_everHadADrink} = 'yes' and {hd_hd_lifestyle_drinkInLastYear} != 'never' and {hd_hd_lifestyle_drinkInLastYear} != 'preferNoAnswer' ",
+          "choices": [
+            {"text": "1 or 2", "value": "1or2"},
+            {"text": "3 or 4", "value": "3or4"},
+            {"text": "5 or 6", "value": "5or6"},
+            {"text": "7 to 9", "value": "7to9"},
+            {"text": "10 or more", "value": "10orMore"},
+            {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+          ]
+        },{
+          "name": "hd_hd_lifestyle_sixDrinksInOccasion",
+          "type": "radiogroup",
+          "title": "How often did you have six or more drinks on one occasion in the past year?",
+          "visibleIf": "{hd_hd_lifestyle_everHadADrink} = 'yes' and {hd_hd_lifestyle_drinkInLastYear} != 'never' and {hd_hd_lifestyle_drinkInLastYear} != 'preferNoAnswer' ",
+          "choices": [
+            {"text": "Less than monthly", "value": "lessThanMonthly"},
+            {"text": "Monthly", "value": "monthly"},
+            {"text": "Weekly", "value": "weekly"},
+            {"text": "Daily or almost daily", "value": "dailyOrAlmostDaily"},
+            {"text": "Never in the last year", "value": "neverInTheLastYear"},
+            {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+          ]
+        }
+      ]
+    },{
+      "elements": [
+        {
+          "type": "panel",
+          "elements": [
+            {
+              "type": "html",
+              "name": "hd_hd_lifestyleSubstancesIntro",
+              "html": "<h2>Other Substances</h2><p>Now we’d like to ask you about your experiences with medicines and other kinds of drugs. Some of the substances we’ll talk about are prescribed by a doctor (like pain medications). We only want to know if you have taken them for reasons or in doses other than prescribed. We understand that these are sensitive questions. You may choose not to answer them. However, by providing answers, you are helping researchers better understand how these substances affect health.</p>"
+            }
+          ]
+        },
+        {
+          "name": "hd_hd_lifestyle_substanceUse",
+          "type": "checkbox",
+          "title": "In your LIFETIME, which of the following substances have you ever used?",
+          "showOtherItem": true,
+          "otherText": "Other",
+          "otherPlaceholder": "Please specify",
+          "showNoneItem": true,
+          "noneText": "None",
+          "choices": [
+            {"text": "Marijuana (cannabis, pot, grass, hash, weed, bhaang, etc.)", "value": "marijuana"},
+            {"text": "Cocaine (coke, crack, etc.)", "value": "cocaine"},
+            {"text": "Prescription stimulants for non-medical reasons (Ritalin, Concerta, Dexedrine, Adderall, diet pills, etc.)", "value": "prescriptionStimulants"},
+            {"text": "Other stimulants (methamphetamine, speed, crystal meth, ice, k2/spice, bath salts, etc.)", "value": "otherStimulants"},
+            {"text": "Inhalants (nitrous oxide, glue, gas, paint thinner, etc.)", "value": "inhalants"},
+            {"text": "Sedatives or sleeping pills for non-medical reasons (Valium, Serepax, Ativan, Xanax, Librium, Rohypnol, GHB, etc.)", "value": "sedatives"},
+            {"text": "Hallucinogens (LSD, acid, mushrooms, PCP, Special K, ecstasy, etc.)", "value": "hallucinogens"},
+            {"text": "Street opioids (heroin, opium, etc.)", "value": "streetOpioids"},
+            {"text": "Prescription opioids for non-medical reasons (fentanyl, oxycodone [OxyContin, Percocet], hydrocodone [Vicodin], methadone, buprenorphine, etc.)", "value": "prescriptionOpioids"}
+          ]
+        },{
+          "name": "hd_hd_lifestyle_marijuana3mos",
+          "type": "radiogroup",
+          "title": "In the PAST THREE MONTHS, how often have you used marijuana (cannabis, pot, grass, hash, bhaang, etc.)?",
+          "visibleIf": "{hd_hd_lifestyle_substanceUse} contains 'marijuana'",
+          "choices": [
+            {"text": "Never", "value": "never"},
+            {"text": "Once or twice", "value": "onceOrTwice"},
+            {"text": "Monthly", "value": "monthly"},
+            {"text": "Weekly", "value": "weekly"},
+            {"text": "Daily or almost daily", "value": "dailyOrAlmostDaily"},
+            {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+          ]
+        },{
+          "name": "hd_hd_lifestyle_cocaine3mos",
+          "type": "radiogroup",
+          "title": "In the PAST THREE MONTHS, how often have you used cocaine (coke, crack, etc.)?",
+          "visibleIf": "{hd_hd_lifestyle_substanceUse} contains 'cocaine'",
+          "choices": [
+            {"text": "Never", "value": "never"},
+            {"text": "Once or twice", "value": "onceOrTwice"},
+            {"text": "Monthly", "value": "monthly"},
+            {"text": "Weekly", "value": "weekly"},
+            {"text": "Daily or almost daily", "value": "dailyOrAlmostDaily"},
+            {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+          ]
+        },{
+          "name": "hd_hd_lifestyle_prescriptionStimulants3mos",
+          "type": "radiogroup",
+          "title": "In the PAST THREE MONTHS, how often have you used prescription stimulants for non-medical reasons (Vyvanse, Ritalin, Concerta, Dexedrine, Adderall, diet pills, etc.)",
+          "visibleIf": "{hd_hd_lifestyle_substanceUse} contains 'prescriptionStimulants'",
+          "choices": [
+            {"text": "Never", "value": "never"},
+            {"text": "Once or twice", "value": "onceOrTwice"},
+            {"text": "Monthly", "value": "monthly"},
+            {"text": "Weekly", "value": "weekly"},
+            {"text": "Daily or almost daily", "value": "dailyOrAlmostDaily"},
+            {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+          ]
+        },{
+          "name": "hd_hd_lifestyle_otherStimulants3mos",
+          "type": "radiogroup",
+          "title": "In the PAST THREE MONTHS, how often have you used other stimulants (methamphetamine, speed, crystal meth, ice, k2/spice, bath salts, etc.)",
+          "visibleIf": "{hd_hd_lifestyle_substanceUse} contains 'otherStimulants'",
+          "choices": [
+            {"text": "Never", "value": "never"},
+            {"text": "Once or twice", "value": "onceOrTwice"},
+            {"text": "Monthly", "value": "monthly"},
+            {"text": "Weekly", "value": "weekly"},
+            {"text": "Daily or almost daily", "value": "dailyOrAlmostDaily"},
+            {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+          ]
+        },{
+          "name": "hd_hd_lifestyle_inhalants3mos",
+          "type": "radiogroup",
+          "title": "In the PAST THREE MONTHS, how often have you used inhalants (nitrous oxide, glue, gas, paint thinner, etc.)",
+          "visibleIf": "{hd_hd_lifestyle_substanceUse} contains 'inhalants'",
+          "choices": [
+            {"text": "Never", "value": "never"},
+            {"text": "Once or twice", "value": "onceOrTwice"},
+            {"text": "Monthly", "value": "monthly"},
+            {"text": "Weekly", "value": "weekly"},
+            {"text": "Daily or almost daily", "value": "dailyOrAlmostDaily"},
+            {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+          ]
+        },{
+          "name": "hd_hd_lifestyle_sedatives3mos",
+          "type": "radiogroup",
+          "title": "In the PAST THREE MONTHS, how often have you used sedatives or sleeping pills for non-medical reasons (Valium, Serepax, Ativan, Xanax, Librium, Rohypnol, GHB, etc.)?",
+          "visibleIf": "{hd_hd_lifestyle_substanceUse} contains 'sedatives'",
+          "choices": [
+            {"text": "Never", "value": "never"},
+            {"text": "Once or twice", "value": "onceOrTwice"},
+            {"text": "Monthly", "value": "monthly"},
+            {"text": "Weekly", "value": "weekly"},
+            {"text": "Daily or almost daily", "value": "dailyOrAlmostDaily"},
+            {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+          ]
+        },{
+          "name": "hd_hd_lifestyle_hallucinogens3mos",
+          "type": "radiogroup",
+          "title": "In the PAST THREE MONTHS, how often have you used hallucinogens (LSD, acid, mushrooms, PCP, Special K, ecstasy, etc.)",
+          "visibleIf": "{hd_hd_lifestyle_substanceUse} contains 'hallucinogens'",
+          "choices": [
+            {"text": "Never", "value": "never"},
+            {"text": "Once or twice", "value": "onceOrTwice"},
+            {"text": "Monthly", "value": "monthly"},
+            {"text": "Weekly", "value": "weekly"},
+            {"text": "Daily or almost daily", "value": "dailyOrAlmostDaily"},
+            {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+          ]
+        },{
+          "name": "hd_hd_lifestyle_streetOpioids3mos",
+          "type": "radiogroup",
+          "title": "In the PAST THREE MONTHS, how often have you used street opioids (heroin, opium, etc.)?",
+          "visibleIf": "{hd_hd_lifestyle_substanceUse} contains 'streetOpioids'",
+          "choices": [
+            {"text": "Never", "value": "never"},
+            {"text": "Once or twice", "value": "onceOrTwice"},
+            {"text": "Monthly", "value": "monthly"},
+            {"text": "Weekly", "value": "weekly"},
+            {"text": "Daily or almost daily", "value": "dailyOrAlmostDaily"},
+            {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+          ]
+        },{
+          "name": "hd_hd_lifestyle_prescriptionOpioids3mos",
+          "type": "radiogroup",
+          "title": "In the PAST THREE MONTHS, how often have you used prescription opioids for non-medical reasons (fentanyl, oxycodone [OxyContin, Percocet], hydrocodone [Vicodin], methadone, buprenorphine, etc.)",
+          "visibleIf": "{hd_hd_lifestyle_substanceUse} contains 'prescriptionOpioids'",
+          "choices": [
+            {"text": "Never", "value": "never"},
+            {"text": "Once or twice", "value": "onceOrTwice"},
+            {"text": "Monthly", "value": "monthly"},
+            {"text": "Weekly", "value": "weekly"},
+            {"text": "Daily or almost daily", "value": "dailyOrAlmostDaily"},
+            {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+          ]
+        },{
+          "name": "hd_hd_lifestyle_otherDrugs3mos",
+          "type": "radiogroup",
+          "title": "In the PAST THREE MONTHS, how often have you used other drugs?",
+          "visibleIf": "{hd_hd_lifestyle_substanceUse} contains 'other'",
+          "choices": [
+            {"text": "Never", "value": "never"},
+            {"text": "Once or twice", "value": "onceOrTwice"},
+            {"text": "Monthly", "value": "monthly"},
+            {"text": "Weekly", "value": "weekly"},
+            {"text": "Daily or almost daily", "value": "dailyOrAlmostDaily"},
+            {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+          ]
+        }
+      ]
+    }
+    ]
+  }
+}

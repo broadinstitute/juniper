@@ -1,0 +1,18 @@
+{
+  "participantUser": {
+    "username": "consented@test.com"
+  },
+  "profile": {
+    "givenName": "Con",
+    "familyName": "Senter",
+    "contactEmail": "consented@test.com",
+    "sexAtBirth": "female",
+    "mailingAddress": {
+      "street1": "600 Muirfield Ct.",
+      "city": "Fairfield (OurHealth)",
+      "state": "OH",
+      "country": "US",
+      "postalCode": "45240"
+    }
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "name": "Heart Demo",
+  "shortcode": "heartdemo",
+  "surveyFiles": [
+    "surveys/preEnroll.json",
+    "surveys/cardioHistory.json",
+    "surveys/medicalHistory.json",
+    "surveys/lifestyle.json",
+    "surveys/familyHistory.json",
+    "surveys/phq9gad7.json",
+    "surveys/medList.json",
+    "surveys/basic.json",
+    "surveys/socialHealth.json"
+  ],
+  "consentFormFiles": [
+    "surveys/ourHealthConsent.json"
+  ],
+  "emailTemplateFiles": [
+    "emails/studyConsent.json",
+    "emails/studyEnroll.json",
+    "emails/consentReminder.json",
+    "emails/surveyReminder.json",
+    "emails/adHoc.json"
+  ],
+  "kitTypeNames": [ "saliva" ],
+  "studyEnvironmentDtos": [
+    {
+      "environmentName": "sandbox",
+      "studyEnvironmentConfig": {
+        "acceptingEnrollment": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": true
+      },
+      "preEnrollSurveyDto": {
+        "populateFileName": "surveys/preEnroll.json"
+      },
+      "configuredSurveyDtos": [
+        {"populateFileName": "surveys/basic.json", "required": true},
+        {"populateFileName": "surveys/cardioHistory.json", "required": true},
+        {"populateFileName": "surveys/medicalHistory.json"},
+        {"populateFileName": "surveys/familyHistory.json"},
+        {"populateFileName": "surveys/medList.json"},
+        {"populateFileName": "surveys/lifestyle.json"},
+        {"populateFileName": "surveys/phq9gad7.json"}
+      ],
+      "configuredConsentDtos": [
+        {
+          "populateFileName": "surveys/ourHealthConsent.json"
+        }
+      ],
+      "notificationConfigDtos": [{
+        "notificationType": "EVENT",
+        "eventType": "STUDY_ENROLLMENT",
+        "populateFileName": "emails/studyEnroll.json"
+      },{
+        "notificationType": "EVENT",
+        "eventType": "STUDY_CONSENT",
+        "populateFileName": "emails/studyConsent.json"
+      },{
+        "notificationType": "TASK_REMINDER",
+        "taskType": "CONSENT",
+        "populateFileName": "emails/consentReminder.json"
+      },{
+        "notificationType": "TASK_REMINDER",
+        "taskType": "SURVEY",
+        "reminderIntervalMinutes": 10080,
+        "maxNumReminders": 2,
+        "populateFileName": "emails/surveyReminder.json"
+      },{
+        "notificationType": "AD_HOC",
+        "populateFileName": "emails/adHoc.json"
+      }],
+      "enrolleeFiles": [
+        "enrollees/jsalk.json",
+        "enrollees/newEnrollee.json",
+        "enrollees/consentedEnrollee.json",
+        "enrollees/basicsDone.json",
+        "enrollees/withdrawn.json"
+      ],
+      "preEnrollmentResponseDtos": [{
+          "qualified": false,
+          "surveyStableId": "hd_hd_preenroll",
+          "surveyVersion": 1,
+          "answers": [
+            {"questionStableId":"hd_hd_preenroll_southAsianAncestry", "stringValue": "yes"},
+            {"questionStableId":"hd_hd_preenroll_understandsEnglish", "stringValue": "no"},
+            {"questionStableId":"hd_hd_preenroll_isAdult", "stringValue": "yes"},
+            {"questionStableId":"hd_hd_preenroll_livesInUS", "stringValue": "yes"}
+          ]
+        },{
+          "qualified": true,
+          "surveyStableId": "hd_hd_preenroll",
+          "surveyVersion": 1,
+          "answers": [
+            {"questionStableId":"hd_hd_preenroll_southAsianAncestry", "stringValue": "yes"},
+            {"questionStableId":"hd_hd_preenroll_understandsEnglish", "stringValue": "yes"},
+            {"questionStableId":"hd_hd_preenroll_isAdult", "stringValue": "yes"},
+            {"questionStableId":"hd_hd_preenroll_livesInUS", "stringValue": "yes"}
+          ]
+      }]
+    },
+    {
+      "environmentName": "irb",
+      "studyEnvironmentConfig": {
+        "acceptingEnrollment": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": false
+      }
+    },
+    {
+      "environmentName": "live",
+      "studyEnvironmentConfig": {
+        "acceptingEnrollment": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": false
+      }
+    }
+  ]
+}

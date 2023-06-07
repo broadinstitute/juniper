@@ -1,0 +1,68 @@
+{
+  "linkedUsername": "SEED@SEED.com",
+  "shortcode": "HDSEED",
+  "simulateSubmissions": false,
+  "submittedHoursAgo": 0,
+  "preEnrollmentResponseDto": {
+    "qualified": true,
+    "surveyStableId": "hd_hd_preenroll",
+    "surveyVersion": 1,
+    "answers": [
+      {"questionStableId":"hd_hd_preenroll_southAsianAncestry", "stringValue": "yes"},
+      {"questionStableId":"hd_hd_preenroll_understandsEnglish", "stringValue": "yes"},
+      {"questionStableId":"hd_hd_preenroll_isAdult", "stringValue": "yes"},
+      {"questionStableId":"hd_hd_preenroll_livesInUS", "stringValue": "yes"},
+      {"questionStableId":"qualified", "booleanValue": true}
+    ]
+  },
+  "surveyResponseDtos": [
+    {
+      "surveyStableId": "hd_hd_cardioHx",
+      "surveyVersion": 1,
+      "answerPopDtos": [
+        { "questionStableId": "hd_hd_cardioHx_worriedHeartHealth", "stringValue": "yesSpecificallyAboutMyHeart"},
+        { "questionStableId": "hd_hd_cardioHx_diagnosedHeartConditions", "objectJsonValue": ["bleedingDisorder", "anemia"]}
+      ],
+      "currentPageNo": 2,
+      "complete": true,
+      "submittedHoursAgo": 48
+    },
+    {
+      "surveyStableId": "hd_hd_mental",
+      "surveyVersion": 1,
+      "answerPopDtos": [
+        { "questionStableId": "hd_hd_mental_phq9Depressed", "stringValue": "0"},
+        { "questionStableId": "hd_hd_mental_phq9LostInterest", "stringValue": "1"}
+      ],
+      "currentPageNo": 1,
+      "complete": true,
+      "submittedHoursAgo": 48
+    }, {
+      "surveyStableId": "hd_hd_basicInfo",
+      "surveyVersion": 1,
+      "answerPopDtos": [
+        {"questionStableId": "hd_hd_basic_firstName", "stringValue": "Random"},
+        {"questionStableId": "hd_hd_basic_lastName", "stringValue": "User"},
+        {"questionStableId": "hd_hd_basic_streetAddress", "stringValue": "123 Walnut Street"},
+        {"questionStableId": "hd_hd_basic_mghPatient", "stringValue": "yes"}
+      ],
+      "currentPageNo": 1,
+      "complete": true,
+      "submittedHoursAgo": 48
+    }
+  ],
+  "consentResponseDtos": [{
+    "consentStableId": "hd_hd_consent",
+    "consentVersion": 1,
+    "consented": true,
+    "answers": [
+      {"questionStableId": "hd_hd_consent_signatureDate", "stringValue": "10/26/22"},
+      {"questionStableId": "hd_hd_consent_legalName", "stringValue": "Random Generated User"},
+      {"questionStableId": "hd_hd_consent_agree", "stringValue": "agree"},
+      {"questionStableId": "hd_hd_consent_signature",
+        "stringValue": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBYRXhpZgAATU0AKgAAAAgAAgESAAMAAAABAAEAAIdpAAQAAAABAAAAJgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAHqADAAQAAAABAAAAHgAAAAD/wAARCAAeAB4DASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9sAQwAcHBwcHBwwHBwwRDAwMERcRERERFx0XFxcXFx0jHR0dHR0dIyMjIyMjIyMqKioqKioxMTExMTc3Nzc3Nzc3Nzc/9sAQwEiJCQ4NDhgNDRg5pyAnObm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm/90ABAAC/9oADAMBAAIRAxEAPwDRuLhhIYwSqr1I61F5xH/LVv0/wqK4Ba5ZR3/wqFo3V/LPJPSsJTdzklKVy8HdgWV2OO+R/hVi1mMgZH5K9/WqM7CNBAp92NSaf1f6D+tNS1sXGb5rH//Qlu8/aW/T8qnjuY/L3vjenA96uT2sc53NwR3FQf2cn99qwcXd2Odwld2MtnJYs3U1oacM7z9P61J/Z6f3mq7DEkKbVohBp3YqdNp3Z//Z"
+      }
+    ],
+    "currentPageNo": 6
+  }]
+}

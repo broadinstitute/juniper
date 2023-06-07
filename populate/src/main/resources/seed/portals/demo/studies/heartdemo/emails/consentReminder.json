@@ -1,0 +1,7 @@
+{
+  "name": "Consent reminder",
+  "bodyPopulateFile": "consentReminder.html",
+  "subject": "Reminder: Please complete the ${study.name} Consent form",
+  "stableId": "hd_hd_reminderConsent",
+  "version": 1
+}
