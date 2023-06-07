@@ -17,6 +17,12 @@ function getFormQuestionsHelper(element: FormElement): FormElement[] {
     : [element]
 }
 
+const applyDefaultSurveyConfig = (surveyModel: SurveyModel): void => {
+  surveyModel.focusFirstQuestionAutomatic = false
+  surveyModel.showTitle = false
+  surveyModel.widthMode = 'static'
+}
+
 /** Create a SurveyJS SurveyModel from a Juniper FormContent object. */
 export const surveyJSModelFromFormContent = (formContent: FormContent): SurveyModel => {
   const formContentClone = cloneDeep(formContent)
@@ -39,11 +45,7 @@ export const surveyJSModelFromFormContent = (formContent: FormContent): SurveyMo
   }
 
   const model = new SurveyModel(formContentClone)
-
-  model.focusFirstQuestionAutomatic = false
-  model.showTitle = false
-  model.widthMode = 'static'
-
+  applyDefaultSurveyConfig(model)
   return model
 }
 
