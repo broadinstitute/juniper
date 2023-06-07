@@ -15,6 +15,12 @@ public class KitRequestDao extends BaseMutableJdbiDao<KitRequest> {
         super(jdbi);
     }
 
+    private final String BASE_QUERY_BY_STUDY =
+            " select " + prefixedGetQueryColumns("kit") + " from " + tableName + " kit " +
+            " join enrollee on kit.enrollee_id = enrollee.id " +
+            " join study_environment on enrollee.study_environment_id = study_environment.id " +
+            " where study_environment.id = :studyEnvironmentId ";
+
     @Override
     protected Class<KitRequest> getClazz() { return KitRequest.class; }
 
@@ -26,15 +32,14 @@ public class KitRequestDao extends BaseMutableJdbiDao<KitRequest> {
      * Find all kits that are not complete (or errored) for a study.
      * This represents the set of in-flight kits that we want to keep an eye on in DSM.
      */
-    public List<KitRequest> findIncompleteKits(UUID studyId) {
+    public List<KitRequest> findIncompleteKits(UUID studyEnvironmentId) {
         return jdbi.withHandle(handle ->
-                handle.createQuery(
-                        "select " + prefixedGetQueryColumns("kit") + " from " + tableName + " kit "
-                        + " join enrollee on kit.enrollee_id = enrollee.id"
-                        + " join study_environment on enrollee.study_environment_id = study_environment.id"
-                        + " where study_environment.study_id = :studyId"
-                        + " and kit.status in (<kitStatuses>)")
-                        .bind("studyId", studyId)
+                handle.createQuery(" select " + prefixedGetQueryColumns("kit") + " from " + tableName + " kit " +
+                                    " join enrollee on kit.enrollee_id = enrollee.id " +
+                                    " join study_environment on enrollee.study_environment_id = study_environment.id " +
+                                    " where study_environment.id = :studyEnvironmentId " +
+                                    " and kit.status in (<kitStatuses>) ")
+                        .bind("studyEnvironmentId", studyEnvironmentId)
                         .bindList("kitStatuses", KitRequestStatus.NON_TERMINAL_STATES)
                         .mapTo(clazz)
                         .list()

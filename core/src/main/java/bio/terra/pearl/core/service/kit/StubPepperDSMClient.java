@@ -34,8 +34,8 @@ public class StubPepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public Collection<PepperDSMKitStatus> fetchKitStatusByStudy(UUID studyId) {
-        return kitRequestDao.findIncompleteKits(studyId).stream().map(kit -> {
+    public Collection<PepperDSMKitStatus> fetchKitStatusByStudy(UUID studyEnvironmentId) {
+        return kitRequestDao.findIncompleteKits(studyEnvironmentId).stream().map(kit -> {
             PepperDSMKitStatus status = PepperDSMKitStatus.builder()
                     .kitId(kit.getId().toString())
                     .currentStatus("SHIPPED")
