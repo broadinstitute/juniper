@@ -16,7 +16,7 @@ public class ScheduledKitStatusService {
     this.kitRequestService = kitRequestService;
   }
   /**
-   * Update kit statuses from DSM at 12:30am every day. We're _very_ generous with lockAtMostFor
+   * Update kit statuses from Pepper at 12:30am every day. We're _very_ generous with lockAtMostFor
    * because this only runs once per day.
    */
   @Scheduled(cron = "0 30 0 * * *")
@@ -25,8 +25,8 @@ public class ScheduledKitStatusService {
       lockAtLeastFor = "1m",
       lockAtMostFor = "360m")
   public void fetchUpdatedKitStatuses() {
-    logger.info("Updating kit status from DSM...");
-    kitRequestService.updateAllKitStatuses();
+    logger.info("Updating kit status from Pepper...");
+    kitRequestService.syncAllKitStatusesFromPepper();
     logger.info("Finished updating kit status.");
   }
 }

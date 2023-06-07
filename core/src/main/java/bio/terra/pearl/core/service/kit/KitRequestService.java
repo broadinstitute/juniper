@@ -33,10 +33,10 @@ import java.util.stream.Collectors;
 public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     private static final Logger logger = LoggerFactory.getLogger(KitRequestService.class);
 
-    // NOTE: These are completely made up for now, until we get further with the DSM integration and know what the real
+    // NOTE: These are completely made up for now, until we get further with the Pepper integration and know what the real
     // possible statuses are.
-    private static final Set<String> DSM_COMPLETED_STATUSES = Set.of("PROCESSED", "CANCELLED");
-    private static final Set<String> DSM_ERRORED_STATUSES = Set.of("CONTAMINATED");
+    private static final Set<String> PEPPER_COMPLETED_STATUSES = Set.of("PROCESSED", "CANCELLED");
+    private static final Set<String> PEPPER_FAILED_STATUSES = Set.of("CONTAMINATED");
 
     public KitRequestService(KitRequestDao dao,
                              KitTypeDao kitTypeDao,
@@ -55,7 +55,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     }
 
     /**
-     * Send a request for a sample kit to DSM.
+     * Send a request for a sample kit to Pepper.
      */
     @Transactional
     public KitRequest requestKit(AdminUser adminUser, Enrollee enrollee, String kitTypeName)
@@ -77,7 +77,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     }
 
     /**
-     * Collect the address fields sent to DSM with a kit request. This is not the full DSM request, just the address
+     * Collect the address fields sent to Pepper with a kit request. This is not the full DSM request, just the address
      * information captured at the time of, and stored with, the kit request.
      */
     public static PepperKitAddress makePepperKitAddress(Profile profile) {
@@ -103,12 +103,12 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     }
 
     /**
-     * Query DSM for the status of a single kit and update the cached status in Juniper.
+     * Query Pepper for the status of a single kit and update the cached status in Juniper.
      * This is intended for the special case of needing the absolute most up-to-date information for a single kit.
      * Do _NOT_ call this repeatedly for a collection of kits. Use a bulk operation instead to avoid overwhelming DSM.
      */
     @Transactional
-    public PepperDSMKitStatus updateKitStatus(UUID kitId) {
+    public PepperDSMKitStatus syncKitStatusFromPepper(UUID kitId) {
         var kitRequest = dao.find(kitId).orElseThrow(() -> new NotFoundException("Kit request not found"));
         var pepperDSMKitStatus = pepperDSMClient.fetchKitStatus(kitId);
         try {
@@ -122,20 +122,20 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     }
 
     /**
-     * Query DSM for all in-progress kits and update the cached status in Juniper. This is intended to be called as a
+     * Query Pepper for all in-progress kits and update the cached status in Juniper. This is intended to be called as a
      * scheduled job during expected non-busy times for DSM. If on-demand updates are needed outside the scheduled job,
      * use {@link KitRequestService#updateKitStatus(AdminUser, UUID)} for a single kit or a batch operation that queries
-     * DSM for less than all open kits.
+     * Pepper for less than all open kits.
      */
     @Transactional
-    public void updateAllKitStatuses() {
+    public void syncAllKitStatusesFromPepper() {
         var studies = studyDao.findAll();
         for (Study study : studies) {
 
             // This assumes that DSM is configured with a single study backing all environments of the Juniper study
-            var dsmKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getId());
-            var dsmStatusFetchedAt = Instant.now();
-            var dsmKitStatusByKitId = dsmKitStatuses.stream().collect(
+            var pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getId());
+            var pepperStatusFetchedAt = Instant.now();
+            var pepperKitStatusByKitId = pepperKitStatuses.stream().collect(
                     Collectors.toMap(PepperDSMKitStatus::getKitId, Function.identity()));
 
             var studyEnvironments = studyEnvironmentDao.findByStudy(study.getId());
@@ -145,9 +145,9 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 // The set of kits returned from DSM may be different from the set of incomplete kits in Juniper, but
                 // we want to update the records in Juniper so those are the ones we want to iterate here.
                 for (KitRequest kit : incompleteKits) {
-                    var dsmKitStatus = dsmKitStatusByKitId.get(kit.getId().toString());
-                    if (dsmKitStatus != null) {
-                        saveKitStatus(kit, dsmKitStatus, dsmStatusFetchedAt);
+                    var pepperKitStatus = pepperKitStatusByKitId.get(kit.getId().toString());
+                    if (pepperKitStatus != null) {
+                        saveKitStatus(kit, pepperKitStatus, pepperStatusFetchedAt);
                     }
                 }
             }
@@ -185,24 +185,24 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      * Saves updated kit status. This is called from a batch job, so exceptions are caught and logged instead of thrown
      * to allow the rest of the batch to be processed.
      */
-    private void saveKitStatus(KitRequest kit, PepperDSMKitStatus dsmKitStatus, Instant dsmStatusFetchedAt) {
+    private void saveKitStatus(KitRequest kit, PepperDSMKitStatus pepperKitStatus, Instant pepperStatusFetchedAt) {
         try {
-            kit.setDsmStatus(objectMapper.writeValueAsString(dsmKitStatus));
-            kit.setDsmStatusFetchedAt(dsmStatusFetchedAt);
-            kit.setStatus(statusFromDSMStatus(dsmKitStatus.getCurrentStatus()));
+            kit.setDsmStatus(objectMapper.writeValueAsString(pepperKitStatus));
+            kit.setDsmStatusFetchedAt(pepperStatusFetchedAt);
+            kit.setStatus(statusFromDSMStatus(pepperKitStatus.getCurrentStatus()));
             dao.update(kit);
         } catch (JsonProcessingException e) {
             logger.warn(
-                    "Unable to serialize status JSON for kit %s: %s".formatted(kit.getId(), dsmKitStatus.toString()),
+                    "Unable to serialize status JSON for kit %s: %s".formatted(kit.getId(), pepperKitStatus.toString()),
                     e);
         }
     }
 
     private KitRequestStatus statusFromDSMStatus(String currentStatus) {
-        if (DSM_COMPLETED_STATUSES.contains(currentStatus)) {
+        if (PEPPER_COMPLETED_STATUSES.contains(currentStatus)) {
             return KitRequestStatus.COMPLETE;
-        } else if (DSM_ERRORED_STATUSES.contains(currentStatus)) {
-            return KitRequestStatus.ERRORED;
+        } else if (PEPPER_FAILED_STATUSES.contains(currentStatus)) {
+            return KitRequestStatus.FAILED;
         } else {
             return KitRequestStatus.IN_PROGRESS;
         }

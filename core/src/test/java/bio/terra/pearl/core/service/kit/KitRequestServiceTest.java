@@ -75,14 +75,14 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .build();
         when(mockPepperDSMClient.fetchKitStatus(kitRequest.getId())).thenReturn(response);
 
-        var sampleKitStatus = kitRequestService.updateKitStatus(kitRequest.getId());
+        var sampleKitStatus = kitRequestService.syncKitStatusFromPepper(kitRequest.getId());
 
         assertThat(sampleKitStatus.getCurrentStatus(), equalTo("SENT"));
     }
 
     @Transactional
     @Test
-    public void testUpdateAllKitStatuses() throws Exception {
+    public void testSyncAllKitStatusesFromPepper() throws Exception {
         /*
          * Arrange:
          *  - an admin user
@@ -91,18 +91,18 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
          *  - two enrollees, 1a and 1b, in the study environment, each with a sample kit
          *  - another enrollee in another study, also with a sample kit
          */
-        var adminUser = adminUserFactory.buildPersisted("testUpdateAllKitStatuses");
-        var studyEnvironment = studyEnvironmentFactory.buildPersisted("testUpdateAllKitStatuses");
-        var kitType = kitTypeFactory.buildPersisted("testUpdateAllKitStatuses");
-        var enrollee1a = enrolleeFactory.buildPersisted("testUpdateAllKitStatuses", studyEnvironment);
-        var enrollee1b = enrolleeFactory.buildPersisted("testUpdateAllKitStatuses", studyEnvironment);
-        var kitRequest1a = kitRequestFactory.buildPersisted("testUpdateAllKitStatuses",
+        var adminUser = adminUserFactory.buildPersisted("testSyncAllKitStatusesFromPepper");
+        var studyEnvironment = studyEnvironmentFactory.buildPersisted("testSyncAllKitStatusesFromPepper");
+        var kitType = kitTypeFactory.buildPersisted("testSyncAllKitStatusesFromPepper");
+        var enrollee1a = enrolleeFactory.buildPersisted("testSyncAllKitStatusesFromPepper", studyEnvironment);
+        var enrollee1b = enrolleeFactory.buildPersisted("testSyncAllKitStatusesFromPepper", studyEnvironment);
+        var kitRequest1a = kitRequestFactory.buildPersisted("testSyncAllKitStatusesFromPepper",
                 adminUser.getId(), enrollee1a.getId(), kitType.getId());
-        var kitRequest1b = kitRequestFactory.buildPersisted("testUpdateAllKitStatuses",
+        var kitRequest1b = kitRequestFactory.buildPersisted("testSyncAllKitStatusesFromPepper",
                 adminUser.getId(), enrollee1b.getId(), kitType.getId());
-        var studyEnvironment2 = studyEnvironmentFactory.buildPersisted("testUpdateAllKitStatuses2");
-        var enrollee2 = enrolleeFactory.buildPersisted("testUpdateAllKitStatuses", studyEnvironment2);
-        var kitRequest2 = kitRequestFactory.buildPersisted("testUpdateAllKitStatuses",
+        var studyEnvironment2 = studyEnvironmentFactory.buildPersisted("testSyncAllKitStatusesFromPepper2");
+        var enrollee2 = enrolleeFactory.buildPersisted("testSyncAllKitStatusesFromPepper", studyEnvironment2);
+        var kitRequest2 = kitRequestFactory.buildPersisted("testSyncAllKitStatusesFromPepper",
                 adminUser.getId(), enrollee2.getId(), kitType.getId());
 
         /*
@@ -130,12 +130,12 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .thenReturn(List.of(kitStatus2));
 
         /* Finally, exercise the unit under test! */
-        kitRequestService.updateAllKitStatuses();
+        kitRequestService.syncAllKitStatusesFromPepper();
 
         /* Load and verify each kit */
         verifyKit(kitRequest1a, kitStatus1a, KitRequestStatus.IN_PROGRESS);
         verifyKit(kitRequest1b, kitStatus1b, KitRequestStatus.COMPLETE);
-        verifyKit(kitRequest2, kitStatus2, KitRequestStatus.ERRORED);
+        verifyKit(kitRequest2, kitStatus2, KitRequestStatus.FAILED);
     }
 
     private void verifyKit(KitRequest kit, PepperDSMKitStatus expectedDSMStatus, KitRequestStatus expectedStatus)

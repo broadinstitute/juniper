@@ -4,7 +4,7 @@ import java.util.Set;
 
 /**
  * High-level, Juniper-centric kit status. Only needs to be specific enough for Juniper to decide how to interact with
- * DSM. This is not intended to mirror all possible states in DSM. For that, see
+ * Pepper. This is not intended to mirror all possible states in Pepper. For that, see
  * {@link bio.terra.pearl.core.service.kit.PepperDSMKitStatus#currentStatus}.
  *
  * CREATED --> IN_PROGRESS --> COMPLETE
@@ -19,10 +19,10 @@ import java.util.Set;
  */
 public enum KitRequestStatus {
     CREATED, // record created in Juniper database, usually followed almost immediately by IN_PROGRESS
-    IN_PROGRESS, // request sent to DSM
-    COMPLETE, // DSM returned a successful end state
-    ERRORED; // DSM returned a terminal error state
+    IN_PROGRESS, // request sent to Pepper
+    COMPLETE, // Pepper returned a successful end state
+    FAILED; // Pepper returned a terminal error state
 
     public static final Set<KitRequestStatus> NON_TERMINAL_STATES = Set.of(CREATED, IN_PROGRESS);
-    public static final Set<KitRequestStatus> TERMINAL_STATES = Set.of(COMPLETE, ERRORED);
+    public static final Set<KitRequestStatus> TERMINAL_STATES = Set.of(COMPLETE, FAILED);
 }

@@ -24,7 +24,7 @@ public class KitRequestDao extends BaseMutableJdbiDao<KitRequest> {
 
     /**
      * Find all kits that are not complete (or errored) for a study.
-     * This represents the set of in-flight kits that we want to keep an eye on in DSM.
+     * This represents the set of in-flight kits that we want to keep an eye on in Pepper.
      */
     public List<KitRequest> findIncompleteKits(UUID studyEnvironmentId) {
         return jdbi.withHandle(handle ->
