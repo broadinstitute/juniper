@@ -1,3 +1,3 @@
-import { JuniperSurvey } from '@juniper/ui-core'
+import { FormContent } from '@juniper/ui-core'
 
-export type OnChangeSurvey = (...args: [valid: true, newValue: JuniperSurvey] | [false, undefined]) => void
+export type OnChangeSurvey = (...args: [valid: true, newValue: FormContent] | [false, undefined]) => void

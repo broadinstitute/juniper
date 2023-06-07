@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Tab, Tabs } from 'react-bootstrap'
 
-import { JuniperSurvey } from '@juniper/ui-core'
+import { FormContent } from '@juniper/ui-core'
 
 import { OnChangeSurvey } from './surveyEditorTypes'
 import { SurveyJsonEditor } from './SurveyJsonEditor'
@@ -19,7 +19,7 @@ export const SurveyEditor = (props: SurveyEditorProps) => {
   const [activeTab, setActiveTab] = useState<string | null>('json')
   const [tabsEnabled, setTabsEnabled] = useState(true)
 
-  const [editedSurvey, setEditedSurvey] = useState(() => JSON.parse(initialContent) as JuniperSurvey)
+  const [editedSurvey, setEditedSurvey] = useState(() => JSON.parse(initialContent) as FormContent)
 
   return (
     <div className="SurveyEditor d-flex flex-column flex-grow-1">

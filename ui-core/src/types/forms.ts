@@ -1,5 +1,3 @@
-import { IPage, Question } from 'survey-core'
-
 export type VersionedForm = {
   id: string
   stableId: string
@@ -66,32 +64,85 @@ export type PreEnrollmentResponse = FormResponse & {
 
 // Survey configuration
 
-/** these types are vague as we're still deciding how much custom stuff we need on top of SurveyJS */
-export type JuniperSurvey = {
-  pages: IPage[]
-  questionTemplates: JuniperQuestion[]
-}
-
-/** things that we need from SurveyJS elements to render the sheet view */
-export type ElementBase = {
-  name: string
-  type: string
+/** Configuration passed to SurveyModel constructor. */
+export type FormContent = {
   title: string
+  pages: FormContentPage[]
+  questionTemplates?: Question[]
 }
 
-/** Encompasses SurveyJS pages and panels. */
-export type ElementContainer = {
+type BaseElement = {
+  visibleIf?: string
+}
+
+export type FormContentPage = BaseElement & {
+  elements: FormElement[]
+}
+
+export type FormElement = FormPanel | HtmlElement | Question
+
+export type FormPanel = BaseElement & {
+  type: 'panel'
+  elements: FormElement[]
+}
+
+export type HtmlElement = {
+  type: 'html'
+  html: string
+}
+
+type BaseQuestion = BaseElement & {
   name: string
-  elements: ElementBase[]
+  title: string
+  description?: string
+  isRequired?: boolean
 }
 
-/**
- * We're extending SurveyJS to support templates -- the idea that a common question format may recur many times
- * in a survey, and so should only be coded once
- */
-export type JuniperQuestion = Question & {
-  questionTemplateName?: string
-  type: string
+type QuestionChoice = {
+  text: string
+  value: string
 }
+
+type WithOtherOption<T> = T & {
+  showOtherItem?: boolean
+  otherText?: string
+  otherPlaceholder?: string
+  otherErrorText?: string
+}
+
+export type CheckboxQuestion = WithOtherOption<BaseQuestion & {
+  type: 'checkbox'
+  choices: QuestionChoice[]
+  showNoneItem?: boolean
+  noneText?: string
+  noneValue?: string
+}>
+
+export type DropdownQuestion = WithOtherOption<BaseQuestion & {
+  type: 'dropdown'
+  choices: QuestionChoice[]
+}>
+
+export type RadiogroupQuestion = WithOtherOption<BaseQuestion & {
+  type: 'radiogroup'
+  choices: QuestionChoice[]
+}>
+
+export type TemplatedQuestion = BaseQuestion & {
+  name: string
+  title?: string
+  questionTemplateName: string
+}
+
+export type TextQuestion = BaseQuestion & {
+  type: 'text'
+}
+
+export type Question =
+  | CheckboxQuestion
+  | DropdownQuestion
+  | RadiogroupQuestion
+  | TemplatedQuestion
+  | TextQuestion
 
 export {}

@@ -1,11 +1,11 @@
 import React, { useCallback, useState } from 'react'
 
-import { JuniperSurvey } from '@juniper/ui-core'
+import { FormContent } from '@juniper/ui-core'
 
 import { OnChangeSurvey } from './surveyEditorTypes'
 
 type SurveyJsonEditorProps = {
-  initialValue: JuniperSurvey
+  initialValue: FormContent
   readOnly?: boolean
   onChange: OnChangeSurvey
 }

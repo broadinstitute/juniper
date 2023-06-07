@@ -3,11 +3,11 @@ import userEvent from '@testing-library/user-event'
 import { cloneDeep } from 'lodash'
 import React from 'react'
 
+import { FormContent, Question } from '@juniper/ui-core'
+
 import { SurveyJsonEditor } from './SurveyJsonEditor'
 
-// TODO: Types for survey config
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const survey: any = {
+const survey: FormContent = {
   title: 'Test survey',
   pages: [
     {
@@ -62,7 +62,7 @@ describe('SurveyJsonEditor', () => {
 
     // Assert
     const expectedEditedSurvey = cloneDeep(survey)
-    expectedEditedSurvey.pages[0].elements[0].title = 'Given name'
+    ;(expectedEditedSurvey.pages[0].elements[0] as Question).title = 'Given name'
 
     expect(onChange).toHaveBeenCalledWith(true, expectedEditedSurvey)
   })
