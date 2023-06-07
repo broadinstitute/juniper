@@ -101,7 +101,10 @@ module.exports = {
     'jest/no-focused-tests': 'error',
     'jest/no-identical-title': 'error',
     //Reminds should be used upon asserting expectations on object's length property
-    'jest/prefer-to-have-length': 'warn'
+    'jest/prefer-to-have-length': 'warn',
+
+    // TypeScript
+    '@typescript-eslint/ban-ts-comment': 'off'
   },
   settings: {
     'import/resolver': {

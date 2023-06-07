@@ -1,19 +1,19 @@
+import classNames from 'classnames'
 import React, { useState } from 'react'
 
 import { VersionedForm } from 'api/api'
 
-import { SurveyCreatorComponent } from 'survey-creator-react'
-import { useSurveyJSCreator } from '../../util/surveyJsUtils'
+import { SurveyEditor } from './editor/SurveyEditor'
 
-type SurveyEditorViewProps<T extends VersionedForm> = {
-  currentForm: T
+type SurveyEditorViewProps = {
+  currentForm: VersionedForm
   readOnly?: boolean
   onCancel: () => void
   onSave: (update: { content: string }) => Promise<void>
 }
 
-/** renders a survey for editing/viewing using the surveyJS editor */
-const SurveyEditorView = <T extends VersionedForm>(props: SurveyEditorViewProps<T>) => {
+/** renders a survey for editing/viewing */
+const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const {
     currentForm,
     readOnly = false,
@@ -21,29 +21,26 @@ const SurveyEditorView = <T extends VersionedForm>(props: SurveyEditorViewProps<
     onSave
   } = props
 
+  const [editedContent, setEditedContent] = useState<string>()
+  const [isEditorValid, setIsEditorValid] = useState(true)
   const [saving, setSaving] = useState(false)
+  const isSaveEnabled = !!editedContent && isEditorValid && !saving
 
-  const { surveyJSCreator } = useSurveyJSCreator(currentForm, () => { /* noop */ })
-  if (surveyJSCreator) {
-    surveyJSCreator.readOnly = readOnly
-  }
-
-
-  /** when save is pressed, call the handling function, and then update the survey with the response */
-  async function handleSave() {
-    if (!surveyJSCreator || saving) {
+  const onClickSave = async () => {
+    if (!isSaveEnabled) {
       return
     }
     setSaving(true)
     try {
-      await onSave({ content: surveyJSCreator.text })
+      await onSave({ content: editedContent })
+      setEditedContent(undefined)
     } finally {
       setSaving(false)
     }
   }
 
   return (
-    <div className="SurveyView">
+    <div className="SurveyView d-flex flex-column flex-grow-1 mx-1 mb-1">
       <div className="d-flex p-2 align-items-center">
         <div className="d-flex flex-grow-1">
           <h5>{currentForm.name}
@@ -51,13 +48,30 @@ const SurveyEditorView = <T extends VersionedForm>(props: SurveyEditorViewProps<
           </h5>
         </div>
         {!readOnly && (
-          <button className="btn btn-primary me-md-2" type="button" onClick={handleSave}>
+          <button
+            aria-disabled={isSaveEnabled ? 'true' : 'false'}
+            className={classNames(
+              'btn btn-primary me-md-2',
+              { disabled: !isSaveEnabled }
+            )}
+            type="button"
+            onClick={onClickSave}
+          >
             Save
           </button>
         )}
         <button className="btn btn-secondary" type="button" onClick={onCancel}>Cancel</button>
       </div>
-      {surveyJSCreator && <SurveyCreatorComponent creator={surveyJSCreator} /> }
+      <SurveyEditor
+        initialContent={currentForm.content}
+        readOnly={readOnly}
+        onChange={(isValid, editedSurvey) => {
+          if (isValid) {
+            setEditedContent(JSON.stringify(editedSurvey))
+          }
+          setIsEditorValid(isValid)
+        }}
+      />
     </div>
   )
 }

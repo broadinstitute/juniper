@@ -2,9 +2,8 @@ import React, { useContext } from 'react'
 import 'react-notifications-component/dist/theme.css'
 import 'styles/notifications.css'
 import 'survey-core/defaultV2.min.css'
-import 'survey-creator-core/survey-creator-core.min.css'
-
 import './App.css'
+
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
 import { ReactNotifications } from 'react-notifications-component'
 
@@ -33,7 +32,7 @@ function App() {
         { config =>
           <AuthProvider {...getOidcConfig(config.b2cTenantName, config.b2cClientId, config.b2cPolicyName)}>
             <UserProvider>
-              <div className="App">
+              <div className="App d-flex flex-column min-vh-100">
                 <IdleStatusMonitor maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={5 * 60 * 1000}/>
                 <ReactNotifications />
                 <NavbarProvider>
@@ -65,9 +64,11 @@ function App() {
 /** Renders the navbar and footer for the page */
 function PageFrame() {
   const navContext = useContext(NavbarContext)
-  return <div>
-    <AdminNavbar {...navContext}/>
-    <Outlet/>
-  </div>
+  return (
+    <>
+      <AdminNavbar {...navContext}/>
+      <Outlet/>
+    </>
+  )
 }
 export default App
