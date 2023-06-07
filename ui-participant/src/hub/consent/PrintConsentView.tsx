@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { Model } from 'survey-core'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 
-import { extractSurveyContent } from '@juniper/ui-core'
+import { surveyJSModelFromForm } from '@juniper/ui-core'
 
 import Api, { Answer, Enrollee } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
@@ -74,19 +74,13 @@ const usePrintableConsent = (args: UsePrintableConsentArgs) => {
       }
       const resumableData = makeSurveyJsData(response?.resumeData, answers, enrollee.participantUserId)
 
-      const surveyContent = extractSurveyContent(form)
-
-      const surveyModel = new Model(surveyContent)
+      const surveyModel = surveyJSModelFromForm(form)
       surveyModel.title = form.name
       surveyModel.data = resumableData?.data
 
       surveyModel.mode = 'display'
       surveyModel.questionsOnPageMode = 'singlePage'
-
-      surveyModel.focusFirstQuestionAutomatic = false
       surveyModel.showProgressBar = 'off'
-      surveyModel.showTitle = false
-      surveyModel.widthMode = 'static'
       surveyModel.setVariable('portalEnvironmentName', portalEnv.environmentName)
 
       return surveyModel

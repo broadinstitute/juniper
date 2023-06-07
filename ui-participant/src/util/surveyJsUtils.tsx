@@ -6,10 +6,10 @@ import _isEqual from 'lodash/isEqual'
 import { micromark } from 'micromark'
 import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Model, SurveyModel } from 'survey-core'
+import { SurveyModel } from 'survey-core'
 import { Survey as SurveyJSComponent } from 'survey-react-ui'
 
-import { extractSurveyContent } from '@juniper/ui-core'
+import { surveyJSModelFromForm } from '@juniper/ui-core'
 
 import { Answer, ConsentForm, Profile, Survey, SurveyJsResumeData, UserResumeData } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
@@ -94,7 +94,7 @@ export function useSurveyJSModel(
 
   /** syncs the surveyJS survey model with the given data/pageNumber */
   function refreshSurvey(refreshData: SurveyJsResumeData | null, pagerPageNumber: number | null) {
-    const newSurveyModel = new Model(extractSurveyContent(form))
+    const newSurveyModel = surveyJSModelFromForm(form)
 
     Object.entries(extraCssClasses).forEach(([elementPath, className]) => {
       set(newSurveyModel.css, elementPath, classNames(get(newSurveyModel.css, elementPath), className))
@@ -116,10 +116,6 @@ export function useSurveyJSModel(
     }
     newSurveyModel.currentPageNo = pageNumber
     newSurveyModel.setVariable('profile', profile)
-
-    newSurveyModel.focusFirstQuestionAutomatic = false
-    newSurveyModel.showTitle = false
-    newSurveyModel.widthMode = 'static'
     newSurveyModel.setVariable('portalEnvironmentName', portalEnv.environmentName)
     setSurveyModel(newSurveyModel)
   }

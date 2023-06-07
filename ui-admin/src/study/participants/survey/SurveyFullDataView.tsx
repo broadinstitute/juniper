@@ -1,13 +1,13 @@
 import React from 'react'
-import { Model, Question, SurveyModel } from 'survey-core'
+import { Question, SurveyModel } from 'survey-core'
 
-import { extractSurveyContent } from '@juniper/ui-core'
+import { surveyJSModelFromForm } from '@juniper/ui-core'
 
 import { Answer, ConsentForm, Survey } from 'api/api'
 
 /** renders every item in a survey response */
 export default function SurveyFullDataView({ answers, survey }: {answers: Answer[], survey: Survey | ConsentForm}) {
-  const surveyJsModel = new Model(extractSurveyContent(survey))
+  const surveyJsModel = surveyJSModelFromForm(survey)
   console.log(`rendering data for survey ${survey.stableId} -- question text not yet implemented`)
   return <dl>
     {answers.map((answer, index) => <ItemDisplay key={index}

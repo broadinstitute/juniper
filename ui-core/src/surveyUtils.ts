@@ -1,5 +1,8 @@
 import './surveyjs'
 
+import { cloneDeep } from 'lodash'
+import { SurveyModel } from 'survey-core'
+
 import { FormContent, FormElement, VersionedForm } from './types/forms'
 
 /** Gets a flattened list of the survey elements */
@@ -14,22 +17,24 @@ function getFormQuestionsHelper(element: FormElement): FormElement[] {
     : [element]
 }
 
-/** transform the stored survey representation into what SurveyJS expects */
-export function extractSurveyContent(form: VersionedForm) {
-  const parsedSurvey = JSON.parse(form.content) as FormContent
-  const questionTemplates = parsedSurvey.questionTemplates
+const applyDefaultSurveyConfig = (surveyModel: SurveyModel): void => {
+  surveyModel.focusFirstQuestionAutomatic = false
+  surveyModel.showTitle = false
+  surveyModel.widthMode = 'static'
+}
+
+/** Create a SurveyJS SurveyModel from a Juniper FormContent object. */
+export const surveyJSModelFromFormContent = (formContent: FormContent): SurveyModel => {
+  const formContentClone = cloneDeep(formContent)
+  const questionTemplates = formContentClone.questionTemplates
   if (questionTemplates) {
-    const elementList = getFormElements(parsedSurvey)
+    const elementList = getFormElements(formContentClone)
     elementList.forEach(q => {
       if ('questionTemplateName' in q) {
         const templateName = q.questionTemplateName
         const matchedTemplate = questionTemplates.find(qt => qt.name === templateName)
         if (!matchedTemplate) {
-          // TODO this is an error we'd want to log in prod systems
-          if (process.env.NODE_ENV === 'development') {
-            alert(`unmatched template ${templateName}`)
-          }
-          return
+          throw new Error(`Unknown question template: ${templateName}`)
         }
         // create a new question object by merging the existing question into the template.
         // any properties explicitly specified on the question will override those from the template
@@ -38,5 +43,18 @@ export function extractSurveyContent(form: VersionedForm) {
       }
     })
   }
-  return parsedSurvey
+
+  const model = new SurveyModel(formContentClone)
+  applyDefaultSurveyConfig(model)
+  return model
+}
+
+/** Get a VersionedForm's form content. */
+const getFormContent = (form: VersionedForm): FormContent => {
+  return JSON.parse(form.content) as FormContent
+}
+
+/** Create a SurveyJS SurveyModel from a Juniper VersionedForm object. */
+export const surveyJSModelFromForm = (form: VersionedForm): SurveyModel => {
+  return surveyJSModelFromFormContent(getFormContent(form))
 }

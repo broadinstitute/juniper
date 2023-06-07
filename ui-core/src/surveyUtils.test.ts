@@ -1,42 +1,65 @@
-import { extractSurveyContent } from './surveyUtils'
-import { RadiogroupQuestion, VersionedForm } from './types/forms'
+import { surveyJSModelFromFormContent } from './surveyUtils'
+import { FormContent } from './types/forms'
 
-describe('extractSurveyContent', () => {
-  it('transforms models with question templates', () => {
-    const survey = {
-      stableId: 'testSurvey',
-      version: 1,
-      content: JSON.stringify({
-        questionTemplates: [
-          {
-            type: 'radiogroup', title: 'what is their favorite color?', name: 'colorPicker',
-            choices: [{ text: 'Green', value: 'green' }, { text: 'Blue', value: 'blue' }]
-          }
-        ],
-        pages: [
-          {
-            elements: [
-              { type: 'html', html: '<span>Talk about your brother</span>' },
-              { name: 'brotherFavoriteColor', questionTemplateName: 'colorPicker' }
-            ]
-          },
-          {
-            elements: [
-              { type: 'html', html: '<span>Talk about your sister</span>' },
-              { name: 'sisterFavoriteColor', questionTemplateName: 'colorPicker' }
-            ]
-          }
-        ]
-      })
+describe('surveyJSModelFromFormContent', () => {
+  it('generates questions using question templates', () => {
+    // Arrange
+    const formContent: FormContent = {
+      title: 'Test form',
+      questionTemplates: [
+        {
+          type: 'radiogroup', title: 'what is their favorite color?', name: 'colorPicker',
+          choices: [{ text: 'Green', value: 'green' }, { text: 'Blue', value: 'blue' }]
+        }
+      ],
+      pages: [
+        {
+          elements: [
+            { type: 'html', html: '<span>Talk about your brother</span>' },
+            { name: 'brotherFavoriteColor', questionTemplateName: 'colorPicker' }
+          ]
+        },
+        {
+          elements: [
+            { type: 'html', html: '<span>Talk about your sister</span>' },
+            { name: 'sisterFavoriteColor', questionTemplateName: 'colorPicker' }
+          ]
+        }
+      ]
     }
 
-    const surveyModel = extractSurveyContent(survey as VersionedForm)
-    expect(surveyModel.pages).toHaveLength(2)
-    const firstTemplatedQuestion = surveyModel.pages[0].elements[1] as RadiogroupQuestion
-    expect(firstTemplatedQuestion.name).toEqual('brotherFavoriteColor')
+    // Act
+    const surveyModel = surveyJSModelFromFormContent(formContent)
+
+    // Assert
+    const firstTemplatedQuestion = surveyModel.getQuestionByName('brotherFavoriteColor')
     expect(firstTemplatedQuestion.title).toEqual('what is their favorite color?')
     expect(firstTemplatedQuestion.choices).toHaveLength(2)
-    const secondTemplatedQuestion = surveyModel.pages[1].elements[1] as RadiogroupQuestion
-    expect(secondTemplatedQuestion.name).toEqual('sisterFavoriteColor')
+
+    const secondTemplatedQuestion = surveyModel.getQuestionByName('sisterFavoriteColor')
+    expect(secondTemplatedQuestion.title).toEqual('what is their favorite color?')
+    expect(secondTemplatedQuestion.choices).toHaveLength(2)
+  })
+
+  it('applies default survey settings', () => {
+    // Arrange
+    const formContent: FormContent = {
+      title: 'Test form',
+      pages: [
+        {
+          elements: [
+            { name: 'question1', type: 'text', title: 'What is the answer?' }
+          ]
+        }
+      ]
+    }
+
+    // Act
+    const surveyModel = surveyJSModelFromFormContent(formContent)
+
+    // Assert
+    expect(surveyModel.focusFirstQuestionAutomatic).toBe(false)
+    expect(surveyModel.showTitle).toBe(false)
+    expect(surveyModel.widthMode).toBe('static')
   })
 })

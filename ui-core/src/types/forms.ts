@@ -128,7 +128,7 @@ export type RadiogroupQuestion = WithOtherOption<BaseQuestion & {
   choices: QuestionChoice[]
 }>
 
-export type TemplatedQuestion = BaseQuestion & {
+export type TemplatedQuestion = Omit<BaseQuestion, 'title'> & {
   name: string
   title?: string
   questionTemplateName: string

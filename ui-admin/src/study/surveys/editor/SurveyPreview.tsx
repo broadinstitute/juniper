@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
-import { SurveyModel } from 'survey-core'
 import { Survey as SurveyJSComponent } from 'survey-react-ui'
 
-import { extractSurveyContent, FormContent, Survey } from '@juniper/ui-core'
+import { FormContent, surveyJSModelFromFormContent } from '@juniper/ui-core'
 
 type SurveyPreviewProps = {
   survey: FormContent
@@ -11,16 +10,7 @@ type SurveyPreviewProps = {
 export const SurveyPreview = (props: SurveyPreviewProps) => {
   const { survey } = props
 
-  const [surveyModel] = useState(() => {
-    const fakeForm = { content: JSON.stringify(survey) } as Survey
-
-    const model = new SurveyModel(extractSurveyContent(fakeForm))
-    model.focusFirstQuestionAutomatic = false
-    model.showTitle = false
-    model.widthMode = 'static'
-
-    return model
-  })
+  const [surveyModel] = useState(() => surveyJSModelFromFormContent(survey))
 
   return (
     <SurveyJSComponent model={surveyModel} />
