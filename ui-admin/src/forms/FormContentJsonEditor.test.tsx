@@ -5,9 +5,9 @@ import React from 'react'
 
 import { FormContent, Question } from '@juniper/ui-core'
 
-import { SurveyJsonEditor } from './SurveyJsonEditor'
+import { FormContentJsonEditor } from './FormContentJsonEditor'
 
-const survey: FormContent = {
+const formContent: FormContent = {
   title: 'Test survey',
   pages: [
     {
@@ -29,19 +29,19 @@ const survey: FormContent = {
   ]
 }
 
-describe('SurveyJsonEditor', () => {
+describe('FormContentJsonEditor', () => {
   it('renders survey as JSON', () => {
     // Act
-    const { container } = render(<SurveyJsonEditor initialValue={survey} onChange={jest.fn()} />)
+    const { container } = render(<FormContentJsonEditor initialValue={formContent} onChange={jest.fn()} />)
 
     // Assert
-    const expectedContent = JSON.stringify(survey, null, 2).replace(/\s+/g, ' ') // Collapse whitespace
+    const expectedContent = JSON.stringify(formContent, null, 2).replace(/\s+/g, ' ') // Collapse whitespace
     expect(container).toHaveTextContent(expectedContent)
   })
 
   it('sets readonly attribute on textatrea', () => {
     // Act
-    render(<SurveyJsonEditor initialValue={survey} readOnly onChange={jest.fn()} />)
+    render(<FormContentJsonEditor initialValue={formContent} readOnly onChange={jest.fn()} />)
 
     // Assert
     const textArea = screen.getByRole('textbox')
@@ -53,7 +53,7 @@ describe('SurveyJsonEditor', () => {
     const user = userEvent.setup()
 
     const onChange = jest.fn()
-    render(<SurveyJsonEditor initialValue={survey} onChange={onChange} />)
+    render(<FormContentJsonEditor initialValue={formContent} onChange={onChange} />)
 
     // Act
     const textArea = screen.getByRole('textbox')
@@ -61,10 +61,10 @@ describe('SurveyJsonEditor', () => {
     await act(() => user.type(textArea, 'Given', { initialSelectionStart: 159, initialSelectionEnd: 164 }))
 
     // Assert
-    const expectedEditedSurvey = cloneDeep(survey)
-    ;(expectedEditedSurvey.pages[0].elements[0] as Question).title = 'Given name'
+    const expectedEditedContent = cloneDeep(formContent)
+    ;(expectedEditedContent.pages[0].elements[0] as Question).title = 'Given name'
 
-    expect(onChange).toHaveBeenCalledWith(true, expectedEditedSurvey)
+    expect(onChange).toHaveBeenCalledWith(true, expectedEditedContent)
   })
 
   it('calls onChange when edited with invalid JSON', async () => {
@@ -72,7 +72,7 @@ describe('SurveyJsonEditor', () => {
     const user = userEvent.setup()
 
     const onChange = jest.fn()
-    render(<SurveyJsonEditor initialValue={survey} onChange={onChange} />)
+    render(<FormContentJsonEditor initialValue={formContent} onChange={onChange} />)
 
     // Act
     const textArea = screen.getByRole('textbox')

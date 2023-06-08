@@ -2,15 +2,15 @@ import React, { useCallback, useState } from 'react'
 
 import { FormContent } from '@juniper/ui-core'
 
-import { OnChangeSurvey } from './surveyEditorTypes'
+import { OnChangeFormContent } from './formEditorTypes'
 
-type SurveyJsonEditorProps = {
+type FormContentJsonEditorProps = {
   initialValue: FormContent
   readOnly?: boolean
-  onChange: OnChangeSurvey
+  onChange: OnChangeFormContent
 }
 
-export const SurveyJsonEditor = (props: SurveyJsonEditorProps) => {
+export const FormContentJsonEditor = (props: FormContentJsonEditorProps) => {
   const { initialValue, readOnly = false, onChange } = props
   const [editorValue, _setEditorValue] = useState(() => JSON.stringify(initialValue, null, 2))
   const [, setIsValid] = useState(true)

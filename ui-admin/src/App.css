@@ -85,9 +85,9 @@ a {
   max-height: 90vh;
 }
 
-/* Have survey editor tabs fill page height */
-.SurveyEditor .tab-content,
-.SurveyEditor .tab-pane.active {
+/* Have form content editor tabs fill page height */
+.FormContentEditor .tab-content,
+.FormContentEditor .tab-pane.active {
   display: flex;
   flex-direction: column;
   flex-grow: 1;

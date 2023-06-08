@@ -3,26 +3,26 @@ import { Tab, Tabs } from 'react-bootstrap'
 
 import { FormContent } from '@juniper/ui-core'
 
-import { OnChangeSurvey } from './surveyEditorTypes'
-import { SurveyJsonEditor } from './SurveyJsonEditor'
-import { SurveyPreview } from './SurveyPreview'
+import { OnChangeFormContent } from './formEditorTypes'
+import { FormContentJsonEditor } from './FormContentJsonEditor'
+import { FormPreview } from './FormPreview'
 
-type SurveyEditorProps = {
+type FormContentEditorProps = {
   initialContent: string
   readOnly: boolean
-  onChange: OnChangeSurvey
+  onChange: OnChangeFormContent
 }
 
-export const SurveyEditor = (props: SurveyEditorProps) => {
+export const FormContentEditor = (props: FormContentEditorProps) => {
   const { initialContent, readOnly, onChange } = props
 
   const [activeTab, setActiveTab] = useState<string | null>('json')
   const [tabsEnabled, setTabsEnabled] = useState(true)
 
-  const [editedSurvey, setEditedSurvey] = useState(() => JSON.parse(initialContent) as FormContent)
+  const [editedContent, setEditedContent] = useState(() => JSON.parse(initialContent) as FormContent)
 
   return (
-    <div className="SurveyEditor d-flex flex-column flex-grow-1">
+    <div className="FormContentEditor d-flex flex-column flex-grow-1">
       <Tabs
         activeKey={activeTab ?? undefined}
         className="mb-1"
@@ -35,12 +35,12 @@ export const SurveyEditor = (props: SurveyEditorProps) => {
           eventKey="json"
           title="JSON Editor"
         >
-          <SurveyJsonEditor
-            initialValue={editedSurvey}
+          <FormContentJsonEditor
+            initialValue={editedContent}
             readOnly={readOnly}
             onChange={(isValid, newSurvey) => {
               if (isValid) {
-                setEditedSurvey(newSurvey)
+                setEditedContent(newSurvey)
                 onChange(true, newSurvey)
               } else {
                 onChange(false, undefined)
@@ -54,7 +54,7 @@ export const SurveyEditor = (props: SurveyEditorProps) => {
           eventKey="preview"
           title="Preview"
         >
-          <SurveyPreview survey={editedSurvey} />
+          <FormPreview formContent={editedContent} />
         </Tab>
       </Tabs>
     </div>

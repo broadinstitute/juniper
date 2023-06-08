@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 
 import { VersionedForm } from 'api/api'
 
-import { SurveyEditor } from './editor/SurveyEditor'
+import { FormContentEditor } from 'forms/FormContentEditor'
 
 type SurveyEditorViewProps = {
   currentForm: VersionedForm
@@ -62,12 +62,12 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
         )}
         <button className="btn btn-secondary" type="button" onClick={onCancel}>Cancel</button>
       </div>
-      <SurveyEditor
+      <FormContentEditor
         initialContent={currentForm.content}
         readOnly={readOnly}
-        onChange={(isValid, editedSurvey) => {
+        onChange={(isValid, newContent) => {
           if (isValid) {
-            setEditedContent(JSON.stringify(editedSurvey))
+            setEditedContent(JSON.stringify(newContent))
           }
           setIsEditorValid(isValid)
         }}
