@@ -1,4 +1,6 @@
-import { render, screen } from '@testing-library/react'
+/* eslint-disable jest/expect-expect */
+import { act, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { FormContent } from '@juniper/ui-core'
@@ -28,7 +30,6 @@ const formContent: FormContent = {
 }
 
 describe('FormPreview', () => {
-  // eslint-disable-next-line jest/expect-expect
   it('renders form', () => {
     // Act
     render(<FormPreview formContent={formContent} />)
@@ -36,5 +37,72 @@ describe('FormPreview', () => {
     // Assert
     screen.getAllByLabelText('First name')
     screen.getAllByLabelText('Last name')
+  })
+
+  describe('options', () => {
+    describe('ignore validation', () => {
+      const formContent: FormContent = {
+        title: 'Test survey',
+        pages: [
+          {
+            elements: [
+              {
+                name: 'question1',
+                title: 'First question',
+                type: 'text',
+                isRequired: true
+              }
+            ]
+          },
+          {
+            elements: [
+              {
+                name: 'question2',
+                title: 'Second question',
+                type: 'text',
+                isRequired: true
+              }
+            ]
+          }
+        ]
+      }
+
+      it('ignores form validation by default', async () => {
+        // Arrange
+        const user = userEvent.setup()
+
+        render(<FormPreview formContent={formContent} />)
+
+        // Act
+        // Attempt to advance to the next page.
+        const nextPageButton = screen.getByTitle('Next')
+        await act(() => user.click(nextPageButton))
+
+        // Assert
+        // Reached the second page despite the first page requiring an answer.
+        screen.getByText('Second question')
+      })
+
+      it('can require form validation', async () => {
+        // Arrange
+        const user = userEvent.setup()
+
+        render(<FormPreview formContent={formContent} />)
+
+        // Act
+        // Turn off 'Ignore validation'
+        const ignoreValidationCheckbox = screen.getByLabelText('Ignore validation')
+        await act(() => user.click(ignoreValidationCheckbox))
+
+        // Attempt to advance to the next page.
+        const nextPageButton = screen.getByTitle('Next')
+        await act(() => user.click(nextPageButton))
+
+        // Assert
+        // Still on the first page.
+        screen.getByText('First question')
+        screen.getByText('Response required.')
+      })
+    })
   })
 })
