@@ -133,6 +133,15 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         if (simulateSubmissions) {
             ParticipantTask task = participantTaskService
                     .findTaskForActivity(ppUser.getId(), enrollee.getStudyEnvironmentId(), survey.getStableId()).get();
+            if (responsePopDto.getSurveyVersion() != task.getTargetAssignedVersion()) {
+                /**
+                 * in simulateSubmission mode, tasks will be automatically created with the curren versions of the survey
+                 * to enable mocking of submissions of prior versions, if the version specified in the enrollee's seed file
+                 * doesn't match the latest, update the task so it's as if the task had been assigned to the prior versipm
+                 */
+                task.setTargetAssignedVersion(responsePopDto.getSurveyVersion());
+                participantTaskService.update(task);
+            }
             HubResponse<SurveyResponse> hubResponse = surveyResponseService
                     .updateResponse(response, ppUser.getParticipantUserId(), ppUser, enrollee, task.getId());
             savedResponse = hubResponse.getResponse();
