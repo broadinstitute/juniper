@@ -30,7 +30,7 @@ const formContent: FormContent = {
 }
 
 describe('FormContentJsonEditor', () => {
-  it('renders survey as JSON', () => {
+  it('renders form content as JSON', () => {
     // Act
     const { container } = render(<FormContentJsonEditor initialValue={formContent} onChange={jest.fn()} />)
 

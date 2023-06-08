@@ -38,10 +38,10 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           <FormContentJsonEditor
             initialValue={editedContent}
             readOnly={readOnly}
-            onChange={(isValid, newSurvey) => {
+            onChange={(isValid, newContent) => {
               if (isValid) {
-                setEditedContent(newSurvey)
-                onChange(true, newSurvey)
+                setEditedContent(newContent)
+                onChange(true, newContent)
               } else {
                 onChange(false, undefined)
               }

@@ -17,9 +17,9 @@ export const FormContentJsonEditor = (props: FormContentJsonEditorProps) => {
   const setEditorValue = useCallback((newEditorValue: string) => {
     _setEditorValue(newEditorValue)
     try {
-      const survey = JSON.parse(newEditorValue)
+      const formContent = JSON.parse(newEditorValue)
       setIsValid(true)
-      onChange(true, survey)
+      onChange(true, formContent)
     } catch (e) {
       setIsValid(false)
       onChange(false, undefined)
