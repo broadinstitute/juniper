@@ -5,3 +5,5 @@ import './formatDate'
 import './inputmask'
 import './multiple-combobox-question'
 import './medications-question'
+
+import './surveyJsStyle.scss'

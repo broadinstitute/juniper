@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import 'bootstrap'
 import 'survey-core/defaultV2.min.css'
 import './index.scss'
-import './surveyJsStyle.css'
+
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 import PortalEnvrionmentProvider from './providers/PortalProvider'
