@@ -20,8 +20,8 @@ export type Answer = {
   booleanValue?: boolean
   objectValue?: string
   otherDescription?: string
-  surveyStableId: string
-  surveyVersion: number
+  surveyStableId?: string
+  surveyVersion?: number
 }
 
 export type FormResponse = {
