@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.azure;
 
+import com.azure.core.util.BinaryData;
 import com.azure.storage.blob.*;
 import com.azure.storage.blob.sas.BlobSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
@@ -51,13 +52,7 @@ public class AzureBlobStorageClient {
         BlockBlobClient blobClient = blobContainerClient.getBlobClient(blobName).getBlockBlobClient();
 
         //Upload the blob
-        try {
-            InputStream dataStream = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
-            blobClient.upload(dataStream, data.length());
-            dataStream.close();
-        } catch (IOException e) {
-            throw new RuntimeException("Error uploading blob to Azure storage container. Error: " + e.getMessage());
-        }
+        blobClient.upload(BinaryData.fromString(data));
 
         return blobClient;
     }
