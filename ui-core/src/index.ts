@@ -8,4 +8,5 @@ export * from './types/portal'
 export * from './types/study'
 export * from './types/task'
 
+export * from './reactUtils'
 export * from './surveyUtils'
