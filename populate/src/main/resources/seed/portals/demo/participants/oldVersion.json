@@ -1,0 +1,18 @@
+{
+  "participantUser": {
+    "username": "oldversion@test.com"
+  },
+  "profile": {
+    "givenName": "Old",
+    "familyName": "Version",
+    "contactEmail": "oldversion@test.com",
+    "sexAtBirth": "male",
+    "mailingAddress": {
+      "street1": "32 Elm Street",
+      "city": "New York",
+      "state": "NY",
+      "country": "US",
+      "postalCode": "10005"
+    }
+  }
+}

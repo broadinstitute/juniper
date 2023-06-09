@@ -15,13 +15,13 @@ export type ConsentForm = VersionedForm
 
 export type Answer = {
   questionStableId: string
-
   stringValue?: string
   numberValue?: number
   booleanValue?: boolean
   objectValue?: string
-
   otherDescription?: string
+  surveyStableId?: string
+  surveyVersion?: number
 }
 
 export type FormResponse = {

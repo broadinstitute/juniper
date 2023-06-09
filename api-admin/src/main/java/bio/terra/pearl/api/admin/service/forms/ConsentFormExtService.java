@@ -19,9 +19,12 @@ public class ConsentFormExtService {
   private StudyEnvironmentConsentService studyEnvironmentConsentService;
 
   public ConsentFormExtService(
-      AuthUtilService authUtilService, ConsentFormService consentFormService) {
+      AuthUtilService authUtilService,
+      ConsentFormService consentFormService,
+      StudyEnvironmentConsentService studyEnvironmentConsentService) {
     this.authUtilService = authUtilService;
     this.consentFormService = consentFormService;
+    this.studyEnvironmentConsentService = studyEnvironmentConsentService;
   }
 
   public ConsentForm createNewVersion(

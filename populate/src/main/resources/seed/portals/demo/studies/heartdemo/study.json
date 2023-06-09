@@ -10,7 +10,8 @@
     "surveys/phq9gad7.json",
     "surveys/medList.json",
     "surveys/basic.json",
-    "surveys/socialHealth.json"
+    "surveys/socialHealth.json",
+    "surveys/socialHealthV2.json"
   ],
   "consentFormFiles": [
     "surveys/ourHealthConsent.json"
@@ -42,7 +43,8 @@
         {"populateFileName": "surveys/familyHistory.json"},
         {"populateFileName": "surveys/medList.json"},
         {"populateFileName": "surveys/lifestyle.json"},
-        {"populateFileName": "surveys/phq9gad7.json"}
+        {"populateFileName": "surveys/phq9gad7.json"},
+        {"populateFileName": "surveys/socialHealthV2.json"}
       ],
       "configuredConsentDtos": [
         {
@@ -76,7 +78,8 @@
         "enrollees/newEnrollee.json",
         "enrollees/consentedEnrollee.json",
         "enrollees/basicsDone.json",
-        "enrollees/withdrawn.json"
+        "enrollees/withdrawn.json",
+        "enrollees/oldVersion.json"
       ],
       "preEnrollmentResponseDtos": [{
           "qualified": false,

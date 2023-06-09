@@ -11,17 +11,22 @@ export default function SurveyFullDataView({ answers, survey }: {answers: Answer
   console.log(`rendering data for survey ${survey.stableId} -- question text not yet implemented`)
   return <dl>
     {answers.map((answer, index) => <ItemDisplay key={index}
-      answer={answer} surveyJsModel={surveyJsModel}/>)}
+      answer={answer} surveyJsModel={surveyJsModel} surveyVersion={survey.version}/>)}
   </dl>
 }
 
-const ItemDisplay = ({ answer, surveyJsModel }: {answer: Answer, surveyJsModel: SurveyModel}) => {
+const ItemDisplay = ({ answer, surveyJsModel, surveyVersion }: {answer: Answer,
+  surveyJsModel: SurveyModel, surveyVersion: number}) => {
   const question = surveyJsModel.getQuestionByName(answer.questionStableId)
   const displayValue = getDisplayValue(answer, question)
+  let stableIdText = answer.questionStableId
+  if (answer.surveyVersion != surveyVersion) {
+    stableIdText = `${answer.questionStableId} v${answer.surveyVersion}`
+  }
   return <>
     <dt className="fw-normal">
       {renderQuestionText(answer, question)}
-      <span className="ms-2 fst-italic text-muted">({answer.questionStableId})</span>
+      <span className="ms-2 fst-italic text-muted">({stableIdText})</span>
     </dt>
     <dl><pre className="fw-bold">{displayValue}</pre></dl>
   </>

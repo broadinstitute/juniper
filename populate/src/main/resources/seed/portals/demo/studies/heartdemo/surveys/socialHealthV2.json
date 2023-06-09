@@ -1,6 +1,6 @@
 {
   "stableId": "hd_hd_socialHealth",
-  "version": 1,
+  "version": 2,
   "name": "Social Determinants of Health",
   "jsonContent": {
     "showProgressBar": "bottom",
@@ -14,9 +14,9 @@
             "html": "The neighborhood where you live may play a role in a variety of health outcomes. Sharing details about your neighborhood may help researchers better understand the relationship between a person’s neighborhood and their overall well-being.\n\nThe following statements describe what your neighborhood might be like. Tell us how much you agree or disagree."
           },
           {
-            "name": "hd_hd_socialHealth_neighborhoodSharesValues",
+            "name": "hd_hd_socialHealth_neighborhoodGetsAlong",
             "type": "radiogroup",
-            "title": "People in my neighborhood share the same values as me.",
+            "title": "People in my neighborhood generally get along with each other.",
             "choices": [
               {"text": "Strongly agree", "value": "stronglyAgree"},
               {"text": "Agree", "value": "agree"},
@@ -26,14 +26,15 @@
             ]
           },
           {
-            "name": "hd_hd_socialHealth_neighborhoodIsWalkable",
+            "name": "hd_hd_socialHealth_neighborhoodSharesValues",
             "type": "radiogroup",
-            "title": "My neighborhood is walkable.",
+            "title": "People in my neighborhood share the same values.",
             "choices": [
-              {"text": "Strongly disagree", "value": "stronglyDisagree"},
-              {"text": "Disagree", "value": "disagree"},
+              {"text": "Strongly agree", "value": "stronglyAgree"},
               {"text": "Agree", "value": "agree"},
-              {"text": "Strongly agree", "value": "stronglyAgree"}
+              {"text": "Neutral (neither agree nor disagree)", "value": "neutralNeitherAgreeNorDisagree"},
+              {"text": "Disagree", "value": "disagree"},
+              {"text": "Strongly disagree", "value": "stronglyDisagree"}
             ]
           },
           {

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class ConsentFormExtServiceTests {
-  private ConsentFormExtService emptyService = new ConsentFormExtService(null, null);
+  private ConsentFormExtService emptyService = new ConsentFormExtService(null, null, null);
 
   @Test
   public void createNewVersionRequiresSuperuser() {
