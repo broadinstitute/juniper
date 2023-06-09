@@ -3,9 +3,9 @@ import React from 'react'
 
 import { FormContent } from '@juniper/ui-core'
 
-import { SurveyPreview } from './SurveyPreview'
+import { FormPreview } from './FormPreview'
 
-const survey: FormContent = {
+const formContent: FormContent = {
   title: 'Test survey',
   pages: [
     {
@@ -27,11 +27,11 @@ const survey: FormContent = {
   ]
 }
 
-describe('SurveyPreview', () => {
+describe('FormPreview', () => {
   // eslint-disable-next-line jest/expect-expect
-  it('renders survey', () => {
+  it('renders form', () => {
     // Act
-    render(<SurveyPreview survey={survey} />)
+    render(<FormPreview formContent={formContent} />)
 
     // Assert
     screen.getAllByLabelText('First name')
