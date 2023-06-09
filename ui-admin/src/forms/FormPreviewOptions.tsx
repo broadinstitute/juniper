@@ -9,6 +9,7 @@ type FormPreviewOptionsProps = {
   onChange: (newValue: FormPreviewOptions) => void
 }
 
+/** Controls for configuring the form editor's preview tab. */
 export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
   const { value, onChange } = props
   return (
