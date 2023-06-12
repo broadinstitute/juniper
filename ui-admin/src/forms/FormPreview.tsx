@@ -28,10 +28,12 @@ export const FormPreview = (props: FormPreviewProps) => {
       <div className="flex-shrink-0 p-3" style={{ width: 300 }}>
         <FormPreviewOptions
           value={{
-            ignoreValidation: surveyModel.ignoreValidation
+            ignoreValidation: surveyModel.ignoreValidation,
+            showInvisibleElements: surveyModel.showInvisibleElements
           }}
-          onChange={({ ignoreValidation }) => {
+          onChange={({ ignoreValidation, showInvisibleElements }) => {
             surveyModel.ignoreValidation = ignoreValidation
+            surveyModel.showInvisibleElements = showInvisibleElements
             forceUpdate()
           }}
         />
