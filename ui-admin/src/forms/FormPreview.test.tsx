@@ -104,5 +104,51 @@ describe('FormPreview', () => {
         screen.getByText('Response required.')
       })
     })
+
+    describe('show invisible questions', () => {
+      const formContent: FormContent = {
+        title: 'Test survey',
+        pages: [
+          {
+            elements: [
+              {
+                name: 'visible_question',
+                title: 'Visible question',
+                type: 'text'
+              },
+              {
+                name: 'hidden_question',
+                title: 'Hidden question',
+                type: 'text',
+                visibleIf: 'false'
+              }
+            ]
+          }
+        ]
+      }
+
+      it('hides invisible questions by default', () => {
+        // Act
+        render(<FormPreview formContent={formContent} />)
+
+        // Assert
+        expect(screen.queryAllByLabelText('Hidden question')).toHaveLength(0)
+      })
+
+      it('can show invisible questions', async () => {
+        // Arrange
+        const user = userEvent.setup()
+
+        render(<FormPreview formContent={formContent} />)
+
+        // Act
+        // Show invisible questions
+        const showInvisibleElementsCheckbox = screen.getByLabelText('Show invisible questions')
+        await act(() => user.click(showInvisibleElementsCheckbox))
+
+        // Assert
+        screen.getAllByLabelText('Hidden question')
+      })
+    })
   })
 })
