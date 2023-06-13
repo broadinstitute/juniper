@@ -21,6 +21,8 @@ export const useHasProvidedStudyPassword = (studyShortcode: string): [boolean, (
   return [value === 'true', setHasProvidedStudyPassword]
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const useCookiesAcknowledged = (): [boolean, () => void] => {
   const [value, setValue] = useLocalStorage('cookiesAcknowledged')
   return [!!value, () => setValue('true')]

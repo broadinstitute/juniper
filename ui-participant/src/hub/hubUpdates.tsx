@@ -25,6 +25,8 @@ export const useHubUpdate = (): HubUpdate | undefined => {
 
 type HubMessageAlertProps = { message: HubUpdateMessage } & Omit<AlertProps, 'children' | 'level' | 'title'>
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const HubMessageAlert = (props: HubMessageAlertProps) => {
   const { message, ...otherProps } = props
   return (

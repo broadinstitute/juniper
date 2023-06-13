@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { HtmlPage, NavbarItemInternal, PortalEnvironment } from '../../api/api'
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 const SiteContentView = ({ portalEnv }: {portalEnv: PortalEnvironment}) => {
   const selectedLanguage = 'en'
   const [selectedNavItem, setSelectedNavItem] = useState<NavbarItemInternal | null>(null)

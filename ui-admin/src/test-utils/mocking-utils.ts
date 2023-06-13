@@ -7,6 +7,8 @@ import _times from 'lodash/times'
 import _random from 'lodash/random'
 
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const mockSurvey: () => Survey = () => ({
   id: 'surveyId1',
   stableId: 'survey1',
@@ -18,6 +20,8 @@ export const mockSurvey: () => Survey = () => ({
 })
 
 // as we add more tests, we'll want to parameterize this and turn it into a proper factory
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
   study: { name: 'Fake study', studyEnvironments: [], shortcode: 'fakeStudy' },
   portal: { shortcode: 'portalCode', id: 'portalId', portalStudies: [], portalEnvironments: [], name: 'Fake portal' },
@@ -49,6 +53,8 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
 })
 
 export const mockDatasetDetails: (datasetName: string, status: string) => DatasetDetails =
+    // TODO: Add JSDoc
+    // eslint-disable-next-line jsdoc/require-jsdoc
     (datasetName: string, status: string) => ({
       createdAt: 1685557140,
       createdBy: '0b9ade05-f7e3-483e-b85a-43deac7505c0',
@@ -63,6 +69,8 @@ export const mockDatasetDetails: (datasetName: string, status: string) => Datase
     })
 
 // as we add more tests, we'll want to parameterize this and turn it into a proper factory
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const mockEnrollee: () => Enrollee = () => {
   const enrolleeId = randomString(10)
   return {
@@ -114,6 +122,8 @@ export const mockEnrollee: () => Enrollee = () => {
   }
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const taskForSurvey = (survey: Survey, enrolleeId: string): ParticipantTask => {
   return {
     id: randomString(10),

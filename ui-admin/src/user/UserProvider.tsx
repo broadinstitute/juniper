@@ -28,6 +28,8 @@ const UserContext = React.createContext<UserContextT>({
 const INTERNAL_LOGIN_TOKEN_KEY = 'internalLoginToken'
 const OAUTH_ACCRESS_TOKEN_KEY = 'oauthAccessToken'
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const useUser = () => useContext(UserContext)
 
 /** Provider for the current logged-in user. */

@@ -12,6 +12,8 @@ export type ImageConfig = {
   style?: CSSProperties
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const validateImageConfig = (imageConfig: unknown): ImageConfig => {
   const message = 'Invalid image config'
   const config = requirePlainObject(imageConfig, message)

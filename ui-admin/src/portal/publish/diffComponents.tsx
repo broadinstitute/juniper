@@ -50,6 +50,8 @@ export const ConfigChangeView = ({ configChange }: {configChange: ConfigChange})
   </div>
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const valuePresent = (val: object) => {
   return val !== null && typeof val !== 'undefined'
 }

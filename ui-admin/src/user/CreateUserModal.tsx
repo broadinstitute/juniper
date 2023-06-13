@@ -7,6 +7,8 @@ import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import Select from 'react-select'
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 const CreateUserModal = ({ onDismiss, portals, userCreated }:
                            { onDismiss: () => void,
                              portals: Portal[], userCreated: () => void

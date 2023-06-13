@@ -6,6 +6,8 @@ type MailingListModalProps = {
   id: string
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const MailingListModal = (props: MailingListModalProps) => {
   const { id } = props
   const closeButtonRef = useRef<HTMLButtonElement>(null)

@@ -100,6 +100,8 @@ const usePrintableConsent = (args: UsePrintableConsentArgs) => {
   return { loading, surveyModel }
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 const PrintConsentView = () => {
   const { portal } = usePortalEnv()
   const { enrollees } = useUser()

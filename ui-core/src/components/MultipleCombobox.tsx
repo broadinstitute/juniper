@@ -14,6 +14,8 @@ type MultipleComboboxProps<ComboboxItem> = {
   onChange?: (value: ComboboxItem[]) => void
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const MultipleComboBox = <ComboboxItem, >(props: MultipleComboboxProps<ComboboxItem>) => {
   const { id, initialValue, itemToString, options, placeholder, onChange } = props
 

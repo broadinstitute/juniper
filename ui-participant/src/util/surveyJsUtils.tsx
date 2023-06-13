@@ -146,6 +146,8 @@ export function useSurveyJSModel(
   return { surveyModel, refreshSurvey, pageNumber, SurveyComponent, setSurveyModel }
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const applyMarkdown = (survey: object, options: { text: string, html: string }) => {
   const markdownText = micromark(options.text)
   // chop off <p> tags.

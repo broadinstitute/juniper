@@ -32,6 +32,8 @@ const ItemDisplay = ({ answer, surveyJsModel, surveyVersion }: {answer: Answer,
   </>
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const getDisplayValue = (answer: Answer, question: Question | QuestionWithChoices) => {
   const answerValue = answer.stringValue ?? answer.numberValue ?? answer.objectValue ?? answer.booleanValue
   if (!question) {
@@ -55,6 +57,8 @@ export const getDisplayValue = (answer: Answer, question: Question | QuestionWit
   return displayValue
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const getTextForChoice = (value: string | number | boolean | undefined, question: Question) => {
   return question.choices.find((choice: ItemValue)  => choice.value === value)?.text ?? value
 }
