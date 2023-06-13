@@ -18,6 +18,7 @@ type TableOfContentsEntry = {
   children: TableOfContentsEntry[]
 }
 
+/** Recursive helper for getTableOfContents. */
 const getTableOfContentsHelper = (formElement: FormElement): TableOfContentsEntry => {
   if ('type' in formElement && formElement.type === 'panel') {
     return {
@@ -34,6 +35,7 @@ const getTableOfContentsHelper = (formElement: FormElement): TableOfContentsEntr
   }
 }
 
+/** Convert a FormContent object into a TableOfContentsEntry. */
 const getTableOfContents = (formContent: FormContent): TableOfContentsEntry => {
   return {
     type: 'form',
@@ -61,10 +63,12 @@ const getTableOfContents = (formContent: FormContent): TableOfContentsEntry => {
   }
 }
 
+/** Should a table of contents entry be expandable? */
 const isEntryTypeExpandable = (entryType: string): boolean => {
   return entryType !== 'questionOrHtml'
 }
 
+/** Should a table of contents entry be selectable? */
 const isEntryTypeSelectable = (entryType: string): boolean => {
   return entryType === 'questionOrHtml'
 }
@@ -79,6 +83,7 @@ type EntryContentsProps = {
   onSelectEntry: (name: string) => void
 }
 
+/** Render the contents/children of a table of contents entry. */
 export const EntryContents = (props: EntryContentsProps) => {
   const {
     activeDescendant,
@@ -128,6 +133,7 @@ type EntryProps = {
   onSelectEntry: (name: string) => void
 }
 
+/** Render a table of contents entry. */
 export const Entry = (props: EntryProps) => {
   const {
     activeDescendant,
@@ -238,6 +244,7 @@ type FormTableOfContentsProps = {
   onSelectElement: (name: string) => void
 }
 
+/** Render a table of contents for a form. */
 export const FormTableOfContents = (props: FormTableOfContentsProps) => {
   const { formContent, selectedElementName, onSelectElement } = props
 
