@@ -15,13 +15,13 @@ describe('surveyJSModelFromFormContent', () => {
       pages: [
         {
           elements: [
-            { type: 'html', html: '<span>Talk about your brother</span>' },
+            { type: 'html', name: 'brotherIntro', html: '<span>Talk about your brother</span>' },
             { name: 'brotherFavoriteColor', questionTemplateName: 'colorPicker' }
           ]
         },
         {
           elements: [
-            { type: 'html', html: '<span>Talk about your sister</span>' },
+            { type: 'html', name: 'sisterIntro', html: '<span>Talk about your sister</span>' },
             { name: 'sisterFavoriteColor', questionTemplateName: 'colorPicker' }
           ]
         }

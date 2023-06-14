@@ -87,6 +87,7 @@ export type FormPanel = BaseElement & {
 }
 
 export type HtmlElement = {
+  name: string
   type: 'html'
   html: string
 }

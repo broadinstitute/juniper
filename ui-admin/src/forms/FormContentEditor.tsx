@@ -3,6 +3,7 @@ import { Tab, Tabs } from 'react-bootstrap'
 
 import { FormContent } from '@juniper/ui-core'
 
+import { FormDesigner } from './FormDesigner'
 import { OnChangeFormContent } from './formEditorTypes'
 import { FormContentJsonEditor } from './FormContentJsonEditor'
 import { FormPreview } from './FormPreview'
@@ -16,7 +17,7 @@ type FormContentEditorProps = {
 export const FormContentEditor = (props: FormContentEditorProps) => {
   const { initialContent, readOnly, onChange } = props
 
-  const [activeTab, setActiveTab] = useState<string | null>('json')
+  const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [tabsEnabled, setTabsEnabled] = useState(true)
 
   const [editedContent, setEditedContent] = useState(() => JSON.parse(initialContent) as FormContent)
@@ -30,6 +31,16 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
         unmountOnExit
         onSelect={setActiveTab}
       >
+        <Tab
+          disabled={activeTab !== 'designer' && !tabsEnabled}
+          eventKey="designer"
+          title="Designer"
+        >
+          <FormDesigner
+            value={editedContent}
+            onChange={setEditedContent}
+          />
+        </Tab>
         <Tab
           disabled={activeTab !== 'json' && !tabsEnabled}
           eventKey="json"
