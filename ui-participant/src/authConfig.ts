@@ -31,8 +31,8 @@ export const getAuthProviderProps = (
   }
 }
 
-/** Creates and returns UserManagerSettings based on B2C configuration values. */
 /* eslint-disable camelcase, max-len */
+/** Creates and returns UserManagerSettings based on B2C configuration values. */
 export const getOidcConfig = (b2cTenantName: string, b2cClientId: string, b2cPolicyName: string): UserManagerSettings => {
   return {
     /*

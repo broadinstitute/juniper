@@ -25,7 +25,7 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module'
   },
-  plugins: ['react', 'jsx-a11y', 'import', 'jest'],
+  plugins: ['react', 'jsx-a11y', 'import', 'jest', 'jsdoc'],
   rules: {
     'array-bracket-newline': ['warn', 'consistent'],
     'array-bracket-spacing': 'warn',
@@ -65,7 +65,6 @@ module.exports = {
     'one-var': ['warn', 'never'],
     'padded-blocks': ['warn', 'never'],
     quotes: ['warn', 'single', { allowTemplateLiterals: true }],
-    'require-jsdoc': 'warn',
     semi: ['warn', 'never'],
     'space-before-blocks': 'warn',
     'space-before-function-paren': [
@@ -104,7 +103,17 @@ module.exports = {
     'jest/prefer-to-have-length': 'warn',
 
     // TypeScript
-    '@typescript-eslint/ban-ts-comment': 'off'
+    '@typescript-eslint/ban-ts-comment': 'off',
+
+    // JSDoc
+    'jsdoc/require-jsdoc': ['warn', {
+      publicOnly: true,
+      require: {
+        FunctionDeclaration: true,
+        FunctionExpression: true,
+        ArrowFunctionExpression: true
+      }
+    }]
   },
   settings: {
     'import/resolver': {

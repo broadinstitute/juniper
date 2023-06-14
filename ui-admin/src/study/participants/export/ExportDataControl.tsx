@@ -7,6 +7,8 @@ import { currentIsoDate } from 'util/timeUtils'
 import { failureNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext: StudyEnvContextT, show: boolean,
                            setShow:  React.Dispatch<React.SetStateAction<boolean>>}) => {
   const [humanReadable, setHumanReadable] = useState(true)

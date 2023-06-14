@@ -60,6 +60,8 @@ function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT
   </>
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const usersPath = (portalShortcode: string) => {
   return `/${portalShortcode}/users`
 }
@@ -74,22 +76,32 @@ export const portalEnvDiffPath = (portalShortcode: string, destEnvName: string, 
   return `/${portalShortcode}/env/${destEnvName}/diff/${sourceEnvName}`
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const siteContentPath = (portalShortcode: string, envName: string) => {
   return `/${portalShortcode}/env/${envName}/siteContent`
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const portalConfigPath = (portalShortcode: string, envName: string) => {
   return `/${portalShortcode}/env/${envName}/config`
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const studyParticipantsPath = (portalShortcode: string, envName: string, studyShortcode: string) => {
   return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/participants`
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const studyContentPath = (portalShortcode: string, envName: string, studyShortcode: string) => {
   return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}`
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const portalParticipantsPath = (portalShortcode: string, envName: string) => {
   return `/${portalShortcode}/env/${envName}/participants`
 }

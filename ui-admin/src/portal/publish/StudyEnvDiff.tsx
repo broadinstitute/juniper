@@ -2,6 +2,8 @@ import React from 'react'
 import { StudyEnvironmentChange } from 'api/api'
 import { ConfigChangeListView, ConfigChanges, VersionChangeView } from './diffComponents'
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 const StudyEnvDiff = ({ studyEnvChange }: {studyEnvChange: StudyEnvironmentChange}) => {
   return <div className="px-3">
     <div className="my-1">

@@ -83,26 +83,38 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
 
 export default StudyEnvironmentRouter
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const studyEnvPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}`
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const notificationConfigPath = (config: NotificationConfig, currentEnvPath: string) => {
   return `${currentEnvPath}/notificationConfigs/${config.id}`
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const getExportDataBrowserPath = (currentEnvPath: string) => {
   return `${currentEnvPath}/export/dataBrowser`
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const studyEnvMetricsPath = (portalShortcode: string, envName: string, studyShortcode: string) => {
   return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/metrics`
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const getDatasetListViewPath = (currentEnvPath: string) => {
   return `${currentEnvPath}/export/dataRepo/datasets`
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const getDatasetDashboardPath = (datasetName: string, currentEnvPath: string) => {
   return `${currentEnvPath}/export/dataRepo/datasets/${datasetName}`
 }

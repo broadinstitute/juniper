@@ -16,6 +16,8 @@ import CreateUserModal from './CreateUserModal'
 import { failureNotification } from '../util/notifications'
 import { Store } from 'react-notifications-component'
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 const PortalUserList = ({ portal }: {portal: Portal}) => {
   const [users, setUsers] = useState<AdminUser[]>([])
   const [isLoading, setIsLoading] = useState(true)

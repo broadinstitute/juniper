@@ -33,6 +33,8 @@ export type ButtonConfig =
   | InternalLinkButtonConfig
   | ExternalLinkButtonConfig
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const validateButtonConfig = (buttonConfig: unknown): ButtonConfig => {
   const message = 'Invalid button config'
   const config = requirePlainObject(buttonConfig, message)
@@ -58,6 +60,8 @@ type ConfiguredButtonProps = {
   className?: string;
 }
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const ConfiguredLink = (props: ConfiguredButtonProps) => {
   const { className, config } = props
   if (config.type === 'join') {

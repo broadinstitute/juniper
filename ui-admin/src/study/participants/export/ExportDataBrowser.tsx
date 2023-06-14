@@ -17,6 +17,8 @@ import ExportDataControl from './ExportDataControl'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
   const [data, setData] = useState<ExportData | null>(null)
   const [isLoading, setIsLoading] = useState(true)

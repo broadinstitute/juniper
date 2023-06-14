@@ -1,6 +1,8 @@
 import React from 'react'
 import { PortalEnvironment } from 'api/api'
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 const PortalEnvConfigView = ({ portalEnv }: {portalEnv: PortalEnvironment}) => {
   const config = portalEnv.portalEnvironmentConfig
 

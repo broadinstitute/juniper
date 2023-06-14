@@ -9,6 +9,8 @@ import { usePreEnrollResponseId, usePreRegResponseId, useReturnToStudy } from 'b
 import { userHasJoinedPortalStudy } from 'util/enrolleeUtils'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 export const RedirectFromOAuth = () => {
   const auth = useAuth()
   const { loginUser, updateEnrollee, user } = useUser()
