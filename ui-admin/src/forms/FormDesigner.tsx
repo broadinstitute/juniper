@@ -10,6 +10,7 @@ type FormDesignerProps = {
   onChange: (editedContent: FormContent) => void
 }
 
+/** UI for editing forms. */
 export const FormDesigner = (props: FormDesignerProps) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { readOnly = false, value, onChange } = props
