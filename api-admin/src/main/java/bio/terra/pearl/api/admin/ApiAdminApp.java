@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.admin;
 
 import bio.terra.common.logging.LoggingInitializer;
+import bio.terra.pearl.core.config.PgArraySerializer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -68,6 +69,7 @@ public class ApiAdminApp {
         .registerModule(new ParameterNamesModule())
         .registerModule(new Jdk8Module())
         .registerModule(new JavaTimeModule())
+        .registerModule(PgArraySerializer.module())
         .setDefaultPropertyInclusion(JsonInclude.Include.NON_ABSENT)
         .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
   }

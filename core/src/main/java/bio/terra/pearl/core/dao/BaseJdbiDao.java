@@ -321,7 +321,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
-    protected String prefixedGetQueryColumns(String prefix) {
+    public String prefixedGetQueryColumns(String prefix) {
         List<String> prefixedCols = getQueryColumns.stream().map(col -> prefix + "." + col)
                 .collect(Collectors.toList());
         return StringUtils.join(prefixedCols, ", ");

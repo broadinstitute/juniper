@@ -10,6 +10,7 @@ public class MappingConfiguration {
     public ObjectMapper populateObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
+        mapper.registerModule(PgArraySerializer.module());
         return mapper;
     }
 }
