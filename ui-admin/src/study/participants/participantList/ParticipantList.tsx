@@ -8,7 +8,7 @@ import {
   getDatasetListViewPath,
   getExportDataBrowserPath,
   StudyEnvContextT, studyEnvMetricsPath
-} from '../StudyEnvironmentRouter'
+} from '../../StudyEnvironmentRouter'
 import {
   ColumnDef,
   flexRender,
@@ -17,11 +17,12 @@ import {
   SortingState,
   useReactTable, VisibilityState
 } from '@tanstack/react-table'
-import { ColumnVisibilityControl, IndeterminateCheckbox, sortableTableHeader } from '../../util/tableUtils'
+import { ColumnVisibilityControl, IndeterminateCheckbox, sortableTableHeader } from '../../../util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
-import ExportDataControl from './export/ExportDataControl'
-import AdHocEmailModal from './AdHocEmailModal'
+import ExportDataControl from '../export/ExportDataControl'
+import AdHocEmailModal from '../AdHocEmailModal'
+import EnrolleeSearchFacets from "./EnrolleeSearchFacets";
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -107,7 +108,12 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   return <div className="ParticipantList container pt-2">
     <div className="row">
       <div className="col-12">
-        <h2 className="h5">{study.name} Participants</h2>
+        <h2 className="h5 text-center">{study.name} Participants</h2>
+      </div>
+      <div className="col-3">
+        <EnrolleeSearchFacets/>
+      </div>
+      <div className="col-9">
         <LoadingSpinner isLoading={isLoading}>
           <div className="d-flex align-items-center justify-content-between">
             <div className="d-flex align-items-center">

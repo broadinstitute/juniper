@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import Api, { Enrollee, Notification } from 'api/api'
-import { StudyEnvContextT, notificationConfigPath } from '../StudyEnvironmentRouter'
+import { StudyEnvContextT, notificationConfigPath } from '../../StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { instantToDefaultString } from 'util/timeUtils'
-import NotificationConfigTypeDisplay from '../notifications/NotifcationConfigTypeDisplay'
+import NotificationConfigTypeDisplay from '../../notifications/NotifcationConfigTypeDisplay'
 import { Link } from 'react-router-dom'
 
 /** loads the list of notifications for a given enrollee and displays them in the UI */

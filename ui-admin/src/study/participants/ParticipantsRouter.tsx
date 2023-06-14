@@ -1,8 +1,8 @@
 import React from 'react'
 import { Link, Route, Routes } from 'react-router-dom'
-import ParticipantList from './ParticipantList'
+import ParticipantList from './participantList/ParticipantList'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import EnrolleeLoader from './EnrolleeLoader'
+import EnrolleeLoader from './enrolleeView/EnrolleeLoader'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
 
 /** routes to list or individual enrollee view as appropriate */

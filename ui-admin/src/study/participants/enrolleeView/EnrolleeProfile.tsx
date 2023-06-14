@@ -1,6 +1,6 @@
 import React from 'react'
 import { Enrollee, MailingAddress } from 'api/api'
-import { dateToDefaultString } from '../../util/timeUtils'
+import { dateToDefaultString } from '../../../util/timeUtils'
 
 /**
  * shows the enrollee profile.  Designed for read-only.  When we implement admin-profile editing capability,

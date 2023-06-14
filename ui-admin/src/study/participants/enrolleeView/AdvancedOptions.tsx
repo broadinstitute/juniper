@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Api, { Enrollee } from 'api/api'
-import { StudyEnvContextT } from '../StudyEnvironmentRouter'
+import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { useUser } from 'user/UserProvider'
 import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
