@@ -139,7 +139,6 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   }, [])
 
   const numSelected = Object.keys(rowSelection).length
-  const facetParam = `facets=${facetValuesToString(facetValues)}`
   const allowSendEmail = numSelected > 0
   const enrolleesSelected = Object.keys(rowSelection)
     .filter(key => rowSelection[key])
@@ -149,7 +148,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     <div className="row">
       <div className="col-12">
         <h2 className="h5 text-center">{study.name} Participants</h2>
-        {decodeURIComponent(facetParam)}
+        facets={decodeURIComponent(searchParams.get('facets') ?? '')}
       </div>
       <div className="col-3">
         <EnrolleeSearchFacets facets={SAMPLE_FACETS} facetValues={facetValues} updateFacetValues={updateFacetValues} />
