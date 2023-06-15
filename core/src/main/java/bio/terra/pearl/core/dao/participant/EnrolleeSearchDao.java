@@ -5,9 +5,6 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.participant.search.SqlSearchable;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.jdbi.v3.core.Jdbi;
@@ -81,10 +78,4 @@ public class EnrolleeSearchDao {
     String sqlQuery = selectQuery + fromQuery + whereQuery + groupByQuery + sortQuery;
     return sqlQuery;
   }
-
-  public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-    Set<Object> seen = ConcurrentHashMap.newKeySet();
-    return t -> seen.add(keyExtractor.apply(t));
-  }
-
 }

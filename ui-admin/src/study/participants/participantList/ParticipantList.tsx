@@ -3,7 +3,7 @@ import Api, { EnrolleeSearchResult } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
-import { Link } from 'react-router-dom'
+import {Link, useSearchParams} from 'react-router-dom'
 import {
   getDatasetListViewPath,
   getExportDataBrowserPath,
@@ -17,12 +17,40 @@ import {
   SortingState,
   useReactTable, VisibilityState
 } from '@tanstack/react-table'
-import { ColumnVisibilityControl, IndeterminateCheckbox, sortableTableHeader } from '../../../util/tableUtils'
+import { ColumnVisibilityControl, IndeterminateCheckbox, sortableTableHeader } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import ExportDataControl from '../export/ExportDataControl'
 import AdHocEmailModal from '../AdHocEmailModal'
-import EnrolleeSearchFacets from "./EnrolleeSearchFacets";
+import EnrolleeSearchFacets, {Facet, SAMPLE_FACETS, FacetValue, newFacetValue} from "./EnrolleeSearchFacets";
+
+const facetValuesToString = (facetValues: FacetValue[]): string => {
+  const paramObj: Record<string, Record<string, object>> = {}
+  facetValues
+    .filter(facetValue => !facetValue.isDefault())
+    .forEach(facetValue => {
+      const category = facetValue.facet.category
+      const keyName = facetValue.facet.keyName
+      const { facet: _, ...values } = facetValue
+      paramObj[category] = paramObj[category] ?? {}
+      paramObj[category][keyName] = values
+    })
+  return JSON.stringify(paramObj)
+}
+
+const facetValuesFromString = (paramString: string, facets: Facet[]): FacetValue[] => {
+  const facetValues = []
+  const paramObj = JSON.parse(paramString)
+
+  for (const categoryName in paramObj) {
+    const category = paramObj[categoryName]
+    for (const keyName in category) {
+      const matchedFacet = facets.find(facet => facet.category === categoryName && facet.keyName === keyName) as Facet
+      facetValues.push(newFacetValue(matchedFacet, category[keyName]))
+    }
+  }
+  return facetValues
+}
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -37,6 +65,9 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     'givenName': false,
     'familyName': false
   })
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const facetValues = facetValuesFromString(searchParams.get('facets') ?? '{}', SAMPLE_FACETS)
 
 
   const columns = useMemo<ColumnDef<EnrolleeSearchResult, string>[]>(() => [{
@@ -90,16 +121,25 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     onRowSelectionChange: setRowSelection
   })
 
+  const searchEnrollees = async (facetValues: FacetValue[]) => {
+    const response = await Api.getEnrollees(portal.shortcode, study.shortcode, currentEnv.environmentName)
+    setParticipantList(response)
+    setIsLoading(false)
+  }
+
+  const updateFacetValues = (facetValues: FacetValue[]) => {
+    //searchEnrollees(facetValues)
+    searchParams.set('facets', facetValuesToString(facetValues))
+    setSearchParams(searchParams)
+    //setFacetValues(facetValues)
+  }
+
   useEffect(() => {
-    Api.getEnrollees(portal.shortcode, study.shortcode, currentEnv.environmentName).then(result => {
-      setParticipantList(result)
-      setIsLoading(false)
-    }).catch(() => {
-      Store.addNotification(failureNotification(`Error loading participants`))
-    })
+    searchEnrollees([])
   }, [])
 
   const numSelected = Object.keys(rowSelection).length
+  const facetParam = `facets=${facetValuesToString(facetValues)}`
   const allowSendEmail = numSelected > 0
   const enrolleesSelected = Object.keys(rowSelection)
     .filter(key => rowSelection[key])
@@ -109,9 +149,10 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     <div className="row">
       <div className="col-12">
         <h2 className="h5 text-center">{study.name} Participants</h2>
+        {decodeURIComponent(facetParam)}
       </div>
       <div className="col-3">
-        <EnrolleeSearchFacets/>
+        <EnrolleeSearchFacets facets={SAMPLE_FACETS} facetValues={facetValues} updateFacetValues={updateFacetValues} />
       </div>
       <div className="col-9">
         <LoadingSpinner isLoading={isLoading}>

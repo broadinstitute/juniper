@@ -1,35 +1,80 @@
-import React, {useState} from 'react'
+import React from 'react'
 
-import {Accordion, Card} from 'react-bootstrap'
+import {Accordion} from 'react-bootstrap'
 import _cloneDeep from "lodash/cloneDeep";
 import Select, {MultiValue} from 'react-select'
-type FacetValue = object
-type StringFacetValue = FacetValue & {
-  values: string[]
+interface IFacetValue {
+  isDefault: () => boolean
+  facet: Facet
 }
-type IntRangeFacetValue = FacetValue & {
-  min: number | null,
+type StringFacetValueFields = { values: string[] }
+class StringFacetValue implements IFacetValue {
+  values: string[]
+  facet: StringFacet
+  constructor(facet: StringFacet, facetVal: StringFacetValueFields = {values: []}) {
+    this.values = facetVal.values
+    this.facet = facet
+  }
+  isDefault() {
+    return this.values.length === 0
+  }
+}
+type IntRangeFacetValueFields = {
+  min: number | null
   max: number | null
 }
-type StableIdStringFacetValue = FacetValue & {
-  values: {
-    stableId: string,
-    values: string[]
-  }[]
+class IntRangeFacetValue implements IFacetValue {
+  min: number | null
+  max: number | null
+  facet: IntRangeFacet
+  constructor(facet: IntRangeFacet, facetVal: IntRangeFacetValueFields = {min: null, max: null}) {
+    this.min = facetVal.min
+    this.max = facetVal.max
+    this.facet = facet
+  }
+  isDefault() {
+    return this.max === null && this.min === null
+  }
 }
+
+class StableIdStringValue {
+  stableId: string | null
+  values: string[]
+  constructor(stableId: string | null = null, values: string[] = []) {
+    this.values = values
+    this.stableId = stableId
+  }
+  isDefault() {
+    return this.values.length === 0
+  }
+}
+type StableIdStringArrayFacetValueFields = { values: StableIdStringValue[] }
+class StableIdStringArrayFacetValue implements IFacetValue {
+  values: StableIdStringValue[]
+  facet: StableIdStringArrayFacet
+  constructor(facet: StableIdStringArrayFacet, facetVal: StableIdStringArrayFacetValueFields = {values: []}) {
+    this.values = facetVal.values
+    this.facet = facet
+  }
+  isDefault() {
+    return this.values.length === 0 || !this.values.some(val => !val.isDefault())
+  }
+}
+
+export type FacetValue =  StringFacetValue | IntRangeFacetValue | StableIdStringArrayFacetValue
 
 type FacetType = | 'INT_RANGE' | 'STRING' | 'STABLEID_STRING'
 
-type Facet = {
+type BaseFacet = {
   keyName: string,
   category: string,
   label: string,
-  type: FacetType
+  type: FacetType,
 }
 
-type IntRangeFacet = Facet & {
+type IntRangeFacet = BaseFacet & {
   type: 'INT_RANGE'
-  min: number | null,
+  min: number | null
   max: number | null
 }
 
@@ -37,18 +82,20 @@ type FacetOption = {
   label: string, value: string
 }
 
-type StringFacet = Facet & {
+type StringFacet = BaseFacet & {
   type: 'STRING',
   options: FacetOption[]
 }
 
-type StableIdStringFacet = Facet & {
+type StableIdStringArrayFacet = BaseFacet & {
   type: 'STABLEID_STRING',
   options: FacetOption[]
   stableIdOptions: FacetOption[]
 }
 
-const facets: (IntRangeFacet | StringFacet | StableIdStringFacet)[] = [{
+export type Facet = StringFacet | StableIdStringArrayFacet | IntRangeFacet
+
+export const SAMPLE_FACETS: Facet[] = [{
   category: 'profile',
   keyName: 'age',
   label: 'Age',
@@ -83,54 +130,67 @@ const facets: (IntRangeFacet | StringFacet | StableIdStringFacet)[] = [{
   ]
 }]
 
-export default function EnrolleeSearchFacets() {
-  const initialValues = () => facets.map(facet => {
-    if (facet.type === 'STRING') {
-      return {values: []} as FacetValue
-    } else if (facet.type === 'INT_RANGE') {
-      return {max: null, min: null} as FacetValue
-    }
-    return {values: []} as FacetValue
-  })
-  const [facetValues, setFacetValues] = useState<FacetValue[]>(initialValues())
+
+export const newFacetValue = (facet: Facet, facetValue?: object): FacetValue => {
+  if (facet.type === 'INT_RANGE') {
+    return new IntRangeFacetValue(facet, facetValue as IntRangeFacetValueFields)
+  } else if (facet.type === 'STABLEID_STRING') {
+    return new StableIdStringArrayFacetValue(facet, facetValue as StableIdStringArrayFacetValueFields)
+  }
+  return new StringFacetValue(facet, facetValue as StringFacetValueFields)
+}
+
+export default function EnrolleeSearchFacets({facets, facetValues, updateFacetValues}:
+    {facets: Facet[], facetValues: FacetValue[], updateFacetValues: (values: FacetValue[]) => void}) {
+
   const updateFacetValue = (facetValue: FacetValue, index: number) => {
     const newValues = _cloneDeep(facetValues)
     newValues[index] = facetValue
-    setFacetValues(newValues)
+    updateFacetValues(newValues)
+  }
+
+  const clearAll = () => {
+    updateFacetValues(facets.map(facet => newFacetValue(facet)))
   }
   return <div>
-    <button className="btn btn-secondary float-end">Clear all</button>
+    <button className="btn btn-secondary float-end" onClick={clearAll}>Clear all</button>
     <Accordion defaultActiveKey={['0']} alwaysOpen flush>
-      {facets.map((facet, index) => <Accordion.Item eventKey={index.toString()}>
-        <Accordion.Header>{facet.label}</Accordion.Header>
-        <Accordion.Body>
-          <FacetView facet={facet} facetValue={facetValues[index]}
-                     updateValue={(facetValue) => updateFacetValue(facetValue, index)}/>
-        </Accordion.Body>
-      </Accordion.Item>)}
+      {facets.map((facet, index) => {
+        const matchedVal = facetValues.find(facetValue => facetValue.facet.keyName === facet.keyName &&
+          facetValue.facet.category === facet.category)
+        return <Accordion.Item eventKey={index.toString()}>
+          <Accordion.Header>{facet.label}</Accordion.Header>
+          <Accordion.Body>
+            <FacetView facet={facet} facetValue={matchedVal}
+                       updateValue={(facetValue) => updateFacetValue(facetValue, index)}/>
+          </Accordion.Body>
+        </Accordion.Item>
+      })}
     </Accordion>
   </div>
 }
 
 const FacetView = ({facet, facetValue, updateValue}:
-                     {facet: Facet, facetValue: FacetValue, updateValue: (facetValue: FacetValue) => void}) => {
+                     {facet: Facet, facetValue: FacetValue | undefined,
+                       updateValue: (facetValue: FacetValue) => void}) => {
+  if (!facetValue) {
+    facetValue = newFacetValue(facet)
+  }
   if (facet.type === 'INT_RANGE') {
-    return <IntRangeFacetView facet={facet as IntRangeFacet} facetValue={facetValue as IntRangeFacetValue}
+    return <IntRangeFacetView facetValue={facetValue as IntRangeFacetValue}
                               updateValue={updateValue}/>
   } else if (facet.type === 'STRING') {
-    return <StringFacetView facet={facet as StringFacet} facetValue={facetValue as StringFacetValue}
+    return <StringFacetView facetValue={facetValue as StringFacetValue}
                               updateValue={updateValue}/>
   } else if (facet.type === 'STABLEID_STRING') {
-    return <StableIdStringFacetView facet={facet as StableIdStringFacet}
-                                    facetValue={facetValue as StableIdStringFacetValue}
+    return <StableIdStringFacetView facetValue={facetValue as StableIdStringArrayFacetValue}
                                     updateValue={updateValue}/>
   }
   return <span>yo</span>
 }
 
-const IntRangeFacetView = ({facet, facetValue, updateValue}:
-                             {facet: IntRangeFacet, facetValue: IntRangeFacetValue,
-  updateValue: (facetValue: FacetValue) => void}) => {
+const IntRangeFacetView = ({facetValue, updateValue}:
+                             {facetValue: IntRangeFacetValue, updateValue: (facetValue: FacetValue) => void}) => {
   const min = facetValue.min ?? ''
   const max = facetValue.max ?? ''
   const textToVal = (text: string): number | null => {
@@ -142,21 +202,22 @@ const IntRangeFacetView = ({facet, facetValue, updateValue}:
   }
   return <div>
     <label>min <input type="text" size={2} value={min}
-                      onChange={e => updateValue({
-                        max: facetValue.max,
-                        min: textToVal(e.target.value)
-                      })}/></label>
+                      onChange={e => updateValue(new IntRangeFacetValue(
+                        facetValue.facet, {
+                          min: textToVal(e.target.value),
+                          max: facetValue.max
+                        }))}/></label>
     <label className="ms-3">max <input type="text" size={2} value={max}
-                      onChange={e => updateValue({
-                        max: textToVal(e.target.value),
-                        min: facetValue.min
-                      })}/></label>
+                      onChange={e => updateValue(new IntRangeFacetValue(
+                        facetValue.facet, {
+                          min: facetValue.min,
+                          max: textToVal(e.target.value)
+                        }))}/></label>
   </div>
 }
 
-const StringFacetView = ({facet, facetValue, updateValue}:
-                           {facet: StringFacet, facetValue: StringFacetValue,
-                             updateValue: (facetValue: FacetValue) => void}) => {
+const StringFacetView = ({facetValue, updateValue}:
+                           {facetValue: StringFacetValue, updateValue: (facetValue: FacetValue) => void}) => {
   const values = facetValue.values
   const setValue = (value: string, checked: boolean ) => {
     let newValues = [...values]
@@ -165,10 +226,10 @@ const StringFacetView = ({facet, facetValue, updateValue}:
     } else if (!checked) {
       newValues = newValues.filter(val => val !== value)
     }
-    updateValue({values: newValues})
+    updateValue(new StringFacetValue(facetValue.facet, {values: newValues}))
   }
   return <div>
-    {facet.options.map(option => {
+    {facetValue.facet.options.map(option => {
       const checked = values.includes(option.value)
       return <div><label>
           <input type="checkbox" className="me-2" checked={checked} value={option.value}
@@ -179,8 +240,7 @@ const StringFacetView = ({facet, facetValue, updateValue}:
   </div>
 }
 
-const StableIdStringFacetView = ({facet, facetValue, updateValue}:
-                           {facet: StableIdStringFacet, facetValue: StableIdStringFacetValue,
+const StableIdStringFacetView = ({facetValue, updateValue}: {facetValue: StableIdStringArrayFacetValue,
                              updateValue: (facetValue: FacetValue) => void}) => {
   const updateValues = (stableId: string, newValue: MultiValue<FacetOption | undefined>) => {
     const stringArrayVals = newValue ? newValue.map(val => val?.value as string) : []
@@ -189,10 +249,11 @@ const StableIdStringFacetView = ({facet, facetValue, updateValue}:
     if (changedVal) {
       changedVal.values = stringArrayVals
     } else {
-      newValues.push({stableId, values: stringArrayVals})
+      newValues.push(new StableIdStringValue(stableId, stringArrayVals))
     }
-    updateValue({values: newValues})
+    updateValue(new StableIdStringArrayFacetValue(facetValue.facet, {values: newValues}))
   }
+  const facet = facetValue.facet
   return <div>
     {facet.stableIdOptions.map(stableIdOption => {
       const stringValues = facetValue.values.find(val => val.stableId === stableIdOption.value)?.values ?? []
