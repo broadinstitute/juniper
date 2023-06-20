@@ -5,7 +5,6 @@ import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
@@ -98,12 +97,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
 
     public Enrollee loadForAdminView(Enrollee enrollee) {
         return dao.loadForAdminView(enrollee);
-    }
-
-
-    public List<EnrolleeSearchResult> search(String studyShortcode, EnvironmentName envName) {
-        StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
-        return dao.searchByStudyEnvironment(studyEnv.getId());
     }
 
     public Optional<Enrollee> findByPreEnrollResponseId(UUID preEnrollResponseId) {

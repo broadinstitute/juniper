@@ -1,14 +1,12 @@
-package bio.terra.pearl.core.service.participant.search;
+package bio.terra.pearl.core.service.participant.search.facets.sql;
 
+import bio.terra.pearl.core.service.participant.search.facets.IntRangeFacetValue;
+import bio.terra.pearl.core.service.participant.search.facets.sql.FacetSqlGenerator;
 import java.util.List;
 import org.jdbi.v3.core.statement.Query;
 
-public class ProfileAgeFacetValue implements SqlSearchable<ProfileAgeFacetValue> {
-  private final IntRangeFacetValue facetValue;
-
-  public ProfileAgeFacetValue(IntRangeFacetValue facetValue) {
-    this.facetValue = facetValue;
-  }
+public class ProfileAgeFacetSqlGenerator implements FacetSqlGenerator<IntRangeFacetValue> {
+  public ProfileAgeFacetSqlGenerator() {}
 
   @Override
   public String getTableName() {
@@ -21,12 +19,12 @@ public class ProfileAgeFacetValue implements SqlSearchable<ProfileAgeFacetValue>
   }
 
   @Override
-  public String getSelectQuery() {
+  public String getSelectQuery(IntRangeFacetValue facetValue) {
     return " max(profile.birth_date) AS profile__birth_date";
   }
 
   @Override
-  public String getWhereClause(int facetIndex) {
+  public String getWhereClause(IntRangeFacetValue facetValue, int facetIndex) {
     int maxValue = facetValue.getMax() != null ? facetValue.getMax() : 150;
     int minValue = facetValue.getMin() != null ? facetValue.getMin() : 0;
     // CAREFUL: this is putting user params directly in sql, this is only safe since it's only allowing integers.
@@ -36,12 +34,14 @@ public class ProfileAgeFacetValue implements SqlSearchable<ProfileAgeFacetValue>
   }
 
   @Override
-  public String getCombinedWhereClause(List<ProfileAgeFacetValue> facetValues) {
+  public String getCombinedWhereClause(List<IntRangeFacetValue> facetValues) {
     return "";
   }
 
   @Override
-  public void bindSqlParameters(int facetIndex, Query query) {
+  public void bindSqlParameters(IntRangeFacetValue facetValue, int facetIndex, Query query) {
     // no-op, see above comment about not using bindings
   }
 }
+
+

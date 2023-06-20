@@ -22,35 +22,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import ExportDataControl from '../export/ExportDataControl'
 import AdHocEmailModal from '../AdHocEmailModal'
-import EnrolleeSearchFacets, {Facet, SAMPLE_FACETS, FacetValue, newFacetValue} from "./EnrolleeSearchFacets";
-
-const facetValuesToString = (facetValues: FacetValue[]): string => {
-  const paramObj: Record<string, Record<string, object>> = {}
-  facetValues
-    .filter(facetValue => !facetValue.isDefault())
-    .forEach(facetValue => {
-      const category = facetValue.facet.category
-      const keyName = facetValue.facet.keyName
-      const { facet: _, ...values } = facetValue
-      paramObj[category] = paramObj[category] ?? {}
-      paramObj[category][keyName] = values
-    })
-  return JSON.stringify(paramObj)
-}
-
-const facetValuesFromString = (paramString: string, facets: Facet[]): FacetValue[] => {
-  const facetValues = []
-  const paramObj = JSON.parse(paramString)
-
-  for (const categoryName in paramObj) {
-    const category = paramObj[categoryName]
-    for (const keyName in category) {
-      const matchedFacet = facets.find(facet => facet.category === categoryName && facet.keyName === keyName) as Facet
-      facetValues.push(newFacetValue(matchedFacet, category[keyName]))
-    }
-  }
-  return facetValues
-}
+import EnrolleeSearchFacets, {} from "./EnrolleeSearchFacets";
+import {facetValuesFromString, facetValuesToString, SAMPLE_FACETS, FacetValue}
+  from "api/enrolleeSearch";
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -84,19 +58,19 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     )
   }, {
     header: 'Shortcode',
-    accessorKey: 'enrollee.shortcode',
+    accessorKey: 'enrollee__shortcode',
     cell: info => <Link to={`${currentEnvPath}/participants/${info.getValue()}`}>{info.getValue()}</Link>
   }, {
     id: 'familyName',
     header: 'Family name',
-    accessorKey: 'profile.familyName'
+    accessorKey: 'profile__familyName'
   }, {
     id: 'givenName',
     header: 'Given name',
-    accessorKey: 'profile.givenName'
+    accessorKey: 'profile__givenName'
   }, {
     header: 'Consented',
-    accessorKey: 'enrollee.consented',
+    accessorKey: 'enrollee__consented',
     cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
   }, {
     header: 'Kit requested',
@@ -122,20 +96,21 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   })
 
   const searchEnrollees = async (facetValues: FacetValue[]) => {
-    const response = await Api.getEnrollees(portal.shortcode, study.shortcode, currentEnv.environmentName)
+    setIsLoading(true)
+    const response = await Api.searchEnrollees(portal.shortcode, study.shortcode, currentEnv.environmentName,
+      facetValues)
     setParticipantList(response)
     setIsLoading(false)
   }
 
   const updateFacetValues = (facetValues: FacetValue[]) => {
-    //searchEnrollees(facetValues)
+    searchEnrollees(facetValues)
     searchParams.set('facets', facetValuesToString(facetValues))
     setSearchParams(searchParams)
-    //setFacetValues(facetValues)
   }
 
   useEffect(() => {
-    searchEnrollees([])
+    searchEnrollees(facetValues)
   }, [])
 
   const numSelected = Object.keys(rowSelection).length

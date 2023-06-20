@@ -7,7 +7,7 @@ import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 
 jest.mock('api/api', () => ({
-  getEnrollees: () => {
+  searchEnrollees: () => {
     const fakeEnrollee = mockEnrollee()
     const enrolleeSearchResults: EnrolleeSearchResult[] = [{
       enrollee: fakeEnrollee,

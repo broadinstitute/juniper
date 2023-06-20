@@ -1,8 +1,12 @@
-package bio.terra.pearl.core.service.participant.search;
+package bio.terra.pearl.core.service.participant.search.facets;
 
+import bio.terra.pearl.core.service.participant.search.facets.FacetValue;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Getter
+@Getter @Setter
+@NoArgsConstructor
 public class IntRangeFacetValue implements FacetValue {
   private String keyName;
   private Integer min;

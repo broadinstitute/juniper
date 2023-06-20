@@ -3,7 +3,7 @@ package bio.terra.pearl.core.dao.participant;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.service.participant.search.SqlSearchable;
+import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -24,12 +24,12 @@ public class EnrolleeSearchDao {
   }
 
   public List<Map<String, Object>> search(String studyShortcode, EnvironmentName envName,
-                                          List<SqlSearchable> facets) {
+                                          List<SqlSearchableFacet> facets) {
     StudyEnvironment studyEnv = studyEnvironmentDao.findByStudy(studyShortcode, envName).get();
     return search(studyEnv.getId(), facets);
   }
 
-  public List<Map<String, Object>> search(UUID studyEnvId, List<SqlSearchable> facets) {
+  public List<Map<String, Object>> search(UUID studyEnvId, List<SqlSearchableFacet> facets) {
     var result =  jdbi.withHandle(handle -> {
       String queryString = generateSearchQueryString(facets);
       Query query = handle.createQuery(queryString);
@@ -43,8 +43,8 @@ public class EnrolleeSearchDao {
     return result;
   }
 
-  protected String generateSearchQueryString(List<SqlSearchable> facets) {
-    var facetsGroupByTable = new HashMap<String, List<SqlSearchable>>();
+  protected String generateSearchQueryString(List<SqlSearchableFacet> facets) {
+    var facetsGroupByTable = new HashMap<String, List<SqlSearchableFacet>>();
     facets.stream()
         .filter(facet -> !"enrollee".equals(facet.getTableName()))
         .forEach(facet -> {
@@ -54,7 +54,11 @@ public class EnrolleeSearchDao {
           facetsGroupByTable.get(facet.getTableName()).add(facet);
         });
 
-    String baseSelectQuery = "select enrollee.id, max(enrollee.shortcode) as enrollee__shortcode, max(enrollee.created_at) as enrollee__created_at";
+    String baseSelectQuery = """
+      select enrollee.id, max(enrollee.shortcode) as enrollee__shortcode, 
+       max(enrollee.created_at) as enrollee__created_at,
+       bool_and(enrollee.consented) as enrollee__consented
+     """;
     List<String> selects = facets.stream().map(facet -> facet.getSelectQuery())
         .collect(Collectors.toList());
     selects.add(0, baseSelectQuery);

@@ -3,142 +3,15 @@ import React from 'react'
 import {Accordion} from 'react-bootstrap'
 import _cloneDeep from "lodash/cloneDeep";
 import Select, {MultiValue} from 'react-select'
-interface IFacetValue {
-  isDefault: () => boolean
-  facet: Facet
-}
-type StringFacetValueFields = { values: string[] }
-class StringFacetValue implements IFacetValue {
-  values: string[]
-  facet: StringFacet
-  constructor(facet: StringFacet, facetVal: StringFacetValueFields = {values: []}) {
-    this.values = facetVal.values
-    this.facet = facet
-  }
-  isDefault() {
-    return this.values.length === 0
-  }
-}
-type IntRangeFacetValueFields = {
-  min: number | null
-  max: number | null
-}
-class IntRangeFacetValue implements IFacetValue {
-  min: number | null
-  max: number | null
-  facet: IntRangeFacet
-  constructor(facet: IntRangeFacet, facetVal: IntRangeFacetValueFields = {min: null, max: null}) {
-    this.min = facetVal.min
-    this.max = facetVal.max
-    this.facet = facet
-  }
-  isDefault() {
-    return this.max === null && this.min === null
-  }
-}
+import {
+  Facet,
+  FacetOption,
+  FacetValue, IntRangeFacetValue,
+  newFacetValue, StableIdStringArrayFacetValue,
+  StableIdStringValue,
+  StringFacetValue
+} from "../../../api/enrolleeSearch";
 
-class StableIdStringValue {
-  stableId: string | null
-  values: string[]
-  constructor(stableId: string | null = null, values: string[] = []) {
-    this.values = values
-    this.stableId = stableId
-  }
-  isDefault() {
-    return this.values.length === 0
-  }
-}
-type StableIdStringArrayFacetValueFields = { values: StableIdStringValue[] }
-class StableIdStringArrayFacetValue implements IFacetValue {
-  values: StableIdStringValue[]
-  facet: StableIdStringArrayFacet
-  constructor(facet: StableIdStringArrayFacet, facetVal: StableIdStringArrayFacetValueFields = {values: []}) {
-    this.values = facetVal.values
-    this.facet = facet
-  }
-  isDefault() {
-    return this.values.length === 0 || !this.values.some(val => !val.isDefault())
-  }
-}
-
-export type FacetValue =  StringFacetValue | IntRangeFacetValue | StableIdStringArrayFacetValue
-
-type FacetType = | 'INT_RANGE' | 'STRING' | 'STABLEID_STRING'
-
-type BaseFacet = {
-  keyName: string,
-  category: string,
-  label: string,
-  type: FacetType,
-}
-
-type IntRangeFacet = BaseFacet & {
-  type: 'INT_RANGE'
-  min: number | null
-  max: number | null
-}
-
-type FacetOption = {
-  label: string, value: string
-}
-
-type StringFacet = BaseFacet & {
-  type: 'STRING',
-  options: FacetOption[]
-}
-
-type StableIdStringArrayFacet = BaseFacet & {
-  type: 'STABLEID_STRING',
-  options: FacetOption[]
-  stableIdOptions: FacetOption[]
-}
-
-export type Facet = StringFacet | StableIdStringArrayFacet | IntRangeFacet
-
-export const SAMPLE_FACETS: Facet[] = [{
-  category: 'profile',
-  keyName: 'age',
-  label: 'Age',
-  type: 'INT_RANGE',
-  max: 150,
-  min: 0
-}, {
-  category: 'profile',
-  keyName: 'sexAtBirth',
-  label: 'Sex at birth',
-  type: 'STRING',
-  options: [
-    {value: 'male', label: 'male'},
-    {value: 'female', label: 'female'},
-    {value: 'other', label: 'other'},
-    {value: 'unknown', label: 'unknown'}
-  ]
-}, {
-  category: 'participantTask',
-  keyName: 'status',
-  label: 'Task status',
-  type: 'STABLEID_STRING',
-  options: [
-    {value: 'COMPLETE', label: 'Complete'},
-    {value: 'IN_PROGRESS', label: 'In progress'},
-    {value: 'NEW', label: 'New'}
-  ],
-  stableIdOptions: [
-    {value: 'oh_oh_consent', label: 'Consent'},
-    {value: 'oh_oh_basicInfo', label: 'Basics'},
-    {value: 'oh_oh_cardioHx', label: 'Cardio History'}
-  ]
-}]
-
-
-export const newFacetValue = (facet: Facet, facetValue?: object): FacetValue => {
-  if (facet.type === 'INT_RANGE') {
-    return new IntRangeFacetValue(facet, facetValue as IntRangeFacetValueFields)
-  } else if (facet.type === 'STABLEID_STRING') {
-    return new StableIdStringArrayFacetValue(facet, facetValue as StableIdStringArrayFacetValueFields)
-  }
-  return new StringFacetValue(facet, facetValue as StringFacetValueFields)
-}
 
 export default function EnrolleeSearchFacets({facets, facetValues, updateFacetValues}:
     {facets: Facet[], facetValues: FacetValue[], updateFacetValues: (values: FacetValue[]) => void}) {

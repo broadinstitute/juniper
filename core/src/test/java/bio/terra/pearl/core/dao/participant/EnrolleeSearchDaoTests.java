@@ -13,7 +13,14 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
-import bio.terra.pearl.core.service.participant.search.*;
+import bio.terra.pearl.core.service.participant.search.facets.CombinedStableIdFacetValue;
+import bio.terra.pearl.core.service.participant.search.facets.IntRangeFacetValue;
+import bio.terra.pearl.core.service.participant.search.facets.StableIdStringFacetValue;
+import bio.terra.pearl.core.service.participant.search.facets.StringFacetValue;
+import bio.terra.pearl.core.service.participant.search.facets.sql.ParticipantTaskFacetSqlGenerator;
+import bio.terra.pearl.core.service.participant.search.facets.sql.ProfileAgeFacetSqlGenerator;
+import bio.terra.pearl.core.service.participant.search.facets.sql.ProfileFacetSqlGenerator;
+import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.List;
@@ -60,8 +67,8 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
     Profile profile2 = Profile.builder().sexAtBirth("female").build();
     enrolleeFactory.buildPersisted("testProfileSearch", studyEnv, profile2);
 
-    ProfileFacetValue facet = new ProfileFacetValue(new StringFacetValue(
-        "sexAtBirth", List.of("male")));
+    SqlSearchableFacet facet = new SqlSearchableFacet(new StringFacetValue(
+        "sexAtBirth", List.of("male")), new ProfileFacetSqlGenerator());
     var result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
     assertThat(result, hasSize(1));
     assertThat(result.get(0).get("enrollee__shortcode"), equalTo(maleEnrollee.getShortcode()));
@@ -77,20 +84,20 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
     Profile profile2 = Profile.builder().birthDate(LocalDate.of(1940, 1, 1)).build();
     Enrollee oldEnrollee = enrolleeFactory.buildPersisted("testProfileSearch", studyEnv, profile2);
 
-    ProfileAgeFacetValue facet = new ProfileAgeFacetValue(new IntRangeFacetValue(
-        "age", 0, 40));
+    SqlSearchableFacet facet = new SqlSearchableFacet(new IntRangeFacetValue(
+        "age", 0, 40), new ProfileAgeFacetSqlGenerator());
     var result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
     assertThat(result, hasSize(1));
     assertThat(result.get(0).get("enrollee__shortcode"), equalTo(youngEnrollee.getShortcode()));
 
-    facet = new ProfileAgeFacetValue(new IntRangeFacetValue(
-        "age", 50, null));
+    facet = new SqlSearchableFacet(new IntRangeFacetValue(
+        "age", 50, null), new ProfileAgeFacetSqlGenerator());
     result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
     assertThat(result, hasSize(1));
     assertThat(result.get(0).get("enrollee__shortcode"), equalTo(oldEnrollee.getShortcode()));
 
-    facet = new ProfileAgeFacetValue(new IntRangeFacetValue(
-        "age", null, null));
+    facet = new SqlSearchableFacet(new IntRangeFacetValue(
+        "age", null, null), new ProfileAgeFacetSqlGenerator());
     result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
     assertThat(result, hasSize(2));
   }
@@ -111,8 +118,8 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
     var differentTaskBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
     participantTaskFactory.buildPersisted(differentTaskBundle, "otherSurvey", TaskStatus.COMPLETE, TaskType.SURVEY);
 
-    ParticipantTaskFacetValue facet = new ParticipantTaskFacetValue(new StableIdFacetValue(
-        "status", List.of("COMPLETE"), "bigSurvey"));
+    SqlSearchableFacet facet = new SqlSearchableFacet(new CombinedStableIdFacetValue("status",
+        List.of(new StableIdStringFacetValue("status", "bigSurvey", List.of("COMPLETE")))), new ParticipantTaskFacetSqlGenerator());
     var result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
     assertThat(result, hasSize(1));
     assertThat(result.get(0).get("enrollee__shortcode"), equalTo(doneEnrolleeBundle.enrollee().getShortcode()));
@@ -120,8 +127,9 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
     assertThat(((PgArray) result.get(0).get("participant_task__status")).getArray(), equalTo(List.of("COMPLETE").toArray()));
     assertThat(((PgArray) result.get(0).get("participant_task__target_stable_id")).getArray(), equalTo(List.of("bigSurvey").toArray()));
 
-    ParticipantTaskFacetValue otherFacet = new ParticipantTaskFacetValue(new StableIdFacetValue(
-        "status", List.of("COMPLETE"), "otherSurvey"));
+    SqlSearchableFacet otherFacet = new SqlSearchableFacet(new CombinedStableIdFacetValue("status",
+        List.of(new StableIdStringFacetValue("status", "otherSurvey", List.of("COMPLETE")))), new ParticipantTaskFacetSqlGenerator());
+
     var otherResult = enrolleeSearchDao.search(studyEnv.getId(), List.of(otherFacet));
     assertThat(otherResult, hasSize(1));
     assertThat(otherResult.get(0).get("enrollee__shortcode"), equalTo(differentTaskBundle.enrollee().getShortcode()));
