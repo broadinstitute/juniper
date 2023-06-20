@@ -15,7 +15,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const title = context.payload.pull_request.title;
-            const regex = /JN|DDO-\d+/;
+            const regex = /JN-\d+/;
             if (!regex.test(title)) {
               core.setFailed("PR title must contain a Jira ticket");
             }
