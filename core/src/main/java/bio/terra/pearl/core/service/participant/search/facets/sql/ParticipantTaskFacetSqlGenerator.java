@@ -39,12 +39,18 @@ public class ParticipantTaskFacetSqlGenerator implements FacetSqlGenerator<Combi
   public String getWhereClause(CombinedStableIdFacetValue facetValue, int facetIndex) {
     String columnName = getColumnName(facetValue);
     return IntStream.range(0, facetValue.getValues().size()).mapToObj(i -> {
+      StableIdStringFacetValue subValue = facetValue.getValues().get(i);
+      String subFilterOrClause = IntStream.range(0, subValue.getValues().size()).mapToObj(j ->
+        "%s.%s = :%s".formatted(TABLE_NAME, columnName, getSqlParamName(TABLE_NAME, columnName, facetIndex, i, j))
+      ).collect(Collectors.joining(" OR "));
+      if (subValue.getValues().size() == 0) {
+        subFilterOrClause = "1 = 1";
+      }
       return """
          exists (select 1 from %s where %s.enrollee_id = enrollee.id
          and %s.target_stable_id = :%s
-         and %s.%s = :%s)
-        """.formatted(TABLE_NAME, TABLE_NAME, TABLE_NAME, getStableIdParam(facetIndex, i), TABLE_NAME, columnName,
-          EnrolleeSearchUtils.getSqlParamName(TABLE_NAME, columnName, facetIndex, i));
+         and (%s))
+        """.formatted(TABLE_NAME, TABLE_NAME, TABLE_NAME, getStableIdParam(facetIndex, i), subFilterOrClause);
     }).collect(Collectors.joining(" and"));
   }
 
@@ -60,13 +66,17 @@ public class ParticipantTaskFacetSqlGenerator implements FacetSqlGenerator<Combi
       StableIdStringFacetValue subVal = facetValue.getValues().get(i);
       query.bind(getStableIdParam(facetIndex, i), subVal.getStableId());
       for (int j = 0; j < subVal.getValues().size(); j++) {
-        query.bind(EnrolleeSearchUtils.getSqlParamName(TABLE_NAME, columnName, i, j), subVal.getValues().get(i));
+        query.bind(getSqlParamName(TABLE_NAME, columnName, facetIndex, i, j), subVal.getValues().get(j));
       }
     }
   }
 
   private String getStableIdParam(int facetIndex, int subIndex) {
     return "participantTaskStableId%d_%d".formatted(facetIndex, subIndex);
+  }
+
+  public static String getSqlParamName(String tableName, String columnName, int facetIndex, int subIndex, int subFilterIndex) {
+    return "%s_%d_%d".formatted(EnrolleeSearchUtils.getSqlParamName(tableName, columnName, facetIndex), subIndex, subFilterIndex);
   }
 
 }

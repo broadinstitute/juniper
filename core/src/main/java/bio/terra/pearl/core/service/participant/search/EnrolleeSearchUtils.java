@@ -11,12 +11,8 @@ public abstract class EnrolleeSearchUtils {
   public static final String FILTER_VALUE_SEPARATOR = ",";
   public static final String FACET_FILTER_SEPARATOR = "=";
 
-  public static String getSqlParamName(String tableName, String columnName, int filterIndex) {
-    return "%s_%s%d".formatted(tableName, columnName, filterIndex);
-  }
-
-  public static String getSqlParamName(String tableName, String columnName, int filterIndex, int subIndex) {
-    return "%s_%d".formatted(getSqlParamName(tableName, columnName, filterIndex), subIndex);
+  public static String getSqlParamName(String tableName, String columnName, int facetIndex) {
+    return "%s_%s%d".formatted(tableName, columnName, facetIndex);
   }
 
   public static String getSimpleWhereClause(StringFacetValue facetValue, String columnName, String tableName) {

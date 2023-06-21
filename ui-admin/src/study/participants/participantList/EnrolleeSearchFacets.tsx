@@ -10,15 +10,23 @@ import {
   newFacetValue, StableIdStringArrayFacetValue,
   StableIdStringValue,
   StringFacetValue
-} from "../../../api/enrolleeSearch";
+} from "api/enrolleeSearch";
 
 
 export default function EnrolleeSearchFacets({facets, facetValues, updateFacetValues}:
     {facets: Facet[], facetValues: FacetValue[], updateFacetValues: (values: FacetValue[]) => void}) {
 
-  const updateFacetValue = (facetValue: FacetValue, index: number) => {
-    const newValues = _cloneDeep(facetValues)
-    newValues[index] = facetValue
+  const updateFacetValue = (facetValue: FacetValue | null, index: number) => {
+    let newValues = _cloneDeep(facetValues)
+    if (facetValue === null) {
+      newValues = newValues.splice(index, index)
+    } else {
+      if (index === -1) {
+        newValues.push(facetValue)
+      } else {
+        newValues[index] = facetValue
+      }
+    }
     updateFacetValues(newValues)
   }
 
@@ -29,13 +37,14 @@ export default function EnrolleeSearchFacets({facets, facetValues, updateFacetVa
     <button className="btn btn-secondary float-end" onClick={clearAll}>Clear all</button>
     <Accordion defaultActiveKey={['0']} alwaysOpen flush>
       {facets.map((facet, index) => {
-        const matchedVal = facetValues.find(facetValue => facetValue.facet.keyName === facet.keyName &&
+        const matchedValIndex = facetValues.findIndex(facetValue => facetValue.facet.keyName === facet.keyName &&
           facetValue.facet.category === facet.category)
-        return <Accordion.Item eventKey={index.toString()}>
+        const matchedVal = facetValues[matchedValIndex]
+        return <Accordion.Item eventKey={index.toString()} key={index}>
           <Accordion.Header>{facet.label}</Accordion.Header>
           <Accordion.Body>
             <FacetView facet={facet} facetValue={matchedVal}
-                       updateValue={(facetValue) => updateFacetValue(facetValue, index)}/>
+                       updateValue={(facetValue) => updateFacetValue(facetValue, matchedValIndex)}/>
           </Accordion.Body>
         </Accordion.Item>
       })}
@@ -45,7 +54,7 @@ export default function EnrolleeSearchFacets({facets, facetValues, updateFacetVa
 
 const FacetView = ({facet, facetValue, updateValue}:
                      {facet: Facet, facetValue: FacetValue | undefined,
-                       updateValue: (facetValue: FacetValue) => void}) => {
+                       updateValue: (facetValue: FacetValue | null) => void}) => {
   if (!facetValue) {
     facetValue = newFacetValue(facet)
   }
@@ -63,7 +72,8 @@ const FacetView = ({facet, facetValue, updateValue}:
 }
 
 const IntRangeFacetView = ({facetValue, updateValue}:
-                             {facetValue: IntRangeFacetValue, updateValue: (facetValue: FacetValue) => void}) => {
+                             {facetValue: IntRangeFacetValue,
+                               updateValue: (facetValue: FacetValue | null) => void}) => {
   const min = facetValue.min ?? ''
   const max = facetValue.max ?? ''
   const textToVal = (text: string): number | null => {
@@ -90,7 +100,7 @@ const IntRangeFacetView = ({facetValue, updateValue}:
 }
 
 const StringFacetView = ({facetValue, updateValue}:
-                           {facetValue: StringFacetValue, updateValue: (facetValue: FacetValue) => void}) => {
+                           {facetValue: StringFacetValue, updateValue: (facetValue: FacetValue | null) => void}) => {
   const values = facetValue.values
   const setValue = (value: string, checked: boolean ) => {
     let newValues = [...values]
@@ -104,7 +114,7 @@ const StringFacetView = ({facetValue, updateValue}:
   return <div>
     {facetValue.facet.options.map(option => {
       const checked = values.includes(option.value)
-      return <div><label>
+      return <div key={option.value}><label>
           <input type="checkbox" className="me-2" checked={checked} value={option.value}
                  onChange={() => setValue(option.value, !checked)}/>
           {option.label}
@@ -114,24 +124,36 @@ const StringFacetView = ({facetValue, updateValue}:
 }
 
 const StableIdStringFacetView = ({facetValue, updateValue}: {facetValue: StableIdStringArrayFacetValue,
-                             updateValue: (facetValue: FacetValue) => void}) => {
+                             updateValue: (facetValue: FacetValue | null) => void}) => {
   const updateValues = (stableId: string, newValue: MultiValue<FacetOption | undefined>) => {
     const stringArrayVals = newValue ? newValue.map(val => val?.value as string) : []
-    const newValues = _cloneDeep(facetValue.values)
+    let newValues = _cloneDeep(facetValue.values)
     const changedVal = newValues.find(val => val.stableId === stableId)
-    if (changedVal) {
+
+    if (stringArrayVals.length === 0) {
+      // clear out the subValue for this stableId
+      newValues = newValues.filter(stableIdVal => stableIdVal.stableId !== stableId)
+    } else if (changedVal) {
+      // add/remove values from an existing stableId filter
       changedVal.values = stringArrayVals
     } else {
+      // create a new filter for a stableId
       newValues.push(new StableIdStringValue(stableId, stringArrayVals))
     }
-    updateValue(new StableIdStringArrayFacetValue(facetValue.facet, {values: newValues}))
+
+    if (newValues.length === 0) {
+      updateValue(null)
+    } else {
+      updateValue(new StableIdStringArrayFacetValue(facetValue.facet, {values: newValues}))
+    }
   }
+
   const facet = facetValue.facet
   return <div>
-    {facet.stableIdOptions.map(stableIdOption => {
+    {facet.stableIdOptions.map((stableIdOption, index) => {
       const stringValues = facetValue.values.find(val => val.stableId === stableIdOption.value)?.values ?? []
       const optValues = stringValues.map(stringVal => facet.options.find(opt => opt.value === stringVal))
-      return <div><label>
+      return <div key={index}><label>
         { stableIdOption.label }
         <Select options={facet.options} value={optValues} isMulti={true}
                 onChange={newValue => updateValues(stableIdOption.value, newValue)}/>

@@ -130,7 +130,10 @@ export const newFacetValue = (facet: Facet, facetValue?: object): FacetValue => 
   if (facet.type === 'INT_RANGE') {
     return new IntRangeFacetValue(facet, facetValue as IntRangeFacetValueFields)
   } else if (facet.type === 'STABLEID_STRING') {
-    return new StableIdStringArrayFacetValue(facet, facetValue as StableIdStringArrayFacetValueFields)
+    const newValues = facetValue ? (facetValue as StableIdStringArrayFacetValueFields).values.map(stableIdVal =>
+      new StableIdStringValue(stableIdVal.stableId, stableIdVal.values)
+    ) : []
+    return new StableIdStringArrayFacetValue(facet, {values: newValues})
   }
   return new StringFacetValue(facet, facetValue as StringFacetValueFields)
 }
