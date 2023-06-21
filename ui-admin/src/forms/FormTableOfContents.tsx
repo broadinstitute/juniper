@@ -5,7 +5,10 @@ import { FormContent, FormElement } from '@juniper/ui-core'
 import { Tree, TreeItemT } from 'components/Tree'
 
 type FormContentTableOfContentsTreeItem = TreeItemT<{
+  /** If this item can be selected. */
   isSelectable: boolean
+
+  /** Path to the form element associated with this tree item in object notation. For example, 'pages[0].elements[1]' */
   path: string
 }>
 

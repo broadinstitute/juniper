@@ -4,19 +4,39 @@ import { get } from 'lodash'
 import React, { Dispatch, SetStateAction, useRef, useState } from 'react'
 
 export type TreeItemT<T> = {
+  /** User facing label. */
   label: string
+
+  /** Data associated with this tree item. */
   data: T
+
+  /** Child tree items. */
   children?: TreeItemT<T>[]
 }
 
 type TreeItemProps<T> = {
+  /** ID of the tree's current active descendant element. */
   activeDescendant: string
+
+  /** ID for this tree item element. */
   id: string
+
+  /** Should the given tree item be rendered as selected? */
   isItemSelected: (item: TreeItemT<T>) => boolean
+
+  /** This tree item's data model. */
   item: TreeItemT<T>
+
+  /** Level within the tree (root is level 0, its children are level 1, etc). */
   level: number
+
+  /** Path to this item from the tree root in object notation. For example, 'children[0].children[1]'. */
   path: string
+
+  /** Update the tree's active descendant. */
   setActiveDescendant: Dispatch<SetStateAction<string>>
+
+  /** Callback when a tree item is clicked. */
   onClickItem: (item: TreeItemT<T>) => void
 }
 
@@ -140,10 +160,19 @@ export const TreeItem = <T, >(props: TreeItemProps<T>) => {
 }
 
 type TreeProps<T> = {
+  /** ID for the tree element. */
   id: string
+
+  /** Should the given tree item be rendered as selected? */
   isItemSelected: (item: TreeItemT<T>) => boolean
+
+  /** ARIA label for the tree element. */
   label: string
+
+  /** Data model for the tree. */
   rootItem: TreeItemT<T>
+
+  /** Callback when a tree item is clicked. */
   onClickItem: (item: TreeItemT<T>) => void
 }
 
