@@ -40,7 +40,10 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
         >
           <FormDesigner
             value={editedContent}
-            onChange={setEditedContent}
+            onChange={newContent => {
+              setEditedContent(newContent)
+              onChange(true, newContent)
+            }}
           />
         </Tab>
         <Tab
