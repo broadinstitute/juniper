@@ -12,7 +12,7 @@ import {
   SurveyResponse,
   PreregistrationResponse
 } from '@juniper/ui-core'
-import {facetValuesToString, FacetValue} from "./enrolleeSearch";
+import { facetValuesToString, FacetValue } from './enrolleeSearch'
 
 export type {
   Answer,

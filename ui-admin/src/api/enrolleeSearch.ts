@@ -5,11 +5,14 @@ export interface IFacetValue {
 export type StringFacetValueFields = { values: string[] }
 export class StringFacetValue implements IFacetValue {
   values: string[]
+
   facet: StringFacet
-  constructor(facet: StringFacet, facetVal: StringFacetValueFields = {values: []}) {
+
+  constructor(facet: StringFacet, facetVal: StringFacetValueFields = { values: [] }) {
     this.values = facetVal.values
     this.facet = facet
   }
+
   isDefault() {
     return this.values.length === 0
   }
@@ -20,13 +23,17 @@ export type IntRangeFacetValueFields = {
 }
 export class IntRangeFacetValue implements IFacetValue {
   min: number | null
+
   max: number | null
+
   facet: IntRangeFacet
-  constructor(facet: IntRangeFacet, facetVal: IntRangeFacetValueFields = {min: null, max: null}) {
+
+  constructor(facet: IntRangeFacet, facetVal: IntRangeFacetValueFields = { min: null, max: null }) {
     this.min = facetVal.min
     this.max = facetVal.max
     this.facet = facet
   }
+
   isDefault() {
     return this.max === null && this.min === null
   }
@@ -34,11 +41,14 @@ export class IntRangeFacetValue implements IFacetValue {
 
 export class StableIdStringValue {
   stableId: string | null
+
   values: string[]
+
   constructor(stableId: string | null = null, values: string[] = []) {
     this.values = values
     this.stableId = stableId
   }
+
   isDefault() {
     return this.values.length === 0
   }
@@ -46,11 +56,14 @@ export class StableIdStringValue {
 export type StableIdStringArrayFacetValueFields = { values: StableIdStringValue[] }
 export class StableIdStringArrayFacetValue implements IFacetValue {
   values: StableIdStringValue[]
+
   facet: StableIdStringArrayFacet
-  constructor(facet: StableIdStringArrayFacet, facetVal: StableIdStringArrayFacetValueFields = {values: []}) {
+
+  constructor(facet: StableIdStringArrayFacet, facetVal: StableIdStringArrayFacetValueFields = { values: [] }) {
     this.values = facetVal.values
     this.facet = facet
   }
+
   isDefault() {
     return this.values.length === 0 || !this.values.some(val => !val.isDefault())
   }
@@ -103,10 +116,10 @@ export const SAMPLE_FACETS: Facet[] = [{
   label: 'Sex at birth',
   type: 'STRING',
   options: [
-    {value: 'male', label: 'male'},
-    {value: 'female', label: 'female'},
-    {value: 'other', label: 'other'},
-    {value: 'unknown', label: 'unknown'}
+    { value: 'male', label: 'male' },
+    { value: 'female', label: 'female' },
+    { value: 'other', label: 'other' },
+    { value: 'unknown', label: 'unknown' }
   ]
 }, {
   category: 'participantTask',
@@ -114,18 +127,21 @@ export const SAMPLE_FACETS: Facet[] = [{
   label: 'Task status',
   type: 'STABLEID_STRING',
   options: [
-    {value: 'COMPLETE', label: 'Complete'},
-    {value: 'IN_PROGRESS', label: 'In progress'},
-    {value: 'NEW', label: 'New'}
+    { value: 'COMPLETE', label: 'Complete' },
+    { value: 'IN_PROGRESS', label: 'In progress' },
+    { value: 'NEW', label: 'New' }
   ],
   stableIdOptions: [
-    {value: 'oh_oh_consent', label: 'Consent'},
-    {value: 'oh_oh_basicInfo', label: 'Basics'},
-    {value: 'oh_oh_cardioHx', label: 'Cardio History'}
+    { value: 'oh_oh_consent', label: 'Consent' },
+    { value: 'oh_oh_basicInfo', label: 'Basics' },
+    { value: 'oh_oh_cardioHx', label: 'Cardio History' }
   ]
 }]
 
 
+/**
+ *
+ */
 export const newFacetValue = (facet: Facet, facetValue?: object): FacetValue => {
   if (facet.type === 'INT_RANGE') {
     return new IntRangeFacetValue(facet, facetValue as IntRangeFacetValueFields)
@@ -133,11 +149,14 @@ export const newFacetValue = (facet: Facet, facetValue?: object): FacetValue => 
     const newValues = facetValue ? (facetValue as StableIdStringArrayFacetValueFields).values.map(stableIdVal =>
       new StableIdStringValue(stableIdVal.stableId, stableIdVal.values)
     ) : []
-    return new StableIdStringArrayFacetValue(facet, {values: newValues})
+    return new StableIdStringArrayFacetValue(facet, { values: newValues })
   }
   return new StringFacetValue(facet, facetValue as StringFacetValueFields)
 }
 
+/**
+ *
+ */
 export const facetValuesToString = (facetValues: FacetValue[]): string => {
   const paramObj: Record<string, Record<string, object>> = {}
   facetValues
@@ -145,6 +164,8 @@ export const facetValuesToString = (facetValues: FacetValue[]): string => {
     .forEach(facetValue => {
       const category = facetValue.facet.category
       const keyName = facetValue.facet.keyName
+      // strip out the 'facet' property since we don't need to send that
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { facet: _, ...values } = facetValue
       paramObj[category] = paramObj[category] ?? {}
       paramObj[category][keyName] = values
@@ -152,6 +173,9 @@ export const facetValuesToString = (facetValues: FacetValue[]): string => {
   return JSON.stringify(paramObj)
 }
 
+/**
+ *
+ */
 export const facetValuesFromString = (paramString: string, facets: Facet[]): FacetValue[] => {
   const facetValues = []
   const paramObj = JSON.parse(paramString)

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import org.junit.jupiter.api.Test;
@@ -107,22 +108,28 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
   public void testTaskSearch() throws Exception {
     PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testTaskSearch", EnvironmentName.live );
     StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testTaskSearch");
+    // enrollee who has completed both surveys
     var doneEnrolleeBundle = enrolleeFactory.buildWithPortalUser("testTaskSearch", portalEnv, studyEnv);
     participantTaskFactory.buildPersisted(doneEnrolleeBundle, "bigSurvey", TaskStatus.COMPLETE, TaskType.SURVEY);
+    participantTaskFactory.buildPersisted(doneEnrolleeBundle, "otherSurvey", TaskStatus.COMPLETE, TaskType.SURVEY);
 
+    // enrollee who has only  one survey in progress
     var inProgressEnrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
     participantTaskFactory.buildPersisted(inProgressEnrolleeBundle, "bigSurvey", TaskStatus.IN_PROGRESS, TaskType.SURVEY);
 
+    // enrollee with no tasks
     var untaskedEnrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
 
-    var differentTaskBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
-    participantTaskFactory.buildPersisted(differentTaskBundle, "otherSurvey", TaskStatus.COMPLETE, TaskType.SURVEY);
+    // enrollee who has only completed the big survey
+    var oneSurveyEnrollee = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
+    participantTaskFactory.buildPersisted(oneSurveyEnrollee, "bigSurvey", TaskStatus.COMPLETE, TaskType.SURVEY);
 
     SqlSearchableFacet facet = new SqlSearchableFacet(new CombinedStableIdFacetValue("status",
         List.of(new StableIdStringFacetValue("status", "bigSurvey", List.of("COMPLETE")))), new ParticipantTaskFacetSqlGenerator());
     var result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
-    assertThat(result, hasSize(1));
-    assertThat(result.get(0).get("enrollee__shortcode"), equalTo(doneEnrolleeBundle.enrollee().getShortcode()));
+    assertThat(result, hasSize(2));
+    assertThat(result.stream().map(resultMap -> resultMap.get("enrollee__shortcode")).toList(),
+        hasItems(doneEnrolleeBundle.enrollee().getShortcode(),oneSurveyEnrollee.enrollee().getShortcode() ));
 
     assertThat(((PgArray) result.get(0).get("participant_task__status")).getArray(), equalTo(List.of("COMPLETE").toArray()));
     assertThat(((PgArray) result.get(0).get("participant_task__target_stable_id")).getArray(), equalTo(List.of("bigSurvey").toArray()));
@@ -132,9 +139,14 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
 
     var otherResult = enrolleeSearchDao.search(studyEnv.getId(), List.of(otherFacet));
     assertThat(otherResult, hasSize(1));
-    assertThat(otherResult.get(0).get("enrollee__shortcode"), equalTo(differentTaskBundle.enrollee().getShortcode()));
+    assertThat(otherResult.get(0).get("enrollee__shortcode"), equalTo(doneEnrolleeBundle.enrollee().getShortcode()));
+
+
+    SqlSearchableFacet bothSurveyFacet = new SqlSearchableFacet(new CombinedStableIdFacetValue("status",
+        List.of(new StableIdStringFacetValue("status", "bigSurvey", List.of("COMPLETE")),
+            new StableIdStringFacetValue("status", "otherSurvey", List.of("COMPLETE")))), new ParticipantTaskFacetSqlGenerator());
+    var bothSurveyResult = enrolleeSearchDao.search(studyEnv.getId(), List.of(bothSurveyFacet));
+    assertThat(bothSurveyResult, hasSize(1));
+    assertThat(bothSurveyResult.get(0).get("enrollee__shortcode"), equalTo(doneEnrolleeBundle.enrollee().getShortcode()));
   }
-
-
-
 }

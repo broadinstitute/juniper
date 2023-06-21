@@ -5,8 +5,8 @@ import static org.hamcrest.Matchers.*;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.api.admin.controller.enrollee.EnrolleeSearchController;
+import bio.terra.pearl.core.service.participant.search.facets.CombinedStableIdFacetValue;
 import bio.terra.pearl.core.service.participant.search.facets.IntRangeFacetValue;
-import bio.terra.pearl.core.service.participant.search.facets.StableIdStringFacetValue;
 import bio.terra.pearl.core.service.participant.search.facets.StringFacetValue;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
 import java.util.List;
@@ -56,9 +56,9 @@ public class EnrolleeSearchControllerTest extends BaseSpringBootTest {
         enrolleeSearchController.facetsFromJsonString(
             "{\"participantTask\":{\"status\":{\"values\":[{\"stableId\":\"oh_oh_consent\",\"values\":[\"COMPLETE\"]}]}}}");
     assertThat(facets, hasSize(1));
-    StableIdStringFacetValue facetValue = (StableIdStringFacetValue) facets.get(0).getValue();
+    CombinedStableIdFacetValue facetValue = (CombinedStableIdFacetValue) facets.get(0).getValue();
     assertThat(facetValue.getKeyName(), equalTo("status"));
-    assertThat(facetValue.getStableId(), equalTo("oh_oh_consent"));
-    assertThat(facetValue.getValues(), hasItems("COMPLETE"));
+    assertThat(facetValue.getValues().get(0).getStableId(), equalTo("oh_oh_consent"));
+    assertThat(facetValue.getValues().get(0).getValues(), hasItems("COMPLETE"));
   }
 }
