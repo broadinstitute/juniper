@@ -26,8 +26,7 @@ public class ProfileFacetSqlGenerator implements FacetSqlGenerator<StringFacetVa
 
     @Override
     public String getSelectQuery(StringFacetValue facetValue) {
-      String columnName = getColumnName(facetValue);
-      return " max(profile.%s) AS profile__%s".formatted(columnName, columnName);
+      return null; // already included in base query
     }
 
     @Override

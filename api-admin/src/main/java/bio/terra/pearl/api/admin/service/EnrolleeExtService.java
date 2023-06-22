@@ -4,6 +4,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.workflow.DataChangeRecord;
@@ -19,7 +20,6 @@ import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -54,7 +54,7 @@ public class EnrolleeExtService {
     this.enrolleeSearchService = enrolleeSearchService;
   }
 
-  public List<Map<String, Object>> search(
+  public List<EnrolleeSearchResult> search(
       AdminUser user,
       String portalShortcode,
       String studyShortcode,

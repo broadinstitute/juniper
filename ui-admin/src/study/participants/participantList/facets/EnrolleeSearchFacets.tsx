@@ -50,9 +50,9 @@ export default function EnrolleeSearchFacets({ facets, facetValues, updateFacetV
         // matchedVal will be undefined if there is no user-specified non-default value for the facet.
         // The FacetComponent will then render it as the default value
         const matchedVal = facetValues[matchedValIndex]
-        return <Accordion.Item eventKey={index.toString()} key={index} style={{background: '#ededed'}}>
-          <Accordion.Header style={{background: '#ededed'}}>{facet.label}</Accordion.Header>
-          <Accordion.Body style={{background: '#ededed'}}>
+        return <Accordion.Item eventKey={index.toString()} key={index}>
+          <Accordion.Header>{facet.label}</Accordion.Header>
+          <Accordion.Body>
             <FacetView facet={facet} facetValue={matchedVal}
               updateValue={facetValue => updateFacetValue(facetValue, matchedValIndex)}/>
           </Accordion.Body>

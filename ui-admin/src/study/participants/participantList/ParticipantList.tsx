@@ -58,19 +58,19 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     )
   }, {
     header: 'Shortcode',
-    accessorKey: 'enrollee__shortcode',
+    accessorKey: 'enrollee.shortcode',
     cell: info => <Link to={`${currentEnvPath}/participants/${info.getValue()}`}>{info.getValue()}</Link>
   }, {
     id: 'familyName',
     header: 'Family name',
-    accessorKey: 'profile__familyName'
+    accessorKey: 'profile.familyName'
   }, {
     id: 'givenName',
     header: 'Given name',
-    accessorKey: 'profile__givenName'
+    accessorKey: 'profile.givenName'
   }, {
     header: 'Consented',
-    accessorKey: 'enrollee__consented',
+    accessorKey: 'enrollee.consented',
     cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
   }, {
     header: 'Kit requested',
@@ -130,12 +130,12 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
         <div className="d-flex align-items-center justify-content-between">
           <div className="d-flex align-items-center">
             <Link to={studyEnvMetricsPath(portal.shortcode, currentEnv.environmentName, study.shortcode)}
-                  className="mx-2">Metrics</Link>
+              className="mx-2">Metrics</Link>
             <span className="px-1">|</span>
             <Link to={getExportDataBrowserPath(currentEnvPath)} className="mx-2">Export preview</Link>
             <span className="px-1">|</span>
             <button className="btn btn-secondary" onClick={() => setShowExportModal(!showExportModal)}
-                    aria-label="show or hide export modal">
+              aria-label="show or hide export modal">
               Download
             </button>
             <span className="px-1">|</span>

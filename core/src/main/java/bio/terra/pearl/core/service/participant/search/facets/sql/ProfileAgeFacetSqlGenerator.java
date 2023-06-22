@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.service.participant.search.facets.sql;
 
 import bio.terra.pearl.core.service.participant.search.facets.IntRangeFacetValue;
-import bio.terra.pearl.core.service.participant.search.facets.sql.FacetSqlGenerator;
 import java.util.List;
 import org.jdbi.v3.core.statement.Query;
 
@@ -20,7 +19,7 @@ public class ProfileAgeFacetSqlGenerator implements FacetSqlGenerator<IntRangeFa
 
   @Override
   public String getSelectQuery(IntRangeFacetValue facetValue) {
-    return " max(profile.birth_date) AS profile__birth_date";
+    return null; // already included in base query
   }
 
   @Override

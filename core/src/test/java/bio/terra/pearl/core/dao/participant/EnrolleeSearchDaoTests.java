@@ -29,7 +29,6 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import org.junit.jupiter.api.Test;
-import org.postgresql.jdbc.PgArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,8 +71,8 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
         "sexAtBirth", List.of("male")), new ProfileFacetSqlGenerator());
     var result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
     assertThat(result, hasSize(1));
-    assertThat(result.get(0).get("enrollee__shortcode"), equalTo(maleEnrollee.getShortcode()));
-    assertThat(result.get(0).get("profile__sex_at_birth"), equalTo("male"));
+    assertThat(result.get(0).getEnrollee().getShortcode(), equalTo(maleEnrollee.getShortcode()));
+    assertThat(result.get(0).getProfile().getSexAtBirth(), equalTo("male"));
   }
 
   @Test
@@ -89,13 +88,13 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
         "age", 0, 40), new ProfileAgeFacetSqlGenerator());
     var result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
     assertThat(result, hasSize(1));
-    assertThat(result.get(0).get("enrollee__shortcode"), equalTo(youngEnrollee.getShortcode()));
+    assertThat(result.get(0).getEnrollee().getShortcode(), equalTo(youngEnrollee.getShortcode()));
 
     facet = new SqlSearchableFacet(new IntRangeFacetValue(
         "age", 50, null), new ProfileAgeFacetSqlGenerator());
     result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
     assertThat(result, hasSize(1));
-    assertThat(result.get(0).get("enrollee__shortcode"), equalTo(oldEnrollee.getShortcode()));
+    assertThat(result.get(0).getEnrollee().getShortcode(), equalTo(oldEnrollee.getShortcode()));
 
     facet = new SqlSearchableFacet(new IntRangeFacetValue(
         "age", null, null), new ProfileAgeFacetSqlGenerator());
@@ -128,18 +127,15 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
         List.of(new StableIdStringFacetValue("status", "bigSurvey", List.of("COMPLETE")))), new ParticipantTaskFacetSqlGenerator());
     var result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
     assertThat(result, hasSize(2));
-    assertThat(result.stream().map(resultMap -> resultMap.get("enrollee__shortcode")).toList(),
+    assertThat(result.stream().map(resultMap -> resultMap.getEnrollee().getShortcode()).toList(),
         hasItems(doneEnrolleeBundle.enrollee().getShortcode(),oneSurveyEnrollee.enrollee().getShortcode() ));
-
-    assertThat(((PgArray) result.get(0).get("participant_task__status")).getArray(), equalTo(List.of("COMPLETE").toArray()));
-    assertThat(((PgArray) result.get(0).get("participant_task__target_stable_id")).getArray(), equalTo(List.of("bigSurvey").toArray()));
 
     SqlSearchableFacet otherFacet = new SqlSearchableFacet(new CombinedStableIdFacetValue("status",
         List.of(new StableIdStringFacetValue("status", "otherSurvey", List.of("COMPLETE")))), new ParticipantTaskFacetSqlGenerator());
 
     var otherResult = enrolleeSearchDao.search(studyEnv.getId(), List.of(otherFacet));
     assertThat(otherResult, hasSize(1));
-    assertThat(otherResult.get(0).get("enrollee__shortcode"), equalTo(doneEnrolleeBundle.enrollee().getShortcode()));
+    assertThat(otherResult.get(0).getEnrollee().getShortcode(), equalTo(doneEnrolleeBundle.enrollee().getShortcode()));
 
 
     SqlSearchableFacet bothSurveyFacet = new SqlSearchableFacet(new CombinedStableIdFacetValue("status",
@@ -147,6 +143,6 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
             new StableIdStringFacetValue("status", "otherSurvey", List.of("COMPLETE")))), new ParticipantTaskFacetSqlGenerator());
     var bothSurveyResult = enrolleeSearchDao.search(studyEnv.getId(), List.of(bothSurveyFacet));
     assertThat(bothSurveyResult, hasSize(1));
-    assertThat(bothSurveyResult.get(0).get("enrollee__shortcode"), equalTo(doneEnrolleeBundle.enrollee().getShortcode()));
+    assertThat(bothSurveyResult.get(0).getEnrollee().getShortcode(), equalTo(doneEnrolleeBundle.enrollee().getShortcode()));
   }
 }
