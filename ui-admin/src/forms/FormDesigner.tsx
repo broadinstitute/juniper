@@ -1,7 +1,10 @@
+import { get, set } from 'lodash/fp'
 import React, { useState } from 'react'
 
-import { FormContent } from '@juniper/ui-core'
+import { FormContent, FormContentPage, FormElement } from '@juniper/ui-core'
 
+import { PageDesigner } from './designer/PageDesigner'
+import { PanelDesigner } from './designer/PanelDesigner'
 import { FormTableOfContents } from './FormTableOfContents'
 
 type FormDesignerProps = {
@@ -12,7 +15,6 @@ type FormDesignerProps = {
 
 /** UI for editing forms. */
 export const FormDesigner = (props: FormDesignerProps) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { readOnly = false, value, onChange } = props
 
   const [selectedElementPath, setSelectedElementPath] = useState<string>()
@@ -26,11 +28,37 @@ export const FormDesigner = (props: FormDesignerProps) => {
           onSelectElement={setSelectedElementPath}
         />
       </div>
-      <div className="flex-grow-1 overflow-scroll">
+      <div className="flex-grow-1 overflow-scroll py-2 px-3">
         {(() => {
           if (selectedElementPath === undefined) {
             return (
               <p className="mt-5 text-center">Select an element to edit</p>
+            )
+          }
+
+          const selectedElement = get(selectedElementPath, value) as FormContentPage | FormElement
+
+          if (!('type' in selectedElement) && !('questionTemplateName' in selectedElement)) {
+            return (
+              <PageDesigner
+                readOnly={readOnly}
+                value={selectedElement}
+                onChange={updatedElement => {
+                  onChange(set(selectedElementPath, updatedElement, value))
+                }}
+              />
+            )
+          }
+
+          if ('type' in selectedElement && selectedElement.type === 'panel') {
+            return (
+              <PanelDesigner
+                readOnly={readOnly}
+                value={selectedElement}
+                onChange={updatedElement => {
+                  onChange(set(selectedElementPath, updatedElement, value))
+                }}
+              />
             )
           }
 
