@@ -3,10 +3,12 @@ package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -21,7 +23,6 @@ import bio.terra.pearl.core.service.participant.search.facets.sql.ParticipantTas
 import bio.terra.pearl.core.service.participant.search.facets.sql.ProfileAgeFacetSqlGenerator;
 import bio.terra.pearl.core.service.participant.search.facets.sql.ProfileFacetSqlGenerator;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -44,18 +45,38 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
   @Autowired
   private EnrolleeSearchDao enrolleeSearchDao;
   @Autowired
-  private ObjectMapper objectMapper;
+  private KitRequestFactory kitRequestFactory;
 
   @Test
   @Transactional
   public void testEmptySearch() {
     StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted("testEmptySearch");
-    enrolleeFactory.buildPersisted("testEmptySearch", studyEnv);
+    var enrollee = enrolleeFactory.buildPersisted("testEmptySearch", studyEnv);
     StudyEnvironment studyEnv2 = studyEnvironmentFactory.buildPersisted("testEmptySearch");
     enrolleeFactory.buildPersisted("testEmptySearch", studyEnv2);
 
     var result = enrolleeSearchDao.search(studyEnv.getId(), List.of());
     assertThat(result, hasSize(1));
+    assertThat(result.get(0).getEnrollee().getShortcode(), equalTo(enrollee.getShortcode()));
+  }
+
+  @Test
+  @Transactional
+  public void testKitRequestStatusReturn() throws Exception {
+    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted("testKitRequestStatusSearch");
+    var enrollee = enrolleeFactory.buildPersisted("testKitRequestStatusSearch", studyEnv);
+    var kitEnrollee = enrolleeFactory.buildPersisted("testKitRequestStatusSearch", studyEnv);
+
+    kitRequestFactory.buildPersisted("testKitRequestStatusSearch", kitEnrollee.getId());
+
+    var result = enrolleeSearchDao.search(studyEnv.getId(), List.of());
+    assertThat(result, hasSize(2));
+    var kitEnrolleeResult = result.stream().filter(esr -> esr.getEnrollee().getShortcode().equals(kitEnrollee.getShortcode()))
+            .findFirst().get();
+    assertThat(kitEnrolleeResult.getMostRecentKitStatus(), equalTo(KitRequestStatus.CREATED));
+    var otherEnrolleeResult = result.stream().filter(esr -> esr.getEnrollee().getShortcode().equals(enrollee.getShortcode()))
+        .findFirst().get();
+    assertThat(otherEnrolleeResult.getMostRecentKitStatus(), equalTo(null));
   }
 
   @Test

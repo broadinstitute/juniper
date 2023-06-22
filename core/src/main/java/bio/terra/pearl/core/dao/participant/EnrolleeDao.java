@@ -8,11 +8,9 @@ import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
-import bio.terra.pearl.core.model.participant.Profile;
-
-import java.util.*;
-
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
@@ -102,23 +100,6 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
             kitRequest.setKitType(kitType);
         }
         return enrollee;
-    }
-
-    public List<EnrolleeSearchResult> searchByStudyEnvironment(UUID studyEnvironmentId) {
-        List<Enrollee> enrollees = findByStudyEnvironmentId(studyEnvironmentId);
-        Map<UUID, Boolean> hasKit = new HashMap<>();
-        for (Enrollee enrollee : enrollees) {
-            var kitRequests = kitRequestDao.findByEnrollee(enrollee.getId());
-            hasKit.put(enrollee.getId(), !kitRequests.isEmpty());
-        }
-        List<UUID> profileIds = enrollees.stream().map(enrollee -> enrollee.getProfileId()).toList();
-        List<Profile> profiles = profileDao.findAll(profileIds);
-        return enrollees.stream().map(enrollee -> EnrolleeSearchResult.builder()
-                .enrollee(enrollee)
-                .profile(profiles.stream().filter(profile -> profile.getId().equals(enrollee.getProfileId()))
-                        .findFirst().orElse(null))
-                .hasKit(hasKit.get(enrollee.getId()))
-                .build()).toList();
     }
 
     public int countByStudyEnvironment(UUID studyEnvironmentId) {

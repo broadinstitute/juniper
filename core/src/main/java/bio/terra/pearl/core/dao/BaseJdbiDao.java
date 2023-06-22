@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.RowMapper;
@@ -27,7 +28,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     protected List<String> getQueryFieldSymbols;
     protected List<String> getQueryColumns;
     protected String createQuerySql;
-
+    @Getter
     protected String tableName;
     protected Class<T> clazz;
 
@@ -85,7 +86,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
                 .collect(Collectors.toList());
     }
 
-    protected String getTableName() {
+    protected String generateTableName() {
         return toSnakeCase(getClazz().getSimpleName());
     };
 
@@ -98,7 +99,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         getQueryFields = generateGetFields(clazz);
         getQueryFieldSymbols = getQueryFields.stream().map(field -> ":" + field).collect(Collectors.toList());
         getQueryColumns = generateGetColumns(getQueryFields);
-        tableName = getTableName();
+        tableName = generateTableName();
         createQuerySql = getCreateQuerySql();
         initializeRowMapper(jdbi);
     }
@@ -331,4 +332,12 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     public static String toSnakeCase(String camelCased) {
         return camelCased.replaceAll("(.)(\\p{Upper})", "$1_$2").toLowerCase();
     }
+
+    /** returns a cloned list of the get query columns (the actual list should never be modified) */
+    public List<String> getGetQueryColumns() {
+        List<String> copy = new ArrayList<>();
+        copy.addAll(getQueryColumns);
+        return copy;
+    }
+
 }
