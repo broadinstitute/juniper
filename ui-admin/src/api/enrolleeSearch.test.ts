@@ -105,7 +105,7 @@ describe('enrolleeSearch facetValuesToString', () => {
 
 describe('enrolleeSearch facetValuesFromString', () => {
   it('returns an empty array from an empty object', () => {
-    expect(facetValuesFromString('{}', [stringFacet, rangeFacet])).toEqual('{}')
+    expect(facetValuesFromString('{}', [stringFacet, rangeFacet])).toEqual([])
   })
 
   it('returns an array of a specified facet', () => {
