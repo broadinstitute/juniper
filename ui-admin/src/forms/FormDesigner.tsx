@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 
 import { FormContent, FormContentPage, FormElement } from '@juniper/ui-core'
 
+import { HtmlDesigner } from './designer/HtmlDesigner'
 import { PageDesigner } from './designer/PageDesigner'
 import { PanelDesigner } from './designer/PanelDesigner'
 import { FormTableOfContents } from './FormTableOfContents'
@@ -53,6 +54,18 @@ export const FormDesigner = (props: FormDesignerProps) => {
           if ('type' in selectedElement && selectedElement.type === 'panel') {
             return (
               <PanelDesigner
+                readOnly={readOnly}
+                value={selectedElement}
+                onChange={updatedElement => {
+                  onChange(set(selectedElementPath, updatedElement, value))
+                }}
+              />
+            )
+          }
+
+          if ('type' in selectedElement && selectedElement.type === 'html') {
+            return (
+              <HtmlDesigner
                 readOnly={readOnly}
                 value={selectedElement}
                 onChange={updatedElement => {
