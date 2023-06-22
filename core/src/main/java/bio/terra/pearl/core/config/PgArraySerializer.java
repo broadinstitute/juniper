@@ -8,7 +8,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 import org.postgresql.jdbc.PgArray;
 
-
+/**
+ * This was useful in an earlier search prototype which serialized results of postgres queries using array_agg
+ * it's not currently used, but it might be useful in the future, so I'm keeping it around
+ */
 public class PgArraySerializer extends StdSerializer<PgArray> {
   public PgArraySerializer() {
     this(null);

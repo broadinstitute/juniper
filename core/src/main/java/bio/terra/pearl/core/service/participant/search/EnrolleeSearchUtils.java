@@ -8,9 +8,6 @@ import org.jdbi.v3.core.statement.Query;
 
 @Getter
 public abstract class EnrolleeSearchUtils {
-  public static final String FILTER_VALUE_SEPARATOR = ",";
-  public static final String FACET_FILTER_SEPARATOR = "=";
-
   public static String getSqlParamName(String tableName, String columnName, int facetIndex) {
     return "%s_%s%d".formatted(tableName, columnName, facetIndex);
   }

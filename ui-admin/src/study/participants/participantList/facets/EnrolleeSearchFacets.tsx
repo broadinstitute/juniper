@@ -24,7 +24,7 @@ export default function EnrolleeSearchFacets({ facets, facetValues, updateFacetV
    * facet to revert to default values
    */
   const updateFacetValue = (facetValue: FacetValue | null, index: number) => {
-    let newValues = _cloneDeep(facetValues)
+    const newValues = _cloneDeep(facetValues)
     if (facetValue === null) {
       newValues.splice(index, 1)
     } else {
