@@ -97,13 +97,13 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         var enrollee1a = enrolleeFactory.buildPersisted("testSyncAllKitStatusesFromPepper", studyEnvironment);
         var enrollee1b = enrolleeFactory.buildPersisted("testSyncAllKitStatusesFromPepper", studyEnvironment);
         var kitRequest1a = kitRequestFactory.buildPersisted("testSyncAllKitStatusesFromPepper",
-            kitType.getId(), enrollee1a.getId(), adminUser.getId());
+            enrollee1a.getId(), kitType.getId(), adminUser.getId());
         var kitRequest1b = kitRequestFactory.buildPersisted("testSyncAllKitStatusesFromPepper",
-            kitType.getId(), enrollee1b.getId(), adminUser.getId());
+            enrollee1b.getId(), kitType.getId(), adminUser.getId());
         var studyEnvironment2 = studyEnvironmentFactory.buildPersisted("testSyncAllKitStatusesFromPepper2");
         var enrollee2 = enrolleeFactory.buildPersisted("testSyncAllKitStatusesFromPepper", studyEnvironment2);
         var kitRequest2 = kitRequestFactory.buildPersisted("testSyncAllKitStatusesFromPepper",
-            kitType.getId(), enrollee2.getId(), adminUser.getId());
+            enrollee2.getId(), kitType.getId(), adminUser.getId());
 
         /*
          * Mock DSM to return kits by study:
