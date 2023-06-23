@@ -125,6 +125,9 @@ module.exports = {
           'ui-participant/tsconfig.json'
         ]
       }
+    },
+    react: {
+      version: 'detect'
     }
   }
 }
