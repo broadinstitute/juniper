@@ -12,7 +12,7 @@ jest.mock('api/api', () => ({
     const enrolleeSearchResults: EnrolleeSearchResult[] = [{
       enrollee: fakeEnrollee,
       profile: fakeEnrollee.profile,
-      hasKit: false
+      mostRecentKitStatus: null
     }]
     return Promise.resolve(enrolleeSearchResults)
   }

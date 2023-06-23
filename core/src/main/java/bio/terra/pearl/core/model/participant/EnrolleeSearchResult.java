@@ -1,13 +1,15 @@
 package bio.terra.pearl.core.model.participant;
 
-import lombok.Builder;
+import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 /** holder class to include an enrolle and their profile */
-@Getter @Setter @Builder
+@Getter @Setter @SuperBuilder
 public class EnrolleeSearchResult {
+    public EnrolleeSearchResult() {}
     private Enrollee enrollee;
     private Profile profile;
-    private boolean hasKit;
+    private KitRequestStatus mostRecentKitStatus;
 }

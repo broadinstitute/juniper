@@ -1,18 +1,20 @@
 package bio.terra.pearl.core.dao.participant;
 
+import bio.terra.pearl.core.dao.BaseJdbiDao;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.mapper.RowMapper;
+import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 import org.jdbi.v3.core.statement.Query;
 import org.springframework.stereotype.Component;
 
@@ -21,14 +23,22 @@ public class EnrolleeSearchDao {
   private final Jdbi jdbi;
   private StudyEnvironmentDao studyEnvironmentDao;
   private EnrolleeDao enrolleeDao;
-  private ObjectMapper objectMapper;
+  private ProfileDao profileDao;
+  private String baseSelectString;
+  private RowMapper<Enrollee> enrolleeRowMapper;
+  private RowMapper<Profile> profileRowMapper;
 
   public EnrolleeSearchDao(StudyEnvironmentDao studyEnvironmentDao, Jdbi jdbi,
-                           EnrolleeDao enrolleeDao, ObjectMapper objectMapper) {
+                           EnrolleeDao enrolleeDao, ProfileDao profileDao) {
     this.studyEnvironmentDao = studyEnvironmentDao;
     this.jdbi = jdbi;
     this.enrolleeDao = enrolleeDao;
-    this.objectMapper = objectMapper;
+    this.profileDao = profileDao;
+    baseSelectString = "select distinct on (enrollee.id) " +
+        generateSelectString(enrolleeDao) + ", " + generateSelectString(profileDao) +
+        ", kit_request.status as kit_request__status";
+    enrolleeRowMapper = BeanMapper.of(Enrollee.class, enrolleeDao.getTableName() + "__");
+    profileRowMapper = BeanMapper.of(Profile.class, profileDao.getTableName() + "__");
   }
 
   public List<EnrolleeSearchResult> search(String studyShortcode, EnvironmentName envName,
@@ -47,9 +57,25 @@ public class EnrolleeSearchDao {
       for (int i = 0; i < facets.size(); i++) {
         facets.get(i).bindSqlParameters(i, query);
       }
-      return query.mapToMap().list();
+      return query
+          .registerRowMapper(Enrollee.class, enrolleeRowMapper)
+          .registerRowMapper(Profile.class, profileRowMapper)
+          .reduceRows(new LinkedHashMap<UUID, EnrolleeSearchResult>(),
+              // see https://jdbi.org/#_resultbearing_reducerows
+              // we don't technically need to use reduce rows yet since we just return one row per enrollee
+              // but I suspect that will change as we start adding more complex joins.
+              (map, rowView) -> {
+                EnrolleeSearchResult esr = map.computeIfAbsent(rowView.getColumn("enrollee__id", UUID.class),
+                    id -> new EnrolleeSearchResult());
+                esr.setEnrollee(rowView.getRow(Enrollee.class));
+                esr.setProfile(rowView.getRow(Profile.class));
+                esr.setMostRecentKitStatus(rowView.getColumn("kit_request__status", KitRequestStatus.class));
+                return map;
+              })
+          .values()
+          .stream().toList();
     });
-    return result.stream().map(row -> transform(row)).toList();
+    return result;
   }
 
   protected String generateSearchQueryString(List<SqlSearchableFacet> facets) {
@@ -64,24 +90,13 @@ public class EnrolleeSearchDao {
           facetsGroupByTable.get(facet.getTableName()).add(facet);
         });
 
-    /** these select fields are very hardcoded.  A better iteration will use the getSelectFields from the DAOs */
-    String baseSelectQuery = """
-      select distinct on (enrollee.id)
-       enrollee.shortcode as enrollee__shortcode,
-       enrollee.created_at as enrollee__created_at,
-       enrollee.last_updated_at as enrollee__last_updated_at,
-       enrollee.consented as enrollee__consented,
-       profile.sex_at_birth as profile__sex_at_birth,
-       profile.given_name as profile__given_name,
-       profile.family_name as profile__family_name
-     """;
     List<String> selects = facets.stream().map(facet -> facet.getSelectQuery())
         .filter(query -> query != null)
         .collect(Collectors.toList());
-    selects.add(0, baseSelectQuery);
+    selects.add(0, baseSelectString);
     String selectQuery = selects.stream().collect(Collectors.joining(","));
 
-    String baseFromQuery = " from enrollee left join profile on profile.id = enrollee.profile_id";
+    String baseFromQuery = " from enrollee left join profile on profile.id = enrollee.profile_id left join kit_request on enrollee.id = kit_request.enrollee_id";
     List<String> froms = facetsGroupByTable.values().stream().map(facetList -> facetList.get(0).getJoinQuery())
         .collect(Collectors.toList());
     froms.add(0, baseFromQuery);
@@ -93,27 +108,17 @@ public class EnrolleeSearchDao {
     wheres.add(0, baseWhereQuery);
     String whereQuery = wheres.stream().collect(Collectors.joining(" AND"));
 
-    String sortQuery = " order by enrollee.id, enrollee.created_at desc;";
+    String sortQuery = " order by enrollee.id, enrollee.created_at desc, kit_request.created_at desc;";
 
     String sqlQuery = selectQuery + fromQuery + whereQuery + sortQuery;
     return sqlQuery;
   }
 
-  /** this method is currently very hardcoded as a POC.  A better iteration would use the jdbi row mappers from the
-   * respective DAOs.
-   * This also should do a better job of nulling out fields that are not fetched to avoid confusion (or just fetching them)
-   * */
-  protected EnrolleeSearchResult transform(Map<String, Object> daoResult) {
-    return EnrolleeSearchResult.builder()
-        .enrollee(Enrollee.builder()
-            .shortcode((String) daoResult.get("enrollee__shortcode"))
-            .createdAt(((Timestamp) daoResult.get("enrollee__created_at")).toInstant())
-            .lastUpdatedAt(((Timestamp) daoResult.get("enrollee__last_updated_at")).toInstant())
-            .consented((Boolean) daoResult.get("enrollee__consented")).build())
-        .profile(Profile.builder()
-            .sexAtBirth((String) daoResult.get("profile__sex_at_birth"))
-            .givenName((String) daoResult.get("profile__given_name"))
-            .familyName((String) daoResult.get("profile__family_name")).build()
-        ).build();
+  protected static String generateSelectString(BaseJdbiDao dao) {
+    List<String> getCols = dao.getGetQueryColumns();
+    String tableName = dao.getTableName();
+    String fieldString = getCols.stream().map(colName -> "%s.%s AS %s__%s".formatted(tableName, colName, tableName, colName))
+        .collect(Collectors.joining(", "));
+    return fieldString;
   }
 }

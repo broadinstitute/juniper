@@ -74,7 +74,7 @@ export type StudyEnvironmentUpdate = {
 export type EnrolleeSearchResult = {
   enrollee: Enrollee,
   profile: Profile,
-  hasKit: boolean
+  mostRecentKitStatus: string | null
 }
 
 export type Enrollee = {
