@@ -14,6 +14,10 @@ const runPopulatePortalScript = (): Promise<undefined> => {
   })
 }
 
+/**
+ * Setup to run before all tests.
+ * https://playwright.dev/docs/test-global-setup-teardown
+ */
 const globalSetup = async () => {
   process.env.ADMIN_URL = 'http://localhost:8080'
   process.env.PARTICIPANT_URL = 'http://sandbox.ourhealth.localhost:8081'
