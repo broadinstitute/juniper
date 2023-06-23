@@ -12,6 +12,7 @@ import {
   SurveyResponse,
   PreregistrationResponse
 } from '@juniper/ui-core'
+import { facetValuesToString, FacetValue } from './enrolleeSearch'
 
 export type {
   Answer,
@@ -423,9 +424,10 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async getEnrollees(portalShortcode: string, studyShortcode: string, envName: string):
+  async searchEnrollees(portalShortcode: string, studyShortcode: string, envName: string, facetValues: FacetValue[]):
     Promise<EnrolleeSearchResult[]> {
-    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees`
+    const facetString = encodeURIComponent(facetValuesToString(facetValues))
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees?facets=${facetString}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },

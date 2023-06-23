@@ -6,20 +6,20 @@ import {
   StudyEnvironmentSurvey,
   SurveyResponse
 } from 'api/api'
-import { StudyEnvContextT } from '../StudyEnvironmentRouter'
+import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { NavLink, Route, Routes } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck'
-import EnrolleeSurveyView from './survey/EnrolleeSurveyView'
-import EnrolleeConsentView from './consent/EnrolleeConsentView'
-import PreEnrollmentView from './survey/PreEnrollmentView'
+import EnrolleeSurveyView from '../survey/EnrolleeSurveyView'
+import EnrolleeConsentView from '../consent/EnrolleeConsentView'
+import PreEnrollmentView from '../survey/PreEnrollmentView'
 import EnrolleeNotifications from './EnrolleeNotifications'
-import DataChangeRecords from './DataChangeRecords'
+import DataChangeRecords from '../DataChangeRecords'
 import EnrolleeProfile from './EnrolleeProfile'
-import ParticipantTaskView from './tasks/ParticipantTaskView'
+import ParticipantTaskView from './ParticipantTaskView'
 import ErrorBoundary from 'util/ErrorBoundary'
 import AdvancedOptions from './AdvancedOptions'
-import KitRequests from './KitRequests'
+import KitRequests from '../KitRequests'
 
 export type SurveyWithResponsesT = {
   survey: StudyEnvironmentSurvey,

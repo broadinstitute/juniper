@@ -15,10 +15,16 @@ public class ParticipantTaskFactory {
 
   public ParticipantTask buildPersisted(EnrolleeFactory.EnrolleeBundle enrolleeBundle,
                                                              TaskStatus status, TaskType type) {
+    return buildPersisted(enrolleeBundle, null, status, type);
+  }
+
+  public ParticipantTask buildPersisted(EnrolleeFactory.EnrolleeBundle enrolleeBundle, String targetStableId,
+                                        TaskStatus status, TaskType type) {
     ParticipantTask task = ParticipantTask.builder()
         .status(status)
         .enrolleeId(enrolleeBundle.enrollee().getId())
         .taskType(type)
+        .targetStableId(targetStableId)
         .studyEnvironmentId(enrolleeBundle.enrollee().getStudyEnvironmentId())
         .targetName(RandomStringUtils.randomAlphabetic(6))
         .portalParticipantUserId(enrolleeBundle.portalParticipantUser().getId())

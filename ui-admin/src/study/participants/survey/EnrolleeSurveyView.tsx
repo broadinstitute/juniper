@@ -4,8 +4,8 @@ import { Enrollee, StudyEnvironmentSurvey, SurveyResponse } from 'api/api'
 import { useParams } from 'react-router-dom'
 import SurveyFullDataView from './SurveyFullDataView'
 import SurveyEditView from './SurveyEditView'
-import { ResponseMapT } from '../EnrolleeView'
-import { EnrolleeParams } from '../EnrolleeLoader'
+import { ResponseMapT } from '../enrolleeView/EnrolleeView'
+import { EnrolleeParams } from '../enrolleeView/EnrolleeLoader'
 import { instantToDefaultString } from '../../../util/timeUtils'
 
 /** Show responses for a survey based on url param */

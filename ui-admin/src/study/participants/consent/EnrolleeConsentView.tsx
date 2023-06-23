@@ -7,8 +7,8 @@ import {
 
 import { useParams } from 'react-router-dom'
 import SurveyFullDataView from 'study/participants/survey/SurveyFullDataView'
-import { ConsentResponseMapT } from '../EnrolleeView'
-import { EnrolleeParams } from '../EnrolleeLoader'
+import { ConsentResponseMapT } from '../enrolleeView/EnrolleeView'
+import { EnrolleeParams } from '../enrolleeView/EnrolleeLoader'
 import { instantToDefaultString } from 'util/timeUtils'
 
 /** shows consent forms for a given enrollee, based on url params specifying the form */

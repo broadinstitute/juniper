@@ -12,6 +12,8 @@ import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
+import bio.terra.pearl.core.service.participant.search.EnrolleeSearchService;
+import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
@@ -31,6 +33,8 @@ public class EnrolleeExtService {
   private DataChangeRecordService dataChangeRecordService;
   private KitRequestService kitRequestService;
 
+  private EnrolleeSearchService enrolleeSearchService;
+
   public EnrolleeExtService(
       AuthUtilService authUtilService,
       EnrolleeService enrolleeService,
@@ -38,7 +42,8 @@ public class EnrolleeExtService {
       PortalService portalService,
       PortalStudyService portalStudyService,
       DataChangeRecordService dataChangeRecordService,
-      KitRequestService kitRequestService) {
+      KitRequestService kitRequestService,
+      EnrolleeSearchService enrolleeSearchService) {
     this.authUtilService = authUtilService;
     this.enrolleeService = enrolleeService;
     this.withdrawnEnrolleeService = withdrawnEnrolleeService;
@@ -46,15 +51,17 @@ public class EnrolleeExtService {
     this.portalStudyService = portalStudyService;
     this.dataChangeRecordService = dataChangeRecordService;
     this.kitRequestService = kitRequestService;
+    this.enrolleeSearchService = enrolleeSearchService;
   }
 
   public List<EnrolleeSearchResult> search(
       AdminUser user,
       String portalShortcode,
       String studyShortcode,
-      EnvironmentName environmentName) {
+      EnvironmentName environmentName,
+      List<SqlSearchableFacet> facets) {
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
-    return enrolleeService.search(studyShortcode, environmentName);
+    return enrolleeSearchService.search(studyShortcode, environmentName, facets);
   }
 
   public Enrollee findWithAdminLoad(AdminUser user, String enrolleeShortcode) {

@@ -268,12 +268,13 @@ paths:
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees:
     get:
       summary: Searches for enrollees in an environment
-      tags: [ enrollee ]
+      tags: [ enrolleeSearch ]
       operationId: search
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: facets, in: query, required: false, schema: { type: string } }
       responses:
         '200':
           description: EnrolleeSearchResult objects

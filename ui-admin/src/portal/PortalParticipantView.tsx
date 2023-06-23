@@ -1,7 +1,7 @@
 import React from 'react'
 import { Portal, PortalEnvironment, StudyEnvironment } from '../api/api'
 import { studyEnvPath } from '../study/StudyEnvironmentRouter'
-import ParticipantList from '../study/participants/ParticipantList'
+import ParticipantList from '../study/participants/participantList/ParticipantList'
 
 /** show each study's participant list.  This will likely want to be updated as we grow */
 export default function PortalParticipantsView({ portal, portalEnv }: {portal: Portal, portalEnv: PortalEnvironment}) {

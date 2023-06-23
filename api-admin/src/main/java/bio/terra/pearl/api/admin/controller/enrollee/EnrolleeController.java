@@ -3,7 +3,6 @@ package bio.terra.pearl.api.admin.controller.enrollee;
 import bio.terra.pearl.api.admin.api.EnrolleeApi;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.EnrolleeExtService;
-import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -26,16 +25,6 @@ public class EnrolleeController implements EnrolleeApi {
     this.authUtilService = authUtilService;
     this.enrolleeExtService = enrolleeExtService;
     this.request = request;
-  }
-
-  @Override
-  public ResponseEntity<Object> search(
-      String portalShortcode, String studyShortcode, String envName) {
-    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    AdminUser adminUser = authUtilService.requireAdminUser(request);
-    var results =
-        enrolleeExtService.search(adminUser, portalShortcode, studyShortcode, environmentName);
-    return ResponseEntity.ok(results);
   }
 
   @Override

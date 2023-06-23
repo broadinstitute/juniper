@@ -3,12 +3,12 @@ import Api, { EnrolleeSearchResult } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import {
   getDatasetListViewPath,
   getExportDataBrowserPath,
   StudyEnvContextT, studyEnvMetricsPath
-} from '../StudyEnvironmentRouter'
+} from '../../StudyEnvironmentRouter'
 import {
   ColumnDef,
   flexRender,
@@ -17,11 +17,14 @@ import {
   SortingState,
   useReactTable, VisibilityState
 } from '@tanstack/react-table'
-import { ColumnVisibilityControl, IndeterminateCheckbox, sortableTableHeader } from '../../util/tableUtils'
+import { ColumnVisibilityControl, IndeterminateCheckbox, sortableTableHeader } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
-import ExportDataControl from './export/ExportDataControl'
-import AdHocEmailModal from './AdHocEmailModal'
+import ExportDataControl from '../export/ExportDataControl'
+import AdHocEmailModal from '../AdHocEmailModal'
+import EnrolleeSearchFacets, {} from './facets/EnrolleeSearchFacets'
+import { facetValuesFromString, facetValuesToString, SAMPLE_FACETS, FacetValue }
+  from 'api/enrolleeSearch'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -36,6 +39,9 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     'givenName': false,
     'familyName': false
   })
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const facetValues = facetValuesFromString(searchParams.get('facets') ?? '{}', SAMPLE_FACETS)
 
 
   const columns = useMemo<ColumnDef<EnrolleeSearchResult, string>[]>(() => [{
@@ -89,13 +95,26 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     onRowSelectionChange: setRowSelection
   })
 
+  const searchEnrollees = async (facetValues: FacetValue[]) => {
+    setIsLoading(true)
+    try {
+      const response = await Api.searchEnrollees(portal.shortcode, study.shortcode, currentEnv.environmentName,
+        facetValues)
+      setParticipantList(response)
+    } catch (e) {
+      Store.addNotification(failureNotification('Error loading participants'))
+    }
+    setIsLoading(false)
+  }
+
+  const updateFacetValues = (facetValues: FacetValue[]) => {
+    searchEnrollees(facetValues)
+    searchParams.set('facets', facetValuesToString(facetValues))
+    setSearchParams(searchParams)
+  }
+
   useEffect(() => {
-    Api.getEnrollees(portal.shortcode, study.shortcode, currentEnv.environmentName).then(result => {
-      setParticipantList(result)
-      setIsLoading(false)
-    }).catch(() => {
-      Store.addNotification(failureNotification(`Error loading participants`))
-    })
+    searchEnrollees(facetValues)
   }, [])
 
   const numSelected = Object.keys(rowSelection).length
@@ -106,26 +125,29 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
 
   return <div className="ParticipantList container pt-2">
     <div className="row">
-      <div className="col-12">
-        <h2 className="h5">{study.name} Participants</h2>
-        <LoadingSpinner isLoading={isLoading}>
-          <div className="d-flex align-items-center justify-content-between">
-            <div className="d-flex align-items-center">
-              <Link to={studyEnvMetricsPath(portal.shortcode, currentEnv.environmentName, study.shortcode)}
-                className="mx-2">Metrics</Link>
-              <span className="px-1">|</span>
-              <Link to={getExportDataBrowserPath(currentEnvPath)} className="mx-2">Export preview</Link>
-              <span className="px-1">|</span>
-              <button className="btn btn-secondary" onClick={() => setShowExportModal(!showExportModal)}
-                aria-label="show or hide export modal">
-                Download
-              </button>
-              <span className="px-1">|</span>
-              <Link to={getDatasetListViewPath(currentEnvPath)} className="mx-2">Terra Data Repo</Link>
-              <ExportDataControl studyEnvContext={studyEnvContext} show={showExportModal} setShow={setShowExportModal}/>
-            </div>
-            <ColumnVisibilityControl table={table}/>
+      <div className="col-12 align-items-baseline d-flex">
+        <h2 className="h4 text-center me-4">{study.name} Participants</h2>
+        <div className="d-flex align-items-center justify-content-between">
+          <div className="d-flex align-items-center">
+            <Link to={studyEnvMetricsPath(portal.shortcode, currentEnv.environmentName, study.shortcode)}
+              className="mx-2">Metrics</Link>
+            <span className="px-1">|</span>
+            <Link to={getExportDataBrowserPath(currentEnvPath)} className="mx-2">Export preview</Link>
+            <span className="px-1">|</span>
+            <button className="btn btn-secondary" onClick={() => setShowExportModal(!showExportModal)}>
+              Download
+            </button>
+            <span className="px-1">|</span>
+            <Link to={getDatasetListViewPath(currentEnvPath)} className="mx-2">Terra Data Repo</Link>
+            <ExportDataControl studyEnvContext={studyEnvContext} show={showExportModal} setShow={setShowExportModal}/>
           </div>
+        </div>
+      </div>
+      <div className="col-3">
+        <EnrolleeSearchFacets facets={SAMPLE_FACETS} facetValues={facetValues} updateFacetValues={updateFacetValues} />
+      </div>
+      <div className="col-9">
+        <LoadingSpinner isLoading={isLoading}>
           <div>
             <div className="d-flex align-items-center">
               <span className="me-2">
@@ -142,6 +164,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
               { showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
                 studyEnvContext={studyEnvContext}
                 onDismiss={() => setShowEmailModal(false)}/> }
+              <ColumnVisibilityControl table={table}/>
             </div>
           </div>
           <table className="table table-striped">
