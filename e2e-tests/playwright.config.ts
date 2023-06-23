@@ -74,13 +74,13 @@ export default defineConfig({
   webServer: [
     {
       command: 'cd .. && ./gradlew :api-admin:bootRun',
-      url: 'http://127.0.0.1:8080',
+      url: 'http://localhost:8080/status',
       timeout: 180 * 1000,
       reuseExistingServer: !process.env.CI
     },
     {
       command: 'cd .. && ./gradlew :api-participant:bootRun',
-      url: 'http://127.0.0.1:8081',
+      url: 'http://localhost:8081/status',
       timeout: 180 * 1000,
       reuseExistingServer: !process.env.CI
     }
