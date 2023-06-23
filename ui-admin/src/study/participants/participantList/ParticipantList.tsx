@@ -134,8 +134,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
             <span className="px-1">|</span>
             <Link to={getExportDataBrowserPath(currentEnvPath)} className="mx-2">Export preview</Link>
             <span className="px-1">|</span>
-            <button className="btn btn-secondary" onClick={() => setShowExportModal(!showExportModal)}
-              aria-label="show or hide export modal">
+            <button className="btn btn-secondary" onClick={() => setShowExportModal(!showExportModal)}>
               Download
             </button>
             <span className="px-1">|</span>

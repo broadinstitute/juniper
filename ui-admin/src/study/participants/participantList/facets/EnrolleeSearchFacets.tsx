@@ -3,6 +3,7 @@ import React from 'react'
 import { Accordion } from 'react-bootstrap'
 import _cloneDeep from 'lodash/cloneDeep'
 import {
+  checkExhaustiveFacetType,
   Facet,
   FacetValue, IntRangeFacetValue,
   newFacetValue, StableIdStringArrayFacetValue,
@@ -12,12 +13,17 @@ import IntRangeFacetView from './IntRangeFacetView'
 import StableIdStringFacetView from './StableIdStringFacetView'
 import StringFacetView from './StringFacetView'
 
+type EnrolleeSearchFacetsProps = {
+  facets: Facet[]
+  facetValues: FacetValue[]
+  updateFacetValues: (values: FacetValue[]) => void
+}
+
 /**
  * Renders a list of facets in an accordion.  Takes an array of facet values -- this array should represent only
  * those facets that have user-specified non-default values.
  */
-export default function EnrolleeSearchFacets({ facets, facetValues, updateFacetValues }:
-    {facets: Facet[], facetValues: FacetValue[], updateFacetValues: (values: FacetValue[]) => void}) {
+export default function EnrolleeSearchFacets({ facets, facetValues, updateFacetValues }: EnrolleeSearchFacetsProps) {
   /**
    *  updates the value at the given index in the facetValue array.  -1 as an index will add a new value to the array
    * if the facetValue is null, it has the effect of clearing the facetValue from the array (which will cause the
@@ -62,25 +68,30 @@ export default function EnrolleeSearchFacets({ facets, facetValues, updateFacetV
   </div>
 }
 
+type FacetViewProps = {
+  facet: Facet,
+  facetValue: FacetValue | undefined,
+  updateValue: (facetValue: FacetValue | null) => void
+}
+
 /**
  * Renders a facet with the appropriate component for the facet type.
  */
-const FacetView = ({ facet, facetValue, updateValue }:
-                     {facet: Facet, facetValue: FacetValue | undefined,
-                       updateValue: (facetValue: FacetValue | null) => void}) => {
+const FacetView = ({ facet, facetValue, updateValue }: FacetViewProps) => {
+  const facetType = facet.type
   if (!facetValue) {
     facetValue = newFacetValue(facet)
   }
-  if (facet.type === 'INT_RANGE') {
+  if (facetType === 'INT_RANGE') {
     return <IntRangeFacetView facetValue={facetValue as IntRangeFacetValue}
       updateValue={updateValue}/>
-  } else if (facet.type === 'STRING') {
+  } else if (facetType === 'STRING') {
     return <StringFacetView facetValue={facetValue as StringFacetValue}
       updateValue={updateValue}/>
-  } else if (facet.type === 'STABLEID_STRING') {
+  } else if (facetType === 'STABLEID_STRING') {
     return <StableIdStringFacetView facetValue={facetValue as StableIdStringArrayFacetValue}
       updateValue={updateValue}/>
   }
-  return <span>yo</span>
+  return checkExhaustiveFacetType(facetType, <></>)
 }
 

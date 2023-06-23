@@ -138,24 +138,33 @@ export const SAMPLE_FACETS: Facet[] = [{
   ]
 }]
 
+/** helper function for making sure a function addresses all facet types.
+ * returnPlaceholder isn't used, but is helpful for when this is needed at the end of a function for return type */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const checkExhaustiveFacetType = <T>(facetType: never, returnPlaceholder?: T): T => {
+  throw new Error(`Unhandled facet type ${facetType}`)
+}
 
 /**
- *
+ * helper constructor to return the right facet value class for the given raw value object
  */
 export const newFacetValue = (facet: Facet, facetValue?: object): FacetValue => {
-  if (facet.type === 'INT_RANGE') {
+  const facetType = facet.type
+  if (facetType === 'INT_RANGE') {
     return new IntRangeFacetValue(facet, facetValue as IntRangeFacetValueFields)
-  } else if (facet.type === 'STABLEID_STRING') {
+  } else if (facetType === 'STABLEID_STRING') {
     const newValues = facetValue ? (facetValue as StableIdStringArrayFacetValueFields).values.map(stableIdVal =>
       new StableIdStringValue(stableIdVal.stableId, stableIdVal.values)
     ) : []
     return new StableIdStringArrayFacetValue(facet, { values: newValues })
+  } else if (facetType === 'STRING') {
+    return new StringFacetValue(facet, facetValue as StringFacetValueFields)
   }
-  return new StringFacetValue(facet, facetValue as StringFacetValueFields)
+  return checkExhaustiveFacetType(facetType, new IntRangeFacetValue(facet))
 }
 
 /**
- *
+ * converts an array of FacetValues to a string, such as for including in a URL.  this does not handle url escaping
  */
 export const facetValuesToString = (facetValues: FacetValue[]): string => {
   const paramObj: Record<string, Record<string, object>> = {}
@@ -174,7 +183,7 @@ export const facetValuesToString = (facetValues: FacetValue[]): string => {
 }
 
 /**
- *
+ * Converts a string into an array of FacetValues, (this does not manage url un-escaping)
  */
 export const facetValuesFromString = (paramString: string, facets: Facet[]): FacetValue[] => {
   const facetValues = []
@@ -184,6 +193,10 @@ export const facetValuesFromString = (paramString: string, facets: Facet[]): Fac
     const category = paramObj[categoryName]
     for (const keyName in category) {
       const matchedFacet = facets.find(facet => facet.category === categoryName && facet.keyName === keyName) as Facet
+      if (!matchedFacet) {
+        // for now, just drop unknown facets
+        continue
+      }
       facetValues.push(newFacetValue(matchedFacet, category[keyName]))
     }
   }
