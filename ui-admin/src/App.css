@@ -18,6 +18,13 @@
   font-style: italic;
 }
 
+.btn-primary[aria-disabled="true"] {
+  background-color: #999;
+  color: #ddd;
+  border: none;
+  font-style: italic;
+}
+
 .btn-secondary:focus, .btn-secondary:hover {
   background-color: transparent;
   color:#4D72AA;
