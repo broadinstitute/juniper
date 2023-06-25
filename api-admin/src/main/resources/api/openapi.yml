@@ -653,6 +653,23 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{env}/config:
+    patch:
+      summary: Updates a portal environment according to the update object
+      tags: [ portalEnvironmentConfig ]
+      operationId: update
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: env, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: PortalEnvironmentConfig object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/internal/v1/populate/baseSeed:
     post:
       summary: Populates

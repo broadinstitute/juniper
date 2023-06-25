@@ -650,6 +650,16 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async updatePortalEnvConfig(portalShortcode: string, envName: string, config: PortalEnvironmentConfig) {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/config`
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(config)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   getParticipantLink(portalEnvConfig: PortalEnvironmentConfig, uiHostname: string,
     portalShortcode: string, envName: string): string {
     if (portalEnvConfig?.participantHostname) {
