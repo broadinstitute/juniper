@@ -59,21 +59,31 @@ function Filter<A>({
   </div>
 }
 
+
+/**
+ * returns a table header with optional sorting and filtering
+ * adapted from https://tanstack.com/table/v8/docs/examples/react/sorting
+ * */
+export function tableHeader<A, B>(header: Header<A, B>, options: { sortable: boolean, filterable: boolean }) {
+  return <th key={header.id}>
+    { options.sortable ? sortableTableHeader(header) : null }
+    { options.filterable ? filterableTableHeader(header) : null }
+  </th>
+}
+
 /**
  * returns a clickable header column with up/down icons indicating sort direction
  * adapted from https://tanstack.com/table/v8/docs/examples/react/sorting
  * */
 export function sortableTableHeader<A, B>(header: Header<A, B>) {
-  return <th key={header.id}>
-    <div className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
-      onClick={header.column.getToggleSortingHandler()} role="button">
-      {flexRender(header.column.columnDef.header, header.getContext())}
-      {{
-        asc: <FontAwesomeIcon icon={faCaretUp}/>,
-        desc: <FontAwesomeIcon icon={faCaretDown}/>
-      }[header.column.getIsSorted() as string] ?? null}
-    </div>
-  </th>
+  return <div className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
+    onClick={header.column.getToggleSortingHandler()} role="button">
+    {flexRender(header.column.columnDef.header, header.getContext())}
+    {{
+      asc: <FontAwesomeIcon icon={faCaretUp}/>,
+      desc: <FontAwesomeIcon icon={faCaretDown}/>
+    }[header.column.getIsSorted() as string] ?? null}
+  </div>
 }
 
 /**
@@ -81,14 +91,11 @@ export function sortableTableHeader<A, B>(header: Header<A, B>) {
  * adapted from https://tanstack.com/table/v8/docs/examples/react/filters
  * */
 export function filterableTableHeader<A, B>(header: Header<A, B>) {
-  return <th key={header.id}>
-    { sortableTableHeader(header) }
-    {header.column.getCanFilter() ? (
-      <div>
-        <Filter column={header.column}/>
-      </div>
-    ) : null}
-  </th>
+  return header.column.getCanFilter() ? (
+    <div>
+      <Filter column={header.column}/>
+    </div>
+  ) : null
 }
 
 /**

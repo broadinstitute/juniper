@@ -18,7 +18,7 @@ import {
   SortingState,
   useReactTable, VisibilityState
 } from '@tanstack/react-table'
-import { ColumnVisibilityControl, IndeterminateCheckbox, filterableTableHeader } from 'util/tableUtils'
+import { ColumnVisibilityControl, IndeterminateCheckbox, tableHeader } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import ExportDataControl from '../export/ExportDataControl'
@@ -177,7 +177,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
           <table className="table table-striped">
             <thead>
               <tr>
-                {table.getFlatHeaders().map(header => filterableTableHeader(header))}
+                {table.getFlatHeaders().map(header => tableHeader(header, { sortable: true, filterable: true }))}
               </tr>
             </thead>
             <tbody>

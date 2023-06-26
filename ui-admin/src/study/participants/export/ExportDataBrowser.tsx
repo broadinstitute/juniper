@@ -10,7 +10,7 @@ import {
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
-import { sortableTableHeader } from 'util/tableUtils'
+import { tableHeader } from 'util/tableUtils'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
 import ExportDataControl from './ExportDataControl'
@@ -96,7 +96,7 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
     {!isLoading && <table className="table table-striped">
       <thead>
         <tr>
-          {table.getFlatHeaders().map(header => sortableTableHeader(header))}
+          {table.getFlatHeaders().map(header => tableHeader(header, { sortable: true, filterable: false }))}
         </tr>
       </thead>
       <tbody>
