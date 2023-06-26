@@ -37,7 +37,7 @@ function DebouncedInput({
 }
 
 /**
- * returns a Filter to handle text and boolean fields
+ * returns a Filter to handle text fields
  * adapted from https://tanstack.com/table/v8/docs/examples/react/filters
  * */
 function Filter<A>({
