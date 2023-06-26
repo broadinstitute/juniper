@@ -1,6 +1,12 @@
 import React from 'react'
 import { StudyEnvironmentChange } from 'api/api'
-import { ConfigChangeListView, ConfigChanges, VersionChangeView } from './diffComponents'
+import {
+  ConfigChangeListView,
+  ConfigChanges, notificationConfigSummary,
+  studyEnvironmentConsentSummary,
+  studyEnvironmentSurveySummary,
+  VersionChangeView
+} from './diffComponents'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -19,17 +25,20 @@ const StudyEnvDiff = ({ studyEnvChange }: {studyEnvChange: StudyEnvironmentChang
     <div className="my-1">
       <h3 className="h6"><input className="me-2" type={'checkbox'} checked={true} readOnly={true}/>
         Consents</h3>
-      <ConfigChangeListView configChangeList={studyEnvChange.consentChanges}/>
+      <ConfigChangeListView configChangeList={studyEnvChange.consentChanges}
+        changeItemSummaryFunc={studyEnvironmentConsentSummary}/>
     </div>
     <div className="my-1">
       <h3 className="h6"><input className="me-2" type={'checkbox'} checked={true} readOnly={true}/>
         Surveys</h3>
-      <ConfigChangeListView configChangeList={studyEnvChange.surveyChanges}/>
+      <ConfigChangeListView configChangeList={studyEnvChange.surveyChanges}
+        changeItemSummaryFunc={studyEnvironmentSurveySummary}/>
     </div>
     <div className="my-1">
       <h3 className="h6"><input className="me-2" type={'checkbox'} checked={true} readOnly={true}/>
         Notification Configs</h3>
-      <ConfigChangeListView configChangeList={studyEnvChange.notificationConfigChanges}/>
+      <ConfigChangeListView configChangeList={studyEnvChange.notificationConfigChanges}
+        changeItemSummaryFunc={notificationConfigSummary}/>
     </div>
   </div>
 }

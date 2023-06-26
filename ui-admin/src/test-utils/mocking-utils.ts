@@ -5,6 +5,7 @@ import { ParticipantTask } from '@juniper/ui-core/build/types/task'
 
 import _times from 'lodash/times'
 import _random from 'lodash/random'
+import { StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
 
 
 // TODO: Add JSDoc
@@ -29,18 +30,7 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
     environmentName: 'sandbox',
     id: 'studyEnvId',
     configuredConsents: [],
-    configuredSurveys: [{
-      id: 'fakeGuid',
-      surveyId: 'surveyId1',
-      surveyOrder: 1,
-      recur: false,
-      recurrenceIntervalDays: 0,
-      allowAdminEdit: true,
-      allowParticipantStart: true,
-      allowParticipantReedit: true,
-      prepopulate: true,
-      survey: mockSurvey()
-    }],
+    configuredSurveys: [mockConfiguredSurvey()],
     notificationConfigs: [],
     studyEnvironmentConfig: {
       initialized: true,
@@ -51,6 +41,24 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
   },
   currentEnvPath: 'portalCode/studies/fakeStudy/env/sandbox'
 })
+
+/**
+ *
+ */
+export const mockConfiguredSurvey: () => StudyEnvironmentSurvey = () => {
+  return {
+    id: 'fakeGuid',
+    surveyId: 'surveyId1',
+    surveyOrder: 1,
+    recur: false,
+    recurrenceIntervalDays: 0,
+    allowAdminEdit: true,
+    allowParticipantStart: true,
+    allowParticipantReedit: true,
+    prepopulate: true,
+    survey: mockSurvey()
+  }
+}
 
 export const mockDatasetDetails: (datasetName: string, status: string) => DatasetDetails =
     // TODO: Add JSDoc
