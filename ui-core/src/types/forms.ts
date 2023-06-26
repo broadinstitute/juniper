@@ -139,11 +139,24 @@ export type TextQuestion = BaseQuestion & {
   type: 'text'
 }
 
+export type SignatureQuestion = BaseQuestion & {
+  type: 'signaturepad'
+}
+
+export type MedicationsQuestion = BaseQuestion & {
+  type: 'medications'
+}
+
 export type Question =
   | CheckboxQuestion
   | DropdownQuestion
+  | MedicationsQuestion
   | RadiogroupQuestion
+  | SignatureQuestion
   | TemplatedQuestion
   | TextQuestion
+
+/** Possible values for the 'type' field of a Question. */
+export type QuestionType = Exclude<Question, TemplatedQuestion>['type']
 
 export {}

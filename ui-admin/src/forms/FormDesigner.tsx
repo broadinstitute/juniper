@@ -6,6 +6,7 @@ import { FormContent, FormContentPage, FormElement } from '@juniper/ui-core'
 import { HtmlDesigner } from './designer/HtmlDesigner'
 import { PageDesigner } from './designer/PageDesigner'
 import { PanelDesigner } from './designer/PanelDesigner'
+import { QuestionDesigner } from './designer/QuestionDesigner'
 import { FormTableOfContents } from './FormTableOfContents'
 
 type FormDesignerProps = {
@@ -75,7 +76,15 @@ export const FormDesigner = (props: FormDesignerProps) => {
             )
           }
 
-          return null
+          return (
+            <QuestionDesigner
+              readOnly={readOnly}
+              value={selectedElement}
+              onChange={updatedElement => {
+                onChange(set(selectedElementPath, updatedElement, value))
+              }}
+            />
+          )
         })()}
       </div>
     </div>

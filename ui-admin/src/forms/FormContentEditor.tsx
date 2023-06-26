@@ -39,6 +39,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           title="Designer"
         >
           <FormDesigner
+            readOnly={readOnly}
             value={editedContent}
             onChange={newContent => {
               setEditedContent(newContent)
