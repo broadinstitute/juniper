@@ -37,9 +37,8 @@ test('renders filters for participant columns', async () => {
   render(RoutedComponent)
 
   //Assert that all 3 default columns have filter inputs
-  await waitFor(() => {
-    expect(screen.getAllByPlaceholderText('Search...')).toHaveLength(3)
-  })
+  const searchInputs = await screen.findAllByPlaceholderText('Search...')
+  expect(searchInputs).toHaveLength(3)
 })
 
 test('filters participants based on shortcode', async () => {
@@ -48,9 +47,7 @@ test('filters participants based on shortcode', async () => {
   render(RoutedComponent)
 
   //Assert that JOSALK is visible in the table
-  await waitFor(() => {
-    expect(screen.getByText('JOSALK')).toBeInTheDocument()
-  })
+  await screen.findByText('JOSALK')
 
   //Search for some unknown shortcode
   await act(() =>
