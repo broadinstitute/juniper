@@ -13,11 +13,12 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable, VisibilityState
 } from '@tanstack/react-table'
-import { ColumnVisibilityControl, IndeterminateCheckbox, sortableTableHeader } from 'util/tableUtils'
+import { ColumnVisibilityControl, IndeterminateCheckbox, filterableTableHeader } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import ExportDataControl from '../export/ExportDataControl'
@@ -37,7 +38,8 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
     'givenName': false,
-    'familyName': false
+    'familyName': false,
+    'contactEmail': false
   })
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -69,11 +71,16 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     header: 'Given name',
     accessorKey: 'profile.givenName'
   }, {
+    id: 'contactEmail',
+    header: 'Contact email',
+    accessorKey: 'profile.contactEmail'
+  }, {
     header: 'Consented',
-    accessorKey: 'enrollee.consented',
-    cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
+    accessorFn: data => data.enrollee.consented.toString(),
+    cell: info => info.getValue() === 'true' ? <FontAwesomeIcon icon={faCheck}/> : ''
   }, {
     header: 'Kit status',
+    filterFn: 'includesString', //the occasional presence of undefined values seems to require a filter type to be set
     accessorKey: 'mostRecentKitStatus'
   }], [study.shortcode])
 
@@ -91,6 +98,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection
   })
 
@@ -169,7 +177,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
           <table className="table table-striped">
             <thead>
               <tr>
-                {table.getFlatHeaders().map(header => sortableTableHeader(header))}
+                {table.getFlatHeaders().map(header => filterableTableHeader(header))}
               </tr>
             </thead>
             <tbody>

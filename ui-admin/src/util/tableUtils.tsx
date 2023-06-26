@@ -1,7 +1,60 @@
 import React, { HTMLProps, useState } from 'react'
-import { flexRender, Header, Table } from '@tanstack/react-table'
+import { Column, flexRender, Header, Table } from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretDown, faCaretUp, faColumns } from '@fortawesome/free-solid-svg-icons'
+
+// A debounced input react component
+function DebouncedInput({
+  value: initialValue,
+  onChange,
+  debounce = 200,
+  ...props
+}: {
+  value: string
+  onChange: (value: string) => void
+  debounce?: number
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) {
+  const [value, setValue] = React.useState(initialValue)
+
+  React.useEffect(() => {
+    setValue(initialValue)
+  }, [initialValue])
+
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      onChange(value)
+    }, debounce)
+
+    return () => clearTimeout(timeout)
+  }, [value])
+
+  return (
+    <input {...props} value={value} onChange={e => setValue(e.target.value)} />
+  )
+}
+
+/**
+ * returns a Filter to handle text and boolean fields
+ * adapted from https://tanstack.com/table/v8/docs/examples/react/filters
+ * */
+function Filter<A>({
+  column
+}: {
+  column: Column<A, unknown>
+}) {
+  const columnFilterValue = column.getFilterValue()
+
+  return <div>
+    <DebouncedInput
+      type="text"
+      value={(columnFilterValue ?? '') as string}
+      onChange={value => column.setFilterValue(value)}
+      placeholder={`Search...`}
+      list={`${column.id} list`}
+    />
+    <div className="h-1" />
+  </div>
+}
 
 /**
  * returns a clickable header column with up/down icons indicating sort direction
@@ -17,6 +70,21 @@ export function sortableTableHeader<A, B>(header: Header<A, B>) {
         desc: <FontAwesomeIcon icon={faCaretDown}/>
       }[header.column.getIsSorted() as string] ?? null}
     </div>
+  </th>
+}
+
+/**
+ * returns a filterable and sortable header column
+ * adapted from https://tanstack.com/table/v8/docs/examples/react/filters
+ * */
+export function filterableTableHeader<A, B, C>(header: Header<A, B>) {
+  return <th key={header.id}>
+    { sortableTableHeader(header) }
+    {header.column.getCanFilter() ? (
+      <div>
+        <Filter column={header.column}/>
+      </div>
+    ) : null}
   </th>
 }
 
