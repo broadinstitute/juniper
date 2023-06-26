@@ -1,4 +1,4 @@
-import React, { HTMLProps, useState } from 'react'
+import React, { HTMLProps, useEffect, useState } from 'react'
 import { Column, flexRender, Header, Table } from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretDown, faCaretUp, faColumns } from '@fortawesome/free-solid-svg-icons'
@@ -19,11 +19,11 @@ function DebouncedInput({
 } & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) {
   const [value, setValue] = React.useState(initialValue)
 
-  React.useEffect(() => {
+  useEffect(() => {
     setValue(initialValue)
   }, [initialValue])
 
-  React.useEffect(() => {
+  useEffect(() => {
     const timeout = setTimeout(() => {
       onChange(value)
     }, debounce)
