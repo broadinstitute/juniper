@@ -66,7 +66,7 @@ function Filter<A>({
 export function tableHeader<A, B>(header: Header<A, B>, options: { sortable: boolean, filterable: boolean }) {
   const sortDirection = options.sortable && header.column.getIsSorted()
   const ariaSort = options.sortable ?
-      sortDirection ? (sortDirection === 'desc' ? 'descending' : 'ascending') : 'none' : undefined
+    sortDirection ? (sortDirection === 'desc' ? 'descending' : 'ascending') : 'none' : undefined
 
   return <th key={header.id}
     aria-sort={ariaSort}>
