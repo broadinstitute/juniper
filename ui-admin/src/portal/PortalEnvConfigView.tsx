@@ -5,6 +5,9 @@ import _cloneDeep from 'lodash/cloneDeep'
 import { failureNotification, successNotification } from '../util/notifications'
 import { Store } from 'react-notifications-component'
 import { Portal } from '@juniper/ui-core/build/types/portal'
+import { Button } from 'components/forms/Button'
+import { set } from 'lodash/fp'
+
 
 type PortalEnvConfigViewProps = {
   portal: Portal,
@@ -21,18 +24,11 @@ const PortalEnvConfigView = ({ portal, portalEnv, updatePortal }: PortalEnvConfi
 
   /** update a given field in the config */
   const updateConfig = (propName: string, value: string | boolean) => {
-    const newConfig = _cloneDeep(config)
-    // eslint-disable-next-line
-    // @ts-ignore
-    newConfig[propName] = value
-    setConfig(newConfig)
+    setConfig(set(propName, value))
   }
-  // saves any changes to the server
+  /** saves any changes to the server */
   const save = async (e: React.MouseEvent) => {
     e.preventDefault()
-    if (!user.superuser) {
-      return
-    }
     try {
       const updatedConfig = await Api.updatePortalEnvConfig(portal.shortcode, portalEnv.environmentName, config)
       Store.addNotification(successNotification('Config saved'))
@@ -82,11 +78,11 @@ const PortalEnvConfigView = ({ portal, portalEnv, updatePortal }: PortalEnvConfi
             onChange={e => updateConfig('emailSourceAddress', e.target.value)}/>
         </label>
       </div>
-      <button onClick={save}
-        aria-disabled={!user.superuser} className="btn btn-primary mt-3"
-        title={user.superuser ? 'Save' : 'You do not have permission to edit these settings'}>
+      <Button onClick={save}
+        variant="primary" disabled={!user.superuser}
+        tooltip={user.superuser ? 'Save' : 'You do not have permission to edit these settings'}>
         Save
-      </button>
+      </Button>
     </form>
   </div>
 }
