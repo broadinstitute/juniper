@@ -17,7 +17,7 @@ function DebouncedInput({
   onChange: (value: string) => void
   debounce?: number
 } & Omit<JSX.IntrinsicElements['input'], 'onChange'>) {
-  const [value, setValue] = React.useState(initialValue)
+  const [value, setValue] = useState(initialValue)
 
   useEffect(() => {
     setValue(initialValue)
@@ -64,7 +64,12 @@ function Filter<A>({
  * adapted from https://tanstack.com/table/v8/docs/examples/react/sorting
  * */
 export function tableHeader<A, B>(header: Header<A, B>, options: { sortable: boolean, filterable: boolean }) {
-  return <th key={header.id}>
+  const sortDirection = options.sortable && header.column.getIsSorted()
+  const ariaSort = options.sortable ?
+      sortDirection ? (sortDirection === 'desc' ? 'descending' : 'ascending') : 'none' : undefined
+
+  return <th key={header.id}
+    aria-sort={ariaSort}>
     { options.sortable ? sortableTableHeader(header) : null }
     { options.filterable ? filterableTableHeader(header) : null }
   </th>
