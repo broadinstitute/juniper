@@ -117,7 +117,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: 'e2e-tests/**/*.spec.ts',
+      files: 'e2e-tests/**/*.test.ts',
       rules: {
         // ESLint thinks the Playwright test function is jest's objects to its parameters.
         'jest/no-done-callback': 'off'
