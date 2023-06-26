@@ -19,8 +19,15 @@ const runPopulatePortalScript = (): Promise<undefined> => {
  * https://playwright.dev/docs/test-global-setup-teardown
  */
 const globalSetup = async () => {
-  process.env.ADMIN_URL = 'http://localhost:8080'
-  process.env.PARTICIPANT_URL = 'http://sandbox.ourhealth.localhost:8081'
+  // In CI, test against the UI bundled into the Java app.
+  // Otherwise, test against the UI dev server.
+  if (process.env.CI) {
+    process.env.ADMIN_URL = 'http://localhost:8080'
+    process.env.PARTICIPANT_URL = 'http://sandbox.ourhealth.localhost:8081'
+  } else {
+    process.env.ADMIN_URL = 'http://localhost:3000'
+    process.env.PARTICIPANT_URL = 'http://sandbox.ourhealth.localhost:3001'
+  }
 
   await runPopulatePortalScript()
 }

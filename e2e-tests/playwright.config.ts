@@ -83,6 +83,24 @@ export default defineConfig({
       url: 'http://localhost:8081/status',
       timeout: 180 * 1000,
       reuseExistingServer: !process.env.CI
-    }
+    },
+    // In CI, test against the UI bundled into the Java app.
+    // Otherwise, test against the UI dev server.
+    ...(
+      process.env.CI ? [] : [
+        {
+          command: 'cd .. && npm -w ui-admin start',
+          url: 'http://localhost:3000',
+          timeout: 120 * 1000,
+          reuseExistingServer: !process.env.CI
+        },
+        {
+          command: 'cd .. && npm -w ui-participant start',
+          url: 'http://localhost:3001',
+          timeout: 120 * 1000,
+          reuseExistingServer: !process.env.CI
+        }
+      ]
+    )
   ]
 })
