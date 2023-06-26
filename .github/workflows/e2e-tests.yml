@@ -1,12 +1,14 @@
 name: End-to-end tests
 
-on:
-  push:
-    branches: [ development ]
-    paths-ignore: [ '*.md']
-  pull_request:
-    branches: [ '**' ]
-  merge_group:
+# TODO: Once tests are added, run on PRs and commits to development.
+on: workflow_dispatch
+# on:
+#   push:
+#     branches: [ development ]
+#     paths-ignore: [ '*.md']
+#   pull_request:
+#     branches: [ '**' ]
+#   merge_group:
 
 jobs:
   test:
