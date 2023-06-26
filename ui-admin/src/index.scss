@@ -1,0 +1,39 @@
+// https://getbootstrap.com/docs/5.0/customize/sass/
+@import '~bootstrap/scss/bootstrap';
+
+body {
+  margin: 0;
+}
+
+body, input, textarea, select, button {
+  font-family: "Montserrat", sans-serif;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+// Allow form controls to be styled as disabled without actually disabling them.
+.form-control.disabled {
+  // Copy .form-control:disabled styles from Bootstrap
+  color: $input-disabled-color;
+  background-color: $input-disabled-bg;
+  border-color: $input-disabled-border-color;
+  opacity: 1;
+}
+
+.form-check-input.disabled {
+  // Copy .form-check-input:disabled styles from Bootstrap.
+  pointer-events: none;
+  filter: none;
+  opacity: $form-check-input-disabled-opacity;
+
+  ~ .form-check-label {
+    cursor: default;
+    opacity: $form-check-label-disabled-opacity;
+  }
+}

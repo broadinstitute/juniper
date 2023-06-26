@@ -1,8 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap/dist/js/bootstrap.bundle.min'
-import 'index.css'
+import 'bootstrap'
+import 'index.scss'
 import 'fonts/Montserrat.css'
 import App from './App'
 
