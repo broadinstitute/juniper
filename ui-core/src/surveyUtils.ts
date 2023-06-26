@@ -6,7 +6,7 @@ import { SurveyModel } from 'survey-core'
 import { FormContent, FormElement, VersionedForm } from './types/forms'
 
 /** Gets a flattened list of the survey elements */
-function getFormElements(formContent: FormContent): FormElement[] {
+export function getFormElements(formContent: FormContent): FormElement[] {
   return formContent.pages.flatMap(page => page.elements.flatMap(getFormQuestionsHelper))
 }
 
