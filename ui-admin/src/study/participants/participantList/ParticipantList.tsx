@@ -80,7 +80,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     cell: info => info.getValue() === 'true' ? <FontAwesomeIcon icon={faCheck}/> : ''
   }, {
     header: 'Kit status',
-    filterFn: 'includesString', //the occasional presence of undefined values seems to require a filter type to be set
+    filterFn: 'includesString', //the occasional presence of an undefined value seems to require a filter type to be set
     accessorKey: 'mostRecentKitStatus'
   }], [study.shortcode])
 

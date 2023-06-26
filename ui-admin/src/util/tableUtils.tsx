@@ -3,7 +3,10 @@ import { Column, flexRender, Header, Table } from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretDown, faCaretUp, faColumns } from '@fortawesome/free-solid-svg-icons'
 
-// A debounced input react component
+/**
+ * Returns a debounced input react component
+ * Adapted from https://tanstack.com/table/v8/docs/examples/react/filters
+ */
 function DebouncedInput({
   value: initialValue,
   onChange,
@@ -40,7 +43,7 @@ function DebouncedInput({
 function Filter<A>({
   column
 }: {
-  column: Column<A, unknown>
+  column: Column<A>
 }) {
   const columnFilterValue = column.getFilterValue()
 
@@ -77,7 +80,7 @@ export function sortableTableHeader<A, B>(header: Header<A, B>) {
  * returns a filterable and sortable header column
  * adapted from https://tanstack.com/table/v8/docs/examples/react/filters
  * */
-export function filterableTableHeader<A, B, C>(header: Header<A, B>) {
+export function filterableTableHeader<A, B>(header: Header<A, B>) {
   return <th key={header.id}>
     { sortableTableHeader(header) }
     {header.column.getCanFilter() ? (
