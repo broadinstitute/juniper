@@ -1,0 +1,11 @@
+{
+  "name": "@juniper/e2e-tests",
+  "version": "0.0.1",
+  "scripts": {
+    "postinstall": "npx playwright install --with-deps",
+    "test": "npx playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.34.0"
+  }
+}
