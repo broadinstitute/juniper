@@ -5,8 +5,8 @@ import ParticipantList from './ParticipantList'
 import { EnrolleeSearchResult } from 'api/api'
 import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
-import userEvent from "@testing-library/user-event";
-import { act } from "react-dom/test-utils";
+import userEvent from '@testing-library/user-event'
+import { act } from 'react-dom/test-utils'
 
 jest.mock('api/api', () => ({
   searchEnrollees: () => {
@@ -38,9 +38,8 @@ test('renders filters for participant columns', async () => {
 
   //Assert that all 3 default columns have filter inputs
   await waitFor(() => {
-    expect(screen.getAllByPlaceholderText('Search...').length).toBe(3)
+    expect(screen.getAllByPlaceholderText('Search...')).toHaveLength(3)
   })
-
 })
 
 test('filters participants based on shortcode', async () => {
@@ -62,7 +61,6 @@ test('filters participants based on shortcode', async () => {
   await waitFor(() => {
     expect(screen.queryByText('JOSALK')).not.toBeInTheDocument()
   })
-
 })
 
 test('send email is toggled depending on participants selected', async () => {
