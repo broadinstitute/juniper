@@ -16,7 +16,7 @@ function DebouncedInput({
   value: string
   onChange: (value: string) => void
   debounce?: number
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) {
+} & Omit<JSX.IntrinsicElements['input'], 'onChange'>) {
   const [value, setValue] = React.useState(initialValue)
 
   useEffect(() => {
