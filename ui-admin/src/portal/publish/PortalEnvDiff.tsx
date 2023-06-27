@@ -4,14 +4,15 @@ import Api, {
   PortalEnvironment,
   PortalEnvironmentChange
 } from 'api/api'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import LoadingSpinner from 'util/LoadingSpinner'
 import StudyEnvDiff from './StudyEnvDiff'
-import { ConfigChangeListView, ConfigChanges, notificationConfigSummary, VersionChangeView } from './diffComponents'
+import { ConfigChangeListView, ConfigChanges, renderNotificationConfig, VersionChangeView } from './diffComponents'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
+import { portalHomePath } from '../PortalRouter'
 
 type EnvironmentDiffProps = {
   portal: Portal,
@@ -97,7 +98,7 @@ export default function PortalEnvDiff({ portal, portalEnv }: EnvironmentDiffProp
             Notification Configs</h2>
           <div className="ms-4">
             <ConfigChangeListView configChangeList={diffResult.notificationConfigChanges}
-              changeItemSummaryFunc={notificationConfigSummary}/>
+              changeItemSummaryFunc={renderNotificationConfig}/>
           </div>
         </div>
         <div>
@@ -108,7 +109,7 @@ export default function PortalEnvDiff({ portal, portalEnv }: EnvironmentDiffProp
       </div>
       <div className="d-flex justify-content-center mt-2 pb-5">
         <button className="btn btn-primary" onClick={applyChanges}>Copy changes</button>
-        <button className="btn btn-cancel" onClick={() => navigate(-1)}>Cancel</button>
+        <Link className="btn btn-cancel" to={portalHomePath(portal.shortcode)}>Cancel</Link>
       </div>
     </>
     }

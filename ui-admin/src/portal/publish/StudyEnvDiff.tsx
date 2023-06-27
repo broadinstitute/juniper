@@ -2,9 +2,9 @@ import React from 'react'
 import { StudyEnvironmentChange } from 'api/api'
 import {
   ConfigChangeListView,
-  ConfigChanges, notificationConfigSummary,
-  studyEnvironmentConsentSummary,
-  studyEnvironmentSurveySummary,
+  ConfigChanges, renderNotificationConfig,
+  renderStudyEnvironmentConsent,
+  renderStudyEnvironmentSurvey,
   VersionChangeView
 } from './diffComponents'
 
@@ -26,19 +26,19 @@ const StudyEnvDiff = ({ studyEnvChange }: {studyEnvChange: StudyEnvironmentChang
       <h3 className="h6"><input className="me-2" type={'checkbox'} checked={true} readOnly={true}/>
         Consents</h3>
       <ConfigChangeListView configChangeList={studyEnvChange.consentChanges}
-        changeItemSummaryFunc={studyEnvironmentConsentSummary}/>
+        changeItemSummaryFunc={renderStudyEnvironmentConsent}/>
     </div>
     <div className="my-1">
       <h3 className="h6"><input className="me-2" type={'checkbox'} checked={true} readOnly={true}/>
         Surveys</h3>
       <ConfigChangeListView configChangeList={studyEnvChange.surveyChanges}
-        changeItemSummaryFunc={studyEnvironmentSurveySummary}/>
+        changeItemSummaryFunc={renderStudyEnvironmentSurvey}/>
     </div>
     <div className="my-1">
       <h3 className="h6"><input className="me-2" type={'checkbox'} checked={true} readOnly={true}/>
         Notification Configs</h3>
       <ConfigChangeListView configChangeList={studyEnvChange.notificationConfigChanges}
-        changeItemSummaryFunc={notificationConfigSummary}/>
+        changeItemSummaryFunc={renderNotificationConfig}/>
     </div>
   </div>
 }

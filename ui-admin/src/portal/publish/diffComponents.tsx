@@ -93,44 +93,36 @@ export const ConfigChangeListView = <T, >({ configChangeList, changeItemSummaryF
     {configChangeList.changedItems.length > 0 && <li className="ps-4">Changed: {configChangeList.changedItems.length}
       <ul className="list-unstyled">
         {configChangeList.changedItems.map((item, index) => <li className="ps-4" key={index}>
-          {versionedConfigChangeSummary(item)}
+          {renderVersionedConfigChange(item)}
         </li>)}
       </ul>
     </li>}
   </ul>
 }
 
-/**
- *
- */
-export const studyEnvironmentSurveySummary = (change: StudyEnvironmentSurvey) => {
+/** summarizes a configured survey */
+export const renderStudyEnvironmentSurvey = (change: StudyEnvironmentSurvey) => {
   return <span>{change.survey.name} <span className="text-muted fst-italic">
     ({change.survey.stableId} v{change.survey.version})
   </span></span>
 }
 
-/**
- *
- */
-export const studyEnvironmentConsentSummary = (change: StudyEnvironmentConsent) => {
+/** summarizes a configured consent */
+export const renderStudyEnvironmentConsent = (change: StudyEnvironmentConsent) => {
   return <span>{change.consentForm.name} <span className="text-muted fst-italic">
     ({change.consentForm.stableId} v{change.consentForm.version})
   </span></span>
 }
 
-/**
- *
- */
-export const notificationConfigSummary = (change: NotificationConfig) => {
+/** summarizes a notification config */
+export const renderNotificationConfig = (change: NotificationConfig) => {
   return <span>{change.emailTemplate.name} - {change.notificationType}<span className="text-muted fst-italic ms-2">
     ({change.emailTemplate.stableId} v{change.emailTemplate.version})
   </span></span>
 }
 
-/**
- *
- */
-export const versionedConfigChangeSummary = (change: VersionedConfigChange) => {
+/** summarizes a change to a versioned entity (name + version) */
+export const renderVersionedConfigChange = (change: VersionedConfigChange) => {
   const docChange = change.documentChange
   return <div>
     <ul>
