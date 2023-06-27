@@ -1,7 +1,8 @@
 import React, { HTMLProps, useEffect, useState } from 'react'
-import { Column, flexRender, Header, Table } from '@tanstack/react-table'
+import { Column, flexRender, Header, RowData, Table } from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretDown, faCaretUp, faColumns } from '@fortawesome/free-solid-svg-icons'
+import Select from 'react-select'
 
 /**
  * Returns a debounced input react component
@@ -36,6 +37,16 @@ function DebouncedInput({
   )
 }
 
+declare module '@tanstack/table-core' {
+  //Extra column metadata for extending the built-in filter functionality of react-table
+  interface ColumnMeta<TData extends RowData, TValue> {
+    //Specifies the type of the column data. By default, columns will be treated as strings
+    columnType?: string
+    //Specifies the Select options if using a dropdown filter (i.e. for booleans)
+    filterOptions?: object[]
+  }
+}
+
 /**
  * returns a Filter to handle text fields
  * adapted from https://tanstack.com/table/v8/docs/examples/react/filters
@@ -45,25 +56,76 @@ function Filter<A>({
 }: {
   column: Column<A>
 }) {
-  const columnFilterValue = column.getFilterValue()
+  return column.columnDef.meta?.columnType === 'boolean' ? (
+    SelectFilter({ column })
+  ) : (
+    SearchFilter({ column })
+  )
+}
+
+/**
+ * returns a SelectFilter to handle fields filtered by dropdown
+ * */
+function SelectFilter<A>({
+  column
+}: {
+  column: Column<A>
+}) {
+  const [selectedValue, setSelectedValue] = useState({})
 
   return <div>
-    <DebouncedInput
-      type="text"
-      value={(columnFilterValue ?? '') as string}
-      onChange={value => column.setFilterValue(value)}
-      placeholder={`Search...`}
+    <Select
+      options={column.columnDef.meta?.filterOptions || []}
+      styles={{
+        control: baseStyles => ({
+          ...baseStyles,
+          width: 200,
+          fontWeight: 'normal'
+        }),
+        menu: baseStyles => ({
+          ...baseStyles,
+          fontWeight: 'normal'
+        })
+      }}
+      value={selectedValue}
+      // @ts-ignore
+      onChange={(newValue: { value: boolean, label: string }) => {
+        //setFilterValue on Column cannot natively handle dropdown options,
+        //so we need to manage the filter value used by the column separately
+        //from the selected value used by the Select component
+        setSelectedValue(newValue)
+        column.setFilterValue(newValue.value)
+      }}
     />
     <div className="h-1" />
   </div>
 }
 
+function SearchFilter<A>({
+  column
+}: {
+  column: Column<A>
+}) {
+  return <div>
+    <DebouncedInput
+      type="text"
+      value={(column.getFilterValue() ?? '') as string}
+      onChange={value => column.setFilterValue(value)}
+      placeholder={`Search...`}
+      list={`${column.id} list`}
+    />
+    <div className="h-1" />
+  </div>
+}
 
 /**
  * returns a table header with optional sorting and filtering
  * adapted from https://tanstack.com/table/v8/docs/examples/react/sorting
  * */
-export function tableHeader<A, B>(header: Header<A, B>, options: { sortable: boolean, filterable: boolean }) {
+export function tableHeader<A, B>(
+  header: Header<A, B>,
+  options: { sortable: boolean, filterable: boolean }
+) {
   const sortDirection = options.sortable && header.column.getIsSorted()
   const ariaSort = options.sortable ?
     sortDirection ? (sortDirection === 'desc' ? 'descending' : 'ascending') : 'none' : undefined
