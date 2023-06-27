@@ -63,7 +63,8 @@ public class PortalUpdateService {
         return applyUpdate(destEnv, change, user);
     }
 
-    /** applies the given update -- the destEnv provided must already be fully-hydrated from loadPortalEnv */
+    /** applies the given update -- the destEnv provided must already be fully-hydrated from loadPortalEnv
+     * returns the updated environment */
     protected PortalEnvironment applyUpdate(PortalEnvironment destEnv, PortalEnvironmentChange envChanges, AdminUser user) throws Exception {
         applyChangesToEnvConfig(destEnv, envChanges.configChanges());
 

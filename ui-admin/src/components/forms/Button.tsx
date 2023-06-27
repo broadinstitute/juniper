@@ -31,7 +31,8 @@ export type ButtonProps = JSX.IntrinsicElements['button'] & {
   variant?: ButtonVariant
 }
 
-/** A button. */
+/** A button.  Among other improvements, this handles the 'disabled' prop in a much more robust way
+ * than <button>, enabling tooltips to be shown for disabled buttons. */
 export const Button = (props: ButtonProps) => {
   const { outline = false, tooltip, variant = 'secondary', ...buttonProps } = props
   const { className, disabled, onBlur, onClick, onFocus, onMouseEnter, onMouseLeave } = buttonProps
@@ -46,6 +47,7 @@ export const Button = (props: ButtonProps) => {
         {...buttonProps}
         ref={buttonRef}
         aria-disabled={disabled}
+        style={{ pointerEvents: 'auto' }}
         className={
           classNames(
             'btn',

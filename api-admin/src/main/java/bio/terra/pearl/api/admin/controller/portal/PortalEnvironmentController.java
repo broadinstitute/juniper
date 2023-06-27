@@ -2,7 +2,7 @@ package bio.terra.pearl.api.admin.controller.portal;
 
 import bio.terra.pearl.api.admin.api.PortalEnvironmentApi;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
-import bio.terra.pearl.api.admin.service.PortalPublishingExtService;
+import bio.terra.pearl.api.admin.service.portal.PortalPublishingExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.publishing.PortalEnvironmentChange;
