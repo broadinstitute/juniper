@@ -11,12 +11,11 @@ export type NumberInputProps = Omit<TextInputProps, 'value' | 'onChange'> & {
  * A number input with label and description.
  */
 export const NumberInput = (props: NumberInputProps) => {
-  const { onChange, value } = props
+  const { onChange } = props
   return (
     <TextInput
       {...props}
       type="number"
-      value={value === undefined ? '' : `${value}`}
       onChange={newValue => {
         onChange?.(newValue === '' ? undefined : parseInt(newValue))
       }}

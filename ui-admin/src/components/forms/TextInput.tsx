@@ -34,7 +34,7 @@ export const TextInput = (props: TextInputProps) => {
         disabled={undefined}
         id={inputId}
         // Allow value to be undefined without triggering a React warning about uncontrolled input.
-        value={value || ''}
+        value={value ?? ''}
         onChange={
           disabled
             // Noop because providing a value without an onChange handler causes a React warning
