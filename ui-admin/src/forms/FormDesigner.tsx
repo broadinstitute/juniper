@@ -78,8 +78,8 @@ export const FormDesigner = (props: FormDesignerProps) => {
 
           return (
             <QuestionDesigner
+              question={selectedElement}
               readOnly={readOnly}
-              value={selectedElement}
               onChange={updatedElement => {
                 onChange(set(selectedElementPath, updatedElement, value))
               }}

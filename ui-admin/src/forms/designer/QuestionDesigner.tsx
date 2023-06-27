@@ -10,25 +10,25 @@ import { questionTypeDescriptions, questionTypeLabels } from './questions/questi
 import { VisibilityFields } from './questions/VisibilityFields'
 
 export type QuestionDesignerProps = {
+  question: Question
   readOnly: boolean
-  value: Question
   onChange: (newValue: Question) => void
 }
 
 /** UI for editing a question in a form. */
 export const QuestionDesigner = (props: QuestionDesignerProps) => {
-  const { readOnly, value, onChange } = props
+  const { question, readOnly, onChange } = props
 
-  const isTemplated = 'questionTemplateName' in value
+  const isTemplated = 'questionTemplateName' in question
 
   return (
     <div>
-      <h2>{value.name}</h2>
+      <h2>{question.name}</h2>
 
       {!isTemplated && (
         <>
-          <p className="fs-4 mb-0">{questionTypeLabels[value.type]} question</p>
-          <p>{questionTypeDescriptions[value.type]}</p>
+          <p className="fs-4 mb-0">{questionTypeLabels[question.type]} question</p>
+          <p>{questionTypeDescriptions[question.type]}</p>
         </>
       )}
 
@@ -36,7 +36,7 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
         <>
           <p className="fs-4 mb-0">Templated question</p>
           <p>
-            This question uses <span className="fw-bold">{value.questionTemplateName}</span> as a template.
+            This question uses <span className="fw-bold">{question.questionTemplateName}</span> as a template.
             Question settings entered here override settings from the template.
           </p>
         </>
@@ -44,33 +44,33 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
 
       <BaseFields
         disabled={readOnly}
-        question={value}
+        question={question}
         onChange={onChange}
       />
 
       {!isTemplated && (
         <>
           {
-            (value.type === 'checkbox' || value.type === 'dropdown' || value.type === 'radiogroup') && (
+            (question.type === 'checkbox' || question.type === 'dropdown' || question.type === 'radiogroup') && (
               <>
                 <ChoicesList
-                  question={value}
+                  question={question}
                   readOnly={readOnly}
                   onChange={onChange}
                 />
                 <OtherOptionFields
                   disabled={readOnly}
-                  question={value}
+                  question={question}
                   onChange={onChange}
                 />
               </>
             )
           }
           {
-            value.type === 'checkbox' && (
+            question.type === 'checkbox' && (
               <CheckboxFields
                 disabled={readOnly}
-                question={value}
+                question={question}
                 onChange={onChange}
               />
             )
@@ -80,7 +80,7 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
 
       <VisibilityFields
         disabled={readOnly}
-        question={value}
+        question={question}
         onChange={onChange}
       />
     </div>
