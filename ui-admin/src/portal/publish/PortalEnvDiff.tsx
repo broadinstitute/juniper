@@ -4,14 +4,15 @@ import Api, {
   PortalEnvironment,
   PortalEnvironmentChange
 } from 'api/api'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import LoadingSpinner from 'util/LoadingSpinner'
 import StudyEnvDiff from './StudyEnvDiff'
-import { ConfigChangeListView, ConfigChanges, VersionChangeView } from './diffComponents'
+import { ConfigChangeListView, ConfigChanges, renderNotificationConfig, VersionChangeView } from './diffComponents'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
+import { portalHomePath } from '../PortalRouter'
 
 type EnvironmentDiffProps = {
   portal: Portal,
@@ -95,7 +96,8 @@ export default function PortalEnvDiff({ portal, portalEnv }: EnvironmentDiffProp
           <h2 className="h6"><input className="me-2" type={'checkbox'} checked={true} readOnly={true}/>
             Notification Configs</h2>
           <div className="ms-4">
-            <ConfigChangeListView configChangeList={diffResult.notificationConfigChanges}/>
+            <ConfigChangeListView configChangeList={diffResult.notificationConfigChanges}
+              renderItemSummary={renderNotificationConfig}/>
           </div>
         </div>
         <div>
@@ -106,7 +108,7 @@ export default function PortalEnvDiff({ portal, portalEnv }: EnvironmentDiffProp
       </div>
       <div className="d-flex justify-content-center mt-2 pb-5">
         <button className="btn btn-primary" onClick={applyChanges}>Copy changes</button>
-        <button className="btn btn-cancel">Cancel</button>
+        <Link className="btn btn-cancel" to={portalHomePath(portal.shortcode)}>Cancel</Link>
       </div>
     </>
     }

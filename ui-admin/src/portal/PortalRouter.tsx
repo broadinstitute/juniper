@@ -61,8 +61,12 @@ function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT
   </>
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/** admin homepage for a given portal */
+export const portalHomePath = (portalShortcode: string) => {
+  return `/${portalShortcode}`
+}
+
+/** path to portal-specific user list */
 export const usersPath = (portalShortcode: string) => {
   return `/${portalShortcode}/users`
 }
