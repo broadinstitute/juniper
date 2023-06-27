@@ -19,7 +19,7 @@ export type UserContextT = {
 }
 
 /** current user object context */
-const UserContext = React.createContext<UserContextT>({
+export const UserContext = React.createContext<UserContextT>({
   user: anonymousUser,
   loginUser: () => { throw new Error('context not yet initialized') },
   loginUserUnauthed: () => { throw new Error('context not yet initialized') },

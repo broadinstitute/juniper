@@ -1,15 +1,49 @@
+import React from 'react'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { DatasetDetails, Enrollee } from 'api/api'
+import { AdminUser, DatasetDetails, Enrollee } from 'api/api'
 import { Survey } from '@juniper/ui-core/build/types/forms'
 import { ParticipantTask } from '@juniper/ui-core/build/types/task'
 
 import _times from 'lodash/times'
 import _random from 'lodash/random'
 import { StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
+import { PortalContextT } from '../portal/PortalProvider'
+import { PortalEnvironment } from '@juniper/ui-core/build/types/portal'
+import { UserContext, UserContextT } from 'user/UserProvider'
+
+const randomString = (length: number) => {
+  return _times(length, () => _random(35).toString(36)).join('')
+}
+
+/** returns a simple portalContext, loosely modeled on OurHealth */
+export const mockPortalContext: () => PortalContextT = () => ({
+  portal: {
+    id: 'fakeportalid1',
+    name: 'mock portal',
+    shortcode: 'mock4u',
+    portalStudies: [],
+    portalEnvironments: [
+      mockPortalEnvironment('sandbox')
+    ]
+  },
+  updatePortal: () => null,
+  isError: false,
+  isLoading: false
+})
+
+/** returns simple mock portal environment */
+export const mockPortalEnvironment: (envName: string) => PortalEnvironment = (envName: string) => ({
+  portalEnvironmentConfig: {
+    initialized: true,
+    password: 'broad_institute',
+    passwordProtected: false,
+    acceptingRegistration: true
+  },
+  environmentName: envName
+})
 
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/** returns a simple survey object for use/extension in tests */
 export const mockSurvey: () => Survey = () => ({
   id: 'surveyId1',
   stableId: 'survey1',
@@ -20,9 +54,7 @@ export const mockSurvey: () => Survey = () => ({
   createdAt: 0
 })
 
-// as we add more tests, we'll want to parameterize this and turn it into a proper factory
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/** returns a simple studyEnvContext object for use/extension in tests */
 export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
   study: { name: 'Fake study', studyEnvironments: [], shortcode: 'fakeStudy' },
   portal: { shortcode: 'portalCode', id: 'portalId', portalStudies: [], portalEnvironments: [], name: 'Fake portal' },
@@ -61,24 +93,21 @@ export const mockConfiguredSurvey: () => StudyEnvironmentSurvey = () => {
 }
 
 export const mockDatasetDetails: (datasetName: string, status: string) => DatasetDetails =
-    // TODO: Add JSDoc
-    // eslint-disable-next-line jsdoc/require-jsdoc
-    (datasetName: string, status: string) => ({
-      createdAt: 1685557140,
-      createdBy: '0b9ade05-f7e3-483e-b85a-43deac7505c0',
-      datasetName,
-      description: 'a successfully created dataset',
-      id: 'a-successful-id',
-      lastExported: 0,
-      lastUpdatedAt: 0,
-      status,
-      studyEnvironmentId: 'studyEnvId',
-      tdrDatasetId: 'a-fake-tdr-dataset-id'
-    })
+  /** returns mock dataset for use/extension in tests */
+  (datasetName: string, status: string) => ({
+    createdAt: 1685557140,
+    createdBy: '0b9ade05-f7e3-483e-b85a-43deac7505c0',
+    datasetName,
+    description: 'a successfully created dataset',
+    id: 'a-successful-id',
+    lastExported: 0,
+    lastUpdatedAt: 0,
+    status,
+    studyEnvironmentId: 'studyEnvId',
+    tdrDatasetId: 'a-fake-tdr-dataset-id'
+  })
 
-// as we add more tests, we'll want to parameterize this and turn it into a proper factory
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/** returns a simple mock enrollee loosely based on the jsalk.json synthetic enrollee */
 export const mockEnrollee: () => Enrollee = () => {
   const enrolleeId = randomString(10)
   return {
@@ -130,8 +159,7 @@ export const mockEnrollee: () => Enrollee = () => {
   }
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/** helper function to generate a ParticipantTask object for a survey and enrollee */
 export const taskForSurvey = (survey: Survey, enrolleeId: string): ParticipantTask => {
   return {
     id: randomString(10),
@@ -149,6 +177,38 @@ export const taskForSurvey = (survey: Survey, enrolleeId: string): ParticipantTa
   }
 }
 
-const randomString = (length: number) => {
-  return _times(length, () => _random(35).toString(36)).join('')
+/** returns simple admin user for testing */
+export const mockAdminUser = (superuser: boolean): AdminUser => {
+  return {
+    username: 'blah',
+    superuser,
+    token: 'fakeToken',
+    portalAdminUsers: [],
+    portalPermissions: {},
+    isAnonymous: false
+  }
 }
+
+/** component for wrapping test components that require a superuser from context */
+export const MockSuperuserProvider = ({ children }: { children: React.ReactNode }) => {
+  return <MockUserProvider user={mockAdminUser(true)}>{children}</MockUserProvider>
+}
+
+/** component for wrapping test components that require a non-superuser from context */
+export const MockRegularUserProvider = ({ children }: { children: React.ReactNode }) => {
+  return <MockUserProvider user={mockAdminUser(false)}>{children}</MockUserProvider>
+}
+
+/** component for wrapping test components that require a user from context */
+export const MockUserProvider = ({ children, user }: { children: React.ReactNode, user: AdminUser }) => {
+  const fakeUserContext: UserContextT = {
+    user,
+    loginUser: () => null,
+    loginUserUnauthed: () => null,
+    logoutUser: () => null
+  }
+  return <UserContext.Provider value={fakeUserContext}>
+    {children}
+  </UserContext.Provider>
+}
+

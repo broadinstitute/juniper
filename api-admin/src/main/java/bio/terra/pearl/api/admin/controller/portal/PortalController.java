@@ -3,7 +3,7 @@ package bio.terra.pearl.api.admin.controller.portal;
 import bio.terra.pearl.api.admin.api.PortalApi;
 import bio.terra.pearl.api.admin.model.PortalShallowDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
-import bio.terra.pearl.api.admin.service.PortalExtService;
+import bio.terra.pearl.api.admin.service.portal.PortalExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import com.fasterxml.jackson.databind.ObjectMapper;

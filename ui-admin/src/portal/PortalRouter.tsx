@@ -49,7 +49,8 @@ function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT
       </Link>
     </NavBreadcrumb>
     <Routes>
-      <Route path="config" element={<PortalEnvConfigView portalEnv={portalEnv}/>}/>
+      <Route path="config" element={<PortalEnvConfigView portal={portal} portalEnv={portalEnv}
+        updatePortal={portalContext.updatePortal}/>}/>
       <Route path="participants" element={<PortalParticipantsView portalEnv={portalEnv} portal={portal}/>}/>
       <Route path="siteContent" element={<SiteContentView portalEnv={portalEnv}/>}/>
       <Route path="diff/:sourceEnvName" element={<PortalEnvDiff portal={portal} portalEnv={portalEnv}/>}/>
