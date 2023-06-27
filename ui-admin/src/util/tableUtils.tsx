@@ -11,7 +11,7 @@ import Select from 'react-select'
 function DebouncedInput({
   value: initialValue,
   onChange,
-  debounce = 200,
+  debounce = 500,
   ...props
 }: {
   value: string
@@ -59,6 +59,7 @@ function Filter<A>({
   return column.columnDef.meta?.columnType === 'boolean' ? (
     SelectFilter({ column })
   ) : (
+    //Defaults to the text search filter
     SearchFilter({ column })
   )
 }
