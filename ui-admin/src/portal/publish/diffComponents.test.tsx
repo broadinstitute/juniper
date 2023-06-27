@@ -18,7 +18,7 @@ describe('configChangeList', () => {
     }
 
     const { baseElement } = render(<ConfigChangeListView configChangeList={emptyChangeList}
-      changeItemSummaryFunc={renderStudyEnvironmentSurvey}/>)
+      renderItemSummary={renderStudyEnvironmentSurvey}/>)
     expect(screen.queryByText('Added')).toBeNull()
     expect(screen.queryByText('Removed')).toBeNull()
     expect(screen.queryByText('Changed')).toBeNull()
@@ -36,7 +36,7 @@ describe('configChangeList', () => {
     }
 
     render(<ConfigChangeListView configChangeList={changeList}
-      changeItemSummaryFunc={renderStudyEnvironmentSurvey}/>)
+      renderItemSummary={renderStudyEnvironmentSurvey}/>)
     expect(screen.queryByText('Added')).toBeNull()
     expect(screen.queryByText('Removed')).toBeNull()
     expect(screen.getByText('Changed: 1')).toBeTruthy()
@@ -51,7 +51,7 @@ describe('configChangeList', () => {
     }
 
     render(<ConfigChangeListView configChangeList={changeList}
-      changeItemSummaryFunc={renderStudyEnvironmentSurvey}/>)
+      renderItemSummary={renderStudyEnvironmentSurvey}/>)
     expect(screen.queryByText('Changed')).toBeNull()
     expect(screen.queryByText('Removed')).toBeNull()
     expect(screen.getByText('Added: 1')).toBeTruthy()

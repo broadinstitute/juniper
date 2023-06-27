@@ -68,9 +68,9 @@ export const versionDisplay = (stableId: string, version: number) => {
 }
 
 /** Summary of notification config changes -- doesn't show any detail yet */
-export const ConfigChangeListView = <T, >({ configChangeList, changeItemSummaryFunc }:
+export const ConfigChangeListView = <T, >({ configChangeList, renderItemSummary }:
                                       {configChangeList: ListChange<T, VersionedConfigChange>,
-                                      changeItemSummaryFunc: (item: T) => React.ReactNode}) => {
+                                      renderItemSummary: (item: T) => React.ReactNode}) => {
   if (!configChangeList.addedItems.length &&
     !configChangeList.removedItems.length && !configChangeList.changedItems.length) {
     return <span className="fst-italic text-muted">no changes</span>
@@ -79,14 +79,14 @@ export const ConfigChangeListView = <T, >({ configChangeList, changeItemSummaryF
     {configChangeList.addedItems.length > 0 && <li className="ps-4">Added: {configChangeList.addedItems.length}
       <ul className="list-unstyled">
         {configChangeList.addedItems.map((item, index) => <li className="ps-4" key={index}>
-          {changeItemSummaryFunc(item)}
+          {renderItemSummary(item)}
         </li>)}
       </ul>
     </li>}
     {configChangeList.removedItems.length > 0 && <li className="ps-4">Removed: {configChangeList.removedItems.length}
       <ul className="list-unstyled">
         {configChangeList.removedItems.map((item, index) => <li className="ps-4" key={index}>
-          {changeItemSummaryFunc(item)}
+          {renderItemSummary(item)}
         </li>)}
       </ul>
     </li>}

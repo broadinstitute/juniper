@@ -27,7 +27,6 @@ export default function PortalEnvDiff({ portal, portalEnv }: EnvironmentDiffProp
   const sourceEnvName: string | undefined = params.sourceEnvName
   const [isLoading, setIsLoading] = useState(true)
   const [diffResult, setDiffResult] = useState<PortalEnvironmentChange | null>(null)
-  //const [selectedDiff, setSelectedDiff] = useState<Por
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -98,7 +97,7 @@ export default function PortalEnvDiff({ portal, portalEnv }: EnvironmentDiffProp
             Notification Configs</h2>
           <div className="ms-4">
             <ConfigChangeListView configChangeList={diffResult.notificationConfigChanges}
-              changeItemSummaryFunc={renderNotificationConfig}/>
+              renderItemSummary={renderNotificationConfig}/>
           </div>
         </div>
         <div>
