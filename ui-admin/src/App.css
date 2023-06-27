@@ -7,25 +7,6 @@
   background-color: #4D72AA;
 }
 
-.btn-secondary {
-  background-color: transparent;
-  color:#4D72AA;
-  border: none;
-}
-
-.btn-secondary[aria-disabled="true"] {
-  color: #666;
-  font-style: italic;
-}
-
-.btn-secondary:focus, .btn-secondary:hover {
-  background-color: transparent;
-  color:#4D72AA;
-  font-weight: bold;
-  border: none;
-  box-shadow: none;
-}
-
 a {
   color: #4D72AA;
   text-decoration: none;
