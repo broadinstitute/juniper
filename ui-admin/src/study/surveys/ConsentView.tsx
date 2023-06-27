@@ -6,9 +6,6 @@ import {  StudyParams } from 'study/StudyRouter'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Api, {
   ConsentForm,
-  Portal,
-  Study,
-  StudyEnvironment,
   StudyEnvironmentConsent
 } from 'api/api'
 
@@ -17,9 +14,10 @@ import SurveyEditorView from './SurveyEditorView'
 import { useUser } from 'user/UserProvider'
 
 /** Handles logic for updating study environment surveys */
-function RawConsentView({ portal, study, currentEnv, consent, readOnly = false }:
-                         {portal: Portal, study: Study, currentEnv: StudyEnvironment,
+function RawConsentView({ studyEnvContext, consent, readOnly = false }:
+                         {studyEnvContext: StudyEnvContextT,
                            consent: ConsentForm, readOnly?: boolean}) {
+  const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
   const { user } = useUser()
   const navigate = useNavigate()
 
@@ -62,7 +60,7 @@ function RawConsentView({ portal, study, currentEnv, consent, readOnly = false }
     <SurveyEditorView
       currentForm={currentForm}
       readOnly={readOnly}
-      onCancel={() => navigate('../..')}
+      onCancel={() => navigate(currentEnvPath)}
       onSave={createNewVersion}
     />
   )
@@ -77,7 +75,7 @@ function ConsentView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const params = useParams<ConsentParamsT>()
   const consentStableId: string | undefined = params.consentStableId
 
-  const { portal, currentEnv, study } = studyEnvContext
+  const { currentEnv } = studyEnvContext
   const [searchParams] = useSearchParams()
   const isReadOnly = searchParams.get('readOnly') === 'true'
 
@@ -89,7 +87,7 @@ function ConsentView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   if (!consent) {
     return <span>The consent {consentStableId} does not exist in this environment</span>
   }
-  return <RawConsentView portal={portal} study={study} currentEnv={currentEnv} consent={consent} readOnly={isReadOnly}/>
+  return <RawConsentView studyEnvContext={studyEnvContext} consent={consent} readOnly={isReadOnly}/>
 }
 
 export default ConsentView
