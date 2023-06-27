@@ -12,7 +12,7 @@ type VisibilityFieldsProps = {
   onChange: (newValue: Question) => void
 }
 
-/** Controls for editing other option for questions. */
+/** Controls for making a question conditionally visible. */
 export const VisibilityFields = (props: VisibilityFieldsProps) => {
   const { disabled, question, onChange } = props
 

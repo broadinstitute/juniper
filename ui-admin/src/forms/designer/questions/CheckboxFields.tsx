@@ -11,7 +11,7 @@ type CheckboxFieldsProps = {
   onChange: (newValue: CheckboxQuestion) => void
 }
 
-/** Controls for editing other option for questions. */
+/** Controls for editing fields specific to checkbox questions. */
 export const CheckboxFields = (props: CheckboxFieldsProps) => {
   const { disabled, question, onChange } = props
 
