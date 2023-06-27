@@ -101,7 +101,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
   }, {
     header: 'Kit status',
-    // filterFn: 'includesString', //an undefined value in a cell seems to switch the filter table away from the default
+    filterFn: 'includesString', //an undefined value in a cell seems to switch the filter table away from the default
     accessorKey: 'mostRecentKitStatus',
     meta: {
       columnType: 'string'

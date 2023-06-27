@@ -112,7 +112,6 @@ function SearchFilter<A>({
       value={(column.getFilterValue() ?? '') as string}
       onChange={value => column.setFilterValue(value)}
       placeholder={`Search...`}
-      list={`${column.id} list`}
     />
     <div className="h-1" />
   </div>
