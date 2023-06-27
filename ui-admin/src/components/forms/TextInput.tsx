@@ -11,7 +11,7 @@ export type TextInputProps = Omit<JSX.IntrinsicElements['input'], 'onChange'> & 
 /** A text input with label and description. */
 export const TextInput = (props: TextInputProps) => {
   const { description, label, labelClassname, ...inputProps } = props
-  const { className, disabled, id, onChange } = inputProps
+  const { className, disabled, id, value, onChange } = inputProps
 
   const generatedId = useId()
   const inputId = id || generatedId
@@ -26,13 +26,15 @@ export const TextInput = (props: TextInputProps) => {
         {label}
       </label>
       <input
+        type="text"
         {...inputProps}
         aria-describedby={description ? descriptionId : undefined}
         aria-disabled={disabled}
         className={classNames('form-control', { disabled }, className)}
         disabled={undefined}
         id={inputId}
-        type="text"
+        // Allow value to be undefined without triggering a React warning about uncontrolled input.
+        value={value || ''}
         onChange={
           disabled
             // Noop because providing a value without an onChange handler causes a React warning

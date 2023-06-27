@@ -137,6 +137,10 @@ export type TemplatedQuestion = Omit<BaseQuestion, 'title'> & {
 
 export type TextQuestion = BaseQuestion & {
   type: 'text'
+  inputType?: 'text' | 'number'
+  size?: number
+  min?: number
+  max?: number
 }
 
 export type SignatureQuestion = BaseQuestion & {
