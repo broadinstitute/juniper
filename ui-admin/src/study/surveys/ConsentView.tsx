@@ -62,7 +62,7 @@ function RawConsentView({ portal, study, currentEnv, consent, readOnly = false }
     <SurveyEditorView
       currentForm={currentForm}
       readOnly={readOnly}
-      onCancel={() => navigate('../../..')}
+      onCancel={() => navigate('../..')}
       onSave={createNewVersion}
     />
   )

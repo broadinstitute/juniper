@@ -60,7 +60,7 @@ function RawSurveyView({ portal, currentEnv, study, survey, readOnly = false }:
     <SurveyEditorView
       currentForm={currentSurvey}
       readOnly={readOnly}
-      onCancel={() => navigate('../../..')}
+      onCancel={() => navigate('../..')}
       onSave={createNewVersion}
     />
   )

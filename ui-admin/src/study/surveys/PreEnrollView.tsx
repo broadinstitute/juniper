@@ -50,7 +50,7 @@ function RawPreRegView({ portalShortcode, currentEnv, survey, studyShortcode, re
     <SurveyEditorView
       currentForm={currentSurvey}
       readOnly={readOnly}
-      onCancel={() => navigate('../../..')}
+      onCancel={() => navigate('../..')}
       onSave={createNewVersion}
     />
   )
