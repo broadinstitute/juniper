@@ -1,4 +1,7 @@
 // Taken from https://github.com/DataBiosphere/terra-ui/blob/6ee212abfc572d75ba6e22b788cf11730219dbff/.eslintrc.js#L4
+/* eslint-env node */
+
+const isFix = process.argv.includes('--fix')
 
 module.exports = {
   env: {
@@ -106,7 +109,7 @@ module.exports = {
     '@typescript-eslint/ban-ts-comment': 'off',
 
     // JSDoc
-    'jsdoc/require-jsdoc': ['warn', {
+    'jsdoc/require-jsdoc': [isFix ? 'off' : 'warn', {
       publicOnly: true,
       require: {
         FunctionDeclaration: true,
