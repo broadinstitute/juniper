@@ -39,7 +39,7 @@ describe('FormContentJsonEditor', () => {
     expect(container).toHaveTextContent(expectedContent)
   })
 
-  it('sets readonly attribute on textatrea', () => {
+  it('sets readonly attribute on textarea', () => {
     // Act
     render(<FormContentJsonEditor initialValue={formContent} readOnly onChange={jest.fn()} />)
 
@@ -81,5 +81,21 @@ describe('FormContentJsonEditor', () => {
 
     // Assert
     expect(onChange).toHaveBeenCalledWith(false, undefined)
+  })
+
+  it('shows feedback when edited with invalid JSON', async () => {
+    // Arrange
+    const user = userEvent.setup()
+
+    const onChange = jest.fn()
+    render(<FormContentJsonEditor initialValue={formContent} onChange={onChange} />)
+
+    // Act
+    const textArea = screen.getByRole('textbox')
+    // Removes quotes around "First name"
+    await act(() => user.type(textArea, 'First name', { initialSelectionStart: 158, initialSelectionEnd: 170 }))
+
+    // Assert
+    expect(textArea).toHaveClass('is-invalid')
   })
 })
