@@ -24,7 +24,7 @@ export const ChoicesList = (props: ChoicesListProps) => {
   return (
     <div className="mb-3">
       <p className="mb-2" id={labelId}>Choices</p>
-      <ol aria-labelledby={labelId} className="list-group list-group-numbered mb-1">
+      <ol aria-labelledby={labelId} className="list-group mb-1">
         {question.choices.map((choice, i) => {
           return (
             <li
@@ -32,7 +32,7 @@ export const ChoicesList = (props: ChoicesListProps) => {
               className="list-group-item d-flex"
             >
               <div
-                className="flex-grow-1 ms-3"
+                className="flex-grow-1"
                 style={{
                   display: 'grid',
                   grid: 'auto-flow / max-content auto',
