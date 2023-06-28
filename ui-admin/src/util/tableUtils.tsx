@@ -62,11 +62,12 @@ function SelectFilter<A>({
 }: {
   column: Column<A>
 }) {
-  const [selectedValue, setSelectedValue] = useState({})
+  const [selectedValue, setSelectedValue] = useState<{ value: boolean, label: string }>()
 
   return <div>
     <Select
       options={column.columnDef.meta?.filterOptions || []}
+      isClearable={true}
       styles={{
         control: baseStyles => ({
           ...baseStyles,
@@ -85,7 +86,9 @@ function SelectFilter<A>({
         //so we need to manage the filter value used by the column separately
         //from the selected value used by the Select component
         setSelectedValue(newValue)
-        column.setFilterValue(newValue.value)
+        newValue !== null ?
+          column.setFilterValue(newValue.value) :
+          column.setFilterValue(undefined)
       }}
     />
     <div className="h-1" />
@@ -259,6 +262,6 @@ declare module '@tanstack/table-core' {
     //Specifies the type of the column data. By default, columns will be treated as strings
     columnType?: string
     //Specifies the Select options if using a dropdown filter (i.e. for booleans)
-    filterOptions?: object[]
+    filterOptions?: { value: boolean, label: string }[]
   }
 }

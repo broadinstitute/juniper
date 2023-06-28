@@ -92,7 +92,6 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     meta: {
       columnType: 'boolean',
       filterOptions: [
-        { value: undefined, label: 'Any' },
         { value: true, label: 'Consented' },
         { value: false, label: 'Not Consented' }
       ]
