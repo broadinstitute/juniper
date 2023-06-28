@@ -127,7 +127,7 @@ describe('getTableOfContentsTree', () => {
         {
           label: 'Question templates',
           data: {
-            isSelectable: false,
+            isSelectable: true,
             path: 'questionTemplates'
           },
           children: [
