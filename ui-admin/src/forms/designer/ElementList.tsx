@@ -7,14 +7,14 @@ import { IconButton } from 'components/forms/Button'
 
 import { getElementLabel } from './designer-utils'
 
-type ElementListProps = {
+type ElementListProps<T extends FormElement> = {
   readOnly: boolean
-  value: FormElement[]
-  onChange: (newValue: FormElement[]) => void
+  value: T[]
+  onChange: (newValue: T[]) => void
 }
 
 /** UI for re-ordering a list of form elements. */
-export const ElementList = (props: ElementListProps) => {
+export const ElementList = <T extends FormElement, >(props: ElementListProps<T>) => {
   const { readOnly, value, onChange } = props
 
   return (

@@ -83,7 +83,7 @@ export type FormElement = FormPanel | HtmlElement | Question
 
 export type FormPanel = BaseElement & {
   type: 'panel'
-  elements: FormElement[]
+  elements: (HtmlElement | Question)[]
 }
 
 export type HtmlElement = {
