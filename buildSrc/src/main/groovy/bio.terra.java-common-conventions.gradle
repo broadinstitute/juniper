@@ -48,7 +48,11 @@ dependencies {
 
     testImplementation 'org.hamcrest:hamcrest:2.2'
 
-    implementation 'bio.terra:terra-common-lib:0.0.75-SNAPSHOT'
+    implementation 'bio.terra:terra-common-lib:0.0.91-SNAPSHOT'
+    //terra-common-lib pulls in google-oauth-client v1.33.2, which contains vuln CVE-2021-22573
+    //This pulls in a patched version of google-oauth-client that supersedes the vulnerable version
+    //This is a workaround until TCL adopts a patched version
+    implementation 'com.google.oauth-client:google-oauth-client:1.33.3'
     implementation 'bio.terra:datarepo-client:1.349.0-SNAPSHOT'
 }
 

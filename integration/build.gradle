@@ -21,7 +21,7 @@ dependencies {
     implementation 'org.glassfish.jersey.connectors:jersey-jdk-connector'
 
     // Google Dependencies
-    implementation 'com.google.auth:google-auth-library-oauth2-http:1.4.0'
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.18.0'
 
     // Terra Test Runner Library
     implementation 'bio.terra:terra-test-runner:0.1.5-SNAPSHOT'
