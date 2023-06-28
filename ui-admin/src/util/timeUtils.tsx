@@ -6,7 +6,7 @@ export function instantToDefaultString(instant?: number) {
   return new Date(instant * 1000).toLocaleString()
 }
 /** renders a java LocalDate as a date string.  this should be sensitive to the user's locale */
-export function dateToDefaultString(date?: number[]) {
+export function dateToDefaultString(date: number[] | undefined) {
   if (typeof date === 'undefined' || date.length != 3) {
     return ''
   }
