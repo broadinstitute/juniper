@@ -48,7 +48,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     protected boolean isSimpleFieldType(Class fieldType) {
         return Enum.class.isAssignableFrom(fieldType) ||
                 Arrays.asList(String.class, Instant.class, LocalDate.class, Boolean.class, boolean.class,
-                                Integer.class, int.class, UUID.class, byte[].class)
+                                Integer.class, Double.class, int.class, UUID.class, byte[].class)
                         .contains(fieldType);
     }
 
@@ -150,7 +150,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         return "insert into " + tableName + " (" + StringUtils.join(insertColumns, ", ") +") " +
                 "values (" + StringUtils.join(insertFieldSymbols, ", ") + ");";
     }
-    
+
     /** basic get-by-id */
     public Optional<T> find(UUID id) {
         return jdbi.withHandle(handle ->
