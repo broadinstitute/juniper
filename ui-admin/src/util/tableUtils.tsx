@@ -231,7 +231,7 @@ export function basicTableLayout<T>(table: Table<T>) {
   return <table className="table table-striped">
     <thead>
       <tr>
-        {table.getFlatHeaders().map(header => sortableTableHeader(header))}
+        {table.getFlatHeaders().map(header => tableHeader(header, { sortable: true, filterable: false }))}
       </tr>
     </thead>
     <tbody>
