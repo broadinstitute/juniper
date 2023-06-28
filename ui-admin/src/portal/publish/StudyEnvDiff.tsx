@@ -8,14 +8,25 @@ import {
   VersionChangeView
 } from './diffComponents'
 
+type StudyEnvDiffProps = {
+  studyEnvChange: StudyEnvironmentChange,
+  selectedChanges: StudyEnvironmentChange,
+  setSelectedChanges: (update: StudyEnvironmentChange) => void
+}
+
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
-const StudyEnvDiff = ({ studyEnvChange }: {studyEnvChange: StudyEnvironmentChange}) => {
+const StudyEnvDiff = ({ studyEnvChange, selectedChanges, setSelectedChanges }: StudyEnvDiffProps) => {
   return <div className="px-3">
     <div className="my-1">
-      <h3 className="h6"><input className="me-2" type={'checkbox'} checked={true} readOnly={true}/>
+      <h3 className="h6">
         Environment config</h3>
-      <ConfigChanges configChanges={studyEnvChange.configChanges}/>
+      <ConfigChanges configChanges={studyEnvChange.configChanges}
+                     selectedChanges={selectedChanges.configChanges}
+                     updateSelectedChanges={configChanges => setSelectedChanges({
+                       ...studyEnvChange,
+                       configChanges
+                     })}/>
     </div>
     <div className="my-1">
       <h3 className="h6"><input className="me-2" type={'checkbox'} checked={true} readOnly={true}/>

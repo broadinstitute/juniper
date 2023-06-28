@@ -24,42 +24,75 @@ export const VersionChangeView = ({ record }: {record: VersionedEntityChange}) =
   </div>
 }
 
+type ConfigChangesProps = {
+  configChanges: ConfigChange[],
+  selectedChanges: ConfigChange[],
+  updateSelectedChanges: (changes: ConfigChange[]) => void
+}
 /** renders a list of config changes, or "no changes" if empty */
-export const ConfigChanges = ({ configChanges }: {configChanges: ConfigChange[]}) => {
+export const ConfigChanges = ({configChanges, selectedChanges, updateSelectedChanges}: ConfigChangesProps) => {
   if (!configChanges.length) {
     return <span className="fst-italic text-muted">no changes</span>
   }
+  const updateSelection = (propertyName: string, selected: boolean) => {
+    const selectionIndex = selectedChanges.findIndex(change => change.propertyName === propertyName)
+    if (selected && selectionIndex < 0) {
+      updateSelectedChanges([
+        ...selectedChanges,
+        configChanges.find(change => change.propertyName === propertyName) as ConfigChange
+      ])
+    }
+    if (!selected && selectionIndex >= 0) {
+      const newArr = [...selectedChanges]
+      newArr.splice(selectionIndex, 1)
+      updateSelectedChanges(newArr)
+    }
+  }
   return <ul className="list-unstyled">
-    {configChanges.map((configChange, index) => <li key={index}>
-      <ConfigChangeView configChange={configChange}/>
-    </li>)}
+    {configChanges.map((configChange, index) => {
+      const propName = configChange.propertyName
+      const selected = !!selectedChanges.find(change => change.propertyName === propName)
+      return <li key={index}>
+        <ConfigChangeView configChange={configChange} selected={selected}
+                          setSelected={(isSelected: boolean) => updateSelection(propName, isSelected)}/>
+      </li>
+    })}
   </ul>
 }
 
+const IMMUTABLE_CONFIG_PROPS = ['initialized']
+
+type ConfigChangeViewProps = {
+  configChange: ConfigChange,
+  selected: boolean,
+  setSelected: (selected: boolean) => void
+}
 /** renders a config change by converting the old and new vals to strings */
-export const ConfigChangeView = ({ configChange }: {configChange: ConfigChange}) => {
+export const ConfigChangeView = ({ configChange, selected, setSelected}: ConfigChangeViewProps) => {
   const noVal = <span className="text-muted fst-italic">none</span>
   const oldVal = valuePresent(configChange.oldValue) ? configChange.oldValue.toString() : noVal
   const newVal = valuePresent(configChange.newValue) ? configChange.newValue.toString() : noVal
-  const id = useId()
+  const readOnly = IMMUTABLE_CONFIG_PROPS.includes(configChange.propertyName)
   return <div>
-    <label htmlFor={`${id}-changes`}>{configChange.propertyName}:</label>
-    <span id={`${id}-changes`} className="ms-3">{oldVal}
-      <FontAwesomeIcon icon={faArrowRight} className="mx-2 fa-sm"/>
-      {newVal}
-    </span>
+    <label>
+      {!readOnly && <input type="checkbox" className="me-2" checked={selected} readOnly={readOnly}
+             onChange={e => setSelected(e.target.checked)}/>}
+      {readOnly && <span className="me-4"></span>}
+      {configChange.propertyName}:
+      <span className="ms-3">{oldVal}
+        <FontAwesomeIcon icon={faArrowRight} className="mx-2 fa-sm"/>
+        {newVal}
+      </span>
+    </label>
   </div>
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/** helper for null/undefined checking an object */
 export const valuePresent = (val: object) => {
   return val !== null && typeof val !== 'undefined'
 }
 
-/**
- * returns html for displaying a single version, and 'not present' if null
- */
+/** returns html for displaying a single version, and 'not present' if null */
 export const versionDisplay = (stableId: string, version: number) => {
   if (!stableId) {
     return <span className="fst-italic text-muted">none</span>
@@ -67,19 +100,47 @@ export const versionDisplay = (stableId: string, version: number) => {
   return <span>{stableId} v{version}</span>
 }
 
+type ConfigChangeListViewProps<T> = {
+  configChangeList: ListChange<T, VersionedConfigChange>,
+  selectedChanges: ListChange<T, VersionedConfigChange>,
+  setSelectedChanges: (changes: ListChange<T, VersionedConfigChange>) => void,
+  renderItemSummary: (item: T) => React.ReactNode
+}
+
 /** Summary of notification config changes -- doesn't show any detail yet */
-export const ConfigChangeListView = <T, >({ configChangeList, renderItemSummary }:
-                                      {configChangeList: ListChange<T, VersionedConfigChange>,
-                                      renderItemSummary: (item: T) => React.ReactNode}) => {
+export const ConfigChangeListView = <T, >({ configChangeList, renderItemSummary, selectedChanges, setSelectedChanges}:
+                                            ConfigChangeListViewProps<T>) => {
   if (!configChangeList.addedItems.length &&
     !configChangeList.removedItems.length && !configChangeList.changedItems.length) {
     return <span className="fst-italic text-muted">no changes</span>
   }
+
+  const updateArray
+
   return <ul className="list-unstyled">
     {configChangeList.addedItems.length > 0 && <li className="ps-4">Added: {configChangeList.addedItems.length}
       <ul className="list-unstyled">
         {configChangeList.addedItems.map((item, index) => <li className="ps-4" key={index}>
-          {renderItemSummary(item)}
+          <label>
+            <input type="checkbox" checked={selectedChanges.addedItems.includes(item)} onChange={e => {
+              const matchIndex = selectedChanges.addedItems.indexOf(item)
+              if (e.target.checked && matchIndex < 0) {
+                const updatedItems = [...selectedChanges.addedItems, item]
+                setSelectedChanges({
+                  ...selectedChanges,
+                  addedItems: updatedItems
+                })
+              }
+              if (!e.target.checked && matchIndex >= 0) {
+                const updatedItems = selectedChanges.removedItems
+                setSelectedChanges({
+                  ...selectedChanges,
+                  addedItems: updatedItems
+                })
+              }
+            }}/>
+            {renderItemSummary(item)}
+          </label>
         </li>)}
       </ul>
     </li>}

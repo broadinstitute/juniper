@@ -183,11 +183,13 @@ export type StudyEnvironmentChange = {
 }
 
 export type VersionedEntityChange = {
-  changed: boolean,
+  changed: true,
   oldStableId: string,
   newStableId: string,
   oldVersion: number,
   newVersion: number
+} | {
+  changed: false
 }
 
 export type ConfigChange = {
