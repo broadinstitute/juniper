@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
@@ -43,7 +43,7 @@ describe('ElementList', () => {
 
     // Act
     const moveBarUpButton = screen.getAllByLabelText('Move this element before the previous one')[1]
-    await user.click(moveBarUpButton)
+    await act(() => user.click(moveBarUpButton))
 
     // Assert
     expect(onChange).toHaveBeenCalledWith([
@@ -65,7 +65,7 @@ describe('ElementList', () => {
     ])
 
     const moveBarDownButton = screen.getAllByLabelText('Move this element after the next one')[1]
-    await user.click(moveBarDownButton)
+    await act(() => user.click(moveBarDownButton))
 
     // Assert
     expect(onChange).toHaveBeenCalledWith([

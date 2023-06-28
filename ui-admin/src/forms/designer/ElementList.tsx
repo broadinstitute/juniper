@@ -1,8 +1,9 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
 
 import { FormElement } from '@juniper/ui-core'
+
+import { IconButton } from 'components/forms/Button'
 
 import { getElementLabel } from './designer-utils'
 
@@ -28,42 +29,36 @@ export const ElementList = (props: ElementListProps) => {
               {getElementLabel(element)}
             </div>
             <div className="flex-shrink-0">
-              <button
-                aria-disabled={readOnly}
+              <IconButton
                 aria-label="Move this element before the previous one"
-                className="btn btn-light ms-2"
-                disabled={i === 0}
+                className="ms-2"
+                disabled={readOnly || i === 0}
+                icon={faChevronUp}
+                variant="light"
                 onClick={() => {
-                  if (!readOnly) {
-                    onChange([
-                      ...value.slice(0, i - 1),
-                      value[i],
-                      value[i - 1],
-                      ...value.slice(i + 1)
-                    ])
-                  }
+                  onChange([
+                    ...value.slice(0, i - 1),
+                    value[i],
+                    value[i - 1],
+                    ...value.slice(i + 1)
+                  ])
                 }}
-              >
-                <FontAwesomeIcon icon={faChevronUp} />
-              </button>
-              <button
-                aria-disabled={readOnly}
+              />
+              <IconButton
                 aria-label="Move this element after the next one"
-                className="btn btn-light ms-2"
-                disabled={i === value.length - 1}
+                className="ms-2"
+                disabled={readOnly || i === value.length - 1}
+                icon={faChevronDown}
+                variant="light"
                 onClick={() => {
-                  if (!readOnly) {
-                    onChange([
-                      ...value.slice(0, i),
-                      value[i + 1],
-                      value[i],
-                      ...value.slice(i + 2)
-                    ])
-                  }
+                  onChange([
+                    ...value.slice(0, i),
+                    value[i + 1],
+                    value[i],
+                    ...value.slice(i + 2)
+                  ])
                 }}
-              >
-                <FontAwesomeIcon icon={faChevronDown} />
-              </button>
+              />
             </div>
           </li>
         )
