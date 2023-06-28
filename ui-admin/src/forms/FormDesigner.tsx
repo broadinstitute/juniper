@@ -8,7 +8,7 @@ import { PageDesigner } from './designer/PageDesigner'
 import { PagesList } from './designer/PagesList'
 import { PanelDesigner } from './designer/PanelDesigner'
 import { QuestionDesigner } from './designer/QuestionDesigner'
-import { QuestionTemplateList } from './designer/QuestionTemplateList'
+import { QuestionTemplatesDesigner } from './designer/QuestionTemplatesDesigner'
 import { FormTableOfContents } from './FormTableOfContents'
 
 type FormDesignerProps = {
@@ -52,7 +52,7 @@ export const FormDesigner = (props: FormDesignerProps) => {
 
           if (selectedElementPath === 'questionTemplates') {
             return (
-              <QuestionTemplateList
+              <QuestionTemplatesDesigner
                 formContent={value}
                 readOnly={readOnly}
                 onChange={onChange}
