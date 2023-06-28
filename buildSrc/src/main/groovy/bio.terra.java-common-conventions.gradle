@@ -48,7 +48,10 @@ dependencies {
 
     testImplementation 'org.hamcrest:hamcrest:2.2'
 
-    implementation 'bio.terra:terra-common-lib:0.0.75-SNAPSHOT'
+    implementation('bio.terra:terra-common-lib:0.0.91-SNAPSHOT') {
+        //Excluding this Google library from TCL until they can update to a non-vulnerable version
+        exclude group: 'com.google.apis', module: 'google-api-services-logging'
+    }
     implementation 'bio.terra:datarepo-client:1.349.0-SNAPSHOT'
 }
 

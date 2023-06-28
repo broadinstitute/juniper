@@ -14,7 +14,10 @@ apply from: 'publishing.gradle'
 
 dependencies {
 
-    implementation 'bio.terra:terra-common-lib'
+    implementation('bio.terra:terra-common-lib') {
+        //Excluding this Google library from TCL until they can update to a non-vulnerable version
+        exclude group: 'com.google.apis', module: 'google-api-services-logging'
+    }
     implementation project(':core')
     implementation project(':populate')
     implementation 'org.apache.commons:commons-dbcp2'
