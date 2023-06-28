@@ -14,21 +14,21 @@ describe('HtmlDesigner', () => {
 
   it('renders HTML', () => {
     // Act
-    render(<HtmlDesigner readOnly={false} value={element} onChange={jest.fn()} />)
+    render(<HtmlDesigner element={element} readOnly={false} onChange={jest.fn()} />)
 
     // Assert
-    const textArea = screen.getByRole('textbox')
-    expect(textArea.textContent).toBe('<h2>Section heading</h2><p>This is a section.</p>')
+    const htmlTextarea = screen.getByLabelText('HTML')
+    expect(htmlTextarea.textContent).toBe('<h2>Section heading</h2><p>This is a section.</p>')
   })
 
   it('allows editing HTML', () => {
     // Arrange
     const onChange = jest.fn()
-    render(<HtmlDesigner readOnly={false} value={element} onChange={onChange} />)
+    render(<HtmlDesigner element={element} readOnly={false} onChange={onChange} />)
 
     // Act
-    const textArea = screen.getByRole('textbox')
-    fireEvent.change(textArea, {
+    const htmlTextarea = screen.getByLabelText('HTML')
+    fireEvent.change(htmlTextarea, {
       target: {
         value: '<h2>New section heading</h2><p>This is a section.</p>'
       }

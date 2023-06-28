@@ -89,8 +89,8 @@ export const FormDesigner = (props: FormDesignerProps) => {
           if ('type' in selectedElement && selectedElement.type === 'html') {
             return (
               <HtmlDesigner
+                element={selectedElement}
                 readOnly={readOnly}
-                value={selectedElement}
                 onChange={updatedElement => {
                   onChange(set(selectedElementPath, updatedElement, value))
                 }}
