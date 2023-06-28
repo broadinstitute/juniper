@@ -48,7 +48,7 @@ export const getTableOfContentsTree = (formContent: FormContent): FormContentTab
       {
         label: 'Pages',
         data: {
-          isSelectable: false,
+          isSelectable: true,
           path: 'pages'
         },
         children: (formContent.pages || []).map((page, pageIndex) => ({

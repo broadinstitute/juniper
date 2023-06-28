@@ -63,7 +63,7 @@ describe('getTableOfContentsTree', () => {
         {
           label: 'Pages',
           data: {
-            isSelectable: false,
+            isSelectable: true,
             path: 'pages'
           },
           children: [

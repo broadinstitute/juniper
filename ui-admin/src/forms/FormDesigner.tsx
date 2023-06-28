@@ -5,6 +5,7 @@ import { FormContent, FormContentPage, FormElement } from '@juniper/ui-core'
 
 import { HtmlDesigner } from './designer/HtmlDesigner'
 import { PageDesigner } from './designer/PageDesigner'
+import { PagesList } from './designer/PagesList'
 import { PanelDesigner } from './designer/PanelDesigner'
 import { QuestionDesigner } from './designer/QuestionDesigner'
 import { QuestionTemplateList } from './designer/QuestionTemplateList'
@@ -36,6 +37,16 @@ export const FormDesigner = (props: FormDesignerProps) => {
           if (selectedElementPath === undefined) {
             return (
               <p className="mt-5 text-center">Select an element to edit</p>
+            )
+          }
+
+          if (selectedElementPath === 'pages') {
+            return (
+              <PagesList
+                formContent={value}
+                readOnly={readOnly}
+                onChange={onChange}
+              />
             )
           }
 
