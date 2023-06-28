@@ -37,17 +37,6 @@ function DebouncedInput({
   )
 }
 
-declare module '@tanstack/table-core' {
-  //Extra column metadata for extending the built-in filter functionality of react-table
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface ColumnMeta<TData extends RowData, TValue> {
-    //Specifies the type of the column data. By default, columns will be treated as strings
-    columnType?: string
-    //Specifies the Select options if using a dropdown filter (i.e. for booleans)
-    filterOptions?: object[]
-  }
-}
-
 /**
  * returns a Filter to handle text fields
  * adapted from https://tanstack.com/table/v8/docs/examples/react/filters
@@ -261,4 +250,15 @@ export function basicTableLayout<T>(table: Table<T>) {
       })}
     </tbody>
   </table>
+}
+
+declare module '@tanstack/table-core' {
+  //Extra column metadata for extending the built-in filter functionality of react-table
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData extends RowData, TValue> {
+    //Specifies the type of the column data. By default, columns will be treated as strings
+    columnType?: string
+    //Specifies the Select options if using a dropdown filter (i.e. for booleans)
+    filterOptions?: object[]
+  }
 }
