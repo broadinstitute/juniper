@@ -36,9 +36,9 @@ test('renders filters for participant columns', async () => {
   const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
   render(RoutedComponent)
 
-  //Assert that all 3 default columns have filter inputs
+  //There are 3 default columns shown, 2 of which allow text search
   const searchInputs = await screen.findAllByPlaceholderText('Search...')
-  expect(searchInputs).toHaveLength(3)
+  expect(searchInputs).toHaveLength(2)
 })
 
 test('filters participants based on shortcode', async () => {
