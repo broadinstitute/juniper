@@ -86,4 +86,30 @@ describe('ElementList', () => {
       }
     ])
   })
+
+  it('allows deleting elements', async () => {
+    // Arrange
+    const user = userEvent.setup()
+
+    const onChange = jest.fn()
+    render(<ElementList readOnly={false} value={elements} onChange={onChange} />)
+
+    // Act
+    const deleteBarButton = screen.getAllByLabelText('Delete this element')[1]
+    await act(() => user.click(deleteBarButton))
+
+    // Assert
+    expect(onChange).toHaveBeenCalledWith([
+      {
+        name: 'foo',
+        type: 'html',
+        html: '<p>foo</p>'
+      },
+      {
+        name: 'baz',
+        type: 'html',
+        html: '<p>baz</p>'
+      }
+    ])
+  })
 })

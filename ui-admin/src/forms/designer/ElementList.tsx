@@ -1,4 +1,4 @@
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
+import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
 
 import { FormElement } from '@juniper/ui-core'
@@ -56,6 +56,20 @@ export const ElementList = (props: ElementListProps) => {
                     value[i + 1],
                     value[i],
                     ...value.slice(i + 2)
+                  ])
+                }}
+              />
+
+              <IconButton
+                aria-label="Delete this element"
+                className="ms-2"
+                disabled={readOnly}
+                icon={faTimes}
+                variant="light"
+                onClick={() => {
+                  onChange([
+                    ...value.slice(0, i),
+                    ...value.slice(i + 1)
                   ])
                 }}
               />
