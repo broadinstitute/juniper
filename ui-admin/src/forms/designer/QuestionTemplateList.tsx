@@ -30,7 +30,6 @@ export const QuestionTemplateList = (props: QuestionTemplateListProps) => {
 
   return (
     <>
-      <h2>Question Templates</h2>
       <ul className="list-group">
         {questionTemplates.map((question, i) => {
           const isReferenced = isQuestionTemplateReferencedInFormContent(formContent, question)
