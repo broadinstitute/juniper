@@ -39,6 +39,7 @@ function DebouncedInput({
 
 declare module '@tanstack/table-core' {
   //Extra column metadata for extending the built-in filter functionality of react-table
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     //Specifies the type of the column data. By default, columns will be treated as strings
     columnType?: string
