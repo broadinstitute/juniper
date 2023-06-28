@@ -2,7 +2,7 @@ import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
-import { FormElement } from '@juniper/ui-core'
+import { FormElement, FormPanel } from '@juniper/ui-core'
 
 import { ElementList } from './ElementList'
 
@@ -87,29 +87,105 @@ describe('ElementList', () => {
     ])
   })
 
-  it('allows deleting elements', async () => {
-    // Arrange
-    const user = userEvent.setup()
-
-    const onChange = jest.fn()
-    render(<ElementList readOnly={false} value={elements} onChange={onChange} />)
-
-    // Act
-    const deleteBarButton = screen.getAllByLabelText('Delete this element')[1]
-    await act(() => user.click(deleteBarButton))
-
-    // Assert
-    expect(onChange).toHaveBeenCalledWith([
+  describe('deleting elements', () => {
+    const elements: FormElement[] = [
+      { name: 'q1', title: 'q1', type: 'text' },
       {
-        name: 'foo',
-        type: 'html',
-        html: '<p>foo</p>'
+        type: 'panel',
+        elements: []
       },
       {
-        name: 'baz',
-        type: 'html',
-        html: '<p>baz</p>'
+        type: 'panel',
+        elements: [
+          { name: 'q2', title: 'q2', type: 'text' },
+          { name: 'q3', title: 'q3', type: 'text' }
+        ]
       }
-    ])
+    ]
+
+    it('allows deleting questions', async () => {
+      // Arrange
+      const user = userEvent.setup()
+
+      const onChange = jest.fn()
+      render(<ElementList readOnly={false} value={elements} onChange={onChange} />)
+
+      // Act
+      const deleteButton = screen.getAllByLabelText('Delete this element')[0]
+      await act(() => user.click(deleteButton))
+
+      // Assert
+      expect(onChange).toHaveBeenCalledWith(elements.slice(1))
+    })
+
+    it('allows deleting empty panels', async () => {
+      // Arrange
+      const user = userEvent.setup()
+
+      const onChange = jest.fn()
+      render(<ElementList readOnly={false} value={elements} onChange={onChange} />)
+
+      // Act
+      const deleteButton = screen.getAllByLabelText('Delete this element')[1]
+      await act(() => user.click(deleteButton))
+
+      // Assert
+      expect(onChange).toHaveBeenCalledWith([...elements.slice(0, 1), ...elements.slice(2)])
+    })
+
+    describe('deleting panels with content', () => {
+      it('prompts for confirmation before deleting panels with content', async () => {
+        // Arrange
+        const user = userEvent.setup()
+
+        const onChange = jest.fn()
+        render(<ElementList readOnly={false} value={elements} onChange={onChange} />)
+
+        // Act
+        const deleteButton = screen.getAllByLabelText('Delete this element')[2]
+        await act(() => user.click(deleteButton))
+
+        // Assert
+        screen.getByText('Delete panel contents?')
+        expect(onChange).not.toHaveBeenCalled()
+      })
+
+      it('allows deleting content with panel', async () => {
+        // Arrange
+        const user = userEvent.setup()
+
+        const onChange = jest.fn()
+        render(<ElementList readOnly={false} value={elements} onChange={onChange} />)
+
+        const deleteButton = screen.getAllByLabelText('Delete this element')[2]
+        await act(() => user.click(deleteButton))
+
+        // Act
+        await act(() => user.click(screen.getByText('Delete contents')))
+
+        // Assert
+        expect(onChange).toHaveBeenCalledWith(elements.slice(0, 2))
+      })
+
+      it('allows keeping panel content on page', async () => {
+        // Arrange
+        const user = userEvent.setup()
+
+        const onChange = jest.fn()
+        render(<ElementList readOnly={false} value={elements} onChange={onChange} />)
+
+        const deleteButton = screen.getAllByLabelText('Delete this element')[2]
+        await act(() => user.click(deleteButton))
+
+        // Act
+        await act(() => user.click(screen.getByText('Keep contents')))
+
+        // Assert
+        expect(onChange).toHaveBeenCalledWith([
+          ...elements.slice(0, 2),
+          ...(elements[2] as FormPanel).elements
+        ])
+      })
+    })
   })
 })
