@@ -1,8 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Modal } from 'react-bootstrap'
 
-import { FormContentPage } from '@juniper/ui-core'
+import { FormContentPage, FormElement, HtmlElement, Question } from '@juniper/ui-core'
+
+import { Button } from 'components/forms/Button'
 
 import { ElementList } from './ElementList'
+import { NewPanelForm } from './NewPanelForm'
+
+/** Can the given FormElement be included in a panel (is it a Question or HtmlElement)? */
+export const canBeIncludedInPanel = (element: FormElement): element is HtmlElement | Question => {
+  if ('type' in element && element.type === 'panel') {
+    return false
+  } else {
+    // This assignment has TS check that element's type is correctly narrowed to HtmlElement | Question.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const question: HtmlElement | Question = element
+    return true
+  }
+}
 
 export type PageDesignerProps = {
   readOnly: boolean
@@ -14,9 +30,25 @@ export type PageDesignerProps = {
 export const PageDesigner = (props: PageDesignerProps) => {
   const { readOnly, value, onChange } = props
 
+  const [showCreatePanelModal, setShowCreatePanelModal] = useState(false)
+
   return (
     <div>
       <h2>Page</h2>
+
+      <div className="mb-3">
+        <Button
+          disabled={readOnly || value.elements.filter(canBeIncludedInPanel).length === 0}
+          tooltip="Group some elements into a panel."
+          variant="secondary"
+          onClick={() => {
+            setShowCreatePanelModal(true)
+          }}
+        >
+          Add panel
+        </Button>
+      </div>
+
       <ElementList
         readOnly={readOnly}
         value={value.elements}
@@ -24,6 +56,33 @@ export const PageDesigner = (props: PageDesignerProps) => {
           onChange({ ...value, elements: newValue })
         }}
       />
+
+      {showCreatePanelModal && (
+        <Modal show onHide={() => setShowCreatePanelModal(false)}>
+          <Modal.Header closeButton>New Panel</Modal.Header>
+          <Modal.Body>
+            <NewPanelForm
+              availableElements={value.elements.filter(canBeIncludedInPanel)}
+              onCreate={newPanel => {
+                const panelElements = newPanel.elements.map(element => element.name)
+                const indexOfFirstElementInPanel = value.elements
+                  .findIndex(element => 'name' in element && panelElements.includes(element.name))
+
+                setShowCreatePanelModal(false)
+                onChange({
+                  ...value,
+                  elements: [
+                    ...value.elements.slice(0, indexOfFirstElementInPanel),
+                    newPanel,
+                    ...value.elements.slice(indexOfFirstElementInPanel)
+                      .filter(element => !('name' in element) || !panelElements.includes(element.name))
+                  ]
+                })
+              }}
+            />
+          </Modal.Body>
+        </Modal>
+      )}
     </div>
   )
 }
