@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
@@ -43,7 +43,7 @@ describe('ElementList', () => {
 
     // Act
     const moveBarUpButton = screen.getAllByLabelText('Move this element before the previous one')[1]
-    await user.click(moveBarUpButton)
+    await act(() => user.click(moveBarUpButton))
 
     // Assert
     expect(onChange).toHaveBeenCalledWith([
@@ -65,7 +65,7 @@ describe('ElementList', () => {
     ])
 
     const moveBarDownButton = screen.getAllByLabelText('Move this element after the next one')[1]
-    await user.click(moveBarDownButton)
+    await act(() => user.click(moveBarDownButton))
 
     // Assert
     expect(onChange).toHaveBeenCalledWith([
@@ -83,6 +83,32 @@ describe('ElementList', () => {
         name: 'bar',
         type: 'html',
         html: '<p>bar</p>'
+      }
+    ])
+  })
+
+  it('allows deleting elements', async () => {
+    // Arrange
+    const user = userEvent.setup()
+
+    const onChange = jest.fn()
+    render(<ElementList readOnly={false} value={elements} onChange={onChange} />)
+
+    // Act
+    const deleteBarButton = screen.getAllByLabelText('Delete this element')[1]
+    await act(() => user.click(deleteBarButton))
+
+    // Assert
+    expect(onChange).toHaveBeenCalledWith([
+      {
+        name: 'foo',
+        type: 'html',
+        html: '<p>foo</p>'
+      },
+      {
+        name: 'baz',
+        type: 'html',
+        html: '<p>baz</p>'
       }
     ])
   })
