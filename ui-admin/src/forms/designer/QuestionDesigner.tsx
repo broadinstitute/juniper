@@ -7,6 +7,7 @@ import { CheckboxFields } from './questions/CheckboxFields'
 import { ChoicesList } from './questions/ChoicesList'
 import { OtherOptionFields } from './questions/OtherOptionFields'
 import { questionTypeDescriptions, questionTypeLabels } from './questions/questionTypes'
+import { TextFields } from './questions/TextFields'
 import { VisibilityFields } from './questions/VisibilityFields'
 
 export type QuestionDesignerProps = {
@@ -69,6 +70,15 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
           {
             question.type === 'checkbox' && (
               <CheckboxFields
+                disabled={readOnly}
+                question={question}
+                onChange={onChange}
+              />
+            )
+          }
+          {
+            question.type === 'text' && (
+              <TextFields
                 disabled={readOnly}
                 question={question}
                 onChange={onChange}
