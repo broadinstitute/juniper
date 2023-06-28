@@ -88,7 +88,7 @@ export const ConfigChangeView = ({ configChange, selected, setSelected}: ConfigC
 }
 
 /** helper for null/undefined checking an object */
-export const valuePresent = (val: object) => {
+export const valuePresent = (val: object | boolean) => {
   return val !== null && typeof val !== 'undefined'
 }
 
@@ -135,10 +135,12 @@ export const ConfigChangeListView = <T extends Configable>
       <ul className="list-unstyled">
         {configChangeList.addedItems.map((item, index) => <li className="ps-4" key={index}>
           <label>
-            <input type="checkbox" checked={selectedChanges.addedItems.includes(item)} onChange={e => {
-              const updatedItems = makeModifiedArray(selectedChanges.addedItems, item, e.target.checked)
-              setSelectedChanges({...selectedChanges, addedItems: updatedItems})
-            }}/>
+            <input type="checkbox" className="me-3"
+                   checked={!!selectedChanges.addedItems.find(listItem => listItem.id === item.id)}
+                   onChange={e => {
+                      const updatedItems = makeModifiedArray(selectedChanges.addedItems, item, e.target.checked)
+                      setSelectedChanges({...selectedChanges, addedItems: updatedItems})
+                    }}/>
             {renderItemSummary(item)}
           </label>
         </li>)}
@@ -148,10 +150,12 @@ export const ConfigChangeListView = <T extends Configable>
       <ul className="list-unstyled">
         {configChangeList.removedItems.map((item, index) => <li className="ps-4" key={index}>
           <label>
-            <input type="checkbox" checked={selectedChanges.removedItems.includes(item)} onChange={e => {
-              const updatedItems = makeModifiedArray(selectedChanges.removedItems, item, e.target.checked)
-              setSelectedChanges({...selectedChanges, removedItems: updatedItems})
-            }}/>
+            <input type="checkbox" className="me-3"
+                   checked={!!selectedChanges.removedItems.find(listItem => listItem.id === item.id)}
+                   onChange={e => {
+                      const updatedItems = makeModifiedArray(selectedChanges.removedItems, item, e.target.checked)
+                      setSelectedChanges({...selectedChanges, removedItems: updatedItems})
+                    }}/>
             {renderItemSummary(item)}
           </label>
         </li>)}
@@ -162,7 +166,7 @@ export const ConfigChangeListView = <T extends Configable>
         {configChangeList.changedItems.map((item, index) => <li className="ps-4" key={index}>
           <label className="d-flex">
             <input type="checkbox" className="me-3"
-                   checked={selectedChanges.changedItems.includes(item)}
+                   checked={!!selectedChanges.changedItems.find(listItem => listItem.sourceId === item.sourceId)}
                    onChange={e => {
                     const updatedItems = makeModifiedArray(selectedChanges.changedItems, item, e.target.checked)
                     setSelectedChanges({...selectedChanges, changedItems: updatedItems})

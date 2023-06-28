@@ -33,7 +33,14 @@ const StudyEnvDiff = ({ studyEnvChange, selectedChanges, setSelectedChanges }: S
     <div className="my-1">
       <h3 className="h6">
         PreEnroll survey</h3>
-      <VersionChangeView record={studyEnvChange.preEnrollSurveyChanges}/>
+      <label className="d-flex">
+        <input type="checkbox" className="me-3" checked={selectedChanges.preEnrollSurveyChanges.changed}
+             onChange={e => setSelectedChanges({
+               ...selectedChanges,
+               preEnrollSurveyChanges: e.target.checked ? studyEnvChange.preEnrollSurveyChanges : {changed: false}
+             })}/>
+        <VersionChangeView record={studyEnvChange.preEnrollSurveyChanges}/>
+      </label>
     </div>
     <div className="my-1">
       <h3 className="h6">
@@ -41,7 +48,7 @@ const StudyEnvDiff = ({ studyEnvChange, selectedChanges, setSelectedChanges }: S
       <ConfigChangeListView configChangeList={studyEnvChange.consentChanges}
                             selectedChanges={selectedChanges.consentChanges}
                             setSelectedChanges={(consentChanges) =>
-                                setSelectedChanges({...studyEnvChange, consentChanges})}
+                                setSelectedChanges({...selectedChanges, consentChanges})}
                             renderItemSummary={renderStudyEnvironmentConsent}/>
     </div>
     <div className="my-1">
@@ -50,7 +57,7 @@ const StudyEnvDiff = ({ studyEnvChange, selectedChanges, setSelectedChanges }: S
       <ConfigChangeListView configChangeList={studyEnvChange.surveyChanges}
                             selectedChanges={selectedChanges.surveyChanges}
                             setSelectedChanges={(surveyChanges) =>
-                              setSelectedChanges({...studyEnvChange, surveyChanges})}
+                              setSelectedChanges({...selectedChanges, surveyChanges})}
                             renderItemSummary={renderStudyEnvironmentSurvey}/>
     </div>
     <div className="my-1">
@@ -59,7 +66,7 @@ const StudyEnvDiff = ({ studyEnvChange, selectedChanges, setSelectedChanges }: S
       <ConfigChangeListView configChangeList={studyEnvChange.notificationConfigChanges}
                             selectedChanges={selectedChanges.notificationConfigChanges}
                             setSelectedChanges={(notificationConfigChanges) =>
-                              setSelectedChanges({...studyEnvChange, notificationConfigChanges})}
+                              setSelectedChanges({...selectedChanges, notificationConfigChanges})}
                             renderItemSummary={renderNotificationConfig}/>
     </div>
   </div>

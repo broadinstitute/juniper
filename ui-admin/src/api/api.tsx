@@ -194,8 +194,8 @@ export type VersionedEntityChange = {
 
 export type ConfigChange = {
   propertyName: string,
-  oldValue: object,
-  newValue: object
+  oldValue: object | boolean,
+  newValue: object | boolean
 }
 
 export type ListChange<T, CT> = {
@@ -205,6 +205,7 @@ export type ListChange<T, CT> = {
 }
 
 export type VersionedConfigChange = {
+  sourceId: string,
   configChanges: ConfigChange[],
   documentChange: VersionedEntityChange
 }

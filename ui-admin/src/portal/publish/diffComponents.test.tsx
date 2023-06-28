@@ -33,6 +33,7 @@ describe('configChangeList', () => {
     const changeList: ListChange<StudyEnvironmentSurvey, VersionedConfigChange> = {
       addedItems: [],
       changedItems: [{
+        sourceId: 'someGuid',
         configChanges: [],
         documentChange: { oldVersion: 1, newVersion: 2, oldStableId: 'foo', newStableId: 'bar', changed: true }
       }],

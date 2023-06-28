@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { portalHomePath } from '../PortalRouter'
+import _cloneDeep from "lodash/cloneDeep";
 
 type EnvironmentDiffProps = {
   portal: Portal,
@@ -38,6 +39,22 @@ const emptyStudyEnvChange: StudyEnvironmentChange = {
 }
 
 /**
+ * gets a default set of changes to apply for the changeset.
+ * This will be empty if the target environment is already initialized, and everything if the target environment
+ * is not yet initialized
+ */
+const getDefaultStudyEnvChanges = (changes: StudyEnvironmentChange) => {
+  const initializationChange = changes.configChanges.find(configChange => configChange.propertyName === 'initialized')
+  if (initializationChange && initializationChange.oldValue === false) {
+    return _cloneDeep(changes)
+  }
+  return {
+    ...emptyStudyEnvChange,
+    studyShortcode: changes.studyShortcode
+  }
+}
+
+/**
  * loads and displays the differences between two portal environments
  * */
 export default function PortalEnvDiff({ portal, portalEnv }: EnvironmentDiffProps) {
@@ -57,10 +74,9 @@ export default function PortalEnvDiff({ portal, portalEnv }: EnvironmentDiffProp
       setDiffResult(result)
       setSelectedChanges({
         ...selectedChanges,
-        studyEnvChanges: result.studyEnvChanges.map((studyEnvChange) => ({
-          ...emptyStudyEnvChange,
-          studyShortcode: studyEnvChange.studyShortcode
-        }))
+        studyEnvChanges: result.studyEnvChanges.map((studyEnvChange) => (
+          getDefaultStudyEnvChanges(studyEnvChange)
+        ))
       })
       setIsLoading(false)
     }).catch(e => {
@@ -126,8 +142,8 @@ export default function PortalEnvDiff({ portal, portalEnv }: EnvironmentDiffProp
           <h2 className="h6">
             Prereg survey
             <span className="fst-italic text-muted fs-6 ms-3">
-              Note this is pre-registration for the Portal as a whole, not a
-              particular study
+              (Note this is pre-registration for the Portal as a whole, not a
+              particular study)
             </span>
           </h2>
           <div className="ms-4">
