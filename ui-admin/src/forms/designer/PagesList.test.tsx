@@ -132,4 +132,42 @@ describe('PagesList', () => {
       ]
     })
   })
+
+  it('allows deleting pages', async () => {
+    // Arrange
+    const user = userEvent.setup()
+
+    const onChange = jest.fn()
+    render(<PagesList formContent={formContent} readOnly={false} onChange={onChange} />)
+
+    // Act
+    const listItems = screen.getAllByRole('listitem')
+    const deletePage2Button = getByLabelText(listItems[1], 'Delete this page')
+    await act(() => user.click(deletePage2Button))
+
+    // Assert
+    expect(onChange).toHaveBeenCalledWith({
+      ...formContent,
+      pages: [
+        {
+          elements: [
+            {
+              name: 'page1Intro',
+              type: 'html',
+              html: '<p>This is page 1</p>'
+            }
+          ]
+        },
+        {
+          elements: [
+            {
+              name: 'page3Intro',
+              type: 'html',
+              html: '<p>This is page 3</p>'
+            }
+          ]
+        }
+      ]
+    })
+  })
 })

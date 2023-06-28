@@ -68,6 +68,22 @@ export const PagesList = (props: PagesListProps) => {
                   }
                 }}
               />
+              <IconButton
+                aria-label="Delete this page"
+                className="ms-2"
+                disabled={readOnly || pages.length === 1}
+                icon={faChevronDown}
+                variant="light"
+                onClick={() => {
+                  onChange({
+                    ...formContent,
+                    pages: [
+                      ...pages.slice(0, i),
+                      ...pages.slice(i + 1)
+                    ]
+                  })
+                }}
+              />
             </div>
           </li>
         )
