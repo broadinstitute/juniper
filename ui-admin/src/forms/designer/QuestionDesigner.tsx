@@ -77,10 +77,10 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
             )
           }
           {
-            value.type === 'text' && (
+            question.type === 'text' && (
               <TextFields
                 disabled={readOnly}
-                question={value}
+                question={question}
                 onChange={onChange}
               />
             )
