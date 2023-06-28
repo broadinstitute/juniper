@@ -61,27 +61,50 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   }, {
     header: 'Shortcode',
     accessorKey: 'enrollee.shortcode',
+    meta: {
+      columnType: 'string'
+    },
     cell: info => <Link to={`${currentEnvPath}/participants/${info.getValue()}`}>{info.getValue()}</Link>
   }, {
     id: 'familyName',
     header: 'Family name',
-    accessorKey: 'profile.familyName'
+    accessorKey: 'profile.familyName',
+    meta: {
+      columnType: 'string'
+    }
   }, {
     id: 'givenName',
     header: 'Given name',
-    accessorKey: 'profile.givenName'
+    accessorKey: 'profile.givenName',
+    meta: {
+      columnType: 'string'
+    }
   }, {
     id: 'contactEmail',
     header: 'Contact email',
-    accessorKey: 'profile.contactEmail'
+    accessorKey: 'profile.contactEmail',
+    meta: {
+      columnType: 'string'
+    }
   }, {
     header: 'Consented',
-    accessorFn: data => data.enrollee.consented.toString(),
-    cell: info => info.getValue() === 'true' ? <FontAwesomeIcon icon={faCheck}/> : ''
+    accessorKey: 'enrollee.consented',
+    meta: {
+      columnType: 'boolean',
+      filterOptions: [
+        { value: true, label: 'Consented' },
+        { value: false, label: 'Not Consented' }
+      ]
+    },
+    filterFn: 'equals',
+    cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
   }, {
     header: 'Kit status',
     filterFn: 'includesString', //an undefined value in a cell seems to switch the filter table away from the default
-    accessorKey: 'mostRecentKitStatus'
+    accessorKey: 'mostRecentKitStatus',
+    meta: {
+      columnType: 'string'
+    }
   }], [study.shortcode])
 
 
