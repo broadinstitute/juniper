@@ -4,7 +4,7 @@ import { Store } from 'react-notifications-component'
 
 import {  StudyParams } from 'study/StudyRouter'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import Api, { StudyEnvironment, Survey } from 'api/api'
+import Api, { Survey } from 'api/api'
 
 import { failureNotification, successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
@@ -16,9 +16,10 @@ export type SurveyParamsT = StudyParams & {
 }
 
 /** Preregistration editor.  This shares a LOT in common with SurveyView */
-function RawPreRegView({ portalShortcode, currentEnv, survey, studyShortcode, readOnly }:
-                      {portalShortcode: string, currentEnv: StudyEnvironment, readOnly: boolean
-                        survey: Survey, studyShortcode: string}) {
+function RawPreRegView({ studyEnvContext, survey, readOnly }:
+                      { studyEnvContext: StudyEnvContextT, readOnly: boolean
+                        survey: Survey}) {
+  const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
   const { user } = useUser()
   const navigate = useNavigate()
 
@@ -33,10 +34,10 @@ function RawPreRegView({ portalShortcode, currentEnv, survey, studyShortcode, re
 
     survey.content = updatedContent
     try {
-      const updatedSurvey = await Api.createNewSurveyVersion(portalShortcode, currentSurvey)
+      const updatedSurvey = await Api.createNewSurveyVersion(portal.shortcode, currentSurvey)
       setCurrentSurvey(updatedSurvey)
       const updatedEnv = { ...currentEnv, preEnrollSurveyId: updatedSurvey.id }
-      const updatedStudyEnv = await Api.updateStudyEnvironment(portalShortcode, studyShortcode,
+      const updatedStudyEnv = await Api.updateStudyEnvironment(portal.shortcode, study.shortcode,
         currentEnv.environmentName, updatedEnv)
       currentEnv.preEnrollSurveyId = updatedStudyEnv.preEnrollSurveyId
       currentEnv.preEnrollSurvey = updatedSurvey
@@ -50,7 +51,7 @@ function RawPreRegView({ portalShortcode, currentEnv, survey, studyShortcode, re
     <SurveyEditorView
       currentForm={currentSurvey}
       readOnly={readOnly}
-      onCancel={() => navigate('../../..')}
+      onCancel={() => navigate(currentEnvPath)}
       onSave={createNewVersion}
     />
   )
@@ -61,7 +62,7 @@ function PreEnrollView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT})
   const params = useParams<SurveyParamsT>()
   const surveyStableId: string | undefined = params.surveyStableId
 
-  const { portal, currentEnv, study } = studyEnvContext
+  const { currentEnv } = studyEnvContext
   const [searchParams] = useSearchParams()
   const readOnly = searchParams.get('readOnly') === 'true'
 
@@ -72,8 +73,7 @@ function PreEnrollView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT})
   if (survey?.stableId != surveyStableId) {
     return <span>The survey {surveyStableId} does not exist on this study</span>
   }
-  return <RawPreRegView portalShortcode={portal.shortcode} currentEnv={currentEnv}
-    survey={survey} studyShortcode={study.shortcode} readOnly={readOnly}/>
+  return <RawPreRegView studyEnvContext={studyEnvContext} survey={survey} readOnly={readOnly}/>
 }
 
 export default PreEnrollView

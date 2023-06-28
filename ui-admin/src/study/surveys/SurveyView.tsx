@@ -4,7 +4,7 @@ import { Store } from 'react-notifications-component'
 
 import {  StudyParams } from 'study/StudyRouter'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import Api, { Portal, Study, StudyEnvironment, StudyEnvironmentSurvey, Survey } from 'api/api'
+import Api, { StudyEnvironmentSurvey, Survey } from 'api/api'
 
 import { failureNotification, successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
@@ -15,9 +15,9 @@ export type SurveyParamsT = StudyParams & {
 }
 
 /** Handles logic for updating study environment surveys */
-function RawSurveyView({ portal, currentEnv, study, survey, readOnly = false }:
-                      {portal: Portal, currentEnv: StudyEnvironment, study: Study,
-                        survey: Survey, readOnly?: boolean}) {
+function RawSurveyView({ studyEnvContext, survey, readOnly = false }:
+                      {studyEnvContext: StudyEnvContextT, survey: Survey, readOnly?: boolean}) {
+  const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
   const navigate = useNavigate()
   const { user } = useUser()
 
@@ -60,7 +60,7 @@ function RawSurveyView({ portal, currentEnv, study, survey, readOnly = false }:
     <SurveyEditorView
       currentForm={currentSurvey}
       readOnly={readOnly}
-      onCancel={() => navigate('../../..')}
+      onCancel={() => navigate(currentEnvPath)}
       onSave={createNewVersion}
     />
   )
@@ -71,7 +71,7 @@ function SurveyView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const params = useParams<SurveyParamsT>()
   const surveyStableId: string | undefined = params.surveyStableId
 
-  const { portal, currentEnv, study } = studyEnvContext
+  const { currentEnv } = studyEnvContext
   const [searchParams] = useSearchParams()
   const isReadOnly = searchParams.get('readOnly') === 'true'
 
@@ -83,7 +83,7 @@ function SurveyView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   if (!survey) {
     return <span>The survey {surveyStableId} does not exist in this environment</span>
   }
-  return <RawSurveyView portal={portal} study={study} currentEnv={currentEnv} survey={survey} readOnly={isReadOnly}/>
+  return <RawSurveyView studyEnvContext={studyEnvContext} survey={survey} readOnly={isReadOnly}/>
 }
 
 export default SurveyView
