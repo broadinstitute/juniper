@@ -13,6 +13,7 @@ import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
@@ -32,17 +33,16 @@ public class BaseJdbiDaoTests extends BaseSpringBootTest {
     public void testGenerateInsertFields() {
         SimpleModelDao testDao = new SimpleModelDao(null);
         List<String> fields = testDao.insertFields;
-        List<String> expectedFields = Arrays.asList("createdAt", "lastUpdatedAt", "boolField",
-                "intField", "stringField", "uuidField", "instantField");
-        Assertions.assertTrue(fields.size() == expectedFields.size() &&
-                expectedFields.containsAll(fields) &&
-                fields.containsAll(expectedFields));
+        var expectedFields = new String[]{"createdAt", "lastUpdatedAt", "boolField",
+                "intField", "doubleField", "stringField", "uuidField", "instantField"};
+        assertThat(fields.toString(), fields, containsInAnyOrder(expectedFields));
     }
 
     @Getter @Setter
     private class SimpleModel extends BaseEntity {
         private boolean boolField;
         private int intField;
+        private Double doubleField;
         private String stringField;
         private UUID uuidField;
         private Instant instantField;
