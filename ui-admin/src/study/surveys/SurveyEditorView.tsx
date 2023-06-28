@@ -1,8 +1,8 @@
-import classNames from 'classnames'
 import React, { useState } from 'react'
 
 import { VersionedForm } from 'api/api'
 
+import { Button } from 'components/forms/Button'
 import { FormContentEditor } from 'forms/FormContentEditor'
 
 type SurveyEditorViewProps = {
@@ -48,17 +48,23 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           </h5>
         </div>
         {!readOnly && (
-          <button
-            aria-disabled={isSaveEnabled ? 'true' : 'false'}
-            className={classNames(
-              'btn btn-primary me-md-2',
-              { disabled: !isSaveEnabled }
-            )}
-            type="button"
+          <Button
+            disabled={!isSaveEnabled}
+            className="me-md-2"
+            tooltip={(() => {
+              if (!editedContent) {
+                return 'Form is unchanged. Make changes to save.'
+              }
+              if (!isEditorValid) {
+                return 'Form is invalid. Correct to save.'
+              }
+              return 'Save changes'
+            })()}
+            variant="primary"
             onClick={onClickSave}
           >
             Save
-          </button>
+          </Button>
         )}
         <button className="btn btn-secondary" type="button" onClick={onCancel}>Cancel</button>
       </div>
