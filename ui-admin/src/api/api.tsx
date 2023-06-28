@@ -98,7 +98,7 @@ export type Profile = {
   doNotEmailSolicit: boolean,
   mailingAddress: MailingAddress,
   phoneNumber: string,
-  birthDate: number
+  birthDate: number[]
 }
 
 export type MailingAddress = {

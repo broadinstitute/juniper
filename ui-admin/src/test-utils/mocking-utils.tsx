@@ -120,7 +120,7 @@ export const mockEnrollee: () => Enrollee = () => {
       givenName: 'Jonas',
       familyName: 'Salk',
       contactEmail: 'jsalk@test.com',
-      birthDate: 0,
+      birthDate: [1994, 11, 20],
       doNotEmail: false,
       doNotEmailSolicit: false,
       phoneNumber: '555.1212',
