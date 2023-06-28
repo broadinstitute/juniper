@@ -9,16 +9,20 @@ import {
 import { StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
 import { mockConfiguredSurvey } from '../../test-utils/mocking-utils'
 
+const noopUpdate = (changes: ListChange<StudyEnvironmentSurvey, VersionedConfigChange>) => 1
+const emptyChangeList: ListChange<StudyEnvironmentSurvey, VersionedConfigChange> = {
+  addedItems: [],
+  changedItems: [],
+  removedItems: []
+}
+
 describe('configChangeList', () => {
   it('doesnt list unchanged items', () => {
-    const emptyChangeList: ListChange<StudyEnvironmentSurvey, VersionedConfigChange> = {
-      addedItems: [],
-      changedItems: [],
-      removedItems: []
-    }
 
     const { baseElement } = render(<ConfigChangeListView configChangeList={emptyChangeList}
-      renderItemSummary={renderStudyEnvironmentSurvey}/>)
+                                                         selectedChanges={emptyChangeList}
+                                                         setSelectedChanges={noopUpdate}
+                                                         renderItemSummary={renderStudyEnvironmentSurvey}/>)
     expect(screen.queryByText('Added')).toBeNull()
     expect(screen.queryByText('Removed')).toBeNull()
     expect(screen.queryByText('Changed')).toBeNull()
@@ -35,8 +39,8 @@ describe('configChangeList', () => {
       removedItems: []
     }
 
-    render(<ConfigChangeListView configChangeList={changeList}
-      renderItemSummary={renderStudyEnvironmentSurvey}/>)
+    render(<ConfigChangeListView configChangeList={changeList} selectedChanges={emptyChangeList}
+                                 setSelectedChanges={noopUpdate} renderItemSummary={renderStudyEnvironmentSurvey}/>)
     expect(screen.queryByText('Added')).toBeNull()
     expect(screen.queryByText('Removed')).toBeNull()
     expect(screen.getByText('Changed: 1')).toBeTruthy()
@@ -50,8 +54,8 @@ describe('configChangeList', () => {
       changedItems: []
     }
 
-    render(<ConfigChangeListView configChangeList={changeList}
-      renderItemSummary={renderStudyEnvironmentSurvey}/>)
+    render(<ConfigChangeListView configChangeList={changeList} selectedChanges={emptyChangeList}
+                                 setSelectedChanges={noopUpdate} renderItemSummary={renderStudyEnvironmentSurvey}/>)
     expect(screen.queryByText('Changed')).toBeNull()
     expect(screen.queryByText('Removed')).toBeNull()
     expect(screen.getByText('Added: 1')).toBeTruthy()

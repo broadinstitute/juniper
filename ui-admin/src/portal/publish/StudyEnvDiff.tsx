@@ -1,12 +1,14 @@
 import React from 'react'
-import { StudyEnvironmentChange } from 'api/api'
+import {ListChange, StudyEnvironmentChange, VersionedConfigChange} from 'api/api'
 import {
+  Configable,
   ConfigChangeListView,
   ConfigChanges, renderNotificationConfig,
   renderStudyEnvironmentConsent,
   renderStudyEnvironmentSurvey,
   VersionChangeView
 } from './diffComponents'
+import {StudyEnvironmentConsent} from "@juniper/ui-core/build/types/study";
 
 type StudyEnvDiffProps = {
   studyEnvChange: StudyEnvironmentChange,
@@ -29,27 +31,36 @@ const StudyEnvDiff = ({ studyEnvChange, selectedChanges, setSelectedChanges }: S
                      })}/>
     </div>
     <div className="my-1">
-      <h3 className="h6"><input className="me-2" type={'checkbox'} checked={true} readOnly={true}/>
+      <h3 className="h6">
         PreEnroll survey</h3>
       <VersionChangeView record={studyEnvChange.preEnrollSurveyChanges}/>
     </div>
     <div className="my-1">
-      <h3 className="h6"><input className="me-2" type={'checkbox'} checked={true} readOnly={true}/>
+      <h3 className="h6">
         Consents</h3>
       <ConfigChangeListView configChangeList={studyEnvChange.consentChanges}
-        renderItemSummary={renderStudyEnvironmentConsent}/>
+                            selectedChanges={selectedChanges.consentChanges}
+                            setSelectedChanges={(consentChanges) =>
+                                setSelectedChanges({...studyEnvChange, consentChanges})}
+                            renderItemSummary={renderStudyEnvironmentConsent}/>
     </div>
     <div className="my-1">
-      <h3 className="h6"><input className="me-2" type={'checkbox'} checked={true} readOnly={true}/>
+      <h3 className="h6">
         Surveys</h3>
       <ConfigChangeListView configChangeList={studyEnvChange.surveyChanges}
-        renderItemSummary={renderStudyEnvironmentSurvey}/>
+                            selectedChanges={selectedChanges.surveyChanges}
+                            setSelectedChanges={(surveyChanges) =>
+                              setSelectedChanges({...studyEnvChange, surveyChanges})}
+                            renderItemSummary={renderStudyEnvironmentSurvey}/>
     </div>
     <div className="my-1">
-      <h3 className="h6"><input className="me-2" type={'checkbox'} checked={true} readOnly={true}/>
+      <h3 className="h6">
         Notification Configs</h3>
       <ConfigChangeListView configChangeList={studyEnvChange.notificationConfigChanges}
-        renderItemSummary={renderNotificationConfig}/>
+                            selectedChanges={selectedChanges.notificationConfigChanges}
+                            setSelectedChanges={(notificationConfigChanges) =>
+                              setSelectedChanges({...studyEnvChange, notificationConfigChanges})}
+                            renderItemSummary={renderNotificationConfig}/>
     </div>
   </div>
 }

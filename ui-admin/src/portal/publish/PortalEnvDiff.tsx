@@ -135,10 +135,13 @@ export default function PortalEnvDiff({ portal, portalEnv }: EnvironmentDiffProp
           </div>
         </div>
         <div className="my-2">
-          <h2 className="h6"><input className="me-2" type={'checkbox'} checked={true} readOnly={true}/>
+          <h2 className="h6">
             Notification Configs</h2>
           <div className="ms-4">
             <ConfigChangeListView configChangeList={diffResult.notificationConfigChanges}
+                                  selectedChanges={selectedChanges.notificationConfigChanges}
+                                  setSelectedChanges={(notificationConfigChanges) =>
+                                    setSelectedChanges({...selectedChanges, notificationConfigChanges})}
               renderItemSummary={renderNotificationConfig}/>
           </div>
         </div>
