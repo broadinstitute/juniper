@@ -1,7 +1,6 @@
 package bio.terra.pearl.api.admin.controller.forms;
 
 import bio.terra.pearl.api.admin.api.ConsentFormApi;
-import bio.terra.pearl.api.admin.model.VersionedFormDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.forms.ConsentFormExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -30,19 +29,14 @@ public class ConsentFormController implements ConsentFormApi {
   }
 
   @Override
-  public ResponseEntity<VersionedFormDto> newVersion(
-      String portalShortcode, String stableId, VersionedFormDto body) {
+  public ResponseEntity<Object> newVersion(String portalShortcode, String stableId, Object body) {
     AdminUser adminUser = requestService.requireAdminUser(request);
-    if (!stableId.equals(body.getStableId())) {
+    ConsentForm consentForm = objectMapper.convertValue(body, ConsentForm.class);
+    if (!stableId.equals(consentForm.getStableId())) {
       throw new IllegalArgumentException("form parameters don't match");
     }
-    ConsentForm consentForm = objectMapper.convertValue(body, ConsentForm.class);
-
     ConsentForm savedConsent =
         consentFormExtService.createNewVersion(portalShortcode, consentForm, adminUser);
-
-    VersionedFormDto savedConsentDto =
-        objectMapper.convertValue(savedConsent, VersionedFormDto.class);
-    return ResponseEntity.ok(savedConsentDto);
+    return ResponseEntity.ok(savedConsent);
   }
 }

@@ -1,7 +1,6 @@
 package bio.terra.pearl.api.admin.controller.forms;
 
 import bio.terra.pearl.api.admin.api.ConfiguredSurveyApi;
-import bio.terra.pearl.api.admin.model.ConfiguredSurveyDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.forms.SurveyExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -32,12 +31,12 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
   }
 
   @Override
-  public ResponseEntity<ConfiguredSurveyDto> patch(
+  public ResponseEntity<Object> patch(
       String portalShortcode,
       String studyShortcode,
       String envName,
       UUID configuredSurveyId,
-      ConfiguredSurveyDto body) {
+      Object body) {
     AdminUser adminUser = requestService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     StudyEnvironmentSurvey configuredSurvey =
@@ -46,6 +45,6 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
     StudyEnvironmentSurvey savedSes =
         surveyExtService.updateConfiguredSurvey(
             portalShortcode, environmentName, configuredSurvey, adminUser);
-    return ResponseEntity.ok(objectMapper.convertValue(savedSes, ConfiguredSurveyDto.class));
+    return ResponseEntity.ok(savedSes);
   }
 }
