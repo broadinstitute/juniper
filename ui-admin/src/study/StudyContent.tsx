@@ -25,6 +25,10 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
     .find(env => env.environmentName === currentEnv.environmentName)?.portalEnvironmentConfig as PortalEnvironmentConfig
   const zoneConfig = useConfig()
   const isReadOnlyEnv = !(currentEnv.environmentName === 'sandbox')
+  currentEnv.configuredSurveys
+    .sort((a, b) => a.surveyOrder - b.surveyOrder)
+  currentEnv.configuredConsents
+    .sort((a, b) => a.consentOrder - b.consentOrder)
 
   return <div className="StudyContent container">
     <div className="row">
@@ -69,9 +73,9 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
             </div>
             <div className="flex-grow-1 p-3">
               <ul className="list-unstyled">
-                { currentEnv.configuredConsents.map(config => {
+                { currentEnv.configuredConsents.map((config, index) => {
                   const consentForm = config.consentForm
-                  return <li key={consentForm.stableId}>
+                  return <li key={index}>
                     <Link to={`consentForms/${consentForm.stableId}?readOnly=${isReadOnlyEnv}`}>
                       {consentForm.name} <span className="detail">v{consentForm.version}</span>
                     </Link>
@@ -86,9 +90,9 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
             </div>
             <div className="flex-grow-1 p-3">
               <ul className="list-unstyled">
-                { currentEnv.configuredSurveys.map(surveyConfig => {
+                { currentEnv.configuredSurveys.map((surveyConfig, index) => {
                   const survey = surveyConfig.survey
-                  return <li className="p-1" key={survey.stableId}>
+                  return <li className="p-1" key={index}>
                     <Link to={`surveys/${survey.stableId}?readOnly=${isReadOnlyEnv}`}>
                       {survey.name} <span className="detail">v{survey.version}</span>
                     </Link>
