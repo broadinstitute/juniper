@@ -9,7 +9,7 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { sortableTableHeader } from 'util/tableUtils'
+import { tableHeader } from 'util/tableUtils'
 import { instantToDefaultString } from 'util/timeUtils'
 
 const columns: ColumnDef<ParticipantTask>[] = [{
@@ -56,7 +56,7 @@ const ParticipantTaskView = ({ enrollee }: {enrollee: Enrollee}) => {
     <table className="table table-striped">
       <thead>
         <tr>
-          {table.getFlatHeaders().map(header => sortableTableHeader(header))}
+          {table.getFlatHeaders().map(header => tableHeader(header, { sortable: true, filterable: false }))}
         </tr>
       </thead>
       <tbody>

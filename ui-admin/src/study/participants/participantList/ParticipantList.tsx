@@ -13,11 +13,12 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable, VisibilityState
 } from '@tanstack/react-table'
-import { ColumnVisibilityControl, IndeterminateCheckbox, sortableTableHeader } from 'util/tableUtils'
+import { ColumnVisibilityControl, IndeterminateCheckbox, tableHeader } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import ExportDataControl from '../export/ExportDataControl'
@@ -37,7 +38,8 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
     'givenName': false,
-    'familyName': false
+    'familyName': false,
+    'contactEmail': false
   })
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -59,22 +61,50 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   }, {
     header: 'Shortcode',
     accessorKey: 'enrollee.shortcode',
+    meta: {
+      columnType: 'string'
+    },
     cell: info => <Link to={`${currentEnvPath}/participants/${info.getValue()}`}>{info.getValue()}</Link>
   }, {
     id: 'familyName',
     header: 'Family name',
-    accessorKey: 'profile.familyName'
+    accessorKey: 'profile.familyName',
+    meta: {
+      columnType: 'string'
+    }
   }, {
     id: 'givenName',
     header: 'Given name',
-    accessorKey: 'profile.givenName'
+    accessorKey: 'profile.givenName',
+    meta: {
+      columnType: 'string'
+    }
+  }, {
+    id: 'contactEmail',
+    header: 'Contact email',
+    accessorKey: 'profile.contactEmail',
+    meta: {
+      columnType: 'string'
+    }
   }, {
     header: 'Consented',
     accessorKey: 'enrollee.consented',
+    meta: {
+      columnType: 'boolean',
+      filterOptions: [
+        { value: true, label: 'Consented' },
+        { value: false, label: 'Not Consented' }
+      ]
+    },
+    filterFn: 'equals',
     cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
   }, {
     header: 'Kit status',
-    accessorKey: 'mostRecentKitStatus'
+    filterFn: 'includesString', //an undefined value in a cell seems to switch the filter table away from the default
+    accessorKey: 'mostRecentKitStatus',
+    meta: {
+      columnType: 'string'
+    }
   }], [study.shortcode])
 
 
@@ -91,6 +121,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection
   })
 
@@ -151,7 +182,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
             <div className="d-flex align-items-center">
               <span className="me-2">
                 {numSelected} of{' '}
-                {table.getPreFilteredRowModel().rows.length} selected
+                {table.getPreFilteredRowModel().rows.length} selected ({table.getFilteredRowModel().rows.length} shown)
               </span>
               <span className="me-2">
                 <button onClick={() => setShowEmailModal(allowSendEmail)}
@@ -169,7 +200,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
           <table className="table table-striped">
             <thead>
               <tr>
-                {table.getFlatHeaders().map(header => sortableTableHeader(header))}
+                {table.getFlatHeaders().map(header => tableHeader(header, { sortable: true, filterable: true }))}
               </tr>
             </thead>
             <tbody>
