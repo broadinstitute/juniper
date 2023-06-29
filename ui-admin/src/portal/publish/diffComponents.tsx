@@ -117,8 +117,8 @@ export const ConfigChangeListView = <T extends Configable>
     return <span className="fst-italic text-muted">no changes</span>
   }
 
-  const makeModifiedArray = <R, >(array: R[], item: R, isAdd: boolean): R[] => {
-    const matchIndex = array.indexOf(item)
+  const makeModifiedArray = <R, >(array: R[], item: R, match: R | undefined, isAdd: boolean): R[] => {
+    const matchIndex = match ? array.indexOf(match) : -1
     if (isAdd && matchIndex < 0) {
       return [...array, item]
     }
@@ -133,47 +133,59 @@ export const ConfigChangeListView = <T extends Configable>
   return <ul className="list-unstyled">
     {configChangeList.addedItems.length > 0 && <li className="ps-4">Added: {configChangeList.addedItems.length}
       <ul className="list-unstyled">
-        {configChangeList.addedItems.map((item, index) => <li className="ps-4" key={index}>
-          <label>
-            <input type="checkbox" className="me-3"
-                   checked={!!selectedChanges.addedItems.find(listItem => listItem.id === item.id)}
-                   onChange={e => {
-                      const updatedItems = makeModifiedArray(selectedChanges.addedItems, item, e.target.checked)
-                      setSelectedChanges({...selectedChanges, addedItems: updatedItems})
-                    }}/>
-            {renderItemSummary(item)}
-          </label>
-        </li>)}
+        {configChangeList.addedItems.map((item, index) => {
+          const match = selectedChanges.addedItems.find(listItem => listItem.id === item.id)
+          return <li className="ps-4" key={index}>
+            <label>
+              <input type="checkbox" className="me-3"
+                     checked={!!match}
+                     onChange={e => {
+                       const updatedItems = makeModifiedArray(selectedChanges.addedItems, item,
+                         match, e.target.checked)
+                       setSelectedChanges({...selectedChanges, addedItems: updatedItems})
+                     }}/>
+              {renderItemSummary(item)}
+            </label>
+          </li>
+        })}
       </ul>
     </li>}
     {configChangeList.removedItems.length > 0 && <li className="ps-4">Removed: {configChangeList.removedItems.length}
       <ul className="list-unstyled">
-        {configChangeList.removedItems.map((item, index) => <li className="ps-4" key={index}>
-          <label>
-            <input type="checkbox" className="me-3"
-                   checked={!!selectedChanges.removedItems.find(listItem => listItem.id === item.id)}
-                   onChange={e => {
-                      const updatedItems = makeModifiedArray(selectedChanges.removedItems, item, e.target.checked)
-                      setSelectedChanges({...selectedChanges, removedItems: updatedItems})
-                    }}/>
-            {renderItemSummary(item)}
-          </label>
-        </li>)}
+        {configChangeList.removedItems.map((item, index) => {
+          const match = selectedChanges.removedItems.find(listItem => listItem.id === item.id)
+          return <li className="ps-4" key={index}>
+            <label>
+              <input type="checkbox" className="me-3"
+                     checked={!!match}
+                     onChange={e => {
+                       const updatedItems = makeModifiedArray(selectedChanges.removedItems, item,
+                         match, e.target.checked)
+                       setSelectedChanges({...selectedChanges, removedItems: updatedItems})
+                     }}/>
+              {renderItemSummary(item)}
+            </label>
+          </li>
+        })}
       </ul>
     </li>}
     {configChangeList.changedItems.length > 0 && <li className="ps-4">Changed: {configChangeList.changedItems.length}
       <ul className="list-unstyled">
-        {configChangeList.changedItems.map((item, index) => <li className="ps-4" key={index}>
-          <label className="d-flex">
-            <input type="checkbox" className="me-3"
-                   checked={!!selectedChanges.changedItems.find(listItem => listItem.sourceId === item.sourceId)}
-                   onChange={e => {
-                    const updatedItems = makeModifiedArray(selectedChanges.changedItems, item, e.target.checked)
-                    setSelectedChanges({...selectedChanges, changedItems: updatedItems})
-                  }}/>
-            {renderVersionedConfigChange(item)}
-          </label>
-        </li>)}
+        {configChangeList.changedItems.map((item, index) => {
+          const match = selectedChanges.changedItems.find(listItem => listItem.sourceId === item.sourceId)
+          return <li className="ps-4" key={index}>
+            <label className="d-flex">
+              <input type="checkbox" className="me-3"
+                     checked={!!match}
+                     onChange={e => {
+                       const updatedItems = makeModifiedArray(selectedChanges.changedItems, item,
+                         match, e.target.checked)
+                       setSelectedChanges({...selectedChanges, changedItems: updatedItems})
+                     }}/>
+              {renderVersionedConfigChange(item)}
+            </label>
+          </li>
+        })}
       </ul>
     </li>}
   </ul>

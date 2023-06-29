@@ -43,6 +43,27 @@ const emptyStudyEnvChange: StudyEnvironmentChange = {
  * This will be empty if the target environment is already initialized, and everything if the target environment
  * is not yet initialized
  */
+const getDefaultPortalEnvChanges = (changes: PortalEnvironmentChange) => {
+  const initializationChange = changes.configChanges.find(configChange => configChange.propertyName === 'initialized')
+  if (initializationChange && initializationChange.oldValue === false) {
+    return _cloneDeep(changes)
+  }
+  return {
+    ...emptyChangeSet,
+    studyEnvChanges: changes.studyEnvChanges.map((studyEnvChange) => (
+      {
+        ...getDefaultStudyEnvChanges(studyEnvChange),
+        studyShortcode: studyEnvChange.studyShortcode
+      }
+    ))
+  }
+}
+
+/**
+ * gets a default set of changes to apply for the changeset.
+ * This will be empty if the target environment is already initialized, and everything if the target environment
+ * is not yet initialized
+ */
 const getDefaultStudyEnvChanges = (changes: StudyEnvironmentChange) => {
   const initializationChange = changes.configChanges.find(configChange => configChange.propertyName === 'initialized')
   if (initializationChange && initializationChange.oldValue === false) {
@@ -72,12 +93,7 @@ export default function PortalEnvDiff({ portal, portalEnv }: EnvironmentDiffProp
     }
     Api.fetchEnvDiff(portal.shortcode, sourceEnvName, portalEnv.environmentName).then(result => {
       setDiffResult(result)
-      setSelectedChanges({
-        ...selectedChanges,
-        studyEnvChanges: result.studyEnvChanges.map((studyEnvChange) => (
-          getDefaultStudyEnvChanges(studyEnvChange)
-        ))
-      })
+      setSelectedChanges(getDefaultPortalEnvChanges(result))
       setIsLoading(false)
     }).catch(e => {
       alert(e)
