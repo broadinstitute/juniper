@@ -7,7 +7,7 @@ import { ParticipantTask } from '@juniper/ui-core/build/types/task'
 import _times from 'lodash/times'
 import _random from 'lodash/random'
 import { StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
-import { PortalContextT } from '../portal/PortalProvider'
+import { LoadedPortalContextT } from '../portal/PortalProvider'
 import { PortalEnvironment } from '@juniper/ui-core/build/types/portal'
 import { UserContext, UserContextT } from 'user/UserProvider'
 
@@ -16,7 +16,7 @@ const randomString = (length: number) => {
 }
 
 /** returns a simple portalContext, loosely modeled on OurHealth */
-export const mockPortalContext: () => PortalContextT = () => ({
+export const mockPortalContext: () => LoadedPortalContextT = () => ({
   portal: {
     id: 'fakeportalid1',
     name: 'mock portal',

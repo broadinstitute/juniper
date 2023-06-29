@@ -6,12 +6,12 @@ import { LoadedPortalContextT, PortalContext, PortalParams } from './PortalProvi
 import MailingListView from './MailingListView'
 import { NavBreadcrumb, SidebarContent } from '../navbar/AdminNavbar'
 import PortalEnvView from './PortalEnvView'
-import PortalEnvDiff from './publish/PortalEnvDiff'
 import SiteContentView from './siteContent/SiteContentView'
 import PortalEnvConfigView from './PortalEnvConfigView'
 import PortalSidebar from './PortalSidebar'
 import PortalUserList from '../user/PortalUserList'
 import PortalParticipantsView from './PortalParticipantView'
+import PortalEnvDiffProvider from './publish/PortalEnvDiffProvider'
 
 /** controls routes for within a portal */
 export default function PortalRouter() {
@@ -36,7 +36,7 @@ export default function PortalRouter() {
 function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT}) {
   const params = useParams<PortalParams>()
   const portalEnvName: string | undefined = params.portalEnv
-  const portal = portalContext.portal
+  const { portal, updatePortal } = portalContext
   const portalEnv = portal.portalEnvironments.find(env => env.environmentName === portalEnvName)
   if (!portalEnv) {
     return <div>No environment matches {portalEnvName}</div>
@@ -53,7 +53,8 @@ function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT
         updatePortal={portalContext.updatePortal}/>}/>
       <Route path="participants" element={<PortalParticipantsView portalEnv={portalEnv} portal={portal}/>}/>
       <Route path="siteContent" element={<SiteContentView portalEnv={portalEnv}/>}/>
-      <Route path="diff/:sourceEnvName" element={<PortalEnvDiff portal={portal} portalEnv={portalEnv}/>}/>
+      <Route path="diff/:sourceEnvName" element={<PortalEnvDiffProvider portal={portal} portalEnv={portalEnv}
+        updatePortal={updatePortal}/>}/>
       <Route path="mailingList" element={<MailingListView portalContext={portalContext}
         portalEnv={portalEnv}/>}/>
       <Route index element={<PortalEnvView portal={portal} portalEnv={portalEnv}/>}/>

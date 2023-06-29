@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import React from 'react'
 
 import { ConfigChangeListView, renderStudyEnvironmentSurvey } from './diffComponents'
@@ -7,9 +7,9 @@ import {
   VersionedConfigChange
 } from 'api/api'
 import { StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
-import { mockConfiguredSurvey } from '../../test-utils/mocking-utils'
+import { mockConfiguredSurvey, mockSurvey } from 'test-utils/mocking-utils'
 
-const noopUpdate = (changes: ListChange<StudyEnvironmentSurvey, VersionedConfigChange>) => 1
+const noopUpdate = () => 1
 const emptyChangeList: ListChange<StudyEnvironmentSurvey, VersionedConfigChange> = {
   addedItems: [],
   changedItems: [],
@@ -18,11 +18,10 @@ const emptyChangeList: ListChange<StudyEnvironmentSurvey, VersionedConfigChange>
 
 describe('configChangeList', () => {
   it('doesnt list unchanged items', () => {
-
     const { baseElement } = render(<ConfigChangeListView configChangeList={emptyChangeList}
-                                                         selectedChanges={emptyChangeList}
-                                                         setSelectedChanges={noopUpdate}
-                                                         renderItemSummary={renderStudyEnvironmentSurvey}/>)
+      selectedChanges={emptyChangeList}
+      setSelectedChanges={noopUpdate}
+      renderItemSummary={renderStudyEnvironmentSurvey}/>)
     expect(screen.queryByText('Added')).toBeNull()
     expect(screen.queryByText('Removed')).toBeNull()
     expect(screen.queryByText('Changed')).toBeNull()
@@ -41,24 +40,45 @@ describe('configChangeList', () => {
     }
 
     render(<ConfigChangeListView configChangeList={changeList} selectedChanges={emptyChangeList}
-                                 setSelectedChanges={noopUpdate} renderItemSummary={renderStudyEnvironmentSurvey}/>)
+      setSelectedChanges={noopUpdate} renderItemSummary={renderStudyEnvironmentSurvey}/>)
     expect(screen.queryByText('Added')).toBeNull()
     expect(screen.queryByText('Removed')).toBeNull()
-    expect(screen.getByText('Changed: 1')).toBeTruthy()
+    expect(screen.getByText('Changed')).toBeTruthy()
   })
 
-  it('shows an added survey', () => {
-    const configuredSurvey = mockConfiguredSurvey()
+  it('handles added surveys', () => {
+    const configuredSurvey1 = {
+      ...mockConfiguredSurvey(),
+      id: 'guid1',
+      survey: {
+        ...mockSurvey(), stableId: 'survey1', name: 'Survey 1'
+      }
+    }
+    const configuredSurvey2 = {
+      ...mockConfiguredSurvey(),
+      id: 'guid2',
+      survey: {
+        ...mockSurvey(), stableId: 'survey2', name: 'Survey 2'
+      }
+    }
     const changeList: ListChange<StudyEnvironmentSurvey, VersionedConfigChange> = {
-      addedItems: [configuredSurvey],
+      addedItems: [configuredSurvey1, configuredSurvey2],
       removedItems: [],
       changedItems: []
     }
+    const spySetChanges = jest.fn(() => 1)
 
     render(<ConfigChangeListView configChangeList={changeList} selectedChanges={emptyChangeList}
-                                 setSelectedChanges={noopUpdate} renderItemSummary={renderStudyEnvironmentSurvey}/>)
+      setSelectedChanges={spySetChanges} renderItemSummary={renderStudyEnvironmentSurvey}/>)
     expect(screen.queryByText('Changed')).toBeNull()
     expect(screen.queryByText('Removed')).toBeNull()
-    expect(screen.getByText('Added: 1')).toBeTruthy()
+    expect(screen.getByText('Added')).toBeTruthy()
+
+    fireEvent.click(screen.getByText('Survey 1'))
+    expect(spySetChanges).toHaveBeenCalledTimes(1)
+    expect(spySetChanges).toHaveBeenCalledWith({
+      ...emptyChangeList,
+      addedItems: [configuredSurvey1]
+    })
   })
 })
