@@ -13,6 +13,10 @@ type PortalEnvDiffProviderProps = {
   portalEnv: PortalEnvironment,
   updatePortal: (portal: Portal) => void
 }
+/**
+ * loads a diff between two environments, based on the passed-in environment and an environment name in a url param
+ * also contains logic for updating an environment with a changeset
+ */
 const PortalEnvDiffProvider = ({ portal, portalEnv, updatePortal }: PortalEnvDiffProviderProps) => {
   const params = useParams()
   const sourceEnvName: string | undefined = params.sourceEnvName
