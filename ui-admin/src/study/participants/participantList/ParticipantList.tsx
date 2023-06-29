@@ -182,7 +182,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
             <div className="d-flex align-items-center">
               <span className="me-2">
                 {numSelected} of{' '}
-                {table.getPreFilteredRowModel().rows.length} selected
+                {table.getPreFilteredRowModel().rows.length} selected ({table.getFilteredRowModel().rows.length} shown)
               </span>
               <span className="me-2">
                 <button onClick={() => setShowEmailModal(allowSendEmail)}
