@@ -1,4 +1,4 @@
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
+import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
 
 import { FormContent } from '@juniper/ui-core'
@@ -66,6 +66,22 @@ export const PagesList = (props: PagesListProps) => {
                       ]
                     })
                   }
+                }}
+              />
+              <IconButton
+                aria-label="Delete this page"
+                className="ms-2"
+                disabled={readOnly || pages.length === 1}
+                icon={faTimes}
+                variant="light"
+                onClick={() => {
+                  onChange({
+                    ...formContent,
+                    pages: [
+                      ...pages.slice(0, i),
+                      ...pages.slice(i + 1)
+                    ]
+                  })
                 }}
               />
             </div>
