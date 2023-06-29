@@ -33,7 +33,7 @@ function DebouncedInput({
   }, [value])
 
   return (
-    <input {...props} value={value} onChange={e => setValue(e.target.value)} />
+    <input {...props} value={value} style={{ height: 32 }} onChange={e => setValue(e.target.value)} />
   )
 }
 
@@ -72,11 +72,17 @@ function SelectFilter<A>({
         control: baseStyles => ({
           ...baseStyles,
           width: 200,
+          height: 32,
+          minHeight: 32,
           fontWeight: 'normal'
         }),
         menu: baseStyles => ({
           ...baseStyles,
           fontWeight: 'normal'
+        }),
+        valueContainer: baseStyles => ({
+          ...baseStyles,
+          padding: '0 0.25rem'
         })
       }}
       value={selectedValue}
