@@ -34,11 +34,12 @@ const StudyEnvDiff = ({ studyEnvChange, selectedChanges, setSelectedChanges }: S
       <h3 className="h6">
         PreEnroll survey</h3>
       <label className="d-flex">
-        <input type="checkbox" className="me-3" checked={selectedChanges.preEnrollSurveyChanges.changed}
+        { studyEnvChange.preEnrollSurveyChanges.changed &&
+          <input type="checkbox" className="me-3" checked={selectedChanges.preEnrollSurveyChanges.changed}
              onChange={e => setSelectedChanges({
                ...selectedChanges,
                preEnrollSurveyChanges: e.target.checked ? studyEnvChange.preEnrollSurveyChanges : {changed: false}
-             })}/>
+             })}/> }
         <VersionChangeView record={studyEnvChange.preEnrollSurveyChanges}/>
       </label>
     </div>
