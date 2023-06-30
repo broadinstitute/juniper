@@ -20,7 +20,7 @@ export type UserContextT = {
   loginUser: (result: LoginResult, accessToken: string) => void,
   loginUserInternal: (result: LoginResult) => void,
   logoutUser: () => void,
-  updateEnrollee: (enrollee: Enrollee, rerender?: boolean) => Promise<void>
+  updateEnrollee: (enrollee: Enrollee, updateWtihoutRerender?: boolean) => Promise<void>
 }
 
 /** current user object context */
