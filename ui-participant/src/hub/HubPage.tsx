@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { usePortalEnv } from '../providers/PortalProvider'
 import { useUser } from '../providers/UserProvider'
 
@@ -21,6 +21,13 @@ export default function HubPage() {
 
   const unjoinedStudies = portal.portalStudies.filter(pStudy => !userHasJoinedPortalStudy(pStudy, enrollees))
   const hasUnjoinedStudies = unjoinedStudies.length > 0
+
+  useEffect(() => {
+    if (hubUpdate) {
+      setDisplayedHubMessage(hubUpdate.message)
+    }
+  }, [hubUpdate])
+
   return (
     <>
       <DocumentTitle title="Dashboard" />
