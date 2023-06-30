@@ -1,21 +1,21 @@
 import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons'
 import React, { useState } from 'react'
 
-import { FormElement, FormPanel } from '@juniper/ui-core'
+import { FormContentPage, FormPanel } from '@juniper/ui-core'
 
 import { IconButton } from 'components/forms/Button'
 
 import { DeletePanelConfirmationModal } from './DeletePanelConfirmationModal'
 import { getElementLabel } from './designer-utils'
 
-type ElementListProps<T extends FormElement> = {
+type PageElementListProps = {
   readOnly: boolean
-  value: T[]
-  onChange: (newValue: T[]) => void
+  value: FormContentPage['elements']
+  onChange: (newValue: FormContentPage['elements']) => void
 }
 
 /** UI for re-ordering a list of form elements. */
-export const ElementList = <T extends FormElement, >(props: ElementListProps<T>) => {
+export const PageElementList = (props: PageElementListProps) => {
   const { readOnly, value, onChange } = props
 
   const [confirmingDeletePanel, setConfirmingDeletePanel] = useState<number>()
@@ -107,12 +107,7 @@ export const ElementList = <T extends FormElement, >(props: ElementListProps<T>)
               // Delete the panel, but put its contents in its place.
               onChange([
                 ...value.slice(0, indexOfPanelToDelete),
-                // Cast as T[] isn't great, but is valid for how this component is used.
-                // T is either FormElement when this is used for elements on a page or
-                // HtmlElement | Question when this used for elements in a panel.
-                // FormPanel['elements'] is (HtmlElement | Question)[], so the cast
-                // is valid in either case.
-                ...(value[indexOfPanelToDelete] as FormPanel).elements as T[],
+                ...(value[indexOfPanelToDelete] as FormPanel).elements,
                 ...value.slice(indexOfPanelToDelete + 1)
               ])
             }
