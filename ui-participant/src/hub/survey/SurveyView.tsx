@@ -68,14 +68,15 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
     }).then(response => {
       response.enrollee.participantTasks = response.tasks
       response.enrollee.profile = response.profile
-      updateEnrollee(response.enrollee)
       const hubUpdate: HubUpdate = {
         message: {
           title: `${form.name} completed`,
           type: 'success'
         }
       }
-      navigate('/hub', { state: hubUpdate })
+      updateEnrollee(response.enrollee, {
+        afterFn: () => { navigate('/hub', { state: hubUpdate }) }
+      })
     }).catch(() => {
       refreshSurvey(surveyModel, null)
       alert('an error occurred')

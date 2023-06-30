@@ -69,7 +69,6 @@ export const RedirectFromOAuth = () => {
                 studyShortcode: portalStudy.study.shortcode,
                 preEnrollResponseId
               })
-              updateEnrollee(response.enrollee)
               const hubUpdate: HubUpdate = {
                 message: {
                   title: 'Welcome to the study.',
@@ -77,7 +76,9 @@ export const RedirectFromOAuth = () => {
                   type: 'info'
                 }
               }
-              navigate('/hub', { replace: true, state: hubUpdate })
+              updateEnrollee(response.enrollee, {
+                afterFn: () => { navigate('/hub', { replace: true, state: hubUpdate }) }
+              })
             } catch {
               alert('an error occurred, please try again, or contact support')
             }
