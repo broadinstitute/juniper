@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { usePortalEnv } from '../providers/PortalProvider'
 import { useUser } from '../providers/UserProvider'
 
@@ -17,16 +17,10 @@ export default function HubPage() {
   const { enrollees } = useUser()
 
   const hubUpdate = useHubUpdate()
-  const [displayedHubMessage, setDisplayedHubMessage] = useState(hubUpdate?.message)
+  const [showMessage, setShowMessage] = useState(true)
 
   const unjoinedStudies = portal.portalStudies.filter(pStudy => !userHasJoinedPortalStudy(pStudy, enrollees))
   const hasUnjoinedStudies = unjoinedStudies.length > 0
-
-  useEffect(() => {
-    if (hubUpdate) {
-      setDisplayedHubMessage(hubUpdate.message)
-    }
-  }, [hubUpdate])
 
   return (
     <>
@@ -35,14 +29,14 @@ export default function HubPage() {
         className="hub-dashboard-background flex-grow-1"
         style={{ background: 'linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%' }}
       >
-        {!!displayedHubMessage && (
+        {!!hubUpdate?.message && showMessage && (
           <HubMessageAlert
-            message={displayedHubMessage}
+            message={hubUpdate.message}
             className="mx-1 mx-md-auto my-1 my-md-5 shadow-sm"
             role="alert"
             style={{ maxWidth: 768 }}
             onDismiss={() => {
-              setDisplayedHubMessage(undefined)
+              setShowMessage(false)
             }}
           />
         )}
