@@ -87,6 +87,39 @@ describe('PanelElementList', () => {
     ])
   })
 
+  it('allows removing elements from panel', async () => {
+    // Arrange
+    const user = userEvent.setup()
+
+    const onChange = jest.fn()
+    render(<PanelElementList readOnly={false} value={elements} onChange={onChange} />)
+
+    // Act
+    const deleteBarButton = screen.getAllByLabelText('Move this element out of panel')[1]
+    await act(() => user.click(deleteBarButton))
+
+    // Assert
+    expect(onChange).toHaveBeenCalledWith(
+      [
+        {
+          name: 'foo',
+          type: 'html',
+          html: '<p>foo</p>'
+        },
+        {
+          name: 'baz',
+          type: 'html',
+          html: '<p>baz</p>'
+        }
+      ],
+      {
+        name: 'bar',
+        type: 'html',
+        html: '<p>bar</p>'
+      }
+    )
+  })
+
   it('allows deleting elements', async () => {
     // Arrange
     const user = userEvent.setup()

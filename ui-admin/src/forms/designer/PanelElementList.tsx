@@ -1,7 +1,7 @@
-import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightFromBracket, faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
 
-import { FormPanel } from '@juniper/ui-core'
+import { FormElement, FormPanel } from '@juniper/ui-core'
 
 import { IconButton } from 'components/forms/Button'
 
@@ -10,7 +10,7 @@ import { getElementLabel } from './designer-utils'
 type PanelElementListProps = {
   readOnly: boolean
   value: FormPanel['elements']
-  onChange: (newValue: FormPanel['elements']) => void
+  onChange: (newValue: FormPanel['elements'], removedElement?: FormElement) => void
 }
 
 /** UI for editing a list of form elements in a panel. */
@@ -58,6 +58,23 @@ export const PanelElementList = (props: PanelElementListProps) => {
                       value[i],
                       ...value.slice(i + 2)
                     ])
+                  }}
+                />
+
+                <IconButton
+                  aria-label="Move this element out of panel"
+                  className="ms-2"
+                  disabled={readOnly}
+                  icon={faArrowRightFromBracket}
+                  variant="light"
+                  onClick={() => {
+                    onChange(
+                      [
+                        ...value.slice(0, i),
+                        ...value.slice(i + 1)
+                      ],
+                      value[i]
+                    )
                   }}
                 />
 

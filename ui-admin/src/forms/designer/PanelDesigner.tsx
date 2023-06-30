@@ -1,13 +1,13 @@
 import React from 'react'
 
-import { FormPanel } from '@juniper/ui-core'
+import { FormElement, FormPanel } from '@juniper/ui-core'
 
 import { PanelElementList } from './PanelElementList'
 
 export type PanelDesignerProps = {
   readOnly: boolean
   value: FormPanel
-  onChange: (newValue: FormPanel) => void
+  onChange: (newValue: FormPanel, removedElement?: FormElement) => void
 }
 
 /** UI for editing a panel in a form. */
@@ -20,8 +20,8 @@ export const PanelDesigner = (props: PanelDesignerProps) => {
       <PanelElementList
         readOnly={readOnly}
         value={value.elements}
-        onChange={newValue => {
-          onChange({ ...value, elements: newValue })
+        onChange={(newValue, removedElement) => {
+          onChange({ ...value, elements: newValue }, removedElement)
         }}
       />
     </div>

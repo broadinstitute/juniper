@@ -1,4 +1,4 @@
-import { get, set } from 'lodash/fp'
+import { flow, get, identity, set, update } from 'lodash/fp'
 import React, { useState } from 'react'
 
 import { FormContent, FormContentPage, FormElement } from '@juniper/ui-core'
@@ -79,8 +79,35 @@ export const FormDesigner = (props: FormDesignerProps) => {
               <PanelDesigner
                 readOnly={readOnly}
                 value={selectedElement}
-                onChange={updatedElement => {
-                  onChange(set(selectedElementPath, updatedElement, value))
+                onChange={(updatedElement, removedElement) => {
+                  // The path to a panel will always end in an array index since the panel will be
+                  // inside an elements array. Extract the path to that elements array and the
+                  // selected element's index in it.
+                  // eslint-disable-next-line max-len,@typescript-eslint/no-non-null-assertion
+                  const [, parentElementsListPath, indexOfSelectedElementString] = selectedElementPath.match(/(.*?)\[(\d)+\]$/)!
+                  const indexOfSelectedElement = parseInt(indexOfSelectedElementString)
+
+                  onChange(
+                    flow(
+                      // Update the panel.
+                      set(selectedElementPath, updatedElement),
+                      // If an element was removed from the panel, add the removed element into the panel's
+                      // parent's elements array after the panel itself.
+                      removedElement
+                        ? update(
+                          parentElementsListPath,
+                          elements => {
+                            console.log(elements)
+                            return [
+                              ...elements.slice(0, indexOfSelectedElement + 1),
+                              removedElement,
+                              ...elements.slice(indexOfSelectedElement + 1)
+                            ]
+                          }
+                        )
+                        : identity
+                    )(value)
+                  )
                 }}
               />
             )
