@@ -21,7 +21,6 @@ export default function HubPage() {
 
   const unjoinedStudies = portal.portalStudies.filter(pStudy => !userHasJoinedPortalStudy(pStudy, enrollees))
   const hasUnjoinedStudies = unjoinedStudies.length > 0
-
   return (
     <>
       <DocumentTitle title="Dashboard" />
