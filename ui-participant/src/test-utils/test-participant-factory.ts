@@ -1,5 +1,6 @@
 import { Enrollee, ParticipantUser } from 'api/api'
 
+/** gets a mock ParticipantUser */
 export const mockParticipantUser: () => ParticipantUser = () => {
   return {
     id: 'user1',
@@ -8,6 +9,7 @@ export const mockParticipantUser: () => ParticipantUser = () => {
   }
 }
 
+/** gets a mock Enrollee */
 export const mockEnrollee: () => Enrollee = () => {
   return {
     shortcode: 'AAABBB',
