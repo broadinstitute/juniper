@@ -3,6 +3,7 @@ import React, { useCallback, useState } from 'react'
 
 import { FormContent } from '@juniper/ui-core'
 
+import { validateFormContent } from './formContentValidation'
 import { OnChangeFormContent } from './formEditorTypes'
 
 type FormContentJsonEditorProps = {
@@ -21,6 +22,7 @@ export const FormContentJsonEditor = (props: FormContentJsonEditorProps) => {
     _setEditorValue(newEditorValue)
     try {
       const formContent = JSON.parse(newEditorValue)
+      validateFormContent(formContent)
       setIsValid(true)
       onChange(true, formContent)
     } catch (e) {

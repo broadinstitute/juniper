@@ -7,6 +7,7 @@ import { FormDesigner } from './FormDesigner'
 import { OnChangeFormContent } from './formEditorTypes'
 import { FormContentJsonEditor } from './FormContentJsonEditor'
 import { FormPreview } from './FormPreview'
+import { validateFormContent } from './formContentValidation'
 
 type FormContentEditorProps = {
   initialContent: string
@@ -43,7 +44,12 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             value={editedContent}
             onChange={newContent => {
               setEditedContent(newContent)
-              onChange(true, newContent)
+              try {
+                validateFormContent(newContent)
+                onChange(true, newContent)
+              } catch (err) {
+                onChange(false, undefined)
+              }
             }}
           />
         </Tab>
