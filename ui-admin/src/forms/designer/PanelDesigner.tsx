@@ -2,7 +2,7 @@ import React from 'react'
 
 import { FormPanel } from '@juniper/ui-core'
 
-import { ElementList } from './ElementList'
+import { PanelElementList } from './PanelElementList'
 
 export type PanelDesignerProps = {
   readOnly: boolean
@@ -17,7 +17,7 @@ export const PanelDesigner = (props: PanelDesignerProps) => {
   return (
     <div>
       <h2>Panel</h2>
-      <ElementList
+      <PanelElementList
         readOnly={readOnly}
         value={value.elements}
         onChange={newValue => {

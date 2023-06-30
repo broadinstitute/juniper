@@ -5,7 +5,7 @@ import { FormContentPage, FormElement, HtmlElement, Question } from '@juniper/ui
 
 import { Button } from 'components/forms/Button'
 
-import { ElementList } from './ElementList'
+import { PageElementList } from './PageElementList'
 import { NewPanelForm } from './NewPanelForm'
 
 /** Can the given FormElement be included in a panel (is it a Question or HtmlElement)? */
@@ -49,7 +49,7 @@ export const PageDesigner = (props: PageDesignerProps) => {
         </Button>
       </div>
 
-      <ElementList
+      <PageElementList
         readOnly={readOnly}
         value={value.elements}
         onChange={newValue => {

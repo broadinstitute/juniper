@@ -4,9 +4,9 @@ import React from 'react'
 
 import { FormElement, FormPanel } from '@juniper/ui-core'
 
-import { ElementList } from './ElementList'
+import { PageElementList } from './PageElementList'
 
-describe('ElementList', () => {
+describe('PageElementList', () => {
   const elements: FormElement[] = [
     {
       name: 'foo',
@@ -27,7 +27,7 @@ describe('ElementList', () => {
 
   it('renders elements', () => {
     // Act
-    render(<ElementList readOnly={false} value={elements} onChange={jest.fn()} />)
+    render(<PageElementList readOnly={false} value={elements} onChange={jest.fn()} />)
 
     // Assert
     const listItems = screen.getAllByRole('listitem')
@@ -39,7 +39,7 @@ describe('ElementList', () => {
     const user = userEvent.setup()
 
     const onChange = jest.fn()
-    render(<ElementList readOnly={false} value={elements} onChange={onChange} />)
+    render(<PageElementList readOnly={false} value={elements} onChange={onChange} />)
 
     // Act
     const moveBarUpButton = screen.getAllByLabelText('Move this element before the previous one')[1]
@@ -108,7 +108,7 @@ describe('ElementList', () => {
       const user = userEvent.setup()
 
       const onChange = jest.fn()
-      render(<ElementList readOnly={false} value={elements} onChange={onChange} />)
+      render(<PageElementList readOnly={false} value={elements} onChange={onChange} />)
 
       // Act
       const deleteButton = screen.getAllByLabelText('Delete this element')[0]
@@ -123,7 +123,7 @@ describe('ElementList', () => {
       const user = userEvent.setup()
 
       const onChange = jest.fn()
-      render(<ElementList readOnly={false} value={elements} onChange={onChange} />)
+      render(<PageElementList readOnly={false} value={elements} onChange={onChange} />)
 
       // Act
       const deleteButton = screen.getAllByLabelText('Delete this element')[1]
@@ -139,7 +139,7 @@ describe('ElementList', () => {
         const user = userEvent.setup()
 
         const onChange = jest.fn()
-        render(<ElementList readOnly={false} value={elements} onChange={onChange} />)
+        render(<PageElementList readOnly={false} value={elements} onChange={onChange} />)
 
         // Act
         const deleteButton = screen.getAllByLabelText('Delete this element')[2]
@@ -155,7 +155,7 @@ describe('ElementList', () => {
         const user = userEvent.setup()
 
         const onChange = jest.fn()
-        render(<ElementList readOnly={false} value={elements} onChange={onChange} />)
+        render(<PageElementList readOnly={false} value={elements} onChange={onChange} />)
 
         const deleteButton = screen.getAllByLabelText('Delete this element')[2]
         await act(() => user.click(deleteButton))
@@ -172,7 +172,7 @@ describe('ElementList', () => {
         const user = userEvent.setup()
 
         const onChange = jest.fn()
-        render(<ElementList readOnly={false} value={elements} onChange={onChange} />)
+        render(<PageElementList readOnly={false} value={elements} onChange={onChange} />)
 
         const deleteButton = screen.getAllByLabelText('Delete this element')[2]
         await act(() => user.click(deleteButton))
