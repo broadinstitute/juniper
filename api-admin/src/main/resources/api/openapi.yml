@@ -175,11 +175,11 @@ paths:
         - { name: configSurveyId, in: path, required: true, schema: { type: string, format: uuid } }
       requestBody:
         required: true
-        content: { application/json: { schema: { $ref: '#/components/schemas/ConfiguredSurveyDto' } } }
+        content: { application/json: { schema: { type: object } } }
       responses:
         '200':
           description: saved configuredSurvey object
-          content: { application/json: { schema: { $ref: '#/components/schemas/ConfiguredSurveyDto' } } }
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/consentForms/{stableId}/{version}/newVersion:
@@ -192,11 +192,11 @@ paths:
         - { name: stableId, in: path, required: true, schema: { type: string } }
       requestBody:
         required: true
-        content: { application/json: { schema: { $ref: '#/components/schemas/VersionedFormDto' } } }
+        content: { application/json: { schema: { type: object } } }
       responses:
         '200':
           description: saved survey object
-          content: { application/json: { schema: { $ref: '#/components/schemas/VersionedFormDto' } } }
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredConsents/{configConsentId}:
@@ -211,11 +211,11 @@ paths:
         - { name: configConsentId, in: path, required: true, schema: { type: string, format: uuid } }
       requestBody:
         required: true
-        content: { application/json: { schema: { $ref: '#/components/schemas/ConfiguredConsentDto' } } }
+        content: { application/json: { schema: { schema: { type: object } } } }
       responses:
         '200':
           description: saved configuredConsent object
-          content: { application/json: { schema: { $ref: '#/components/schemas/ConfiguredConsentDto' } } }
+          content: { application/json: { schema: { schema: { type: object } } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/kitTypes:
@@ -892,26 +892,6 @@ components:
       type: object
       properties:
         token: {type: string}
-    VersionedFormDto:
-      type: object
-      properties:
-        name: {type: string}
-        version: {type: integer}
-        content: {type: string}
-        stableId: {type: string}
-        id: {type: string, format: uuid}
-    ConfiguredSurveyDto:
-      type: object
-      properties:
-        id: {type: string, format: uuid }
-        surveyId: { type: string, format: uuid }
-        studyEnvironmentId: { type: string, format: uuid }
-    ConfiguredConsentDto:
-      type: object
-      properties:
-        id: { type: string, format: uuid }
-        consentFormId: { type: string, format: uuid }
-        studyEnvironmentId: { type: string, format: uuid }
     StudyEnvironmentDto:
       type: object
       properties:

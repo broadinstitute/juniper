@@ -1,7 +1,6 @@
 package bio.terra.pearl.api.admin.controller.forms;
 
 import bio.terra.pearl.api.admin.api.ConfiguredConsentApi;
-import bio.terra.pearl.api.admin.model.ConfiguredConsentDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.forms.ConsentFormExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -32,12 +31,12 @@ public class ConfiguredConsentController implements ConfiguredConsentApi {
   }
 
   @Override
-  public ResponseEntity<ConfiguredConsentDto> patch(
+  public ResponseEntity<Object> patch(
       String portalShortcode,
       String studyShortcode,
       String envName,
       UUID configuredConsentId,
-      ConfiguredConsentDto body) {
+      Object body) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     StudyEnvironmentConsent configuredForm =
@@ -45,6 +44,6 @@ public class ConfiguredConsentController implements ConfiguredConsentApi {
     var savedConfig =
         consentFormExtService.updateConfiguredConsent(
             portalShortcode, environmentName, configuredForm, adminUser);
-    return ResponseEntity.ok(objectMapper.convertValue(savedConfig, ConfiguredConsentDto.class));
+    return ResponseEntity.ok(savedConfig);
   }
 }
