@@ -81,46 +81,48 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
     })
   }
 
-  const { surveyModel, refreshSurvey, setSurveyModel } = useSurveyJSModel(form, resumableData,
+  const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData,
     onComplete, pager, enrollee.profile)
 
   const saveDiff = () => {
-    // we use setSurveyModel to make sure we have the latest version of it, we're not updating it
-    setSurveyModel(freshSurveyModel => {
-      if (freshSurveyModel) {
-        const updatedAnswers = getUpdatedAnswers(prevSave.current as Record<string, object>, freshSurveyModel.data)
-        if (updatedAnswers.length < 1) {
-          // don't bother saving if there are no changes
-          return freshSurveyModel
-        }
-        const prevPrevSave = prevSave.current
-        prevSave.current = freshSurveyModel.data
+    const updatedAnswers = getUpdatedAnswers(prevSave.current as Record<string, object>, surveyModel.data)
+    if (updatedAnswers.length < 1) {
+      // don't bother saving if there are no changes
+      return
+    }
+    const prevPrevSave = prevSave.current
+    prevSave.current = surveyModel.data
 
-        const responseDto = {
-          resumeData: getResumeData(freshSurveyModel, enrollee.participantUserId),
-          enrolleeId: enrollee.id,
-          answers: updatedAnswers,
-          creatingParticipantId: enrollee.participantUserId,
-          surveyId: form.id,
-          complete: activeResponse?.complete ?? false
-        } as SurveyResponse
-        Api.submitSurveyResponse({
-          studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
-          version: form.version, response: responseDto, taskId
-        }).then(response => {
-          const updatedEnrollee = {
-            ...response.enrollee,
-            participantTasks: response.tasks,
-            profile: response.profile
-          }
-          updateEnrollee(updatedEnrollee)
-        }).catch(() => {
-          // if the operation fails, restore the state from before so the next diff operation will capture the changes
-          // that failed to save this time
-          prevSave.current = prevPrevSave
-        })
+    const responseDto = {
+      resumeData: getResumeData(surveyModel, enrollee.participantUserId),
+      enrolleeId: enrollee.id,
+      answers: updatedAnswers,
+      creatingParticipantId: enrollee.participantUserId,
+      surveyId: form.id,
+      complete: activeResponse?.complete ?? false
+    } as SurveyResponse
+    Api.submitSurveyResponse({
+      studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
+      version: form.version, response: responseDto, taskId
+    }).then(response => {
+      const updatedEnrollee = {
+        ...response.enrollee,
+        participantTasks: response.tasks,
+        profile: response.profile
       }
-      return freshSurveyModel
+      /**
+       * CAREFUL -- we're updating the enrollee object so that if they navigate back to the dashboard, they'll
+       * see this survey as 'in progress' and capture any profile changes.
+       * However, we don't want to trigger a rerender, because that will wipe out any answers that the user has
+       * typed but are still in focus.  SurveyJS does not write answers to data/state until the question loses focus.
+       * So we use a 'updateWithoutRerender' flag on update Enrollee, this works since there are no currently
+       * visible components that use the enrollee object--otherwise they would not be refreshed
+       */
+      updateEnrollee(updatedEnrollee, true)
+    }).catch(() => {
+      // if the operation fails, restore the state from before so the next diff operation will capture the changes
+      // that failed to save this time
+      prevSave.current = prevPrevSave
     })
   }
 
@@ -145,7 +147,7 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
       <div style={{ background: '#f3f3f3' }} className="flex-grow-1">
         <SurveyReviewModeButton surveyModel={surveyModel}/>
         <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">{form.name}</h1>
-        {surveyModel && <SurveyComponent model={surveyModel}/>}
+        <SurveyComponent model={surveyModel}/>
         <SurveyFooter survey={form} surveyModel={surveyModel}/>
       </div>
     </>
@@ -153,8 +155,8 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
 }
 
 /** renders the foot for the survey, if it exists and we are on the last page */
-function SurveyFooter({ survey, surveyModel }: { survey: Survey, surveyModel: SurveyModel | null }) {
-  if (!survey.footer || !surveyModel?.isLastPage) {
+export function SurveyFooter({ survey, surveyModel }: { survey: Survey, surveyModel: SurveyModel }) {
+  if (!survey.footer || !surveyModel.isLastPage) {
     return null
   }
   return <div className="p-3 mb-0 w-100 d-flex justify-content-center"
