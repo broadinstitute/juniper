@@ -40,7 +40,7 @@ export const ConfigChanges = ({ configChanges, selectedChanges, updateSelectedCh
     if (selected && selectionIndex < 0) {
       updateSelectedChanges([
         ...selectedChanges,
-        configChanges.find(change => change.propertyName === propertyName) as ConfigChange
+        configChanges.find(change => change.propertyName === propertyName)!
       ])
     }
     if (!selected && selectionIndex >= 0) {
@@ -118,8 +118,13 @@ export const ConfigChangeListView = <T extends Configable>
     return <span className="fst-italic text-muted">no changes</span>
   }
 
-  /** returns a new array with 'item' inserted or removed */
-  const makeModifiedArray = <R, >(array: R[], item: R, matchIndex: number, isAdd: boolean): R[] => {
+  /**
+   * returns a new array with 'item' inserted or removed according to the isAdd param
+   * matchIndex is provided as a separate argument because it's up to the caller to determine if
+   * the item is already in the array.
+   * */
+  const makeModifiedArray = <R, >(array: R[], item: R, { matchIndex, isAdd }: {matchIndex: number, isAdd: boolean}):
+    R[] => {
     if (isAdd && matchIndex < 0) {
       return [...array, item]
     }
@@ -142,7 +147,7 @@ export const ConfigChangeListView = <T extends Configable>
                 checked={matchIndex >= 0}
                 onChange={e => {
                   const updatedItems = makeModifiedArray(selectedChanges.addedItems, item,
-                    matchIndex, e.target.checked)
+                    { matchIndex, isAdd: e.target.checked })
                   setSelectedChanges({ ...selectedChanges, addedItems: updatedItems })
                 }}/>
               {renderItemSummary(item)}
@@ -161,7 +166,7 @@ export const ConfigChangeListView = <T extends Configable>
                 checked={matchIndex >= 0}
                 onChange={e => {
                   const updatedItems = makeModifiedArray(selectedChanges.removedItems, item,
-                    matchIndex, e.target.checked)
+                    { matchIndex, isAdd: e.target.checked })
                   setSelectedChanges({ ...selectedChanges, removedItems: updatedItems })
                 }}/>
               {renderItemSummary(item)}
@@ -180,7 +185,7 @@ export const ConfigChangeListView = <T extends Configable>
                 checked={matchIndex >= 0}
                 onChange={e => {
                   const updatedItems = makeModifiedArray(selectedChanges.changedItems, item,
-                    matchIndex, e.target.checked)
+                    { matchIndex, isAdd: e.target.checked })
                   setSelectedChanges({ ...selectedChanges, changedItems: updatedItems })
                 }}/>
               {renderVersionedConfigChange(item)}

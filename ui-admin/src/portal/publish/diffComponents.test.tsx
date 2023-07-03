@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { ConfigChangeListView, renderStudyEnvironmentSurvey } from './diffComponents'
@@ -74,7 +75,7 @@ describe('configChangeList', () => {
     expect(screen.queryByText('Removed')).toBeNull()
     expect(screen.getByText('Added')).toBeTruthy()
 
-    fireEvent.click(screen.getByText('Survey 1'))
+    userEvent.click(screen.getByText('Survey 1'))
     expect(spySetChanges).toHaveBeenCalledTimes(1)
     expect(spySetChanges).toHaveBeenCalledWith({
       ...emptyChangeList,

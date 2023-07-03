@@ -21,7 +21,7 @@ const PortalEnvDiffProvider = ({ portal, portalEnv, updatePortal }: PortalEnvDif
   const params = useParams()
   const sourceEnvName: string | undefined = params.sourceEnvName
   const [isLoading, setIsLoading] = useState(true)
-  const [diffResult, setDiffResult] = useState<PortalEnvironmentChange | null>(null)
+  const [diffResult, setDiffResult] = useState<PortalEnvironmentChange>()
   const navigate = useNavigate()
 
   const applyChanges = (changeSet: PortalEnvironmentChange) => {
