@@ -47,7 +47,7 @@ describe('configChangeList', () => {
     expect(screen.getByText('Changed')).toBeTruthy()
   })
 
-  it('handles added surveys', () => {
+  it('handles added surveys', async () => {
     const configuredSurvey1 = {
       ...mockConfiguredSurvey(),
       id: 'guid1',
@@ -75,7 +75,7 @@ describe('configChangeList', () => {
     expect(screen.queryByText('Removed')).toBeNull()
     expect(screen.getByText('Added')).toBeTruthy()
 
-    userEvent.click(screen.getByText('Survey 1'))
+    await userEvent.click(screen.getByText('Survey 1'))
     expect(spySetChanges).toHaveBeenCalledTimes(1)
     expect(spySetChanges).toHaveBeenCalledWith({
       ...emptyChangeList,
