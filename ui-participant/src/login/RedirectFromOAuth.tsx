@@ -76,8 +76,8 @@ export const RedirectFromOAuth = () => {
                   type: 'info'
                 }
               }
-              updateEnrollee(response.enrollee, {
-                afterFn: () => { navigate('/hub', { replace: true, state: hubUpdate }) }
+              updateEnrollee(response.enrollee).then(() => {
+                navigate('/hub', { replace: true, state: hubUpdate })
               })
             } catch {
               alert('an error occurred, please try again, or contact support')

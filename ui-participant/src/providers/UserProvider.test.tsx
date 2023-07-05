@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import UserProvider, { useUser } from './UserProvider'
 import { mockEnrollee, mockParticipantUser } from '../test-utils/test-participant-factory'
 import { setupRouterTest } from '../test-utils/router-testing-utils'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AuthProvider } from 'react-oidc-context'
 
@@ -18,7 +18,7 @@ const UpdateEnrolleeTestComponent = () => {
   }, [])
 
   const addEnrollee = () => {
-    updateEnrollee(mockEnrollee(), { afterFn: () => setUpdated(true) })
+    updateEnrollee(mockEnrollee()).then(() => { setUpdated(true) })
   }
 
   return <div>
@@ -45,7 +45,9 @@ describe('UserProvider', () => {
     </AuthProvider>)
     render(RoutedComponent)
     expect(screen.getByText('No updates yet')).toBeInTheDocument()
-    userEvent.click(screen.getByText('Add Enrollee'))
+    act(() => {
+      userEvent.click(screen.getByText('Add Enrollee'))
+    })
     expect(screen.queryByText('Updated state but not enrollee')).toBeNull()
     await waitFor(() => expect(screen.getByText('Updated enrollee and state')).toBeInTheDocument())
   })

@@ -74,9 +74,7 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
           type: 'success'
         }
       }
-      updateEnrollee(response.enrollee, {
-        afterFn: () => { navigate('/hub', { state: hubUpdate }) }
-      })
+      updateEnrollee(response.enrollee).then(() => { navigate('/hub', { state: hubUpdate }) })
     }).catch(() => {
       refreshSurvey(surveyModel, null)
       alert('an error occurred')

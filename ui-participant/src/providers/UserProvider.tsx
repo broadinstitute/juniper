@@ -14,16 +14,13 @@ const anonymousUser: User = {
   username: 'anonymous'
 }
 
-type UpdateEnrolleeOptions = {
-  afterFn?: () => void // function to call after the update is complete (such as to do a navigate)
-}
 export type UserContextT = {
   user: User,
   enrollees: Enrollee[],  // this data is included to speed initial hub rendering.  it is NOT kept current
   loginUser: (result: LoginResult, accessToken: string) => void,
   loginUserInternal: (result: LoginResult) => void,
   logoutUser: () => void,
-  updateEnrollee: (enrollee: Enrollee, opts?: UpdateEnrolleeOptions) => void
+  updateEnrollee: (enrollee: Enrollee) => Promise<void>
 }
 
 /** current user object context */
@@ -90,8 +87,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   }
 
   /** updates a single enrollee in the list of enrollees -- the enrollee object should contain an updated task list */
-  function updateEnrollee(enrollee: Enrollee, opts?: UpdateEnrolleeOptions) {
-    const { afterFn } = opts ?? {}
+  function updateEnrollee(enrollee: Enrollee): Promise<void> {
     setLoginState(oldState => {
       if (oldState == null) {
         return oldState
@@ -103,9 +99,9 @@ export default function UserProvider({ children }: { children: React.ReactNode }
         enrollees: updatedEnrollees
       }
     })
-    if (afterFn) {
-      window.setTimeout(afterFn, 0)
-    }
+    return new Promise(resolve => {
+      window.setTimeout(resolve, 0)
+    })
   }
 
   const userContext: UserContextT = {
