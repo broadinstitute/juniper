@@ -183,17 +183,20 @@ export type StudyEnvironmentChange = {
 }
 
 export type VersionedEntityChange = {
-  changed: boolean,
+  changed: true,
   oldStableId: string,
   newStableId: string,
   oldVersion: number,
   newVersion: number
+} | {
+  changed: false
 }
 
+type ConfigChangeValue = object | string | boolean
 export type ConfigChange = {
   propertyName: string,
-  oldValue: object,
-  newValue: object
+  oldValue: ConfigChangeValue,
+  newValue: ConfigChangeValue
 }
 
 export type ListChange<T, CT> = {
@@ -203,6 +206,7 @@ export type ListChange<T, CT> = {
 }
 
 export type VersionedConfigChange = {
+  sourceId: string,
   configChanges: ConfigChange[],
   documentChange: VersionedEntityChange
 }

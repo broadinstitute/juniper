@@ -6,7 +6,7 @@ import {
 } from 'api/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
-import React, { useId } from 'react'
+import React from 'react'
 import { NotificationConfig, StudyEnvironmentConsent, StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
 
 /**
@@ -24,42 +24,76 @@ export const VersionChangeView = ({ record }: {record: VersionedEntityChange}) =
   </div>
 }
 
+type ConfigChangesProps = {
+  configChanges: ConfigChange[],
+  selectedChanges: ConfigChange[],
+  updateSelectedChanges: (changes: ConfigChange[]) => void
+}
 /** renders a list of config changes, or "no changes" if empty */
-export const ConfigChanges = ({ configChanges }: {configChanges: ConfigChange[]}) => {
+export const ConfigChanges = ({ configChanges, selectedChanges, updateSelectedChanges }: ConfigChangesProps) => {
   if (!configChanges.length) {
     return <span className="fst-italic text-muted">no changes</span>
   }
+  /** handles add/remove from the selected changes */
+  const updateSelection = (propertyName: string, selected: boolean) => {
+    const selectionIndex = selectedChanges.findIndex(change => change.propertyName === propertyName)
+    if (selected && selectionIndex < 0) {
+      updateSelectedChanges([
+        ...selectedChanges,
+        configChanges.find(change => change.propertyName === propertyName)!
+      ])
+    }
+    if (!selected && selectionIndex >= 0) {
+      const newArr = [...selectedChanges]
+      newArr.splice(selectionIndex, 1)
+      updateSelectedChanges(newArr)
+    }
+  }
   return <ul className="list-unstyled">
-    {configChanges.map((configChange, index) => <li key={index}>
-      <ConfigChangeView configChange={configChange}/>
-    </li>)}
+    {configChanges.map((configChange, index) => {
+      const propName = configChange.propertyName
+      const selected = !!selectedChanges.find(change => change.propertyName === propName)
+      return <li key={index}>
+        <ConfigChangeView configChange={configChange} selected={selected}
+          setSelected={(isSelected: boolean) => updateSelection(propName, isSelected)}/>
+      </li>
+    })}
   </ul>
 }
 
+const IMMUTABLE_CONFIG_PROPS = ['initialized']
+
+type ConfigChangeViewProps = {
+  configChange: ConfigChange,
+  selected: boolean,
+  setSelected: (selected: boolean) => void
+}
 /** renders a config change by converting the old and new vals to strings */
-export const ConfigChangeView = ({ configChange }: {configChange: ConfigChange}) => {
+export const ConfigChangeView = ({ configChange, selected, setSelected }: ConfigChangeViewProps) => {
   const noVal = <span className="text-muted fst-italic">none</span>
   const oldVal = valuePresent(configChange.oldValue) ? configChange.oldValue.toString() : noVal
   const newVal = valuePresent(configChange.newValue) ? configChange.newValue.toString() : noVal
-  const id = useId()
+  const readOnly = IMMUTABLE_CONFIG_PROPS.includes(configChange.propertyName)
   return <div>
-    <label htmlFor={`${id}-changes`}>{configChange.propertyName}:</label>
-    <span id={`${id}-changes`} className="ms-3">{oldVal}
-      <FontAwesomeIcon icon={faArrowRight} className="mx-2 fa-sm"/>
-      {newVal}
-    </span>
+    <label>
+      {!readOnly && <input type="checkbox" className="me-2" checked={selected} readOnly={readOnly}
+        onChange={e => setSelected(e.target.checked)}/>}
+      {readOnly && <span className="me-4"></span>}
+      {configChange.propertyName}:
+      <span className="ms-3">{oldVal}
+        <FontAwesomeIcon icon={faArrowRight} className="mx-2 fa-sm"/>
+        {newVal}
+      </span>
+    </label>
   </div>
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
-export const valuePresent = (val: object) => {
+/** helper for null/undefined checking an object */
+export const valuePresent = (val: object | boolean | string) => {
   return val !== null && typeof val !== 'undefined'
 }
 
-/**
- * returns html for displaying a single version, and 'not present' if null
- */
+/** returns html for displaying a single version, and 'not present' if null */
 export const versionDisplay = (stableId: string, version: number) => {
   if (!stableId) {
     return <span className="fst-italic text-muted">none</span>
@@ -67,34 +101,97 @@ export const versionDisplay = (stableId: string, version: number) => {
   return <span>{stableId} v{version}</span>
 }
 
+export type Configable = StudyEnvironmentConsent | StudyEnvironmentSurvey | NotificationConfig
+type ConfigChangeListViewProps<T extends Configable> = {
+  configChangeList: ListChange<T, VersionedConfigChange>,
+  selectedChanges: ListChange<T, VersionedConfigChange>,
+  setSelectedChanges: (changes: ListChange<T, VersionedConfigChange>) => void,
+  renderItemSummary: (item: T) => React.ReactNode
+}
+
 /** Summary of notification config changes -- doesn't show any detail yet */
-export const ConfigChangeListView = <T, >({ configChangeList, renderItemSummary }:
-                                      {configChangeList: ListChange<T, VersionedConfigChange>,
-                                      renderItemSummary: (item: T) => React.ReactNode}) => {
+export const ConfigChangeListView = <T extends Configable>
+  ({ configChangeList, renderItemSummary, selectedChanges, setSelectedChanges }:
+                                            ConfigChangeListViewProps<T>) => {
   if (!configChangeList.addedItems.length &&
     !configChangeList.removedItems.length && !configChangeList.changedItems.length) {
     return <span className="fst-italic text-muted">no changes</span>
   }
+
+  /**
+   * returns a new array with 'item' inserted or removed according to the isAdd param
+   * matchIndex is provided as a separate argument because it's up to the caller to determine if
+   * the item is already in the array.
+   * */
+  const makeModifiedArray = <R, >(array: R[], item: R, { matchIndex, isAdd }: {matchIndex: number, isAdd: boolean}):
+    R[] => {
+    if (isAdd && matchIndex < 0) {
+      return [...array, item]
+    }
+    if (!isAdd && matchIndex >= 0) {
+      const updatedItems = [...array]
+      updatedItems.splice(matchIndex, 1)
+      return updatedItems
+    }
+    return [...array]
+  }
+
   return <ul className="list-unstyled">
-    {configChangeList.addedItems.length > 0 && <li className="ps-4">Added: {configChangeList.addedItems.length}
+    {configChangeList.addedItems.length > 0 && <li className="ps-4">Added
       <ul className="list-unstyled">
-        {configChangeList.addedItems.map((item, index) => <li className="ps-4" key={index}>
-          {renderItemSummary(item)}
-        </li>)}
+        {configChangeList.addedItems.map((item, index) => {
+          const matchIndex = selectedChanges.addedItems.findIndex(listItem => listItem.id === item.id)
+          return <li className="ps-4" key={index}>
+            <label className="d-flex align-items-start">
+              <input type="checkbox" className="me-3 mt-1"
+                checked={matchIndex >= 0}
+                onChange={e => {
+                  const updatedItems = makeModifiedArray(selectedChanges.addedItems, item,
+                    { matchIndex, isAdd: e.target.checked })
+                  setSelectedChanges({ ...selectedChanges, addedItems: updatedItems })
+                }}/>
+              {renderItemSummary(item)}
+            </label>
+          </li>
+        })}
       </ul>
     </li>}
-    {configChangeList.removedItems.length > 0 && <li className="ps-4">Removed: {configChangeList.removedItems.length}
+    {configChangeList.removedItems.length > 0 && <li className="ps-4">Removed
       <ul className="list-unstyled">
-        {configChangeList.removedItems.map((item, index) => <li className="ps-4" key={index}>
-          {renderItemSummary(item)}
-        </li>)}
+        {configChangeList.removedItems.map((item, index) => {
+          const matchIndex = selectedChanges.removedItems.findIndex(listItem => listItem.id === item.id)
+          return <li className="ps-4" key={index}>
+            <label className="d-flex align-items-start">
+              <input type="checkbox" className="me-3 mt-1"
+                checked={matchIndex >= 0}
+                onChange={e => {
+                  const updatedItems = makeModifiedArray(selectedChanges.removedItems, item,
+                    { matchIndex, isAdd: e.target.checked })
+                  setSelectedChanges({ ...selectedChanges, removedItems: updatedItems })
+                }}/>
+              {renderItemSummary(item)}
+            </label>
+          </li>
+        })}
       </ul>
     </li>}
-    {configChangeList.changedItems.length > 0 && <li className="ps-4">Changed: {configChangeList.changedItems.length}
+    {configChangeList.changedItems.length > 0 && <li className="ps-4">Changed
       <ul className="list-unstyled">
-        {configChangeList.changedItems.map((item, index) => <li className="ps-4" key={index}>
-          {renderVersionedConfigChange(item)}
-        </li>)}
+        {configChangeList.changedItems.map((item, index) => {
+          const matchIndex = selectedChanges.changedItems.findIndex(listItem => listItem.sourceId === item.sourceId)
+          return <li className="ps-4" key={index}>
+            <label className="d-flex align-items-start">
+              <input type="checkbox" className="me-3 mt-1"
+                checked={matchIndex >= 0}
+                onChange={e => {
+                  const updatedItems = makeModifiedArray(selectedChanges.changedItems, item,
+                    { matchIndex, isAdd: e.target.checked })
+                  setSelectedChanges({ ...selectedChanges, changedItems: updatedItems })
+                }}/>
+              {renderVersionedConfigChange(item)}
+            </label>
+          </li>
+        })}
       </ul>
     </li>}
   </ul>
@@ -125,13 +222,17 @@ export const renderNotificationConfig = (change: NotificationConfig) => {
 export const renderVersionedConfigChange = (change: VersionedConfigChange) => {
   const docChange = change.documentChange
   return <div>
-    <ul>
+    {docChange.changed && <div>
+      {docChange.oldStableId} v{docChange.oldVersion}
+      <FontAwesomeIcon icon={faArrowRight} className="px-2 fa-sm"/>
+      {docChange.newStableId} v{docChange.newVersion}
+    </div>}
+    <ul className="list-unstyled ms-4 pb-2">
       {change.configChanges.map((configChange, index) => <li key={index}>
-        {configChange.propertyName} {configChange.oldValue?.toString()} -&gt; {configChange.newValue?.toString()}
+        <span className="me-2">{configChange.propertyName}:</span> {configChange.oldValue?.toString()}
+        <FontAwesomeIcon icon={faArrowRight} className="px-2 fa-sm"/>
+        {configChange.newValue?.toString()}
       </li>)}
     </ul>
-    {docChange.changed && <div>
-      {docChange.oldStableId} v{docChange.oldVersion} -&gt; {docChange.newStableId} v{docChange.newVersion}
-    </div>}
   </div>
 }
