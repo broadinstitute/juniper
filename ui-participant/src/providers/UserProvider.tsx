@@ -20,7 +20,7 @@ export type UserContextT = {
   loginUser: (result: LoginResult, accessToken: string) => void,
   loginUserInternal: (result: LoginResult) => void,
   logoutUser: () => void,
-  updateEnrollee: (enrollee: Enrollee) => void
+  updateEnrollee: (enrollee: Enrollee) => Promise<void>
 }
 
 /** current user object context */
@@ -87,7 +87,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   }
 
   /** updates a single enrollee in the list of enrollees -- the enrollee object should contain an updated task list */
-  function updateEnrollee(enrollee: Enrollee) {
+  function updateEnrollee(enrollee: Enrollee): Promise<void> {
     setLoginState(oldState => {
       if (oldState == null) {
         return oldState
@@ -98,6 +98,9 @@ export default function UserProvider({ children }: { children: React.ReactNode }
         user: oldState?.user,
         enrollees: updatedEnrollees
       }
+    })
+    return new Promise(resolve => {
+      window.setTimeout(resolve, 0)
     })
   }
 

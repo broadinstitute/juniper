@@ -65,14 +65,15 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
       version: form.version, response: responseDto
     }).then(response => {
       response.enrollee.participantTasks = response.tasks
-      updateEnrollee(response.enrollee)
       const hubUpdate: HubUpdate = {
         message: {
           title: `${form.name} completed`,
           type: 'success'
         }
       }
-      navigate('/hub', { state: hubUpdate })
+      updateEnrollee(response.enrollee).then(() => {
+        navigate('/hub', { state: hubUpdate })
+      })
     }).catch(() => {
       refreshSurvey(surveyModel, null)
       alert('an error occurred')
