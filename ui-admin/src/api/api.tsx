@@ -363,6 +363,17 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async createNewSurvey(portalShortcode: string, survey: Survey): Promise<Survey> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys/${survey.stableId}`
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(survey)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async createNewSurveyVersion(portalShortcode: string, survey: Survey): Promise<Survey> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys/${survey.stableId}/newVersion`
 
