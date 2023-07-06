@@ -4,6 +4,7 @@ import bio.terra.pearl.api.admin.api.SurveyApi;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.forms.SurveyExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.servlet.http.HttpServletRequest;
@@ -36,14 +37,12 @@ public class SurveyController implements SurveyApi {
   }
 
   @Override
-  public ResponseEntity<Object> create(String portalShortcode, String stableId, Object body) {
+  public ResponseEntity<Object> create(String portalShortcode, String studyShortCode, Object body) {
     AdminUser adminUser = requestService.requireAdminUser(request);
 
     Survey survey = objectMapper.convertValue(body, Survey.class);
-    if (!stableId.equals(survey.getStableId())) {
-      throw new IllegalArgumentException("survey parameters don't match");
-    }
-    Survey savedSurvey = surveyExtService.create(portalShortcode, survey, adminUser);
+    StudyEnvironmentSurvey savedSurvey =
+        surveyExtService.create(portalShortcode, studyShortCode, survey, adminUser);
     return ResponseEntity.ok(savedSurvey);
   }
 

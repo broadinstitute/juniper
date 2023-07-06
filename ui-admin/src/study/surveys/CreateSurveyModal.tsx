@@ -3,8 +3,6 @@ import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
 import Api from 'api/api'
-import { failureNotification, successNotification } from 'util/notifications'
-import { Store } from 'react-notifications-component'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -15,9 +13,12 @@ const CreateSurveyModal = ({ studyEnvContext, show, setShow }: {studyEnvContext:
   const [surveyStableId, setSurveyStableId] = useState('')
   const createDataset = async () => {
     setIsLoading(true)
-    const response = await Api.createNewSurvey(studyEnvContext.portal.shortcode,
-      {content: "", createdAt: 0, footer: "", id: "", lastUpdatedAt: 0,
-        version: 0, name: surveyName, stableId: surveyStableId })
+    await Api.createNewSurvey(studyEnvContext.portal.shortcode,
+      studyEnvContext.study.shortcode,
+      {
+        content: '{}', createdAt: 0, footer: '', id: '', lastUpdatedAt: 0,
+        version: 0, name: surveyName, stableId: surveyStableId
+      })
     setShow(false)
     setIsLoading(false)
     clearFields()

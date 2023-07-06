@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 
 import { StudyEnvContextT } from './StudyEnvironmentRouter'
 import { Link } from 'react-router-dom'
@@ -9,8 +9,7 @@ import Api, { PortalEnvironmentConfig } from 'api/api'
 import NotificationConfigTypeDisplay, { deliveryTypeDisplayMap } from './notifications/NotifcationConfigTypeDisplay'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
 import { useConfig } from '../providers/ConfigProvider'
-import CreateDatasetModal from "./participants/datarepo/CreateDatasetModal";
-import CreateSurveyModal from "./surveys/CreateSurveyModal";
+import CreateSurveyModal from './surveys/CreateSurveyModal'
 
 /** renders the main configuration page for a study environment */
 function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {

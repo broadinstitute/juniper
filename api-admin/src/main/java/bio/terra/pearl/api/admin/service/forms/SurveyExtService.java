@@ -4,10 +4,12 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import java.util.List;
@@ -20,14 +22,17 @@ public class SurveyExtService {
   private AuthUtilService authUtilService;
   private SurveyService surveyService;
   private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
+  private StudyEnvironmentService studyEnvironmentService;
 
   public SurveyExtService(
       AuthUtilService authUtilService,
       SurveyService surveyService,
-      StudyEnvironmentSurveyService studyEnvironmentSurveyService) {
+      StudyEnvironmentSurveyService studyEnvironmentSurveyService,
+      StudyEnvironmentService studyEnvironmentService) {
     this.authUtilService = authUtilService;
     this.surveyService = surveyService;
     this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
+    this.studyEnvironmentService = studyEnvironmentService;
   }
 
   public Survey get(String portalShortcode, String stableId, int version, AdminUser adminUser) {
@@ -35,7 +40,8 @@ public class SurveyExtService {
     return authSurveyToPortal(portal, stableId, version);
   }
 
-  public Survey create(String portalShortcode, Survey survey, AdminUser adminUser) {
+  public StudyEnvironmentSurvey create(
+      String portalShortcode, String studyShortcode, Survey survey, AdminUser adminUser) {
     if (!adminUser.isSuperuser()) {
       throw new PermissionDeniedException("You do not have permissions to perform this operation");
     }
@@ -46,7 +52,25 @@ public class SurveyExtService {
     }
     survey.setPortalId(portal.getId());
     survey.setVersion(1);
-    return surveyService.create(survey);
+
+    Survey createdSurvey = surveyService.create(survey);
+
+    StudyEnvironment studyEnv =
+        studyEnvironmentService
+            .findByStudy(studyShortcode, EnvironmentName.sandbox)
+            .orElseThrow(
+                () ->
+                    new NotFoundException(
+                        "Sandbox environment must first be configured for this study"));
+
+    StudyEnvironmentSurvey studyEnvSurvey =
+        StudyEnvironmentSurvey.builder()
+            .surveyId(createdSurvey.getId())
+            .survey(createdSurvey)
+            .studyEnvironmentId(studyEnv.getId())
+            .build();
+
+    return studyEnvironmentSurveyService.create(studyEnvSurvey);
   }
 
   public Survey createNewVersion(String portalShortcode, Survey survey, AdminUser adminUser) {

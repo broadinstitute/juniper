@@ -129,14 +129,14 @@ paths:
           content: { application/json: { schema: {type: object} } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/surveys/{stableId}:
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/surveys:
     post:
       summary: creates the requested survey, will fail if the given stableId already exists
       tags: [ survey ]
       operationId: create
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: stableId, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
       requestBody:
         required: true
         content: { application/json: { schema: {type: object} } }
