@@ -3,7 +3,15 @@ import './surveyjs'
 import { cloneDeep } from 'lodash'
 import { SurveyModel } from 'survey-core'
 
-import { FormContent, FormElement, VersionedForm } from './types/forms'
+import { FormContent, FormElement, VersionedForm, Answer } from './types/forms'
+
+export type SurveyJsResumeData = {
+  currentPageNo: number,
+  data: object
+}
+
+export type SurveyJsValueType = string | boolean | number | object | null
+export const SURVEY_JS_OTHER_SUFFIX = '-Comment'
 
 /** Gets a flattened list of the survey elements */
 export function getFormElements(formContent: FormContent): FormElement[] {
@@ -58,3 +66,34 @@ const getFormContent = (form: VersionedForm): FormContent => {
 export const surveyJSModelFromForm = (form: VersionedForm): SurveyModel => {
   return surveyJSModelFromFormContent(getFormContent(form))
 }
+
+/** convert a list of answers and resumeData into the resume data format surveyJs expects */
+export function makeSurveyJsData(resumeData: string | undefined,
+                                 answers: Answer[] | undefined,
+                                 userId: string | undefined):
+  SurveyJsResumeData {
+  answers = answers ?? []
+  const answerHash = answers.reduce(
+    (hash: Record<string, SurveyJsValueType>, answer: Answer) => {
+      if (answer.objectValue) {
+        hash[answer.questionStableId] = JSON.parse(answer.objectValue)
+      } else {
+        hash[answer.questionStableId] = answer.stringValue ?? answer.numberValue ?? null
+      }
+      if (answer.otherDescription) {
+        hash[answer.questionStableId + SURVEY_JS_OTHER_SUFFIX] = answer.otherDescription
+      }
+      return hash
+    }, {})
+  let currentPageNo = 0
+  if (resumeData && userId) {
+    const userResumeData = JSON.parse(resumeData)[userId]
+    // subtract 1 since surveyJS is 0-indexed
+    currentPageNo = userResumeData?.currentPageNo - 1
+  }
+  return {
+    data: answerHash,
+    currentPageNo
+  }
+}
+

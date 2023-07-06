@@ -16,7 +16,7 @@ type ButtonVariant =
   | 'link'
 
 // Mainly for tests. JSDOM does not support the :focus-visible selector.
-const supportsFocusVisible = (() => {
+export const supportsFocusVisible = (() => {
   try {
     document.querySelector(':focus-visible')
     return true

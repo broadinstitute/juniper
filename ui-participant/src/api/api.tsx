@@ -52,11 +52,6 @@ export type LoginResult = {
   enrollees: Enrollee[]
 }
 
-export type SurveyJsResumeData = {
-  currentPageNo: number,
-  data: object
-}
-
 export type Enrollee = {
   id: string
   consented: boolean

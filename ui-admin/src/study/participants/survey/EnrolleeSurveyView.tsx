@@ -6,7 +6,7 @@ import SurveyFullDataView from './SurveyFullDataView'
 import SurveyEditView from './SurveyEditView'
 import { ResponseMapT } from '../enrolleeView/EnrolleeView'
 import { EnrolleeParams } from '../enrolleeView/EnrolleeLoader'
-import { instantToDefaultString } from '../../../util/timeUtils'
+import { instantToDefaultString } from 'util/timeUtils'
 
 /** Show responses for a survey based on url param */
 export default function EnrolleeSurveyView({ enrollee, responseMap }:
@@ -50,7 +50,8 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, responses }:
         {isEditing ? 'cancel' : 'update / edit'}
       </button>
       <hr/>
-      {!isEditing && <SurveyFullDataView answers={lastResponse.answers} survey={configSurvey.survey}/> }
+      {!isEditing && <SurveyFullDataView answers={lastResponse.answers} survey={configSurvey.survey}
+        userId={enrollee.participantUserId}/> }
       {isEditing && <SurveyEditView survey={configSurvey.survey} response={lastResponse}/>}
     </div>
   </div>

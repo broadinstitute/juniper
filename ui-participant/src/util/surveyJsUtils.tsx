@@ -9,12 +9,10 @@ import { useSearchParams } from 'react-router-dom'
 import { SurveyModel } from 'survey-core'
 import { Survey as SurveyJSComponent } from 'survey-react-ui'
 
-import { surveyJSModelFromForm } from '@juniper/ui-core'
+import { SURVEY_JS_OTHER_SUFFIX, surveyJSModelFromForm, SurveyJsResumeData } from '@juniper/ui-core'
 
-import { Answer, ConsentForm, Profile, Survey, SurveyJsResumeData, UserResumeData } from 'api/api'
+import { Answer, ConsentForm, Profile, Survey, UserResumeData } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
-
-const SURVEY_JS_OTHER_SUFFIX = '-Comment'
 
 const PAGE_NUMBER_PARAM_NAME = 'page'
 
@@ -180,34 +178,6 @@ export function getSurveyJsAnswerList(surveyJSModel: SurveyModel): Answer[] {
       return !key.endsWith(SURVEY_JS_OTHER_SUFFIX) && surveyJSModel.getQuestionByName(key)?.getType() !== 'html'
     })
     .map(([key, value]) => makeAnswer(value as SurveyJsValueType, key, surveyJSModel.data))
-}
-
-/** convert a list of answers and resumeData into the resume data format surveyJs expects */
-export function makeSurveyJsData(resumeData: string | undefined, answers: Answer[] | undefined, userId: string):
-  SurveyJsResumeData | null {
-  answers = answers ?? []
-  const answerHash = answers.reduce(
-    (hash: Record<string, SurveyJsValueType>, answer: Answer) => {
-      if (answer.objectValue) {
-        hash[answer.questionStableId] = JSON.parse(answer.objectValue)
-      } else {
-        hash[answer.questionStableId] = answer.stringValue ?? answer.numberValue ?? null
-      }
-      if (answer.otherDescription) {
-        hash[answer.questionStableId + SURVEY_JS_OTHER_SUFFIX] = answer.otherDescription
-      }
-      return hash
-    }, {})
-  let currentPageNo = 0
-  if (resumeData) {
-    const userResumeData = JSON.parse(resumeData)[userId]
-    // subtract 1 since surveyJS is 0-indexed
-    currentPageNo = userResumeData?.currentPageNo - 1
-  }
-  return {
-    data: answerHash,
-    currentPageNo
-  }
 }
 
 /** return an Answer for the given value.  This should be updated to take some sort of questionType/dataType param */
