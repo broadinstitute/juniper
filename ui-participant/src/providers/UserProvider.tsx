@@ -20,7 +20,7 @@ export type UserContextT = {
   loginUser: (result: LoginResult, accessToken: string) => void,
   loginUserInternal: (result: LoginResult) => void,
   logoutUser: () => void,
-  updateEnrollee: (enrollee: Enrollee) => Promise<void>
+  updateEnrollee: (enrollee: Enrollee, updateWtihoutRerender?: boolean) => Promise<void>
 }
 
 /** current user object context */
@@ -87,18 +87,25 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   }
 
   /** updates a single enrollee in the list of enrollees -- the enrollee object should contain an updated task list */
-  function updateEnrollee(enrollee: Enrollee): Promise<void> {
-    setLoginState(oldState => {
-      if (oldState == null) {
-        return oldState
-      }
-      const updatedEnrollees = oldState.enrollees.filter(exEnrollee => exEnrollee.shortcode != enrollee.shortcode)
-      updatedEnrollees.push(enrollee)
-      return {
-        user: oldState?.user,
-        enrollees: updatedEnrollees
-      }
-    })
+  function updateEnrollee(enrollee: Enrollee, updateWtihoutRerender=false): Promise<void> {
+    if (updateWtihoutRerender && loginState) {
+      // update the underlying value, but don't call setLoginState, so no refresh
+      // this should obviously be used with great care
+      const matchIndex = loginState.enrollees.findIndex(exEnrollee => exEnrollee.shortcode === enrollee.shortcode)
+      loginState.enrollees[matchIndex] = enrollee
+    } else {
+      setLoginState(oldState => {
+        if (oldState == null) {
+          return oldState
+        }
+        const updatedEnrollees = oldState.enrollees.filter(exEnrollee => exEnrollee.shortcode != enrollee.shortcode)
+        updatedEnrollees.push(enrollee)
+        return {
+          user: oldState?.user,
+          enrollees: updatedEnrollees
+        }
+      })
+    }
     return new Promise(resolve => {
       window.setTimeout(resolve, 0)
     })
