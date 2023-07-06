@@ -10,6 +10,7 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import java.util.Optional;
@@ -32,6 +33,7 @@ public class SurveyExtServiceTests {
   @MockBean private AuthUtilService mockAuthUtilService;
   @MockBean private SurveyService mockSurveyService;
   @MockBean private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
+  @MockBean private StudyEnvironmentService studyEnvironmentService;
 
   @Test
   public void createNewVersionRequiresSuperuser() {
