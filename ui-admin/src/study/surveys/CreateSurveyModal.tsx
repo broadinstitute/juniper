@@ -37,7 +37,11 @@ const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {s
     setSurveyStableId('')
   }
 
-  return <Modal show={show} onHide={() => setShow(false)}>
+  return <Modal show={show}
+    onHide={() => {
+      setShow(false)
+      clearFields()
+    }}>
     <Modal.Header closeButton>
       <Modal.Title>Create New Survey</Modal.Title>
       <div className="ms-4">
