@@ -69,8 +69,7 @@ export const surveyJSModelFromForm = (form: VersionedForm): SurveyModel => {
 
 /** convert a list of answers and resumeData into the resume data format surveyJs expects */
 export function makeSurveyJsData(resumeData: string | undefined,
-                                 answers: Answer[] | undefined,
-                                 userId: string | undefined):
+  answers: Answer[] | undefined, userId: string | undefined):
   SurveyJsResumeData {
   answers = answers ?? []
   const answerHash = answers.reduce(
