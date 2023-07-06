@@ -17,7 +17,7 @@ const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {s
 
   const navigate = useNavigate()
 
-  const createDataset = async () => {
+  const createSurvey = async () => {
     setIsLoading(true)
     await Api.createNewSurvey(studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
@@ -58,7 +58,7 @@ const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {s
     </Modal.Body>
     <Modal.Footer>
       <LoadingSpinner isLoading={isLoading}>
-        <button className="btn btn-primary" onClick={createDataset}>Create</button>
+        <button className="btn btn-primary" onClick={createSurvey}>Create</button>
         <button className="btn btn-secondary" onClick={() => {
           setShow(false)
           clearFields()

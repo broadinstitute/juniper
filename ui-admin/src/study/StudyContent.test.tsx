@@ -1,5 +1,6 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import {fireEvent, render, screen} from '@testing-library/react'
+import { GetBy } from '@testing-library/dom'
 
 import StudyContent from './StudyContent'
 import { mockConfiguredSurvey, mockStudyEnvContext, mockSurvey } from 'test-utils/mocking-utils'
@@ -28,4 +29,16 @@ test('renders surveys in-order', async () => {
   const a = html.search('First survey')
   const b = html.search('Second survey')
   expect(a).toBeLessThan(b)
+})
+
+test('renders a Create Survey modal', async () => {
+  const studyEnvContext = mockStudyEnvContext()
+
+  const { RoutedComponent } = setupRouterTest(<StudyContent studyEnvContext={studyEnvContext}/>)
+  render(RoutedComponent)
+
+  const addSurveyButton = screen.getByTestId('addSurvey')
+  fireEvent.click(addSurveyButton)
+  expect(screen.getByText('Survey Name')).toBeInTheDocument()
+  expect(screen.getByText('Survey Stable ID')).toBeInTheDocument()
 })

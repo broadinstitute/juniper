@@ -102,15 +102,11 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                   </li>
                 }) }
                 <li>
-                  <button className="btn btn-secondary" onClick={() => {
+                  <button className="btn btn-secondary" data-testid={'addSurvey'} onClick={() => {
                     setShowCreateSurveyModal(!showCreateSurveyModal)
                   }}>
                     <FontAwesomeIcon icon={faPlus}/> Add
                   </button>
-                  <CreateSurveyModal studyEnvContext={studyEnvContext}
-                    isReadOnlyEnv={isReadOnlyEnv}
-                    show={showCreateSurveyModal}
-                    setShow={setShowCreateSurveyModal}/>
                 </li>
               </ul>
 
@@ -139,6 +135,10 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
             </div>
           </li>
         </ul> }
+        { <CreateSurveyModal studyEnvContext={studyEnvContext}
+          isReadOnlyEnv={isReadOnlyEnv}
+          show={showCreateSurveyModal}
+          setShow={setShowCreateSurveyModal}/> }
         { !currentEnv.studyEnvironmentConfig.initialized && <div>Not yet initialized</div> }
       </div>
     </div>
