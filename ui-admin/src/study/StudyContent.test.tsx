@@ -1,6 +1,5 @@
 import React from 'react'
-import {fireEvent, render, screen} from '@testing-library/react'
-import { GetBy } from '@testing-library/dom'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import StudyContent from './StudyContent'
 import { mockConfiguredSurvey, mockStudyEnvContext, mockSurvey } from 'test-utils/mocking-utils'
