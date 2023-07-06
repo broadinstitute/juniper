@@ -9,8 +9,7 @@ import { Survey } from '@juniper/ui-core'
 
 jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
 beforeEach(() => {
-  // @ts-expect-error TS doesn't realize this function is mocked
-  usePortalEnv.mockReturnValue({
+  (usePortalEnv as jest.Mock).mockReturnValue({
     portalEnv: {
       environmentName: 'sandbox'
     }
