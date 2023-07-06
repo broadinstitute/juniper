@@ -3,25 +3,34 @@ import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
 import Api from 'api/api'
+import { useNavigate } from 'react-router-dom'
+import { Store } from 'react-notifications-component'
+import { failureNotification } from '../../util/notifications'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
-const CreateSurveyModal = ({ studyEnvContext, show, setShow }: {studyEnvContext: StudyEnvContextT,
-    show: boolean, setShow:  React.Dispatch<React.SetStateAction<boolean>> }) => {
+const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {studyEnvContext: StudyEnvContextT,
+  isReadOnlyEnv: boolean, show: boolean, setShow:  React.Dispatch<React.SetStateAction<boolean>> }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [surveyName, setSurveyName] = useState('')
   const [surveyStableId, setSurveyStableId] = useState('')
+
+  const navigate = useNavigate()
+
   const createDataset = async () => {
     setIsLoading(true)
     await Api.createNewSurvey(studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
       {
-        content: '{}', createdAt: 0, footer: '', id: '', lastUpdatedAt: 0,
-        version: 0, name: surveyName, stableId: surveyStableId
-      })
+        createdAt: 0, id: '', lastUpdatedAt: 0, version: 1,
+        content: '{"pages":[]}', name: surveyName, stableId: surveyStableId
+      }).catch(e =>
+      Store.addNotification(failureNotification(`Error creating survey: ${e.message}`))
+    )
     setShow(false)
+    //TODO: this requires a full refresh of the portal context to work. for now, just refresh the page after it errors
+    navigate(`surveys/${surveyStableId}?readOnly=${isReadOnlyEnv}`)
     setIsLoading(false)
-    clearFields()
   }
   const clearFields = () => {
     setSurveyName('')

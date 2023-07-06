@@ -45,7 +45,7 @@ public class SurveyExtServiceTests {
   public void createRequiresSuperuser() {
     AdminUser user = AdminUser.builder().superuser(false).build();
     Assertions.assertThrows(
-        PermissionDeniedException.class, () -> surveyExtService.create("foo", null, user));
+        PermissionDeniedException.class, () -> surveyExtService.create("foo", "bar", null, user));
   }
 
   @Test

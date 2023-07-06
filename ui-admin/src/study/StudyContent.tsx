@@ -108,6 +108,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                     <FontAwesomeIcon icon={faPlus}/> Add
                   </button>
                   <CreateSurveyModal studyEnvContext={studyEnvContext}
+                    isReadOnlyEnv={isReadOnlyEnv}
                     show={showCreateSurveyModal}
                     setShow={setShowCreateSurveyModal}/>
                 </li>
