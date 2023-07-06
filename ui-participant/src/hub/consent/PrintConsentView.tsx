@@ -10,7 +10,7 @@ import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
-import { makeSurveyJsData } from 'util/surveyJsUtils'
+import { makeSurveyJsData } from '@juniper/ui-core'
 
 import { enrolleeForStudy } from './ConsentView'
 

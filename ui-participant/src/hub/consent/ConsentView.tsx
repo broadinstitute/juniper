@@ -15,11 +15,11 @@ import { Survey as SurveyComponent } from 'survey-react-ui'
 import {
   getResumeData,
   getSurveyJsAnswerList,
-  makeSurveyJsData,
   PageNumberControl,
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
+import { makeSurveyJsData } from '@juniper/ui-core'
 import { HubUpdate } from 'hub/hubUpdates'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
