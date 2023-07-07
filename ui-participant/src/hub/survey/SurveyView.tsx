@@ -6,7 +6,6 @@ import Api, {
   Portal,
   StudyEnvironmentSurvey,
   Survey,
-  SurveyJsResumeData,
   SurveyResponse,
   SurveyWithResponse
 } from 'api/api'
@@ -20,7 +19,7 @@ import {
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
-import { makeSurveyJsData } from '@juniper/ui-core'
+import { makeSurveyJsData, SurveyJsResumeData } from '@juniper/ui-core'
 import { HubUpdate } from 'hub/hubUpdates'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
