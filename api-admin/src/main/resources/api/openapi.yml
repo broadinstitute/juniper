@@ -394,6 +394,25 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/participantNote:
+    post:
+      summary: Create a participant note
+      tags: [ participantNote ]
+      operationId: create
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: Participant note
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/notificationConfigs:
     get:
       summary: gets all the active notification configs for the environment

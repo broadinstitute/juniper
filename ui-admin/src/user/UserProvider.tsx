@@ -4,6 +4,7 @@ import Api, { AdminUser } from 'api/api'
 import { useAuth } from 'react-oidc-context'
 
 const anonymousUser: AdminUser = {
+  id: '',
   token: '',
   isAnonymous: true,
   username: '',

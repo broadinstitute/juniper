@@ -1,20 +1,17 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.dao.admin.AdminUserDao;
-import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.consent.ConsentResponseDto;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
@@ -40,6 +37,7 @@ import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
 import bio.terra.pearl.populate.dto.kit.KitRequestPopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
 import bio.terra.pearl.populate.dto.participant.EnrolleePopDto;
+import bio.terra.pearl.populate.dto.participant.ParticipantNotePopDto;
 import bio.terra.pearl.populate.dto.participant.ParticipantTaskPopDto;
 import bio.terra.pearl.populate.dto.survey.AnswerPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
@@ -48,10 +46,8 @@ import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
 import bio.terra.pearl.populate.util.PopulateUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-
 import org.springframework.stereotype.Service;
 
 @Service
@@ -72,10 +68,12 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     private EnrollmentService enrollmentService;
     private ProfileService profileService;
     private WithdrawnEnrolleeService withdrawnEnrolleeService;
+    private ParticipantNoteService participantNoteService;
     private EnrolleePopulateDao enrolleePopulateDao;
-    private KitRequestDao kitRequestDao;
+    private KitRequestService kitRequestService;
     private KitTypeDao kitTypeDao;
     private AdminUserDao adminUserDao;
+
 
     public EnrolleePopulator(EnrolleeService enrolleeService,
                              StudyEnvironmentService studyEnvironmentService,
@@ -88,8 +86,9 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                              NotificationConfigService notificationConfigService,
                              NotificationService notificationService, AnswerProcessingService answerProcessingService,
                              EnrollmentService enrollmentService, ProfileService profileService,
-                             WithdrawnEnrolleeService withdrawnEnrolleeService, EnrolleePopulateDao enrolleePopulateDao,
-                             KitRequestDao kitRequestDao, KitTypeDao kitTypeDao, AdminUserDao adminUserDao) {
+                             WithdrawnEnrolleeService withdrawnEnrolleeService, ParticipantNoteService participantNoteService,
+                             EnrolleePopulateDao enrolleePopulateDao,
+                             KitRequestService kitRequestService, KitTypeDao kitTypeDao, AdminUserDao adminUserDao) {
         this.portalParticipantUserService = portalParticipantUserService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.surveyService = surveyService;
@@ -106,8 +105,9 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         this.enrollmentService = enrollmentService;
         this.profileService = profileService;
         this.withdrawnEnrolleeService = withdrawnEnrolleeService;
+        this.participantNoteService = participantNoteService;
         this.enrolleePopulateDao = enrolleePopulateDao;
-        this.kitRequestDao = kitRequestDao;
+        this.kitRequestService = kitRequestService;
         this.kitTypeDao = kitTypeDao;
         this.adminUserDao = adminUserDao;
     }
@@ -145,11 +145,10 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             HubResponse<SurveyResponse> hubResponse = surveyResponseService
                     .updateResponse(response, ppUser.getParticipantUserId(), ppUser, enrollee, task.getId());
             savedResponse = hubResponse.getResponse();
-            if (responsePopDto.getSubmittedHoursAgo() != null) {
-                Instant simulatedTime = Instant.now().minus(Duration.ofHours(responsePopDto.getSubmittedHoursAgo()));
-                enrolleePopulateDao.changeSurveyResponseTime(savedResponse.getId(), simulatedTime);
+            if (responsePopDto.isTimeShifted()) {
+                enrolleePopulateDao.changeSurveyResponseTime(savedResponse.getId(), responsePopDto.shiftedInstant());
                 if (responsePopDto.isComplete()) {
-                    enrolleePopulateDao.changeTaskCompleteTime(task.getId(), simulatedTime);
+                    enrolleePopulateDao.changeTaskCompleteTime(task.getId(), responsePopDto.shiftedInstant());
                 }
             }
         } else {
@@ -232,7 +231,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         participantTaskService.create(taskDto);
     }
 
-    private void populateKitRequest(Enrollee enrollee, Profile profile, KitRequestPopDto kitRequestPopDto) throws JsonProcessingException {
+    /** creates the kit request in the DB and attaches it to the passed-in enrollee object */
+    private KitRequest populateKitRequest(Enrollee enrollee, Profile profile, KitRequestPopDto kitRequestPopDto) throws JsonProcessingException {
         var adminUser = adminUserDao.findByUsername(kitRequestPopDto.getCreatingAdminUsername()).get();
         var kitType = kitTypeDao.findByName(kitRequestPopDto.getKitTypeName()).get();
         var sentToAddress = KitRequestService.makePepperKitAddress(profile);
@@ -246,7 +246,28 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 .dsmStatus(kitRequestPopDto.getDsmStatusJson().toString())
                 .dsmStatusFetchedAt(Instant.now())
                 .build();
-        kitRequestDao.create(kitRequest);
+        kitRequest = kitRequestService.create(kitRequest);
+        enrollee.getKitRequests().add(kitRequest);
+        return kitRequest;
+    }
+
+    private ParticipantNote populateParticipantNote(Enrollee enrollee, ParticipantNotePopDto notePopDto) {
+        AdminUser creatingUser = adminUserDao.findByUsername(notePopDto.getCreatingAdminUsername()).get();
+        UUID kitRequestId = null;
+        if (notePopDto.getKitRequestIndex() != null) {
+            kitRequestId = enrollee.getKitRequests().get(notePopDto.getKitRequestIndex()).getId();
+        }
+        ParticipantNote participantNote = ParticipantNote.builder()
+            .enrolleeId(enrollee.getId())
+            .creatingAdminUserId(creatingUser.getId())
+            .kitRequestId(kitRequestId)
+            .text(notePopDto.getText())
+            .build();
+        participantNote = participantNoteService.create(participantNote);
+        if (notePopDto.isTimeShifted()) {
+            enrolleePopulateDao.changeParticipantNoteTime(participantNote.getId(), notePopDto.shiftedInstant());
+        }
+        return participantNote;
     }
 
     private String getTargetName(TaskType taskType, String stableId, int version) {
@@ -357,6 +378,9 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             populateKitRequest(enrollee, profileWithAddress, kitRequestPopDto);
         }
         populateNotifications(enrollee, popDto, attachedEnv.getId(), ppUser);
+        for (ParticipantNotePopDto notePopDto : popDto.getParticipantNoteDtos()) {
+            populateParticipantNote(enrollee, notePopDto);
+        }
 
         /**
          * restore the email status
@@ -367,9 +391,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         profile = profileService.find(ppUser.getProfileId()).get();
         profile.setDoNotEmail(isDoNotEmail);
         profileService.update(profile);
-        if (popDto.getSubmittedHoursAgo() != null) {
-            Instant simulatedTime = Instant.now().minus(Duration.ofHours(popDto.getSubmittedHoursAgo()));
-            enrolleePopulateDao.changeEnrolleeCreationTime(enrollee.getId(), simulatedTime);
+        if (popDto.isTimeShifted()) {
+            enrolleePopulateDao.changeEnrolleeCreationTime(enrollee.getId(), popDto.shiftedInstant());
         }
         if (popDto.isWithdrawn()) {
             withdrawnEnrolleeService.withdrawEnrollee(enrollee);
@@ -396,6 +419,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             }
         });
     }
+
 
 }
 

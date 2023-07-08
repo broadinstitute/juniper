@@ -119,6 +119,9 @@ databaseChangeLog:
   - include:
       file: changesets/2023_06_05_add_saliva_kit_type.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2023_07_07_admin_notes.yaml
+      relativeToChangelogFile: true
 
 
 

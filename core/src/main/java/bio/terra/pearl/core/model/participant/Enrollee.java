@@ -6,9 +6,7 @@ import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,5 +37,7 @@ public class Enrollee extends BaseEntity {
     @Builder.Default
     private Set<ParticipantTask> participantTasks = new HashSet<>();
     @Builder.Default
-    private Set<KitRequest> kitRequests = new HashSet<>();
+    private List<ParticipantNote> participantNotes = new ArrayList<>();
+    @Builder.Default
+    private List<KitRequest> kitRequests = new ArrayList<>();
 }

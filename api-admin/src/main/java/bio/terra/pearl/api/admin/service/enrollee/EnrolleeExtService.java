@@ -1,12 +1,12 @@
-package bio.terra.pearl.api.admin.service;
+package bio.terra.pearl.api.admin.service.enrollee;
 
+import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
-import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.workflow.DataChangeRecord;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.kit.KitRequestService;
@@ -20,7 +20,6 @@ import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -65,12 +64,12 @@ public class EnrolleeExtService {
   }
 
   public Enrollee findWithAdminLoad(AdminUser user, String enrolleeShortcode) {
-    Enrollee enrollee = authAdminUserToEnrollee(user, enrolleeShortcode);
+    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(user, enrolleeShortcode);
     return enrolleeService.loadForAdminView(enrollee);
   }
 
   public List<DataChangeRecord> findDataChangeRecords(AdminUser user, String enrolleeShortcode) {
-    Enrollee enrollee = authAdminUserToEnrollee(user, enrolleeShortcode);
+    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(user, enrolleeShortcode);
     return dataChangeRecordService.findByEnrollee(enrollee.getId());
   }
 
@@ -79,34 +78,18 @@ public class EnrolleeExtService {
     if (!user.isSuperuser()) {
       throw new PermissionDeniedException("Not authoried to withdraw participants");
     }
-    Enrollee enrollee = authAdminUserToEnrollee(user, enroleeShortcode);
+    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(user, enroleeShortcode);
     return withdrawnEnrolleeService.withdrawEnrollee(enrollee);
   }
 
   public KitRequest requestKit(AdminUser adminUser, String enrolleeShortcode, String kitTypeName)
       throws JsonProcessingException {
-    Enrollee enrollee = authAdminUserToEnrollee(adminUser, enrolleeShortcode);
+    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(adminUser, enrolleeShortcode);
     return kitRequestService.requestKit(adminUser, enrollee, kitTypeName);
   }
 
   public Collection<KitRequest> getKitRequests(AdminUser adminUser, String enrolleeShortcode) {
-    Enrollee enrollee = authAdminUserToEnrollee(adminUser, enrolleeShortcode);
+    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(adminUser, enrolleeShortcode);
     return kitRequestService.getKitRequests(adminUser, enrollee);
-  }
-
-  /**
-   * returns the enrollee if the user is authorized to access/modify it, throws an error otherwise
-   */
-  public Enrollee authAdminUserToEnrollee(AdminUser user, String enrolleeShortcode) {
-    // find what portal(s) the enrollee is in, and then check that the adminUser is authorized in at
-    // least one
-    List<PortalStudy> portalStudies = portalStudyService.findByEnrollee(enrolleeShortcode);
-    List<UUID> portalIds = portalStudies.stream().map(PortalStudy::getPortalId).toList();
-    if (!portalService.checkAdminInAtLeastOnePortal(user, portalIds)) {
-      throw new PermissionDeniedException(
-          "User %s does not have permissions on enrollee %s or enrollee does not exist"
-              .formatted(user.getUsername(), enrolleeShortcode));
-    }
-    return enrolleeService.findOneByShortcode(enrolleeShortcode).get();
   }
 }

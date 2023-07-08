@@ -23,6 +23,7 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
     private final PreEnrollmentResponseDao preEnrollmentResponseDao;
     private final ProfileDao profileDao;
     private final SurveyResponseDao surveyResponseDao;
+    private final ParticipantNoteDao participantNoteDao;
 
     public EnrolleeDao(Jdbi jdbi,
                        ConsentResponseDao consentResponseDao,
@@ -31,7 +32,8 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
                        ParticipantTaskDao participantTaskDao,
                        PreEnrollmentResponseDao preEnrollmentResponseDao,
                        ProfileDao profileDao,
-                       SurveyResponseDao surveyResponseDao) {
+                       SurveyResponseDao surveyResponseDao,
+                       ParticipantNoteDao participantNoteDao) {
         super(jdbi);
         this.consentResponseDao = consentResponseDao;
         this.kitRequestDao = kitRequestDao;
@@ -40,6 +42,7 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.profileDao = profileDao;
         this.surveyResponseDao = surveyResponseDao;
+        this.participantNoteDao = participantNoteDao;
     }
 
     @Override
@@ -84,7 +87,18 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
         return findByProperty("pre_enrollment_response_id", preEnrollResponseId);
     }
 
-    /** loads child relationships including survey responses, profile, etc... */
+    /**
+     * loads child relationships including survey responses, profile, etc...
+     * This currently makes ~10 separate DB queries, all of which should be individually quite quick.
+     * If this grows much more, it might be worth parallelizing or batching the DB fetches.
+     *
+     * because the individual queries are returning relatively small amounts of data (likely <10KB each) splitting these
+     * into separate API calls and incurring the overhead of separate DB auth queries for each request
+     * would probably result in much worse performance.
+     *
+     * That said, if this grows too much larger, it might make sense to group it into two different
+     * batches.
+     * */
     public Enrollee loadForAdminView(Enrollee enrollee) {
         enrollee.getSurveyResponses().addAll(surveyResponseDao.findByEnrolleeIdWithAnswers(enrollee.getId()));
         enrollee.getConsentResponses().addAll(consentResponseDao.findByEnrolleeId(enrollee.getId()));
@@ -99,6 +113,7 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
             var kitType = allKitTypes.stream().filter((t -> t.getId().equals(kitRequest.getKitTypeId()))).findFirst().get();
             kitRequest.setKitType(kitType);
         }
+        enrollee.getParticipantNotes().addAll(participantNoteDao.findByEnrollee(enrollee.getId()));
         return enrollee;
     }
 

@@ -116,6 +116,7 @@ export const mockEnrollee: () => Enrollee = () => {
     surveyResponses: [],
     consented: false,
     consentResponses: [],
+    participantNotes: [],
     profile: {
       givenName: 'Jonas',
       familyName: 'Salk',
@@ -180,6 +181,7 @@ export const taskForSurvey = (survey: Survey, enrolleeId: string): ParticipantTa
 /** returns simple admin user for testing */
 export const mockAdminUser = (superuser: boolean): AdminUser => {
   return {
+    id: 'adminUser1',
     username: 'blah',
     superuser,
     token: 'fakeToken',

@@ -48,6 +48,7 @@ export type {
 } from '@juniper/ui-core'
 
 export type AdminUser = {
+  id: string,
   username: string,
   token: string,
   superuser: boolean,
@@ -85,6 +86,7 @@ export type Enrollee = {
   preRegResponse?: PreregistrationResponse,
   preEnrollmentResponse?: PreregistrationResponse,
   participantTasks: ParticipantTask[],
+  participantNotes: ParticipantNote[],
   kitRequests: KitRequest[],
   consented: boolean,
   profile: Profile
@@ -255,6 +257,16 @@ export type DatasetJobHistory = {
   datasetId: string,
   status: string
   jobType: string
+}
+
+export type ParticipantNote = {
+  id: string,
+  createdAt: number,
+  lastUpdatedAt: number,
+  enrolleeId: string,
+  text: string,
+  kitRequestId: string,
+  creatingAdminUserId: string
 }
 
 let bearerToken: string | null = null
@@ -464,6 +476,20 @@ export default {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/changeRecords`
     const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async createParticipantNote(portalShortcode: string,
+                              studyShortcode: string,
+                              envName: string,
+                              enrolleeShortcode: string,
+                              noteText: string): Promise<ParticipantNote> {
+    const url =
+      `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/participantNote`
+    const response = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({text: noteText}),
+      headers: this.getInitHeaders() })
     return await this.processJsonResponse(response)
   },
 
