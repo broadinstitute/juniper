@@ -27,6 +27,7 @@ export const mockPortalContext: () => LoadedPortalContextT = () => ({
     ]
   },
   updatePortal: () => null,
+  reloadPortal: () => null,
   isError: false,
   isLoading: false
 })

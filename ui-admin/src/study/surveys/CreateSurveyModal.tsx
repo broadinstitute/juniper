@@ -1,36 +1,53 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
-import Api from 'api/api'
+import Api, { VersionedForm } from 'api/api'
 import { useNavigate } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from '../../util/notifications'
+import { PortalContext, PortalContextT } from '../../portal/PortalProvider'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
 const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {studyEnvContext: StudyEnvContextT,
   isReadOnlyEnv: boolean, show: boolean, setShow:  React.Dispatch<React.SetStateAction<boolean>> }) => {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isUpdating, setIsUpdating] = useState(false)
   const [surveyName, setSurveyName] = useState('')
   const [surveyStableId, setSurveyStableId] = useState('')
 
+  const portalContext = useContext(PortalContext) as PortalContextT
   const navigate = useNavigate()
 
   const createSurvey = async () => {
-    setIsLoading(true)
-    await Api.createNewSurvey(studyEnvContext.portal.shortcode,
-      studyEnvContext.study.shortcode,
+    setIsUpdating(true)
+    const createdSurvey = await Api.createNewSurvey(studyEnvContext.portal.shortcode,
       {
         createdAt: 0, id: '', lastUpdatedAt: 0, version: 1,
         content: '{"pages":[]}', name: surveyName, stableId: surveyStableId
       }).catch(e =>
       Store.addNotification(failureNotification(`Error creating survey: ${e.message}`))
+    ) as VersionedForm
+
+    await Api.createConfiguredSurvey(studyEnvContext.portal.shortcode,
+      studyEnvContext.study.shortcode,
+      studyEnvContext.currentEnv.environmentName,
+      {
+        allowAdminEdit: false, prepopulate: false, surveyId: createdSurvey.id,
+        id: '', studyEnvironmentId: studyEnvContext.currentEnv.id,
+        surveyOrder: studyEnvContext.currentEnv.configuredSurveys.length,
+        survey: createdSurvey, allowParticipantStart: true, allowParticipantReedit: true,
+        recurrenceIntervalDays: 0, recur: false
+      }).catch(e =>
+      Store.addNotification(failureNotification(`Error configuring survey: ${e.message}`))
     )
+
+    portalContext.reloadPortal(studyEnvContext.portal.shortcode)
+
     setShow(false)
     //TODO: this requires a full refresh of the portal context to work. for now, just refresh the page after it errors
     navigate(`surveys/${surveyStableId}?readOnly=${isReadOnlyEnv}`)
-    setIsLoading(false)
+    setIsUpdating(false)
   }
   const clearFields = () => {
     setSurveyName('')
@@ -61,7 +78,7 @@ const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {s
       </form>
     </Modal.Body>
     <Modal.Footer>
-      <LoadingSpinner isLoading={isLoading}>
+      <LoadingSpinner isLoading={isUpdating}>
         <button className="btn btn-primary" onClick={createSurvey}>Create</button>
         <button className="btn btn-secondary" onClick={() => {
           setShow(false)

@@ -7,6 +7,7 @@ import { NavBreadcrumb } from 'navbar/AdminNavbar'
 
 export type PortalContextT = {
   updatePortal: (portal: Portal) => void
+  reloadPortal: (shortcode: string) => void,
   portal: Portal | null,
   isLoading: boolean,
   isError: boolean
@@ -14,6 +15,7 @@ export type PortalContextT = {
 
 export type LoadedPortalContextT = {
   updatePortal: (portal: Portal) => void
+  reloadPortal: (shortcode: string) => void
   portal: Portal
 }
 
@@ -24,6 +26,7 @@ export type PortalParams = {
 
 export const PortalContext = React.createContext<PortalContextT>({
   updatePortal: () => alert('error - portal not yet loaded'),
+  reloadPortal: () => alert('error - portal not yet loaded'),
   portal: null,
   isLoading: true,
   isError: false
@@ -54,7 +57,8 @@ function RawPortalProvider({ shortcode, children }:
     setPortalState(updatedPortal)
   }
 
-  useEffect(() => {
+  /** grabs the latest from the server and updates the portal object */
+  function reloadPortal(shortcode: string) {
     Api.getPortal(shortcode).then(result => {
       setPortalState(result)
       setIsError(false)
@@ -64,11 +68,16 @@ function RawPortalProvider({ shortcode, children }:
       setIsLoading(false)
       setPortalState(null)
     })
+  }
+
+  useEffect(() => {
+    reloadPortal(shortcode)
   }, [shortcode])
 
   const portalContext: PortalContextT  = {
     portal: portalState,
     updatePortal,
+    reloadPortal,
     isLoading,
     isError
   }

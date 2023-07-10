@@ -4,7 +4,6 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
-import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.exception.NotFoundException;
@@ -40,8 +39,7 @@ public class SurveyExtService {
     return authSurveyToPortal(portal, stableId, version);
   }
 
-  public StudyEnvironmentSurvey create(
-      String portalShortcode, String studyShortcode, Survey survey, AdminUser adminUser) {
+  public Survey create(String portalShortcode, Survey survey, AdminUser adminUser) {
     if (!adminUser.isSuperuser()) {
       throw new PermissionDeniedException("You do not have permissions to perform this operation");
     }
@@ -53,24 +51,7 @@ public class SurveyExtService {
     survey.setPortalId(portal.getId());
     survey.setVersion(1);
 
-    Survey createdSurvey = surveyService.create(survey);
-
-    StudyEnvironment studyEnv =
-        studyEnvironmentService
-            .findByStudy(studyShortcode, EnvironmentName.sandbox)
-            .orElseThrow(
-                () ->
-                    new NotFoundException(
-                        "Sandbox environment must first be configured for this study"));
-
-    StudyEnvironmentSurvey studyEnvSurvey =
-        StudyEnvironmentSurvey.builder()
-            .surveyId(createdSurvey.getId())
-            .survey(createdSurvey)
-            .studyEnvironmentId(studyEnv.getId())
-            .build();
-
-    return studyEnvironmentSurveyService.create(studyEnvSurvey);
+    return surveyService.create(survey);
   }
 
   public Survey createNewVersion(String portalShortcode, Survey survey, AdminUser adminUser) {
@@ -79,6 +60,19 @@ public class SurveyExtService {
     }
     Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
     return surveyService.createNewVersion(portal.getId(), survey);
+  }
+
+  public StudyEnvironmentSurvey createConfiguredSurvey(
+      String portalShortcode,
+      EnvironmentName envName,
+      StudyEnvironmentSurvey surveyToConfigure,
+      AdminUser user) {
+    authUtilService.authUserToPortal(user, portalShortcode);
+    if (user.isSuperuser() || EnvironmentName.sandbox.equals(envName)) {
+      return studyEnvironmentSurveyService.create(surveyToConfigure);
+    }
+    throw new PermissionDeniedException(
+        "You do not have permission to update the {} environment".formatted(envName));
   }
 
   public StudyEnvironmentSurvey updateConfiguredSurvey(

@@ -129,14 +129,13 @@ paths:
           content: { application/json: { schema: {type: object} } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/surveys:
+  /api/portals/v1/{portalShortcode}/surveys:
     post:
       summary: creates the requested survey, will fail if the given stableId already exists
       tags: [ survey ]
       operationId: create
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
       requestBody:
         required: true
         content: { application/json: { schema: {type: object} } }
@@ -161,6 +160,24 @@ paths:
         '200':
           description: saved survey object
           content: { application/json: { schema: {type: object} } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys:
+    post:
+      summary: Creates a configured survey in a study environment
+      tags: [ configuredSurvey ]
+      operationId: create
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: saved configuredSurvey object
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys/{configSurveyId}:
