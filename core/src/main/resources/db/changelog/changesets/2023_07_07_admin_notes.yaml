@@ -14,10 +14,10 @@ databaseChangeLog:
                   { name: last_updated_at, type: datetime, constraints: { nullable: false } }
               - column: { name: text, type: text, constraints: { nullable: false } }
               - column: { name: creating_admin_user_id, type: uuid, constraints:
-                { foreignKeyName: fk_note_creating_admin_user, references: admin_user(id) }
+                { foreignKeyName: fk_note_creating_admin_user, references: admin_user(id), nullable: false }
               }
               - column: { name: enrollee_id, type: uuid, constraints:
-                { foreignKeyName: fk_participant_note_enrollee, references: enrollee(id) }
+                { foreignKeyName: fk_participant_note_enrollee, references: enrollee(id), nullable: false }
               }
               - column: { name: kit_request_id, type: uuid, constraints:
                 { foreignKeyName: fk_note_kit_request, references: kit_request(id) }

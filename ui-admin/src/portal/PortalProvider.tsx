@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import Api, { Portal } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
-import AdminUserProvider from "../providers/AdminUserProvider";
+import AdminUserProvider from '../providers/AdminUserProvider'
 
 
 export type PortalContextT = {

@@ -265,7 +265,7 @@ export type ParticipantNote = {
   lastUpdatedAt: number,
   enrolleeId: string,
   text: string,
-  kitRequestId: string,
+  kitRequestId?: string,
   creatingAdminUserId: string
 }
 
@@ -480,16 +480,17 @@ export default {
   },
 
   async createParticipantNote(portalShortcode: string,
-                              studyShortcode: string,
-                              envName: string,
-                              enrolleeShortcode: string,
-                              noteText: string): Promise<ParticipantNote> {
+    studyShortcode: string,
+    envName: string,
+    enrolleeShortcode: string,
+    noteText: string): Promise<ParticipantNote> {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/participantNote`
     const response = await fetch(url, {
       method: 'POST',
-      body: JSON.stringify({text: noteText}),
-      headers: this.getInitHeaders() })
+      body: JSON.stringify({ text: noteText }),
+      headers: this.getInitHeaders()
+    })
     return await this.processJsonResponse(response)
   },
 

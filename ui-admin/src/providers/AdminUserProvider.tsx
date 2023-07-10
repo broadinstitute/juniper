@@ -1,5 +1,5 @@
-import React, {useContext, useEffect, useState} from 'react'
-import Api, {AdminUser} from "api/api";
+import React, { useContext, useEffect, useState } from 'react'
+import Api, { AdminUser } from 'api/api'
 
 export type AdminUserContextT = {
   users: AdminUser[],
@@ -22,9 +22,9 @@ export const useAdminUserContext = () => {
  * This provider also makes no guarantees of user freshness--it's assumed users will be added infrequently
  * enough that, e.g., polling for updates isn't worth the trouble.
  */
-export default function AdminUserProvider({portalShortcode, children}:
+export default function AdminUserProvider({ portalShortcode, children }:
 {portalShortcode: string, children: React.ReactNode}) {
-  const [userState, setUserState] = useState<AdminUserContextT>({users: [], isLoading: true})
+  const [userState, setUserState] = useState<AdminUserContextT>({ users: [], isLoading: true })
   useEffect(() => {
     Api.fetchAdminUsersByPortal(portalShortcode).then(result => {
       setUserState({

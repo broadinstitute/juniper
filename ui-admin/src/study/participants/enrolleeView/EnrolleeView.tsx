@@ -37,7 +37,7 @@ export type ConsentResponseMapT = {[stableId: string] : ConsentWithResponsesT}
 /** shows a master-detail view for an enrollee with sub views on surveys, tasks, etc... */
 export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
 {enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void}) {
-  const { currentEnv, currentEnvPath } = studyEnvContext
+  const { currentEnv } = studyEnvContext
 
   /** gets classes to apply to nav links */
   function getLinkCssClasses({ isActive }: {isActive: boolean}) {
@@ -154,8 +154,8 @@ export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
             <ErrorBoundary>
               <Routes>
                 <Route path="profile" element={<EnrolleeProfile enrollee={enrollee}
-                                                                studyEnvContext={studyEnvContext}
-                                                                onUpdate={onUpdate}/>}/>
+                  studyEnvContext={studyEnvContext}
+                  onUpdate={onUpdate}/>}/>
                 <Route path="consents" element={<div>consents</div>}/>
                 { currentEnv.preEnrollSurvey && <Route path="preRegistration" element={
                   <PreEnrollmentView preEnrollSurvey={currentEnv.preEnrollSurvey}
@@ -185,7 +185,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                   <AdvancedOptions enrollee={enrollee} studyEnvContext={studyEnvContext}/>
                 }/>
                 <Route index element={<EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext}
-                                                       onUpdate={onUpdate}/>}/>
+                  onUpdate={onUpdate}/>}/>
                 <Route path="*" element={<div>unknown enrollee route</div>}/>
               </Routes>
             </ErrorBoundary>

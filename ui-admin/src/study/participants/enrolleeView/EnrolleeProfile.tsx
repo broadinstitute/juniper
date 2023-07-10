@@ -1,10 +1,8 @@
 import React from 'react'
 import { Enrollee, MailingAddress } from 'api/api'
-import { dateToDefaultString } from '../../../util/timeUtils'
-import ParticipantNotesView from "./ParticipantNotesView";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlus} from "@fortawesome/free-solid-svg-icons";
-import {StudyEnvContextT} from "../../StudyEnvironmentRouter";
+import { dateToDefaultString } from 'util/timeUtils'
+import ParticipantNotesView from './ParticipantNotesView'
+import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 
 /**
  * shows the enrollee profile.  Designed for read-only.  When we implement admin-profile editing capability,
@@ -54,7 +52,7 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
       { !enrollee.profile.mailingAddress && <span className="detail">none</span>}
     </form>
     <ParticipantNotesView notes={enrollee.participantNotes} enrollee={enrollee}
-                          studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>
+      studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>
   </div>
 }
 

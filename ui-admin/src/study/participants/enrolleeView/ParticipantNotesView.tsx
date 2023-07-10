@@ -1,14 +1,12 @@
-import React, {useState} from 'react'
-import Api, {AdminUser, Enrollee, ParticipantNote} from "api/api";
-import {instantToDefaultString} from "util/timeUtils";
-import {useAdminUserContext} from "providers/AdminUserProvider";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlus, faUser} from "@fortawesome/free-solid-svg-icons";
-import {enrolleeKitRequestPath} from "./EnrolleeView";
-import {Link} from "react-router-dom";
-import {StudyEnvContextT} from "../../StudyEnvironmentRouter";
-import {failureNotification} from "../../../util/notifications";
-import {Store} from "react-notifications-component";
+import React, { useState } from 'react'
+import Api, { Enrollee, ParticipantNote } from 'api/api'
+import { useAdminUserContext } from 'providers/AdminUserProvider'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import { failureNotification } from 'util/notifications'
+import { Store } from 'react-notifications-component'
+import { ParticipantNoteView } from './ParticipantNoteView'
 
 type ParticipantNotesViewProps = {
   enrollee: Enrollee,
@@ -17,7 +15,8 @@ type ParticipantNotesViewProps = {
   onUpdate: () => void
 }
 
-export default function ParticipantNotesView({enrollee, notes, studyEnvContext, onUpdate}: ParticipantNotesViewProps) {
+/** shows a list of participant notes, with the ability to add a new note */
+const ParticipantNotesView = ({ enrollee, notes, studyEnvContext, onUpdate }: ParticipantNotesViewProps) => {
   const [showAdd, setShowAdd] = useState(false)
   const [newNoteText, setNewNoteText] = useState('')
   const { users } = useAdminUserContext()
@@ -32,7 +31,6 @@ export default function ParticipantNotesView({enrollee, notes, studyEnvContext, 
     } catch (e) {
       Store.addNotification(failureNotification('could not save note'))
     }
-
 
 
     onUpdate()
@@ -50,29 +48,11 @@ export default function ParticipantNotesView({enrollee, notes, studyEnvContext, 
       </div>
     </div>}
     { sortedNotes.map(note =>
-      <ParticipantNoteView enrollee={enrollee} note={note} studyEnvContext={studyEnvContext} users={users}
+      <ParticipantNoteView enrollee={enrollee} note={note} currentEnvPath={studyEnvContext.currentEnvPath} users={users}
         key={note.id}/>
     )}
   </div>
 }
 
-type ParticipantNoteViewProps = {
-  enrollee: Enrollee,
-  note: ParticipantNote,
-  studyEnvContext: StudyEnvContextT,
-  users: AdminUser[]
-}
-function ParticipantNoteView({ enrollee, note, users, studyEnvContext }: ParticipantNoteViewProps) {
-    return <div className="mb-3">
-      <div>
-        <span className="fw-bold text-muted"> <FontAwesomeIcon icon={faUser} className="mx-2"/>
-        {users.find(user => user.id === note.creatingAdminUserId)?.username}
-      </span>
-        <span className="text-muted ms-3">{instantToDefaultString(note.createdAt)}</span>
-      </div>
-      <div className="mt-1">{note.text}</div>
-      { note.kitRequestId && <Link to={enrolleeKitRequestPath(studyEnvContext.currentEnvPath, enrollee.shortcode)}>
-        Kit requests
-      </Link>}
-    </div>
-}
+export default ParticipantNotesView
+
