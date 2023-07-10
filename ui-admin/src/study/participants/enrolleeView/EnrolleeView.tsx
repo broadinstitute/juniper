@@ -80,7 +80,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
     <div className="row mt-2">
       <div className="col-12">
         <div className="d-flex">
-          <div className="participantTabs">
+          <div className="participantTabs" style={{ minWidth: '280', maxWidth: '280px' }}>
             <ul className="list-group">
               <li className="list-group-item">
                 <NavLink to="profile" className={getLinkCssClasses}>Profile</NavLink>

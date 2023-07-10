@@ -113,6 +113,7 @@ export const mockEnrollee: () => Enrollee = () => {
   return {
     id: enrolleeId,
     shortcode: 'JOSALK',
+    participantUserId: 'userId1',
     surveyResponses: [],
     consented: false,
     consentResponses: [],
