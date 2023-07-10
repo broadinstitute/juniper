@@ -7,7 +7,7 @@ import { NavBreadcrumb } from 'navbar/AdminNavbar'
 
 export type PortalContextT = {
   updatePortal: (portal: Portal) => void
-  reloadPortal: (shortcode: string) => void,
+  reloadPortal: (shortcode: string, onReload: () => void) => void,
   portal: Portal | null,
   isLoading: boolean,
   isError: boolean
@@ -15,7 +15,7 @@ export type PortalContextT = {
 
 export type LoadedPortalContextT = {
   updatePortal: (portal: Portal) => void
-  reloadPortal: (shortcode: string) => void
+  reloadPortal: (shortcode: string, onReload: () => void) => void
   portal: Portal
 }
 
@@ -58,11 +58,12 @@ function RawPortalProvider({ shortcode, children }:
   }
 
   /** grabs the latest from the server and updates the portal object */
-  function reloadPortal(shortcode: string) {
+  function reloadPortal(shortcode: string, onReload: () => void) {
     Api.getPortal(shortcode).then(result => {
       setPortalState(result)
       setIsError(false)
       setIsLoading(false)
+      onReload()
     }).catch(() => {
       setIsError(true)
       setIsLoading(false)
@@ -71,7 +72,7 @@ function RawPortalProvider({ shortcode, children }:
   }
 
   useEffect(() => {
-    reloadPortal(shortcode)
+    reloadPortal(shortcode, () => undefined)
   }, [shortcode])
 
   const portalContext: PortalContextT  = {
