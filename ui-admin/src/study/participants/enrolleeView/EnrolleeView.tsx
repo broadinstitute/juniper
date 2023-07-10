@@ -212,6 +212,7 @@ const TaskSummary = ({ tasks }: {tasks: ParticipantTask[]}) => {
   </ul>
 }
 
+/** path to kit request list for enrollee */
 export const enrolleeKitRequestPath = (currentEnvPath: string, enrolleeShortcode: string) => {
   return `${currentEnvPath}/participants/${enrolleeShortcode}/kitRequests`
 }

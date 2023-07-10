@@ -11,6 +11,7 @@ const AdminUserContext = React.createContext<AdminUserContextT>({
   isLoading: true
 })
 
+/** helper function for accessing context */
 export const useAdminUserContext = () => {
   return useContext(AdminUserContext)
 }

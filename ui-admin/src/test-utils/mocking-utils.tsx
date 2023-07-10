@@ -191,6 +191,7 @@ export const mockAdminUser = (superuser: boolean): AdminUser => {
   }
 }
 
+/** mock ParticipantNote */
 export const mockParticipantNote = (): ParticipantNote => {
   return {
     id: 'noteId1',
