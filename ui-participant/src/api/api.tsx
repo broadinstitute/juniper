@@ -396,6 +396,10 @@ export default {
     bearerToken = null
   },
 
+  setBearerToken(token: string): void {
+    bearerToken = token
+  },
+
   async log(logEvent: LogEvent): Promise<void> {
     const url = `${API_ROOT}/public/log/v1/log`
     await fetch(url, {

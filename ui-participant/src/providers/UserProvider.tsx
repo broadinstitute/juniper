@@ -122,6 +122,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     auth.events.addUserLoaded(user => {
+      Api.setBearerToken(user.access_token)
       localStorage.setItem(OAUTH_ACCRESS_TOKEN_KEY, user.access_token)
     })
 
