@@ -8,8 +8,7 @@ import { Store } from 'react-notifications-component'
 import { failureNotification } from '../../util/notifications'
 import { PortalContext, PortalContextT } from '../../portal/PortalProvider'
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/** renders a modal that creates a new survey in a portal and configures it to the current study env */
 const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {studyEnvContext: StudyEnvContextT,
   isReadOnlyEnv: boolean, show: boolean, setShow:  React.Dispatch<React.SetStateAction<boolean>> }) => {
   const [isLoading, setIsLoading] = useState(false)
