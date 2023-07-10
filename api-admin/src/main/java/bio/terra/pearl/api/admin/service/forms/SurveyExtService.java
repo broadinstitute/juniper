@@ -50,7 +50,6 @@ public class SurveyExtService {
     }
     survey.setPortalId(portal.getId());
     survey.setVersion(1);
-
     return surveyService.create(survey);
   }
 

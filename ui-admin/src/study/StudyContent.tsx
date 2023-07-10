@@ -18,6 +18,8 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
     padding: '1em 0 0 1em',
     borderBottom: '1px solid #f6f6f6'
   }
+
+
   const preEnrollSurvey = currentEnv.preEnrollSurvey
   const envConfig = currentEnv.studyEnvironmentConfig
   const portalEnvConfig = portal.portalEnvironments
