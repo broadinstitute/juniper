@@ -2,9 +2,11 @@ package bio.terra.pearl.api.admin.service.forms;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -32,7 +34,7 @@ public class SurveyExtServiceTests {
 
   @MockBean private AuthUtilService mockAuthUtilService;
   @MockBean private SurveyService mockSurveyService;
-  @MockBean private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
+  @MockBean private StudyEnvironmentSurveyService mockStudyEnvironmentSurveyService;
   @MockBean private StudyEnvironmentService studyEnvironmentService;
 
   @Test
@@ -47,7 +49,35 @@ public class SurveyExtServiceTests {
   public void createRequiresSuperuser() {
     AdminUser user = AdminUser.builder().superuser(false).build();
     Assertions.assertThrows(
-        PermissionDeniedException.class, () -> surveyExtService.create("foo", "bar", null, user));
+        PermissionDeniedException.class, () -> surveyExtService.create("foo", null, user));
+  }
+
+  @Test
+  public void createConfiguredRequiresPortalAuth() {
+    AdminUser user = AdminUser.builder().superuser(false).build();
+    when(mockAuthUtilService.authUserToPortal(user, "foo"))
+        .thenThrow(new PermissionDeniedException("test1"));
+    Assertions.assertThrows(
+        PermissionDeniedException.class,
+        () ->
+            surveyExtService.createConfiguredSurvey(
+                "foo", "bar", EnvironmentName.sandbox, null, user));
+  }
+
+  @Test
+  public void createConfiguredOnlyInSandbox() {
+    AdminUser user = AdminUser.builder().superuser(false).build();
+    PermissionDeniedException thrownException =
+        Assertions.assertThrows(
+            PermissionDeniedException.class,
+            () ->
+                surveyExtService.createConfiguredSurvey(
+                    "foo", "bar", EnvironmentName.irb, null, user));
+
+    assertTrue(
+        thrownException
+            .getMessage()
+            .contentEquals("You do not have permission to update the irb environment"));
   }
 
   @Test

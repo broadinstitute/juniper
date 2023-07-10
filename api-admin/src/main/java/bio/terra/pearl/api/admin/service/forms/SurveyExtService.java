@@ -64,6 +64,7 @@ public class SurveyExtService {
 
   public StudyEnvironmentSurvey createConfiguredSurvey(
       String portalShortcode,
+      String studyShortcode,
       EnvironmentName envName,
       StudyEnvironmentSurvey surveyToConfigure,
       AdminUser user) {
@@ -72,7 +73,7 @@ public class SurveyExtService {
       return studyEnvironmentSurveyService.create(surveyToConfigure);
     }
     throw new PermissionDeniedException(
-        "You do not have permission to update the {} environment".formatted(envName));
+        "You do not have permission to update the %s environment".formatted(envName));
   }
 
   public StudyEnvironmentSurvey updateConfiguredSurvey(
@@ -88,7 +89,7 @@ public class SurveyExtService {
       return studyEnvironmentSurveyService.update(existing);
     }
     throw new PermissionDeniedException(
-        "You do not have permission to update the {} environment".formatted(envName));
+        "You do not have permission to update the %s environment".formatted(envName));
   }
 
   /** confirms that the Survey is accessible from the given portal */
