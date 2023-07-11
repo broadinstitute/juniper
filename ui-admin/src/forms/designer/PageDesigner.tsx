@@ -33,7 +33,6 @@ export const PageDesigner = (props: PageDesignerProps) => {
   const { readOnly, value, onChange } = props
 
   const [showCreatePanelModal, setShowCreatePanelModal] = useState(false)
-  const [showCreateQuestionModal, setShowCreateQuestionModal] = useState(false)
 
   return (
     <div>
