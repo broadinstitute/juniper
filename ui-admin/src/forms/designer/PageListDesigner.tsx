@@ -22,7 +22,6 @@ export const PageListDesigner = (props: PageListDesignerProps) => {
   return (
     <>
       <h2>Pages</h2>
-
       <div className="mb-3">
         <Button
           disabled={readOnly}
