@@ -15,6 +15,7 @@ const randomString = (length: number) => {
   return _times(length, () => _random(35).toString(36)).join('')
 }
 
+/** returns a mock portal */
 export const mockPortal: () => Portal = () => ({
   id: 'fakeportalid1',
   name: 'mock portal',

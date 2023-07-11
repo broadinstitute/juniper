@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from '../../util/notifications'
 import { PortalContext, PortalContextT } from '../../portal/PortalProvider'
+import InfoPopup from '../../components/forms/InfoPopup'
 
 /** renders a modal that creates a new survey in a portal and configures it to the current study env */
 const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {studyEnvContext: StudyEnvContextT,
@@ -80,6 +81,7 @@ const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {s
             onChange={event => setSurveyName(event.target.value)}/>
         </label>
         <label className="form-label"> Survey Stable ID
+          <InfoPopup content={'A stable and unique identifier for the survey. May be shown in exported datasets.'}/>
           <input type="text" size={50} className="form-control" id="inputSurveyStableId" value={surveyStableId}
             onChange={event => setSurveyStableId(event.target.value)}/>
         </label>
