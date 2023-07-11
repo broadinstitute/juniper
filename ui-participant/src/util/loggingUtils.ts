@@ -1,4 +1,4 @@
-import Api, {getEnvSpec, LogEvent} from 'api/api'
+import Api, { getEnvSpec, LogEvent } from 'api/api'
 
 /** listens to all window errors and logs them  */
 const setupErrorLogger = () => {

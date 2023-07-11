@@ -8,7 +8,7 @@ import {
   StudyEnvironmentSurvey,
   SurveyResponse
 } from '@juniper/ui-core'
-import {defaultApiErrorHandle} from "../util/error-utils";
+import { defaultApiErrorHandle } from 'util/error-utils'
 
 export type {
   Answer,
@@ -150,9 +150,9 @@ export default {
       method: 'GET'
     }
   },
-  
+
   /** get the json from the response and alert and log any errors */
-  async processJsonResponse(response: Response, opts: {alertErrors: boolean} = {alertErrors: true}) {
+  async processJsonResponse(response: Response, opts: {alertErrors: boolean} = { alertErrors: true }) {
     const obj = await response.json()
     if (response.ok) {
       return obj
@@ -321,8 +321,10 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async submitSurveyResponse({ studyShortcode, stableId, version, enrolleeShortcode, response, taskId, 
-                               alertErrors=true}: {
+  async submitSurveyResponse({
+    studyShortcode, stableId, version, enrolleeShortcode, response, taskId,
+    alertErrors=true
+  }: {
     studyShortcode: string, stableId: string, version: number, response: SurveyResponse, enrolleeShortcode: string,
     taskId: string, alertErrors: boolean
   }): Promise<HubResponse> {
@@ -336,7 +338,7 @@ export default {
       headers: this.getInitHeaders(),
       body: JSON.stringify(response)
     })
-    return await this.processJsonResponse(result, {alertErrors})
+    return await this.processJsonResponse(result, { alertErrors })
   },
 
   async submitMailingListContact(name: string, email: string) {
@@ -371,7 +373,7 @@ export default {
       method: 'POST',
       headers: this.getInitHeaders()
     })
-    const loginResult = await this.processJsonResponse(response, {alertErrors: false})
+    const loginResult = await this.processJsonResponse(response, { alertErrors: false })
     if (loginResult?.user?.token) {
       bearerToken = loginResult.user.token
     }
@@ -395,7 +397,7 @@ export default {
       method: 'POST',
       headers: this.getInitHeaders()
     })
-    return await this.processJsonResponse(response, {alertErrors: false})
+    return await this.processJsonResponse(response, { alertErrors: false })
   },
 
   async logout(): Promise<void> {

@@ -1,5 +1,4 @@
-import React from 'react'
-import {logError} from "./loggingUtils";
+import { logError } from './loggingUtils'
 
 export type ApiErrorResponse = {
   message: string,
@@ -13,7 +12,7 @@ const errorSuffix = 'If this error persists, please contact support@juniper.terr
  * shows a specific error message if the error is auth-related.
  */
 export const defaultApiErrorHandle = (error: ApiErrorResponse,
-                                      errorHeader = 'An unexpected error occurred. ') => {
+  errorHeader = 'An unexpected error occurred. ') => {
   if (error.statusCode === 401 || error.statusCode === 403) {
     alert(`${errorHeader}\n\nRequest could not be authorized -- you may need to log in again\n\n${errorSuffix}`)
   } else {
