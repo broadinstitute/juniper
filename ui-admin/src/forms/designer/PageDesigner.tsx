@@ -7,6 +7,8 @@ import { Button } from 'components/forms/Button'
 
 import { PageElementList } from './PageElementList'
 import { NewPanelForm } from './NewPanelForm'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 /** Can the given FormElement be included in a panel (is it a Question or HtmlElement)? */
 export const canBeIncludedInPanel = (element: FormElement): element is HtmlElement | Question => {
@@ -31,6 +33,7 @@ export const PageDesigner = (props: PageDesignerProps) => {
   const { readOnly, value, onChange } = props
 
   const [showCreatePanelModal, setShowCreatePanelModal] = useState(false)
+  const [showCreateQuestionModal, setShowCreateQuestionModal] = useState(false)
 
   return (
     <div>
@@ -45,7 +48,7 @@ export const PageDesigner = (props: PageDesignerProps) => {
             setShowCreatePanelModal(true)
           }}
         >
-          Add panel
+          <FontAwesomeIcon icon={faPlus}/> Add panel
         </Button>
       </div>
 

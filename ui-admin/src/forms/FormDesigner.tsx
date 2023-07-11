@@ -10,6 +10,7 @@ import { PanelDesigner } from './designer/PanelDesigner'
 import { QuestionDesigner } from './designer/QuestionDesigner'
 import { QuestionTemplatesDesigner } from './designer/QuestionTemplatesDesigner'
 import { FormTableOfContents } from './FormTableOfContents'
+import {PageListDesigner} from "./designer/PageListDesigner";
 
 type FormDesignerProps = {
   readOnly?: boolean
@@ -42,7 +43,7 @@ export const FormDesigner = (props: FormDesignerProps) => {
 
           if (selectedElementPath === 'pages') {
             return (
-              <PagesList
+              <PageListDesigner
                 formContent={value}
                 readOnly={readOnly}
                 onChange={onChange}
