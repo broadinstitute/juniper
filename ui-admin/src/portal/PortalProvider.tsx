@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import Api, { Portal } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
+import AdminUserProvider from '../providers/AdminUserProvider'
 
 
 export type PortalContextT = {
@@ -90,6 +91,8 @@ function RawPortalProvider({ shortcode, children }:
       <Link className="text-white" to={`/${shortcode}`}>
         {portalState?.name}</Link>
     </NavBreadcrumb>
-    {children}
+    <AdminUserProvider portalShortcode={shortcode}>
+      {children}
+    </AdminUserProvider>
   </PortalContext.Provider>
 }

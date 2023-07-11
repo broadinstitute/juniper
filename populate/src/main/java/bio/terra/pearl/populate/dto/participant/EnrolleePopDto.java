@@ -1,6 +1,7 @@
 package bio.terra.pearl.populate.dto.participant;
 
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.populate.dto.TimeShiftable;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
 import bio.terra.pearl.populate.dto.kit.KitRequestPopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter @Setter @NoArgsConstructor
-public class EnrolleePopDto extends Enrollee {
+public class EnrolleePopDto extends Enrollee implements TimeShiftable {
     private String linkedUsername;
     /**
      * if true, the data for this enrollee will be processed through service calls as if they were submitted
@@ -33,6 +34,7 @@ public class EnrolleePopDto extends Enrollee {
     private Set<ConsentResponsePopDto> consentResponseDtos = new HashSet<>();
     private Set<ParticipantTaskPopDto> participantTaskDtos = new HashSet<>();
     private List<NotificationPopDto> notifications = new ArrayList<>();
+    private List<ParticipantNotePopDto> participantNoteDtos = new ArrayList<>();
     private Integer submittedHoursAgo;
     private Set<KitRequestPopDto> kitRequestDtos = new HashSet<>();
 }

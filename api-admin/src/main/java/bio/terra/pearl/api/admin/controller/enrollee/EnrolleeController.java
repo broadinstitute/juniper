@@ -2,7 +2,7 @@ package bio.terra.pearl.api.admin.controller.enrollee;
 
 import bio.terra.pearl.api.admin.api.EnrolleeApi;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
-import bio.terra.pearl.api.admin.service.EnrolleeExtService;
+import bio.terra.pearl.api.admin.service.enrollee.EnrolleeExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;

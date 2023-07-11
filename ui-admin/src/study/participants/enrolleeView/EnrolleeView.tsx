@@ -83,7 +83,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
           <div className="participantTabs" style={{ minWidth: '280', maxWidth: '280px' }}>
             <ul className="list-group">
               <li className="list-group-item">
-                <NavLink to="profile" className={getLinkCssClasses}>Profile</NavLink>
+                <NavLink to="profile" className={getLinkCssClasses}>Profile &amp; Notes</NavLink>
               </li>
               <li className="list-group-item subgroup">
                 <NavLink to="tasks" className={getLinkCssClasses}>Tasks</NavLink>
@@ -153,7 +153,9 @@ export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
           <div className="participantTabContent flex-grow-1 bg-white p-3">
             <ErrorBoundary>
               <Routes>
-                <Route path="profile" element={<EnrolleeProfile enrollee={enrollee}/>}/>
+                <Route path="profile" element={<EnrolleeProfile enrollee={enrollee}
+                  studyEnvContext={studyEnvContext}
+                  onUpdate={onUpdate}/>}/>
                 <Route path="consents" element={<div>consents</div>}/>
                 { currentEnv.preEnrollSurvey && <Route path="preRegistration" element={
                   <PreEnrollmentView preEnrollSurvey={currentEnv.preEnrollSurvey}
@@ -182,7 +184,8 @@ export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                 <Route path="advanced" element={
                   <AdvancedOptions enrollee={enrollee} studyEnvContext={studyEnvContext}/>
                 }/>
-                <Route index element={<EnrolleeProfile enrollee={enrollee}/>}/>
+                <Route index element={<EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext}
+                  onUpdate={onUpdate}/>}/>
                 <Route path="*" element={<div>unknown enrollee route</div>}/>
               </Routes>
             </ErrorBoundary>
@@ -207,6 +210,11 @@ const TaskSummary = ({ tasks }: {tasks: ParticipantTask[]}) => {
       </span>
     </li>)}
   </ul>
+}
+
+/** path to kit request list for enrollee */
+export const enrolleeKitRequestPath = (currentEnvPath: string, enrolleeShortcode: string) => {
+  return `${currentEnvPath}/participants/${enrolleeShortcode}/kitRequests`
 }
 
 /** TODO -- this should be computed server-side */

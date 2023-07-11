@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: "admin_notes"
+      author: dbush
+      changes:
+        - createTable:
+            tableName: participant_note
+            columns:
+              - column: &idColumn
+                  { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: &createdAt
+                  { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: &lastUpdatedAt
+                  { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: text, type: text, constraints: { nullable: false } }
+              - column: { name: creating_admin_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_note_creating_admin_user, references: admin_user(id), nullable: false }
+              }
+              - column: { name: enrollee_id, type: uuid, constraints:
+                { foreignKeyName: fk_participant_note_enrollee, references: enrollee(id), nullable: false }
+              }
+              - column: { name: kit_request_id, type: uuid, constraints:
+                { foreignKeyName: fk_note_kit_request, references: kit_request(id) }
+              }
+              - createIndex: # enable quick showing of all notes for an enrollee
+                  tableName: participant_note
+                  indexName: idx_admin_task_enrollee_id
+                  columns:
+                    - column:
+                        descending: true
+                        name: enrollee_id
+              - createIndex: # enable quick showing of all notes for a kit
+                  tableName: participant_note
+                  indexName: idx_admin_task_kit_request_id
+                  columns:
+                    - column:
+                        descending: true
+                        name: kit_request_id
+        - addColumn:
+            tableName: data_change_record
+            columns:
+              - column: { name: participant_note_id, type: uuid, constraints:
+                { foreignKeyName: fk_data_change_record_note, references: participant_note(id) }
+              }
+              - column: { name: deletion, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }

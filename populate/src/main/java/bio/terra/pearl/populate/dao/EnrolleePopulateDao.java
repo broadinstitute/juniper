@@ -47,4 +47,14 @@ public class EnrolleePopulateDao {
     );
   }
 
+  /** update both the creation and the lastUpdatedAt times to the given time */
+  public void changeParticipantNoteTime(UUID noteId, Instant creationTime) {
+    jdbi.withHandle(handle ->
+        handle.createUpdate("update participant_note set created_at = :creationTime, last_updated_at = :creationTime where id = :noteId;")
+            .bind("noteId", noteId)
+            .bind("creationTime", creationTime)
+            .execute()
+    );
+  }
+
 }
