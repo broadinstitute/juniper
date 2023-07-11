@@ -2,6 +2,7 @@ package bio.terra.pearl.populate;
 
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.ParticipantNote;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.site.HtmlSection;
@@ -51,10 +52,8 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
 
         List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
         Assertions.assertEquals(4, enrollees.size());
-        Enrollee jonas = enrollees.stream().filter(enrollee -> "OHSALK".equals(enrollee.getShortcode()))
-                .findFirst().get();
-        checkOurhealthSurveys(jonas);
-
+        checkOurhealthSurveys(enrollees);
+        checkParticipantNotes(enrollees);
         checkOurhealthSiteContent(portal.getId());
         checkExportContent(portal.getId(), sandboxEnvironmentId);
         checkDataDictionary(portal.getId(), sandboxEnvironmentId);
@@ -64,7 +63,8 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
         portalPopulator.populate(new FilePopulateContext("portals/ourhealth/portal.json"), true);
     }
 
-    private void checkOurhealthSurveys(Enrollee jonas) throws IOException {
+    private void checkOurhealthSurveys(List<Enrollee> enrollees) throws IOException {
+        Enrollee jonas = getJonasSalk(enrollees);
         Survey cardioHistorySurvey = surveyService.findByStableId("oh_oh_cardioHx", 1).get();
 
         List<SurveyResponse> jonasResponses = surveyResponseService.findByEnrolleeId(jonas.getId());
@@ -88,6 +88,15 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
                 .getSections().stream().findFirst().get();
         Assertions.assertEquals(HtmlSectionType.HERO_WITH_IMAGE, firstLandingSection.getSectionType());
         Assertions.assertNotNull(lsc.getFooterSection());
+    }
+
+    private void checkParticipantNotes(List<Enrollee> enrollees) {
+        Enrollee jonas = getJonasSalk(enrollees);
+        List<ParticipantNote> notes = participantNoteService.findByEnrollee(jonas.getId());
+        assertThat(notes, hasSize(2));
+        List<ParticipantNote> kitNotes = notes.stream().filter(note -> note.getKitRequestId() != null).toList();
+        assertThat(kitNotes, hasSize(1));
+        assertThat(kitNotes.get(0).getText(), equalTo("Phone call: asked to delay kit shipment as they are travelling for next two months"));
     }
 
     private void checkExportContent(UUID portalId, UUID sandboxEnvironmentId) throws Exception {
@@ -117,6 +126,11 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
         assertThat(withdrawnEnrolleeService.isWithdrawn("OHGONE"), is(true));
         assertThat(enrolleeService.findOneByShortcode("OHGONE").isEmpty(), is(true));
         assertThat(withdrawnEnrolleeService.isWithdrawn("OHSALK"), is(false));
+    }
+
+    private Enrollee getJonasSalk(List<Enrollee> enrollees) {
+        return enrollees.stream().filter(enrollee -> "OHSALK".equals(enrollee.getShortcode()))
+            .findFirst().get();
     }
 
 }

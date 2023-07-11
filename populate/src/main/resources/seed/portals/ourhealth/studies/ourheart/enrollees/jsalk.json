@@ -94,5 +94,15 @@
         "discardReason": ""
       }
     }
-  ]
+  ],
+  "participantNoteDtos": [{
+    "creatingAdminUsername": "staff@ourhealth.org",
+    "text": "Phone call: asked to delay kit shipment as they are travelling for next two months",
+    "kitRequestIndex": 0,
+    "submittedHoursAgo": 3
+  },{
+    "creatingAdminUsername": "staff@ourhealth.org",
+    "text": "Reviewed survey responses, many are incomplete, sent additional reminder email",
+    "submittedHoursAgo": 20
+  }]
 }

@@ -52,11 +52,6 @@ export type LoginResult = {
   enrollees: Enrollee[]
 }
 
-export type SurveyJsResumeData = {
-  currentPageNo: number,
-  data: object
-}
-
 export type Enrollee = {
   id: string
   consented: boolean
@@ -399,6 +394,10 @@ export default {
       headers: this.getInitHeaders()
     })
     bearerToken = null
+  },
+
+  setBearerToken(token: string): void {
+    bearerToken = token
   },
 
   async log(logEvent: LogEvent): Promise<void> {

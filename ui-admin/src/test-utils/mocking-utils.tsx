@@ -1,6 +1,6 @@
 import React from 'react'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import {AdminUser, DatasetDetails, Enrollee, Portal} from 'api/api'
+import { AdminUser, DatasetDetails, Enrollee, ParticipantNote, Portal } from 'api/api'
 import { Survey } from '@juniper/ui-core/build/types/forms'
 import { ParticipantTask } from '@juniper/ui-core/build/types/task'
 
@@ -116,9 +116,11 @@ export const mockEnrollee: () => Enrollee = () => {
   return {
     id: enrolleeId,
     shortcode: 'JOSALK',
+    participantUserId: 'userId1',
     surveyResponses: [],
     consented: false,
     consentResponses: [],
+    participantNotes: [],
     profile: {
       givenName: 'Jonas',
       familyName: 'Salk',
@@ -183,12 +185,25 @@ export const taskForSurvey = (survey: Survey, enrolleeId: string): ParticipantTa
 /** returns simple admin user for testing */
 export const mockAdminUser = (superuser: boolean): AdminUser => {
   return {
+    id: 'adminUser1',
     username: 'blah',
     superuser,
     token: 'fakeToken',
     portalAdminUsers: [],
     portalPermissions: {},
     isAnonymous: false
+  }
+}
+
+/** mock ParticipantNote */
+export const mockParticipantNote = (): ParticipantNote => {
+  return {
+    id: 'noteId1',
+    creatingAdminUserId: 'adminId',
+    enrolleeId: 'enrolleeId',
+    createdAt: 0,
+    lastUpdatedAt: 0,
+    text: 'some note text'
   }
 }
 

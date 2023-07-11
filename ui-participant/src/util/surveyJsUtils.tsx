@@ -9,12 +9,10 @@ import { useSearchParams } from 'react-router-dom'
 import { SurveyModel } from 'survey-core'
 import { Survey as SurveyJSComponent } from 'survey-react-ui'
 
-import { surveyJSModelFromForm } from '@juniper/ui-core'
+import { SURVEY_JS_OTHER_SUFFIX, surveyJSModelFromForm, SurveyJsResumeData } from '@juniper/ui-core'
 
-import { Answer, ConsentForm, Profile, Survey, SurveyJsResumeData, UserResumeData } from 'api/api'
+import { Answer, ConsentForm, Profile, Survey, UserResumeData } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
-
-const SURVEY_JS_OTHER_SUFFIX = '-Comment'
 
 const PAGE_NUMBER_PARAM_NAME = 'page'
 
@@ -84,7 +82,7 @@ export function useSurveyJSModel(
 
   const { portalEnv } = usePortalEnv()
 
-  const [surveyModel, setSurveyModel] = useState<SurveyModel | null>(null)
+  const [surveyModel, setSurveyModel] = useState<SurveyModel>(newSurveyJSModel(resumeData, pager.pageNumber))
 
   /** hand a page change by updating state of both the surveyJS model and our internal state*/
   function handlePageChanged(model: SurveyModel, options: any) { // eslint-disable-line @typescript-eslint/no-explicit-any, max-len
@@ -92,8 +90,8 @@ export function useSurveyJSModel(
     pager.updatePageNumber(newPage)
   }
 
-  /** syncs the surveyJS survey model with the given data/pageNumber */
-  function refreshSurvey(refreshData: SurveyJsResumeData | null, pagerPageNumber: number | null) {
+  /** returns a surveyJS survey model with the given data/pageNumber */
+  function newSurveyJSModel(refreshData: SurveyJsResumeData | null, pagerPageNumber: number | null) {
     const newSurveyModel = surveyJSModelFromForm(form)
 
     Object.entries(extraCssClasses).forEach(([elementPath, className]) => {
@@ -117,9 +115,16 @@ export function useSurveyJSModel(
     newSurveyModel.currentPageNo = pageNumber
     newSurveyModel.setVariable('profile', profile)
     newSurveyModel.setVariable('portalEnvironmentName', portalEnv.environmentName)
-    setSurveyModel(newSurveyModel)
+    newSurveyModel.onComplete.add(onComplete)
+    newSurveyModel.onCurrentPageChanged.add(handlePageChanged)
+    newSurveyModel.onTextMarkdown.add(applyMarkdown)
+    newSurveyModel.completedHtml = '<div></div>'  // the application UX will handle showing any needed messages
+    return newSurveyModel
   }
 
+  const refreshSurvey = (refreshData: SurveyJsResumeData | null, pagerPageNumber: number | null) => {
+    setSurveyModel(newSurveyJSModel(refreshData, pagerPageNumber))
+  }
 
   // handle external page number changes, e.g. browser back button
   useEffect(() => {
@@ -128,19 +133,6 @@ export function useSurveyJSModel(
     }
   }, [pager.pageNumber])
 
-  // load the initial data into the survey on page load
-  useEffect(() => refreshSurvey(resumeData, pager.pageNumber), [])
-
-  useEffect(() => {
-    // add the event handler here (rather than in initialize)
-    // so onComplete has the right scope of the model
-    if (surveyModel) {
-      surveyModel.onComplete.add(onComplete)
-      surveyModel.onCurrentPageChanged.add(handlePageChanged)
-      surveyModel.onTextMarkdown.add(applyMarkdown)
-      surveyModel.completedHtml = '<div></div>'  // the application UX will handle showing any needed messages
-    }
-  }, [surveyModel])
   const pageNumber = surveyModel ? surveyModel.currentPageNo + 1 : 1
   const SurveyComponent = surveyModel ? <SurveyJSComponent model={surveyModel}/> : <></>
   return { surveyModel, refreshSurvey, pageNumber, SurveyComponent, setSurveyModel }
@@ -186,34 +178,6 @@ export function getSurveyJsAnswerList(surveyJSModel: SurveyModel): Answer[] {
       return !key.endsWith(SURVEY_JS_OTHER_SUFFIX) && surveyJSModel.getQuestionByName(key)?.getType() !== 'html'
     })
     .map(([key, value]) => makeAnswer(value as SurveyJsValueType, key, surveyJSModel.data))
-}
-
-/** convert a list of answers and resumeData into the resume data format surveyJs expects */
-export function makeSurveyJsData(resumeData: string | undefined, answers: Answer[] | undefined, userId: string):
-  SurveyJsResumeData | null {
-  answers = answers ?? []
-  const answerHash = answers.reduce(
-    (hash: Record<string, SurveyJsValueType>, answer: Answer) => {
-      if (answer.objectValue) {
-        hash[answer.questionStableId] = JSON.parse(answer.objectValue)
-      } else {
-        hash[answer.questionStableId] = answer.stringValue ?? answer.numberValue ?? null
-      }
-      if (answer.otherDescription) {
-        hash[answer.questionStableId + SURVEY_JS_OTHER_SUFFIX] = answer.otherDescription
-      }
-      return hash
-    }, {})
-  let currentPageNo = 0
-  if (resumeData) {
-    const userResumeData = JSON.parse(resumeData)[userId]
-    // subtract 1 since surveyJS is 0-indexed
-    currentPageNo = userResumeData?.currentPageNo - 1
-  }
-  return {
-    data: answerHash,
-    currentPageNo
-  }
 }
 
 /** return an Answer for the given value.  This should be updated to take some sort of questionType/dataType param */

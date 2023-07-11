@@ -42,6 +42,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private DataChangeRecordService dataChangeRecordService;
     private WithdrawnEnrolleeService withdrawnEnrolleeService;
     private ParticipantUserService participantUserService;
+    private ParticipantNoteService participantNoteService;
     private KitRequestService kitRequestService;
 
 
@@ -58,7 +59,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            @Lazy DataChangeRecordService dataChangeRecordService,
                            @Lazy WithdrawnEnrolleeService withdrawnEnrolleeService,
                            @Lazy ParticipantUserService participantUserService,
-                           KitRequestService kitRequestService,
+                           ParticipantNoteService participantNoteService, KitRequestService kitRequestService,
                            SecureRandom secureRandom) {
         super(enrolleeDao);
         this.surveyResponseService = surveyResponseService;
@@ -72,6 +73,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.dataChangeRecordService = dataChangeRecordService;
         this.withdrawnEnrolleeService = withdrawnEnrolleeService;
         this.participantUserService = participantUserService;
+        this.participantNoteService = participantNoteService;
         this.kitRequestService = kitRequestService;
         this.secureRandom = secureRandom;
     }
@@ -126,6 +128,9 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         for (ConsentResponse consentResponse : consentResponseService.findByEnrolleeId(enrolleeId)) {
             consentResponseService.delete(consentResponse.getId(), cascades);
         }
+        participantNoteService.deleteByEnrollee(enrolleeId);
+        kitRequestService.deleteByEnrolleeId(enrolleeId, cascades);
+
         notificationService.deleteByEnrolleeId(enrolleeId);
         dataChangeRecordService.deleteByEnrolleeId(enrolleeId);
         dao.delete(enrolleeId);
@@ -140,7 +145,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     @Transactional
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId, Set<CascadeProperty> cascade) {
         for (Enrollee enrollee : dao.findByStudyEnvironmentId(studyEnvironmentId)) {
-            kitRequestService.deleteByEnrolleeId(enrollee.getId(), cascade);
             delete(enrollee.getId(), cascade);
         }
     }

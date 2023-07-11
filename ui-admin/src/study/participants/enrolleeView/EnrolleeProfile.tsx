@@ -1,14 +1,17 @@
 import React from 'react'
 import { Enrollee, MailingAddress } from 'api/api'
-import { dateToDefaultString } from '../../../util/timeUtils'
+import { dateToDefaultString } from 'util/timeUtils'
+import ParticipantNotesView from './ParticipantNotesView'
+import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 
 /**
  * shows the enrollee profile.  Designed for read-only.  When we implement admin-profile editing capability,
  * we should do it via a survey so we can reuse that editing and snapshot infrastructure
  */
-export default function EnrolleeProfile({ enrollee }: {enrollee: Enrollee}) {
+export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
+{enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void}) {
   return <div>
-    <form>
+    <form className="mb-3">
       <div>
         <label className="form-label">
           Given name: <input className="form-control" type="text" readOnly={true} value={enrollee.profile.givenName}/>
@@ -44,10 +47,12 @@ export default function EnrolleeProfile({ enrollee }: {enrollee: Enrollee}) {
           <input className="form-control" type="text" readOnly={true} value={enrollee.profile.phoneNumber}/>
         </label>
       </div>
-      <h6>Mailing address</h6>
+      <h3 className="h6">Mailing address</h3>
       { enrollee.profile.mailingAddress && <MailingAddressView mailingAddress={enrollee.profile.mailingAddress}/>}
       { !enrollee.profile.mailingAddress && <span className="detail">none</span>}
     </form>
+    <ParticipantNotesView notes={enrollee.participantNotes} enrollee={enrollee}
+      studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>
   </div>
 }
 

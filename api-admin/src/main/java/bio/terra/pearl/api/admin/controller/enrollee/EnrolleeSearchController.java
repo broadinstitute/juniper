@@ -2,7 +2,7 @@ package bio.terra.pearl.api.admin.controller.enrollee;
 
 import bio.terra.pearl.api.admin.api.EnrolleeSearchApi;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
-import bio.terra.pearl.api.admin.service.EnrolleeExtService;
+import bio.terra.pearl.api.admin.service.enrollee.EnrolleeExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.participant.search.facets.FacetValueFactory;

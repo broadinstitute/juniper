@@ -7,19 +7,18 @@ import Api, {
   ConsentWithResponses,
   Enrollee,
   Portal,
-  StudyEnvironmentConsent,
-  SurveyJsResumeData
+  StudyEnvironmentConsent
 } from 'api/api'
 
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import {
   getResumeData,
   getSurveyJsAnswerList,
-  makeSurveyJsData,
   PageNumberControl,
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
+import { makeSurveyJsData, SurveyJsResumeData } from '@juniper/ui-core'
 import { HubUpdate } from 'hub/hubUpdates'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
