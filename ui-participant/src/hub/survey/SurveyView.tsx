@@ -30,6 +30,7 @@ import SurveyReviewModeButton from './ReviewModeButton'
 import { Markdown } from '../../landing/Markdown'
 import { SurveyModel } from 'survey-core'
 import { DocumentTitle } from 'util/DocumentTitle'
+import {defaultApiErrorHandle} from "../../util/error-utils";
 
 const TASK_ID_PARAM = 'taskId'
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
@@ -45,9 +46,10 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
   const navigate = useNavigate()
   const { updateEnrollee } = useUser()
   const prevSave = useRef(resumableData?.data ?? {})
+  const lastAutoSaveErrored = useRef(false)
 
   /** Submit the response to the server */
-  const onComplete = () => {
+  const onComplete = async () => {
     if (!surveyModel || !refreshSurvey) {
       return
     }
@@ -62,7 +64,7 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
       complete: true
     } as SurveyResponse
 
-    Api.submitSurveyResponse({
+    await Api.submitSurveyResponse({
       studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
       version: form.version, response: responseDto, taskId
     }).then(response => {
@@ -75,15 +77,16 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
         }
       }
       updateEnrollee(response.enrollee).then(() => { navigate('/hub', { state: hubUpdate }) })
-    }).catch(() => {
+    }).catch((e) => {
+      defaultApiErrorHandle(e)
       refreshSurvey(surveyModel, null)
-      alert('an error occurred')
     })
   }
 
   const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData,
     onComplete, pager, enrollee.profile)
 
+  /** if the survey has been updated, save the updated answers. */
   const saveDiff = () => {
     const updatedAnswers = getUpdatedAnswers(prevSave.current as Record<string, object>, surveyModel.data)
     if (updatedAnswers.length < 1) {
@@ -119,10 +122,15 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
        * visible components that use the enrollee object--otherwise they would not be refreshed
        */
       updateEnrollee(updatedEnrollee, true)
-    }).catch(() => {
+    }).catch((e) => {
       // if the operation fails, restore the state from before so the next diff operation will capture the changes
       // that failed to save this time
       prevSave.current = prevPrevSave
+      if (!lastAutoSaveErrored.current) {
+        // only log & alert if this is the first autosave problem to avoid spamming logs & alerts
+        defaultApiErrorHandle(e, 'Autosave unexpectedly failed, please reload the page')
+      }
+      lastAutoSaveErrored.current = true
     })
   }
 

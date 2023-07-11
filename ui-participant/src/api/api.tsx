@@ -155,7 +155,7 @@ export default {
     if (response.ok) {
       return obj
     }
-    return Promise.reject(response)
+    return Promise.reject(obj)
   },
 
   async getConfig(): Promise<Config> {
@@ -327,7 +327,10 @@ export default {
     }
     const result = await fetch(url, {
       method: 'POST',
-      headers: this.getInitHeaders(),
+      headers: {
+        ...this.getInitHeaders(),
+        Authorization: 'foo'
+      },
       body: JSON.stringify(response)
     })
     return await this.processJsonResponse(result)

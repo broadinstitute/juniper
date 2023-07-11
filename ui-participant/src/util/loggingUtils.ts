@@ -1,19 +1,9 @@
-import Api, { getEnvSpec } from 'api/api'
+import Api, {getEnvSpec, LogEvent} from 'api/api'
 
 /** listens to all window errors and logs them  */
 const setupErrorLogger = () => {
   window.addEventListener('error', event => {
-    const envSpec = getEnvSpec()
-    Api.log({
-      eventType: 'ERROR',
-      eventName: 'jserror',
-      portalShortcode: envSpec.shortcode ?? envSpec.shortcodeOrHostname,
-      // TODO figure out how to get username and studyShortcode here
-      environmentName: envSpec.envName,
-      // TODO adding browser agent stuff will likely be helpful
-      eventDetail: JSON.stringify({ message: event.error.message }),
-      stackTrace: event.error.stack
-    })
+    logError({ message: event.error.message }, event.error.stack)
   })
 }
 
@@ -21,12 +11,34 @@ export default setupErrorLogger
 
 /** logs web vitals from reportWebVitals */
 export const logVitals = (metric: object) => {
-  const envSpec = getEnvSpec()
-  Api.log({
+  log({
     eventType: 'STATS',
     eventName: 'webvitals',
-    portalShortcode: envSpec.shortcode ?? envSpec.shortcodeOrHostname,
-    environmentName: envSpec.envName,
     eventDetail: JSON.stringify(metric)
+  })
+}
+
+/**
+ * logs an event to the server. This takes care of setting the portalShortcode and environmentName on the event
+ * in the future, this should handle getting username and studyShortcode here and/or browser agent stuff
+ */
+export const log = (event: LogEvent) => {
+  const envSpec = getEnvSpec()
+  event.portalShortcode = envSpec.shortcode ?? envSpec.shortcodeOrHostname
+  event.environmentName = envSpec.envName
+  Api.log(event)
+}
+
+export type ErrorEventDetail = {
+  message: string,
+  responseCode?: number
+}
+
+export const logError = (detail: ErrorEventDetail, stackTrace: string) => {
+  Api.log({
+    eventType: 'ERROR',
+    eventName: 'jserror',
+    eventDetail: JSON.stringify(detail),
+    stackTrace
   })
 }
