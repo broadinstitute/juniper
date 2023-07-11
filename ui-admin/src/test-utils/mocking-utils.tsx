@@ -1,6 +1,6 @@
 import React from 'react'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { AdminUser, DatasetDetails, Enrollee } from 'api/api'
+import {AdminUser, DatasetDetails, Enrollee, Portal} from 'api/api'
 import { Survey } from '@juniper/ui-core/build/types/forms'
 import { ParticipantTask } from '@juniper/ui-core/build/types/task'
 
@@ -15,19 +15,21 @@ const randomString = (length: number) => {
   return _times(length, () => _random(35).toString(36)).join('')
 }
 
+export const mockPortal: () => Portal = () => ({
+  id: 'fakeportalid1',
+  name: 'mock portal',
+  shortcode: 'mock4u',
+  portalStudies: [],
+  portalEnvironments: [
+    mockPortalEnvironment('sandbox')
+  ]
+})
+
 /** returns a simple portalContext, loosely modeled on OurHealth */
 export const mockPortalContext: () => LoadedPortalContextT = () => ({
-  portal: {
-    id: 'fakeportalid1',
-    name: 'mock portal',
-    shortcode: 'mock4u',
-    portalStudies: [],
-    portalEnvironments: [
-      mockPortalEnvironment('sandbox')
-    ]
-  },
+  portal: mockPortal(),
   updatePortal: () => null,
-  reloadPortal: () => null,
+  reloadPortal: () => Promise.resolve(mockPortal()),
   isError: false,
   isLoading: false
 })

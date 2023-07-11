@@ -7,7 +7,7 @@ import { NavBreadcrumb } from 'navbar/AdminNavbar'
 
 export type PortalContextT = {
   updatePortal: (portal: Portal) => void
-  reloadPortal: (shortcode: string, onReload: () => void) => void,
+  reloadPortal: (shortcode: string) => Promise<Portal | null>,
   portal: Portal | null,
   isLoading: boolean,
   isError: boolean
@@ -15,7 +15,7 @@ export type PortalContextT = {
 
 export type LoadedPortalContextT = {
   updatePortal: (portal: Portal) => void
-  reloadPortal: (shortcode: string, onReload: () => void) => void
+  reloadPortal: (shortcode: string) => Promise<Portal>
   portal: Portal
 }
 
@@ -26,7 +26,7 @@ export type PortalParams = {
 
 export const PortalContext = React.createContext<PortalContextT>({
   updatePortal: () => alert('error - portal not yet loaded'),
-  reloadPortal: () => alert('error - portal not yet loaded'),
+  reloadPortal: () => Promise.resolve(null),
   portal: null,
   isLoading: true,
   isError: false
@@ -58,21 +58,22 @@ function RawPortalProvider({ shortcode, children }:
   }
 
   /** grabs the latest from the server and updates the portal object */
-  function reloadPortal(shortcode: string, onReload: () => void) {
-    Api.getPortal(shortcode).then(result => {
+  function reloadPortal(shortcode: string): Promise<Portal> {
+    return Api.getPortal(shortcode).then(result => {
       setPortalState(result)
       setIsError(false)
       setIsLoading(false)
-      onReload()
+      return result
     }).catch(() => {
       setIsError(true)
       setIsLoading(false)
       setPortalState(null)
+      throw new Error('error - portal could not be loaded')
     })
   }
 
   useEffect(() => {
-    reloadPortal(shortcode, () => undefined)
+    void reloadPortal(shortcode)
   }, [shortcode])
 
   const portalContext: PortalContextT  = {

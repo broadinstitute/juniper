@@ -47,9 +47,8 @@ const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {s
         }
       )
 
-      portalContext.reloadPortal(studyEnvContext.portal.shortcode, () => {
-        navigate(`surveys/${surveyStableId}?readOnly=${isReadOnlyEnv}`)
-      })
+      await portalContext.reloadPortal(studyEnvContext.portal.shortcode)
+      navigate(`surveys/${surveyStableId}?readOnly=${isReadOnlyEnv}`)
     } catch (err) {
       Store.addNotification(
         failureNotification(`Error configuring survey: ${err}`))
