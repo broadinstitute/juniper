@@ -34,6 +34,7 @@ export type ErrorEventDetail = {
   responseCode?: number
 }
 
+/** specific helper function for logging an error */
 export const logError = (detail: ErrorEventDetail, stackTrace: string) => {
   Api.log({
     eventType: 'ERROR',

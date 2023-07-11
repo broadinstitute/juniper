@@ -30,7 +30,6 @@ import SurveyReviewModeButton from './ReviewModeButton'
 import { Markdown } from '../../landing/Markdown'
 import { SurveyModel } from 'survey-core'
 import { DocumentTitle } from 'util/DocumentTitle'
-import { defaultApiErrorHandle } from '../../util/error-utils'
 
 const TASK_ID_PARAM = 'taskId'
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
@@ -77,8 +76,7 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
         }
       }
       updateEnrollee(response.enrollee).then(() => { navigate('/hub', { state: hubUpdate }) })
-    }).catch(e => {
-      defaultApiErrorHandle(e)
+    }).catch(() => {
       refreshSurvey(surveyModel, null)
     })
   }
