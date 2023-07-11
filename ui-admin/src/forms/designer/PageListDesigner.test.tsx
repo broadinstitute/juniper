@@ -4,7 +4,7 @@ import React from 'react'
 
 import { FormContent } from '@juniper/ui-core'
 
-import { PageListDesigner } from './PageListDesigner';
+import { PageListDesigner } from './PageListDesigner'
 
 describe('PageListDesigner', () => {
   const formContent: FormContent = {
