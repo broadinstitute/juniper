@@ -24,8 +24,6 @@ export default function MailingListForm(props: MailingListFormProps) {
     Api.submitMailingListContact(name, email).then(() => {
       setJoined(true)
       onJoin?.()
-    }).catch((e: Error) => {
-      alert(`an error occured ${e.message}`)
     })
   }
   // minimal validation - name not null and email has an @ and dots

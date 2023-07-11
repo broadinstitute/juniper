@@ -76,7 +76,6 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
       })
     }).catch(() => {
       refreshSurvey(surveyModel, null)
-      alert('an error occurred')
     })
   }
 
@@ -118,6 +117,8 @@ export default function ConsentView() {
   const stableId = params.stableId
   const version = parseInt(params.version ?? '')
   const studyShortcode = params.studyShortcode
+  const navigate = useNavigate()
+
   if (!stableId || !version || !studyShortcode) {
     return <div>You must specify study, form, and version</div>
   }
@@ -127,12 +128,11 @@ export default function ConsentView() {
     Api.fetchConsentAndResponses({
       studyShortcode,
       enrolleeShortcode: enrollee.shortcode, stableId, version
+    }).then(response => {
+      setFormAndResponses(response)
+    }).catch(() => {
+      navigate('/hub')
     })
-      .then(response => {
-        setFormAndResponses(response)
-      }).catch(() => {
-        alert('error loading consent form - please retry')
-      })
   }, [])
 
   if (!formAndResponses) {

@@ -8,6 +8,7 @@ import {
   StudyEnvironmentSurvey,
   SurveyResponse
 } from '@juniper/ui-core'
+import {defaultApiErrorHandle} from "../util/error-utils";
 
 export type {
   Answer,
@@ -149,11 +150,15 @@ export default {
       method: 'GET'
     }
   },
-
-  async processJsonResponse(response: Response) {
+  
+  /** get the json from the response and alert and log any errors */
+  async processJsonResponse(response: Response, opts: {alertErrors: boolean} = {alertErrors: true}) {
     const obj = await response.json()
     if (response.ok) {
       return obj
+    }
+    if (opts.alertErrors) {
+      defaultApiErrorHandle(obj)
     }
     return Promise.reject(obj)
   },
@@ -316,9 +321,10 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async submitSurveyResponse({ studyShortcode, stableId, version, enrolleeShortcode, response, taskId }: {
+  async submitSurveyResponse({ studyShortcode, stableId, version, enrolleeShortcode, response, taskId, 
+                               alertErrors=true}: {
     studyShortcode: string, stableId: string, version: number, response: SurveyResponse, enrolleeShortcode: string,
-    taskId: string
+    taskId: string, alertErrors: boolean
   }): Promise<HubResponse> {
     let url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}`
       + `/surveys/${stableId}/${version}`
@@ -327,13 +333,10 @@ export default {
     }
     const result = await fetch(url, {
       method: 'POST',
-      headers: {
-        ...this.getInitHeaders(),
-        Authorization: 'foo'
-      },
+      headers: this.getInitHeaders(),
       body: JSON.stringify(response)
     })
-    return await this.processJsonResponse(result)
+    return await this.processJsonResponse(result, {alertErrors})
   },
 
   async submitMailingListContact(name: string, email: string) {
@@ -368,7 +371,7 @@ export default {
       method: 'POST',
       headers: this.getInitHeaders()
     })
-    const loginResult = await this.processJsonResponse(response)
+    const loginResult = await this.processJsonResponse(response, {alertErrors: false})
     if (loginResult?.user?.token) {
       bearerToken = loginResult.user.token
     }
@@ -392,7 +395,7 @@ export default {
       method: 'POST',
       headers: this.getInitHeaders()
     })
-    return await this.processJsonResponse(response)
+    return await this.processJsonResponse(response, {alertErrors: false})
   },
 
   async logout(): Promise<void> {

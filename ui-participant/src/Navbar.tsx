@@ -46,8 +46,6 @@ export default function Navbar(props: NavbarProps) {
     Api.logout().then(() => {
       logoutUser()
       window.location.href = '/'
-    }).catch(e => {
-      alert(`an error occurred during logout ${e}`)
     })
   }
 

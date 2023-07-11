@@ -66,7 +66,7 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
 
     await Api.submitSurveyResponse({
       studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
-      version: form.version, response: responseDto, taskId
+      version: form.version, response: responseDto, taskId, alertErrors: true
     }).then(response => {
       response.enrollee.participantTasks = response.tasks
       response.enrollee.profile = response.profile
@@ -104,9 +104,11 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
       surveyId: form.id,
       complete: activeResponse?.complete ?? false
     } as SurveyResponse
+    // only log & alert if this is the first autosave problem to avoid spamming logs & alerts
+    const alertErrors =  !lastAutoSaveErrored.current
     Api.submitSurveyResponse({
       studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
-      version: form.version, response: responseDto, taskId
+      version: form.version, response: responseDto, taskId, alertErrors
     }).then(response => {
       const updatedEnrollee = {
         ...response.enrollee,
@@ -122,14 +124,11 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
        * visible components that use the enrollee object--otherwise they would not be refreshed
        */
       updateEnrollee(updatedEnrollee, true)
-    }).catch((e) => {
+      lastAutoSaveErrored.current = false
+    }).catch(() => {
       // if the operation fails, restore the state from before so the next diff operation will capture the changes
       // that failed to save this time
       prevSave.current = prevPrevSave
-      if (!lastAutoSaveErrored.current) {
-        // only log & alert if this is the first autosave problem to avoid spamming logs & alerts
-        defaultApiErrorHandle(e, 'Autosave unexpectedly failed, please reload the page')
-      }
       lastAutoSaveErrored.current = true
     })
   }
@@ -203,6 +202,7 @@ function SurveyView() {
 
   const [searchParams] = useSearchParams()
   const taskId = searchParams.get(TASK_ID_PARAM) ?? ''
+  const navigate = useNavigate()
 
   if (!stableId || !version || !studyShortcode) {
     return <div>You must specify study, form, and version</div>
@@ -217,7 +217,7 @@ function SurveyView() {
       .then(response => {
         setFormAndResponse(response)
       }).catch(() => {
-        alert('error loading survey form - please retry')
+      navigate('/hub')
       })
   }, [])
 

@@ -52,7 +52,6 @@ export default function PreEnrollView({ enrollContext, survey }:
         updatePreEnrollResponseId(result.id as string)
       }
     }).catch(() => {
-      alert('an error occurred, please retry')
       updatePreEnrollResponseId(null)
       // SurveyJS doesn't support "uncompleting" surveys, so we have to reinitialize it
       // (for now we assume prereg is only a single page)
