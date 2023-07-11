@@ -52,4 +52,13 @@ describe('PageListDesigner', () => {
       ]
     })
   })
+
+  it('shows a message when there are no pages', async () => {
+    // Arrange
+    const onChange = jest.fn()
+    render(<PageListDesigner formContent={{ title: 'Empty form', pages: [] }} readOnly={false} onChange={onChange} />)
+
+    // Assert
+    expect(screen.getByText('This form does not contain any pages.')).toBeInTheDocument()
+  })
 })
