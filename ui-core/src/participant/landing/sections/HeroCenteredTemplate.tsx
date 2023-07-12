@@ -2,16 +2,17 @@ import _ from 'lodash'
 import classNames from 'classnames'
 import React from 'react'
 
-import { SectionConfig } from 'src/types/landingPageConfig'
-import { getSectionStyle } from 'src/participant/util/styleUtils'
-import { withValidatedSectionConfig } from 'src/participant/util/withValidatedSectionConfig'
-import { requireOptionalArray, requireOptionalString } from 'src/participant/util/validationUtils'
+import { SectionConfig } from '../../../types/landingPageConfig'
+import { getSectionStyle } from '../../../participant/util/styleUtils'
+import { withValidatedSectionConfig } from '../../../participant/util/withValidatedSectionConfig'
+import { requireOptionalArray, requireOptionalString } from '../../../participant/util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
 import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
 import { InlineMarkdown, Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
+import {useApiContext} from "../../../participant/ApiProvider";
 
 type HeroCenteredTemplateConfig = {
   blurb?: string, //  text below the title
@@ -51,7 +52,7 @@ type HeroCenteredTemplateProps = TemplateComponentProps<HeroCenteredTemplateConf
 function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
   const { anchorRef, config } = props
   const { blurb, blurbAlign, buttons, title, image } = config
-
+  const { getImageUrl } = useApiContext()
   const hasTitle = !!title
   const hasBlurb = !!blurb
   const hasImage = !!image
@@ -61,7 +62,7 @@ function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
   const hasContentFollowingBlurb = hasImage || hasButtons
   const hasContentFollowingImage = hasButtons
 
-  return <div id={anchorRef} className="row mx-0" style={getSectionStyle(config)}>
+  return <div id={anchorRef} className="row mx-0" style={getSectionStyle(config, getImageUrl)}>
     <div className="col-12 col-sm-10 col-lg-6 mx-auto text-center">
       {hasTitle && (
         <h2 className={classNames('fs-1 fw-normal lh-sm', hasContentFollowingTitle ? 'mb-4' : 'mb-0')}>

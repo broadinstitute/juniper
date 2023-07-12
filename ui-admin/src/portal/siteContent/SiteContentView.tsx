@@ -1,51 +1,97 @@
 import React, { useState } from 'react'
-import { HtmlPage, NavbarItemInternal, PortalEnvironment } from '../../api/api'
+import { NavbarItemInternal, PortalEnvironment } from 'api/api'
+import Select from 'react-select'
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faPlus} from "@fortawesome/free-solid-svg-icons";
+import HtmlPageEditView from "./HtmlPageEditView";
+import {HtmlPage, LocalSiteContent, NavbarItem, SiteContent} from "@juniper/ui-core/build/types/landingPageConfig";
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
-const SiteContentView = ({ portalEnv }: {portalEnv: PortalEnvironment}) => {
+type NavbarOption = {label: string, value: NavbarItemInternal | null}
+const landingPageOption = {label: 'Landing page', value: null}
+
+
+const InitializedSiteContentView = ({siteContent}: {siteContent: SiteContent}) => {
   const selectedLanguage = 'en'
-  const [selectedNavItem, setSelectedNavItem] = useState<NavbarItemInternal | null>(null)
+  const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
+  const [workingContent, setWorkingContent] = useState<SiteContent>(siteContent)
 
-  if (!portalEnv.siteContent) {
-    return <div>no site content configured yet</div>
+  const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage)
+
+  const updateLocalContent = (localContent: LocalSiteContent) => {
+    const matchedIndex = workingContent.localizedSiteContents
+      .findIndex(lsc => lsc.language === localContent.language)
+    workingContent.localizedSiteContents[matchedIndex] = localContent
+    setWorkingContent(workingContent)
   }
-  const localContent = portalEnv.siteContent?.localizedSiteContents.find(lsc => lsc.language === selectedLanguage)
+
+  const updatePage = (page: HtmlPage, navItem: NavbarItemInternal | null) => {
+    if (!localContent) {
+      return
+    }
+    const updatedLocalContents = [...workingContent.localizedSiteContents]
+    const updatedIndex = updatedLocalContents.findIndex(lsc => lsc.language === selectedLanguage)
+    const updatedLocalContent = updatedLocalContents[updatedIndex]
+
+    if (!navItem) {
+      updatedLocalContents[updatedIndex] = {
+        ...updatedLocalContent,
+        landingPage: page
+      }
+    } else {
+      const updatedNavBarItems = [...updatedLocalContent.navbarItems]
+      updatedNavBarItems[navItem.itemOrder] = navItem
+      updatedLocalContents[updatedIndex] = {
+        ...updatedLocalContent,
+        navbarItems: updatedNavBarItems
+      }
+    }
+    const newWorkingContent: SiteContent = {
+      ...workingContent,
+      localizedSiteContents: updatedLocalContents
+    }
+    setWorkingContent(newWorkingContent)
+  }
+
+
   if (!localContent) {
     return <div>no content for language {selectedLanguage}</div>
   }
-  const renderedTitle = selectedNavItem ? selectedNavItem.text : 'Landing page'
-  const pageToRender = selectedNavItem ? selectedNavItem.htmlPage : localContent.landingPage
+  const currentNavBarItem = selectedNavOpt.value ? selectedNavOpt.value : null
+  const pageToRender = currentNavBarItem ? currentNavBarItem.htmlPage : localContent.landingPage
 
-  return <div className="container d-flex bg-white p-3">
-    <ul className="list-group">
-      <li className="list-group-item" onClick={() => setSelectedNavItem(null)}>Landing page</li>
-      {localContent.navbarItems
-        .filter((navItem): navItem is NavbarItemInternal => navItem.itemType === 'INTERNAL')
-        .map(navItem => <li key={navItem.text} className="list-group-item" role="button"
-          onClick={() => setSelectedNavItem(navItem)}>
-          {navItem.text}
-        </li>
-        )}
-    </ul>
+  const pageOpts: {label: string, value: NavbarItemInternal | null}[] = localContent.navbarItems
+    .filter((navItem): navItem is NavbarItemInternal => navItem.itemType === 'INTERNAL')
+    .map(navItem => ({label: navItem.text, value: navItem}))
+  pageOpts.unshift({label: 'Landing page', value: null})
+
+  return <div className="d-flex bg-white p-3">
     <div className="ps-3">
-      <h2 className="h5">{renderedTitle}</h2>
+      <div className="d-flex mb-3">
+        <div>
+          <Select options={pageOpts} value={selectedNavOpt}
+                  onChange={e => setSelectedNavOpt(e ?? landingPageOption)}/>
+        </div>
+        <button className="btn btn-secondary" onClick={() => alert('not yet implemented')}>
+          <FontAwesomeIcon icon={faPlus}/> Add page
+        </button>
+      </div>
+
+
       <div>
-        {pageToRender && <HtmlPageView htmlPage={pageToRender}/>}
+        {pageToRender && <HtmlPageEditView htmlPage={pageToRender}
+                                           updatePage={(page) => updatePage(page, currentNavBarItem)}/>}
       </div>
     </div>
   </div>
 }
 
-const HtmlPageView = ({ htmlPage }: {htmlPage: HtmlPage}) => {
-  return <div>
-    {htmlPage.sections.map((section, index) => {
-      const textValue = JSON.stringify(JSON.parse(section?.sectionConfig ?? '{}'), null, 2)
-      return <div key={index}>
-        <textarea readOnly value={textValue} rows={8} cols={120}/>
-      </div>
-    })}
-  </div>
+
+/** shows a view for editing site content pages */
+const SiteContentView = ({ portalEnv }: {portalEnv: PortalEnvironment}) => {
+  if (!portalEnv.siteContent) {
+    return <div>no site content configured yet</div>
+  }
+  return <InitializedSiteContentView siteContent={portalEnv.siteContent}/>
 }
 
 export default SiteContentView

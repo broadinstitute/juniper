@@ -1,9 +1,7 @@
-import _ from 'lodash'
-import React from 'react'
+import React from "react";
 
-import { HtmlPage, HtmlSection, SectionConfig, SectionType } from 'api/api'
-import { DocumentTitle } from 'util/DocumentTitle'
-import { isPlainObject } from 'util/validationUtils'
+import { HtmlSection, SectionConfig, SectionType } from '../../../types/landingPageConfig'
+import { isPlainObject } from '../../../participant/util/validationUtils'
 
 import BannerImage from './BannerImage'
 import FrequentlyAskedQuestionsTemplate from './FrequentlyAskedQuestionsTemplate'
@@ -18,6 +16,7 @@ import LinkSectionsFooter from './LinkSectionsFooter'
 import { TemplateComponent } from './templateUtils'
 
 
+
 const templateComponents: Record<SectionType, TemplateComponent> = {
   'FAQ': FrequentlyAskedQuestionsTemplate,
   'HERO_CENTERED': HeroCenteredTemplate,
@@ -29,16 +28,6 @@ const templateComponents: Record<SectionType, TemplateComponent> = {
   'RAW_HTML': RawHtmlTemplate,
   'LINK_SECTIONS_FOOTER': LinkSectionsFooter,
   'BANNER_IMAGE': BannerImage
-}
-
-/** renders a configured HtmlPage */
-export default function HtmlPageView({ page }: { page: HtmlPage }) {
-  return <>
-    <DocumentTitle title={page.title} />
-    {
-      _.map(page.sections, (section: HtmlSection) => <HtmlSectionView section={section} key={section.id}/>)
-    }
-  </>
 }
 
 /** Get the template component for rendering a section */

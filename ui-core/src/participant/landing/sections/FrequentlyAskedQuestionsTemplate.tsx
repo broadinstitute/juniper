@@ -6,15 +6,16 @@ import classNames from 'classnames'
 import _ from 'lodash'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
-import { SectionConfig } from 'src/types/landingPageConfig'
-import { getSectionStyle } from 'src/participant/util/styleUtils'
+import { SectionConfig } from '../../../types/landingPageConfig'
+import { getSectionStyle } from '../../../participant/util/styleUtils'
 import { requireOptionalBoolean, requireOptionalString, requirePlainObject, requireString }
-  from 'src/participant/util/validationUtils'
-import { withValidatedSectionConfig } from 'src/participant/util/withValidatedSectionConfig'
+  from '../../../participant/util/validationUtils'
+import { withValidatedSectionConfig } from '../../../participant/util/withValidatedSectionConfig'
 
 import { Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
+import {useApiContext} from "../../../participant/ApiProvider";
 
 const idFor = (question: string): string => {
   return _.kebabCase(question)
@@ -122,6 +123,8 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
     title = 'Frequently Asked Questions'
   } = config
 
+  const { getImageUrl } = useApiContext()
+
   const [numExpandedQuestions, setNumExpandedQuestions] = useState(0)
   const allQuestionsAreExpanded = numExpandedQuestions === questions.length
 
@@ -143,7 +146,7 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
     collapses.forEach(el => { Collapse.getOrCreateInstance(el).hide() })
   }, [])
 
-  return <div id={anchorRef} className="row mx-0 justify-content-center" style={getSectionStyle(config)}>
+  return <div id={anchorRef} className="row mx-0 justify-content-center" style={getSectionStyle(config, getImageUrl)}>
     <div className="col-12 col-sm-8 col-lg-6">
       {!!title && (
         <h2 className="fs-1 fw-normal lh-sm mb-4 text-center">{title}</h2>

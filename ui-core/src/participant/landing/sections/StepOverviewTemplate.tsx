@@ -1,17 +1,18 @@
 import _ from 'lodash'
 import React from 'react'
 
-import { SectionConfig } from 'src/types/landingPageConfig'
-import { getSectionStyle } from 'src/participant/util/styleUtils'
-import { withValidatedSectionConfig } from 'src/participant/util/withValidatedSectionConfig'
+import { SectionConfig } from '../../../types/landingPageConfig'
+import { getSectionStyle } from '../../../participant/util/styleUtils'
+import { withValidatedSectionConfig } from '../../../participant/util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString }
-  from 'src/participant/util/validationUtils'
+  from '../../../participant/util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
 import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
 import { InlineMarkdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
+import {useApiContext} from "../../../participant/ApiProvider";
 
 type StepConfig = {
   image: ImageConfig,
@@ -53,9 +54,9 @@ function StepOverviewTemplate(props: StepOverviewTemplateProps) {
   const { buttons, steps, title } = config
 
   const hasButtons = (buttons || []).length > 0
-
+  const { getImageUrl } = useApiContext()
   // TODO: improve layout code for better flexing, especially with <> 4 steps
-  return <div id={anchorRef} style={getSectionStyle(config)}>
+  return <div id={anchorRef} style={getSectionStyle(config, getImageUrl)}>
     {!!title && (
       <h2 className="fs-1 fw-normal lh-sm text-center">
         <InlineMarkdown>{title}</InlineMarkdown>

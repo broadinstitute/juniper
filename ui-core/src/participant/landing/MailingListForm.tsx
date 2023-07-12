@@ -1,9 +1,9 @@
-import Api from 'api/api'
 import classNames from 'classnames'
 import React, { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope } from '@fortawesome/free-regular-svg-icons'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
+import {useApiContext} from "../../participant/ApiProvider";
 
 type MailingListFormProps = {
   onJoin?: () => void
@@ -16,12 +16,12 @@ export default function MailingListForm(props: MailingListFormProps) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [joined, setJoined] = useState(false)
-
+  const { submitMailingListContact } = useApiContext()
   const containerClasses = classNames('d-flex', 'flex-column', 'align-items-center', 'mx-auto')
 
   const submit = (e: React.SyntheticEvent) => {
     e.preventDefault()
-    Api.submitMailingListContact(name, email).then(() => {
+    submitMailingListContact(name, email).then(() => {
       setJoined(true)
       onJoin?.()
     })

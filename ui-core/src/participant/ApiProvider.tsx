@@ -1,11 +1,15 @@
 import React, {useContext} from 'react'
 
+export type ImageUrlFunc = (cleanFileName: string, version: number) => string
+export type SubmitMailingListContactFunc = (name: string, email: string) => Promise<object>
 export type ApiContextT = {
-  getImageUrl: (cleanFileName: string, version: number) => string
+  getImageUrl: ImageUrlFunc,
+  submitMailingListContact: SubmitMailingListContactFunc
 }
 
 export const previewApi: ApiContextT = {
-  getImageUrl: () => ''
+  getImageUrl: () => '',
+  submitMailingListContact: () => Promise.resolve({})
 }
 
 const ApiContext = React.createContext<ApiContextT>(previewApi)
@@ -13,7 +17,7 @@ export const useApiContext = () => {
   return useContext(ApiContext)
 }
 
-export function ApiProvider({api, children}: {api: ApiContextT, children: React.ReactNode}) {
+export const ApiProvider = ({api, children}: {api: ApiContextT, children: React.ReactNode}) => {
   return <ApiContext.Provider value={api}>
     {children}
   </ApiContext.Provider>

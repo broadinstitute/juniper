@@ -3,12 +3,13 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { faFacebook, faInstagram, faTwitter } from '@fortawesome/free-brands-svg-icons'
 import React from 'react'
 
-import { SectionConfig } from 'src/types/landingPageConfig'
-import { getSectionStyle } from 'src/participant/util/styleUtils'
-import { withValidatedSectionConfig } from 'src/participant/util/withValidatedSectionConfig'
-import { requireOptionalString } from 'src/participant/util/validationUtils'
+import { SectionConfig } from '../../../types/landingPageConfig'
+import { getSectionStyle } from '../../../participant/util/styleUtils'
+import { withValidatedSectionConfig } from '../../../participant/util/withValidatedSectionConfig'
+import { requireOptionalString } from '../../../participant/util/validationUtils'
 
 import { TemplateComponentProps } from './templateUtils'
+import {useApiContext} from "../../../participant/ApiProvider";
 
 type SocialMediaSite = 'Facebook' | 'Instagram' | 'Twitter'
 
@@ -82,9 +83,9 @@ type SocialMediaTemplateProps = TemplateComponentProps<SocialMediaTemplateConfig
  */
 function SocialMediaTemplate(props: SocialMediaTemplateProps) {
   const { anchorRef, config } = props
-
+  const { getImageUrl } = useApiContext()
   return (
-    <div id={anchorRef} className="row mx-0" style={getSectionStyle(config)}>
+    <div id={anchorRef} className="row mx-0" style={getSectionStyle(config, getImageUrl)}>
       <div className="hstack justify-content-center gap-2">
         {socialMediaSites.map(site => {
           const handleKey = `${site.label.toLowerCase()}Handle` as HandleKey

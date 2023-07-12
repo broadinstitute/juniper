@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { Portal } from 'api/api'
-import MailingListForm from 'landing/MailingListForm'
+import MailingListForm from '@juniper/ui-core/build/participant/landing/MailingListForm'
 
 type StudyIneligibleProps = {
   portal: Portal

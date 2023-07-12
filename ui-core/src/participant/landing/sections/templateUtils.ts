@@ -1,4 +1,4 @@
-import {SectionConfig} from "src/types/landingPageConfig";
+import {SectionConfig} from "../../../types/landingPageConfig";
 
 
 export type TemplateComponentProps<ConfigType extends SectionConfig = SectionConfig> = {

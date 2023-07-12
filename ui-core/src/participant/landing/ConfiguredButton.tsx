@@ -2,7 +2,7 @@ import classNames from 'classnames'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { requireOptionalString, requirePlainObject, requireString } from 'src/participant/util/validationUtils'
+import { requireOptionalString, requirePlainObject, requireString } from '../../participant/util/validationUtils'
 
 type JoinButtonConfig = {
   type: 'join'

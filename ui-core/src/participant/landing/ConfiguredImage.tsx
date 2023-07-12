@@ -1,9 +1,9 @@
 import classNames from 'classnames'
 import React, { CSSProperties } from 'react'
-import { useApiContext } from 'src/participant/ApiProvider'
+import { useApiContext } from '../../participant/ApiProvider'
 
 import { requireOptionalString, requireNumber, requirePlainObject, requireString }
-  from 'src/participant/util/validationUtils'
+  from '../../participant/util/validationUtils'
 
 export type ImageConfig = {
   cleanFileName: string,

@@ -1,10 +1,10 @@
 import classNames from 'classnames'
 import React, { useEffect, useId } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
-import { LocalSiteContent } from 'src/types/landingPageConfig'
+import { LocalSiteContent } from '@juniper/ui-core'
 import Navbar from '../Navbar'
-import { MailingListModal } from './MailingListModal'
-import { HtmlSectionView } from './sections/HtmlPageView'
+import { MailingListModal } from '@juniper/ui-core/build/participant/landing/MailingListModal'
+import { HtmlSectionView } from '@juniper/ui-core/build/participant/landing/sections/HtmlSectionView'
 
 /** renders the landing page for a portal (e.g. hearthive.org) */
 function LandingPageView({ localContent }: { localContent: LocalSiteContent }) {

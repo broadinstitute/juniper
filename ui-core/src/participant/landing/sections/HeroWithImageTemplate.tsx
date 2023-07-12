@@ -2,17 +2,18 @@ import classNames from 'classnames'
 import _ from 'lodash'
 import React from 'react'
 
-import { SectionConfig } from 'src/types/landingPageConfig'
-import { getSectionStyle } from 'src/participant/util/styleUtils'
-import { withValidatedSectionConfig } from 'src/participant/util/withValidatedSectionConfig'
+import { SectionConfig } from '../../../types/landingPageConfig'
+import { getSectionStyle } from '../../../participant/util/styleUtils'
+import { withValidatedSectionConfig } from '../../../participant/util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalNumber, requireOptionalString }
-  from 'src/participant/util/validationUtils'
+  from '../../../participant/util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
 import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
 import { InlineMarkdown, Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
+import {useApiContext} from "../../../participant/ApiProvider";
 
 type HeroWithImageTemplateConfig = {
   blurb?: string, //  text below the title
@@ -71,7 +72,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
     logos,
     title
   } = config
-
+  const { getImageUrl } = useApiContext()
   const isLeftImage = imagePosition === 'left' // default is right, so left has to be explicitly specified
   const imageWidthPercentage = _.isNumber(configuredImageWidthPercentage)
     ? _.clamp(configuredImageWidthPercentage, 0, 100)
@@ -90,7 +91,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
     <div
       className={classNames('row', 'py-0', 'mx-0', isLeftImage ? 'flex-row' : 'flex-row-reverse')}
       id={anchorRef}
-      style={getSectionStyle(config)}
+      style={getSectionStyle(config, getImageUrl)}
     >
       <div
         className={classNames(
