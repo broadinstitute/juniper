@@ -4,7 +4,7 @@ import React from 'react'
 import { FormContent } from '@juniper/ui-core'
 
 import { PagesList } from './PagesList'
-import { Button } from '../../components/forms/Button'
+import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
