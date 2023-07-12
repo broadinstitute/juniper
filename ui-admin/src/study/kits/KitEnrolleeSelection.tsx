@@ -21,7 +21,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import RequestKitModal from '../participants/RequestKitModal'
 
 /**
- *
+ * Interface for filtering/selecting enrollees who should receive sample kits.
  */
 export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext

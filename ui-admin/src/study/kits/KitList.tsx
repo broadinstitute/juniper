@@ -43,10 +43,10 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
     loadKits()
   }, [])
 
+  // Inspired by https://stackoverflow.com/a/70171464/244191
   type ApplyFunction<X, T, R> = (all: X, current: T) => R
   type GetFunction<T, R> = (t: T) => R
 
-  // Inspired by https://stackoverflow.com/a/70171464/244191
   const groupAndApplyByIndex = <T, V extends string | number, R>(data: Array<T>,
     get: GetFunction<T, V>,
     apply: ApplyFunction<Record<V, R>, V, R>) => {

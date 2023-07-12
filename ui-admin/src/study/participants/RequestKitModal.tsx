@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Modal } from 'react-bootstrap'
-import Api, { Enrollee, KitType } from 'api/api'
-import { StudyEnvContextT } from '../StudyEnvironmentRouter'
+import Api, { KitType } from 'api/api'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Select from 'react-select'
 
 /** Renders a modal for an admin to submit a sample collection kit request. */
