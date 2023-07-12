@@ -2,10 +2,11 @@ import classNames from 'classnames'
 import _ from 'lodash'
 import React from 'react'
 
-import { SectionConfig } from 'api/api'
-import { getSectionStyle } from 'util/styleUtils'
-import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
-import { requireOptionalArray, requireOptionalNumber, requireOptionalString } from 'util/validationUtils'
+import { SectionConfig } from 'src/types/landingPageConfig'
+import { getSectionStyle } from 'src/participant/util/styleUtils'
+import { withValidatedSectionConfig } from 'src/participant/util/withValidatedSectionConfig'
+import { requireOptionalArray, requireOptionalNumber, requireOptionalString }
+  from 'src/participant/util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
 import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'

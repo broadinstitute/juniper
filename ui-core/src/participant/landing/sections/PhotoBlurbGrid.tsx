@@ -1,10 +1,11 @@
 import classNames from 'classnames'
 import React from 'react'
 
-import { SectionConfig } from 'api/api'
-import { getSectionStyle } from 'util/styleUtils'
-import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
-import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
+import { SectionConfig } from 'src/types/landingPageConfig'
+import { getSectionStyle } from 'src/participant/util/styleUtils'
+import { withValidatedSectionConfig } from 'src/participant/util/withValidatedSectionConfig'
+import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString }
+  from 'src/participant/util/validationUtils'
 
 import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
 import { Markdown } from '../Markdown'

@@ -6,10 +6,11 @@ import classNames from 'classnames'
 import _ from 'lodash'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
-import { SectionConfig } from 'api/api'
-import { getSectionStyle } from 'util/styleUtils'
-import { requireOptionalBoolean, requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
-import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
+import { SectionConfig } from 'src/types/landingPageConfig'
+import { getSectionStyle } from 'src/participant/util/styleUtils'
+import { requireOptionalBoolean, requireOptionalString, requirePlainObject, requireString }
+  from 'src/participant/util/validationUtils'
+import { withValidatedSectionConfig } from 'src/participant/util/withValidatedSectionConfig'
 
 import { Markdown } from '../Markdown'
 

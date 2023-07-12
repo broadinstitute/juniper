@@ -1,4 +1,5 @@
-import { SectionConfig } from 'api/api'
+import {SectionConfig} from "src/types/landingPageConfig";
+
 
 export type TemplateComponentProps<ConfigType extends SectionConfig = SectionConfig> = {
   anchorRef?: string

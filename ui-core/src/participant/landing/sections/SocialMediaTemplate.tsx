@@ -3,10 +3,10 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { faFacebook, faInstagram, faTwitter } from '@fortawesome/free-brands-svg-icons'
 import React from 'react'
 
-import { SectionConfig } from 'api/api'
-import { getSectionStyle } from 'util/styleUtils'
-import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
-import { requireOptionalString } from 'util/validationUtils'
+import { SectionConfig } from 'src/types/landingPageConfig'
+import { getSectionStyle } from 'src/participant/util/styleUtils'
+import { withValidatedSectionConfig } from 'src/participant/util/withValidatedSectionConfig'
+import { requireOptionalString } from 'src/participant/util/validationUtils'
 
 import { TemplateComponentProps } from './templateUtils'
 

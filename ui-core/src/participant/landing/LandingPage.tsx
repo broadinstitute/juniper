@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import React, { useEffect, useId } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
-import { LocalSiteContent } from 'api/api'
+import { LocalSiteContent } from 'src/types/landingPageConfig'
 import Navbar from '../Navbar'
 import { MailingListModal } from './MailingListModal'
 import { HtmlSectionView } from './sections/HtmlPageView'

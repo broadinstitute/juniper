@@ -3,11 +3,11 @@ import { faEnvelope } from '@fortawesome/free-regular-svg-icons'
 import _ from 'lodash'
 import React from 'react'
 
-import { SectionConfig } from 'api/api'
-import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
-import { requireOptionalArray, requirePlainObject, requireString } from 'util/validationUtils'
+import { SectionConfig } from 'src/types/landingPageConfig'
+import { withValidatedSectionConfig } from 'src/participant/util/withValidatedSectionConfig'
+import { requireOptionalArray, requirePlainObject, requireString } from 'src/participant/util/validationUtils'
 
-import { ButtonConfig, ConfiguredLink, validateButtonConfig } from 'landing/ConfiguredButton'
+import { ButtonConfig, ConfiguredLink, validateButtonConfig } from 'src/participant/landing/ConfiguredButton'
 import { socialMediaSites } from './SocialMediaTemplate'
 import { TemplateComponentProps } from './templateUtils'
 
