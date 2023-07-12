@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { StudyEnvContextT } from './StudyEnvironmentRouter'
 import { Link } from 'react-router-dom'
@@ -9,6 +9,7 @@ import Api, { PortalEnvironmentConfig } from 'api/api'
 import NotificationConfigTypeDisplay, { deliveryTypeDisplayMap } from './notifications/NotifcationConfigTypeDisplay'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
 import { useConfig } from '../providers/ConfigProvider'
+import CreateSurveyModal from './surveys/CreateSurveyModal'
 
 /** renders the main configuration page for a study environment */
 function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -25,6 +26,8 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
     .find(env => env.environmentName === currentEnv.environmentName)?.portalEnvironmentConfig as PortalEnvironmentConfig
   const zoneConfig = useConfig()
   const isReadOnlyEnv = !(currentEnv.environmentName === 'sandbox')
+  const [showCreateSurveyModal, setShowCreateSurveyModal] = useState(false)
+
   currentEnv.configuredSurveys
     .sort((a, b) => a.surveyOrder - b.surveyOrder)
   currentEnv.configuredConsents
@@ -99,7 +102,9 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                   </li>
                 }) }
                 <li>
-                  <button className="btn btn-secondary" onClick={() => alert('not yet implemented')}>
+                  <button className="btn btn-secondary" data-testid={'addSurvey'} onClick={() => {
+                    setShowCreateSurveyModal(!showCreateSurveyModal)
+                  }}>
                     <FontAwesomeIcon icon={faPlus}/> Add
                   </button>
                 </li>
@@ -130,6 +135,10 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
             </div>
           </li>
         </ul> }
+        { <CreateSurveyModal studyEnvContext={studyEnvContext}
+          isReadOnlyEnv={isReadOnlyEnv}
+          show={showCreateSurveyModal}
+          setShow={setShowCreateSurveyModal}/> }
         { !currentEnv.studyEnvironmentConfig.initialized && <div>Not yet initialized</div> }
       </div>
     </div>
