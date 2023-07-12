@@ -19,6 +19,8 @@ export const PageListDesigner = (props: PageListDesignerProps) => {
   const { formContent, readOnly, onChange } = props
   const { pages = [] } = formContent
 
+  const newPage = () => ({ elements: [] })
+
   return (
     <>
       <h2>Pages</h2>
@@ -30,7 +32,7 @@ export const PageListDesigner = (props: PageListDesignerProps) => {
           onClick={() => {
             onChange({
               ...formContent,
-              pages: concat(pages, { elements: [] })
+              pages: concat(pages, newPage())
             })
           }}
         >
