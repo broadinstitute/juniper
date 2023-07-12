@@ -107,7 +107,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
         assertThat(exportData, hasSize(4));
         Map<String, String> jsalkMap = exportData.stream().filter(map -> "OHSALK".equals(map.get("enrollee.shortcode")))
                 .findFirst().get();
-        assertThat(jsalkMap.get("profile.mailingAddress.street1"), equalTo("123 Walnut Street"));
+        assertThat(jsalkMap.get("profile.mailingAddress.street1"), equalTo("415 Main Street"));
         assertThat(jsalkMap.get("oh_oh_cardioHx.oh_oh_cardioHx_worriedHeartHealth"),
                 equalTo("Yes, specifically about my heart"));
     }

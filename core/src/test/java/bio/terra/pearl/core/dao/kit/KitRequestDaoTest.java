@@ -75,6 +75,36 @@ public class KitRequestDaoTest extends BaseSpringBootTest {
         assertThat(incompleteKits, not(hasItem(completedKit)));
     }
 
+    @Transactional
+    @Test
+    public void testFindByStudyEnvironment() throws Exception {
+        var adminUser = adminUserFactory.buildPersisted("testFindByStudyEnvironment");
+        var kitType = kitTypeFactory.buildPersisted("testFindByStudyEnvironment");
+        var studyEnvironment1 = studyEnvironmentFactory.buildPersisted("testFindByStudyEnvironment 1");
+        var studyEnvironment2 = studyEnvironmentFactory.buildPersisted("testFindByStudyEnvironment 2");
+        var enrollee1 = enrolleeFactory.buildPersisted("testFindByStudyEnvironment 1", studyEnvironment1);
+        var enrollee2 = enrolleeFactory.buildPersisted("testFindByStudyEnvironment 2", studyEnvironment2);
+
+        var kit1 = kitRequestFactory.builder("testFindByStudyEnvironment 1")
+                .creatingAdminUserId(adminUser.getId())
+                .enrolleeId(enrollee1.getId())
+                .kitTypeId(kitType.getId())
+                .build();
+        kit1 = kitRequestDao.create(kit1);
+        var kit2 = kitRequestFactory.builder("testFindByStudyEnvironment 2")
+                .creatingAdminUserId(adminUser.getId())
+                .enrolleeId(enrollee2.getId())
+                .kitTypeId(kitType.getId())
+                .build();
+        kit2 = kitRequestDao.create(kit2);
+
+        var kits1 = kitRequestDao.findByStudyEnvironment(studyEnvironment1.getId());
+        assertThat(kits1, contains(kit1));
+
+        var kits2 = kitRequestDao.findByStudyEnvironment(studyEnvironment2.getId());
+        assertThat(kits2, contains(kit2));
+    }
+
     @Autowired
     private AdminUserFactory adminUserFactory;
     @Autowired

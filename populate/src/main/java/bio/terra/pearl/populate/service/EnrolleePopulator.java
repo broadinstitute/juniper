@@ -24,6 +24,7 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
 import bio.terra.pearl.core.service.kit.KitRequestService;
+import bio.terra.pearl.core.service.kit.PepperKitStatus;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.participant.*;
@@ -47,8 +48,13 @@ import bio.terra.pearl.populate.util.PopulateUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import org.springframework.stereotype.Service;
+
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.HOURS;
 
 @Service
 public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, StudyPopulateContext> {
@@ -413,11 +419,58 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 popDto.setSubmittedHoursAgo(PopulateUtils.randomInteger(0, 480)); //add some jitter to when they joined, to make graphs/views more interesting
                 popDto.setShortcode(PopulateUtils.randomShortcode(""));
 
+                if (PopulateUtils.randomBoolean(20)) {
+                    popDto.getKitRequestDtos().clear();
+                } else {
+                    popDto.getKitRequestDtos().forEach(kitDto -> {
+                        try {
+                            var pepperStatus = objectMapper.readValue(kitDto.getDsmStatusJson().toString(), PepperKitStatus.class);
+                            var status = PopulateUtils.randomItem(List.of("CREATED", "LABELED", "SCANNED", "RECEIVED"));
+                            // Set appropriate statuses:
+                            //   PepperKitStatus.currentStatus - status according to GP workflow in Pepper
+                            //   KitRequestPopDto.statusName - status according to study staff workflow in Juniper
+                            pepperStatus.setCurrentStatus(status);
+                            switch (status) {
+                                case "CREATED" -> kitDto.setStatusName("CREATED");
+                                case "LABELED", "SCANNED" -> kitDto.setStatusName("IN_PROGRESS");
+                                case "RECEIVED" -> kitDto.setStatusName("COMPLETE");
+                                default -> {
+                                    pepperStatus.setCurrentStatus("ERROR");
+                                    kitDto.setStatus(KitRequestStatus.FAILED);
+                                }
+                            }
+                            generateFakeDates(pepperStatus, status);
+                            kitDto.setDsmStatusJson(objectMapper.valueToTree(pepperStatus));
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
+
                 populateFromDto(popDto, context, false);
             } catch (IOException e) {
                 throw new RuntimeException("Unable to bulk populate enrollees due to error: " + e.getMessage());
             }
         });
+    }
+
+    private static void generateFakeDates(PepperKitStatus pepperStatus, String status) {
+        Instant recent = Instant.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault());
+        switch (status) {
+            // Intentional fall-through to set all dates up to and including the date of `status`
+            case "RECEIVED":
+                recent = recent.minus(PopulateUtils.randomInteger(1, 72), HOURS);
+                pepperStatus.setReceiveDate(formatter.format(recent));
+            case "SCANNED":
+                recent = recent.minus(PopulateUtils.randomInteger(10, 30), DAYS);
+                pepperStatus.setScanDate(formatter.format(recent));
+            case "LABELED":
+                recent = recent.minus(PopulateUtils.randomInteger(5, 7), DAYS);
+                pepperStatus.setLabelDate(formatter.format(recent));
+            case "CREATED":
+                // Unfortunately, we can't do much here because we don't allow modifying createdAt
+        }
     }
 
 

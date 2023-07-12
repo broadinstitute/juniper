@@ -3,15 +3,18 @@ package bio.terra.pearl.core.service.kit;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.time.Instant;
-
 @Getter @Setter
 @SuperBuilder @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class PepperDSMKitStatus {
+public class PepperKitStatus {
     private String kitId;
     private String currentStatus;
+    private String labelDate;
+    private String scanDate;
+    private String receiveDate;
+    private String trackingNumber;
+    private String returnTrackingNumber;
     private String errorMessage;
-    private Instant errorDate;
+    private String errorDate;
 }

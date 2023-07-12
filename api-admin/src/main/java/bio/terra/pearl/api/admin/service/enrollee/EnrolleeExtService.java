@@ -63,6 +63,15 @@ public class EnrolleeExtService {
     return enrolleeSearchService.search(studyShortcode, environmentName, facets);
   }
 
+  public List<Enrollee> findForKitManagement(
+      AdminUser user,
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName environmentName) {
+    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    return enrolleeService.findForKitManagement(studyShortcode, environmentName);
+  }
+
   public Enrollee findWithAdminLoad(AdminUser user, String enrolleeShortcode) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(user, enrolleeShortcode);
     return enrolleeService.loadForAdminView(enrollee);
@@ -90,6 +99,6 @@ public class EnrolleeExtService {
 
   public Collection<KitRequest> getKitRequests(AdminUser adminUser, String enrolleeShortcode) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(adminUser, enrolleeShortcode);
-    return kitRequestService.getKitRequests(adminUser, enrollee);
+    return kitRequestService.getKitRequests(enrollee);
   }
 }

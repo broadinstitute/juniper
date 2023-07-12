@@ -97,6 +97,11 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.findByStudyEnvironmentId(studyEnvironmentId);
     }
 
+    public List<Enrollee> findForKitManagement(String studyShortcode, EnvironmentName envName) {
+        StudyEnvironment studyEnvironment = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
+        return dao.findForKitManagement(studyEnvironment.getId());
+    }
+
     public Enrollee loadForAdminView(Enrollee enrollee) {
         return dao.loadForAdminView(enrollee);
     }

@@ -56,12 +56,12 @@ public class LivePepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public PepperDSMKitStatus fetchKitStatus(UUID kitRequestId) {
+    public PepperKitStatus fetchKitStatus(UUID kitRequestId) {
         return null;
     }
 
     @Override
-    public Collection<PepperDSMKitStatus> fetchKitStatusByStudy(UUID studyId) {
+    public Collection<PepperKitStatus> fetchKitStatusByStudy(UUID studyId) {
         return null;
     }
 

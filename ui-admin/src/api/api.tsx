@@ -143,12 +143,23 @@ export type KitType = {
   description: string
 }
 
+export type PepperKitStatus = {
+  kitId: string,
+  currentStatus: string,
+  labelDate: string,
+  scanDate: string,
+  receiveDate: string,
+  trackingNumber: string,
+  returnTrackingNumber: string
+}
+
 export type KitRequest = {
   id: string,
   createdAt: number,
   kitType: KitType,
   sentToAddress: string,
   status: string
+  pepperStatus?: PepperKitStatus
 }
 
 export type Config = {
@@ -492,6 +503,26 @@ export default {
       body: JSON.stringify({ text: noteText }),
       headers: this.getInitHeaders()
     })
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchEnrollesForKitManagement(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: string
+  ): Promise<Enrollee[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrolleesForKitManagement`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchKitsForKitManagement(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: string
+  ): Promise<KitRequest[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/kitsForKitManagement`
+    const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 

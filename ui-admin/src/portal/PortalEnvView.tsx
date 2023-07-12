@@ -7,6 +7,7 @@ import {
   portalConfigPath,
   siteContentPath,
   studyContentPath,
+  studyKitsPath,
   studyParticipantsPath
 } from './PortalRouter'
 import PortalEnvPublishControl from './publish/PortalEnvPublishControl'
@@ -78,6 +79,7 @@ function StudyConfigView({ portal, study, envName }: {portal: Portal, study: Stu
     <span>{study.name}</span>
     <Link to={studyContentPath(portal.shortcode, envName, study.shortcode)} className="ms-3">Content</Link>
     <Link to={studyParticipantsPath(portal.shortcode, envName, study.shortcode)} className="ms-3">Participants</Link>
+    <Link to={studyKitsPath(portal.shortcode, envName, study.shortcode)} className="ms-3">Kits</Link>
     <Link to={studyEnvMetricsPath(portal.shortcode, envName, study.shortcode)} className="ms-3">Metrics</Link>
   </div>
 }

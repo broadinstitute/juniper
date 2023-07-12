@@ -117,6 +117,18 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
         return enrollee;
     }
 
+    public List<Enrollee> findForKitManagement(UUID studyEnvironmentId) {
+        var enrollees = findByStudyEnvironmentId(studyEnvironmentId)
+                .stream().map(this::loadForKitManagementView);
+        return enrollees.toList();
+    }
+
+    public Enrollee loadForKitManagementView(Enrollee enrollee) {
+        enrollee.getParticipantTasks().addAll(participantTaskDao.findByEnrolleeId(enrollee.getId()));
+        enrollee.getKitRequests().addAll(kitRequestDao.findByEnrollee(enrollee.getId()));
+        return enrollee;
+    }
+
     public int countByStudyEnvironment(UUID studyEnvironmentId) {
         return countByProperty("study_environment_id", studyEnvironmentId);
     }

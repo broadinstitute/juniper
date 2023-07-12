@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Enrollee, KitRequest } from 'api/api'
+import Api, { Enrollee, KitRequest } from 'api/api'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { basicTableLayout } from 'util/tableUtils'
@@ -45,10 +45,13 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
                                         studyEnvContext: StudyEnvContextT,
                                         onUpdate: () => void
                                       }) {
+  const { currentEnv, portal, study } = studyEnvContext
   const { user } = useUser()
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
 
-  const onSubmit = () => {
+  const onSubmit = async (kitType: string) => {
+    await Api.createKitRequest(
+      portal.shortcode, study.shortcode, currentEnv.environmentName, enrollee.shortcode, kitType)
     setShowRequestKitModal(false)
     onUpdate()
   }
@@ -67,7 +70,6 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
       </button>
     }
     {showRequestKitModal && <RequestKitModal
-      enrollee={enrollee}
       studyEnvContext={studyEnvContext}
       onDismiss={() => setShowRequestKitModal(false)}
       onSubmit={onSubmit}

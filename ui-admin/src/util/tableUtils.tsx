@@ -235,12 +235,26 @@ export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
   </div>
 }
 
+/**
+ * Configuration for basicTableLayout. This can have configuration properties that affect different parts of the table,
+ * such as headers, rows, etc. All configuration properties are optional.
+ */
+export type BasicTableConfig = {
+  filterable?: boolean
+}
+
+/** Default configuration if no `BasicTableConfig` is provided or any of its attributes are not specified. */
+const defaultBasicTableConfig = {
+  filterable: false
+}
+
 /** helper function for simple table layouts */
-export function basicTableLayout<T>(table: Table<T>) {
+export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig = {}) {
+  const { filterable } = { ...defaultBasicTableConfig, ...config }
   return <table className="table table-striped">
     <thead>
       <tr>
-        {table.getFlatHeaders().map(header => tableHeader(header, { sortable: true, filterable: false }))}
+        {table.getFlatHeaders().map(header => tableHeader(header, { sortable: true, filterable }))}
       </tr>
     </thead>
     <tbody>

@@ -3,6 +3,7 @@ package bio.terra.pearl.populate.util;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Random;
 
 public class PopulateUtils {
@@ -18,6 +19,10 @@ public class PopulateUtils {
 
     public static String randomString(int length) {
         return RandomStringUtils.randomAlphabetic(length);
+    }
+
+    public static <T> T randomItem(List<T> items) {
+        return items.get(randomInteger(0, items.size()));
     }
 
     public static String randomShortcode(String prefix) {
