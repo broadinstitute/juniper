@@ -7,12 +7,12 @@ export type ApiContextT = {
   submitMailingListContact: SubmitMailingListContactFunc
 }
 
-export const previewApi: ApiContextT = {
+export const emptyApi: ApiContextT = {
   getImageUrl: () => '',
   submitMailingListContact: () => Promise.resolve({})
 }
 
-const ApiContext = React.createContext<ApiContextT>(previewApi)
+const ApiContext = React.createContext<ApiContextT>(emptyApi)
 export const useApiContext = () => {
   return useContext(ApiContext)
 }
