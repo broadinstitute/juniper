@@ -4,7 +4,6 @@ import { Question, QuestionType } from '@juniper/ui-core'
 
 import { Button } from 'components/forms/Button'
 import { QuestionDesigner } from './QuestionDesigner'
-import { questionTypeLabels } from './questions/questionTypes'
 import { TextInput } from '../../components/forms/TextInput'
 
 type NewQuestionFormProps = {
@@ -16,44 +15,49 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
   const { onCreate } = props
   const [selectedQuestionType, setSelectedQuestionType] = useState<QuestionType>('text')
   const [questionName, setQuestionName] = useState<string>('')
-  const [title, setTitle] = useState<string>('')
-  const [question, setQuestion] = useState<Question>()
 
   const emptyQuestions: Record<QuestionType, Question> = {
     checkbox: {
       type: 'checkbox',
       name: questionName,
-      title,
+      title: '',
       choices: []
     },
     dropdown: {
       type: 'dropdown',
       name: questionName,
-      title,
+      title: '',
       choices: []
     },
     medications: {
       type: 'medications',
       name: questionName,
-      title
+      title: ''
     },
     radiogroup: {
       type: 'radiogroup',
       name: questionName,
-      title,
+      title: '',
       choices: []
     },
     signaturepad: {
       type: 'signaturepad',
       name: questionName,
-      title
+      title: ''
     },
     text: {
       type: 'text',
       name: questionName,
-      title
+      title: ''
     }
   }
+
+  const [question, setQuestion] = useState<Question>(emptyQuestions[selectedQuestionType])
+
+  // //TODO: probably don't need this as an effect
+  // useEffect(() => {
+  //   setQuestion(emptyQuestions[selectedQuestionType])
+  // }, [selectedQuestionType])
 
   return (
     <>
@@ -66,23 +70,28 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
               value={questionName}
               onChange={value => {
                 setQuestionName(value)
+                setQuestion({ ...question, name: value })
               }}
             />
           </div>
           <label className="form-label" htmlFor="text-question-input-type">Question type</label>
           <select id="questionType" className="form-select" value={selectedQuestionType}
-            onChange={e => setSelectedQuestionType(e.target.value as QuestionType)}>
+            onChange={e => {
+              const newQuestionType = e.target.value as QuestionType
+              setSelectedQuestionType(newQuestionType)
+              setQuestion(emptyQuestions[newQuestionType])
+            }}>
             <option value="text">Text</option>
             <option value="checkbox">Checkbox</option>
             <option value="dropdown">Dropdown</option>
             <option value="medications">Medications</option>
-            <option value="radiogroup">Radiogroup</option>
+            <option value="radiogroup">Radio group</option>
             <option value="signaturepad">Signature</option>
           </select>
         </div>
 
         { selectedQuestionType && <QuestionDesigner
-          question={emptyQuestions[selectedQuestionType]}
+          question={question}
           showTitle={false}
           readOnly={false} //maybe pass this in from parent component, but you can't really get here if it's read-only
           onChange={updatedElement => {
@@ -93,7 +102,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
         <Button
           variant="primary"
           onClick={() => {
-            onCreate(question!)
+            onCreate(question)
           }}
         >
                     Create question
