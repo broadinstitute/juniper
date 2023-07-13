@@ -4,13 +4,6 @@ import { HtmlSectionView } from './HtmlSectionView'
 import { HtmlSection } from 'src/types/landingPageConfig'
 
 
-jest.mock('providers/PortalProvider', () => {
-  return {
-    ...jest.requireActual('providers/PortalProvider'),
-    usePortalEnv: jest.fn()
-  }
-})
-
 describe('HTMLSectionView', () => {
   describe('misconfiguration does not cause render errors', () => {
     beforeEach(() => {
