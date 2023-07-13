@@ -18,6 +18,7 @@ export const emptyApi: ApiContextT = {
 }
 
 const ApiContext = React.createContext<ApiContextT>(emptyApi)
+/** helper function for using the api context */
 export const useApiContext = () => {
   return useContext(ApiContext)
 }
