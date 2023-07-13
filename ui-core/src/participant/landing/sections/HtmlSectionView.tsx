@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 
 import { HtmlSection, SectionConfig, SectionType } from '../../../types/landingPageConfig'
 import { isPlainObject } from '../../../participant/util/validationUtils'
@@ -14,7 +14,6 @@ import PhotoBlurbGrid from './PhotoBlurbGrid'
 import ParticipationDetailTemplate from './ParticipationDetailTemplate'
 import LinkSectionsFooter from './LinkSectionsFooter'
 import { TemplateComponent } from './templateUtils'
-
 
 
 const templateComponents: Record<SectionType, TemplateComponent> = {

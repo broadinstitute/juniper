@@ -1,11 +1,9 @@
 import classNames from 'classnames'
 import React, { useEffect, useRef } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
-import { LocalSiteContent } from '@juniper/ui-core'
+import { LocalSiteContent, MailingListModal, HtmlSectionView } from '@juniper/ui-core'
 import _uniqueId from 'lodash/uniqueId'
 import Navbar from '../Navbar'
-import { MailingListModal } from '@juniper/ui-core'
-import { HtmlSectionView } from '@juniper/ui-core'
 
 /** renders the landing page for a portal (e.g. hearthive.org) */
 function LandingPageView({ localContent }: { localContent: LocalSiteContent }) {

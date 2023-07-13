@@ -1,4 +1,4 @@
-import React, {useContext} from 'react'
+import React, { useContext } from 'react'
 
 export type ImageUrlFunc = (cleanFileName: string, version: number) => string
 export type SubmitMailingListContactFunc = (name: string, email: string) => Promise<object>
@@ -27,7 +27,7 @@ export const useApiContext = () => {
  * endpoints depending on whether they are being rendered in the participant UI, or in preview-mode on the admin tool
  * Unlike many other providers, this does not do anything asynchronously or make server requests, it's just a container
  */
-export const ApiProvider = ({api, children}: {api: ApiContextT, children: React.ReactNode}) => {
+export const ApiProvider = ({ api, children }: {api: ApiContextT, children: React.ReactNode}) => {
   return <ApiContext.Provider value={api}>
     {children}
   </ApiContext.Provider>

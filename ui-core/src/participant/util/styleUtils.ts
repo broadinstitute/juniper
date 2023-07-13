@@ -2,7 +2,7 @@ import { CSSProperties } from 'react'
 
 import { SectionConfig } from '../../types/landingPageConfig'
 import { isPlainObject } from './validationUtils'
-import {ImageUrlFunc} from "../../participant/ApiProvider";
+import { ImageUrlFunc } from '../../participant/ApiProvider'
 
 const allowedStyles = [
   'background',

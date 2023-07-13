@@ -12,7 +12,7 @@ import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../Configu
 import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
 
 import { TemplateComponentProps } from './templateUtils'
-import {useApiContext} from "../../../participant/ApiProvider";
+import { useApiContext } from '../../../participant/ApiProvider'
 
 type ParticipationDetailTemplateConfig = {
   actionButton?: ButtonConfig, // button

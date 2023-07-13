@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope } from '@fortawesome/free-regular-svg-icons'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
-import {useApiContext} from "../../participant/ApiProvider";
+import { useApiContext } from '../../participant/ApiProvider'
 
 type MailingListFormProps = {
   onJoin?: () => void

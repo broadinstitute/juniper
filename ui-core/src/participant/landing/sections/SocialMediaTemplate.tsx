@@ -9,7 +9,7 @@ import { withValidatedSectionConfig } from '../../../participant/util/withValida
 import { requireOptionalString } from '../../../participant/util/validationUtils'
 
 import { TemplateComponentProps } from './templateUtils'
-import {useApiContext} from "../../../participant/ApiProvider";
+import { useApiContext } from '../../../participant/ApiProvider'
 
 type SocialMediaSite = 'Facebook' | 'Instagram' | 'Twitter'
 

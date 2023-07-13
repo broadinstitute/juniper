@@ -15,7 +15,7 @@ import { withValidatedSectionConfig } from '../../../participant/util/withValida
 import { Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
-import {useApiContext} from "../../../participant/ApiProvider";
+import { useApiContext } from '../../../participant/ApiProvider'
 
 const idFor = (question: string): string => {
   return _.kebabCase(question)

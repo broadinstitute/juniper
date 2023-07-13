@@ -11,7 +11,7 @@ import ConfiguredImage, { ImageConfig, validateImageConfig } from '../Configured
 import { Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
-import {useApiContext} from "../../../participant/ApiProvider";
+import { useApiContext } from '../../../participant/ApiProvider'
 
 type PhotoBlurbGridConfig = {
   title?: string,

@@ -13,7 +13,7 @@ import ConfiguredImage, { ImageConfig, validateImageConfig } from '../Configured
 import { InlineMarkdown, Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
-import {useApiContext} from "../../../participant/ApiProvider";
+import { useApiContext } from '../../../participant/ApiProvider'
 
 type HeroWithImageTemplateConfig = {
   blurb?: string, //  text below the title

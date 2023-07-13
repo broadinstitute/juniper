@@ -45,7 +45,7 @@ type ConfiguredImageProps = {
 /** renders an image that is part of a SiteContent spec */
 export default function ConfiguredImage(props: ConfiguredImageProps) {
   const { image, className, style } = props
-  const {getImageUrl} = useApiContext()
+  const { getImageUrl } = useApiContext()
   return (
     <img
       src={getImageUrl(image.cleanFileName, image.version)}
