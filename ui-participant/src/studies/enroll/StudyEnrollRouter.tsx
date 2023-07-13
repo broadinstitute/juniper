@@ -112,7 +112,7 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
           }
           navigate('/hub', { replace: true, state: hubUpdate })
         }).catch(() => {
-          alert('an error occurred, please try again, or contact support')
+          navigate('/hub', { replace: true })
         })
       }
     } else {

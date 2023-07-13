@@ -40,7 +40,6 @@ export default function PreRegistration({ registrationContext }: { registrationC
         updatePreRegResponseId(result.id as string)
       }
     }).catch(() => {
-      alert('an error occurred, please retry')
       updatePreRegResponseId(null)
       // SurveyJS doesn't support "uncompleting" surveys, so we have to reinitialize it
       // (for now we assume prereg is only a single page)
