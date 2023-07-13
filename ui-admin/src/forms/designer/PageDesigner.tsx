@@ -7,6 +7,7 @@ import { Button } from 'components/forms/Button'
 
 import { PageElementList } from './PageElementList'
 import { NewPanelForm } from './NewPanelForm'
+import { NewQuestionForm } from './NewQuestionForm'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
@@ -33,12 +34,23 @@ export const PageDesigner = (props: PageDesignerProps) => {
   const { readOnly, value, onChange } = props
 
   const [showCreatePanelModal, setShowCreatePanelModal] = useState(false)
+  const [showCreateQuestionModal, setShowCreateQuestionModal] = useState(false)
 
   return (
     <div>
       <h2>Page</h2>
 
       <div className="mb-3">
+        <Button
+          disabled={readOnly}
+          tooltip="Create a new question."
+          variant="secondary"
+          onClick={() => {
+            setShowCreateQuestionModal(true)
+          }}
+        >
+          <FontAwesomeIcon icon={faPlus}/> Add question
+        </Button>
         <Button
           disabled={readOnly || value.elements.filter(canBeIncludedInPanel).length === 0}
           tooltip="Group some elements into a panel."
@@ -58,6 +70,28 @@ export const PageDesigner = (props: PageDesignerProps) => {
           onChange({ ...value, elements: newValue })
         }}
       />
+
+      {showCreateQuestionModal && (
+        <Modal show className="modal-lg" onHide={() => setShowCreateQuestionModal(false)}>
+          <Modal.Header closeButton>New Question</Modal.Header>
+          <Modal.Body>
+            <NewQuestionForm
+              onCreate={newQuestion => {
+                console.log(newQuestion)
+
+                setShowCreateQuestionModal(false)
+                onChange({
+                  ...value,
+                  elements: [
+                    ...value.elements,
+                    newQuestion
+                  ]
+                })
+              }}
+            />
+          </Modal.Body>
+        </Modal>
+      )}
 
       {showCreatePanelModal && (
         <Modal show onHide={() => setShowCreatePanelModal(false)}>

@@ -13,18 +13,19 @@ import { VisibilityFields } from './questions/VisibilityFields'
 export type QuestionDesignerProps = {
   question: Question
   readOnly: boolean
+  showTitle: boolean
   onChange: (newValue: Question) => void
 }
 
 /** UI for editing a question in a form. */
 export const QuestionDesigner = (props: QuestionDesignerProps) => {
-  const { question, readOnly, onChange } = props
+  const { question, readOnly, showTitle, onChange } = props
 
   const isTemplated = 'questionTemplateName' in question
 
   return (
     <div>
-      <h2>{question.name}</h2>
+      {showTitle && <h2>{question.name}</h2>}
 
       {!isTemplated && (
         <>
