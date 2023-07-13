@@ -109,7 +109,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     /**
      * Fetch all sample kits for a study environment.
      */
-    public Collection<KitRequest> getSampleKitsForStudyEnvironment(StudyEnvironment studyEnvironment) {
+    public Collection<KitRequest> getSampleKitsByStudyEnvironment(StudyEnvironment studyEnvironment) {
         var allKitTypes = kitTypeDao.findAll();
         var kitTypeMap = allKitTypes.stream().collect(Collectors.toMap(KitType::getId, Function.identity()));
         var kits = dao.findByStudyEnvironment(studyEnvironment.getId());

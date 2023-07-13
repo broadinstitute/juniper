@@ -25,7 +25,7 @@ public class KitExtService {
     this.studyEnvironmentService = studyEnvironmentService;
   }
 
-  public Collection<KitRequest> getKitRequestsForStudyEnvironment(
+  public Collection<KitRequest> getKitRequestsByStudyEnvironment(
       AdminUser adminUser,
       String portalShortcode,
       String studyShortcode,
@@ -35,6 +35,6 @@ public class KitExtService {
     StudyEnvironment studyEnvironment =
         studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
 
-    return kitRequestService.getSampleKitsForStudyEnvironment(studyEnvironment);
+    return kitRequestService.getSampleKitsByStudyEnvironment(studyEnvironment);
   }
 }

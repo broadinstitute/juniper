@@ -33,7 +33,7 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
 
   const loadKits = async () => {
     setIsLoading(true)
-    const kits = await Api.fetchKitsForKitManagement(
+    const kits = await Api.fetchKitsByStudyEnvironment(
       portal.shortcode, study.shortcode, currentEnv.environmentName)
     setKits(kits)
     setIsLoading(false)

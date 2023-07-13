@@ -26,7 +26,7 @@ public class KitExtServiceTests extends BaseSpringBootTest {
     Assertions.assertThrows(
         PermissionDeniedException.class,
         () ->
-            kitExtService.getKitRequestsForStudyEnvironment(
+            kitExtService.getKitRequestsByStudyEnvironment(
                 adminUser, "someportal", "somestudy", EnvironmentName.sandbox));
   }
 

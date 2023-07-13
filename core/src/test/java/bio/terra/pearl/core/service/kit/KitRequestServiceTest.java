@@ -101,7 +101,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .build());
 
         // Act
-        var kits = kitRequestService.getSampleKitsForStudyEnvironment(studyEnvironment);
+        var kits = kitRequestService.getSampleKitsByStudyEnvironment(studyEnvironment);
 
         // Assert
         assertThat(kits, contains(kitRequest1, kitRequest2));

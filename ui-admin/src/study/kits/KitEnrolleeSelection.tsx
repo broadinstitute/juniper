@@ -34,7 +34,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
 
   const loadEnrollees = async () => {
     setIsLoading(true)
-    const enrollees = await Api.fetchEnrollesForKitManagement(
+    const enrollees = await Api.fetchEnrolleesWithKits(
       portal.shortcode, study.shortcode, currentEnv.environmentName)
     setEnrollees(enrollees)
     setIsLoading(false)

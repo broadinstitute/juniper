@@ -506,22 +506,22 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async fetchEnrollesForKitManagement(
+  async fetchEnrolleesWithKits(
     portalShortcode: string,
     studyShortcode: string,
     envName: string
   ): Promise<Enrollee[]> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrolleesForKitManagement`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrolleesWithKits`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
-  async fetchKitsForKitManagement(
+  async fetchKitsByStudyEnvironment(
     portalShortcode: string,
     studyShortcode: string,
     envName: string
   ): Promise<KitRequest[]> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/kitsForKitManagement`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/kits`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },

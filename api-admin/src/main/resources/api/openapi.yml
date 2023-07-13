@@ -871,11 +871,11 @@ paths:
                 format: binary
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrolleesForKitManagement:
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrolleesWithKits:
     get:
       summary: Gets a list of enrollees with tasks and kit requests
-      tags: [ kit ]
-      operationId: listForKitManagement
+      tags: [ enrollee ]
+      operationId: enrolleesWithKits
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
@@ -886,11 +886,11 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/kitsForKitManagement:
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/kits:
     get:
       summary: Gets a list of kits for a study
       tags: [ kit ]
-      operationId: listKitsForKitManagement
+      operationId: kitsByStudyEnvironment
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }

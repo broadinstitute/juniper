@@ -85,12 +85,7 @@
         "deactivationReason": "",
         "trackingNumbers": [],
         "returnTrackingNumber": "",
-        "errors": [
-          {
-            "errorDate": "",
-            "errorMessage": ""
-          }
-        ],
+        "errors": [],
         "discardDate": "",
         "discardReason": ""
       }
