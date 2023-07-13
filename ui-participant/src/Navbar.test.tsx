@@ -18,6 +18,7 @@ describe('CustomNavLink', () => {
     const navbarItem: NavbarItemInternal = {
       itemType: 'INTERNAL',
       text: 'Internal link',
+      itemOrder: 1,
       htmlPage: {
         path: 'testPage'
       } as HtmlPage
@@ -38,6 +39,7 @@ describe('CustomNavLink', () => {
     const navbarItem: NavbarItemInternalAnchor = {
       itemType: 'INTERNAL_ANCHOR',
       text: 'Internal anchor link',
+      itemOrder: 1,
       href: '/testPage#anchor'
     }
 
@@ -56,6 +58,7 @@ describe('CustomNavLink', () => {
     const navbarItem: NavbarItemExternal = {
       itemType: 'EXTERNAL',
       text: 'External link',
+      itemOrder: 1,
       href: 'https://example.com'
     }
 
@@ -71,6 +74,7 @@ describe('CustomNavLink', () => {
     // Arrange
     const navbarItem: NavbarItemMailingList = {
       itemType: 'MAILING_LIST',
+      itemOrder: 1,
       text: 'Mailing list link'
     }
 

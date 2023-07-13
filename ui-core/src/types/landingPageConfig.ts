@@ -51,6 +51,7 @@ export type NavbarItem =
   | NavbarItemExternal
 
 export type BaseNavBarItem = {
+  id: string
   itemType: 'INTERNAL' | 'INTERNAL_ANCHOR' | 'MAILING_LIST' | 'EXTERNAL'
   text: string
   itemOrder: number

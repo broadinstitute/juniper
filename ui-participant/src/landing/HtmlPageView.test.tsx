@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import HtmlPageView from './HtmlPageView'
-import { HtmlPage, HtmlSection } from 'api/api'
+import { HtmlPage } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
 
 jest.mock('providers/PortalProvider', () => {
