@@ -12,12 +12,12 @@ import java.util.UUID;
 
 @Component
 public class StubPepperDSMClient implements PepperDSMClient {
-    private final KitRequestDao kitRequestDao;
+    private final KitRequestService kitRequestService;
     private final ObjectMapper objectMapper;
 
-    public StubPepperDSMClient(KitRequestDao kitRequestDao,
+    public StubPepperDSMClient(KitRequestService kitRequestService,
                                ObjectMapper objectMapper) {
-        this.kitRequestDao = kitRequestDao;
+        this.kitRequestService = kitRequestService;
         this.objectMapper = objectMapper;
     }
 
@@ -43,7 +43,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
 
     @Override
     public Collection<PepperKitStatus> fetchKitStatusByStudy(UUID studyEnvironmentId) {
-        return kitRequestDao.findIncompleteKits(studyEnvironmentId).stream().map(kit -> {
+        return kitRequestService.findIncompleteKits(studyEnvironmentId).stream().map(kit -> {
             PepperKitStatus status = PepperKitStatus.builder()
                     .kitId(kit.getId().toString())
                     .currentStatus("SHIPPED")

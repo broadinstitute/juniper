@@ -2,8 +2,6 @@ package bio.terra.pearl.core.service.kit;
 
 import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
-import bio.terra.pearl.core.dao.study.StudyDao;
-import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
@@ -18,6 +16,8 @@ import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ProfileService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import bio.terra.pearl.core.service.study.StudyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -45,16 +45,16 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                              KitTypeDao kitTypeDao,
                              PepperDSMClient pepperDSMClient,
                              ProfileService profileService,
-                             StudyDao studyDao,
-                             StudyEnvironmentDao studyEnvironmentDao,
+                             @Lazy StudyEnvironmentService studyEnvironmentService,
+                             @Lazy StudyService studyService,
                              ObjectMapper objectMapper) {
         super(dao);
         this.enrolleeService = enrolleeService;
         this.kitTypeDao = kitTypeDao;
         this.pepperDSMClient = pepperDSMClient;
         this.profileService = profileService;
-        this.studyDao = studyDao;
-        this.studyEnvironmentDao = studyEnvironmentDao;
+        this.studyEnvironmentService = studyEnvironmentService;
+        this.studyService = studyService;
         this.objectMapper = objectMapper;
     }
 
@@ -155,7 +155,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      */
     @Transactional
     public void syncAllKitStatusesFromPepper() {
-        var studies = studyDao.findAll();
+        var studies = studyService.findAll();
         for (Study study : studies) {
 
             // This assumes that DSM is configured with a single study backing all environments of the Juniper study
@@ -164,9 +164,9 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             var pepperKitStatusByKitId = pepperKitStatuses.stream().collect(
                     Collectors.toMap(PepperKitStatus::getKitId, Function.identity()));
 
-            var studyEnvironments = studyEnvironmentDao.findByStudy(study.getId());
+            var studyEnvironments = studyEnvironmentService.findByStudy(study.getId());
             for (StudyEnvironment studyEnvironment : studyEnvironments) {
-                var incompleteKits = dao.findIncompleteKits(studyEnvironment.getId());
+                var incompleteKits = findIncompleteKits(studyEnvironment.getId());
 
                 // The set of kits returned from DSM may be different from the set of incomplete kits in Juniper, but
                 // we want to update the records in Juniper so those are the ones we want to iterate here.
@@ -178,6 +178,12 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 }
             }
         }
+    }
+
+    public List<KitRequest> findIncompleteKits(UUID studyEnvironmentId) {
+        return dao.findByStatus(
+                studyEnvironmentId,
+                List.of(KitRequestStatus.CREATED, KitRequestStatus.IN_PROGRESS));
     }
 
     /**
@@ -238,7 +244,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     private final KitTypeDao kitTypeDao;
     private final PepperDSMClient pepperDSMClient;
     private final ProfileService profileService;
-    private final StudyDao studyDao;
-    private final StudyEnvironmentDao studyEnvironmentDao;
+    private final StudyService studyService;
+    private final StudyEnvironmentService studyEnvironmentService;
     private final ObjectMapper objectMapper;
 }

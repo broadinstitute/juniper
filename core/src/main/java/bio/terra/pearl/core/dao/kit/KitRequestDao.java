@@ -32,12 +32,12 @@ public class KitRequestDao extends BaseMutableJdbiDao<KitRequest> {
      * Find all kits that are not complete (or errored) for a study.
      * This represents the set of in-flight kits that we want to keep an eye on in Pepper.
      */
-    public List<KitRequest> findIncompleteKits(UUID studyEnvironmentId) {
+    public List<KitRequest> findByStatus(UUID studyEnvironmentId, List<KitRequestStatus> statuses) {
         return jdbi.withHandle(handle ->
                 handle.createQuery(BASE_QUERY_BY_STUDY +
                                 " and kit.status in (<kitStatuses>) ")
                         .bind("studyEnvironmentId", studyEnvironmentId)
-                        .bindList("kitStatuses", KitRequestStatus.NON_TERMINAL_STATES)
+                        .bindList("kitStatuses", statuses)
                         .mapTo(clazz)
                         .list()
         );
