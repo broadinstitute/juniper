@@ -16,6 +16,7 @@ describe('CustomNavLink', () => {
   it('renders internal links', () => {
     // Arrange
     const navbarItem: NavbarItemInternal = {
+      id: 'foo',
       itemType: 'INTERNAL',
       text: 'Internal link',
       itemOrder: 1,
@@ -37,6 +38,7 @@ describe('CustomNavLink', () => {
   it('renders internal anchor links', () => {
     // Arrange
     const navbarItem: NavbarItemInternalAnchor = {
+      id: 'foo',
       itemType: 'INTERNAL_ANCHOR',
       text: 'Internal anchor link',
       itemOrder: 1,
@@ -56,6 +58,7 @@ describe('CustomNavLink', () => {
   it('renders external links', () => {
     // Arrange
     const navbarItem: NavbarItemExternal = {
+      id: 'foo',
       itemType: 'EXTERNAL',
       text: 'External link',
       itemOrder: 1,
@@ -73,6 +76,7 @@ describe('CustomNavLink', () => {
   it('renders mailing list links', async () => {
     // Arrange
     const navbarItem: NavbarItemMailingList = {
+      id: 'foo',
       itemType: 'MAILING_LIST',
       itemOrder: 1,
       text: 'Mailing list link'

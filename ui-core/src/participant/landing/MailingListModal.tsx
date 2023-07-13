@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 
-import MailingListForm from './MailingListForm'
+import { MailingListForm } from './MailingListForm'
 
 type MailingListModalProps = {
   id: string

@@ -1,6 +1,7 @@
 import { SiteContent, LocalSiteContent, HtmlPage } from 'api/api'
 import { HtmlSection } from '@juniper/ui-core/build/types/landingPageConfig'
 
+/** mock site content */
 export const mockSiteContent = (): SiteContent => {
   return {
     defaultLanguage: 'en',
@@ -12,6 +13,7 @@ export const mockSiteContent = (): SiteContent => {
   }
 }
 
+/** mock local site content */
 export const mockLocalSiteContent = (): LocalSiteContent => {
   return {
     navbarItems: [],
@@ -23,6 +25,7 @@ export const mockLocalSiteContent = (): LocalSiteContent => {
   }
 }
 
+/** mock html page */
 export const mockHtmlPage = (): HtmlPage => {
   return {
     path: '/',
@@ -31,6 +34,7 @@ export const mockHtmlPage = (): HtmlPage => {
   }
 }
 
+/** mock single page section */
 export const mockHtmlSection = (): HtmlSection => {
   return {
     id: 'fakeId',
@@ -42,6 +46,7 @@ export const mockHtmlSection = (): HtmlSection => {
   }
 }
 
+/** no-op apiContext for rendering preview participant content in tests */
 export const emptyApi = {
   getImageUrl: () => '',
   submitMailingListContact: () => Promise.resolve({})

@@ -10,7 +10,7 @@ type MailingListFormProps = {
 }
 
 /** shows a form for entering name and email to join the portal mailing list */
-export default function MailingListForm(props: MailingListFormProps) {
+export function MailingListForm(props: MailingListFormProps) {
   const { onJoin } = props
 
   const [name, setName] = useState('')
