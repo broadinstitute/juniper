@@ -92,7 +92,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
 
         { selectedQuestionType && <QuestionDesigner
           question={question}
-          showTitle={false}
+          showName={false}
           readOnly={false} //maybe pass this in from parent component, but you can't really get here if it's read-only
           onChange={updatedElement => {
             setQuestion(updatedElement)
@@ -105,7 +105,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
             onCreate(question)
           }}
         >
-                    Create question
+          Create question
         </Button>
       </div>
     </>
