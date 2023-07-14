@@ -4,8 +4,8 @@ import _ from 'lodash'
 import React from 'react'
 
 import { SectionConfig } from '../../../types/landingPageConfig'
-import { withValidatedSectionConfig } from '../../../participant/util/withValidatedSectionConfig'
-import { requireOptionalArray, requirePlainObject, requireString } from '../../../participant/util/validationUtils'
+import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
+import { requireOptionalArray, requirePlainObject, requireString } from '../../util/validationUtils'
 
 import { ButtonConfig, ConfiguredLink, validateButtonConfig } from '../../../participant/landing/ConfiguredButton'
 import { socialMediaSites } from './SocialMediaTemplate'

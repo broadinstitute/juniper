@@ -7,10 +7,10 @@ import _ from 'lodash'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import { SectionConfig } from '../../../types/landingPageConfig'
-import { getSectionStyle } from '../../../participant/util/styleUtils'
+import { getSectionStyle } from '../../util/styleUtils'
 import { requireOptionalBoolean, requireOptionalString, requirePlainObject, requireString }
-  from '../../../participant/util/validationUtils'
-import { withValidatedSectionConfig } from '../../../participant/util/withValidatedSectionConfig'
+  from '../../util/validationUtils'
+import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
 
 import { Markdown } from '../Markdown'
 

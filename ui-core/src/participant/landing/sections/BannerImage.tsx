@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { SectionConfig } from '../../../types/landingPageConfig'
-import { withValidatedSectionConfig } from '../../../participant/util/withValidatedSectionConfig'
+import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
 
 import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
 

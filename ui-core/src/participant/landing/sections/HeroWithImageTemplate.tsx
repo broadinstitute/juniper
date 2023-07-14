@@ -3,17 +3,17 @@ import _ from 'lodash'
 import React from 'react'
 
 import { SectionConfig } from '../../../types/landingPageConfig'
-import { getSectionStyle } from '../../../participant/util/styleUtils'
-import { withValidatedSectionConfig } from '../../../participant/util/withValidatedSectionConfig'
+import { getSectionStyle } from '../../util/styleUtils'
+import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalNumber, requireOptionalString }
-  from '../../../participant/util/validationUtils'
+  from '../../util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
 import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
 import { InlineMarkdown, Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
-import { useApiContext } from '../../../participant/ApiProvider'
+import { useApiContext } from '../../ApiProvider'
 
 type HeroWithImageTemplateConfig = {
   blurb?: string, //  text below the title

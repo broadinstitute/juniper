@@ -4,9 +4,9 @@ import { faFacebook, faInstagram, faTwitter } from '@fortawesome/free-brands-svg
 import React from 'react'
 
 import { SectionConfig } from '../../../types/landingPageConfig'
-import { getSectionStyle } from '../../../participant/util/styleUtils'
-import { withValidatedSectionConfig } from '../../../participant/util/withValidatedSectionConfig'
-import { requireOptionalString } from '../../../participant/util/validationUtils'
+import { getSectionStyle } from '../../util/styleUtils'
+import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
+import { requireOptionalString } from '../../util/validationUtils'
 
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'

@@ -50,7 +50,7 @@ export type NavbarItem =
   | NavbarItemMailingList
   | NavbarItemExternal
 
-export type BaseNavBarItem = {
+type BaseNavBarItem = {
   id: string
   itemType: 'INTERNAL' | 'INTERNAL_ANCHOR' | 'MAILING_LIST' | 'EXTERNAL'
   text: string

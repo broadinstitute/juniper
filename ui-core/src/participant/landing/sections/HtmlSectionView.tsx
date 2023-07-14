@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { HtmlSection, SectionConfig, SectionType } from '../../../types/landingPageConfig'
-import { isPlainObject } from '../../../participant/util/validationUtils'
+import { isPlainObject } from '../../util/validationUtils'
 
 import BannerImage from './BannerImage'
 import FrequentlyAskedQuestionsTemplate from './FrequentlyAskedQuestionsTemplate'

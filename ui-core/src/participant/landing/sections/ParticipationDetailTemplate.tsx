@@ -4,9 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClock } from '@fortawesome/free-regular-svg-icons'
 
 import { SectionConfig } from '../../../types/landingPageConfig'
-import { getSectionStyle } from '../../../participant/util/styleUtils'
-import { withValidatedSectionConfig } from '../../../participant/util/withValidatedSectionConfig'
-import { requireOptionalString } from '../../../participant/util/validationUtils'
+import { getSectionStyle } from '../../util/styleUtils'
+import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
+import { requireOptionalString } from '../../util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
 import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
