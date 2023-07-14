@@ -8,15 +8,16 @@ import { TextInput } from '../../components/forms/TextInput'
 
 type NewQuestionFormProps = {
     onCreate: (newQuestion: Question) => void
+    readOnly: boolean
 }
 
 /** UI for creating a new question. */
 export const NewQuestionForm = (props: NewQuestionFormProps) => {
-  const { onCreate } = props
+  const { onCreate, readOnly } = props
   const [selectedQuestionType, setSelectedQuestionType] = useState<QuestionType>('text')
   const [questionName, setQuestionName] = useState<string>('')
 
-  const emptyQuestions: Record<QuestionType, Question> = {
+  const baseQuestions: Record<QuestionType, Question> = {
     checkbox: {
       type: 'checkbox',
       name: questionName,
@@ -52,12 +53,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
     }
   }
 
-  const [question, setQuestion] = useState<Question>(emptyQuestions[selectedQuestionType])
-
-  // //TODO: probably don't need this as an effect
-  // useEffect(() => {
-  //   setQuestion(emptyQuestions[selectedQuestionType])
-  // }, [selectedQuestionType])
+  const [question, setQuestion] = useState<Question>(baseQuestions[selectedQuestionType])
 
   return (
     <>
@@ -74,12 +70,12 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
               }}
             />
           </div>
-          <label className="form-label" htmlFor="text-question-input-type">Question type</label>
+          <label className="form-label" htmlFor="questionType">Question type</label>
           <select id="questionType" className="form-select" value={selectedQuestionType}
             onChange={e => {
               const newQuestionType = e.target.value as QuestionType
               setSelectedQuestionType(newQuestionType)
-              setQuestion(emptyQuestions[newQuestionType])
+              setQuestion(baseQuestions[newQuestionType])
             }}>
             <option value="text">Text</option>
             <option value="checkbox">Checkbox</option>
@@ -93,7 +89,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
         { selectedQuestionType && <QuestionDesigner
           question={question}
           showName={false}
-          readOnly={false} //maybe pass this in from parent component, but you can't really get here if it's read-only
+          readOnly={readOnly}
           onChange={updatedElement => {
             setQuestion(updatedElement)
           }}

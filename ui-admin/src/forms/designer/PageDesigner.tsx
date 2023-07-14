@@ -76,9 +76,8 @@ export const PageDesigner = (props: PageDesignerProps) => {
           <Modal.Header closeButton>New Question</Modal.Header>
           <Modal.Body>
             <NewQuestionForm
+              readOnly={readOnly}
               onCreate={newQuestion => {
-                console.log(newQuestion)
-
                 setShowCreateQuestionModal(false)
                 onChange({
                   ...value,
