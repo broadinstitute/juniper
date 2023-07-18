@@ -4,7 +4,7 @@ import React, { CSSProperties, Suspense, lazy, useEffect } from 'react'
 import LandingPage from 'landing/LandingPage'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { usePortalEnv } from 'providers/PortalProvider'
-import Api, { NavbarItem, NavbarItemInternal, getImageUrl } from 'api/api'
+import Api, { NavbarItem, NavbarItemInternal } from 'api/api'
 import HtmlPageView from 'landing/HtmlPageView'
 import PortalRegistrationRouter from 'landing/registration/PortalRegistrationRouter'
 import { AuthProvider } from 'react-oidc-context'
@@ -98,7 +98,7 @@ function App() {
   </Route>)
 
   return (
-    <ApiProvider api={{ ...Api, getImageUrl }}>
+    <ApiProvider api={Api}>
       <EnvironmentAlert portalEnvironment={portal.portalEnvironments[0]}/>
       <DocumentTitle />
       <PortalPasswordGate portal={portal}>

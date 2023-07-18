@@ -16,12 +16,12 @@ export function MailingListForm(props: MailingListFormProps) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [joined, setJoined] = useState(false)
-  const { submitMailingListContact } = useApiContext()
+  const Api = useApiContext()
   const containerClasses = classNames('d-flex', 'flex-column', 'align-items-center', 'mx-auto')
 
   const submit = (e: React.SyntheticEvent) => {
     e.preventDefault()
-    submitMailingListContact(name, email).then(() => {
+    Api.submitMailingListContact(name, email).then(() => {
       setJoined(true)
       onJoin?.()
     })

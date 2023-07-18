@@ -415,6 +415,10 @@ export default {
       headers: this.getInitHeaders(),
       body: JSON.stringify(logEvent)
     })
+  },
+  /** get a url for fetching an image from the server, suitable for a src in an img tag */
+  getImageUrl(cleanFileName: string, version: number) {
+    return getImageUrl(cleanFileName, version)
   }
 }
 
