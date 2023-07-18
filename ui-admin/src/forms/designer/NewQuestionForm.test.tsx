@@ -9,9 +9,9 @@ describe('NewQuestionForm', () => {
     render(<NewQuestionForm onCreate={() => jest.fn()} readOnly={false} />)
 
     //Assert
-    const questionNameInput = screen.getByLabelText('Question name')
+    const questionStableIdInput = screen.getByLabelText('Question stable ID')
     const questionTypeSelect = screen.getByLabelText('Question type')
-    expect(questionNameInput).toBeInTheDocument()
+    expect(questionStableIdInput).toBeInTheDocument()
     expect(questionTypeSelect).toBeInTheDocument()
     expect((questionTypeSelect as HTMLSelectElement).value).toBe('text')
   })
