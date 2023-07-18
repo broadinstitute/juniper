@@ -7,13 +7,22 @@ import { currentIsoDate } from 'util/timeUtils'
 import { failureNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+const FILE_FORMATS = [{
+  label: 'Tab-delimted (.tsv)',
+  value: 'TSV',
+  fileSuffix: 'tsv'
+}, {
+  label: 'Excel (.xlsx)',
+  value: 'EXCEL',
+  fileSuffix: 'xlsx'
+}]
+
+/** form for configuring and downloading enrollee data */
 const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext: StudyEnvContextT, show: boolean,
                            setShow:  React.Dispatch<React.SetStateAction<boolean>>}) => {
   const [humanReadable, setHumanReadable] = useState(true)
   const [onlyIncludeMostRecent, setOnlyIncludeMostRecent] = useState(true)
-  const [fileFormat, setFileFormat] = useState('TSV')
+  const [fileFormat, setFileFormat] = useState(FILE_FORMATS[0])
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -22,7 +31,7 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
       onlyIncludeMostRecent,
       splitOptionsIntoColumns: !humanReadable,
       stableIdsForOptions: !humanReadable,
-      fileFormat
+      fileFormat: fileFormat.value
     }
   }
 
@@ -45,7 +54,7 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
     setIsLoading(true)
     Api.exportEnrollees(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
       studyEnvContext.currentEnv.environmentName, optionsFromState()).then(response => {
-      saveLoadedData(response, `${currentIsoDate()  }-enrollees.${fileFormat.toLowerCase()}`)
+      saveLoadedData(response, `${currentIsoDate()  }-enrollees.${fileFormat.fileSuffix}`)
     })
   }
 
@@ -61,9 +70,6 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
   }
   const includeRecentChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     setOnlyIncludeMostRecent(e.target.value === 'true')
-  }
-  const fileFormatChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFileFormat(e.target.value)
   }
 
   return <Modal show={show} onHide={() => setShow(false)}>
@@ -101,16 +107,12 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
         </div>
         <div className="py-2">
           <span className="fw-bold">File format</span><br/>
-          <label className="me-3">
-            <input type="radio" name="fileFormat" value="TSV" checked={fileFormat == 'TSV'}
-              onChange={fileFormatChanged} className="me-1" disabled={true}/>
-            Tab-delimited (.tsv)
-          </label>
-          <label>
-            <input type="radio" name="fileFormat" value="XLSX" checked={fileFormat == 'EXCEL'}
-              onChange={fileFormatChanged} className="me-1" disabled={true}/>
-            Excel (.xlsx)
-          </label>
+          {FILE_FORMATS.map(format => <label className="me-3" key={format.value}>
+            <input type="radio" name="fileFormat" value="TSV" checked={fileFormat.value === format.value}
+              onChange={() => setFileFormat(format)}
+              className="me-1"/>
+            {format.label}
+          </label>)}
         </div>
       </form>
     </Modal.Body>
