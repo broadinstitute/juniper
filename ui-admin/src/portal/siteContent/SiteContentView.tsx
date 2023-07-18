@@ -4,9 +4,8 @@ import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import HtmlPageEditView from './HtmlPageEditView'
-import { HtmlPage, LocalSiteContent, ApiProvider, SiteContent } from '@juniper/ui-core'
+import { HtmlPage, LocalSiteContent, ApiProvider, SiteContent, ApiContextT } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
-import { ApiContextT } from '@juniper/ui-core/build/participant/ApiProvider'
 
 type NavbarOption = {label: string, value: string | null}
 const landingPageOption = { label: 'Landing page', value: null }
