@@ -61,8 +61,8 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
         <div className="mb-3">
           <div className="mb-3">
             <TextInput
-              description='The stable identifier for the survey question'
-              label='Question name'
+              description='The unique stable identifier for the survey question'
+              label='Question stable ID'
               value={questionName}
               onChange={value => {
                 setQuestionName(value)
