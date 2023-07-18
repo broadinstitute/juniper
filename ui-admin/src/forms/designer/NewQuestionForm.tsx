@@ -4,7 +4,7 @@ import { Question, QuestionType } from '@juniper/ui-core'
 
 import { Button } from 'components/forms/Button'
 import { QuestionDesigner } from './QuestionDesigner'
-import { TextInput } from '../../components/forms/TextInput'
+import { TextInput } from 'components/forms/TextInput'
 
 type NewQuestionFormProps = {
     onCreate: (newQuestion: Question) => void
