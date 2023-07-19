@@ -4,8 +4,8 @@ import React from 'react'
 export default function ExportHelp() {
   return <div>
     <h3>Participant List Export Info</h3>
-    <p>Participant export enables download of tabular files (.tsv or .xlsx) containing the data currently visible in
-        the Participant List.
+    <p>Participant export enables download of tabular files (.tsv or .xlsx) containing all participants
+      except those who have withdrawn from the study.
             One row will be generated per participant.</p>
 
     <h4>File format</h4>
