@@ -6,9 +6,9 @@ import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +16,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
@@ -30,6 +31,12 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
 
     public List<ParticipantTask> findByEnrolleeId(UUID enrolleeId) {
         return findAllByProperty("enrollee_id", enrolleeId);
+    }
+
+    @Transactional
+    public Map<UUID, Set<ParticipantTask>> findByEnrolleeIds(Collection<UUID> enrolleeIds) {
+        return streamAllByPropertyCollection("enrollee_id", enrolleeIds)
+                .collect(Collectors.groupingBy(ParticipantTask::getEnrolleeId, Collectors.toSet()));
     }
 
     /** Attempts to find a task for the given activity and study.  If there are multiple, it will return the first */

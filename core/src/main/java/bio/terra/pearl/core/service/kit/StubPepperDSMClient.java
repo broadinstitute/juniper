@@ -1,10 +1,10 @@
 package bio.terra.pearl.core.service.kit;
 
-import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -15,7 +15,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
     private final KitRequestService kitRequestService;
     private final ObjectMapper objectMapper;
 
-    public StubPepperDSMClient(KitRequestService kitRequestService,
+    public StubPepperDSMClient(@Lazy KitRequestService kitRequestService,
                                ObjectMapper objectMapper) {
         this.kitRequestService = kitRequestService;
         this.objectMapper = objectMapper;

@@ -6,8 +6,8 @@ import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class KitRequestDao extends BaseMutableJdbiDao<KitRequest> {
@@ -26,6 +26,11 @@ public class KitRequestDao extends BaseMutableJdbiDao<KitRequest> {
 
     public List<KitRequest> findByEnrollee(UUID enrolleeId) {
         return super.findAllByProperty("enrollee_id", enrolleeId);
+    }
+
+    public Map<UUID, List<KitRequest>> findByEnrolleeIds(Collection<UUID> enrolleeIds) {
+        return streamAllByPropertyCollection("enrollee_id", enrolleeIds)
+                .collect(Collectors.groupingBy(KitRequest::getEnrolleeId, Collectors.toList()));
     }
 
     /**

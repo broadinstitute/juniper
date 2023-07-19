@@ -253,6 +253,9 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 .dsmStatusFetchedAt(Instant.now())
                 .build();
         kitRequest = kitRequestService.create(kitRequest);
+        if (kitRequestPopDto.getCreatedAt() != null) {
+            enrolleePopulateDao.changeKitCreationTime(kitRequest.getId(), kitRequestPopDto.getCreatedAt());
+        }
         enrollee.getKitRequests().add(kitRequest);
         return kitRequest;
     }
@@ -422,29 +425,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 if (PopulateUtils.randomBoolean(20)) {
                     popDto.getKitRequestDtos().clear();
                 } else {
-                    popDto.getKitRequestDtos().forEach(kitDto -> {
-                        try {
-                            var pepperStatus = objectMapper.readValue(kitDto.getDsmStatusJson().toString(), PepperKitStatus.class);
-                            var status = PopulateUtils.randomItem(List.of("CREATED", "LABELED", "SCANNED", "RECEIVED"));
-                            // Set appropriate statuses:
-                            //   PepperKitStatus.currentStatus - status according to GP workflow in Pepper
-                            //   KitRequestPopDto.statusName - status according to study staff workflow in Juniper
-                            pepperStatus.setCurrentStatus(status);
-                            switch (status) {
-                                case "CREATED" -> kitDto.setStatusName("CREATED");
-                                case "LABELED", "SCANNED" -> kitDto.setStatusName("IN_PROGRESS");
-                                case "RECEIVED" -> kitDto.setStatusName("COMPLETE");
-                                default -> {
-                                    pepperStatus.setCurrentStatus("ERROR");
-                                    kitDto.setStatus(KitRequestStatus.FAILED);
-                                }
-                            }
-                            generateFakeDates(pepperStatus, status);
-                            kitDto.setDsmStatusJson(objectMapper.valueToTree(pepperStatus));
-                        } catch (JsonProcessingException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
+                    populateKitRequests(popDto);
                 }
 
                 populateFromDto(popDto, context, false);
@@ -454,7 +435,33 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         });
     }
 
-    private static void generateFakeDates(PepperKitStatus pepperStatus, String status) {
+    private void populateKitRequests(EnrolleePopDto popDto) {
+        popDto.getKitRequestDtos().forEach(kitDto -> {
+            try {
+                var pepperStatus = objectMapper.readValue(kitDto.getDsmStatusJson().toString(), PepperKitStatus.class);
+                var status = PopulateUtils.randomItem(List.of("CREATED", "LABELED", "SCANNED", "RECEIVED"));
+                // Set appropriate statuses:
+                //   PepperKitStatus.currentStatus - status according to GP workflow in Pepper
+                //   KitRequestPopDto.statusName - status according to study staff workflow in Juniper
+                pepperStatus.setCurrentStatus(status);
+                switch (status) {
+                    case "CREATED" -> kitDto.setStatusName("CREATED");
+                    case "LABELED", "SCANNED" -> kitDto.setStatusName("IN_PROGRESS");
+                    case "RECEIVED" -> kitDto.setStatusName("COMPLETE");
+                    default -> {
+                        pepperStatus.setCurrentStatus("ERROR");
+                        kitDto.setStatus(KitRequestStatus.FAILED);
+                    }
+                }
+                generateFakeDates(kitDto, pepperStatus, status);
+                kitDto.setDsmStatusJson(objectMapper.valueToTree(pepperStatus));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private static void generateFakeDates(KitRequestPopDto kitDto, PepperKitStatus pepperStatus, String status) {
         Instant recent = Instant.now();
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault());
         switch (status) {
@@ -469,7 +476,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 recent = recent.minus(PopulateUtils.randomInteger(5, 7), DAYS);
                 pepperStatus.setLabelDate(formatter.format(recent));
             case "CREATED":
-                // Unfortunately, we can't do much here because we don't allow modifying createdAt
+                kitDto.setCreatedAt(recent.minus(PopulateUtils.randomInteger(12, 48), HOURS));
         }
     }
 
