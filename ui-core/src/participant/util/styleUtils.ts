@@ -1,7 +1,8 @@
 import { CSSProperties } from 'react'
 
-import { getImageUrl, SectionConfig } from 'api/api'
-import { isPlainObject } from 'util/validationUtils'
+import { SectionConfig } from '../../types/landingPageConfig'
+import { isPlainObject } from './validationUtils'
+import { ImageUrlFunc } from '../../participant/ApiProvider'
 
 const allowedStyles = [
   'background',
@@ -14,7 +15,7 @@ const allowedStyles = [
 export const sectionStyleConfigKeys = [...allowedStyles, 'backgroundImage'] as const
 
 /** From section configuration, get styles to apply to the section's container */
-export const getSectionStyle = (config: SectionConfig): CSSProperties => {
+export const getSectionStyle = (config: SectionConfig, getImageUrl: ImageUrlFunc): CSSProperties => {
   const defaultStyles = {
     paddingBottom: '3rem',
     paddingTop: '3rem'

@@ -1,21 +1,22 @@
 import classNames from 'classnames'
-import React, { useEffect, useId } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
-import { LocalSiteContent } from 'api/api'
+import { LocalSiteContent, MailingListModal, HtmlSectionView } from '@juniper/ui-core'
+import _uniqueId from 'lodash/uniqueId'
 import Navbar from '../Navbar'
-import { MailingListModal } from './MailingListModal'
-import { HtmlSectionView } from './sections/HtmlPageView'
 
 /** renders the landing page for a portal (e.g. hearthive.org) */
 function LandingPageView({ localContent }: { localContent: LocalSiteContent }) {
   const location = useLocation()
-  const mailingListModalId = useId()
+  // we don't use useId() since this needs to be used in a CSS selector
+  // see https://blog.openreplay.com/understanding-the-useid-hook-in-react/
+  const mailingListModalId = useRef(_uniqueId('mailingListModel'))
 
   useEffect(() => {
     const mailingListLinks = document.querySelectorAll<HTMLLinkElement>('a[href="#mailing-list"]')
     Array.from(mailingListLinks).forEach(el => {
       el.dataset.bsToggle = 'modal'
-      el.dataset.bsTarget = `#${CSS.escape(mailingListModalId)}`
+      el.dataset.bsTarget = `#${mailingListModalId.current}`
     })
   }, [location.pathname])
 
@@ -50,7 +51,7 @@ function LandingPageView({ localContent }: { localContent: LocalSiteContent }) {
           </div>
         </div>
       </footer>
-      <MailingListModal id={mailingListModalId} />
+      <MailingListModal id={mailingListModalId.current} />
     </div>
   </div>
 }

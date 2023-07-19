@@ -50,25 +50,28 @@ export type NavbarItem =
   | NavbarItemMailingList
   | NavbarItemExternal
 
-export type NavbarItemInternal = {
-  itemType: 'INTERNAL'
+type BaseNavBarItem = {
+  id: string
+  itemType: 'INTERNAL' | 'INTERNAL_ANCHOR' | 'MAILING_LIST' | 'EXTERNAL'
   text: string
+  itemOrder: number
+}
+
+export type NavbarItemInternal = BaseNavBarItem & {
+  itemType: 'INTERNAL'
   htmlPage: HtmlPage
 }
 
-export type NavbarItemInternalAnchor = {
+export type NavbarItemInternalAnchor = BaseNavBarItem & {
   itemType: 'INTERNAL_ANCHOR'
-  text: string
   href: string
 }
 
-export type NavbarItemMailingList = {
+export type NavbarItemMailingList = BaseNavBarItem & {
   itemType: 'MAILING_LIST'
-  text: string
 }
 
-export type NavbarItemExternal = {
+export type NavbarItemExternal = BaseNavBarItem & {
   itemType: 'EXTERNAL'
-  text: string
   href: string
 }

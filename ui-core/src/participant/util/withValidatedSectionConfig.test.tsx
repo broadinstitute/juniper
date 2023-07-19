@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react'
 import React from 'react'
 
-import { SectionConfig } from 'api/api'
-import { requireString } from 'util/validationUtils'
+import { SectionConfig } from '../../types/landingPageConfig'
+import { requireString } from './validationUtils'
 
 import { withValidatedSectionConfig } from './withValidatedSectionConfig'
 

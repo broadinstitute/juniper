@@ -3,15 +3,16 @@ import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClock } from '@fortawesome/free-regular-svg-icons'
 
-import { SectionConfig } from 'api/api'
-import { getSectionStyle } from 'util/styleUtils'
-import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
-import { requireOptionalString } from 'util/validationUtils'
+import { SectionConfig } from '../../../types/landingPageConfig'
+import { getSectionStyle } from '../../util/styleUtils'
+import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
+import { requireOptionalString } from '../../util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
 import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
 
 import { TemplateComponentProps } from './templateUtils'
+import { useApiContext } from '../../../participant/ApiProvider'
 
 type ParticipationDetailTemplateConfig = {
   actionButton?: ButtonConfig, // button
@@ -64,10 +65,11 @@ function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
     imagePosition,
     title
   } = config
+  const { getImageUrl } = useApiContext()
 
   const hasImage = !!image
   const isLeftImage = imagePosition === 'left' // default is right, so left has to be explicitly specified
-  return <div id={anchorRef} className="row mx-0" style={getSectionStyle(config)}>
+  return <div id={anchorRef} className="row mx-0" style={getSectionStyle(config, getImageUrl)}>
     <div
       className={classNames(
         'col-md-10 col-lg-8', 'mx-auto', 'row',
