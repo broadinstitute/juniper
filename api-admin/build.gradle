@@ -66,7 +66,7 @@ test {
     useJUnitPlatform ()
 }
 
-sonarqube {
+sonar {
     properties {
         property 'sonar.projectName', 'terra-java-project-template'
         property 'sonar.projectKey', 'terra-java-project-template'
