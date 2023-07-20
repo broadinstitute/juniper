@@ -1,8 +1,9 @@
 import classNames from 'classnames'
 import React, { CSSProperties } from 'react'
-import { getImageUrl } from 'api/api'
+import { useApiContext } from '../../participant/ApiProvider'
 
-import { requireOptionalString, requireNumber, requirePlainObject, requireString } from 'util/validationUtils'
+import { requireOptionalString, requireNumber, requirePlainObject, requireString }
+  from '../../participant/util/validationUtils'
 
 export type ImageConfig = {
   cleanFileName: string,
@@ -44,7 +45,7 @@ type ConfiguredImageProps = {
 /** renders an image that is part of a SiteContent spec */
 export default function ConfiguredImage(props: ConfiguredImageProps) {
   const { image, className, style } = props
-
+  const { getImageUrl } = useApiContext()
   return (
     <img
       src={getImageUrl(image.cleanFileName, image.version)}

@@ -52,7 +52,7 @@ function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT
       <Route path="config" element={<PortalEnvConfigView portal={portal} portalEnv={portalEnv}
         updatePortal={portalContext.updatePortal}/>}/>
       <Route path="participants" element={<PortalParticipantsView portalEnv={portalEnv} portal={portal}/>}/>
-      <Route path="siteContent" element={<SiteContentView portalEnv={portalEnv}/>}/>
+      <Route path="siteContent" element={<SiteContentView portalEnv={portalEnv} portalShortcode={portal.shortcode}/>}/>
       <Route path="diff/:sourceEnvName" element={<PortalEnvDiffProvider portal={portal} portalEnv={portalEnv}
         updatePortal={updatePortal}/>}/>
       <Route path="mailingList" element={<MailingListView portalContext={portalContext}
