@@ -1,7 +1,7 @@
 import React from 'react'
 import Modal from 'react-bootstrap/Modal'
 
-/** show a modal with means of contact support */
+/** show a modal with means of contacting support */
 export default function ContactSupportInfoModal({ onHide }: { onHide: () => void }) {
   return <Modal show={true} onHide={onHide}>
     <Modal.Header closeButton>
