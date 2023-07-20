@@ -22,7 +22,7 @@ export const BaseFields = (props: BaseFieldsProps) => {
           disabled={disabled}
           label="Question text"
           rows={2}
-          value={question.title}
+          value={question.title || ''}
           onChange={value => {
             onChange({
               ...question,
@@ -38,7 +38,7 @@ export const BaseFields = (props: BaseFieldsProps) => {
           disabled={disabled}
           label="Description"
           rows={2}
-          value={question.description}
+          value={question.description || ''}
           onChange={value => {
             onChange({
               ...question,

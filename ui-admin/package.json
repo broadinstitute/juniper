@@ -16,7 +16,7 @@
     "plotly.js": "^2.23.0",
     "query-string": "^7.1.1",
     "react": "^18.2.0",
-    "react-bootstrap": "^2.5.0",
+    "react-bootstrap": "^2.8.0",
     "react-contenteditable": "^3.3.6",
     "react-dom": "^18.2.0",
     "react-notifications-component": "^4.0.1",
@@ -57,5 +57,11 @@
   },
   "eslintConfig": {
     "extends": "../.eslintrc.js"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "react-markdown": "<rootDir>/../node_modules/react-markdown/react-markdown.min.js",
+      "micromark": "<rootDir>/src/test-utils/micromark-mock.js"
+    }
   }
 }
