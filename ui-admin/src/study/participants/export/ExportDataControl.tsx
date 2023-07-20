@@ -6,6 +6,7 @@ import Api from 'api/api'
 import { currentIsoDate } from 'util/timeUtils'
 import { failureNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
+import { Link } from 'react-router-dom'
 
 const FILE_FORMATS = [{
   label: 'Tab-delimted (.tsv)',
@@ -74,10 +75,9 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
 
   return <Modal show={show} onHide={() => setShow(false)}>
     <Modal.Header closeButton>
-      <Modal.Title>Download</Modal.Title>
-      <div className="ms-4">
-        {studyEnvContext.study.name}: {studyEnvContext.currentEnv.environmentName}
-      </div>
+      <Modal.Title>
+        Download
+      </Modal.Title>
     </Modal.Header>
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
@@ -113,6 +113,11 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
               className="me-1"/>
             {format.label}
           </label>)}
+        </div>
+        <hr/>
+        <div>
+          For more information about download formats,
+          see the <Link to={'/help/export'} target="_blank">help page</Link>.
         </div>
       </form>
     </Modal.Body>
