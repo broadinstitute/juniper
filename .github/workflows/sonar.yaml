@@ -27,31 +27,29 @@ jobs:
   #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
   #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  sonar-api-admin:
-    name: SonarCloud api-admin
+  sonar-java:
+    name: SonarCloud Java
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Scan api-admin via gradle
-        run: ./gradlew --build-cache :api-admin:compileJava :api-admin:sonar
+      - name: Scan via gradle
+        run: ./gradlew --build-cache compileJava sonar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 
-  sonar-ui-admin:
-    name: SonarCloud ui-admin
+  sonar-typescript:
+    name: SonarCloud TypeScript
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Scan ui-admin via sonarcloud-github-action
+      - name: Scan via sonarcloud-github-action
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          projectBaseDir: ui-admin/
