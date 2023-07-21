@@ -2,23 +2,56 @@ name: Sonar
 on: workflow_dispatch
 
 jobs:
-  sonar:
+  # sonar:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+
+  #     - name: Set up JDK
+  #       uses: actions/setup-java@v3
+  #       with:
+  #         java-version: '17'
+  #         distribution: 'temurin'
+  #         cache: 'gradle'
+
+  #     - name: SonarCloud Scan (Typescript only)
+  #       uses: SonarSource/sonarcloud-github-action@master
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+
+  #     - name: SonarCloud Scan (Java only)
+  #       run: ./gradlew --build-cache compileJava sonar
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  sonar-api-admin:
+    name: SonarCloud api-admin
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - name: Set up JDK
-        uses: actions/setup-java@v3
         with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: 'gradle'
+          fetch-depth: 0
+      - name: Scan api-admin via gradle
+        run: ./gradlew --build-cache :api-admin:compileJava :api-admin:sonar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      - name: Build all projects without running tests
-        run: ./gradlew --build-cache compileJava
 
-      - name: SonarCloud Scan
+  sonar-ui-admin:
+    name: SonarCloud ui-admin
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Scan ui-admin via sonarcloud-github-action
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: ui-admin/

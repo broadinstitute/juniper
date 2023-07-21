@@ -68,8 +68,9 @@ test {
 
 sonar {
     properties {
-        property 'sonar.projectName', 'terra-java-project-template'
-        property 'sonar.projectKey', 'terra-java-project-template'
+        property 'sonar.projectName', 'juniper-api-admin'
+        property 'sonar.projectKey', 'broadinstitute_juniper-api-admin'
+        property 'sonar.projectBaseDir', '.'
         property 'sonar.organization', 'broad-databiosphere'
         property 'sonar.host.url', 'https://sonarcloud.io'
     }

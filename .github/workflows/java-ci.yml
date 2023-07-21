@@ -53,7 +53,7 @@ jobs:
       - name: Build and SonarQube scan with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
-          arguments: build sonar --info # if you need to see test failure full stacktraces, change this to `build --info`
+          arguments: build --info # if you need to see test failure full stacktraces, change this to `build --info`
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
