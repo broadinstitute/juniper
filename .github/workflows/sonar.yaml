@@ -30,9 +30,9 @@ jobs:
         with:
           projectBaseDir: ui-admin/
           args: >
-              -Dsonar.projectName=juniper-ui-admin
+              -Dsonar.projectName=juniper
               -Dsonar.organization=dsp-appsec
-              -Dsonar.projectKey=broadinstitute_juniper-ui-admin
+              -Dsonar.projectKey=broadinstitute_juniper
               -Dsonar.verbose=true
 
   # sonar:
