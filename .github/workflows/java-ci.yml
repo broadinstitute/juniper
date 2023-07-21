@@ -12,12 +12,13 @@
 name: Java CI
 
 on:
-  push:
-    branches: [ development ]
-    paths-ignore: [ '*.md']
-  pull_request:
-    branches: [ '**' ]
-  merge_group:
+  # push:
+  #   branches: [ development ]
+  #   paths-ignore: [ '*.md']
+  # pull_request:
+  #   branches: [ '**' ]
+  # merge_group:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -56,7 +57,6 @@ jobs:
           arguments: build --info # if you need to see test failure full stacktraces, change this to `build --info`
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   # Need to uncomment these in follow up PR, The new Trivy and Tag workflows need to exist on the development branch
   # before the following steps will work
