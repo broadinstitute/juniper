@@ -6,7 +6,6 @@ plugins {
     id 'io.spring.dependency-management'
     id 'com.jfrog.artifactory' version '4.18.2'
     id 'org.hidetake.swagger.generator'
-    id 'org.sonarqube'
 }
 
 dependencyManagement {
@@ -17,13 +16,3 @@ dependencyManagement {
 
 apply from: 'artifactory.gradle'
 apply from: 'swagger.gradle'
-
-sonar {
-    properties {
-        property 'sonar.projectName', 'juniper-client'
-        property 'sonar.projectKey', 'broadinstitute_juniper-client'
-        property 'sonar.projectBaseDir', '.'
-        property 'sonar.organization', 'broad-databiosphere'
-        property 'sonar.host.url', 'https://sonarcloud.io'
-    }
-}
