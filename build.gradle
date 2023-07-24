@@ -24,9 +24,11 @@ sonar {
         property 'sonar.projectKey', "broadinstitute_${rootProject.name}"
         property 'sonar.organization', 'dsp-appsec'
         property 'sonar.host.url', 'https://sonarcloud.io'
-        property 'sonar.sources', 'src/main/java,src/main/resources'
     }
 }
 subprojects {
     apply plugin: 'org.sonarqube'
+    sonar {
+        property 'sonar.sources', 'src/main/java,src/main/resources'
+    }
 }
