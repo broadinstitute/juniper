@@ -18,19 +18,15 @@ task bundleParticipantUI(type: NpmTask, dependsOn: [npmInstall, buildUICore]) {
     args = ['--workspace=ui-participant', 'run', 'build']
 }
 
-sonar {
-    properties {
-        property 'sonar.projectName', "${rootProject.name}"
-        property 'sonar.projectKey', "broadinstitute_${rootProject.name}"
-        property 'sonar.organization', 'dsp-appsec'
-        property 'sonar.host.url', 'https://sonarcloud.io'
-    }
-}
+apply plugin: 'org.sonarqube'
 subprojects {
-    apply plugin: 'org.sonarqube'
     sonar {
         properties {
-            property 'sonar.sources', 'src/main/java,src/main/resources'
+            property 'sonar.projectName', "${rootProject.name}-${project.name}"
+            property 'sonar.projectKey', "broadinstitute_${rootProject.name}-${project.name}"
+            property 'sonar.projectBaseDir', "${projectDir}"
+            property 'sonar.organization', 'dsp-appsec'
+            property 'sonar.host.url', 'https://sonarcloud.io'
         }
     }
 }
