@@ -17,15 +17,14 @@ task bundleParticipantUI(type: NpmTask, dependsOn: [npmInstall, buildUICore]) {
     args = ['--workspace=ui-participant', 'run', 'build']
 }
 
+apply plugin: 'org.sonarqube'
 subprojects {
-    apply plugin: 'org.sonarqube'
-
     sonar {
         properties {
             property 'sonar.projectName', "${rootProject.name}-${project.name}"
             property 'sonar.projectKey', "broadinstitute_${rootProject.name}-${project.name}"
             property 'sonar.projectBaseDir', "${projectDir}"
-            property 'sonar.organization', 'broad-databiosphere'
+            property 'sonar.organization', 'dsp-appsec'
             property 'sonar.host.url', 'https://sonarcloud.io'
         }
     }
