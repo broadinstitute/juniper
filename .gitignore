@@ -45,3 +45,6 @@ tmp/
 
 # direnv
 .envrc
+
+*.hprof
+
