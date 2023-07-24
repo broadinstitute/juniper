@@ -3,7 +3,6 @@ plugins {
     id 'de.undercouch.download'
     id 'com.google.cloud.tools.jib'
     id 'com.srcclr.gradle'
-    id 'org.sonarqube'
 
     id 'com.gorylenko.gradle-git-properties' version '2.3.1'
 }

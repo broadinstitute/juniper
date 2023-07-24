@@ -42,3 +42,6 @@ npm-debug.log*
 .scannerwork
 .sonar-token
 tmp/
+
+# direnv
+.envrc
