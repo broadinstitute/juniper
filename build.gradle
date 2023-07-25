@@ -29,6 +29,8 @@ sonar {
 subprojects {
     apply plugin: 'org.sonarqube'
     sonar {
-        property 'sonar.sources', 'src/main/java,src/main/resources'
+        properties {
+            property 'sonar.sources', 'src/main/java,src/main/resources'
+        }
     }
 }
