@@ -1,5 +1,10 @@
 name: Sonar
 on: workflow_dispatch
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   sonar-java:
@@ -48,4 +53,5 @@ jobs:
         with:
           projectBaseDir: ${{ github.workspace }}/${{ matrix.subproject }}
           args: >
-              -Dsonar.verbose=true
+              -Dsonar.branch.target=${{ github.event.repository.default_branch }}
+              -Dsonar.branch.name=${{ github.ref_name }}
