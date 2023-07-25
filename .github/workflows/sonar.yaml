@@ -59,3 +59,9 @@ jobs:
           args: >
               -Dsonar.branch.target=${{ github.event.repository.default_branch }}
               -Dsonar.branch.name=${{ steps.branch-name.outputs.current_branch }}
+      - name: Announce
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --body "SonarCloud analyzed branch: ${{ steps.branch-name.outputs.current_branch }}/"
+        env:
+          GH_TOKEN: ${{ github.token }}
