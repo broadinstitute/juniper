@@ -41,11 +41,8 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
             onChange={e => {
               const newQuestionType = e.target.value as QuestionType
               setSelectedQuestionType(newQuestionType)
-              const baseQuestion = baseQuestions[newQuestionType]
-              console.log(question)
-              console.log(baseQuestion)
               // @ts-ignore
-              setQuestion({ ...baseQuestion, ...question, type: newQuestionType })
+              setQuestion({ ...baseQuestions[newQuestionType], ...question, type: newQuestionType })
             }}>
             <option value="text">Text</option>
             <option value="checkbox">Checkbox</option>
