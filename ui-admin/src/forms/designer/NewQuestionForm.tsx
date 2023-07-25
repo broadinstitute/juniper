@@ -5,6 +5,8 @@ import { Question, QuestionType } from '@juniper/ui-core'
 import { Button } from 'components/forms/Button'
 import { QuestionDesigner } from './QuestionDesigner'
 import { TextInput } from 'components/forms/TextInput'
+import { baseQuestions } from './questions/questionTypes'
+import _ from 'lodash'
 
 type NewQuestionFormProps = {
     onCreate: (newQuestion: Question) => void
@@ -16,42 +18,6 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
   const { onCreate, readOnly } = props
   const [selectedQuestionType, setSelectedQuestionType] = useState<QuestionType>('text')
   const [questionName, setQuestionName] = useState<string>('')
-
-  const baseQuestions: Record<QuestionType, Question> = {
-    checkbox: {
-      type: 'checkbox',
-      name: questionName,
-      title: '',
-      choices: []
-    },
-    dropdown: {
-      type: 'dropdown',
-      name: questionName,
-      title: '',
-      choices: []
-    },
-    medications: {
-      type: 'medications',
-      name: questionName,
-      title: ''
-    },
-    radiogroup: {
-      type: 'radiogroup',
-      name: questionName,
-      title: '',
-      choices: []
-    },
-    signaturepad: {
-      type: 'signaturepad',
-      name: questionName,
-      title: ''
-    },
-    text: {
-      type: 'text',
-      name: questionName,
-      title: ''
-    }
-  }
 
   const [question, setQuestion] = useState<Question>(baseQuestions[selectedQuestionType])
 
@@ -75,7 +41,11 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
             onChange={e => {
               const newQuestionType = e.target.value as QuestionType
               setSelectedQuestionType(newQuestionType)
-              setQuestion(baseQuestions[newQuestionType])
+              const baseQuestion = baseQuestions[newQuestionType]
+              console.log(question)
+              console.log(baseQuestion)
+              // @ts-ignore
+              setQuestion({ ...baseQuestion, ...question, type: newQuestionType })
             }}>
             <option value="text">Text</option>
             <option value="checkbox">Checkbox</option>
@@ -98,7 +68,10 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
         <Button
           variant="primary"
           onClick={() => {
-            onCreate(question)
+            //While preserving the state during editing, we may have accumulated some extra fields
+            //that don't exist on the final question type. So we need to remove them before saving.
+            const sanitizedQuestion = _.pick(question, Object.keys(baseQuestions[selectedQuestionType])) as Question
+            onCreate(sanitizedQuestion)
           }}
         >
           Create question
