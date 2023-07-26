@@ -13,7 +13,7 @@ describe('NewQuestionForm', () => {
     const questionTypeSelect = screen.getByLabelText('Question type')
     expect(questionStableIdInput).toBeInTheDocument()
     expect(questionTypeSelect).toBeInTheDocument()
-    expect((questionTypeSelect as HTMLSelectElement).value).toBe('text')
+    expect((questionTypeSelect as HTMLSelectElement).value).toBe('placeholder')
   })
 
   test('updates to the appropriate QuestionDesigner when a new question type is selected', () => {
