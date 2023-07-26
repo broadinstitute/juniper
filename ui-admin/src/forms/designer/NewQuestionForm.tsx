@@ -19,7 +19,7 @@ type NewQuestionFormProps = {
 export const NewQuestionForm = (props: NewQuestionFormProps) => {
   const { onCreate, readOnly } = props
   const [question, setQuestion] = useState<Question>(baseQuestions['text'])
-  const [selectedQuestionType, setSelectedQuestionType] = useState<string | undefined>(undefined)
+  const [selectedQuestionType, setSelectedQuestionType] = useState<QuestionType | undefined>(undefined)
   const [questionStableId, setQuestionStableId] = useState<string>('')
   const [freetext, setFreetext] = useState<string | undefined>(undefined)
 
@@ -102,7 +102,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
             //While preserving the state during editing, we may have accumulated some extra fields
             //that don't exist on the final question type. So we need to remove them before saving.
             const sanitizedQuestion = _.pick(question,
-              Object.keys(baseQuestions[selectedQuestionType as QuestionType])) as Question
+              Object.keys(baseQuestions[selectedQuestionType || 'text'])) as Question
             onCreate(sanitizedQuestion)
           }}
         >
