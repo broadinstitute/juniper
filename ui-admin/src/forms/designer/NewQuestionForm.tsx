@@ -46,7 +46,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
               const newQuestionType = e.target.value as QuestionType
               setSelectedQuestionType(newQuestionType)
               // @ts-ignore
-              if (e.target.value === 'autofill') {
+              if (e.target.value === 'freetext') {
                 setFreetextMode(true)
               } else {
                 // @ts-ignore
@@ -60,7 +60,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
             <option value="medications">Medications</option>
             <option value="radiogroup">Radio group</option>
             <option value="signaturepad">Signature</option>
-            <option value="autofill">Automatically detect my question type (freetext)</option>
+            <option value="freetext">Automatically detect my question type (freetext)</option>
           </select>
         </div>
 
