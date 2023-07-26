@@ -18,12 +18,12 @@ type NewQuestionFormProps = {
 /** UI for creating a new question. */
 export const NewQuestionForm = (props: NewQuestionFormProps) => {
   const { onCreate, readOnly } = props
-  const [selectedQuestionType, setSelectedQuestionType] = useState<QuestionType>('text')
+  const [selectedQuestionType, setSelectedQuestionType] = useState<string>('')
   const [questionName, setQuestionName] = useState<string>('')
-  const [freetextMode, setFreetextMode] = useState<boolean>(false)
-  const [freetext, setFreetext] = useState<string>('')
+  // const [freetextMode, setFreetextMode] = useState<boolean>(false)
+  const [freetext, setFreetext] = useState<string | undefined>(undefined)
 
-  const [question, setQuestion] = useState<Question>(baseQuestions[selectedQuestionType])
+  const [question, setQuestion] = useState<Question>(baseQuestions[selectedQuestionType as QuestionType])
 
   return (
     <>
@@ -45,15 +45,14 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
             onChange={e => {
               const newQuestionType = e.target.value as QuestionType
               setSelectedQuestionType(newQuestionType)
-              // @ts-ignore
               if (e.target.value === 'freetext') {
-                setFreetextMode(true)
+                setFreetext('')
               } else {
-                // @ts-ignore
-                setQuestion({ ...baseQuestions[newQuestionType], ...question, type: newQuestionType })
-                setFreetextMode(false)
+                setQuestion({ ...baseQuestions[newQuestionType], ...question, type: newQuestionType } as Question)
+                setFreetext(undefined)
               }
             }}>
+            <option value="" disabled={true}>Select a question type</option>
             <option value="text">Text</option>
             <option value="checkbox">Checkbox</option>
             <option value="dropdown">Dropdown</option>
@@ -64,8 +63,9 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
           </select>
         </div>
 
-        { freetextMode && <div className="mb-3">
+        { freetext && <div className="mb-3">
           <Textarea
+            //Show if freetext is defined
             description="Enter your question text here.
             We'll try to automatically detect the question type and populate the fields."
             disabled={readOnly}
@@ -77,23 +77,20 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
               const newQuestionObj = questionFromRawText(value)
               const newType = newQuestionObj.type as QuestionType
               setSelectedQuestionType(newType)
-              console.log(newQuestionObj)
-              //todo: which types actually need to be set here?
+              //questionFromRawText can only reasonably predict the type of question, it's choices, and it's text.
+              //We'll pick those three fields out and allow the user to decide the rest of the fields explicitly.
               setQuestion({
                 ...question,
-                // @ts-ignore
                 type: newType,
-                name: questionName,
                 title: newQuestionObj.title || '',
-                //TODO: harmonize the question choice types
-                // @ts-ignore
                 choices: newQuestionObj.choices
-              })
+              } as Question)
             }}
           />
         </div> }
 
-        { (freetext || !freetextMode) && selectedQuestionType && <QuestionDesigner
+        { freetext && selectedQuestionType && <QuestionDesigner
+          //Show if freetext is defined and nonempty
           question={question}
           showName={false}
           readOnly={readOnly}
@@ -104,10 +101,12 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
 
         <Button
           variant="primary"
+          disabled={readOnly || !selectedQuestionType || !questionName}
           onClick={() => {
             //While preserving the state during editing, we may have accumulated some extra fields
             //that don't exist on the final question type. So we need to remove them before saving.
-            const sanitizedQuestion = _.pick(question, Object.keys(baseQuestions[selectedQuestionType])) as Question
+            const sanitizedQuestion = _.pick(question,
+                Object.keys(baseQuestions[selectedQuestionType as QuestionType])) as Question
             onCreate(sanitizedQuestion)
           }}
         >

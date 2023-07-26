@@ -99,7 +99,7 @@ type BaseQuestion = BaseElement & {
   isRequired?: boolean
 }
 
-type QuestionChoice = {
+export type QuestionChoice = {
   text: string
   value: string
 }

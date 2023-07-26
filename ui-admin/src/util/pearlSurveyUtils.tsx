@@ -1,4 +1,5 @@
 import _camelCase from 'lodash/camelCase'
+import { QuestionChoice } from '@juniper/ui-core/src/types/forms'
 
 /**
  * A set of utilities for processing "Pearl" surveys, which are currently defined as SurveyJS surveys but with
@@ -25,7 +26,7 @@ export type QuestionObj = {
   namePrefix: string,
   nameSuffix: string,
   type: string,
-  choices?: Choice[],
+  choices?: QuestionChoice[],
   title?: string,
   questionTemplateName?: string,
   visibleIf?: string,
