@@ -7,8 +7,8 @@ import { QuestionDesigner } from './QuestionDesigner'
 import { TextInput } from 'components/forms/TextInput'
 import { baseQuestions } from './questions/questionTypes'
 import _ from 'lodash'
-import { Textarea } from '../../components/forms/Textarea'
-import { questionFromRawText } from '../../util/pearlSurveyUtils'
+import { Textarea } from 'components/forms/Textarea'
+import { questionFromRawText } from 'util/pearlSurveyUtils'
 
 type NewQuestionFormProps = {
     onCreate: (newQuestion: Question) => void
