@@ -35,11 +35,6 @@ export type QuestionObj = {
   isRequired?: boolean
 }
 
-export type Choice = {
-  text: string,
-  value: string
-}
-
 /** renders a choice text into a stableId-suitable string */
 export function getValueForChoice(choiceText: string) {
   let value =_camelCase(choiceText)
