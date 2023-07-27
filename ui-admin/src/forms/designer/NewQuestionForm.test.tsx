@@ -51,9 +51,9 @@ describe('NewQuestionForm', () => {
 
     //Act
     const questionTypeSelect = screen.getByLabelText('Question type')
-    fireEvent.change(questionTypeSelect, {target: {value: 'freetext'}})
+    fireEvent.change(questionTypeSelect, { target: { value: 'freetext' } })
     const freetextInput = screen.getByLabelText('Freetext') as HTMLInputElement
-    userEvent.pointer({target: freetextInput, offset: 0, keys: '[MouseLeft]'})
+    userEvent.pointer({ target: freetextInput, offset: 0, keys: '[MouseLeft]' })
     userEvent.keyboard('This is a question!\nThis is an option!\nThis is another option!')
 
     //Assert
