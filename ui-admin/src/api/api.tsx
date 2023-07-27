@@ -1,3 +1,4 @@
+import _pick from 'lodash/pick'
 import {
   ConsentForm,
   Survey,
@@ -153,12 +154,49 @@ export type PepperKitStatus = {
   returnTrackingNumber: string
 }
 
+const emptyPepperKitStatus: PepperKitStatus = {
+  kitId: '',
+  currentStatus: '(unknown)',
+  labelDate: '',
+  scanDate: '',
+  receiveDate: '',
+  trackingNumber: '',
+  returnTrackingNumber: ''
+}
+
+/**
+ * Parse kit status JSON returned from Pepper.
+ *
+ * Since the JSON is coming from outside of Juniper, we want to be extra careful to guard against unexpected content.
+ * Therefore, this function will never raise an error and will always return an object that conforms to the
+ * `PepperKitStatus` type.
+ */
+function parsePepperKitStatus(json: string | undefined): PepperKitStatus {
+  if (json) {
+    try {
+      const pepperStatus = JSON.parse(json)
+      if (pepperStatus.kitId && pepperStatus.currentStatus) {
+        return {
+          ...emptyPepperKitStatus,
+          ..._pick(pepperStatus,
+            'kitId', 'currentStatus', 'labelDate', 'scanDate', 'receiveDate', 'trackingNumber', 'returnTrackingNumber')
+        }
+      }
+    } catch {
+      // ignore; fall-through to result for unexpected value
+    }
+  }
+  return emptyPepperKitStatus
+}
+
 export type KitRequest = {
   id: string,
   createdAt: number,
+  enrollee?: Enrollee,
   kitType: KitType,
   sentToAddress: string,
   status: string
+  dsmStatus?: string
   pepperStatus?: PepperKitStatus
 }
 
@@ -523,7 +561,9 @@ export default {
   ): Promise<KitRequest[]> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/kits`
     const response = await fetch(url, this.getGetInit())
-    return await this.processJsonResponse(response)
+    const kits: KitRequest[] = await this.processJsonResponse(response)
+    kits.forEach(kit => kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus))
+    return kits
   },
 
   async createKitRequest(

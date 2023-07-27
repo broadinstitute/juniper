@@ -115,14 +115,6 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         var kits = dao.findByStudyEnvironment(studyEnvironment.getId());
         kits.forEach(kit -> {
             kit.setKitType(kitTypeMap.get(kit.getKitTypeId()));
-            try {
-                kit.setPepperStatus(objectMapper.readValue(kit.getDsmStatus(), PepperKitStatus.class));
-            } catch (JsonProcessingException e) {
-                // This is unexpected, so we should log it. However, we will suppress the exception.
-                // If we were to propagate it, then unexpected JSON from Pepper would result in
-                // not being able to render the kit list page at all.
-                logger.warn("Unable to parse JSON from Pepper: {}", kit.getDsmStatus());
-            }
             enrolleeService.find(kit.getEnrolleeId()).ifPresent(kit::setEnrollee);
         });
         return kits;

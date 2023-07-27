@@ -105,14 +105,6 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
         // Assert
         assertThat(kits, contains(kitRequest1, kitRequest2));
-
-        // kit 1's status JSON is valid, so its deserialized status should be non-null
-        var fetchedKitRequest1 = kits.stream().filter(kit -> kit.getId().equals(kitRequest1.getId())).findFirst().get();
-        assertThat(fetchedKitRequest1.getPepperStatus(), notNullValue());
-
-        // kit 2's status JSON is bogus, so its deserialized status should be null
-        var fetchedKitRequest2 = kits.stream().filter(kit -> kit.getId().equals(kitRequest2.getId())).findFirst().get();
-        assertThat(kitRequest2.getPepperStatus(), nullValue());
     }
 
     @Transactional

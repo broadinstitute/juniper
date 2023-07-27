@@ -34,6 +34,5 @@ public class KitRequest extends BaseEntity {
      * JSON blob of status from DSM
      */
     private String dsmStatus;
-    private PepperKitStatus pepperStatus;
     private Instant dsmStatusFetchedAt;
 }

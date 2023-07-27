@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import _countBy from 'lodash/countBy'
 import { Link } from 'react-router-dom'
 import {
   ColumnDef,
@@ -23,11 +24,9 @@ const pepperStatusToHumanStatus = (dsmStatus?: string): string => {
     : '(unknown)'
 }
 
-/**
- * Shows a list of all kits for a study.
- */
+/** Loads sample kits for a study and shows them as a list. */
 export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) {
-  const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
+  const { portal, study, currentEnv } = studyEnvContext
   const [isLoading, setIsLoading] = useState(true)
   const [kits, setKits] = useState<KitRequest[]>([])
 
@@ -43,24 +42,16 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
     loadKits()
   }, [])
 
-  // Inspired by https://stackoverflow.com/a/70171464/244191
-  type ApplyFunction<X, T, R> = (all: X, current: T) => R
-  type GetFunction<T, R> = (t: T) => R
+  return <LoadingSpinner isLoading={isLoading}>
+    <KitListView kits={kits} studyEnvContext={studyEnvContext}/>
+  </LoadingSpinner>
+}
 
-  const groupAndApplyByIndex = <T, V extends string | number, R>(data: Array<T>,
-    get: GetFunction<T, V>,
-    apply: ApplyFunction<Record<V, R>, V, R>) => {
-    return data.reduce((all, element) => {
-      return {
-        ...all,
-        [get(element)]: apply(all, get(element))
-      }
-    }, {} as Record<V, R>)
-  }
+/** Renders a table with a list of kits. */
+export function KitListView({ studyEnvContext, kits }: { studyEnvContext: StudyEnvContextT, kits: KitRequest[] }) {
+  const { currentEnvPath } = studyEnvContext
 
-  const getStatus: GetFunction<KitRequest, string> = k => k.pepperStatus?.currentStatus || ''
-  const countsByStatus = groupAndApplyByIndex(kits, getStatus,
-    (all, element) => ((all[element] as number || 0) + 1))
+  const countsByStatus = _countBy(kits, kit => kit.pepperStatus?.currentStatus || '')
 
   const columns: ColumnDef<KitRequest, string>[] = [{
     header: 'Enrollee shortcode',
@@ -119,15 +110,13 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
   })
 
   return <>
-    <LoadingSpinner isLoading={isLoading}>
-      <div>
-        <span>Total Kits: {kits.length}</span>
-        <span className='ms-3'><>{pepperStatusToHumanStatus('CREATED')}: {countsByStatus['CREATED'] || 0}</></span>
-        <span className='ms-3'><>{pepperStatusToHumanStatus('LABELED')}: {countsByStatus['LABELED'] || 0}</></span>
-        <span className='ms-3'><>{pepperStatusToHumanStatus('SCANNED')}: {countsByStatus['SCANNED'] || 0}</></span>
-        <span className='ms-3'><>{pepperStatusToHumanStatus('RECEIVED')}: {countsByStatus['RECEIVED'] || 0}</></span>
-      </div>
-      {basicTableLayout(table, { filterable: true })}
-    </LoadingSpinner>
+    <div>
+      <span>Total Kits: {kits.length}</span>
+      <span className='ms-3'><>{pepperStatusToHumanStatus('CREATED')}: {countsByStatus['CREATED'] || 0}</></span>
+      <span className='ms-3'><>{pepperStatusToHumanStatus('LABELED')}: {countsByStatus['LABELED'] || 0}</></span>
+      <span className='ms-3'><>{pepperStatusToHumanStatus('SCANNED')}: {countsByStatus['SCANNED'] || 0}</></span>
+      <span className='ms-3'><>{pepperStatusToHumanStatus('RECEIVED')}: {countsByStatus['RECEIVED'] || 0}</></span>
+    </div>
+    {basicTableLayout(table, { filterable: true })}
   </>
 }
