@@ -17,9 +17,9 @@ type NewQuestionFormProps = {
 export const NewQuestionForm = (props: NewQuestionFormProps) => {
   const { onCreate, readOnly } = props
   const [selectedQuestionType, setSelectedQuestionType] = useState<QuestionType>('text')
-  const [questionName, setQuestionName] = useState<string>('')
 
   const [question, setQuestion] = useState<Question>(baseQuestions[selectedQuestionType])
+  const { name: questionName } = question
 
   return (
     <>
@@ -31,7 +31,6 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
               label='Question stable ID'
               value={questionName}
               onChange={value => {
-                setQuestionName(value)
                 setQuestion({ ...question, name: value })
               }}
             />
