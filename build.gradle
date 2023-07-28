@@ -1,5 +1,6 @@
 plugins {
     id 'com.github.node-gradle.node' version '5.0.0'
+    id 'org.sonarqube'
 }
 
 apply plugin: 'base'
@@ -15,4 +16,21 @@ task bundleAdminUI(type: NpmTask, dependsOn: [npmInstall, buildUICore]) {
 
 task bundleParticipantUI(type: NpmTask, dependsOn: [npmInstall, buildUICore]) {
     args = ['--workspace=ui-participant', 'run', 'build']
+}
+
+sonar {
+    properties {
+        property 'sonar.projectName', "${rootProject.name}"
+        property 'sonar.projectKey', "broadinstitute_${rootProject.name}"
+        property 'sonar.organization', 'dsp-appsec'
+        property 'sonar.host.url', 'https://sonarcloud.io'
+    }
+}
+subprojects {
+    apply plugin: 'org.sonarqube'
+    sonar {
+        properties {
+            property 'sonar.sources', 'src/main/java,src/main/resources'
+        }
+    }
 }

@@ -1,24 +1,67 @@
 name: Sonar
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
-  sonar:
+  sonar-java:
+    name: SonarCloud Java
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - name: Set up JDK
+        with:
+          fetch-depth: 0
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'temurin'
-          cache: 'gradle'
+          distribution: 'adopt'
+      - name: Scan via gradle
+        run: >-
+          ./gradlew
+          --build-cache
+          -x test
+          -x spotlessJava
+          -x spotlessJavaApply
+          -x spotlessJavaCheck
+          -x spotlessCheck
+          -x spotlessApply
+          build sonar -info
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      - name: Build all projects without running tests
-        run: ./gradlew --build-cache compileJava
 
-      - name: SonarCloud Scan
+  sonar-typescript:
+    name: SonarCloud TypeScript
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        subproject: ['ui-admin', 'ui-core', 'ui-participant']
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v5
+      - name: Scan ${{ matrix.subproject }} via sonarcloud-github-action
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: ${{ github.workspace }}/${{ matrix.subproject }}
+          args: >
+              -Dsonar.branch.target=${{ github.event.repository.default_branch }}
+              -Dsonar.branch.name=${{ steps.branch-name.outputs.current_branch }}
+      - name: Announce
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --body "SonarCloud [analyzed ${{ matrix.subproject }} on ${{ steps.branch-name.outputs.current_branch }}](https://sonarcloud.io/summary/new_code?id=broadinstitute_juniper-${{ matrix.subproject }}&branch=${{ steps.branch-name.outputs.current_branch }})"
+        env:
+          GH_TOKEN: ${{ github.token }}
