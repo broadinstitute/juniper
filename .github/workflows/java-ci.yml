@@ -12,13 +12,12 @@
 name: Java CI
 
 on:
-  # push:
-  #   branches: [ development ]
-  #   paths-ignore: [ '*.md']
-  # pull_request:
-  #   branches: [ '**' ]
-  # merge_group:
-  workflow_dispatch:
+  push:
+    branches: [ development ]
+    paths-ignore: [ '*.md']
+  pull_request:
+    branches: [ '**' ]
+  merge_group:
 
 jobs:
   build:
@@ -51,12 +50,10 @@ jobs:
           distribution: 'adopt'
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
-      - name: Build and SonarQube scan with Gradle
+      - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
           arguments: build --info # if you need to see test failure full stacktraces, change this to `build --info`
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
 
   # Need to uncomment these in follow up PR, The new Trivy and Tag workflows need to exist on the development branch
   # before the following steps will work

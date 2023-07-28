@@ -29,7 +29,7 @@ DTOs, and populate services.  the PopulateCliApp can be used to populate specifi
    In development, it serves at localhost:8081.  Lives in `api-participant` directory
 ##### Study Manager UI
    Participant UI is a create-react-app SPA.  Lives in `ui-participant` directory.  Serves on localhost:3001 in development
-
+   
 
 
 ## Local development
@@ -47,7 +47,7 @@ run `./local-dev/run_postgres.sh start`
 This will start a postgres container with a schema and user configured
 
 #### IDE Setup
-Open the root folder in IntelliJ.
+Open the root folder in IntelliJ.  
 
 * **server:**
 
@@ -76,15 +76,15 @@ Open the root folder in IntelliJ.
         * set environment variable: `B2C_POLICY_NAME=B2C_1A_ddp_participant_signup_signin_dev`
         * set environment variable: `B2C_CHANGE_PASSWORD_POLICY_NAME=B2C_1A_ddp_participant_change_password_dev`
         * disable launch optimization
-
-
+        
+         
 ### Running the application
 #### Admin tool (study manager, population)
 * API (api-admin module)
 In intelliJ, you can either run ApiAdminApp (from the api-admin module) directly, or execute the "bootRun" gradle task.
 In basic development mode, this will only serve the API, not the frontend assets.
 
-To make the application useful, you will want to populate some users and studies.  After the admin API is running,
+To make the application useful, you will want to populate some users and studies.  After the admin API is running, 
 from the root project directory, run
 ```
 ./scripts/populate_portal.sh ourhealth
@@ -98,7 +98,7 @@ From the command line:
   REACT_APP_B2C_TENANT_NAME=ddpdevb2c REACT_APP_B2C_CLIENT_ID=$(vault read -field value secret/dsp/ddp/b2c/dev/application_id) npm -w ui-admin start
   ```
 (note that you can just run `npm -w ui-admin start` if you don't need to test B2C login functionality)
-Then go to `localhost:3000`
+Then go to `localhost:3000` 
 
 ##### Participant API (api-participant module)
 In intelliJ, you can either run ApiParticipantApp (from the api-participant module) directly, or execute the "bootRun" gradle task.
@@ -118,9 +118,9 @@ Then go to `sandbox.ourhealth.localhost:3001`
 (Notice how you need the environment name and portal name as subdomains)
 
 
-### Feature Development
+### Feature Development 
 
-#### Adding a new model
+#### Adding a new model 
 1. Create the schema, models, and services
    1. Create your POJO model in `core/src/main/java/bio/terra/pearl/core/model`, you will almost certainly want to extend
    `BaseEntity`
@@ -150,16 +150,3 @@ Then go to `sandbox.ourhealth.localhost:3001`
 #### Adding environment variables
   Helm charts:
   https://github.com/broadinstitute/terra-helmfile/tree/master/values/app/d2p/live
-
-
-### SonarCloud code scanning
-
-Because juniper contains TypeScript projects and Java projects, the scans are run independently
-in each project
-
-Typescript UI subprojects (ui-admin, ui-core, and ui-participant) are scanned using the
-SonarCloud GitHub Action. Analysis (SonarCloud
-runs the scan on its own and comments back results to PRs).
-
-Java subprojects (core, client, api-admin, api-participant) are scanned using gradle with the
-sonarqube plugin.
