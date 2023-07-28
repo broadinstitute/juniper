@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        subproject: ['ui-admin', 'ui-participant']
+        subproject: ['ui-admin', 'ui-core', 'ui-participant']
     steps:
       - uses: actions/checkout@v3
         with:
