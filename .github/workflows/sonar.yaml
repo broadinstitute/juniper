@@ -38,13 +38,7 @@ jobs:
 
   sonar-typescript:
     name: SonarCloud TypeScript
-
-  sonar-typescript:
-    name: SonarCloud TypeScript
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        subproject: ['ui-admin', 'ui-participant']
     strategy:
       matrix:
         subproject: ['ui-admin', 'ui-participant']
@@ -56,16 +50,11 @@ jobs:
         id: branch-name
         uses: tj-actions/branch-names@v5
       - name: Scan ${{ matrix.subproject }} via sonarcloud-github-action
-      - name: Get branch name
-        id: branch-name
-        uses: tj-actions/branch-names@v5
-      - name: Scan ${{ matrix.subproject }} via sonarcloud-github-action
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          projectBaseDir: ${{ github.workspace }}/${{ matrix.subproject }}
           projectBaseDir: ${{ github.workspace }}/${{ matrix.subproject }}
           args: >
               -Dsonar.branch.target=${{ github.event.repository.default_branch }}
