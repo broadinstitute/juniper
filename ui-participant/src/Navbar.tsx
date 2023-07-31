@@ -7,7 +7,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
 import Api, { getEnvSpec, getImageUrl, NavbarItem } from 'api/api'
-import { MailingListModal } from 'landing/MailingListModal'
+import { MailingListModal } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { useConfig } from 'providers/ConfigProvider'
@@ -46,8 +46,6 @@ export default function Navbar(props: NavbarProps) {
     Api.logout().then(() => {
       logoutUser()
       window.location.href = '/'
-    }).catch(e => {
-      alert(`an error occurred during logout ${e}`)
     })
   }
 

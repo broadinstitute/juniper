@@ -1,13 +1,12 @@
 import React, { useRef } from 'react'
 
-import MailingListForm from './MailingListForm'
+import { MailingListForm } from './MailingListForm'
 
 type MailingListModalProps = {
   id: string
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/** display a modal prompting user to join mailing list */
 export const MailingListModal = (props: MailingListModalProps) => {
   const { id } = props
   const closeButtonRef = useRef<HTMLButtonElement>(null)

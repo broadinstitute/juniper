@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Model } from 'survey-core'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 
@@ -55,6 +55,7 @@ const usePrintableConsent = (args: UsePrintableConsentArgs) => {
 
   const [loading, setLoading] = useState(true)
   const [surveyModel, setSurveyModel] = useState<Model | null>(null)
+  const navigate = useNavigate()
   useEffect(() => {
     const loadConsent = async () => {
       const consentAndResponses = await Api.fetchConsentAndResponses({
@@ -88,7 +89,7 @@ const usePrintableConsent = (args: UsePrintableConsentArgs) => {
     loadConsent()
       .then(setSurveyModel)
       .catch(() => {
-        alert('Error loading consent form - please retry')
+        navigate('/hub')
       })
       .finally(() => {
         setLoading(false)

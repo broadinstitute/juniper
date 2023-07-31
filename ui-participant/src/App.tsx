@@ -4,8 +4,8 @@ import React, { CSSProperties, Suspense, lazy, useEffect } from 'react'
 import LandingPage from 'landing/LandingPage'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { usePortalEnv } from 'providers/PortalProvider'
-import { NavbarItem, NavbarItemInternal } from 'api/api'
-import HtmlPageView from 'landing/sections/HtmlPageView'
+import Api, { NavbarItem, NavbarItemInternal } from 'api/api'
+import HtmlPageView from 'landing/HtmlPageView'
 import PortalRegistrationRouter from 'landing/registration/PortalRegistrationRouter'
 import { AuthProvider } from 'react-oidc-context'
 import { getAuthProviderProps } from 'authConfig'
@@ -22,6 +22,7 @@ import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { useCookiesAcknowledged } from './browserPersistentState'
 import { CookieAlert } from './CookieAlert'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
+import { ApiProvider } from '@juniper/ui-core'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
@@ -97,7 +98,7 @@ function App() {
   </Route>)
 
   return (
-    <>
+    <ApiProvider api={Api}>
       <EnvironmentAlert portalEnvironment={portal.portalEnvironments[0]}/>
       <DocumentTitle />
       <PortalPasswordGate portal={portal}>
@@ -142,7 +143,7 @@ function App() {
           </BrowserRouter>
         </div>
       </PortalPasswordGate>
-    </>
+    </ApiProvider>
 
   )
 }

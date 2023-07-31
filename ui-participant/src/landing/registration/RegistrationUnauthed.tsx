@@ -77,7 +77,6 @@ export default function RegistrationUnauthed({ registrationContext, returnTo }: 
         navigate(returnTo)
       }
     }).catch(() => {
-      alert('an error occurred.  Please retry.  If this persists, contact us')
       // if there's an error, reshow the survey (for now, assume registration is a single page)
       refreshSurvey(resumeData, 1)
     })

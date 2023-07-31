@@ -3,7 +3,6 @@ plugins {
     id 'de.undercouch.download'
     id 'com.google.cloud.tools.jib'
     id 'com.srcclr.gradle'
-    id 'org.sonarqube'
 
     id 'com.gorylenko.gradle-git-properties' version '2.3.1'
 }
@@ -60,13 +59,4 @@ jibDockerBuild.dependsOn('copyWebApp')
 
 test {
     useJUnitPlatform ()
-}
-
-sonarqube {
-    properties {
-        property 'sonar.projectName', 'terra-java-project-template'
-        property 'sonar.projectKey', 'terra-java-project-template'
-        property 'sonar.organization', 'broad-databiosphere'
-        property 'sonar.host.url', 'https://sonarcloud.io'
-    }
 }

@@ -1,22 +1,22 @@
-import Api from 'api/api'
 import classNames from 'classnames'
 import React, { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope } from '@fortawesome/free-regular-svg-icons'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
+import { useApiContext } from '../../participant/ApiProvider'
 
 type MailingListFormProps = {
   onJoin?: () => void
 }
 
 /** shows a form for entering name and email to join the portal mailing list */
-export default function MailingListForm(props: MailingListFormProps) {
+export function MailingListForm(props: MailingListFormProps) {
   const { onJoin } = props
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [joined, setJoined] = useState(false)
-
+  const Api = useApiContext()
   const containerClasses = classNames('d-flex', 'flex-column', 'align-items-center', 'mx-auto')
 
   const submit = (e: React.SyntheticEvent) => {
@@ -24,8 +24,6 @@ export default function MailingListForm(props: MailingListFormProps) {
     Api.submitMailingListContact(name, email).then(() => {
       setJoined(true)
       onJoin?.()
-    }).catch((e: Error) => {
-      alert(`an error occured ${e.message}`)
     })
   }
   // minimal validation - name not null and email has an @ and dots

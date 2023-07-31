@@ -1,8 +1,8 @@
 import { pick } from 'lodash'
 import React, { ComponentType } from 'react'
 
-import { SectionConfig } from 'api/api'
-import { sectionStyleConfigKeys } from 'util/styleUtils'
+import { SectionConfig } from '../../types/landingPageConfig'
+import { sectionStyleConfigKeys } from './styleUtils'
 
 /** Returns a higher order component that accepts section configuration, validates that it
  *  conforms to ConfigType, and renders the wrapped component with the validated configuration.

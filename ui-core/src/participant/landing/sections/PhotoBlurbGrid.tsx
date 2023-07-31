@@ -1,15 +1,17 @@
 import classNames from 'classnames'
 import React from 'react'
 
-import { SectionConfig } from 'api/api'
-import { getSectionStyle } from 'util/styleUtils'
-import { withValidatedSectionConfig } from 'util/withValidatedSectionConfig'
-import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString } from 'util/validationUtils'
+import { SectionConfig } from '../../../types/landingPageConfig'
+import { getSectionStyle } from '../../util/styleUtils'
+import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
+import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString }
+  from '../../util/validationUtils'
 
 import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
 import { Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
+import { useApiContext } from '../../../participant/ApiProvider'
 
 type PhotoBlurbGridConfig = {
   title?: string,
@@ -62,13 +64,13 @@ type PhotoBlurbGridProps = TemplateComponentProps<PhotoBlurbGridConfig>
 function PhotoBlurbGrid(props: PhotoBlurbGridProps) {
   const { anchorRef, config } = props
   const { subGrids, title } = config
-
+  const { getImageUrl } = useApiContext()
   const hasTitle = !!title
   // Heading levels must increase one at a time, so if the grid has no
   // title, then the subgrid headings should be h2 elements.
   const subGridHeadingLevel = hasTitle ? 3 : 2
 
-  return <div id={anchorRef} style={getSectionStyle(config)}>
+  return <div id={anchorRef} style={getSectionStyle(config, getImageUrl)}>
     {!!title && (
       <h2 className="fs-1 fw-normal lh-sm text-center mb-4">
         {title}
