@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master
+      - development
   pull_request:
     types: [opened, synchronize, reopened]
 
