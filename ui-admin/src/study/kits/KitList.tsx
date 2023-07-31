@@ -92,10 +92,10 @@ export function KitListView({ studyEnvContext, kits }: { studyEnvContext: StudyE
     meta: {
       columnType: 'string',
       filterOptions: [
-        { value: true, label: 'Created' },
-        { value: true, label: 'Prepared' },
-        { value: true, label: 'Sent' },
-        { value: true, label: 'Received' }
+        { value: 'created', label: 'Created' },
+        { value: 'prepared', label: 'Prepared' },
+        { value: 'sent', label: 'Sent' },
+        { value: 'received', label: 'Received' }
       ]
     },
     filterFn: 'equalsString'

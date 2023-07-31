@@ -46,7 +46,8 @@ function Filter<A>({
 }: {
   column: Column<A>
 }) {
-  return column.columnDef.meta?.columnType === 'boolean' ? (
+  const columnType = column.columnDef.meta?.columnType
+  return columnType === 'string' || columnType === 'boolean' ? (
     SelectFilter({ column })
   ) : (
     //Defaults to the text search filter
@@ -62,7 +63,7 @@ function SelectFilter<A>({
 }: {
   column: Column<A>
 }) {
-  const [selectedValue, setSelectedValue] = useState<{ value: boolean, label: string }>()
+  const [selectedValue, setSelectedValue] = useState<{ value: boolean | string, label: string }>()
 
   return <div>
     <Select
@@ -87,7 +88,7 @@ function SelectFilter<A>({
       }}
       value={selectedValue}
       // @ts-ignore
-      onChange={(newValue: { value: boolean, label: string }) => {
+      onChange={(newValue: { value: boolean | string, label: string }) => {
         //setFilterValue on Column cannot natively handle dropdown options,
         //so we need to manage the filter value used by the column separately
         //from the selected value used by the Select component
@@ -282,6 +283,6 @@ declare module '@tanstack/table-core' {
     //Specifies the type of the column data. By default, columns will be treated as strings
     columnType?: string
     //Specifies the Select options if using a dropdown filter (i.e. for booleans)
-    filterOptions?: { value: boolean, label: string }[]
+    filterOptions?: { value: boolean | string, label: string }[]
   }
 }
