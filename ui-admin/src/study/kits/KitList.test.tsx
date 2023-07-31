@@ -4,16 +4,6 @@ import { mockEnrollee, mockKitRequest, mockStudyEnvContext } from 'test-utils/mo
 import KitList from './KitList'
 import { BrowserRouter } from 'react-router-dom'
 
-const dsmStatus = JSON.stringify({
-  kitId: '123-456-789',
-  currentStatus: 'CREATED',
-  labelDate: new Date().toISOString(),
-  scanDate: new Date().toISOString(),
-  receiveDate: new Date().toISOString(),
-  trackingNumber: 'Z23456',
-  returnTrackingNumber: 'Z87654'
-})
-
 jest.mock('api/api', () => ({
   fetchKitsByStudyEnvironment: () => {
     return Promise.resolve([mockKitRequest({
