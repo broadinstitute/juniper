@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.portal.MailingListContactDao;
 import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,9 @@ public class MailingListContactService extends ImmutableEntityService<MailingLis
 
     public List<MailingListContact> findByPortalEnv(UUID portalEnvId) {
         return dao.findByPortalEnv(portalEnvId);
+    }
+    public Optional<MailingListContact> findByPortalEnv(UUID portalEnvId, String emailAddress) {
+        return dao.findByPortalEnv(portalEnvId, emailAddress);
     }
     public void deleteByPortalEnvId(UUID portalEnvId) {
         dao.deleteByPortalEnvId(portalEnvId);

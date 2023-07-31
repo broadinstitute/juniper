@@ -34,7 +34,8 @@ export type StudyEnvironmentSurvey = {
   allowAdminEdit: boolean
   allowParticipantStart: boolean
   allowParticipantReedit: boolean
-  prepopulate: boolean
+  prepopulate: boolean,
+  studyEnvironmentId?: string
 }
 
 export type StudyEnvironmentConsent = {

@@ -36,13 +36,10 @@ public class SurveyController implements SurveyApi {
   }
 
   @Override
-  public ResponseEntity<Object> create(String portalShortcode, String stableId, Object body) {
+  public ResponseEntity<Object> create(String portalShortcode, Object body) {
     AdminUser adminUser = requestService.requireAdminUser(request);
 
     Survey survey = objectMapper.convertValue(body, Survey.class);
-    if (!stableId.equals(survey.getStableId())) {
-      throw new IllegalArgumentException("survey parameters don't match");
-    }
     Survey savedSurvey = surveyExtService.create(portalShortcode, survey, adminUser);
     return ResponseEntity.ok(savedSurvey);
   }

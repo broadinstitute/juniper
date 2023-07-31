@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import HtmlPageView, { HtmlSectionView } from './HtmlPageView'
-import { HtmlPage, HtmlSection } from 'api/api'
+import HtmlPageView from './HtmlPageView'
+import { HtmlPage } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
 
 jest.mock('providers/PortalProvider', () => {
@@ -44,38 +44,5 @@ describe('HTMLPageView', () => {
     }
     render(<HtmlPageView page={simplePage}/>)
     expect(screen.getByText('Hellllo')).toBeInTheDocument()
-  })
-})
-
-describe('HTMLSectionView', () => {
-  describe('misconfiguration does not cause render errors', () => {
-    beforeEach(() => {
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      jest.spyOn(console, 'warn').mockImplementation(() => {})
-    })
-
-    it('absorbs configuration that is invalid JSON', () => {
-      const section: HtmlSection = {
-        id: 'misconfiguredSection',
-        sectionType: 'HERO_WITH_IMAGE',
-        sectionConfig: '{key:"value"}'
-      }
-
-      const { container } = render(<HtmlSectionView section={section} />)
-      expect(container).toBeEmptyDOMElement()
-      expect(console.warn).toHaveBeenCalled()
-    })
-
-    it('absorbs configuration that is not an object', () => {
-      const section: HtmlSection = {
-        id: 'misconfiguredSection',
-        sectionType: 'HERO_WITH_IMAGE',
-        sectionConfig: '"config"'
-      }
-
-      const { container } = render(<HtmlSectionView section={section} />)
-      expect(container).toBeEmptyDOMElement()
-      expect(console.warn).toHaveBeenCalled()
-    })
   })
 })

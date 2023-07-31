@@ -80,7 +80,7 @@ export const RedirectFromOAuth = () => {
                 navigate('/hub', { replace: true, state: hubUpdate })
               })
             } catch {
-              alert('an error occurred, please try again, or contact support')
+              navigate('/hub', { replace: true })
             }
           } else {
             navigate('/hub', { replace: true })
