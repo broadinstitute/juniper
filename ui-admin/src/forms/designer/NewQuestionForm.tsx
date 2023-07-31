@@ -9,6 +9,7 @@ import { baseQuestions } from './questions/questionTypes'
 import _ from 'lodash'
 import { Textarea } from 'components/forms/Textarea'
 import { questionFromRawText } from 'util/pearlSurveyUtils'
+import { Checkbox } from '../../components/forms/Checkbox'
 
 type NewQuestionFormProps = {
     onCreate: (newQuestion: Question) => void
@@ -21,7 +22,8 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
 
   const [question, setQuestion] = useState<Question>(baseQuestions['text'])
   const [selectedQuestionType, setSelectedQuestionType] = useState<QuestionType>()
-  const [freetext, setFreetext] = useState<string>()
+  const [freetext, setFreetext] = useState<string>('')
+  const [freetextMode, setFreetextMode] = useState<boolean>(false)
   const { name: questionName } = question
 
   return (
@@ -39,35 +41,38 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
             />
           </div>
           <label className="form-label" htmlFor="questionType">Question type</label>
-          <select id="questionType" defaultValue="placeholder" className="form-select" value={selectedQuestionType}
+          <select id="questionType" className="form-select" value={selectedQuestionType}
             onChange={e => {
-              if (e.target.value === 'freetext') {
-                setFreetext('')
-              } else {
-                const newQuestionType = e.target.value as QuestionType
-                setSelectedQuestionType(newQuestionType)
-                setQuestion({ ...baseQuestions[newQuestionType], ...question, type: newQuestionType } as Question)
-                setFreetext(undefined)
-              }
+              const newQuestionType = e.target.value as QuestionType
+              setSelectedQuestionType(newQuestionType)
+              setQuestion({ ...baseQuestions[newQuestionType], ...question, type: newQuestionType } as Question)
             }}>
-            <option value="placeholder" disabled={true}>Select a question type</option>
+            <option hidden>Select a question type</option>
             <option value="text">Text</option>
             <option value="checkbox">Checkbox</option>
             <option value="dropdown">Dropdown</option>
             <option value="medications">Medications</option>
             <option value="radiogroup">Radio group</option>
             <option value="signaturepad">Signature</option>
-            <option value="freetext">Automatically detect my question type (freetext)</option>
           </select>
         </div>
 
-        { freetext !== undefined && <div className="mb-3">
+        <Checkbox
+          checked={freetextMode}
+          disabled={readOnly}
+          description={'Automatically fill out the question fields based on entered text'}
+          label={'Enable freetext mode'}
+          onChange={checked => {
+            setFreetextMode(checked)
+          }}
+        />
+
+        { freetextMode && <div className="mb-3">
           <Textarea
-            description="Enter your question text here.
-            As you type, we'll try to automatically detect the various question fields."
+            description="As you enter text, we'll try to automatically detect the various question fields"
             disabled={readOnly}
             label="Freetext"
-            rows={2}
+            rows={3}
             value={freetext}
             onChange={value => {
               setFreetext(value)
@@ -86,7 +91,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
           />
         </div> }
 
-        { (freetext !== undefined || selectedQuestionType) && <QuestionDesigner
+        { selectedQuestionType && <QuestionDesigner
           question={question}
           showName={false}
           readOnly={readOnly}
