@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link, Route, Routes } from 'react-router-dom'
+import { Link, Navigate, Route, Routes } from 'react-router-dom'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
 import { studyKitsPath } from 'portal/PortalRouter'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
@@ -18,7 +18,9 @@ export default function KitsRouter({ studyEnvContext }: {studyEnvContext: StudyE
       <Link className='text-white' to={studyKitsPath(portalShortcode, environmentName, studyShortcode)}>kits</Link>
     </NavBreadcrumb>
     <Routes>
-      <Route index element={<KitManager studyEnvContext={studyEnvContext}/>}/>
+      <Route index element={<Navigate to='byEnrollee' replace={true}/>}/>
+      <Route path="byEnrollee" element={<KitManager studyEnvContext={studyEnvContext} tab='byEnrollee'/>}/>
+      <Route path="byKit" element={<KitManager studyEnvContext={studyEnvContext} tab='byKit'/>}/>
     </Routes>
   </>
 }
