@@ -12,7 +12,7 @@ describe('NewQuestionForm', () => {
     //Assert
     screen.getByLabelText('Question stable ID')
     const questionTypeSelect = screen.getByLabelText('Question type')
-    expect(questionTypeSelect).toHaveValue('placeholder')
+    expect(questionTypeSelect).toHaveValue('Select a question type')
   })
 
   test('updates to the appropriate QuestionDesigner when a new question type is selected', async () => {
@@ -36,12 +36,12 @@ describe('NewQuestionForm', () => {
     //Act
     const user = userEvent.setup()
     const questionTypeSelect = screen.getByLabelText('Question type')
-    await act(() => user.selectOptions(questionTypeSelect, 'freetext'))
+    const freetextModeCheckbox = screen.getByLabelText('Enable freetext mode')
+    await act(() => user.click(freetextModeCheckbox))
 
     //Assert
     screen.getByLabelText('Freetext')
-    expect(questionTypeSelect).toHaveValue('freetext')
-    expect(screen.getByText(questionTypeDescriptions.text)).toBeInTheDocument() //initial question type is text
+    expect(questionTypeSelect).toHaveValue('Select a question type')
   })
 
   test('updates to the appropriate QuestionDesigner based on freetext input', async () => {
@@ -51,7 +51,8 @@ describe('NewQuestionForm', () => {
     //Act
     const user = userEvent.setup()
     const questionTypeSelect = screen.getByLabelText('Question type')
-    await act(() => user.selectOptions(questionTypeSelect, 'freetext'))
+    const freetextModeCheckbox = screen.getByLabelText('Enable freetext mode')
+    await act(() => user.click(freetextModeCheckbox))
 
     const freetextInput = screen.getByLabelText('Freetext') as HTMLInputElement
     await act(() => user.type(freetextInput, 'This is a question!\nThis is an option!\nThis is another option!'))
