@@ -20,8 +20,8 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
   const { onCreate, readOnly } = props
 
   const [question, setQuestion] = useState<Question>(baseQuestions['text'])
-  const [selectedQuestionType, setSelectedQuestionType] = useState<QuestionType | undefined>(undefined)
-  const [freetext, setFreetext] = useState<string | undefined>(undefined)
+  const [selectedQuestionType, setSelectedQuestionType] = useState<QuestionType>()
+  const [freetext, setFreetext] = useState<string>()
   const { name: questionName } = question
 
   return (
