@@ -58,20 +58,6 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
                 setQuestion({ name: questionName, questionTemplateName: newValue?.value } as Question)
               }}
             />
-            {/*<select id="questionTemplate" className="form-select" value={selectedQuestionTemplateName}*/}
-            {/*  onChange={e => {*/}
-            {/*    const selectedQuestionTemplate = questionTemplates*/}
-            {/*      .find(questionTemplate => questionTemplate.name === e.target.value)*/}
-
-            {/*    setSelectedQuestionTemplateName(e.target.value)*/}
-
-            {/*    setQuestion({ ...question, questionTemplateName: e.target.value } as Question)*/}
-            {/*  }}>*/}
-            {/*  <option hidden>Select a question template</option>*/}
-            {/*  { questionTemplates.map(questionTemplate => {*/}
-            {/*    return <option value={questionTemplate.name}>{questionTemplate.name}</option>*/}
-            {/*  })}*/}
-            {/*</select>*/}
             <p
               className="form-text"
               id="questionTemplateDesc"
