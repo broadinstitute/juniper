@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Modal } from 'react-bootstrap'
 
-import { FormContentPage, FormElement, HtmlElement, Question } from '@juniper/ui-core'
+import {FormContent, FormContentPage, FormElement, HtmlElement, Question} from '@juniper/ui-core'
 
 import { Button } from 'components/forms/Button'
 
@@ -25,13 +25,14 @@ export const canBeIncludedInPanel = (element: FormElement): element is HtmlEleme
 
 export type PageDesignerProps = {
   readOnly: boolean
+  formContent: FormContent
   value: FormContentPage
   onChange: (newValue: FormContentPage) => void
 }
 
 /** UI for editing a page of a form. */
 export const PageDesigner = (props: PageDesignerProps) => {
-  const { readOnly, value, onChange } = props
+  const { readOnly, formContent, value, onChange } = props
 
   const [showCreatePanelModal, setShowCreatePanelModal] = useState(false)
   const [showCreateQuestionModal, setShowCreateQuestionModal] = useState(false)
@@ -77,6 +78,7 @@ export const PageDesigner = (props: PageDesignerProps) => {
           <Modal.Body>
             <NewQuestionForm
               readOnly={readOnly}
+              questionTemplates={formContent.questionTemplates || []}
               onCreate={newQuestion => {
                 setShowCreateQuestionModal(false)
                 onChange({

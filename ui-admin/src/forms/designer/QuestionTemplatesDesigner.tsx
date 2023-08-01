@@ -44,6 +44,7 @@ export const QuestionTemplatesDesigner = (props: QuestionTemplatesDesignerProps)
           <Modal.Body>
             <NewQuestionForm
               readOnly={readOnly}
+              questionTemplates={questionTemplates}
               onCreate={newQuestionTemplate => {
                 setShowCreateQuestionTemplateModal(false)
                 onChange({

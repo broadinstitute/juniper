@@ -13,12 +13,13 @@ import { Checkbox } from '../../components/forms/Checkbox'
 
 type NewQuestionFormProps = {
     onCreate: (newQuestion: Question) => void
+    questionTemplates: Question[]
     readOnly: boolean
 }
 
 /** UI for creating a new question. */
 export const NewQuestionForm = (props: NewQuestionFormProps) => {
-  const { onCreate, readOnly } = props
+  const { onCreate, questionTemplates, readOnly } = props
 
   const [question, setQuestion] = useState<Question>(baseQuestions['text'])
   const [selectedQuestionType, setSelectedQuestionType] = useState<QuestionType>()
@@ -57,6 +58,26 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
           </select>
         </div>
 
+        <div className="mb-3">
+          <label className="form-label" htmlFor="questionTemplate">Question template (optional)</label>
+          <select id="questionTemplate" className="form-select" value={selectedQuestionType}
+            onChange={e => {
+              const selectedQuestion = questionTemplates
+                .find(questionTemplate => questionTemplate.name === e.target.value)
+
+              console.log(selectedQuestion)
+              // @ts-ignore
+              // setSelectedQuestionType(selectedQuestion.type)
+              // @ts-ignore
+              setQuestion(_.omit(selectedQuestion, ['name']))
+            }}>
+            <option hidden>Select a question template</option>
+            { questionTemplates.map(questionTemplate => {
+              return <option value={questionTemplate.name}>{questionTemplate.name}</option>
+            })}
+          </select>
+        </div>
+
         <Checkbox
           checked={freetextMode}
           disabled={readOnly}
@@ -91,7 +112,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
           />
         </div> }
 
-        { selectedQuestionType && <QuestionDesigner
+        { <QuestionDesigner //TODO add back the check here
           question={question}
           showName={false}
           readOnly={readOnly}
