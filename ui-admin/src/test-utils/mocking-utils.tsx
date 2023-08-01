@@ -1,5 +1,5 @@
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { AdminUser, DatasetDetails, Enrollee, KitRequest, KitType, ParticipantNote, Portal } from 'api/api'
+import { DatasetDetails, Enrollee, KitRequest, KitType, ParticipantNote, Portal } from 'api/api'
 import { Survey } from '@juniper/ui-core/build/types/forms'
 import { ParticipantTask } from '@juniper/ui-core/build/types/task'
 
