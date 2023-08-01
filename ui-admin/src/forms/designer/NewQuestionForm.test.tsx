@@ -17,10 +17,10 @@ describe('NewQuestionForm', () => {
 
   test('updates to the appropriate QuestionDesigner when a new question type is selected', async () => {
     //Arrange
+    const user = userEvent.setup()
     render(<NewQuestionForm onCreate={() => jest.fn()} readOnly={false}/>)
 
     //Act
-    const user = userEvent.setup()
     const questionTypeSelect = screen.getByLabelText('Question type')
     await act(() => user.selectOptions(questionTypeSelect, 'checkbox'))
 
@@ -31,10 +31,10 @@ describe('NewQuestionForm', () => {
 
   test('renders freetext input', async () => {
     //Arrange
+    const user = userEvent.setup()
     render(<NewQuestionForm onCreate={() => jest.fn()} readOnly={false}/>)
 
     //Act
-    const user = userEvent.setup()
     const questionTypeSelect = screen.getByLabelText('Question type')
     const freetextModeCheckbox = screen.getByLabelText('Enable freetext mode')
     await act(() => user.click(freetextModeCheckbox))
@@ -46,10 +46,10 @@ describe('NewQuestionForm', () => {
 
   test('updates to the appropriate QuestionDesigner based on freetext input', async () => {
     //Arrange
+    const user = userEvent.setup()
     render(<NewQuestionForm onCreate={() => jest.fn()} readOnly={false}/>)
 
     //Act
-    const user = userEvent.setup()
     const questionTypeSelect = screen.getByLabelText('Question type')
     const freetextModeCheckbox = screen.getByLabelText('Enable freetext mode')
     await act(() => user.click(freetextModeCheckbox))
