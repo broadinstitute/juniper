@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Modal } from 'react-bootstrap'
 
-import {FormContent, FormContentPage, FormElement, HtmlElement, Question} from '@juniper/ui-core'
+import { FormContent, FormContentPage, FormElement, HtmlElement, Question } from '@juniper/ui-core'
 
 import { Button } from 'components/forms/Button'
 

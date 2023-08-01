@@ -6,10 +6,11 @@ import { Button } from 'components/forms/Button'
 import { QuestionDesigner } from './QuestionDesigner'
 import { TextInput } from 'components/forms/TextInput'
 import { baseQuestions } from './questions/questionTypes'
-import _, {isEmpty} from 'lodash'
+import _, { isEmpty } from 'lodash'
 import { Textarea } from 'components/forms/Textarea'
 import { questionFromRawText } from 'util/pearlSurveyUtils'
 import { Checkbox } from '../../components/forms/Checkbox'
+import Select from 'react-select'
 
 type NewQuestionFormProps = {
     onCreate: (newQuestion: Question) => void
@@ -23,7 +24,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
 
   const [question, setQuestion] = useState<Question>(baseQuestions['text'])
   const [selectedQuestionType, setSelectedQuestionType] = useState<QuestionType>()
-  const [selectedQuestionTemplateName, setSelectedQuestionTemplateName] = useState<string>()
+  const [selectedQuestionTemplateName, setSelectedQuestionTemplateName] = useState<{value: string, label: string}>()
   const [freetext, setFreetext] = useState<string>('')
   const [freetextMode, setFreetextMode] = useState<boolean>(false)
   const { name: questionName } = question
@@ -45,20 +46,32 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
 
           { !isEmpty(questionTemplates) && <div className="mb-3">
             <label className="form-label" htmlFor="questionTemplate">Question template (optional)</label>
-            <select id="questionTemplate" className="form-select" value={selectedQuestionTemplateName}
-              onChange={e => {
-                const selectedQuestionTemplate = questionTemplates
-                  .find(questionTemplate => questionTemplate.name === e.target.value)
-
-                setSelectedQuestionTemplateName(e.target.value)
-
-                setQuestion({ ...question, questionTemplateName: e.target.value } as Question)
-              }}>
-              <option hidden>Select a question template</option>
-              { questionTemplates.map(questionTemplate => {
-                return <option value={questionTemplate.name}>{questionTemplate.name}</option>
+            <Select
+              options={questionTemplates.map(questionTemplate => {
+                return { label: questionTemplate.name, value: questionTemplate.name }
               })}
-            </select>
+              isClearable={true}
+              value={selectedQuestionTemplateName}
+              onChange={newValue => {
+                setSelectedQuestionTemplateName(newValue!)
+                setSelectedQuestionType(undefined)
+                setQuestion({ name: questionName, questionTemplateName: newValue?.value } as Question)
+              }}
+            />
+            {/*<select id="questionTemplate" className="form-select" value={selectedQuestionTemplateName}*/}
+            {/*  onChange={e => {*/}
+            {/*    const selectedQuestionTemplate = questionTemplates*/}
+            {/*      .find(questionTemplate => questionTemplate.name === e.target.value)*/}
+
+            {/*    setSelectedQuestionTemplateName(e.target.value)*/}
+
+            {/*    setQuestion({ ...question, questionTemplateName: e.target.value } as Question)*/}
+            {/*  }}>*/}
+            {/*  <option hidden>Select a question template</option>*/}
+            {/*  { questionTemplates.map(questionTemplate => {*/}
+            {/*    return <option value={questionTemplate.name}>{questionTemplate.name}</option>*/}
+            {/*  })}*/}
+            {/*</select>*/}
             <p
               className="form-text"
               id="questionTemplateDesc"
@@ -134,8 +147,11 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
           onClick={() => {
             //While preserving the state during editing, we may have accumulated some extra fields
             //that don't exist on the final question type. So we need to remove them before saving.
-            const sanitizedQuestion = _.pick(question,
-              Object.keys(baseQuestions[selectedQuestionType || 'text'])) as Question
+            const sanitizedQuestion = selectedQuestionTemplateName ?
+                _.pick(question, [
+                  'name', 'title', 'isRequired', 'visibleIf', 'description', 'questionTemplateName'
+                ]) as Question :
+                _.pick(question, Object.keys(baseQuestions[selectedQuestionType || 'text'])) as Question
             onCreate(sanitizedQuestion)
           }}
         >
