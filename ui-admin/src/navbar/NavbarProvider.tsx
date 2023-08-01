@@ -10,7 +10,7 @@ export type NavbarContextT = {
   setBreadCrumbs: Dispatch<SetStateAction<React.ReactNode[]>>
 }
 
-const emptyNavbarContext: NavbarContextT = {
+export const emptyNavbarContext: NavbarContextT = {
   breadCrumbs: [],
   sidebarContent: null,
   showSidebar: false,

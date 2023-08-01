@@ -1,4 +1,4 @@
-import React, { lazy, useContext } from 'react'
+import React, { lazy, Suspense, useContext } from 'react'
 import 'react-notifications-component/dist/theme.css'
 import 'styles/notifications.css'
 import 'survey-core/defaultV2.min.css'
@@ -22,6 +22,7 @@ import UserList from './user/UserList'
 import InvestigatorTermsOfUsePage from './terms/InvestigatorTermsOfUsePage'
 import PrivacyPolicyPage from 'terms/PrivacyPolicyPage'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
+import LoadingSpinner from './util/LoadingSpinner'
 const HelpRouter = lazy(() => import('./help/HelpRouter'))
 
 
@@ -40,7 +41,9 @@ function App() {
                   <BrowserRouter>
                     <Routes>
                       <Route path="/" element={<PageFrame/>}>
-                        <Route path="help/*" element={<HelpRouter />} />
+                        <Route path="help/*" element={<Suspense fallback={<LoadingSpinner/>}>
+                          <HelpRouter />
+                        </Suspense>} />
                         <Route element={<ProtectedRoute/>}>
                           <Route path="users" element={<UserList/>}/>
                           <Route path=":portalShortcode/*" element={<PortalProvider><PortalRouter/></PortalProvider>}/>

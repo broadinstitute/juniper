@@ -2,7 +2,8 @@ import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 
 import PortalEnvConfigView from './PortalEnvConfigView'
-import { mockPortalContext, MockRegularUserProvider, MockSuperuserProvider } from 'test-utils/mocking-utils'
+import { mockPortalContext } from 'test-utils/mocking-utils'
+import { MockRegularUserProvider, MockSuperuserProvider } from 'test-utils/user-mocking-utils'
 import { Portal, PortalEnvironment } from '@juniper/ui-core/build/types/portal'
 
 test('renders a portal env. config', async () => {

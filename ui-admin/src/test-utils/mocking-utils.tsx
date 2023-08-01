@@ -1,6 +1,5 @@
-import React from 'react'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { AdminUser, DatasetDetails, Enrollee, ParticipantNote, Portal } from 'api/api'
+import { DatasetDetails, Enrollee, ParticipantNote, Portal } from 'api/api'
 import { Survey } from '@juniper/ui-core/build/types/forms'
 import { ParticipantTask } from '@juniper/ui-core/build/types/task'
 
@@ -9,7 +8,6 @@ import _random from 'lodash/random'
 import { StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
 import { LoadedPortalContextT } from '../portal/PortalProvider'
 import { PortalEnvironment } from '@juniper/ui-core/build/types/portal'
-import { UserContext, UserContextT } from 'user/UserProvider'
 
 const randomString = (length: number) => {
   return _times(length, () => _random(35).toString(36)).join('')
@@ -183,19 +181,6 @@ export const taskForSurvey = (survey: Survey, enrolleeId: string): ParticipantTa
   }
 }
 
-/** returns simple admin user for testing */
-export const mockAdminUser = (superuser: boolean): AdminUser => {
-  return {
-    id: 'adminUser1',
-    username: 'blah',
-    superuser,
-    token: 'fakeToken',
-    portalAdminUsers: [],
-    portalPermissions: {},
-    isAnonymous: false
-  }
-}
-
 /** mock ParticipantNote */
 export const mockParticipantNote = (): ParticipantNote => {
   return {
@@ -207,27 +192,3 @@ export const mockParticipantNote = (): ParticipantNote => {
     text: 'some note text'
   }
 }
-
-/** component for wrapping test components that require a superuser from context */
-export const MockSuperuserProvider = ({ children }: { children: React.ReactNode }) => {
-  return <MockUserProvider user={mockAdminUser(true)}>{children}</MockUserProvider>
-}
-
-/** component for wrapping test components that require a non-superuser from context */
-export const MockRegularUserProvider = ({ children }: { children: React.ReactNode }) => {
-  return <MockUserProvider user={mockAdminUser(false)}>{children}</MockUserProvider>
-}
-
-/** component for wrapping test components that require a user from context */
-export const MockUserProvider = ({ children, user }: { children: React.ReactNode, user: AdminUser }) => {
-  const fakeUserContext: UserContextT = {
-    user,
-    loginUser: () => null,
-    loginUserUnauthed: () => null,
-    logoutUser: () => null
-  }
-  return <UserContext.Provider value={fakeUserContext}>
-    {children}
-  </UserContext.Provider>
-}
-
