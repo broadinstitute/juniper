@@ -22,6 +22,7 @@ export const TextFields = (props: TextFieldsProps) => {
         <select
           className="form-select"
           id="text-question-input-type"
+          disabled={disabled}
           value={question.inputType || 'text'}
           onChange={e => {
             const newType = e.target.value

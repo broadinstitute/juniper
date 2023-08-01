@@ -6,7 +6,7 @@ import { Button } from 'components/forms/Button'
 import { QuestionDesigner } from './QuestionDesigner'
 import { TextInput } from 'components/forms/TextInput'
 import { baseQuestions } from './questions/questionTypes'
-import _ from 'lodash'
+import _, {isEmpty} from 'lodash'
 import { Textarea } from 'components/forms/Textarea'
 import { questionFromRawText } from 'util/pearlSurveyUtils'
 import { Checkbox } from '../../components/forms/Checkbox'
@@ -23,6 +23,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
 
   const [question, setQuestion] = useState<Question>(baseQuestions['text'])
   const [selectedQuestionType, setSelectedQuestionType] = useState<QuestionType>()
+  const [selectedQuestionTemplateName, setSelectedQuestionTemplateName] = useState<string>()
   const [freetext, setFreetext] = useState<string>('')
   const [freetextMode, setFreetextMode] = useState<boolean>(false)
   const { name: questionName } = question
@@ -41,8 +42,34 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
               }}
             />
           </div>
+
+          { !isEmpty(questionTemplates) && <div className="mb-3">
+            <label className="form-label" htmlFor="questionTemplate">Question template (optional)</label>
+            <select id="questionTemplate" className="form-select" value={selectedQuestionTemplateName}
+              onChange={e => {
+                const selectedQuestionTemplate = questionTemplates
+                  .find(questionTemplate => questionTemplate.name === e.target.value)
+
+                setSelectedQuestionTemplateName(e.target.value)
+
+                setQuestion({ ...question, questionTemplateName: e.target.value } as Question)
+              }}>
+              <option hidden>Select a question template</option>
+              { questionTemplates.map(questionTemplate => {
+                return <option value={questionTemplate.name}>{questionTemplate.name}</option>
+              })}
+            </select>
+            <p
+              className="form-text"
+              id="questionTemplateDesc"
+            >
+              {'Select a question template to pre-populate the question fields.'}
+            </p>
+          </div> }
+
           <label className="form-label" htmlFor="questionType">Question type</label>
-          <select id="questionType" className="form-select" value={selectedQuestionType}
+          <select id="questionType"
+            disabled={!!selectedQuestionTemplateName} className="form-select" value={selectedQuestionType}
             onChange={e => {
               const newQuestionType = e.target.value as QuestionType
               setSelectedQuestionType(newQuestionType)
@@ -58,29 +85,9 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
           </select>
         </div>
 
-        <div className="mb-3">
-          <label className="form-label" htmlFor="questionTemplate">Question template (optional)</label>
-          <select id="questionTemplate" className="form-select" value={selectedQuestionType}
-            onChange={e => {
-              const selectedQuestion = questionTemplates
-                .find(questionTemplate => questionTemplate.name === e.target.value)
-
-              console.log(selectedQuestion)
-              // @ts-ignore
-              // setSelectedQuestionType(selectedQuestion.type)
-              // @ts-ignore
-              setQuestion(_.omit(selectedQuestion, ['name']))
-            }}>
-            <option hidden>Select a question template</option>
-            { questionTemplates.map(questionTemplate => {
-              return <option value={questionTemplate.name}>{questionTemplate.name}</option>
-            })}
-          </select>
-        </div>
-
         <Checkbox
           checked={freetextMode}
-          disabled={readOnly}
+          disabled={readOnly || !!selectedQuestionTemplateName}
           description={'Automatically fill out the question fields based on entered text'}
           label={'Enable freetext mode'}
           onChange={checked => {
@@ -112,7 +119,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
           />
         </div> }
 
-        { <QuestionDesigner //TODO add back the check here
+        { (selectedQuestionType || selectedQuestionTemplateName) && <QuestionDesigner
           question={question}
           showName={false}
           readOnly={readOnly}
@@ -123,7 +130,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
 
         <Button
           variant="primary"
-          disabled={readOnly || !selectedQuestionType || !questionName}
+          disabled={readOnly || (!selectedQuestionType && !selectedQuestionTemplateName) || !questionName}
           onClick={() => {
             //While preserving the state during editing, we may have accumulated some extra fields
             //that don't exist on the final question type. So we need to remove them before saving.
