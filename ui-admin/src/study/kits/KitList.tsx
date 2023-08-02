@@ -9,7 +9,7 @@ import {
 import Api, { KitRequest } from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { basicTableLayout } from 'util/tableUtils'
+import {basicTableLayout, FilterType} from 'util/tableUtils'
 import { instantToDateString, isoToInstant } from 'util/timeUtils'
 
 const pepperStatusToHumanStatus = (dsmStatus?: string): string => {
@@ -91,11 +91,12 @@ export function KitListView({ studyEnvContext, kits }: { studyEnvContext: StudyE
     accessorFn: data => pepperStatusToHumanStatus(data?.pepperStatus?.currentStatus),
     meta: {
       columnType: 'string',
+      filterType: FilterType.Select,
       filterOptions: [
         { value: 'created', label: 'Created' },
         { value: 'prepared', label: 'Prepared' },
         { value: 'sent', label: 'Sent' },
-        { value: 'received', label: 'Received' }
+        { value: 'returned', label: 'Returned' }
       ]
     },
     filterFn: 'equalsString'

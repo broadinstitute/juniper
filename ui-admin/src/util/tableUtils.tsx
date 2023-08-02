@@ -37,6 +37,11 @@ function DebouncedInput({
   )
 }
 
+export enum FilterType {
+  Select,
+  Search
+}
+
 /**
  * returns a Filter to handle text fields
  * adapted from https://tanstack.com/table/v8/docs/examples/react/filters
@@ -46,13 +51,20 @@ function Filter<A>({
 }: {
   column: Column<A>
 }) {
-  const columnType = column.columnDef.meta?.columnType
-  return columnType === 'string' || columnType === 'boolean' ? (
-    SelectFilter({ column })
-  ) : (
-    //Defaults to the text search filter
-    SearchFilter({ column })
-  )
+  switch (column.columnDef.meta?.filterType) {
+    case FilterType.Select:
+      return SelectFilter({ column })
+    case FilterType.Search:
+      return SearchFilter({ column })
+    default: {
+      return column.columnDef.meta?.columnType === 'boolean' ? (
+        SelectFilter({ column })
+      ) : (
+        //Defaults to the text search filter
+        SearchFilter({ column })
+      )
+    }
+  }
 }
 
 /**
@@ -282,6 +294,7 @@ declare module '@tanstack/table-core' {
   interface ColumnMeta<TData extends RowData, TValue> {
     //Specifies the type of the column data. By default, columns will be treated as strings
     columnType?: string
+    filterType?: FilterType
     //Specifies the Select options if using a dropdown filter (i.e. for booleans)
     filterOptions?: { value: boolean | string, label: string }[]
   }
