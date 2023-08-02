@@ -44,7 +44,7 @@ export const QuestionTemplatesDesigner = (props: QuestionTemplatesDesignerProps)
           <Modal.Body>
             <NewQuestionForm
               readOnly={readOnly}
-              questionTemplates={questionTemplates}
+              questionTemplates={[]} //Question templates can't be based off of other templates, so don't pass any in
               onCreate={newQuestionTemplate => {
                 setShowCreateQuestionTemplateModal(false)
                 onChange({
