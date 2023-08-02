@@ -18,7 +18,7 @@ describe('InfoPopup', () => {
     expect(await screen.findByText('blah blah')).toBeTruthy()
     await userEvent.click(button)
     // tooltip disappears on second click
-    await waitForElementToBeRemoved(() => screen.queryByText('blah blah'))
+    expect(screen.queryByText('blah blah')).toBeNull()
   })
 
   it('disappears on clicks outside', async () => {
@@ -33,6 +33,6 @@ describe('InfoPopup', () => {
 
     // tooltip disappears on click of outside thing
     await userEvent.click(screen.getByText('Something complicated'))
-    await waitForElementToBeRemoved(() => screen.queryByText('blah blah'))
+    expect(screen.queryByText('blah blah')).toBeNull()
   })
 })
