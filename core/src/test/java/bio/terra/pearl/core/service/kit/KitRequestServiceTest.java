@@ -19,10 +19,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -69,7 +71,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         var kitRequest = kitRequestFactory.buildPersisted("testUpdateKitStatus",
             enrollee.getId(), kitType.getId(), adminUser.getId());
 
-        var response = PepperDSMKitStatus.builder()
+        var response = PepperKitStatus.builder()
                 .kitId(kitRequest.getId().toString())
                 .currentStatus("SENT")
                 .build();
@@ -78,6 +80,31 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         var sampleKitStatus = kitRequestService.syncKitStatusFromPepper(kitRequest.getId());
 
         assertThat(sampleKitStatus.getCurrentStatus(), equalTo("SENT"));
+    }
+
+    @Transactional
+    @Test
+    public void testGetSampleKitsForStudyEnvironment() throws Exception {
+        // Arrange:
+        //   2 kits, one with bogus status JSON
+        var adminUser = adminUserFactory.buildPersisted("testGetSampleKitsForStudyEnvironment");
+        var studyEnvironment = studyEnvironmentFactory.buildPersisted("testGetSampleKitsForStudyEnvironment");
+        var enrollee = enrolleeFactory.buildPersisted("testGetSampleKitsForStudyEnvironment", studyEnvironment);
+        var kitType = kitTypeFactory.buildPersisted("testGetSampleKitsForStudyEnvironment");
+        var kitRequest1 = kitRequestFactory.buildPersisted("testGetSampleKitsForStudyEnvironment",
+                enrollee.getId(), kitType.getId(), adminUser.getId());
+        var kitRequest2 = kitRequestDao.create(kitRequestFactory.builder("testGetSampleKitsForStudyEnvironment")
+                .creatingAdminUserId(adminUser.getId())
+                .enrolleeId(enrollee.getId())
+                .kitTypeId(kitType.getId())
+                .dsmStatus("BOOM!")
+                .build());
+
+        // Act
+        var kits = kitRequestService.getSampleKitsByStudyEnvironment(studyEnvironment);
+
+        // Assert
+        assertThat(kits, contains(kitRequest1, kitRequest2));
     }
 
     @Transactional
@@ -110,19 +137,19 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
          *  - the first study has two kits, one in flight and one complete
          *  - the second study has one kit with an error
          */
-        var kitStatus1a = PepperDSMKitStatus.builder()
+        var kitStatus1a = PepperKitStatus.builder()
                 .kitId(kitRequest1a.getId().toString())
                 .currentStatus("SENT")
                 .build();
-        var kitStatus1b = PepperDSMKitStatus.builder()
+        var kitStatus1b = PepperKitStatus.builder()
                 .kitId(kitRequest1b.getId().toString())
                 .currentStatus("PROCESSED")
                 .build();
-        var kitStatus2 = PepperDSMKitStatus.builder()
+        var kitStatus2 = PepperKitStatus.builder()
                 .kitId(kitRequest2.getId().toString())
                 .currentStatus("CONTAMINATED")
                 .errorMessage("Something went wrong")
-                .errorDate(Instant.now())
+                .errorDate(DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault()).format(Instant.now()))
                 .build();
         when(mockPepperDSMClient.fetchKitStatusByStudy(studyEnvironment.getStudyId()))
                 .thenReturn(List.of(kitStatus1a, kitStatus1b));
@@ -138,11 +165,11 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         verifyKit(kitRequest2, kitStatus2, KitRequestStatus.FAILED);
     }
 
-    private void verifyKit(KitRequest kit, PepperDSMKitStatus expectedDSMStatus, KitRequestStatus expectedStatus)
+    private void verifyKit(KitRequest kit, PepperKitStatus expectedDSMStatus, KitRequestStatus expectedStatus)
             throws JsonProcessingException {
         var savedKit = kitRequestDao.find(kit.getId()).get();
         assertThat(savedKit.getStatus(), equalTo(expectedStatus));
-        assertThat(objectMapper.readValue(savedKit.getDsmStatus(), PepperDSMKitStatus.class),
+        assertThat(objectMapper.readValue(savedKit.getDsmStatus(), PepperKitStatus.class),
                 equalTo(expectedDSMStatus));
     }
 

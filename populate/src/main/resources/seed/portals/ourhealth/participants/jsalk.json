@@ -9,10 +9,10 @@
     "sexAtBirth": "male",
     "mailingAddress": {
       "street1": "32 Elm Street",
-      "city": "New York",
-      "state": "NY",
+      "city": "Cambridge",
+      "state": "MA",
       "country": "US",
-      "postalCode": "10005"
+      "postalCode": "02142"
     }
   }
 }

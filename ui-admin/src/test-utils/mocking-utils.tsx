@@ -1,5 +1,5 @@
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { DatasetDetails, Enrollee, ParticipantNote, Portal } from 'api/api'
+import { DatasetDetails, Enrollee, KitRequest, KitType, ParticipantNote, Portal } from 'api/api'
 import { Survey } from '@juniper/ui-core/build/types/forms'
 import { ParticipantTask } from '@juniper/ui-core/build/types/task'
 
@@ -109,6 +109,38 @@ export const mockDatasetDetails: (datasetName: string, status: string) => Datase
     tdrDatasetId: 'a-fake-tdr-dataset-id'
   })
 
+/** returns a mock kit request type */
+export const mockKitType: () => KitType = () => ({
+  id: 'kitTypeId',
+  name: 'testKit',
+  displayName: 'Test kit',
+  description: 'Test sample collection kit'
+})
+
+/** returns a mock kit request */
+export const mockKitRequest: (args?: {
+  enrollee?: Enrollee,
+  dsmStatus?: string,
+}) => KitRequest = ({ enrollee, dsmStatus } = {}) => ({
+  id: 'kitRequestId',
+  createdAt: 1,
+  enrollee,
+  kitType: mockKitType(),
+  // This is intentionally a little different from the enrollee's current mailing address to show that sentToAddress
+  // is a capture of the mailing address at the time the kit was sent.
+  sentToAddress: JSON.stringify({
+    firstName: 'Jonas',
+    lastName: 'Salk',
+    street1: '1234 Fake Street',
+    city: 'Cambridge',
+    state: 'MA',
+    postalCode: '02138',
+    country: 'US'
+  }),
+  status: 'CREATED',
+  dsmStatus
+})
+
 /** returns a simple mock enrollee loosely based on the jsalk.json synthetic enrollee */
 export const mockEnrollee: () => Enrollee = () => {
   const enrolleeId = randomString(10)
@@ -138,28 +170,7 @@ export const mockEnrollee: () => Enrollee = () => {
       }
     },
     participantTasks: [],
-    kitRequests: [{
-      id: 'kitRequestId',
-      createdAt: 1,
-      kitType: {
-        id: 'kitTypeId',
-        name: 'testKit',
-        displayName: 'Test kit',
-        description: 'Test sample collection kit'
-      },
-      // This is intentionally a little different from the enrollee's current mailing address to show that sentToAddress
-      // is a capture of the mailing address at the time the kit was sent.
-      sentToAddress: JSON.stringify({
-        firstName: 'Jonas',
-        lastName: 'Salk',
-        street1: '1234 Fake Street',
-        city: 'Cambridge',
-        state: 'MA',
-        postalCode: '02138',
-        country: 'US'
-      }),
-      status: 'CREATED'
-    }]
+    kitRequests: [mockKitRequest()]
   }
 }
 

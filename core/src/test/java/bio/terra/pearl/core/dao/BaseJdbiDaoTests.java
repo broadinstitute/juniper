@@ -7,14 +7,12 @@ import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.Study;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import org.junit.jupiter.api.Assertions;
@@ -83,5 +81,36 @@ public class BaseJdbiDaoTests extends BaseSpringBootTest {
         Assertions.assertThrows(UnableToExecuteStatementException.class, () -> {
             portalDao.bulkCreate(List.of(portal1, portal2, portal3));
         });
+    }
+
+    @Test
+    @Transactional
+    public void testStreamAllByProperty() {
+        // Arrange
+        var portal1 = portalDao.create(portalFactory.builder("").name("testStreamAllByProperty").build());
+        var portal2 = portalDao.create(portalFactory.builder("").name("testStreamAllByProperty").build());
+
+        // Act
+        var stream = portalDao.streamAllByProperty("name", "testStreamAllByProperty");
+        var foundPortals = stream.toList();
+
+        // Assert
+        assertThat(foundPortals, contains(portal1, portal2));
+    }
+
+    @Test
+    @Transactional
+    public void testStreamAllByPropertyCollection() {
+        // Arrange
+        var portal1 = portalDao.create(portalFactory.builder("").name("testStreamAllByProperty").build());
+        var portal2 = portalDao.create(portalFactory.builder("").name("testStreamAllByProperty").build());
+        var portalIds = List.of(portal1.getId(), portal2.getId());
+
+        // Act
+        var stream = portalDao.streamAllByPropertyCollection("id", portalIds);
+        var foundPortals = stream.toList();
+
+        // Assert
+        assertThat(foundPortals, contains(portal1, portal2));
     }
 }

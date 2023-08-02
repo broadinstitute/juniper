@@ -37,6 +37,11 @@ function DebouncedInput({
   )
 }
 
+export enum FilterType {
+  Select,
+  Search
+}
+
 /**
  * returns a Filter to handle text fields
  * adapted from https://tanstack.com/table/v8/docs/examples/react/filters
@@ -46,12 +51,20 @@ function Filter<A>({
 }: {
   column: Column<A>
 }) {
-  return column.columnDef.meta?.columnType === 'boolean' ? (
-    SelectFilter({ column })
-  ) : (
-    //Defaults to the text search filter
-    SearchFilter({ column })
-  )
+  switch (column.columnDef.meta?.filterType) {
+    case FilterType.Select:
+      return SelectFilter({ column })
+    case FilterType.Search:
+      return SearchFilter({ column })
+    default: {
+      return column.columnDef.meta?.columnType === 'boolean' ? (
+        SelectFilter({ column })
+      ) : (
+        //Defaults to the text search filter
+        SearchFilter({ column })
+      )
+    }
+  }
 }
 
 /**
@@ -62,7 +75,7 @@ function SelectFilter<A>({
 }: {
   column: Column<A>
 }) {
-  const [selectedValue, setSelectedValue] = useState<{ value: boolean, label: string }>()
+  const [selectedValue, setSelectedValue] = useState<{ value: boolean | string, label: string }>()
 
   return <div>
     <Select
@@ -87,7 +100,7 @@ function SelectFilter<A>({
       }}
       value={selectedValue}
       // @ts-ignore
-      onChange={(newValue: { value: boolean, label: string }) => {
+      onChange={(newValue: { value: boolean | string, label: string }) => {
         //setFilterValue on Column cannot natively handle dropdown options,
         //so we need to manage the filter value used by the column separately
         //from the selected value used by the Select component
@@ -235,12 +248,26 @@ export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
   </div>
 }
 
+/**
+ * Configuration for basicTableLayout. This can have configuration properties that affect different parts of the table,
+ * such as headers, rows, etc. All configuration properties are optional.
+ */
+export type BasicTableConfig = {
+  filterable?: boolean
+}
+
+/** Default configuration if no `BasicTableConfig` is provided or any of its attributes are not specified. */
+const defaultBasicTableConfig = {
+  filterable: false
+}
+
 /** helper function for simple table layouts */
-export function basicTableLayout<T>(table: Table<T>) {
+export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig = {}) {
+  const { filterable } = { ...defaultBasicTableConfig, ...config }
   return <table className="table table-striped">
     <thead>
       <tr>
-        {table.getFlatHeaders().map(header => tableHeader(header, { sortable: true, filterable: false }))}
+        {table.getFlatHeaders().map(header => tableHeader(header, { sortable: true, filterable }))}
       </tr>
     </thead>
     <tbody>
@@ -267,7 +294,8 @@ declare module '@tanstack/table-core' {
   interface ColumnMeta<TData extends RowData, TValue> {
     //Specifies the type of the column data. By default, columns will be treated as strings
     columnType?: string
+    filterType?: FilterType
     //Specifies the Select options if using a dropdown filter (i.e. for booleans)
-    filterOptions?: { value: boolean, label: string }[]
+    filterOptions?: { value: boolean | string, label: string }[]
   }
 }

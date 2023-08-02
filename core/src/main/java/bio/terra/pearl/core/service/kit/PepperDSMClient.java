@@ -10,6 +10,6 @@ import java.util.UUID;
 public interface PepperDSMClient {
     String sendKitRequest(Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address)
             throws JsonProcessingException;
-    PepperDSMKitStatus fetchKitStatus(UUID kitRequestId);
-    Collection<PepperDSMKitStatus> fetchKitStatusByStudy(UUID studyId);
+    PepperKitStatus fetchKitStatus(UUID kitRequestId);
+    Collection<PepperKitStatus> fetchKitStatusByStudy(UUID studyId);
 }

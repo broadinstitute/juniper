@@ -9,9 +9,14 @@ import bio.terra.pearl.core.factory.kit.KitTypeFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -48,31 +53,70 @@ public class KitRequestDaoTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testFindIncompleteKits() throws Exception {
+    public void testFindByStatus() throws Exception {
+        // Arrange
         var adminUser = adminUserFactory.buildPersisted("testFindIncompleteKits");
         var studyEnvironment = studyEnvironmentFactory.buildPersisted("testUpdateAllKitStatuses");
-        var newEnrollee = enrolleeFactory.buildPersisted("testFindIncompleteKits", studyEnvironment);
-        var oldEnrollee = enrolleeFactory.buildPersisted("testFindIncompleteKits", studyEnvironment);
+        var enrollee = enrolleeFactory.buildPersisted("testFindIncompleteKits", studyEnvironment);
         var kitType = kitTypeFactory.buildPersisted("testFindIncompleteKits");
 
-        var newKit = kitRequestFactory.builder("testFindIncompleteKits")
+        Function<KitRequestStatus, KitRequest> makeKit = status -> {
+            try {
+                var kit = kitRequestFactory.builder("testFindIncompleteKits " + status.name())
+                        .creatingAdminUserId(adminUser.getId())
+                        .enrolleeId(enrollee.getId())
+                        .kitTypeId(kitType.getId())
+                        .status(status)
+                        .build();
+                return kitRequestDao.create(kit);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        };
+        var incompleteKits = Stream.of(KitRequestStatus.CREATED, KitRequestStatus.IN_PROGRESS).map(makeKit).toList();
+        var completeKits = Stream.of(KitRequestStatus.COMPLETE, KitRequestStatus.FAILED).map(makeKit).toList();
+
+        // Act
+        var fetchedIncompleteKits = kitRequestDao.findByStatus(
+                studyEnvironment.getId(),
+                List.of(KitRequestStatus.CREATED, KitRequestStatus.IN_PROGRESS));
+        var fetchedCompleteKits = kitRequestDao.findByStatus(
+                studyEnvironment.getId(),
+                List.of(KitRequestStatus.COMPLETE, KitRequestStatus.FAILED));
+
+        // Assert
+        assertThat(fetchedIncompleteKits, containsInAnyOrder(incompleteKits.toArray()));
+        assertThat(fetchedCompleteKits, containsInAnyOrder(completeKits.toArray()));
+    }
+
+    @Transactional
+    @Test
+    public void testFindByStudyEnvironment() throws Exception {
+        var adminUser = adminUserFactory.buildPersisted("testFindByStudyEnvironment");
+        var kitType = kitTypeFactory.buildPersisted("testFindByStudyEnvironment");
+        var studyEnvironment1 = studyEnvironmentFactory.buildPersisted("testFindByStudyEnvironment 1");
+        var studyEnvironment2 = studyEnvironmentFactory.buildPersisted("testFindByStudyEnvironment 2");
+        var enrollee1 = enrolleeFactory.buildPersisted("testFindByStudyEnvironment 1", studyEnvironment1);
+        var enrollee2 = enrolleeFactory.buildPersisted("testFindByStudyEnvironment 2", studyEnvironment2);
+
+        var kit1 = kitRequestFactory.builder("testFindByStudyEnvironment 1")
                 .creatingAdminUserId(adminUser.getId())
-                .enrolleeId(newEnrollee.getId())
+                .enrolleeId(enrollee1.getId())
                 .kitTypeId(kitType.getId())
                 .build();
-        newKit = kitRequestDao.create(newKit);
-        var completedKit = kitRequestFactory.builder("testFindIncompleteKits")
+        kit1 = kitRequestDao.create(kit1);
+        var kit2 = kitRequestFactory.builder("testFindByStudyEnvironment 2")
                 .creatingAdminUserId(adminUser.getId())
-                .enrolleeId(oldEnrollee.getId())
+                .enrolleeId(enrollee2.getId())
                 .kitTypeId(kitType.getId())
-                .status(KitRequestStatus.COMPLETE)
                 .build();
-        completedKit = kitRequestDao.create(completedKit);
+        kit2 = kitRequestDao.create(kit2);
 
-        var incompleteKits = kitRequestDao.findIncompleteKits(studyEnvironment.getId());
+        var kits1 = kitRequestDao.findByStudyEnvironment(studyEnvironment1.getId());
+        assertThat(kits1, contains(kit1));
 
-        assertThat(incompleteKits, hasItem(newKit));
-        assertThat(incompleteKits, not(hasItem(completedKit)));
+        var kits2 = kitRequestDao.findByStudyEnvironment(studyEnvironment2.getId());
+        assertThat(kits2, contains(kit2));
     }
 
     @Autowired

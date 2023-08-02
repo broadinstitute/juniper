@@ -10,6 +10,7 @@ import SurveyView from './surveys/SurveyView'
 import ConsentView from './surveys/ConsentView'
 import PreEnrollView from './surveys/PreEnrollView'
 import StudyContent from './StudyContent'
+import KitsRouter from './kits/KitsRouter'
 import ParticipantsRouter from './participants/ParticipantsRouter'
 import NotificationConfigView from './notifications/NotificationConfigView'
 import QuestionScratchbox from './surveys/editor/QuestionScratchbox'
@@ -70,6 +71,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
         <Route path="*" element={<div>Unknown prereg page</div>}/>
       </Route>
       <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
+      <Route path="kits/*" element={<KitsRouter studyEnvContext={studyEnvContext}/>}/>
       <Route path="metrics" element={<StudyEnvMetricsView studyEnvContext={studyEnvContext}/>}/>
       <Route path="export/dataBrowser" element={<ExportDataBrowser studyEnvContext={studyEnvContext}/>}/>
       <Route path="export/dataRepo/datasets" element={<DatasetList studyEnvContext={studyEnvContext}/>}/>

@@ -8,6 +8,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.jdbi.v3.core.Jdbi;
@@ -248,6 +250,15 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
+    protected Stream<T> streamAllByProperty(String columnName, Object columnValue) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from " + tableName + " where " + columnName + " = :columnValue;")
+                        .bind("columnValue", columnValue)
+                        .mapTo(clazz)
+                        .stream()
+        );
+    }
+
     protected List<T> findAllByPropertyCollection(String columnName, Collection<?> columnValues) {
         if (columnValues.isEmpty()) {
             // short circuit this case because bindList errors if list is empty
@@ -258,6 +269,19 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
                         .bindList("columnValues", columnValues)
                         .mapTo(clazz)
                         .list()
+        );
+    }
+
+    protected Stream<T> streamAllByPropertyCollection(String columnName, Collection<?> columnValues) {
+        if (columnValues.isEmpty()) {
+            // short circuit this case because bindList errors if list is empty
+            return Stream.empty();
+        }
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from " + tableName + " where " + columnName + " IN (<columnValues>);")
+                        .bindList("columnValues", columnValues)
+                        .mapTo(clazz)
+                        .stream()
         );
     }
 

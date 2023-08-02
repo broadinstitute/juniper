@@ -1,29 +1,27 @@
 import React, { useEffect, useState } from 'react'
 import { Modal } from 'react-bootstrap'
-import Api, { Enrollee, KitType } from 'api/api'
-import { StudyEnvContextT } from '../StudyEnvironmentRouter'
+import Api, { KitType } from 'api/api'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Select from 'react-select'
 
 /** Renders a modal for an admin to submit a sample collection kit request. */
-export default function RequestKitModal({ enrollee, studyEnvContext, onDismiss, onSubmit }: {
-    enrollee: Enrollee,
+export default function RequestKitModal({ studyEnvContext, onDismiss, onSubmit }: {
     studyEnvContext: StudyEnvContextT,
     onDismiss: () => void,
-    onSubmit: () => void }) {
-  const { currentEnv, portal, study } = studyEnvContext
+    onSubmit: (kitType: string) => void }) {
+  const { portal, study } = studyEnvContext
   const [kitTypes, setKitTypes] = useState<KitType[]>()
   const [kitType, setKitType] = useState('')
+  const [error, setError] = useState<string>()
   const kitTypeOptions = kitTypes?.map(kitType => ({ label: kitType.displayName, value: kitType.name }))
   const selectedKitTypeOption = kitTypeOptions?.find(kitTypeOption => kitTypeOption.value === kitType)
 
-  const createKitRequest = async () => {
-    await Api.createKitRequest(
-      portal.shortcode, study.shortcode, currentEnv.environmentName, enrollee.shortcode, kitType)
-  }
-
   const handleSubmit = async () => {
-    await createKitRequest()
-    onSubmit()
+    try {
+      onSubmit(kitType)
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : `${e}`)
+    }
   }
 
   useEffect(() => {
@@ -41,6 +39,7 @@ export default function RequestKitModal({ enrollee, studyEnvContext, onDismiss, 
       <Modal.Title>Request a kit</Modal.Title>
     </Modal.Header>
     <Modal.Body>
+      {error && <div>Error: {error}</div>}
       <form onSubmit={e => e.preventDefault()}>
         <div>
           <label className='form-label'>

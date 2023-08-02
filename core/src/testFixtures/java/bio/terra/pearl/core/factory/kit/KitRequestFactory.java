@@ -6,7 +6,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
-import bio.terra.pearl.core.service.kit.PepperDSMKitStatus;
+import bio.terra.pearl.core.service.kit.PepperKitStatus;
 import bio.terra.pearl.core.service.kit.PepperKitAddress;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,7 +54,7 @@ public class KitRequestFactory {
                 .kitTypeId(kitTypeId)
                 .build();
         var savedKitRequest = kitRequestDao.create(kitRequest);
-        var dsmStatus = PepperDSMKitStatus.builder()
+        var dsmStatus = PepperKitStatus.builder()
                 .currentStatus("CREATED")
                 .kitId(savedKitRequest.getId().toString())
                 .build();

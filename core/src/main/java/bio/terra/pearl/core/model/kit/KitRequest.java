@@ -1,6 +1,8 @@
 package bio.terra.pearl.core.model.kit;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.service.kit.PepperKitStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +16,7 @@ import java.util.UUID;
 public class KitRequest extends BaseEntity {
     private UUID creatingAdminUserId;
     private UUID enrolleeId;
+    private Enrollee enrollee;
     private UUID kitTypeId;
     private KitType kitType;
     /**

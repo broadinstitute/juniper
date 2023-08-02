@@ -57,4 +57,13 @@ public class EnrolleePopulateDao {
     );
   }
 
+  public void changeKitCreationTime(UUID kitRequestId, Instant creationTime) {
+    jdbi.withHandle(handle ->
+            handle.createUpdate("update kit_request set created_at = :creationTime where id = :kitRequestId;")
+                    .bind("kitRequestId", kitRequestId)
+                    .bind("creationTime", creationTime)
+                    .execute()
+    );
+  }
+
 }

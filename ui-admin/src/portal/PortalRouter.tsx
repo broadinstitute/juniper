@@ -100,6 +100,11 @@ export const studyParticipantsPath = (portalShortcode: string, envName: string, 
   return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/participants`
 }
 
+/** Construct a path to a study's kit management interface. */
+export const studyKitsPath = (portalShortcode: string, envName: string, studyShortcode: string) => {
+  return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/kits`
+}
+
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
 export const studyContentPath = (portalShortcode: string, envName: string, studyShortcode: string) => {

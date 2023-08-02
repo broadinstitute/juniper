@@ -3,6 +3,7 @@ package bio.terra.pearl.api.admin.controller.enrollee;
 import bio.terra.pearl.api.admin.api.EnrolleeApi;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.enrollee.EnrolleeExtService;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -77,6 +78,18 @@ public class EnrolleeController implements EnrolleeApi {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     var kitRequests = enrolleeExtService.getKitRequests(adminUser, enrolleeShortcode);
     return ResponseEntity.ok(kitRequests);
+  }
+
+  @Override
+  public ResponseEntity<Object> enrolleesWithKits(
+      String portalShortcode, String studyShortcode, String envName) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+
+    var enrollees =
+        enrolleeExtService.findForKitManagement(
+            adminUser, portalShortcode, studyShortcode, environmentName);
+    return ResponseEntity.ok(enrollees);
   }
 
   public record WithdrawnResponse(UUID withdrawnEnrolleeId) {}

@@ -2,8 +2,6 @@ package bio.terra.pearl.core.service.kit;
 
 import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
-import bio.terra.pearl.core.dao.study.StudyDao;
-import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
@@ -16,11 +14,15 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ProfileService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import bio.terra.pearl.core.service.study.StudyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,18 +41,20 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     private static final Set<String> PEPPER_FAILED_STATUSES = Set.of("CONTAMINATED");
 
     public KitRequestService(KitRequestDao dao,
+                             @Lazy EnrolleeService enrolleeService,
                              KitTypeDao kitTypeDao,
                              PepperDSMClient pepperDSMClient,
                              ProfileService profileService,
-                             StudyDao studyDao,
-                             StudyEnvironmentDao studyEnvironmentDao,
+                             @Lazy StudyEnvironmentService studyEnvironmentService,
+                             @Lazy StudyService studyService,
                              ObjectMapper objectMapper) {
         super(dao);
+        this.enrolleeService = enrolleeService;
         this.kitTypeDao = kitTypeDao;
         this.pepperDSMClient = pepperDSMClient;
         this.profileService = profileService;
-        this.studyDao = studyDao;
-        this.studyEnvironmentDao = studyEnvironmentDao;
+        this.studyEnvironmentService = studyEnvironmentService;
+        this.studyService = studyService;
         this.objectMapper = objectMapper;
     }
 
@@ -98,8 +102,22 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     /**
      * Fetch all kits for an enrollee.
      */
-    public Collection<KitRequest> getKitRequests(AdminUser adminUser, Enrollee enrollee) {
+    public Collection<KitRequest> getKitRequests(Enrollee enrollee) {
         return dao.findByEnrollee(enrollee.getId());
+    }
+
+    /**
+     * Fetch all sample kits for a study environment.
+     */
+    public Collection<KitRequest> getSampleKitsByStudyEnvironment(StudyEnvironment studyEnvironment) {
+        var allKitTypes = kitTypeDao.findAll();
+        var kitTypeMap = allKitTypes.stream().collect(Collectors.toMap(KitType::getId, Function.identity()));
+        var kits = dao.findByStudyEnvironment(studyEnvironment.getId());
+        kits.forEach(kit -> {
+            kit.setKitType(kitTypeMap.get(kit.getKitTypeId()));
+            enrolleeService.find(kit.getEnrolleeId()).ifPresent(kit::setEnrollee);
+        });
+        return kits;
     }
 
     /**
@@ -108,17 +126,17 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      * Do _NOT_ call this repeatedly for a collection of kits. Use a bulk operation instead to avoid overwhelming DSM.
      */
     @Transactional
-    public PepperDSMKitStatus syncKitStatusFromPepper(UUID kitId) {
+    public PepperKitStatus syncKitStatusFromPepper(UUID kitId) {
         var kitRequest = dao.find(kitId).orElseThrow(() -> new NotFoundException("Kit request not found"));
-        var pepperDSMKitStatus = pepperDSMClient.fetchKitStatus(kitId);
+        var pepperKitStatus = pepperDSMClient.fetchKitStatus(kitId);
         try {
-            kitRequest.setDsmStatus(objectMapper.writeValueAsString(pepperDSMKitStatus));
+            kitRequest.setDsmStatus(objectMapper.writeValueAsString(pepperKitStatus));
             kitRequest.setDsmStatusFetchedAt(Instant.now());
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Could not parse JSON response from DSM", e);
         }
         dao.update(kitRequest);
-        return pepperDSMKitStatus;
+        return pepperKitStatus;
     }
 
     /**
@@ -129,18 +147,18 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      */
     @Transactional
     public void syncAllKitStatusesFromPepper() {
-        var studies = studyDao.findAll();
+        var studies = studyService.findAll();
         for (Study study : studies) {
 
             // This assumes that DSM is configured with a single study backing all environments of the Juniper study
             var pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getId());
             var pepperStatusFetchedAt = Instant.now();
             var pepperKitStatusByKitId = pepperKitStatuses.stream().collect(
-                    Collectors.toMap(PepperDSMKitStatus::getKitId, Function.identity()));
+                    Collectors.toMap(PepperKitStatus::getKitId, Function.identity()));
 
-            var studyEnvironments = studyEnvironmentDao.findByStudy(study.getId());
+            var studyEnvironments = studyEnvironmentService.findByStudy(study.getId());
             for (StudyEnvironment studyEnvironment : studyEnvironments) {
-                var incompleteKits = dao.findIncompleteKits(studyEnvironment.getId());
+                var incompleteKits = findIncompleteKits(studyEnvironment.getId());
 
                 // The set of kits returned from DSM may be different from the set of incomplete kits in Juniper, but
                 // we want to update the records in Juniper so those are the ones we want to iterate here.
@@ -152,6 +170,12 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 }
             }
         }
+    }
+
+    public List<KitRequest> findIncompleteKits(UUID studyEnvironmentId) {
+        return dao.findByStatus(
+                studyEnvironmentId,
+                List.of(KitRequestStatus.CREATED, KitRequestStatus.IN_PROGRESS));
     }
 
     /**
@@ -185,7 +209,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      * Saves updated kit status. This is called from a batch job, so exceptions are caught and logged instead of thrown
      * to allow the rest of the batch to be processed.
      */
-    private void saveKitStatus(KitRequest kit, PepperDSMKitStatus pepperKitStatus, Instant pepperStatusFetchedAt) {
+    private void saveKitStatus(KitRequest kit, PepperKitStatus pepperKitStatus, Instant pepperStatusFetchedAt) {
         try {
             kit.setDsmStatus(objectMapper.writeValueAsString(pepperKitStatus));
             kit.setDsmStatusFetchedAt(pepperStatusFetchedAt);
@@ -208,10 +232,11 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         }
     }
 
+    private final EnrolleeService enrolleeService;
     private final KitTypeDao kitTypeDao;
     private final PepperDSMClient pepperDSMClient;
     private final ProfileService profileService;
-    private final StudyDao studyDao;
-    private final StudyEnvironmentDao studyEnvironmentDao;
+    private final StudyService studyService;
+    private final StudyEnvironmentService studyEnvironmentService;
     private final ObjectMapper objectMapper;
 }

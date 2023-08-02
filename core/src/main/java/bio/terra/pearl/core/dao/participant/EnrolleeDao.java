@@ -8,11 +8,15 @@ import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.jdbi.v3.core.Jdbi;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
@@ -56,6 +60,11 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
 
     public List<Enrollee> findByStudyEnvironmentId(UUID studyEnvironmentId) {
         return findAllByProperty("study_environment_id", studyEnvironmentId);
+    }
+
+    @Transactional
+    public Stream<Enrollee> streamByStudyEnvironmentId(UUID studyEnvironmentId) {
+        return streamAllByProperty("study_environment_id", studyEnvironmentId);
     }
 
     public List<Enrollee> findAllByShortcodes(List<String> shortcodes) {
@@ -115,6 +124,40 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
         }
         enrollee.getParticipantNotes().addAll(participantNoteDao.findByEnrollee(enrollee.getId()));
         return enrollee;
+    }
+
+    /**
+     * Fetches enrollees, loading all details needed for the kit management view -- currently tasks and kits.
+     * Reduces database round-trips by fetching entities from each table and performing in-memory joins.
+     * Uses Streams to reduce the number of iterations over collections of entities:
+     *  - Streams enrollees into two lists: enrollees and enrollee IDs
+     *    - avoids separately collecting IDs from entities
+     *    - retains order of results (not otherwise guaranteed when using something like Collectors.toMap())
+     *  - Streams tasks and kits into maps grouped by enrollee ID
+     *    - avoids separate iteration to build these maps
+     *  All that remains is a single traversal through the enrollee list to attach their tasks and kits.
+     */
+    @Transactional
+    public List<Enrollee> findForKitManagement(UUID studyEnvironmentId) {
+        var enrolleesAndIds = streamByStudyEnvironmentId(studyEnvironmentId).collect(Collectors.teeing(
+                Collectors.toList(),
+                Collectors.mapping(Enrollee::getId, Collectors.toList()),
+                Pair::of
+        ));
+
+        var enrollees = enrolleesAndIds.getFirst();
+        var enrolleeIds = enrolleesAndIds.getSecond();
+
+        var tasksByEnrolleeId = participantTaskDao.findByEnrolleeIds(enrolleeIds);
+        var kitsByEnrolleeId = kitRequestDao.findByEnrolleeIds(enrolleeIds);
+
+        enrollees.forEach(enrollee -> {
+            // Be sure to set empty collections to indicate that they are empty instead of not initialized
+            enrollee.setParticipantTasks(tasksByEnrolleeId.getOrDefault(enrollee.getId(), Collections.emptySet()));
+            enrollee.setKitRequests(kitsByEnrolleeId.getOrDefault(enrollee.getId(), Collections.emptyList()));
+        });
+
+        return enrollees;
     }
 
     public int countByStudyEnvironment(UUID studyEnvironmentId) {

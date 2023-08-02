@@ -77,6 +77,9 @@ function EnvironmentSummary({ studyEnv }: {studyEnv: StudyEnvironment}) {
     <p>
       <Link to={`env/${studyEnv.environmentName}/participants`}>Participants</Link>
     </p>
+    <p>
+      <Link to={`env/${studyEnv.environmentName}/kits`}>Kits</Link>
+    </p>
   </div>
 }
 

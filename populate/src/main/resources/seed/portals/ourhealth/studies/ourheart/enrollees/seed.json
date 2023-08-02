@@ -15,6 +15,32 @@
       {"questionStableId":"qualified", "booleanValue": true}
     ]
   },
+  "participantTaskDtos": [
+    {
+      "status": "COMPLETE",
+      "taskType": "CONSENT",
+      "targetStableId": "oh_oh_consent",
+      "targetAssignedVersion": 1,
+      "taskOrder": 0,
+      "blocksHub": true
+    },
+    {
+      "status": "COMPLETE",
+      "taskType": "SURVEY",
+      "targetStableId": "oh_oh_basicInfo",
+      "targetAssignedVersion": 1,
+      "taskOrder": 0,
+      "blocksHub": true
+    },
+    {
+      "status": "COMPLETE",
+      "taskType": "SURVEY",
+      "targetStableId": "oh_oh_cardioHx",
+      "targetAssignedVersion": 1,
+      "taskOrder": 1,
+      "blocksHub": true
+    }
+  ],
   "surveyResponseDtos": [
     {
       "surveyStableId": "oh_oh_cardioHx",
@@ -64,5 +90,35 @@
       }
     ],
     "currentPageNo": 6
-  }]
+  }],
+  "kitRequestDtos": [
+    {
+      "creatingAdminUsername": "staff@ourhealth.org",
+      "kitTypeName": "saliva",
+      "statusName": "CREATED",
+      "dsmStatusJson": {
+        "kitId": "11111111-2222-3333-4444-555555555555",
+        "currentStatus": "CREATED",
+        "labelDate": "",
+        "scanDate": "",
+        "receiveDate": "",
+        "scannedByEmail": "",
+        "receivedByEmail": "",
+        "labeledByEmail": "",
+        "deactivationDate": "",
+        "deactivatedBy": "",
+        "deactivationReason": "",
+        "trackingNumbers": [],
+        "returnTrackingNumber": "",
+        "errors": [
+          {
+            "errorDate": "",
+            "errorMessage": ""
+          }
+        ],
+        "discardDate": "",
+        "discardReason": ""
+      }
+    }
+  ]
 }

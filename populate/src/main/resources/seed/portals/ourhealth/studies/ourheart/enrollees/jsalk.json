@@ -43,7 +43,7 @@
       "answerPopDtos": [
         {"questionStableId": "oh_oh_basic_firstName", "stringValue": "Jonas"},
         {"questionStableId": "oh_oh_basic_lastName", "stringValue": "Salk"},
-        {"questionStableId": "oh_oh_basic_streetAddress", "stringValue": "123 Walnut Street"},
+        {"questionStableId": "oh_oh_basic_streetAddress", "stringValue": "415 Main Street"},
         {"questionStableId": "oh_oh_basic_mghPatient", "stringValue": "yes"},
         {"questionStableId": "oh_oh_basic_dateOfBirth", "stringValue":  "11/12/1987"}
       ],
@@ -73,9 +73,10 @@
       "statusName": "CREATED",
       "dsmStatusJson": {
         "kitId": "11111111-2222-3333-4444-555555555555",
+        "currentStatus": "CREATED",
         "labelDate": "2023-05-24",
-        "scanDate": "2023-05-24",
-        "receiveDate": "2023-05-24",
+        "scanDate": "",
+        "receiveDate": "",
         "scannedByEmail": "",
         "receivedByEmail": "",
         "labeledByEmail": "",
@@ -84,13 +85,8 @@
         "deactivationReason": "",
         "trackingNumbers": [],
         "returnTrackingNumber": "",
-        "errors": [
-          {
-            "errorDate": "2023-05-24",
-            "errorMessage": ""
-          }
-        ],
-        "discardDate": "2023-05-24",
+        "errors": [],
+        "discardDate": "",
         "discardReason": ""
       }
     }
