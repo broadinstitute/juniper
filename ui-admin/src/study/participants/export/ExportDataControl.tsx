@@ -7,6 +7,7 @@ import { currentIsoDate } from 'util/timeUtils'
 import { failureNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { Link } from 'react-router-dom'
+import { saveBlobAsDownload } from '../../../util/downloadUtils'
 
 const FILE_FORMATS = [{
   label: 'Tab-delimted (.tsv)',
@@ -43,11 +44,7 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
       return
     }
     const blob = await response.blob()
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = fileName
-    a.click()
+    saveBlobAsDownload(blob, fileName)
     setIsLoading(false)
   }
 
