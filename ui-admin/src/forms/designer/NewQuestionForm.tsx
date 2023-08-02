@@ -72,7 +72,6 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
           <select id="questionType"
             disabled={!!selectedQuestionTemplateName}
             className="form-select"
-            key={selectedQuestionType}
             value={selectedQuestionType}
             onChange={e => {
               const newQuestionType = e.target.value as QuestionType
