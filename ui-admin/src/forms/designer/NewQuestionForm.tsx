@@ -11,6 +11,7 @@ import { Textarea } from 'components/forms/Textarea'
 import { questionFromRawText } from 'util/pearlSurveyUtils'
 import { Checkbox } from '../../components/forms/Checkbox'
 import Select from 'react-select'
+import { unset } from 'lodash/fp'
 
 type NewQuestionFormProps = {
     onCreate: (newQuestion: Question) => void
@@ -53,9 +54,9 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
               isClearable={true}
               value={selectedQuestionTemplateName}
               onChange={newValue => {
-                setSelectedQuestionTemplateName(newValue!)
                 setSelectedQuestionType(undefined)
-                setQuestion({ name: questionName, questionTemplateName: newValue?.value } as Question)
+                setSelectedQuestionTemplateName(newValue ? newValue : undefined)
+                setQuestion(unset('type', { name: questionName, questionTemplateName: newValue?.value }) as Question)
               }}
             />
             <p
@@ -68,7 +69,10 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
 
           <label className="form-label" htmlFor="questionType">Question type</label>
           <select id="questionType"
-            disabled={!!selectedQuestionTemplateName} className="form-select" value={selectedQuestionType}
+            disabled={!!selectedQuestionTemplateName}
+            className="form-select"
+            key={selectedQuestionType || 'default'}
+            value={selectedQuestionType}
             onChange={e => {
               const newQuestionType = e.target.value as QuestionType
               setSelectedQuestionType(newQuestionType)
