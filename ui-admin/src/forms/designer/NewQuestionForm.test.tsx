@@ -61,4 +61,28 @@ describe('NewQuestionForm', () => {
     expect(questionTypeSelect).toHaveValue('radiogroup')
     expect(screen.getByText(questionTypeDescriptions.radiogroup)).toBeInTheDocument()
   })
+
+  test('renders the question template picker when there are templates', async () => {
+    //Arrange
+    render(<NewQuestionForm
+      onCreate={() => jest.fn()}
+      questionTemplates={[{ name: 'oh_oh_template', title: 'A template', type: 'text' }]}
+      readOnly={false}/>
+    )
+
+    //Assert
+    expect(screen.getByText('Question template (optional)')).toBeInTheDocument()
+  })
+
+  test('does not render the question template picker where aren\'t any templates', async () => {
+    //Arrange
+    render(<NewQuestionForm
+      onCreate={() => jest.fn()}
+      questionTemplates={[]}
+      readOnly={false}/>
+    )
+
+    //Assert
+    expect(screen.queryByText('Question template (optional)')).not.toBeInTheDocument()
+  })
 })
