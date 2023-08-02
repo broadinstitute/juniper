@@ -9,7 +9,7 @@ import {
 import Api, { KitRequest } from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
-import {basicTableLayout, FilterType} from 'util/tableUtils'
+import { basicTableLayout, FilterType } from 'util/tableUtils'
 import { instantToDateString, isoToInstant } from 'util/timeUtils'
 
 const pepperStatusToHumanStatus = (dsmStatus?: string): string => {
