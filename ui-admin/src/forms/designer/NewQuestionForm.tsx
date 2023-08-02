@@ -55,6 +55,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
               value={selectedQuestionTemplateName}
               onChange={newValue => {
                 setSelectedQuestionType(undefined)
+                setFreetextMode(false)
                 setSelectedQuestionTemplateName(newValue ? newValue : undefined)
                 setQuestion(unset('type', { name: questionName, questionTemplateName: newValue?.value }) as Question)
               }}
