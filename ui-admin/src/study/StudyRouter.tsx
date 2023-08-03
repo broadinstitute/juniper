@@ -47,7 +47,7 @@ function StudyRouterFromShortcode({ shortcode, portalContext }:
 
   return <>
     <NavBreadcrumb>
-      <Link className="text-white" to={`/${portalContext.portal.shortcode}/studies/${study?.shortcode}`}>
+      <Link to={`/${portalContext.portal.shortcode}/studies/${study?.shortcode}`}>
         {study?.name}</Link>
     </NavBreadcrumb>
     <Routes>

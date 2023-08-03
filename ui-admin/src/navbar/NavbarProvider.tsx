@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useState } from 'react'
-import BaseSidebar from './BaseSidebar'
+import AdminSidebar from './AdminSidebar'
 
 export type NavbarContextT = {
   breadCrumbs: React.ReactNode[],
@@ -26,7 +26,7 @@ export default function NavbarProvider({ children }: { children: React.ReactNode
   const [breadCrumbs, setBreadCrumbs] = useState<React.ReactNode[]>([])
   const [showSidebar, setShowSidebar] = useState(false)
   const [sidebarContent, setSidebarContent] =
-    useState<React.ReactNode[]>([<BaseSidebar/>])
+    useState<React.ReactNode[]>([<AdminSidebar/>])
 
 
   const navState: NavbarContextT = {

@@ -99,7 +99,7 @@ function RawPortalProvider({ shortcode, children }:
 
   return <PortalContext.Provider value={portalContext}>
     <NavBreadcrumb>
-      <Link className="text-white" to={`/${shortcode}`}>
+      <Link to={`/${shortcode}`}>
         {portalState?.name}</Link>
     </NavBreadcrumb>
     <AdminUserProvider portalShortcode={shortcode}>

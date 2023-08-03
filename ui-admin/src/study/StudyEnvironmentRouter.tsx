@@ -3,8 +3,7 @@ import { NotificationConfig, Portal, Study, StudyEnvironment } from 'api/api'
 import { StudyParams } from 'study/StudyRouter'
 
 import { Link, Route, Routes, useParams } from 'react-router-dom'
-import { NavBreadcrumb, SidebarContent } from '../navbar/AdminNavbar'
-import StudyEnvironmentSidebar from './StudyEnvironmentSidebar'
+import { NavBreadcrumb } from '../navbar/AdminNavbar'
 import { PortalContext } from '../portal/PortalProvider'
 import SurveyView from './surveys/SurveyView'
 import ConsentView from './surveys/ConsentView'
@@ -41,15 +40,9 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
   const studyEnvContext: StudyEnvContextT = { study, currentEnv, currentEnvPath, portal }
   return <div className="StudyView d-flex flex-column flex-grow-1">
     <NavBreadcrumb>
-      <Link className="text-white" to={currentEnvPath}>
+      <Link to={currentEnvPath}>
         {envName}</Link>
     </NavBreadcrumb>
-    <SidebarContent>
-      <StudyEnvironmentSidebar study={study}
-        portalShortcode={portal.shortcode}
-        currentEnv={currentEnv}
-        currentEnvPath={currentEnvPath}/>
-    </SidebarContent>
     <Routes>
       <Route path="surveys">
         <Route path=":surveyStableId">
@@ -84,6 +77,10 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
 }
 
 export default StudyEnvironmentRouter
+
+export const participantListPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
+  return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/participants`
+}
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc

@@ -23,6 +23,7 @@ import InvestigatorTermsOfUsePage from './terms/InvestigatorTermsOfUsePage'
 import PrivacyPolicyPage from 'terms/PrivacyPolicyPage'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
 import LoadingSpinner from './util/LoadingSpinner'
+import AdminSidebar from "./navbar/AdminSidebar";
 const HelpRouter = lazy(() => import('./help/HelpRouter'))
 
 
@@ -71,10 +72,13 @@ function App() {
 function PageFrame() {
   const navContext = useContext(NavbarContext)
   return (
-    <>
-      <AdminNavbar {...navContext}/>
-      <Outlet/>
-    </>
+    <div className="d-flex">
+      <AdminSidebar/>
+      <div className="flex-grow-1">
+          <AdminNavbar {...navContext}/>
+          <Outlet/>
+      </div>
+    </div>
   )
 }
 export default App

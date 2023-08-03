@@ -15,7 +15,7 @@ export default function KitsRouter({ studyEnvContext }: {studyEnvContext: StudyE
 
   return <>
     <NavBreadcrumb>
-      <Link className='text-white' to={studyKitsPath(portalShortcode, environmentName, studyShortcode)}>kits</Link>
+      <Link to={studyKitsPath(portalShortcode, environmentName, studyShortcode)}>kits</Link>
     </NavBreadcrumb>
     <Routes>
       <Route index element={<Navigate to='byEnrollee' replace={true}/>}/>

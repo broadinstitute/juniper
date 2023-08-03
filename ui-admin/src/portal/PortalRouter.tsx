@@ -4,11 +4,10 @@ import StudyRouter from '../study/StudyRouter'
 import PortalDashboard from './PortalDashboard'
 import { LoadedPortalContextT, PortalContext, PortalParams } from './PortalProvider'
 import MailingListView from './MailingListView'
-import { NavBreadcrumb, SidebarContent } from '../navbar/AdminNavbar'
+import { NavBreadcrumb } from '../navbar/AdminNavbar'
 import PortalEnvView from './PortalEnvView'
 import SiteContentView from './siteContent/SiteContentView'
 import PortalEnvConfigView from './PortalEnvConfigView'
-import PortalSidebar from './PortalSidebar'
 import PortalUserList from '../user/PortalUserList'
 import PortalParticipantsView from './PortalParticipantView'
 import PortalEnvDiffProvider from './publish/PortalEnvDiffProvider'
@@ -17,9 +16,6 @@ import PortalEnvDiffProvider from './publish/PortalEnvDiffProvider'
 export default function PortalRouter() {
   const portalContext = useContext(PortalContext) as LoadedPortalContextT
   return <>
-    <SidebarContent>
-      <PortalSidebar portalShortcode={portalContext.portal.shortcode}/>
-    </SidebarContent>
     <Routes>
       <Route path="studies">
         <Route path=":studyShortcode/*" element={<StudyRouter portalContext={portalContext}/>}/>
@@ -44,7 +40,7 @@ function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT
 
   return <>
     <NavBreadcrumb>
-      <Link className="text-white" to={`${portal.shortcode}/env/${portalEnvName}`}>
+      <Link to={`${portal.shortcode}/env/${portalEnvName}`}>
         {portalEnvName}
       </Link>
     </NavBreadcrumb>
