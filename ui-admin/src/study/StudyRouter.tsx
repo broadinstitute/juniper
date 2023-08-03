@@ -56,3 +56,8 @@ function StudyRouterFromShortcode({ shortcode, portalContext }:
     </Routes>
   </>
 }
+
+export const studyShortcodeFromPath = (path: string | undefined) => {
+  const match = path?.match(/studies\/([^/]+)/)
+  return match ? match[1] : undefined
+}

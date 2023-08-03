@@ -5,12 +5,11 @@ import { mockAdminUser, MockUserProvider } from 'test-utils/user-mocking-utils'
 import { render, screen } from '@testing-library/react'
 import AdminNavbar from './AdminNavbar'
 import userEvent from '@testing-library/user-event'
-import { emptyNavbarContext } from './NavbarProvider'
 
 test('renders the help menu', async () => {
   const { RoutedComponent } = setupRouterTest(
     <MockUserProvider user={mockAdminUser(false)}>
-      <AdminNavbar {...emptyNavbarContext}/>
+      <AdminNavbar/>
     </MockUserProvider>)
   render(RoutedComponent)
   expect(screen.getByTitle('help menu')).toBeInTheDocument()
@@ -24,7 +23,7 @@ test('renders the user menu', async () => {
       ...mockAdminUser(false),
       username: 'testuser123'
     }}>
-      <AdminNavbar {...emptyNavbarContext}/>
+      <AdminNavbar/>
     </MockUserProvider>)
   render(RoutedComponent)
   expect(screen.getByTitle('user menu')).toBeInTheDocument()

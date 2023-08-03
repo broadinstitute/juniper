@@ -9,9 +9,8 @@ import { ReactNotifications } from 'react-notifications-component'
 
 import { RedirectFromOAuth } from 'login/RedirectFromOAuth'
 import { ProtectedRoute } from 'login/ProtectedRoute'
-import NavbarProvider, { NavbarContext } from 'navbar/NavbarProvider'
 import AdminNavbar from 'navbar/AdminNavbar'
-import PortalList from 'portal/PortalList'
+import HomePage from 'HomePage'
 import PortalProvider from 'portal/PortalProvider'
 import UserProvider from 'user/UserProvider'
 import ConfigProvider, { ConfigConsumer } from 'providers/ConfigProvider'
@@ -24,6 +23,7 @@ import PrivacyPolicyPage from 'terms/PrivacyPolicyPage'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
 import LoadingSpinner from './util/LoadingSpinner'
 import AdminSidebar from "./navbar/AdminSidebar";
+import NavContextProvider from "navbar/NavContextProvider";
 const HelpRouter = lazy(() => import('./help/HelpRouter'))
 
 
@@ -38,27 +38,26 @@ function App() {
               <div className="App d-flex flex-column min-vh-100">
                 <IdleStatusMonitor maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={5 * 60 * 1000}/>
                 <ReactNotifications />
-                <NavbarProvider>
-                  <BrowserRouter>
-                    <Routes>
-                      <Route path="/" element={<PageFrame/>}>
-                        <Route path="help/*" element={<Suspense fallback={<LoadingSpinner/>}>
-                          <HelpRouter />
-                        </Suspense>} />
-                        <Route element={<ProtectedRoute/>}>
-                          <Route path="users" element={<UserList/>}/>
-                          <Route path=":portalShortcode/*" element={<PortalProvider><PortalRouter/></PortalProvider>}/>
-                          <Route index element={<PortalList/>}/>
-                        </Route>
-
-                        <Route path="privacy" element={<PrivacyPolicyPage />} />
-                        <Route path="terms" element={<InvestigatorTermsOfUsePage />} />
-                        <Route path="*" element={<div>Unknown page</div>}/>
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/">
+                      <Route path="help/*" element={<Suspense fallback={<LoadingSpinner/>}>
+                        <HelpRouter />
+                      </Suspense>} />
+                      <Route element={<ProtectedRoute>
+                          <NavContextProvider><PageFrame/></NavContextProvider>
+                        </ProtectedRoute>}>
+                        <Route path="users" element={<UserList/>}/>
+                        <Route path=":portalShortcode/*" element={<PortalProvider><PortalRouter/></PortalProvider>}/>
+                        <Route index element={<HomePage/>}/>
                       </Route>
-                      <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
-                    </Routes>
-                  </BrowserRouter>
-                </NavbarProvider>
+                      <Route path="privacy" element={<PrivacyPolicyPage />} />
+                      <Route path="terms" element={<InvestigatorTermsOfUsePage />} />
+                      <Route path="*" element={<div>Unknown page</div>}/>
+                    </Route>
+                    <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
+                  </Routes>
+                </BrowserRouter>
               </div>
             </UserProvider>
           </AuthProvider>
@@ -70,12 +69,11 @@ function App() {
 
 /** Renders the navbar and footer for the page */
 function PageFrame() {
-  const navContext = useContext(NavbarContext)
   return (
     <div className="d-flex">
       <AdminSidebar/>
       <div className="flex-grow-1">
-          <AdminNavbar {...navContext}/>
+          <AdminNavbar/>
           <Outlet/>
       </div>
     </div>

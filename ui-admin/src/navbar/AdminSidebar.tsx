@@ -1,20 +1,34 @@
-import React, {useState} from 'react'
+import React, {useEffect, useId, useRef, useState} from 'react'
 import { useUser } from '../user/UserProvider'
-import {Link, NavLink, NavLinkProps} from "react-router-dom";
+import {Link, NavLink, NavLinkProps, useParams} from "react-router-dom";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faArrowLeft, faArrowRight} from "@fortawesome/free-solid-svg-icons";
+import {faArrowLeft, faArrowRight, faChevronDown, faChevronUp} from "@fortawesome/free-solid-svg-icons";
 import {Accordion} from "react-bootstrap";
-import {Portal, Study} from "@juniper/ui-core";
+import {Markdown, Portal, Study} from "@juniper/ui-core";
 import {participantListPath} from "../study/StudyEnvironmentRouter";
+import classNames from "classnames";
+import {faPlus} from "@fortawesome/free-solid-svg-icons/faPlus";
+import {faXmark} from "@fortawesome/free-solid-svg-icons/faXmark";
+import {StudyParams, studyShortcodeFromPath} from "../study/StudyRouter";
+import {useNavContext} from "./NavContextProvider";
 
 /** renders the left navbar of admin tool */
-const AdminSidebar = ({portal, study, studyList}: {portal?: Portal, study?: Study, studyList?: Study[]}) => {
+const AdminSidebar = () => {
   const [open, setOpen] = useState(true)
   const { user } = useUser()
+  const params = useParams()
+  const studyShortcode = studyShortcodeFromPath(params['*'])
+  const { portalList } = useNavContext()
+
+  let studyList: Study[] = []
+  if (portalList.length) {
+    studyList = portalList.flatMap(portal => portal.portalStudies.map(ps => ps.study))
+  }
 
   if (user.isAnonymous) {
     return <div></div>
   }
+  const currentStudy = studyList.find(study => study.shortcode === studyShortcode)
 
   return <div style={{backgroundColor: '#333F52', height: '100vh', minWidth: open ? '250px' : '50px'}}
   className="p-2 pt-3">
@@ -29,22 +43,7 @@ const AdminSidebar = ({portal, study, studyList}: {portal?: Portal, study?: Stud
           <FontAwesomeIcon icon={faArrowLeft}/>
         </button>
       </div>
-      <Accordion defaultActiveKey={['0']} alwaysOpen >
-        <Accordion.Item eventKey="0" key="0">
-            <Accordion.Header>Research Coordination</Accordion.Header>
-            <Accordion.Body>
-              <ul className="list-unstyled ps-2">
-                <li>Tasks</li>
-                <li>
-                  <Link to={participantListPath('ourhealth', 'ourheart', 'live')}>
-                    Participant List
-                  </Link>
-                </li>
-              </ul>
-            </Accordion.Body>
-          </Accordion.Item>
-      </Accordion>
-
+      { currentStudy && <StudySidebarOptions study={currentStudy}/> }
       <ul className="nav nav-pills flex-column mb-auto">
         {user.superuser && <li>
           <SidebarNavLink to="/users">All users</SidebarNavLink>
@@ -52,6 +51,44 @@ const AdminSidebar = ({portal, study, studyList}: {portal?: Portal, study?: Stud
       </ul>
     </>}
   </div>;
+}
+
+const StudySidebarOptions = ({study}: {study: Study}) => {
+  return <>
+    <div className="text-white">
+      {study.name}
+      <CollapsableMenu header={'Research Coordination'} content={<ul className="list-unstyled">
+        <li className="pb-2">Tasks</li>
+        <li>Participant list</li>
+      </ul>}/>
+    </div>
+  </>
+}
+
+function CollapsableMenu({header, content}: {header: React.ReactNode, content: React.ReactNode}) {
+  const contentId = useId()
+  const targetSelector  = `#${contentId}`
+  return <div className="pt-3">
+    <div>
+      <button
+          aria-controls={targetSelector}
+          aria-expanded="true"
+          className="btn-link btn w-100 py-2 px-0 d-flex fw-bold text-decoration-none text-white"
+          data-bs-target={targetSelector}
+          data-bs-toggle="collapse"
+      >
+        <span className="text-center" style={{ width: 30 }}>
+          <FontAwesomeIcon icon={faChevronDown} className="hidden-when-collapsed"/>
+          <FontAwesomeIcon icon={faChevronUp} className="hidden-when-expanded"/>
+        </span>
+        {header}
+      </button>
+    </div>
+    <div className="collapse show" id={contentId} style={{paddingLeft: '30px'}}>
+      {content}
+    </div>
+  </div>
+
 }
 
 /** renders a link in the sidebar with appropriate style and onClick handler to close the sidebar when clicked */

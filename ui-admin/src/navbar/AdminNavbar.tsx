@@ -4,17 +4,15 @@ import { UserContextT, useUser } from 'user/UserProvider'
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars'
 
 import { Link, NavLink, NavLinkProps } from 'react-router-dom'
-import { NavbarContext, NavbarContextT } from './NavbarProvider'
+import {useNavContext} from './NavContextProvider'
 import {faChevronRight, faQuestionCircle, faUserCircle} from '@fortawesome/free-solid-svg-icons'
 import ContactSupportInfoModal from '../help/ContactSupportInfoModal'
 
 /** note we name this adminNavbar to avoid naming conflicts with bootstrap navbar */
-function AdminNavbar({ breadCrumbs }: NavbarContextT) {
+function AdminNavbar() {
+  const { breadCrumbs } = useNavContext()
   const currentUser: UserContextT = useUser()
   const [showContactModal, setShowContactModal] = useState(false)
-  if (!breadCrumbs) {
-    breadCrumbs = []
-  }
 
   if (currentUser.user.isAnonymous) {
     return <div></div>
@@ -74,15 +72,15 @@ function AdminNavbar({ breadCrumbs }: NavbarContextT) {
  * so that order rendering will be in-order rather than reversed.  See https://github.com/facebook/react/issues/15281
  * */
 export function NavBreadcrumb({ children }: {children: React.ReactNode}) {
-  const navContext = useContext(NavbarContext)
+  const {setBreadCrumbs} = useNavContext()
   useEffect(() => {
     /** use the setState arg that takes a function to avoid race conditions */
-    navContext.setBreadCrumbs((oldCrumbs: React.ReactNode[]) => {
+    setBreadCrumbs((oldCrumbs: React.ReactNode[]) => {
       return  [...oldCrumbs, children]
     })
     /** return the function that will remove the breadcrumb */
     return () => {
-      navContext.setBreadCrumbs((oldCrumbs: React.ReactNode[]) => {
+      setBreadCrumbs((oldCrumbs: React.ReactNode[]) => {
         return oldCrumbs.slice(0, -1)
       })
     }

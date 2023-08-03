@@ -4,6 +4,7 @@ import Api, { Portal } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
 import AdminUserProvider from '../providers/AdminUserProvider'
+import {emptyContextAlertFunction} from "../util/contextUtils";
 
 
 export type PortalContextT = {
@@ -26,8 +27,8 @@ export type PortalParams = {
 }
 
 export const PortalContext = React.createContext<PortalContextT>({
-  updatePortal: () => alert('error - portal not yet loaded'),
-  reloadPortal: () => Promise.resolve(null),
+  updatePortal: emptyContextAlertFunction,
+  reloadPortal: emptyContextAlertFunction,
   portal: null,
   isLoading: true,
   isError: false
