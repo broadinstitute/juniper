@@ -29,11 +29,11 @@ const AdminSidebar = ({portal, study, studyList}: {portal?: Portal, study?: Stud
           <FontAwesomeIcon icon={faArrowLeft}/>
         </button>
       </div>
-      <Accordion defaultActiveKey={['0']} alwaysOpen flush >
+      <Accordion defaultActiveKey={['0']} alwaysOpen >
         <Accordion.Item eventKey="0" key="0">
             <Accordion.Header>Research Coordination</Accordion.Header>
             <Accordion.Body>
-              <ul className="list-unstyled">
+              <ul className="list-unstyled ps-2">
                 <li>Tasks</li>
                 <li>
                   <Link to={participantListPath('ourhealth', 'ourheart', 'live')}>

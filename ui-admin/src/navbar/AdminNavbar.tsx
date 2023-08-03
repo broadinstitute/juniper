@@ -24,7 +24,8 @@ function AdminNavbar({ breadCrumbs }: NavbarContextT) {
       <div className="collapse navbar-collapse" id="navbarNavDropdown">
         <ul className="navbar-nav ms-3">
           { breadCrumbs.map((crumb, index) => <li key={index} className="ms-2">
-            {crumb} {(index < breadCrumbs.length -1) && <FontAwesomeIcon icon={faChevronRight} className="fa-xs"/>}
+            {crumb} {(index < breadCrumbs.length -1) &&
+              <FontAwesomeIcon icon={faChevronRight} className="fa-xs text-muted"/>}
           </li>)}
         </ul>
         <ul className="navbar-nav ms-auto">

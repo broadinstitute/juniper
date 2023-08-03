@@ -9,7 +9,7 @@ import { NavBreadcrumb } from 'navbar/AdminNavbar'
 export default function ParticipantsRouter({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   return <>
     <NavBreadcrumb>
-      <Link className="text-white" to={`${studyEnvContext.currentEnvPath}/participants`}>
+      <Link to={`${studyEnvContext.currentEnvPath}/participants`}>
           participants</Link>
     </NavBreadcrumb>
     <Routes>
