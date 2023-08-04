@@ -1,17 +1,16 @@
 import React, { useState } from 'react'
 
-import { Question, QuestionType } from '@juniper/ui-core'
+import { Question, QuestionType, TemplatedQuestion } from '@juniper/ui-core'
 
 import { Button } from 'components/forms/Button'
 import { QuestionDesigner } from './QuestionDesigner'
 import { TextInput } from 'components/forms/TextInput'
 import { baseQuestions } from './questions/questionTypes'
-import { isEmpty, pick } from 'lodash'
+import { isEmpty, omit, pick } from 'lodash'
 import { Textarea } from 'components/forms/Textarea'
 import { questionFromRawText } from 'util/pearlSurveyUtils'
 import { Checkbox } from '../../components/forms/Checkbox'
 import Select from 'react-select'
-import { unset } from 'lodash/fp'
 
 type NewQuestionFormProps = {
     onCreate: (newQuestion: Question) => void
@@ -29,6 +28,8 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
   const [freetext, setFreetext] = useState<string>('')
   const [freetextMode, setFreetextMode] = useState<boolean>(false)
   const { name: questionName } = question
+
+  console.log(question)
 
   return (
     <>
@@ -54,10 +55,23 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
               isClearable={true}
               value={selectedQuestionTemplateName}
               onChange={newValue => {
-                setSelectedQuestionType(undefined)
                 setFreetextMode(false)
-                setSelectedQuestionTemplateName(newValue ? newValue : undefined)
-                setQuestion(unset('type', { name: questionName, questionTemplateName: newValue?.value }) as Question)
+                if (newValue) {
+                  setQuestion({ name: questionName, questionTemplateName: newValue.value } as Question)
+                  setSelectedQuestionTemplateName(newValue)
+                  //Change the selected question type to match the template
+                  const referencedQuestionTemplate = questionTemplates.find(questionTemplate =>
+                    questionTemplate.name === newValue.value) as Exclude<Question, TemplatedQuestion>
+                  setSelectedQuestionType(referencedQuestionTemplate.type)
+                } else {
+                  //Remove the questionTemplateName from the question object
+                  setQuestion(omit({
+                    ...question,
+                    name: questionName,
+                    type: selectedQuestionType
+                  }, ['questionTemplateName']) as Question)
+                  setSelectedQuestionTemplateName(undefined)
+                }
               }}
             />
             <p
@@ -78,7 +92,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
               setSelectedQuestionType(newQuestionType)
               setQuestion({ ...baseQuestions[newQuestionType], ...question, type: newQuestionType } as Question)
             }}>
-            <option hidden>Select a question type</option>
+            <option value="" hidden>Select a question type</option>
             <option value="text">Text</option>
             <option value="checkbox">Checkbox</option>
             <option value="dropdown">Dropdown</option>
