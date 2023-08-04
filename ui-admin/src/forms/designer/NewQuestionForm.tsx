@@ -6,7 +6,7 @@ import { Button } from 'components/forms/Button'
 import { QuestionDesigner } from './QuestionDesigner'
 import { TextInput } from 'components/forms/TextInput'
 import { baseQuestions } from './questions/questionTypes'
-import _, { isEmpty } from 'lodash'
+import { isEmpty, pick } from 'lodash'
 import { Textarea } from 'components/forms/Textarea'
 import { questionFromRawText } from 'util/pearlSurveyUtils'
 import { Checkbox } from '../../components/forms/Checkbox'
@@ -138,10 +138,10 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
             //While preserving the state during editing, we may have accumulated some extra fields
             //that don't exist on the final question type. So we need to remove them before saving.
             const sanitizedQuestion = selectedQuestionTemplateName ?
-                _.pick(question, [
+                pick(question, [
                   'name', 'title', 'isRequired', 'visibleIf', 'description', 'questionTemplateName'
                 ]) as Question :
-                _.pick(question, Object.keys(baseQuestions[selectedQuestionType || 'text'])) as Question
+                pick(question, Object.keys(baseQuestions[selectedQuestionType || 'text'])) as Question
             onCreate(sanitizedQuestion)
           }}
         >
