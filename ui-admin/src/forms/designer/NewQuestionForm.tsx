@@ -64,7 +64,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
               className="form-text"
               id="questionTemplateDesc"
             >
-              {'Select a question template to pre-populate the question fields'}
+              Select a question template to pre-populate the question fields
             </p>
           </div> }
 
