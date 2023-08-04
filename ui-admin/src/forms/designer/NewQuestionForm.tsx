@@ -29,8 +29,6 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
   const [freetextMode, setFreetextMode] = useState<boolean>(false)
   const { name: questionName } = question
 
-  console.log(question)
-
   return (
     <>
       <div className="text-align-right">
@@ -66,6 +64,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
                 } else {
                   //Remove the questionTemplateName from the question object
                   setQuestion(omit({
+                    ...baseQuestions[selectedQuestionType || 'text'],
                     ...question,
                     name: questionName,
                     type: selectedQuestionType
@@ -92,7 +91,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
               setSelectedQuestionType(newQuestionType)
               setQuestion({ ...baseQuestions[newQuestionType], ...question, type: newQuestionType } as Question)
             }}>
-            <option value="" hidden>Select a question type</option>
+            <option hidden>Select a question type</option>
             <option value="text">Text</option>
             <option value="checkbox">Checkbox</option>
             <option value="dropdown">Dropdown</option>
