@@ -26,6 +26,7 @@ import AdHocEmailModal from '../AdHocEmailModal'
 import EnrolleeSearchFacets, {} from './facets/EnrolleeSearchFacets'
 import { facetValuesFromString, facetValuesToString, SAMPLE_FACETS, FacetValue }
   from 'api/enrolleeSearch'
+import { instantToDefaultString } from '../../../util/timeUtils'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -65,6 +66,11 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
       columnType: 'string'
     },
     cell: info => <Link to={`${currentEnvPath}/participants/${info.getValue()}`}>{info.getValue()}</Link>
+  }, {
+    header: 'Created',
+    accessorKey: 'enrollee.createdAt',
+    enableColumnFilter: false,
+    cell: info => instantToDefaultString(info.getValue() as unknown as number)
   }, {
     id: 'familyName',
     header: 'Family name',
