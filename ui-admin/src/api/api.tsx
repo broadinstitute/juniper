@@ -801,6 +801,10 @@ export default {
   }
 }
 
+export function getImageUrl(portalShortcode: string, cleanFileName: string, version: number) {
+  return `${basePortalEnvUrl(portalShortcode, 'live')}/siteImages/${version}/${cleanFileName}`
+}
+
 /** base api path for study-scoped api requests */
 function basePortalEnvUrl(portalShortcode: string, envName: string) {
   return `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}`

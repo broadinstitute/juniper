@@ -3,13 +3,8 @@ import { useUser } from '../user/UserProvider'
 import {Link, NavLink, NavLinkProps, useParams} from "react-router-dom";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faArrowLeft, faArrowRight, faChevronDown, faChevronUp} from "@fortawesome/free-solid-svg-icons";
-import {Accordion} from "react-bootstrap";
-import {Markdown, Portal, Study} from "@juniper/ui-core";
-import {participantListPath} from "../study/StudyEnvironmentRouter";
-import classNames from "classnames";
-import {faPlus} from "@fortawesome/free-solid-svg-icons/faPlus";
-import {faXmark} from "@fortawesome/free-solid-svg-icons/faXmark";
-import {StudyParams, studyShortcodeFromPath} from "../study/StudyRouter";
+import {Study} from "@juniper/ui-core";
+import {studyShortcodeFromPath} from "../study/StudyRouter";
 import {useNavContext} from "./NavContextProvider";
 
 /** renders the left navbar of admin tool */
