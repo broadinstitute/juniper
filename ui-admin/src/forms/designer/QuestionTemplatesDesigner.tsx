@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { FormContent } from '@juniper/ui-core'
 
 import { QuestionTemplateList } from './QuestionTemplateList'
-import { Button } from '../../components/forms/Button'
+import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Modal } from 'react-bootstrap'
