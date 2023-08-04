@@ -9,8 +9,10 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout, IndeterminateCheckbox } from '../util/tableUtils'
-import { instantToDefaultString } from '../util/timeUtils'
+import { basicTableLayout, IndeterminateCheckbox } from 'util/tableUtils'
+import { currentIsoDate, instantToDateString, instantToDefaultString } from 'util/timeUtils'
+import { Button } from 'components/forms/Button'
+import { escapeCsvValue, saveBlobAsDownload } from 'util/downloadUtils'
 
 const columns: ColumnDef<MailingListContact>[] = [{
   id: 'select',
@@ -59,6 +61,24 @@ export default function MailingListView({ portalContext, portalEnv }:
     debugTable: true
   })
 
+  /** download selected contacts as a csv */
+  const download = () => {
+    const contactsSelected = Object.keys(rowSelection)
+      .filter(key => rowSelection[key])
+      .map(key => contacts[parseInt(key)])
+    const csvDataString = contactsSelected.map(contact => {
+      return `${escapeCsvValue(contact.email)}, ${escapeCsvValue(contact.name)}, 
+      ${instantToDateString(contact.createdAt)}`
+    }).join('\n')
+    const csvString = `email, name, date joined\n${  csvDataString}`
+    const blob = new Blob([csvString], {
+      type: 'text/plain'
+    })
+    saveBlobAsDownload(blob, `${portalContext.portal.shortcode}-MailingList-${currentIsoDate()}.csv`)
+  }
+  const numSelected = Object.keys(rowSelection).length
+
+
   useEffect(() => {
     Api.fetchMailingList(portalContext.portal.shortcode, portalEnv.environmentName).then(result => {
       setContacts(result)
@@ -71,10 +91,19 @@ export default function MailingListView({ portalContext, portalEnv }:
   return <div className="container p-3">
     <h1 className="h4">Mailing list </h1>
     <LoadingSpinner isLoading={isLoading}>
-      <div>
-        {Object.keys(rowSelection).length} of{' '}
-        {table.getPreFilteredRowModel().rows.length} selected
+      <div className="d-flex align-items-center">
+        <div>
+          {numSelected} of {table.getPreFilteredRowModel().rows.length} selected
+        </div>
+        <div>
+          <Button onClick={download}
+            variant="link" disabled={!numSelected}
+            tooltip={numSelected ? 'Download selected contacts' : 'you must select contacts to download'}>
+            Download
+          </Button>
+        </div>
       </div>
+
       {basicTableLayout(table)}
     </LoadingSpinner>
   </div>

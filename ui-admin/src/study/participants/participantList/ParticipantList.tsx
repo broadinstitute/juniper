@@ -26,7 +26,8 @@ import AdHocEmailModal from '../AdHocEmailModal'
 import EnrolleeSearchFacets, {} from './facets/EnrolleeSearchFacets'
 import { facetValuesFromString, facetValuesToString, SAMPLE_FACETS, FacetValue }
   from 'api/enrolleeSearch'
-import { instantToDefaultString } from '../../../util/timeUtils'
+import { Button } from 'components/forms/Button'
+import { instantToDefaultString } from 'util/timeUtils'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -191,11 +192,11 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
                 {table.getPreFilteredRowModel().rows.length} selected ({table.getFilteredRowModel().rows.length} shown)
               </span>
               <span className="me-2">
-                <button onClick={() => setShowEmailModal(allowSendEmail)}
-                  aria-disabled={!allowSendEmail} className="btn btn-secondary"
-                  title={allowSendEmail ? 'Send email' : 'Select at least one participant'}>
+                <Button onClick={() => setShowEmailModal(allowSendEmail)}
+                  variant="link" disabled={!allowSendEmail}
+                  tooltip={allowSendEmail ? 'Send email' : 'Select at least one participant'}>
                   Send email
-                </button>
+                </Button>
               </span>
               { showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
                 studyEnvContext={studyEnvContext}
