@@ -16,7 +16,7 @@ type VisibilityFieldsProps = {
 export const VisibilityFields = (props: VisibilityFieldsProps) => {
   const { disabled, question, onChange } = props
 
-  const hasVisibleIfExpression = Object.hasOwnProperty.call(question, 'visibleIf')
+  const hasVisibleIfExpression = Object.hasOwnProperty.call(question, 'visibleIf') && question.visibleIf !== undefined
 
   return (
     <>
