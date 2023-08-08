@@ -1,8 +1,8 @@
 import { Portal, PortalEnvironment } from 'api/api'
 import React, { useState } from 'react'
 import Select from 'react-select'
-import { portalEnvDiffPath } from '../PortalRouter'
 import { Link } from 'react-router-dom'
+import { studyDiffPath } from 'study/StudyRouter'
 
 type SelectOptionType = { label: string, value: string }
 
@@ -13,9 +13,8 @@ const ALLOWED_COPY_FLOWS: Record<string, string[]> = {
 }
 
 /** modal allowing a user to copy one environment's configs over to another */
-const PortalEnvPublishControl = ({ destEnv, portal }: {destEnv: PortalEnvironment, portal: Portal}) => {
-  const destEnvName = destEnv.environmentName
-
+const PortalEnvPublishControl = ({ destEnvName, portal, studyShortcode }:
+                                     {destEnvName: string, portal: Portal, studyShortcode: string}) => {
   const initializedEnvironmentNames = getInitializedEnvironmentNames(portal)
   const allowedSourceNames = ALLOWED_COPY_FLOWS[destEnvName].filter((envName: string) => {
     return initializedEnvironmentNames.includes(envName)
@@ -28,7 +27,8 @@ const PortalEnvPublishControl = ({ destEnv, portal }: {destEnv: PortalEnvironmen
   const currentVal = { label: sourceEnvName, value: sourceEnvName }
   let envSelector = <></>
   if (allowedSourceNames.length == 1) {
-    envSelector = <Link to={portalEnvDiffPath(portal.shortcode, destEnvName, sourceEnvName)}>
+    envSelector = <Link to={studyDiffPath(portal.shortcode, studyShortcode, sourceEnvName, destEnvName)}
+      className="btn btn-outline-primary">
       Copy from {sourceEnvName}
     </Link>
   }
@@ -38,7 +38,8 @@ const PortalEnvPublishControl = ({ destEnv, portal }: {destEnv: PortalEnvironmen
       <Select options={opts} value={currentVal}
         onChange={(opt: SelectOptionType | null) =>
           setSourceEnvName(opt?.value ? opt?.value : allowedSourceNames[0])} />
-      <Link to={portalEnvDiffPath(portal.shortcode, destEnvName, sourceEnvName)}>
+      <Link to={studyDiffPath(portal.shortcode, studyShortcode, sourceEnvName, destEnvName)}
+        className="btn btn-outline-primary ms-2">
         Copy
       </Link>
     </>

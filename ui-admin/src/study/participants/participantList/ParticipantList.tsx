@@ -4,11 +4,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
 import { Link, useSearchParams } from 'react-router-dom'
-import {
-  getDatasetListViewPath,
-  getExportDataBrowserPath,
-  StudyEnvContextT, studyEnvMetricsPath
-} from '../../StudyEnvironmentRouter'
+import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
   ColumnDef,
   flexRender,
@@ -105,7 +101,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     meta: {
       columnType: 'string'
     }
-  }], [study.shortcode])
+  }], [study.shortcode, currentEnv.environmentName])
 
 
   const table = useReactTable({
@@ -145,7 +141,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
 
   useEffect(() => {
     searchEnrollees(facetValues)
-  }, [])
+  }, [study.shortcode, currentEnv.environmentName])
 
   const numSelected = Object.keys(rowSelection).length
   const allowSendEmail = numSelected > 0
@@ -157,26 +153,8 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     <div className="row">
       <div className="col-12 align-items-baseline d-flex">
         <h2 className="h4 text-center me-4">{study.name} Participants</h2>
-        <div className="d-flex align-items-center justify-content-between">
-          <div className="d-flex align-items-center">
-            <Link to={studyEnvMetricsPath(portal.shortcode, currentEnv.environmentName, study.shortcode)}
-              className="mx-2">Metrics</Link>
-            <span className="px-1">|</span>
-            <Link to={getExportDataBrowserPath(currentEnvPath)} className="mx-2">Export preview</Link>
-            <span className="px-1">|</span>
-            <button className="btn btn-secondary" onClick={() => setShowExportModal(!showExportModal)}>
-              Download
-            </button>
-            <span className="px-1">|</span>
-            <Link to={getDatasetListViewPath(currentEnvPath)} className="mx-2">Terra Data Repo</Link>
-            <ExportDataControl studyEnvContext={studyEnvContext} show={showExportModal} setShow={setShowExportModal}/>
-          </div>
-        </div>
       </div>
-      <div className="col-3">
-        <EnrolleeSearchFacets facets={SAMPLE_FACETS} facetValues={facetValues} updateFacetValues={updateFacetValues} />
-      </div>
-      <div className="col-9">
+      <div className="col-12">
         <LoadingSpinner isLoading={isLoading}>
           <div>
             <div className="d-flex align-items-center">

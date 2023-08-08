@@ -67,7 +67,7 @@ export default function MailingListView({ portalContext, portalEnv }:
       alert(`error loading mailing list ${  e}`)
       setIsLoading(false)
     })
-  }, [])
+  }, [portalContext.portal.shortcode, portalEnv.environmentName])
   return <div className="container p-3">
     <h1 className="h4">Mailing list </h1>
     <LoadingSpinner isLoading={isLoading}>

@@ -4,7 +4,7 @@ import Api, { Portal } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
 import AdminUserProvider from '../providers/AdminUserProvider'
-import {emptyContextAlertFunction} from "../util/contextUtils";
+import { emptyContextAlertFunction } from '../util/contextUtils'
 
 
 export type PortalContextT = {
@@ -61,6 +61,7 @@ function RawPortalProvider({ shortcode, children }:
 
   /** grabs the latest from the server and updates the portal object */
   function reloadPortal(shortcode: string): Promise<Portal> {
+    setIsLoading(true)
     return Api.getPortal(shortcode).then(result => {
       setPortalState(result)
       setIsError(false)
@@ -99,10 +100,6 @@ function RawPortalProvider({ shortcode, children }:
   }
 
   return <PortalContext.Provider value={portalContext}>
-    <NavBreadcrumb>
-      <Link to={`/${shortcode}`}>
-        {portalState?.name}</Link>
-    </NavBreadcrumb>
     <AdminUserProvider portalShortcode={shortcode}>
       {children}
     </AdminUserProvider>

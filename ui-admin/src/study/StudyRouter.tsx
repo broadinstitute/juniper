@@ -4,8 +4,12 @@ import { Study } from 'api/api'
 
 import { LoadedPortalContextT } from 'portal/PortalProvider'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
-import StudyEnvironmentRouter from './StudyEnvironmentRouter'
+import StudyEnvironmentRouter, { studyEnvPath } from './StudyEnvironmentRouter'
 import StudyDashboard from './StudyDashboard'
+import PortalUserList from '../user/PortalUserList'
+import PortalPublishingView from './publishing/StudyPublishingView'
+import PortalEnvDiffProvider from '../portal/publish/PortalEnvDiffProvider'
+import StudyPublishingView from './publishing/StudyPublishingView'
 
 export type StudyContextT = {
   updateStudy: (study: Study) => void
@@ -43,15 +47,18 @@ function StudyRouterFromShortcode({ shortcode, portalContext }:
     return <div>Study could not be loaded or found.</div>
   }
 
+
   const study = matchedPortalStudy?.study
 
   return <>
-    <NavBreadcrumb>
-      <Link to={`/${portalContext.portal.shortcode}/studies/${study?.shortcode}`}>
-        {study?.name}</Link>
-    </NavBreadcrumb>
     <Routes>
       <Route path="env/:studyEnv/*" element={<StudyEnvironmentRouter study={study}/>}/>
+      <Route path="diff/:sourceEnvName/:destEnvName" element={
+        <PortalEnvDiffProvider portal={portalContext.portal}
+          updatePortal={portalContext.updatePortal} studyShortcode={study.shortcode}/>}/>
+      <Route path="publishing" element={<StudyPublishingView portal={portalContext.portal}
+        studyShortcode={study.shortcode}/>}/>
+      <Route path="users" element={<PortalUserList portal={portalContext.portal}/>}/>
       <Route index element={<StudyDashboard study={study}/>}/>
     </Routes>
   </>
@@ -60,4 +67,21 @@ function StudyRouterFromShortcode({ shortcode, portalContext }:
 export const studyShortcodeFromPath = (path: string | undefined) => {
   const match = path?.match(/studies\/([^/]+)/)
   return match ? match[1] : undefined
+}
+
+/** path to portal-specific user list, but keeps study in-context */
+export const studyUsersPath = (portalShortcode: string, studyShortcode: string) => {
+  return `/${portalShortcode}/studies/${studyShortcode}/users`
+}
+
+/** helper for a publishing route that keeps the study env in context */
+export const studyPublishingPath = (portalShortcode: string, studyShortcode: string) => {
+  return `/${portalShortcode}/studies/${studyShortcode}/publishing`
+}
+
+
+/** path for showing the diff between two study environments */
+export const studyDiffPath = (portalShortcode: string, studyShortcode: string,
+  srcEnvName: string, destEnvName: string) => {
+  return `/${portalShortcode}/studies/${studyShortcode}/diff/${srcEnvName}/${destEnvName}`
 }

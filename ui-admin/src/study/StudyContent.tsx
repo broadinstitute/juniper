@@ -33,114 +33,73 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
   currentEnv.configuredConsents
     .sort((a, b) => a.consentOrder - b.consentOrder)
 
-  return <div className="StudyContent container">
-    <div className="row">
-      <div className="col-12 p-3">
-        <h4>{currentEnv.environmentName.toLowerCase()} environment</h4>
-        <a href={Api.getParticipantLink(portalEnvConfig, zoneConfig.participantUiHostname,
-          portal.shortcode, currentEnv.environmentName)}
-        target="_blank">Participant view <FontAwesomeIcon icon={faExternalLink}/></a>
-        { currentEnv.studyEnvironmentConfig.initialized && <ul className="list-unstyled">
-          <li className="bg-white my-3">
-            <div style={contentHeaderStyle}>
-              <h6>Environment Configuration</h6>
-            </div>
-            <div className="flex-grow-1 p-3">
-              <div className="form-group">
-                <div className="form-group-item">
-                  <label>Password protected:</label> { envConfig.passwordProtected ? 'Yes' : 'No'}
-                  <br/>
-                  <label>Accepting enrollment: </label> { envConfig.acceptingEnrollment ? 'Yes' : 'No'}
-                </div>
-                <button className="btn btn-secondary" onClick={() => alert('not yet implemented')}>
-                  <FontAwesomeIcon icon={faEdit}/> Edit
+  return <div className="container row">
+    <div className="col-12 p-3">
+      <a href={Api.getParticipantLink(portalEnvConfig, zoneConfig.participantUiHostname,
+        portal.shortcode, currentEnv.environmentName)}
+      target="_blank">Participant view <FontAwesomeIcon icon={faExternalLink}/></a>
+      { currentEnv.studyEnvironmentConfig.initialized && <ul className="list-unstyled">
+        <li className="mb-3 bg-white">
+          <div style={contentHeaderStyle}>
+            <h6>Pre-enrollment questionnaire</h6>
+          </div>
+          <div className="flex-grow-1 p-3">
+            { preEnrollSurvey && <ul className="list-unstyled"><li>
+              <Link to={`preEnroll/${preEnrollSurvey.stableId}?readOnly=${isReadOnlyEnv}`}>
+                {preEnrollSurvey.name} <span className="detail">v{preEnrollSurvey.version}</span>
+              </Link>
+            </li></ul>}
+          </div>
+        </li>
+        <li className="mb-3 bg-white">
+          <div style={contentHeaderStyle}>
+            <h6>Consent forms</h6>
+          </div>
+          <div className="flex-grow-1 p-3">
+            <ul className="list-unstyled">
+              { currentEnv.configuredConsents.map((config, index) => {
+                const consentForm = config.consentForm
+                return <li key={index}>
+                  <Link to={`consentForms/${consentForm.stableId}?readOnly=${isReadOnlyEnv}`}>
+                    {consentForm.name} <span className="detail">v{consentForm.version}</span>
+                  </Link>
+                </li>
+              }) }
+            </ul>
+          </div>
+        </li>
+        <li className="mb-3 bg-white">
+          <div style={contentHeaderStyle}>
+            <h6>Surveys</h6>
+          </div>
+          <div className="flex-grow-1 p-3">
+            <ul className="list-unstyled">
+              { currentEnv.configuredSurveys.map((surveyConfig, index) => {
+                const survey = surveyConfig.survey
+                return <li className="p-1" key={index}>
+                  <Link to={`surveys/${survey.stableId}?readOnly=${isReadOnlyEnv}`}>
+                    {survey.name} <span className="detail">v{survey.version}</span>
+                  </Link>
+                </li>
+              }) }
+              <li>
+                <button className="btn btn-secondary" data-testid={'addSurvey'} onClick={() => {
+                  setShowCreateSurveyModal(!showCreateSurveyModal)
+                }}>
+                  <FontAwesomeIcon icon={faPlus}/> Add
                 </button>
-              </div>
-            </div>
-          </li>
-          <li className="mb-3 bg-white">
-            <div style={contentHeaderStyle}>
-              <h6>Pre-enrollment questionnaire</h6>
-            </div>
-            <div className="flex-grow-1 p-3">
-              { preEnrollSurvey && <ul className="list-unstyled"><li>
-                <Link to={`preEnroll/${preEnrollSurvey.stableId}?readOnly=${isReadOnlyEnv}`}>
-                  {preEnrollSurvey.name} <span className="detail">v{preEnrollSurvey.version}</span>
-                </Link>
-              </li></ul>}
-            </div>
-          </li>
-          <li className="mb-3 bg-white">
-            <div style={contentHeaderStyle}>
-              <h6>Consent forms</h6>
-            </div>
-            <div className="flex-grow-1 p-3">
-              <ul className="list-unstyled">
-                { currentEnv.configuredConsents.map((config, index) => {
-                  const consentForm = config.consentForm
-                  return <li key={index}>
-                    <Link to={`consentForms/${consentForm.stableId}?readOnly=${isReadOnlyEnv}`}>
-                      {consentForm.name} <span className="detail">v{consentForm.version}</span>
-                    </Link>
-                  </li>
-                }) }
-              </ul>
-            </div>
-          </li>
-          <li className="mb-3 bg-white">
-            <div style={contentHeaderStyle}>
-              <h6>Surveys</h6>
-            </div>
-            <div className="flex-grow-1 p-3">
-              <ul className="list-unstyled">
-                { currentEnv.configuredSurveys.map((surveyConfig, index) => {
-                  const survey = surveyConfig.survey
-                  return <li className="p-1" key={index}>
-                    <Link to={`surveys/${survey.stableId}?readOnly=${isReadOnlyEnv}`}>
-                      {survey.name} <span className="detail">v{survey.version}</span>
-                    </Link>
-                  </li>
-                }) }
-                <li>
-                  <button className="btn btn-secondary" data-testid={'addSurvey'} onClick={() => {
-                    setShowCreateSurveyModal(!showCreateSurveyModal)
-                  }}>
-                    <FontAwesomeIcon icon={faPlus}/> Add
-                  </button>
-                </li>
-              </ul>
+              </li>
+            </ul>
 
-            </div>
+          </div>
 
-          </li>
-          <li className=" mb-3 bg-white">
-            <div style={contentHeaderStyle}>
-              <h6>Participant Notifications</h6>
-            </div>
-            <div className="flex-grow-1 p-3">
-              <ul className="list-unstyled">
-                { currentEnv.notificationConfigs.map(config => <li key={config.id} className="p-1">
-                  <div className="d-flex">
-                    <Link to={`notificationConfigs/${config.id}`}>
-                      <NotificationConfigTypeDisplay config={config}/>
-                      <span className="detail"> ({deliveryTypeDisplayMap[config.deliveryType]})</span>
-                    </Link>
-                  </div>
-                </li>
-                ) }
-              </ul>
-              <button className="btn btn-secondary" onClick={() => alert('not yet implemented')}>
-                <FontAwesomeIcon icon={faPlus}/> Add
-              </button>
-            </div>
-          </li>
-        </ul> }
-        { <CreateSurveyModal studyEnvContext={studyEnvContext}
-          isReadOnlyEnv={isReadOnlyEnv}
-          show={showCreateSurveyModal}
-          setShow={setShowCreateSurveyModal}/> }
-        { !currentEnv.studyEnvironmentConfig.initialized && <div>Not yet initialized</div> }
-      </div>
+        </li>
+      </ul> }
+      { <CreateSurveyModal studyEnvContext={studyEnvContext}
+        isReadOnlyEnv={isReadOnlyEnv}
+        show={showCreateSurveyModal}
+        setShow={setShowCreateSurveyModal}/> }
+      { !currentEnv.studyEnvironmentConfig.initialized && <div>Not yet initialized</div> }
     </div>
   </div>
 }

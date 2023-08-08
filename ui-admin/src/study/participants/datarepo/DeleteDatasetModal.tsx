@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { getDatasetListViewPath, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { StudyEnvContextT, studyEnvDatasetListViewPath } from 'study/StudyEnvironmentRouter'
 import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { useNavigate } from 'react-router-dom'
@@ -24,7 +24,8 @@ const DeleteDatasetModal = ({ studyEnvContext, datasetName, show, setShow, loadD
       studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName, datasetName)
     if (response.ok) {
       Store.addNotification(successNotification(`Deletion of dataset ${datasetName} has been initiated`))
-      navigate(getDatasetListViewPath(studyEnvContext.currentEnvPath))
+      navigate(studyEnvDatasetListViewPath(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
+        studyEnvContext.currentEnv.environmentName))
     } else {
       Store.addNotification(failureNotification(`${datasetName} deletion failed`))
     }

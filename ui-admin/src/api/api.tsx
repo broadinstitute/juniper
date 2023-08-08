@@ -802,12 +802,17 @@ export default {
 }
 
 export function getImageUrl(portalShortcode: string, cleanFileName: string, version: number) {
-  return `${basePortalEnvUrl(portalShortcode, 'live')}/siteImages/${version}/${cleanFileName}`
+  return `${basePublicPortalEnvUrl(portalShortcode, 'live')}/siteImages/${version}/${cleanFileName}`
 }
 
 /** base api path for study-scoped api requests */
 function basePortalEnvUrl(portalShortcode: string, envName: string) {
   return `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}`
+}
+
+/** base api path for study-scoped api requests */
+function basePublicPortalEnvUrl(portalShortcode: string, envName: string) {
+  return `${API_ROOT}/public/portals/v1/${portalShortcode}/env/${envName}`
 }
 
 /** base api path for study-scoped api requests */

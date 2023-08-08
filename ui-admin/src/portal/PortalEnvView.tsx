@@ -32,7 +32,6 @@ export default function PortalEnvView({ portal, portalEnv }:
   return <div className="bg-white p-3 mb-2">
     <div className="d-flex align-items-baseline">
       <h3 className="h5 text-capitalize me-4">{envIcon} {portalEnv.environmentName}</h3>
-      { isSuperuser() && <PortalEnvPublishControl portal={portal} destEnv={portalEnv}/> }
     </div>
 
     <div className="ms-4 mt-3">
@@ -77,10 +76,10 @@ export default function PortalEnvView({ portal, portalEnv }:
 function StudyConfigView({ portal, study, envName }: {portal: Portal, study: Study, envName: string}) {
   return <div>
     <span>{study.name}</span>
-    <Link to={studyContentPath(portal.shortcode, envName, study.shortcode)} className="ms-3">Content</Link>
-    <Link to={studyParticipantsPath(portal.shortcode, envName, study.shortcode)} className="ms-3">Participants</Link>
-    <Link to={studyKitsPath(portal.shortcode, envName, study.shortcode)} className="ms-3">Kits</Link>
-    <Link to={studyEnvMetricsPath(portal.shortcode, envName, study.shortcode)} className="ms-3">Metrics</Link>
+    <Link to={studyContentPath(portal.shortcode, study.shortcode, envName)} className="ms-3">Content</Link>
+    <Link to={studyParticipantsPath(portal.shortcode, study.shortcode, envName)} className="ms-3">Participants</Link>
+    <Link to={studyKitsPath(portal.shortcode, study.shortcode, envName)} className="ms-3">Kits</Link>
+    <Link to={studyEnvMetricsPath(portal.shortcode, study.shortcode, envName)} className="ms-3">Metrics</Link>
   </div>
 }
 

@@ -4,8 +4,8 @@ import { UserContextT, useUser } from 'user/UserProvider'
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars'
 
 import { Link, NavLink, NavLinkProps } from 'react-router-dom'
-import {useNavContext} from './NavContextProvider'
-import {faChevronRight, faQuestionCircle, faUserCircle} from '@fortawesome/free-solid-svg-icons'
+import { useNavContext } from './NavContextProvider'
+import { faChevronRight, faQuestionCircle, faUserCircle } from '@fortawesome/free-solid-svg-icons'
 import ContactSupportInfoModal from '../help/ContactSupportInfoModal'
 
 /** note we name this adminNavbar to avoid naming conflicts with bootstrap navbar */
@@ -21,7 +21,8 @@ function AdminNavbar() {
     <nav className="Navbar navbar navbar-expand-lg navbar-light">
       <div className="collapse navbar-collapse" id="navbarNavDropdown">
         <ul className="navbar-nav ms-3">
-          { breadCrumbs.map((crumb, index) => <li key={index} className="ms-2">
+          { breadCrumbs.map((crumb, index) => <li key={index}
+            className="ms-2 d-flex align-items-center">
             {crumb} {(index < breadCrumbs.length -1) &&
               <FontAwesomeIcon icon={faChevronRight} className="fa-xs text-muted"/>}
           </li>)}
@@ -67,12 +68,14 @@ function AdminNavbar() {
 
 /**
  * Component for adding a breadcrumb into the navbar when a component is rendered.
+ * 'value' is used to determine whether the crumb needs updating
+ *
  * The breadcrumb will be removed when the component is.
  * This component does not render anything directly, but is still structured as a component rather than a pure hook
  * so that order rendering will be in-order rather than reversed.  See https://github.com/facebook/react/issues/15281
  * */
-export function NavBreadcrumb({ children }: {children: React.ReactNode}) {
-  const {setBreadCrumbs} = useNavContext()
+export function NavBreadcrumb({ value, children }: {value: string, children: React.ReactNode}) {
+  const { setBreadCrumbs } = useNavContext()
   useEffect(() => {
     /** use the setState arg that takes a function to avoid race conditions */
     setBreadCrumbs((oldCrumbs: React.ReactNode[]) => {
@@ -84,7 +87,7 @@ export function NavBreadcrumb({ children }: {children: React.ReactNode}) {
         return oldCrumbs.slice(0, -1)
       })
     }
-  }, [])
+  }, [value])
   return null
 }
 

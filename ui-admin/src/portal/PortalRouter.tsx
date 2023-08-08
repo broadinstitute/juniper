@@ -39,18 +39,11 @@ function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT
   }
 
   return <>
-    <NavBreadcrumb>
-      <Link to={`${portal.shortcode}/env/${portalEnvName}`}>
-        {portalEnvName}
-      </Link>
-    </NavBreadcrumb>
     <Routes>
       <Route path="config" element={<PortalEnvConfigView portal={portal} portalEnv={portalEnv}
         updatePortal={portalContext.updatePortal}/>}/>
       <Route path="participants" element={<PortalParticipantsView portalEnv={portalEnv} portal={portal}/>}/>
       <Route path="siteContent" element={<SiteContentView portalEnv={portalEnv} portalShortcode={portal.shortcode}/>}/>
-      <Route path="diff/:sourceEnvName" element={<PortalEnvDiffProvider portal={portal} portalEnv={portalEnv}
-        updatePortal={updatePortal}/>}/>
       <Route path="mailingList" element={<MailingListView portalContext={portalContext}
         portalEnv={portalEnv}/>}/>
       <Route index element={<PortalEnvView portal={portal} portalEnv={portalEnv}/>}/>
@@ -73,42 +66,32 @@ export const mailingListPath = (portalShortcode: string, envName: string) => {
   return `/${portalShortcode}/env/${envName}/mailingList`
 }
 
-/** absolute path for the environment diff page */
-export const portalEnvDiffPath = (portalShortcode: string, destEnvName: string, sourceEnvName: string) => {
-  return `/${portalShortcode}/env/${destEnvName}/diff/${sourceEnvName}`
-}
-
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/** path to edit the site content */
 export const siteContentPath = (portalShortcode: string, envName: string) => {
   return `/${portalShortcode}/env/${envName}/siteContent`
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/** path to env config for the portal */
 export const portalConfigPath = (portalShortcode: string, envName: string) => {
   return `/${portalShortcode}/env/${envName}/config`
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
-export const studyParticipantsPath = (portalShortcode: string, envName: string, studyShortcode: string) => {
+/** path to study participant list */
+export const studyParticipantsPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/participants`
 }
 
 /** Construct a path to a study's kit management interface. */
-export const studyKitsPath = (portalShortcode: string, envName: string, studyShortcode: string) => {
+export const studyKitsPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/kits`
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
-export const studyContentPath = (portalShortcode: string, envName: string, studyShortcode: string) => {
+/** view study content, surveys, consents, etc... */
+export const studyContentPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}`
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/** list all participants in all studies for the portal */
 export const portalParticipantsPath = (portalShortcode: string, envName: string) => {
   return `/${portalShortcode}/env/${envName}/participants`
 }

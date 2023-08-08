@@ -22,8 +22,8 @@ import InvestigatorTermsOfUsePage from './terms/InvestigatorTermsOfUsePage'
 import PrivacyPolicyPage from 'terms/PrivacyPolicyPage'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
 import LoadingSpinner from './util/LoadingSpinner'
-import AdminSidebar from "./navbar/AdminSidebar";
-import NavContextProvider from "navbar/NavContextProvider";
+import AdminSidebar from './navbar/AdminSidebar'
+import NavContextProvider from 'navbar/NavContextProvider'
 const HelpRouter = lazy(() => import('./help/HelpRouter'))
 
 
@@ -45,8 +45,8 @@ function App() {
                         <HelpRouter />
                       </Suspense>} />
                       <Route element={<ProtectedRoute>
-                          <NavContextProvider><PageFrame/></NavContextProvider>
-                        </ProtectedRoute>}>
+                        <NavContextProvider><PageFrame/></NavContextProvider>
+                      </ProtectedRoute>}>
                         <Route path="users" element={<UserList/>}/>
                         <Route path=":portalShortcode/*" element={<PortalProvider><PortalRouter/></PortalProvider>}/>
                         <Route index element={<HomePage/>}/>
@@ -73,8 +73,8 @@ function PageFrame() {
     <div className="d-flex">
       <AdminSidebar/>
       <div className="flex-grow-1">
-          <AdminNavbar/>
-          <Outlet/>
+        <AdminNavbar/>
+        <Outlet/>
       </div>
     </div>
   )

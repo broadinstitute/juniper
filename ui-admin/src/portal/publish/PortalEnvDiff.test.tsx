@@ -14,9 +14,9 @@ describe('PortalEnvDiff', () => {
 
     const { RoutedComponent } = setupRouterTest(<PortalEnvDiffView
       portal={portal}
-      portalEnv={portal.portalEnvironments[0]}
+      destEnvName={portal.portalEnvironments[0].environmentName}
       applyChanges={() => 1}
-      sourceName="sourceEnv"
+      sourceEnvName="sourceEnv"
       changeSet={emptyChangeSet}/>)
     render(RoutedComponent)
     expect(screen.queryAllByText('no changes')).toHaveLength(4)
@@ -34,9 +34,9 @@ describe('PortalEnvDiff', () => {
     const spyApplyChanges = jest.fn(() => 1)
     const { RoutedComponent } = setupRouterTest(<PortalEnvDiffView
       portal={portal}
-      portalEnv={portal.portalEnvironments[0]}
+      destEnvName={portal.portalEnvironments[0].environmentName}
       applyChanges={spyApplyChanges}
-      sourceName="sourceEnv"
+      sourceEnvName="sourceEnv"
       changeSet={changeSet}/>)
     render(RoutedComponent)
     expect(screen.queryAllByText('no changes')).toHaveLength(3)

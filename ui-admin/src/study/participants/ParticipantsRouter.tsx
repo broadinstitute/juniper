@@ -8,7 +8,7 @@ import { NavBreadcrumb } from 'navbar/AdminNavbar'
 /** routes to list or individual enrollee view as appropriate */
 export default function ParticipantsRouter({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   return <>
-    <NavBreadcrumb>
+    <NavBreadcrumb value={studyEnvContext.currentEnvPath}>
       <Link to={`${studyEnvContext.currentEnvPath}/participants`}>
           participants</Link>
     </NavBreadcrumb>

@@ -73,17 +73,17 @@ const getDefaultStudyEnvChanges = (changes: StudyEnvironmentChange) => {
 
 type EnvironmentDiffProps = {
   portal: Portal,
-  portalEnv: PortalEnvironment,
+  sourceEnvName: string,
   applyChanges:  (changeSet: PortalEnvironmentChange) => void,
   changeSet: PortalEnvironmentChange,
-  sourceName: string
+  destEnvName: string
 }
 
 /**
  * loads and displays the differences between two portal environments
  * */
 export default function PortalEnvDiffView(
-  { changeSet, portal, portalEnv, applyChanges, sourceName }: EnvironmentDiffProps) {
+  { changeSet, portal, destEnvName, applyChanges, sourceEnvName }: EnvironmentDiffProps) {
   const [selectedChanges, setSelectedChanges] = useState<PortalEnvironmentChange>(getDefaultPortalEnvChanges(changeSet))
 
   const updateSelectedStudyEnvChanges = (update: StudyEnvironmentChange) => {
@@ -99,9 +99,9 @@ export default function PortalEnvDiffView(
 
   return <div className="container mt-3">
     <h1 className="h4">
-      Difference: {sourceName}
+      Difference: {sourceEnvName}
       <FontAwesomeIcon icon={faArrowRight} className="fa-sm mx-2"/>
-      {portalEnv.environmentName}
+      {destEnvName}
     </h1>
     <span>Select changes to apply</span>
 

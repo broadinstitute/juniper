@@ -81,7 +81,7 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
 
   useEffect(() => {
     loadData()
-  }, [])
+  }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
   return <div className="container-fluid py-3">
     <h1 className="h3">Data export preview</h1>
     <span className="text-muted fst-italic">

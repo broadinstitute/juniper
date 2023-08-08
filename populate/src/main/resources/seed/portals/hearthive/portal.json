@@ -52,12 +52,15 @@
     }
   ],
   "siteImageDtos": [{
-    "populateFileName": "images/main_banner.webp"
-  },
+      "populateFileName": "images/main_banner.webp"
+    },
     {
       "populateFileName": "images/participant_smile.webp"
     },
     {
       "populateFileName": "images/HEX_Round.webp"
-    }]
+    },
+    {
+      "populateFileName": "images/favicon.ico"
+  }]
 }

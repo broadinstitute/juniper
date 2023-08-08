@@ -37,7 +37,7 @@ export default function EnrolleeLoader({ studyEnvContext }: {studyEnvContext: St
   }, [enrolleeShortcode])
 
   return <LoadingSpinner isLoading={isLoading}>
-    <NavBreadcrumb>
+    <NavBreadcrumb value={enrollee?.shortcode || ''}>
       <Link className="text-white" to={`${currentEnvPath}/enrollees/${enrolleeShortcode}`}>
         {enrollee?.shortcode}</Link>
     </NavBreadcrumb>
