@@ -13,6 +13,7 @@ import { useUser } from 'providers/UserProvider'
 import { useConfig } from 'providers/ConfigProvider'
 import { getOidcConfig } from 'authConfig'
 import { UserManager } from 'oidc-client-ts'
+import { uniqueId } from 'lodash'
 
 const navLinkClasses = 'nav-link fs-5 ms-lg-3'
 
@@ -57,7 +58,7 @@ export default function Navbar(props: NavbarProps) {
     }
   }, [location.pathname])
 
-  const dropdownId = useId()
+  const dropdownId = uniqueId('navDropdown')
 
   return <nav {...props} className={classNames('navbar navbar-expand-lg navbar-light', props.className)}>
     <div className="container-fluid">
