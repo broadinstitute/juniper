@@ -1,5 +1,5 @@
 import { Portal, Study } from '@juniper/ui-core'
-import { Link, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import {
   studyContentPath,
   studyKitsPath,
@@ -24,65 +24,69 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
   const setSelectedStudy = (portalShortcode: string, studyShortcode: string) => {
     navigate(studyParticipantsPath(portalShortcode, studyShortcode, 'live'))
   }
+  const navStyleFunc = ({ isActive }: {isActive: boolean}) => {
+    return isActive ? { background: '#567' } : {}
+  }
+
   return <div className="pt-3">
     <StudySelector portalList={portalList} selectedShortcode={study.shortcode} setSelectedStudy={setSelectedStudy}/>
     <div className="text-white">
       <CollapsableMenu header={'Research Coordination'} content={<ul className="list-unstyled">
         <li className="mb-3">
-          <Link to={studyParticipantsPath(portalShortcode, study.shortcode, 'live')}
-            className="text-white">Participant list</Link>
+          <NavLink to={studyParticipantsPath(portalShortcode, study.shortcode, 'live')}
+            className="text-white p-1 rounded" style={navStyleFunc}>Participant list</NavLink>
         </li>
         <li className="mb-3">
-          <Link to={studyKitsPath(portalShortcode, study.shortcode, 'live')}
-            className="text-white">Biologistics</Link>
+          <NavLink to={studyKitsPath(portalShortcode, study.shortcode, 'live')}
+            className="text-white p-1 rounded" style={navStyleFunc}>Biologistics</NavLink>
         </li>
         <li>
-          <Link to={studyEnvMailingListPath(portalShortcode, study.shortcode, 'live')}
-            className="text-white">Mailing list</Link>
+          <NavLink to={studyEnvMailingListPath(portalShortcode, study.shortcode, 'live')}
+            className="text-white p-1 rounded" style={navStyleFunc}>Mailing list</NavLink>
         </li>
       </ul>}/>
       <CollapsableMenu header={'Analytics & Data'} content={<ul className="list-unstyled">
         <li className="mb-3">
-          <Link to={studyEnvMetricsPath(portalShortcode, study.shortcode, 'live')}
-            className="text-white">Participant Analytics</Link>
+          <NavLink to={studyEnvMetricsPath(portalShortcode, study.shortcode, 'live')}
+            className="text-white p-1 rounded" style={navStyleFunc}>Participant Analytics</NavLink>
         </li>
         <li className="mb-3">
-          <Link to={studyEnvDataBrowserPath(portalShortcode, study.shortcode, 'live')}
-            className="text-white">Data Export</Link>
+          <NavLink to={studyEnvDataBrowserPath(portalShortcode, study.shortcode, 'live')}
+            className="text-white p-1 rounded" style={navStyleFunc}>Data Export</NavLink>
         </li>
         <li>
-          <Link to={studyEnvDatasetListViewPath(portalShortcode, study.shortcode, 'live')}
-            className="text-white">Terra Data Repo</Link>
+          <NavLink to={studyEnvDatasetListViewPath(portalShortcode, study.shortcode, 'live')}
+            className="text-white p-1 rounded" style={navStyleFunc}>Terra Data Repo</NavLink>
         </li>
       </ul>}/>
       <CollapsableMenu header={'Design & Build'} content={<ul className="list-unstyled">
         <li className="mb-3">
-          <Link to={studyEnvSiteContentPath(portalShortcode, study.shortcode, 'sandbox')}
-            className="text-white">Website</Link>
+          <NavLink to={studyEnvSiteContentPath(portalShortcode, study.shortcode, 'sandbox')}
+            className="text-white p-1 rounded" style={navStyleFunc}>Website</NavLink>
         </li>
         <li className="mb-3">
-          <Link to={studyContentPath(portalShortcode, study.shortcode, 'sandbox')}
-            className="text-white">Forms & Surveys</Link>
+          <NavLink to={studyContentPath(portalShortcode, study.shortcode, 'sandbox')}
+            className="text-white p-1 rounded" style={navStyleFunc}>Forms & Surveys</NavLink>
         </li>
         <li>
-          <Link to={studyEnvNotificationsPath(portalShortcode, study.shortcode, 'sandbox')}
-            className="text-white">Emails & Notifications</Link>
+          <NavLink to={studyEnvNotificationsPath(portalShortcode, study.shortcode, 'sandbox')}
+            className="text-white p-1 rounded" style={navStyleFunc}>Emails & Notifications</NavLink>
         </li>
       </ul>}/>
       <CollapsableMenu header={'Publish'} content={<ul className="list-unstyled">
         <li className="mb-3">
-          <Link to={studyPublishingPath(portalShortcode, study.shortcode)}
-            className="text-white">Publish content</Link>
+          <NavLink to={studyPublishingPath(portalShortcode, study.shortcode)}
+            className="text-white p-1 rounded" style={navStyleFunc}>Publish content</NavLink>
         </li>
         <li>
-          <Link to={studyEnvSiteSettingsPath(portalShortcode, study.shortcode, 'live')}
-            className="text-white">Site Settings</Link>
+          <NavLink to={studyEnvSiteSettingsPath(portalShortcode, study.shortcode, 'live')}
+            className="text-white p-1 rounded" style={navStyleFunc}>Site Settings</NavLink>
         </li>
       </ul>}/>
       <CollapsableMenu header={'Administration'} content={<ul className="list-unstyled">
         <li className="mb-3">
-          <Link to={studyUsersPath(portalShortcode, study.shortcode)}
-            className="text-white">Manage team</Link>
+          <NavLink to={studyUsersPath(portalShortcode, study.shortcode)}
+            className="text-white p-1 rounded" style={navStyleFunc}>Manage team</NavLink>
         </li>
       </ul>}/>
 

@@ -1,13 +1,11 @@
-import React, { useEffect, useId, useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { useUser } from '../user/UserProvider'
-import { Link, NavLink, NavLinkProps, useNavigate, useParams } from 'react-router-dom'
+import { Link, NavLink, useParams } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faArrowRight, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
-import { Portal, Study } from '@juniper/ui-core'
+import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { Study } from '@juniper/ui-core'
 import { studyShortcodeFromPath } from '../study/StudyRouter'
 import { useNavContext } from './NavContextProvider'
-import StudySelector from './StudySelector'
-import { studyKitsPath, studyParticipantsPath } from '../portal/PortalRouter'
 import { StudySidebar } from './StudySidebar'
 import CollapsableMenu from './CollapsableMenu'
 
@@ -20,7 +18,6 @@ const AdminSidebar = () => {
   const { portalList } = useNavContext()
   const studyShortcode = studyShortcodeFromPath(params['*'])
   const portalShortcode = params.portalShortcode
-
 
   let studyList: Study[] = []
   if (portalList.length) {
@@ -51,7 +48,7 @@ const AdminSidebar = () => {
       {user.superuser && <CollapsableMenu header={'Superuser functions'} content={
         <ul className="list-unstyled">
           <li>
-            <Link to="/users" className="text-white">All users</Link>
+            <NavLink to="/users" className="text-white">All users</NavLink>
           </li>
         </ul>}/>}
     </>}

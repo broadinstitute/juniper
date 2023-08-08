@@ -49,7 +49,6 @@ const columns: ColumnDef<DatasetJobHistory>[] = [{
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
 const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
-  const { currentEnvPath } = studyEnvContext
   const [showDeleteDatasetModal, setShowDeleteDatasetModal] = useState(false)
   const [datasetDetails, setDatasetDetails] = useState<DatasetDetails | undefined>(undefined)
   const [datasetJobHistory, setDatasetJobHistory] = useState<DatasetJobHistory[]>([])

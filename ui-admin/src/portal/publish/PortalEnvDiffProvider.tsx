@@ -6,7 +6,7 @@ import { failureNotification, successNotification } from 'util/notifications'
 import _cloneDeep from 'lodash/cloneDeep'
 import LoadingSpinner from 'util/LoadingSpinner'
 import PortalEnvDiffView from './PortalEnvDiffView'
-import { Portal, PortalEnvironment } from '@juniper/ui-core/build/types/portal'
+import { Portal } from '@juniper/ui-core/build/types/portal'
 import { studyPublishingPath } from '../../study/StudyRouter'
 
 type PortalEnvDiffProviderProps = {

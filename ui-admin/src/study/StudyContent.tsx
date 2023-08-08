@@ -4,16 +4,11 @@ import { StudyEnvContextT } from './StudyEnvironmentRouter'
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
-import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
-import Api, { PortalEnvironmentConfig } from 'api/api'
-import NotificationConfigTypeDisplay, { deliveryTypeDisplayMap } from './notifications/NotifcationConfigTypeDisplay'
-import { faEdit } from '@fortawesome/free-solid-svg-icons'
-import { useConfig } from '../providers/ConfigProvider'
 import CreateSurveyModal from './surveys/CreateSurveyModal'
 
 /** renders the main configuration page for a study environment */
 function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
-  const { currentEnv, portal } = studyEnvContext
+  const { currentEnv } = studyEnvContext
   const contentHeaderStyle = {
     padding: '1em 0 0 1em',
     borderBottom: '1px solid #f6f6f6'
@@ -21,10 +16,6 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
 
 
   const preEnrollSurvey = currentEnv.preEnrollSurvey
-  const envConfig = currentEnv.studyEnvironmentConfig
-  const portalEnvConfig = portal.portalEnvironments
-    .find(env => env.environmentName === currentEnv.environmentName)?.portalEnvironmentConfig as PortalEnvironmentConfig
-  const zoneConfig = useConfig()
   const isReadOnlyEnv = !(currentEnv.environmentName === 'sandbox')
   const [showCreateSurveyModal, setShowCreateSurveyModal] = useState(false)
 
@@ -35,9 +26,6 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
 
   return <div className="container row">
     <div className="col-12 p-3">
-      <a href={Api.getParticipantLink(portalEnvConfig, zoneConfig.participantUiHostname,
-        portal.shortcode, currentEnv.environmentName)}
-      target="_blank">Participant view <FontAwesomeIcon icon={faExternalLink}/></a>
       { currentEnv.studyEnvironmentConfig.initialized && <ul className="list-unstyled">
         <li className="mb-3 bg-white">
           <div style={contentHeaderStyle}>

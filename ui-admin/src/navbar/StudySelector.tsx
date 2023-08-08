@@ -1,6 +1,6 @@
 import React from 'react'
 import Select from 'react-select'
-import { Portal, Study } from '@juniper/ui-core'
+import { Portal } from '@juniper/ui-core'
 import { getImageUrl } from 'api/api'
 
 /** selects a given study and containing portal */

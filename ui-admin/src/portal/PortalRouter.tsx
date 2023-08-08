@@ -1,16 +1,14 @@
 import React, { useContext } from 'react'
-import { Link, Route, Routes, useParams } from 'react-router-dom'
+import { Route, Routes, useParams } from 'react-router-dom'
 import StudyRouter from '../study/StudyRouter'
 import PortalDashboard from './PortalDashboard'
 import { LoadedPortalContextT, PortalContext, PortalParams } from './PortalProvider'
 import MailingListView from './MailingListView'
-import { NavBreadcrumb } from '../navbar/AdminNavbar'
 import PortalEnvView from './PortalEnvView'
 import SiteContentView from './siteContent/SiteContentView'
 import PortalEnvConfigView from './PortalEnvConfigView'
 import PortalUserList from '../user/PortalUserList'
 import PortalParticipantsView from './PortalParticipantView'
-import PortalEnvDiffProvider from './publish/PortalEnvDiffProvider'
 
 /** controls routes for within a portal */
 export default function PortalRouter() {
@@ -32,7 +30,7 @@ export default function PortalRouter() {
 function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT}) {
   const params = useParams<PortalParams>()
   const portalEnvName: string | undefined = params.portalEnv
-  const { portal, updatePortal } = portalContext
+  const { portal } = portalContext
   const portalEnv = portal.portalEnvironments.find(env => env.environmentName === portalEnvName)
   if (!portalEnv) {
     return <div>No environment matches {portalEnvName}</div>

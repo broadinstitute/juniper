@@ -1,4 +1,4 @@
-import { Portal, PortalEnvironment } from 'api/api'
+import { Portal } from 'api/api'
 import React, { useState } from 'react'
 import Select from 'react-select'
 import { Link } from 'react-router-dom'

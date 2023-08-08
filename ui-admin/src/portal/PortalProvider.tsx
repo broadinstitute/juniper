@@ -1,8 +1,7 @@
 import React, { PropsWithChildren, ReactNode, useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import Api, { Portal } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { NavBreadcrumb } from 'navbar/AdminNavbar'
 import AdminUserProvider from '../providers/AdminUserProvider'
 import { emptyContextAlertFunction } from '../util/contextUtils'
 

@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useContext } from 'react'
+import React, { lazy, Suspense } from 'react'
 import 'react-notifications-component/dist/theme.css'
 import 'styles/notifications.css'
 import 'survey-core/defaultV2.min.css'

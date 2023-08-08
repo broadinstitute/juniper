@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React from 'react'
+import { Link } from 'react-router-dom'
 import { studyParticipantsPath } from './portal/PortalRouter'
 import { useNavContext } from './navbar/NavContextProvider'
 import { getImageUrl } from './api/api'
@@ -13,7 +13,7 @@ function HomePage() {
     <div className="ms-5 mt-4">
       <h2 className="h4">My Studies</h2>
       <ul className="list-group list-group-flush fs-5">
-        { portalList.flatMap((portal, index) =>
+        { portalList.flatMap(portal =>
           portal.portalStudies.map(portalStudy => {
             const study = portalStudy.study
             return <li key={`${portal.shortcode}-${study.shortcode}`}

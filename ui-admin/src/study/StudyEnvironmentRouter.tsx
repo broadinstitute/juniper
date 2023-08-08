@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { NotificationConfig, Portal, PortalEnvironment, Study, StudyEnvironment } from 'api/api'
 import { StudyParams } from 'study/StudyRouter'
 
-import { Link, Route, Routes, useNavigate, useParams } from 'react-router-dom'
+import { Route, Routes, useNavigate, useParams } from 'react-router-dom'
 import { NavBreadcrumb } from '../navbar/AdminNavbar'
 import { LoadedPortalContextT, PortalContext } from '../portal/PortalProvider'
 import SurveyView from './surveys/SurveyView'
@@ -21,9 +21,7 @@ import SiteContentView from '../portal/siteContent/SiteContentView'
 import Select from 'react-select'
 import MailingListView from '../portal/MailingListView'
 import StudySettings from './StudySettings'
-import LoadingSpinner from '../util/LoadingSpinner'
-import PortalPublishingView from './publishing/StudyPublishingView'
-import PortalEnvDiffProvider from '../portal/publish/PortalEnvDiffProvider'
+import { ENVIRONMENT_ICON_MAP } from './publishing/StudyPublishingView'
 import NotificationContent from './notifications/NotificationContent'
 
 
@@ -54,7 +52,11 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
   if (!currentEnv) {
     return <span>invalid environment {envName}</span>
   }
-  const envOpts = ['live', 'irb', 'sandbox'].map(env => ({ label: env, value: env }))
+  const envOpts = ['live', 'irb', 'sandbox'].map(env => ({
+    label: <span>
+      {ENVIRONMENT_ICON_MAP[env]} &nbsp; {env}
+    </span>, value: env
+  }))
   const currentEnvPath = studyEnvPath(portal.shortcode, study.shortcode, currentEnv.environmentName)
   const portalEnv = portal.portalEnvironments
     .find(env => env.environmentName === currentEnv.environmentName) as PortalEnvironment
@@ -64,6 +66,12 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       <Select options={envOpts}
         value={envOpts.find(opt => opt.value === envName)}
         className="me-2"
+        styles={{
+          control: baseStyles => ({
+            ...baseStyles,
+            minWidth: '9em'
+          })
+        }}
         onChange={opt => updateEnv(opt?.value)}
       />
     </NavBreadcrumb>
@@ -108,6 +116,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
 
 export default StudyEnvironmentRouter
 
+/** helper for participant list path */
 export const participantListPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/participants`
 }
@@ -117,6 +126,7 @@ export const studyEnvPath = (portalShortcode: string, studyShortcode: string, en
   return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}`
 }
 
+/** helper for path to configure study notifications */
 export const studyEnvNotificationsPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/notificationContent`
 }
@@ -126,8 +136,7 @@ export const notificationConfigPath = (config: NotificationConfig, currentEnvPat
   return `${currentEnvPath}/notificationConfigs/${config.id}`
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/** path to the export preview */
 export const studyEnvDataBrowserPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/export/dataBrowser`
 }

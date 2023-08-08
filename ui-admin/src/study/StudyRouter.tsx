@@ -1,13 +1,11 @@
 import React  from 'react'
-import { Link, Route, Routes, useParams } from 'react-router-dom'
+import { Route, Routes, useParams } from 'react-router-dom'
 import { Study } from 'api/api'
 
 import { LoadedPortalContextT } from 'portal/PortalProvider'
-import { NavBreadcrumb } from 'navbar/AdminNavbar'
-import StudyEnvironmentRouter, { studyEnvPath } from './StudyEnvironmentRouter'
+import StudyEnvironmentRouter from './StudyEnvironmentRouter'
 import StudyDashboard from './StudyDashboard'
 import PortalUserList from '../user/PortalUserList'
-import PortalPublishingView from './publishing/StudyPublishingView'
 import PortalEnvDiffProvider from '../portal/publish/PortalEnvDiffProvider'
 import StudyPublishingView from './publishing/StudyPublishingView'
 
@@ -46,7 +44,6 @@ function StudyRouterFromShortcode({ shortcode, portalContext }:
   if (!matchedPortalStudy) {
     return <div>Study could not be loaded or found.</div>
   }
-
 
   const study = matchedPortalStudy?.study
 

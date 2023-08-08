@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import {
   ConfigChange,
   Portal,
-  PortalEnvironment,
   PortalEnvironmentChange, StudyEnvironmentChange
 } from 'api/api'
 import { Link } from 'react-router-dom'

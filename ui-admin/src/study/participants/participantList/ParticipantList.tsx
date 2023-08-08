@@ -17,17 +17,14 @@ import {
 import { ColumnVisibilityControl, IndeterminateCheckbox, tableHeader } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
-import ExportDataControl from '../export/ExportDataControl'
 import AdHocEmailModal from '../AdHocEmailModal'
-import EnrolleeSearchFacets, {} from './facets/EnrolleeSearchFacets'
-import { facetValuesFromString, facetValuesToString, SAMPLE_FACETS, FacetValue }
+import { facetValuesFromString, SAMPLE_FACETS, FacetValue }
   from 'api/enrolleeSearch'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
   const [participantList, setParticipantList] = useState<EnrolleeSearchResult[]>([])
-  const [showExportModal, setShowExportModal] = useState(false)
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -37,7 +34,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     'familyName': false,
     'contactEmail': false
   })
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
 
   const facetValues = facetValuesFromString(searchParams.get('facets') ?? '{}', SAMPLE_FACETS)
 
@@ -131,12 +128,6 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
       Store.addNotification(failureNotification('Error loading participants'))
     }
     setIsLoading(false)
-  }
-
-  const updateFacetValues = (facetValues: FacetValue[]) => {
-    searchEnrollees(facetValues)
-    searchParams.set('facets', facetValuesToString(facetValues))
-    setSearchParams(searchParams)
   }
 
   useEffect(() => {

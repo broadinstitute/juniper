@@ -10,11 +10,9 @@ import {
   studyKitsPath,
   studyParticipantsPath
 } from './PortalRouter'
-import PortalEnvPublishControl from './publish/PortalEnvPublishControl'
 import { faCogs } from '@fortawesome/free-solid-svg-icons/faCogs'
 import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons/faClipboardCheck'
 import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers'
-import { isSuperuser } from '../user/UserProvider'
 import { studyEnvMetricsPath } from '../study/StudyEnvironmentRouter'
 
 

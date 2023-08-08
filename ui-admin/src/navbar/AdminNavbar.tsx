@@ -1,9 +1,8 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { UserContextT, useUser } from 'user/UserProvider'
-import { faBars } from '@fortawesome/free-solid-svg-icons/faBars'
 
-import { Link, NavLink, NavLinkProps } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useNavContext } from './NavContextProvider'
 import { faChevronRight, faQuestionCircle, faUserCircle } from '@fortawesome/free-solid-svg-icons'
 import ContactSupportInfoModal from '../help/ContactSupportInfoModal'

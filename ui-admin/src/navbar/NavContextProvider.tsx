@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Portal, Study } from '@juniper/ui-core'
+import { Portal } from '@juniper/ui-core'
 import { emptyContextAlertFunction } from '../util/contextUtils'
 import Api from '../api/api'
 import { portalParticipantsPath } from '../portal/PortalRouter'
