@@ -1,15 +1,35 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { VersionedForm } from 'api/api'
 
 import { Button } from 'components/forms/Button'
 import { FormContentEditor } from 'forms/FormContentEditor'
+import { Modal } from 'react-bootstrap'
 
 type SurveyEditorViewProps = {
   currentForm: VersionedForm
   readOnly?: boolean
   onCancel: () => void
   onSave: (update: { content: string }) => Promise<void>
+}
+
+type Draft = {
+  content: string
+  date: number
+}
+
+const LoadedDraftModal = ({ onDismiss }: {
+  onDismiss: () => void
+}) => {
+  return <Modal show={true} onHide={onDismiss}>
+    <Modal.Header>
+      <Modal.Title>Survey Draft Loaded</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+      <p>Previously unsaved changes to this survey have been automatically loaded.
+        Be sure to save the survey in order to publish your changes.</p>
+    </Modal.Body>
+  </Modal>
 }
 
 /** renders a survey for editing/viewing */
@@ -21,10 +41,56 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     onSave
   } = props
 
-  const [editedContent, setEditedContent] = useState<string>()
   const [isEditorValid, setIsEditorValid] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [savingDraft, setSavingDraft] = useState(false)
+  const [showLoadedDraftModal, setShowLoadedDraftModal] = useState(false)
+
+  const getDraft = (key: string) => {
+    const draft = localStorage.getItem(key)
+    if (!draft) {
+      return undefined
+    } else {
+      const draftParsed: Draft = JSON.parse(draft)
+      return draftParsed
+    }
+  }
+
+  const FORM_DRAFT_KEY = `surveyDraft_${currentForm.id}_${currentForm.version}`
+  const [editedContent, setEditedContent] = useState<string | undefined>(getDraft(FORM_DRAFT_KEY)?.content)
   const isSaveEnabled = !!editedContent && isEditorValid && !saving
+
+  const editedContentRef = useRef<string | undefined>()
+  editedContentRef.current = editedContent
+
+  useEffect(() => {
+    const saveToLocalStorage = () => {
+      const saveDate = Date.now()
+      if (editedContentRef.current) {
+        setSavingDraft(true)
+        localStorage.setItem(FORM_DRAFT_KEY, JSON.stringify({ content: editedContentRef.current, date: saveDate }))
+        //Saving a draft happens so quickly that the "Saving draft..." message isn't even visible to the user.
+        //Set a timeout to show it for 2 seconds so the user knows that their drafts are being saved.
+        setTimeout(() => {
+          setSavingDraft(false)
+        }, 2000)
+      }
+    }
+
+    const draftSaveInterval = setInterval(saveToLocalStorage, 30000) //save draft every 30 seconds
+
+    return () => {
+      clearInterval(draftSaveInterval)
+    }
+  }, [])
+
+  //Let the user know if we loaded a draft from local storage when the component first renders. It's important
+  //for them to know if the version of the survey they're seeing are from a draft or are actually published.
+  useEffect(() => {
+    if (getDraft(FORM_DRAFT_KEY)) {
+      setShowLoadedDraftModal(true)
+    }
+  }, [])
 
   const onClickSave = async () => {
     if (!isSaveEnabled) {
@@ -33,6 +99,9 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     setSaving(true)
     try {
       await onSave({ content: editedContent })
+      //Once we've persisted the form draft to the database, there's no need to keep it in local storage.
+      //Future drafts will have different FORM_DRAFT_KEYs anyway, as they're based on the form version number.
+      localStorage.removeItem(FORM_DRAFT_KEY)
       setEditedContent(undefined)
     } finally {
       setSaving(false)
@@ -47,6 +116,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
             <span className="detail me-2 ms-2">version {currentForm.version}</span>
           </h5>
         </div>
+        { savingDraft && <span className="detail me-2 ms-2">Saving draft...</span> }
         {!readOnly && (
           <Button
             disabled={!isSaveEnabled}
@@ -67,9 +137,10 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           </Button>
         )}
         <button className="btn btn-secondary" type="button" onClick={onCancel}>Cancel</button>
+        {showLoadedDraftModal && <LoadedDraftModal onDismiss={() => setShowLoadedDraftModal(false)} />}
       </div>
       <FormContentEditor
-        initialContent={currentForm.content}
+        initialContent={editedContent || currentForm.content} //favor loading the draft, if we find one
         readOnly={readOnly}
         onChange={(isValid, newContent) => {
           if (isValid) {
