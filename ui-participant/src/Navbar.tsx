@@ -68,7 +68,7 @@ export default function Navbar(props: NavbarProps) {
       <button
         aria-controls={dropdownId} aria-expanded="false" aria-label="Toggle navigation"
         className="navbar-toggler"
-        data-bs-toggle="collapse" data-bs-target={`#${CSS.escape(dropdownId)}`}
+        data-bs-toggle="collapse" data-bs-target={`#${dropdownId}`}
         type="button"
       >
         <span className="navbar-toggler-icon"/>
