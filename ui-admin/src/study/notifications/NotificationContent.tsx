@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 
+/** shows configuration of notifications for a study */
 export default function NotificationContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const currentEnv = studyEnvContext.currentEnv
   return <div className="container m-3 p-3 bg-white">

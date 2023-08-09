@@ -801,6 +801,7 @@ export default {
   }
 }
 
+/** gets an image url for a SiteImage suitable for including in an img tag */
 export function getImageUrl(portalShortcode: string, cleanFileName: string, version: number) {
   return `${basePublicPortalEnvUrl(portalShortcode, 'live')}/siteImages/${version}/${cleanFileName}`
 }

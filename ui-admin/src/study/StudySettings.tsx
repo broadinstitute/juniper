@@ -6,6 +6,7 @@ import { LoadedPortalContextT } from '../portal/PortalProvider'
 import PortalEnvConfigView from '../portal/PortalEnvConfigView'
 import { PortalEnvironment } from '@juniper/ui-core'
 
+/** shows settings for both a study and its containing portal */
 export default function StudySettings({ studyEnvContext, portalContext }:
 {studyEnvContext: StudyEnvContextT, portalContext: LoadedPortalContextT}) {
   const envConfig = studyEnvContext.currentEnv.studyEnvironmentConfig
