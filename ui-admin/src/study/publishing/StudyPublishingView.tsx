@@ -7,11 +7,10 @@ import { faWrench } from '@fortawesome/free-solid-svg-icons'
 import { isSuperuser } from 'user/UserProvider'
 import PortalEnvPublishControl from 'portal/publish/PortalEnvPublishControl'
 import { Link } from 'react-router-dom'
-import { siteContentPath } from 'portal/PortalRouter'
 import Api from 'api/api'
 import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
 import { useConfig } from 'providers/ConfigProvider'
-import {studyEnvSiteContentPath} from "../StudyEnvironmentRouter";
+import { studyEnvSiteContentPath } from '../StudyEnvironmentRouter'
 
 
 const ENV_SORT_ORDER = ['sandbox', 'irb', 'live']
@@ -59,8 +58,8 @@ function StudyEnvPublishView({ portal, portalEnv, studyShortcode }:
       { isInitialized && <div>
                 Website
         {portalEnv.siteContent && <Link to={studyEnvSiteContentPath(portal.shortcode, studyShortcode,
-            portalEnv.environmentName)}
-          className="ms-2 fw-normal">
+          portalEnv.environmentName)}
+        className="ms-2 fw-normal">
           {portalEnv.siteContent.stableId} v{portalEnv.siteContent.version}
         </Link> }
       </div>}

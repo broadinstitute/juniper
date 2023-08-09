@@ -91,7 +91,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       </Route>
       <Route path="notificationContent">
         <Route path="configs/:configId"
-               element={<NotificationConfigView studyEnvContext={studyEnvContext}/>}/>
+          element={<NotificationConfigView studyEnvContext={studyEnvContext}/>}/>
         <Route index element={<NotificationContent studyEnvContext={studyEnvContext}/>}/>
       </Route>
 

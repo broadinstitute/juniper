@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Portal } from '@juniper/ui-core'
 import { emptyContextAlertFunction } from '../util/contextUtils'
 import Api from '../api/api'
-import {portalParticipantsPath, studyParticipantsPath} from '../portal/PortalRouter'
+import { studyParticipantsPath } from '../portal/PortalRouter'
 import { useNavigate } from 'react-router-dom'
 import LoadingSpinner from '../util/LoadingSpinner'
 

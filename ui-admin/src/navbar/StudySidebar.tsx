@@ -1,7 +1,6 @@
 import { Portal, Study } from '@juniper/ui-core'
 import { NavLink, useNavigate } from 'react-router-dom'
 import {
-  studyContentPath,
   studyKitsPath,
   studyParticipantsPath
 } from 'portal/PortalRouter'
@@ -34,7 +33,7 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
       <CollapsableMenu header={'Research Coordination'} content={<ul className="list-unstyled">
         <li className="mb-3">
           <NavLink to={studyParticipantsPath(portalShortcode, study.shortcode, 'live')}
-            className="text-white p-1 rounded" style={navStyleFunc}>Participant list</NavLink>
+            className="text-white p-1 rounded" style={navStyleFunc}>Participant List</NavLink>
         </li>
         <li className="mb-3">
           <NavLink to={studyKitsPath(portalShortcode, study.shortcode, 'live')}
@@ -76,7 +75,7 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
       <CollapsableMenu header={'Publish'} content={<ul className="list-unstyled">
         <li className="mb-3">
           <NavLink to={studyPublishingPath(portalShortcode, study.shortcode)}
-            className="text-white p-1 rounded" style={navStyleFunc}>Publish content</NavLink>
+            className="text-white p-1 rounded" style={navStyleFunc}>Publish Content</NavLink>
         </li>
         <li>
           <NavLink to={studyEnvSiteSettingsPath(portalShortcode, study.shortcode, 'live')}
@@ -86,7 +85,7 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
       <CollapsableMenu header={'Administration'} content={<ul className="list-unstyled">
         <li className="mb-3">
           <NavLink to={studyUsersPath(portalShortcode, study.shortcode)}
-            className="text-white p-1 rounded" style={navStyleFunc}>Manage team</NavLink>
+            className="text-white p-1 rounded" style={navStyleFunc}>Manage Team</NavLink>
         </li>
       </ul>}/>
 
