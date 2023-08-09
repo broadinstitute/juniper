@@ -72,7 +72,7 @@ function PageFrame() {
   return (
     <div className="d-flex">
       <AdminSidebar/>
-      <div className="flex-grow-1">
+      <div className="flex-grow-1 d-flex flex-column">
         <AdminNavbar/>
         <Outlet/>
       </div>

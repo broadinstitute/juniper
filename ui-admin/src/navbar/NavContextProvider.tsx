@@ -38,7 +38,8 @@ export default function NavContextProvider({ children }: { children: React.React
   useEffect(() => {
     Api.getPortals().then(result => {
       setPortalList(result)
-      if (result.length === 1 && result[0].portalStudies.length === 1) {
+      /** if there's only one study, and the user is going to the homepage, direct to that study's participant page */
+      if (result.length === 1 && result[0].portalStudies.length === 1 && window.location.pathname.length < 2) {
         const studyShortcode = result[0].portalStudies[0].study.shortcode
         navigate(studyParticipantsPath(result[0].shortcode, studyShortcode, 'live'), { replace: true })
       }
