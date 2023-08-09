@@ -8,7 +8,6 @@ import Api, { Survey } from 'api/api'
 
 import { failureNotification, successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
-import { useUser } from 'user/UserProvider'
 
 export type SurveyParamsT = StudyParams & {
   surveyStableId: string,
@@ -20,18 +19,12 @@ function RawPreRegView({ studyEnvContext, survey, readOnly }:
                       { studyEnvContext: StudyEnvContextT, readOnly: boolean
                         survey: Survey}) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
-  const { user } = useUser()
   const navigate = useNavigate()
 
   const [currentSurvey, setCurrentSurvey] = useState(survey)
 
   /** saves as a new version and updates the study environment accordingly */
   async function createNewVersion({ content: updatedContent }: { content: string }): Promise<void> {
-    if (!user.superuser) {
-      Store.addNotification(failureNotification('you do not have permissions to save surveys'))
-      return
-    }
-
     survey.content = updatedContent
     try {
       const updatedSurvey = await Api.createNewSurveyVersion(portal.shortcode, currentSurvey)

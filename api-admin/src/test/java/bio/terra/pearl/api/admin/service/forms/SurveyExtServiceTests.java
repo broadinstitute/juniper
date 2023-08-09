@@ -38,21 +38,6 @@ public class SurveyExtServiceTests {
   @MockBean private StudyEnvironmentService studyEnvironmentService;
 
   @Test
-  public void createNewVersionRequiresSuperuser() {
-    AdminUser user = AdminUser.builder().superuser(false).build();
-    Assertions.assertThrows(
-        PermissionDeniedException.class,
-        () -> surveyExtService.createNewVersion("foo", null, user));
-  }
-
-  @Test
-  public void createRequiresSuperuser() {
-    AdminUser user = AdminUser.builder().superuser(false).build();
-    Assertions.assertThrows(
-        PermissionDeniedException.class, () -> surveyExtService.create("foo", null, user));
-  }
-
-  @Test
   public void createConfiguredRequiresPortalAuth() {
     AdminUser user = AdminUser.builder().superuser(false).build();
     when(mockAuthUtilService.authUserToPortal(user, "foo"))

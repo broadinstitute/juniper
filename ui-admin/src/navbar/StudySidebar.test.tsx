@@ -19,6 +19,6 @@ test('renders the study selector and sub menus', async () => {
   render(RoutedComponent)
   expect(screen.getByText(study.name)).toBeInTheDocument()
   expect(screen.getByText('Research Coordination')).toBeVisible()
-  expect(screen.getByText('Participant list')).toBeVisible()
+  expect(screen.getByText('Participant List')).toBeVisible()
   expect(screen.getByText('Analytics & Data')).toBeVisible()
 })

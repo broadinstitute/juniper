@@ -14,7 +14,6 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
     borderBottom: '1px solid #f6f6f6'
   }
 
-
   const preEnrollSurvey = currentEnv.preEnrollSurvey
   const isReadOnlyEnv = !(currentEnv.environmentName === 'sandbox')
   const [showCreateSurveyModal, setShowCreateSurveyModal] = useState(false)
