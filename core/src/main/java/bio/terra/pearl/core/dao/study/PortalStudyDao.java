@@ -5,13 +5,17 @@ import bio.terra.pearl.core.model.study.PortalStudy;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import bio.terra.pearl.core.model.study.Study;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PortalStudyDao extends BaseJdbiDao<PortalStudy> {
-    public PortalStudyDao(Jdbi jdbi) {
+    private StudyDao studyDao;
+    public PortalStudyDao(Jdbi jdbi, StudyDao studyDao) {
         super(jdbi);
+        this.studyDao = studyDao;
     }
     @Override
     protected Class<PortalStudy> getClazz() {
@@ -24,6 +28,9 @@ public class PortalStudyDao extends BaseJdbiDao<PortalStudy> {
 
     public List<PortalStudy> findByPortalId(UUID portalId) {
         return findAllByProperty("portal_id", portalId);
+    }
+    public List<PortalStudy> findByPortalIds(List<UUID> portalIds) {
+        return findAllByPropertyCollection("portal_id", portalIds);
     }
 
     /** gets a list of PortalStudies corresponding to an Enrollee.  Enrollees are specific to a single Study,
@@ -50,6 +57,15 @@ public class PortalStudyDao extends BaseJdbiDao<PortalStudy> {
                         .bind("portalId", portalId)
                         .mapTo(clazz)
                         .findOne());
+    }
+
+    public void attachStudies(List<PortalStudy> portalStudies) {
+        List<UUID> ids = portalStudies.stream().map(ps -> ps.getStudyId()).toList();
+        List<Study> studies = studyDao.findAll(ids);
+        for(PortalStudy portalStudy : portalStudies) {
+            portalStudy.setStudy(studies.stream().filter(study -> study.getId().equals(portalStudy.getStudyId()))
+                    .findFirst().get());
+        }
     }
 
     public void deleteByPortalId(UUID portalId) {

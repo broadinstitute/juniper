@@ -37,10 +37,13 @@ public class PortalExtService {
     return portalService.fullLoad(portal, "en");
   }
 
+  /** gets all the portals the user has access to, and attaches the corresponding studies */
   public List<Portal> getAll(AdminUser user) {
     // no additional auth checks needed -- the underlying service filters out portals the user does
     // not have access to
-    return portalService.findByAdminUser(user);
+    List<Portal> portals = portalService.findByAdminUser(user);
+    portalService.attachStudies(portals);
+    return portals;
   }
 
   public PortalEnvironmentConfig updateConfig(

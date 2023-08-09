@@ -209,9 +209,9 @@ export function IndeterminateCheckbox({
  * */
 export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
   const [show, setShow] = useState(false)
-  return <div className="position-relative">
+  return <div className="position-relative ms-auto">
     <button className="btn btn-secondary" onClick={() => setShow(!show)} aria-label="show or hide columns">
-      <FontAwesomeIcon icon={faColumns} className="fa-lg"/>
+      Show/hide columns <FontAwesomeIcon icon={faColumns} className="fa-lg"/>
     </button>
     { show && <div className="position-absolute border border-gray rounded bg-white p-3"
       style={{ width: '300px', zIndex: 100, right: 0 }}>

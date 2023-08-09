@@ -40,7 +40,7 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
 
   useEffect(() => {
     loadKits()
-  }, [])
+  }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
   return <LoadingSpinner isLoading={isLoading}>
     <KitListView kits={kits} studyEnvContext={studyEnvContext}/>

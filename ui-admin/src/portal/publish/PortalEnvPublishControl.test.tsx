@@ -2,9 +2,9 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 
 import PortalEnvPublishControl from './PortalEnvPublishControl'
-import { Portal, PortalEnvironment } from '../../api/api'
-import { setupRouterTest } from '../../test-utils/router-testing-utils'
-import { portalEnvDiffPath } from '../PortalRouter'
+import { Portal, PortalEnvironment } from 'api/api'
+import { setupRouterTest } from 'test-utils/router-testing-utils'
+import { studyDiffPath } from '../../study/StudyRouter'
 
 test('renders a copy link', () => {
   const sandboxEnv :PortalEnvironment = {
@@ -32,11 +32,13 @@ test('renders a copy link', () => {
     portalStudies: [],
     portalEnvironments: [sandboxEnv, irbEnv]
   }
-  const { RoutedComponent } = setupRouterTest(<PortalEnvPublishControl portal={portal} destEnv={irbEnv} />)
+  const { RoutedComponent } = setupRouterTest(<PortalEnvPublishControl
+    portal={portal} studyShortcode={'bar'}  destEnvName={'irb'} />)
   render(RoutedComponent)
   const copyLink = screen.getByText('Copy from sandbox')
   expect(copyLink).toBeInTheDocument()
-  expect(copyLink).toHaveAttribute('href', portalEnvDiffPath(portal.shortcode, 'irb', 'sandbox'))
+  expect(copyLink).toHaveAttribute('href',
+    studyDiffPath(portal.shortcode, 'bar', 'sandbox', 'irb'))
   // irb link shouldn't exist since irb env isn't initialized
   expect(screen.queryByText('Copy from irb')).toBeNull()
 })

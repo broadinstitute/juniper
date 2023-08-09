@@ -30,7 +30,7 @@ export default function MetricGraph({ studyEnvContext, metricInfo }: {studyEnvCo
     }).catch(e => {
       Store.addNotification(failureNotification(e.message))
     })
-  }, [metricInfo.name])
+  }, [metricInfo.name, studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
   const copyRawData = () => {
     if (!metricData) {

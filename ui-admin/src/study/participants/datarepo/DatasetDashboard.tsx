@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { getDatasetListViewPath, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { StudyEnvContextT, studyEnvDatasetListViewPath } from 'study/StudyEnvironmentRouter'
 import Api, { DatasetDetails, DatasetJobHistory } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
@@ -49,7 +49,6 @@ const columns: ColumnDef<DatasetJobHistory>[] = [{
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
 const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
-  const { currentEnvPath } = studyEnvContext
   const [showDeleteDatasetModal, setShowDeleteDatasetModal] = useState(false)
   const [datasetDetails, setDatasetDetails] = useState<DatasetDetails | undefined>(undefined)
   const [datasetJobHistory, setDatasetJobHistory] = useState<DatasetJobHistory[]>([])
@@ -102,10 +101,11 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
 
   useEffect(() => {
     loadData()
-  }, [])
+  }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
   return <div className="container-fluid py-3">
     <h1 className="h3">Terra Data Repo</h1>
-    <Link to={getDatasetListViewPath(currentEnvPath)} className="mx-2">
+    <Link to={studyEnvDatasetListViewPath(studyEnvContext.portal.shortcode,
+      studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName)} className="mx-2">
       <FontAwesomeIcon icon={faArrowLeft}/> Back to dataset list
     </Link>
     { user.superuser && datasetDetails?.status == 'CREATED' &&

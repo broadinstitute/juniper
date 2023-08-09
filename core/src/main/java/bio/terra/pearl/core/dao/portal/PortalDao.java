@@ -91,6 +91,16 @@ public class PortalDao extends BaseMutableJdbiDao<Portal> {
         return portal;
     }
 
+    public void attachStudies(List<Portal> portals) {
+        List<UUID> portalIds = portals.stream().map(portal -> portal.getId()).toList();
+        List<PortalStudy> portalStudies = portalStudyDao.findByPortalIds(portalIds);
+        portalStudyDao.attachStudies(portalStudies);
+        for(Portal portal : portals) {
+            List<PortalStudy> matches = portalStudies.stream().filter(portalStudy -> portalStudy.getPortalId().equals(portal.getId())).toList();
+            portal.getPortalStudies().addAll(matches);
+        }
+    }
+
     public List<Portal> findByAdminUserId(UUID userId) {
         List<PortalAdminUser> portalAdmins = portalAdminUserDao.findByUserId(userId);
         return findAll(portalAdmins.stream().map(PortalAdminUser::getPortalId).toList());

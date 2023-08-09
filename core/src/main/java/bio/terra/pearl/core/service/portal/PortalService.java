@@ -139,6 +139,10 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         return dao.findByAdminUserId(user.getId());
     }
 
+    public void attachStudies(List<Portal> portals) {
+        dao.attachStudies(portals);
+    }
+
     public boolean checkAdminIsInPortal(AdminUser user, UUID portalId) {
         return user.isSuperuser() || portalAdminUserDao.isUserInPortal(user.getId(), portalId);
     }
