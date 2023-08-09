@@ -11,14 +11,12 @@ import Api, {
 
 import { failureNotification, successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
-import { useUser } from 'user/UserProvider'
 
 /** Handles logic for updating study environment surveys */
 function RawConsentView({ studyEnvContext, consent, readOnly = false }:
                          {studyEnvContext: StudyEnvContextT,
                            consent: ConsentForm, readOnly?: boolean}) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
-  const { user } = useUser()
   const navigate = useNavigate()
 
   const [currentForm, setCurrentForm] = useState(consent)

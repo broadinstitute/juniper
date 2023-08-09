@@ -8,7 +8,6 @@ import Api, { Survey } from 'api/api'
 
 import { failureNotification, successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
-import { useUser } from 'user/UserProvider'
 
 export type SurveyParamsT = StudyParams & {
   surveyStableId: string,
@@ -20,7 +19,6 @@ function RawPreRegView({ studyEnvContext, survey, readOnly }:
                       { studyEnvContext: StudyEnvContextT, readOnly: boolean
                         survey: Survey}) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
-  const { user } = useUser()
   const navigate = useNavigate()
 
   const [currentSurvey, setCurrentSurvey] = useState(survey)
