@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { getDatasetDashboardPath, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { datasetDashboardPath, StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Api, { DatasetDetails } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
@@ -25,7 +25,7 @@ const datasetColumns = (currentEnvPath: string): ColumnDef<DatasetDetails>[] => 
   accessorKey: 'datasetName',
   cell: info => {
     return info.row.original.status !== 'DELETING' ?
-      <Link to={getDatasetDashboardPath(info.row.original.datasetName, currentEnvPath)} className="mx-2">
+      <Link to={datasetDashboardPath(info.row.original.datasetName, currentEnvPath)} className="mx-2">
         {info.getValue() as unknown as string}
       </Link> : <span className="mx-2">{info.row.original.datasetName}</span>
   }
@@ -86,7 +86,7 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
 
   useEffect(() => {
     loadData()
-  }, [])
+  }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
   return <div className="container-fluid py-3">
     <h1 className="h3">Study Environment Datasets</h1>
     { user.superuser &&

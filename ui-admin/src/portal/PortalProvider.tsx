@@ -1,9 +1,9 @@
 import React, { PropsWithChildren, ReactNode, useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import Api, { Portal } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { NavBreadcrumb } from 'navbar/AdminNavbar'
 import AdminUserProvider from '../providers/AdminUserProvider'
+import { emptyContextAlertFunction } from '../util/contextUtils'
 
 
 export type PortalContextT = {
@@ -26,8 +26,8 @@ export type PortalParams = {
 }
 
 export const PortalContext = React.createContext<PortalContextT>({
-  updatePortal: () => alert('error - portal not yet loaded'),
-  reloadPortal: () => Promise.resolve(null),
+  updatePortal: emptyContextAlertFunction,
+  reloadPortal: emptyContextAlertFunction,
   portal: null,
   isLoading: true,
   isError: false
@@ -60,6 +60,7 @@ function RawPortalProvider({ shortcode, children }:
 
   /** grabs the latest from the server and updates the portal object */
   function reloadPortal(shortcode: string): Promise<Portal> {
+    setIsLoading(true)
     return Api.getPortal(shortcode).then(result => {
       setPortalState(result)
       setIsError(false)
@@ -98,10 +99,6 @@ function RawPortalProvider({ shortcode, children }:
   }
 
   return <PortalContext.Provider value={portalContext}>
-    <NavBreadcrumb>
-      <Link className="text-white" to={`/${shortcode}`}>
-        {portalState?.name}</Link>
-    </NavBreadcrumb>
     <AdminUserProvider portalShortcode={shortcode}>
       {children}
     </AdminUserProvider>

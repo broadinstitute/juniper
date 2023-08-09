@@ -55,7 +55,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
 
   useEffect(() => {
     loadEnrollees()
-  }, [])
+  }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
   const onSubmit = async (kitType: string) => {
     const enrolleesSelected = Object.keys(rowSelection)

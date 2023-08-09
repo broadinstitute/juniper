@@ -4,11 +4,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
 import { Link, useSearchParams } from 'react-router-dom'
-import {
-  getDatasetListViewPath,
-  getExportDataBrowserPath,
-  StudyEnvContextT, studyEnvMetricsPath
-} from '../../StudyEnvironmentRouter'
+import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
   ColumnDef,
   flexRender,
@@ -21,10 +17,8 @@ import {
 import { ColumnVisibilityControl, IndeterminateCheckbox, tableHeader } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
-import ExportDataControl from '../export/ExportDataControl'
 import AdHocEmailModal from '../AdHocEmailModal'
-import EnrolleeSearchFacets, {} from './facets/EnrolleeSearchFacets'
-import { facetValuesFromString, facetValuesToString, SAMPLE_FACETS, FacetValue }
+import { facetValuesFromString, SAMPLE_FACETS, FacetValue }
   from 'api/enrolleeSearch'
 import { Button } from 'components/forms/Button'
 import { instantToDefaultString } from 'util/timeUtils'
@@ -33,7 +27,6 @@ import { instantToDefaultString } from 'util/timeUtils'
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
   const [participantList, setParticipantList] = useState<EnrolleeSearchResult[]>([])
-  const [showExportModal, setShowExportModal] = useState(false)
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -43,7 +36,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     'familyName': false,
     'contactEmail': false
   })
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
 
   const facetValues = facetValuesFromString(searchParams.get('facets') ?? '{}', SAMPLE_FACETS)
 
@@ -112,7 +105,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     meta: {
       columnType: 'string'
     }
-  }], [study.shortcode])
+  }], [study.shortcode, currentEnv.environmentName])
 
 
   const table = useReactTable({
@@ -144,15 +137,9 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     setIsLoading(false)
   }
 
-  const updateFacetValues = (facetValues: FacetValue[]) => {
-    searchEnrollees(facetValues)
-    searchParams.set('facets', facetValuesToString(facetValues))
-    setSearchParams(searchParams)
-  }
-
   useEffect(() => {
     searchEnrollees(facetValues)
-  }, [])
+  }, [study.shortcode, currentEnv.environmentName])
 
   const numSelected = Object.keys(rowSelection).length
   const allowSendEmail = numSelected > 0
@@ -164,26 +151,8 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     <div className="row">
       <div className="col-12 align-items-baseline d-flex">
         <h2 className="h4 text-center me-4">{study.name} Participants</h2>
-        <div className="d-flex align-items-center justify-content-between">
-          <div className="d-flex align-items-center">
-            <Link to={studyEnvMetricsPath(portal.shortcode, currentEnv.environmentName, study.shortcode)}
-              className="mx-2">Metrics</Link>
-            <span className="px-1">|</span>
-            <Link to={getExportDataBrowserPath(currentEnvPath)} className="mx-2">Export preview</Link>
-            <span className="px-1">|</span>
-            <button className="btn btn-secondary" onClick={() => setShowExportModal(!showExportModal)}>
-              Download
-            </button>
-            <span className="px-1">|</span>
-            <Link to={getDatasetListViewPath(currentEnvPath)} className="mx-2">Terra Data Repo</Link>
-            <ExportDataControl studyEnvContext={studyEnvContext} show={showExportModal} setShow={setShowExportModal}/>
-          </div>
-        </div>
       </div>
-      <div className="col-3">
-        <EnrolleeSearchFacets facets={SAMPLE_FACETS} facetValues={facetValues} updateFacetValues={updateFacetValues} />
-      </div>
-      <div className="col-9">
+      <div className="col-12">
         <LoadingSpinner isLoading={isLoading}>
           <div>
             <div className="d-flex align-items-center">

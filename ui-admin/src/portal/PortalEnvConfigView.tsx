@@ -42,49 +42,46 @@ const PortalEnvConfigView = ({ portal, portalEnv, updatePortal }: PortalEnvConfi
       Store.addNotification(failureNotification(`Save failed ${  e}`))
     }
   }
-  return <div className="container p-4">
-    <h2 className="h5">Configuration settings - {portalEnv.environmentName}</h2>
-    <form className="bg-white p-3">
-      <div>
-        <label className="form-label">
-        password protected <input type="checkbox" checked={config.passwordProtected}
-            onChange={e => updateConfig('passwordProtected', e.target.checked)}/>
-        </label>
-      </div>
-      <div>
-        <label className="form-label">
-        password <input type="text" className="form-control" value={config.password}
-            onChange={e => updateConfig('password', e.target.value)}/>
-        </label>
-      </div>
-      <div>
-        <label className="form-label">
-        accepting registration
-          <input type="checkbox" checked={config.acceptingRegistration}
-            onChange={e => updateConfig('acceptingRegistration', e.target.checked)}/>
-        </label>
-      </div>
-      <div>
-        <label className="form-label">
-        participant hostname
-          <input type="text" className="form-control" value={config.participantHostname}
-            onChange={e => updateConfig('participantHostname', e.target.value)}/>
-        </label>
-      </div>
-      <div>
-        <label className="form-label">
-        Email source address
-          <input type="text" className="form-control" value={config.emailSourceAddress}
-            onChange={e => updateConfig('emailSourceAddress', e.target.value)}/>
-        </label>
-      </div>
-      <Button onClick={save}
-        variant="primary" disabled={!user.superuser}
-        tooltip={user.superuser ? 'Save' : 'You do not have permission to edit these settings'}>
-        Save
-      </Button>
-    </form>
-  </div>
+  return <form className="bg-white p-3">
+    <div>
+      <label className="form-label">
+      password protected <input type="checkbox" checked={config.passwordProtected}
+          onChange={e => updateConfig('passwordProtected', e.target.checked)}/>
+      </label>
+    </div>
+    <div>
+      <label className="form-label">
+      password <input type="text" className="form-control" value={config.password}
+          onChange={e => updateConfig('password', e.target.value)}/>
+      </label>
+    </div>
+    <div>
+      <label className="form-label">
+      accepting registration
+        <input type="checkbox" checked={config.acceptingRegistration}
+          onChange={e => updateConfig('acceptingRegistration', e.target.checked)}/>
+      </label>
+    </div>
+    <div>
+      <label className="form-label">
+      participant hostname
+        <input type="text" className="form-control" value={config.participantHostname}
+          onChange={e => updateConfig('participantHostname', e.target.value)}/>
+      </label>
+    </div>
+    <div>
+      <label className="form-label">
+      Email source address
+        <input type="text" className="form-control" value={config.emailSourceAddress}
+          onChange={e => updateConfig('emailSourceAddress', e.target.value)}/>
+      </label>
+    </div>
+    <Button onClick={save}
+      variant="primary" disabled={!user.superuser}
+      tooltip={user.superuser ? 'Save' : 'You do not have permission to edit these settings'}>
+      Save
+    </Button>
+  </form>
 }
 
 export default PortalEnvConfigView
