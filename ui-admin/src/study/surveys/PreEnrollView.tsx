@@ -27,11 +27,6 @@ function RawPreRegView({ studyEnvContext, survey, readOnly }:
 
   /** saves as a new version and updates the study environment accordingly */
   async function createNewVersion({ content: updatedContent }: { content: string }): Promise<void> {
-    if (!user.superuser) {
-      Store.addNotification(failureNotification('you do not have permissions to save surveys'))
-      return
-    }
-
     survey.content = updatedContent
     try {
       const updatedSurvey = await Api.createNewSurveyVersion(portal.shortcode, currentSurvey)

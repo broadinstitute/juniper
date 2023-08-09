@@ -24,11 +24,6 @@ function RawSurveyView({ studyEnvContext, survey, readOnly = false }:
   const [currentSurvey, setCurrentSurvey] = useState(survey)
   /** saves the survey as a new version */
   async function createNewVersion({ content: updatedTextContent }: { content: string }): Promise<void> {
-    if (!user.superuser) {
-      Store.addNotification(failureNotification('you do not have permissions to save surveys'))
-      return
-    }
-
     survey.content = updatedTextContent
     try {
       const updatedSurvey = await Api.createNewSurveyVersion(portal.shortcode, currentSurvey)

@@ -19,7 +19,6 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
     borderBottom: '1px solid #f6f6f6'
   }
 
-
   const preEnrollSurvey = currentEnv.preEnrollSurvey
   const envConfig = currentEnv.studyEnvironmentConfig
   const portalEnvConfig = portal.portalEnvironments

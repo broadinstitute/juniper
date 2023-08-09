@@ -40,9 +40,6 @@ public class SurveyExtService {
   }
 
   public Survey create(String portalShortcode, Survey survey, AdminUser adminUser) {
-    if (!adminUser.isSuperuser()) {
-      throw new PermissionDeniedException("You do not have permissions to perform this operation");
-    }
     Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
     List<Survey> existing = surveyService.findByStableId(survey.getStableId());
     if (existing.size() > 0) {
@@ -54,9 +51,6 @@ public class SurveyExtService {
   }
 
   public Survey createNewVersion(String portalShortcode, Survey survey, AdminUser adminUser) {
-    if (!adminUser.isSuperuser()) {
-      throw new PermissionDeniedException("You do not have permissions to perform this operation");
-    }
     Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
     return surveyService.createNewVersion(portal.getId(), survey);
   }
