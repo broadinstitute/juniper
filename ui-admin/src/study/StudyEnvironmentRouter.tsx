@@ -89,9 +89,12 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
         </Route>
         <Route path="*" element={<div>Unknown consent page</div>}/>
       </Route>
-      <Route path="notificationContent" element={<NotificationContent studyEnvContext={studyEnvContext}/>}/>
-      <Route path="notificationConfigs/:configId"
-        element={<NotificationConfigView studyEnvContext={studyEnvContext}/>}/>
+      <Route path="notificationContent">
+        <Route path="configs/:configId"
+               element={<NotificationConfigView studyEnvContext={studyEnvContext}/>}/>
+        <Route index element={<NotificationContent studyEnvContext={studyEnvContext}/>}/>
+      </Route>
+
       <Route path="preEnroll">
         <Route path=":surveyStableId" element={<PreEnrollView studyEnvContext={studyEnvContext}/>}/>
         <Route path="*" element={<div>Unknown prereg page</div>}/>
@@ -108,7 +111,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       <Route path="export/dataRepo/datasets" element={<DatasetList studyEnvContext={studyEnvContext}/>}/>
       <Route path="export/dataRepo/datasets/:datasetName"
         element={<DatasetDashboard studyEnvContext={studyEnvContext}/>}/>
-      <Route index element={<StudyContent studyEnvContext={studyEnvContext}/>}/>
+      <Route path="forms" element={<StudyContent studyEnvContext={studyEnvContext}/>}/>
       <Route path="*" element={<div>Unknown study environment page</div>}/>
     </Routes>
   </div>
@@ -121,9 +124,14 @@ export const participantListPath = (portalShortcode: string, studyShortcode: str
   return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/participants`
 }
 
-/** path for viewing study environment form content */
+/** root study environment path */
 export const studyEnvPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}`
+}
+
+/** surveys, consents, etc.. */
+export const studyEnvFormsPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
+  return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/forms`
 }
 
 /** helper for path to configure study notifications */
@@ -133,7 +141,7 @@ export const studyEnvNotificationsPath = (portalShortcode: string, studyShortcod
 
 /** path for viewing a particular notification config path */
 export const notificationConfigPath = (config: NotificationConfig, currentEnvPath: string) => {
-  return `${currentEnvPath}/notificationConfigs/${config.id}`
+  return `${currentEnvPath}/notificationContent/configs/${config.id}`
 }
 
 /** path to the export preview */

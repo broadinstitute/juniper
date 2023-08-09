@@ -8,7 +8,7 @@ import {
 import StudySelector from './StudySelector'
 import React from 'react'
 import {
-  studyEnvDataBrowserPath, studyEnvDatasetListViewPath,
+  studyEnvDataBrowserPath, studyEnvDatasetListViewPath, studyEnvFormsPath,
   studyEnvMailingListPath,
   studyEnvMetricsPath, studyEnvNotificationsPath,
   studyEnvSiteContentPath, studyEnvSiteSettingsPath
@@ -65,7 +65,7 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
             className="text-white p-1 rounded" style={navStyleFunc}>Website</NavLink>
         </li>
         <li className="mb-3">
-          <NavLink to={studyContentPath(portalShortcode, study.shortcode, 'sandbox')}
+          <NavLink to={studyEnvFormsPath(portalShortcode, study.shortcode, 'sandbox')}
             className="text-white p-1 rounded" style={navStyleFunc}>Forms & Surveys</NavLink>
         </li>
         <li>

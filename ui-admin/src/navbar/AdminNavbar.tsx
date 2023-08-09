@@ -17,7 +17,7 @@ function AdminNavbar() {
     return <div></div>
   }
   return <>
-    <nav className="Navbar navbar navbar-expand-lg navbar-light">
+    <nav className="Navbar navbar navbar-expand-lg navbar-light" style={{maxWidth: '100vw'}}>
       <div className="collapse navbar-collapse" id="navbarNavDropdown">
         <ul className="navbar-nav ms-3">
           { breadCrumbs.map((crumb, index) => <li key={index}

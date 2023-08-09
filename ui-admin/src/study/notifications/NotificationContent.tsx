@@ -14,7 +14,7 @@ export default function NotificationContent({ studyEnvContext }: {studyEnvContex
       <ul className="list-unstyled">
         { currentEnv.notificationConfigs.map(config => <li key={config.id} className="p-1">
           <div className="d-flex">
-            <Link to={`notificationConfigs/${config.id}`}>
+            <Link to={`configs/${config.id}`}>
               <NotificationConfigTypeDisplay config={config}/>
               <span className="detail"> ({deliveryTypeDisplayMap[config.deliveryType]})</span>
             </Link>

@@ -11,6 +11,7 @@ import { siteContentPath } from 'portal/PortalRouter'
 import Api from 'api/api'
 import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
 import { useConfig } from 'providers/ConfigProvider'
+import {studyEnvSiteContentPath} from "../StudyEnvironmentRouter";
 
 
 const ENV_SORT_ORDER = ['sandbox', 'irb', 'live']
@@ -57,7 +58,8 @@ function StudyEnvPublishView({ portal, portalEnv, studyShortcode }:
       { !isInitialized && <div className="fst-italic text-muted">Not initialized</div> }
       { isInitialized && <div>
                 Website
-        {portalEnv.siteContent && <Link to={siteContentPath(portal.shortcode, portalEnv.environmentName)}
+        {portalEnv.siteContent && <Link to={studyEnvSiteContentPath(portal.shortcode, studyShortcode,
+            portalEnv.environmentName)}
           className="ms-2 fw-normal">
           {portalEnv.siteContent.stableId} v{portalEnv.siteContent.version}
         </Link> }
