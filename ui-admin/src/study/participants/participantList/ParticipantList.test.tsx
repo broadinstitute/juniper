@@ -29,6 +29,7 @@ test('renders a participant with link', async () => {
   })
   const participantLink = screen.getByText('JOSALK')
   expect(participantLink).toHaveAttribute('href', `/${studyEnvContext.currentEnvPath}/participants/JOSALK`)
+  expect(screen.getByText('Created')).toBeInTheDocument()
 })
 
 test('renders filters for participant columns', async () => {

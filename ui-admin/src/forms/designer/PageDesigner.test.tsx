@@ -28,7 +28,7 @@ describe('PageDesigner', () => {
       // Arrange
       const user = userEvent.setup()
 
-      render(<PageDesigner readOnly={false} value={page} onChange={jest.fn()} />)
+      render(<PageDesigner readOnly={false} value={page} formContent={{ title: '', pages: [] }} onChange={jest.fn()} />)
 
       const createPanelButton = screen.getByText('Add panel')
 
@@ -49,7 +49,7 @@ describe('PageDesigner', () => {
       const user = userEvent.setup()
 
       const onChange = jest.fn()
-      render(<PageDesigner readOnly={false} value={page} onChange={onChange} />)
+      render(<PageDesigner readOnly={false} value={page} formContent={{ title: '', pages: [] }} onChange={onChange} />)
 
       await act(() => user.click(screen.getByText('Add panel')))
 

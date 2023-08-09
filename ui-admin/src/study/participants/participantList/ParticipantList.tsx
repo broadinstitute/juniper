@@ -20,6 +20,8 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import AdHocEmailModal from '../AdHocEmailModal'
 import { facetValuesFromString, SAMPLE_FACETS, FacetValue }
   from 'api/enrolleeSearch'
+import { Button } from 'components/forms/Button'
+import { instantToDefaultString } from 'util/timeUtils'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -58,6 +60,11 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
       columnType: 'string'
     },
     cell: info => <Link to={`${currentEnvPath}/participants/${info.getValue()}`}>{info.getValue()}</Link>
+  }, {
+    header: 'Created',
+    accessorKey: 'enrollee.createdAt',
+    enableColumnFilter: false,
+    cell: info => instantToDefaultString(info.getValue() as unknown as number)
   }, {
     id: 'familyName',
     header: 'Family name',
@@ -154,11 +161,11 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
                 {table.getPreFilteredRowModel().rows.length} selected ({table.getFilteredRowModel().rows.length} shown)
               </span>
               <span className="me-2">
-                <button onClick={() => setShowEmailModal(allowSendEmail)}
-                  aria-disabled={!allowSendEmail} className="btn btn-secondary"
-                  title={allowSendEmail ? 'Send email' : 'Select at least one participant'}>
+                <Button onClick={() => setShowEmailModal(allowSendEmail)}
+                  variant="link" disabled={!allowSendEmail}
+                  tooltip={allowSendEmail ? 'Send email' : 'Select at least one participant'}>
                   Send email
-                </button>
+                </Button>
               </span>
               { showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
                 studyEnvContext={studyEnvContext}

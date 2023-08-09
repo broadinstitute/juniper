@@ -146,6 +146,7 @@ export const mockEnrollee: () => Enrollee = () => {
   const enrolleeId = randomString(10)
   return {
     id: enrolleeId,
+    createdAt: 0,
     shortcode: 'JOSALK',
     participantUserId: 'userId1',
     surveyResponses: [],

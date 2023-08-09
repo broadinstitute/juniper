@@ -82,6 +82,7 @@ export type EnrolleeSearchResult = {
 export type Enrollee = {
   id: string,
   shortcode: string,
+  createdAt: number,
   participantUserId: string,
   surveyResponses: SurveyResponse[],
   consentResponses: ConsentResponse[],

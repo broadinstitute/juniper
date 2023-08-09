@@ -143,7 +143,7 @@ export function tableHeader<A, B>(
     sortDirection ? (sortDirection === 'desc' ? 'descending' : 'ascending') : 'none' : undefined
 
   return <th key={header.id}
-    aria-sort={ariaSort}>
+    aria-sort={ariaSort} style={{ verticalAlign: 'top' }}>
     { options.sortable ? sortableTableHeader(header) : null }
     { options.filterable ? filterableTableHeader(header) : null }
   </th>
