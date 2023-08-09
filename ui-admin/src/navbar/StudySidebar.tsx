@@ -41,7 +41,7 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
         </li>
         <li>
           <NavLink to={studyEnvMailingListPath(portalShortcode, study.shortcode, 'live')}
-            className="text-white p-1 rounded" style={navStyleFunc}>Mailing list</NavLink>
+            className="text-white p-1 rounded" style={navStyleFunc}>Mailing List</NavLink>
         </li>
       </ul>}/>
       <CollapsableMenu header={'Analytics & Data'} content={<ul className="list-unstyled">
@@ -65,11 +65,11 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
         </li>
         <li className="mb-3">
           <NavLink to={studyEnvFormsPath(portalShortcode, study.shortcode, 'sandbox')}
-            className="text-white p-1 rounded" style={navStyleFunc}>Forms & Surveys</NavLink>
+            className="text-white p-1 rounded" style={navStyleFunc}>Forms &amp; Surveys</NavLink>
         </li>
         <li>
           <NavLink to={studyEnvNotificationsPath(portalShortcode, study.shortcode, 'sandbox')}
-            className="text-white p-1 rounded" style={navStyleFunc}>Emails & Notifications</NavLink>
+            className="text-white p-1 rounded" style={navStyleFunc}>Emails &amp; Notifications</NavLink>
         </li>
       </ul>}/>
       <CollapsableMenu header={'Publish'} content={<ul className="list-unstyled">
