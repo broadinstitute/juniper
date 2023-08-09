@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Portal } from '@juniper/ui-core'
 import { emptyContextAlertFunction } from '../util/contextUtils'
 import Api from '../api/api'
-import { portalParticipantsPath } from '../portal/PortalRouter'
+import {portalParticipantsPath, studyParticipantsPath} from '../portal/PortalRouter'
 import { useNavigate } from 'react-router-dom'
 import LoadingSpinner from '../util/LoadingSpinner'
 
@@ -38,8 +38,9 @@ export default function NavContextProvider({ children }: { children: React.React
   useEffect(() => {
     Api.getPortals().then(result => {
       setPortalList(result)
-      if (result.length === 1) {
-        navigate(portalParticipantsPath(result[0].shortcode, 'live'), { replace: true })
+      if (result.length === 1 && result[0].portalStudies.length === 1) {
+        const studyShortcode = result[0].portalStudies[0].study.shortcode
+        navigate(studyParticipantsPath(result[0].shortcode, studyShortcode, 'live'), { replace: true })
       }
       setIsLoading(false)
     })
