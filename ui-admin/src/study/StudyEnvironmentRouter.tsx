@@ -100,6 +100,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
         </Route>
         <Route path="surveys">
           <Route path=":surveyStableId">
+            <Route path=":version" element={<SurveyView studyEnvContext={studyEnvContext}/>}/>
             <Route index element={<SurveyView studyEnvContext={studyEnvContext}/>}/>
           </Route>
           <Route path="scratch" element={<QuestionScratchbox/>}/>

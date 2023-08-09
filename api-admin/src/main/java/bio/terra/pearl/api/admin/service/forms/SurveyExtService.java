@@ -36,7 +36,9 @@ public class SurveyExtService {
 
   public Survey get(String portalShortcode, String stableId, int version, AdminUser adminUser) {
     Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
-    return authSurveyToPortal(portal, stableId, version);
+    Survey survey = authSurveyToPortal(portal, stableId, version);
+    surveyService.attachAnswerMappings(survey);
+    return survey;
   }
 
   public Survey create(String portalShortcode, Survey survey, AdminUser adminUser) {

@@ -125,7 +125,7 @@ public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> imp
     @Transactional
     public Survey createNewVersion(UUID portalId, Survey survey) {
         Survey newSurvey = new Survey();
-        BeanUtils.copyProperties(survey, newSurvey, "id", "createdAt", "lastUpdatedAt");
+        BeanUtils.copyProperties(survey, newSurvey, "id", "createdAt", "lastUpdatedAt", "answerMappings");
         newSurvey.setPortalId(portalId);
         int nextVersion = dao.getNextVersion(survey.getStableId());
         newSurvey.setVersion(nextVersion);
@@ -137,6 +137,13 @@ public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> imp
             newSurvey.getAnswerMappings().add(newAnswerMapping);
         }
         return create(newSurvey);
+    }
+
+    public void attachAnswerMappings(Survey survey) {
+        survey.getAnswerMappings().clear();
+        survey.getAnswerMappings().addAll(
+                answerMappingDao.findBySurveyId(survey.getId())
+        );
     }
 
     public int getNextVersion(String stableId) {
