@@ -76,28 +76,10 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       />
     </NavBreadcrumb>
     <Routes>
-      <Route path="surveys">
-        <Route path=":surveyStableId">
-          <Route index element={<SurveyView studyEnvContext={studyEnvContext}/>}/>
-        </Route>
-        <Route path="scratch" element={<QuestionScratchbox/>}/>
-        <Route path="*" element={<div>Unknown survey page</div>}/>
-      </Route>
-      <Route path="consentForms">
-        <Route path=":consentStableId">
-          <Route index element={<ConsentView studyEnvContext={studyEnvContext}/>}/>
-        </Route>
-        <Route path="*" element={<div>Unknown consent page</div>}/>
-      </Route>
       <Route path="notificationContent">
         <Route path="configs/:configId"
           element={<NotificationConfigView studyEnvContext={studyEnvContext}/>}/>
         <Route index element={<NotificationContent studyEnvContext={studyEnvContext}/>}/>
-      </Route>
-
-      <Route path="preEnroll">
-        <Route path=":surveyStableId" element={<PreEnrollView studyEnvContext={studyEnvContext}/>}/>
-        <Route path="*" element={<div>Unknown prereg page</div>}/>
       </Route>
       <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
       <Route path="kits/*" element={<KitsRouter studyEnvContext={studyEnvContext}/>}/>
@@ -111,7 +93,26 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       <Route path="export/dataRepo/datasets" element={<DatasetList studyEnvContext={studyEnvContext}/>}/>
       <Route path="export/dataRepo/datasets/:datasetName"
         element={<DatasetDashboard studyEnvContext={studyEnvContext}/>}/>
-      <Route path="forms" element={<StudyContent studyEnvContext={studyEnvContext}/>}/>
+      <Route path="forms">
+        <Route path="preEnroll">
+          <Route path=":surveyStableId" element={<PreEnrollView studyEnvContext={studyEnvContext}/>}/>
+          <Route path="*" element={<div>Unknown prereg page</div>}/>
+        </Route>
+        <Route path="surveys">
+          <Route path=":surveyStableId">
+            <Route index element={<SurveyView studyEnvContext={studyEnvContext}/>}/>
+          </Route>
+          <Route path="scratch" element={<QuestionScratchbox/>}/>
+          <Route path="*" element={<div>Unknown survey page</div>}/>
+        </Route>
+        <Route path="consentForms">
+          <Route path=":consentStableId">
+            <Route index element={<ConsentView studyEnvContext={studyEnvContext}/>}/>
+          </Route>
+          <Route path="*" element={<div>Unknown consent page</div>}/>
+        </Route>
+        <Route index element={<StudyContent studyEnvContext={studyEnvContext}/>}/>
+      </Route>
       <Route path="*" element={<div>Unknown study environment page</div>}/>
     </Routes>
   </div>
