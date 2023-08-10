@@ -4,7 +4,8 @@ import { VersionedForm } from 'api/api'
 
 import { Button } from 'components/forms/Button'
 import { FormContentEditor } from 'forms/FormContentEditor'
-import { Modal } from 'react-bootstrap'
+import LoadedLocalDraftModal from './LoadedLocalDraftModal'
+import DiscardLocalDraftModal from './DiscardLocalDraftModal'
 
 type SurveyEditorViewProps = {
   currentForm: VersionedForm
@@ -16,20 +17,6 @@ type SurveyEditorViewProps = {
 type Draft = {
   content: string
   date: number
-}
-
-const LoadedDraftModal = ({ onDismiss }: {
-  onDismiss: () => void
-}) => {
-  return <Modal show={true} onHide={onDismiss}>
-    <Modal.Header>
-      <Modal.Title>Survey Draft Loaded</Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-      <p>Previously unsaved changes to this survey have been automatically loaded.
-        Be sure to save the survey in order to publish your changes.</p>
-    </Modal.Body>
-  </Modal>
 }
 
 /** renders a survey for editing/viewing */
@@ -45,6 +32,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const [saving, setSaving] = useState(false)
   const [savingDraft, setSavingDraft] = useState(false)
   const [showLoadedDraftModal, setShowLoadedDraftModal] = useState(false)
+  const [showDiscardDraftModal, setShowDiscardDraftModal] = useState(false)
 
   const getDraft = (key: string) => {
     const draft = localStorage.getItem(key)
@@ -77,7 +65,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
       }
     }
 
-    const draftSaveInterval = setInterval(saveToLocalStorage, 30000) //save draft every 30 seconds
+    const draftSaveInterval = setInterval(saveToLocalStorage, 5000) //save draft every 60 seconds
 
     return () => {
       clearInterval(draftSaveInterval)
@@ -105,6 +93,14 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
       setEditedContent(undefined)
     } finally {
       setSaving(false)
+    }
+  }
+
+  const onClickCancel = () => {
+    if (editedContent) {
+      setShowDiscardDraftModal(true)
+    } else {
+      onCancel()
     }
   }
 
@@ -136,8 +132,22 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
             Save
           </Button>
         )}
-        <button className="btn btn-secondary" type="button" onClick={onCancel}>Cancel</button>
-        {showLoadedDraftModal && <LoadedDraftModal onDismiss={() => setShowLoadedDraftModal(false)} />}
+        <button className="btn btn-secondary" type="button"
+          onClick={onClickCancel}>Cancel</button>
+        {showLoadedDraftModal && <LoadedLocalDraftModal onDismiss={() => setShowLoadedDraftModal(false)} />}
+        {showDiscardDraftModal &&
+            <DiscardLocalDraftModal
+              onClose={() => {
+                setShowDiscardDraftModal(false)
+                onCancel()
+              }}
+              onDiscard={() => {
+                setShowDiscardDraftModal(false)
+                localStorage.removeItem(FORM_DRAFT_KEY)
+                onCancel()
+              }}
+              onDismiss={() => setShowDiscardDraftModal(false)}
+            />}
       </div>
       <FormContentEditor
         initialContent={editedContent || currentForm.content} //favor loading the draft, if we find one
