@@ -1,6 +1,13 @@
+import { VersionedForm } from '@juniper/ui-core'
+
 export type FormDraft = {
   content: string
   date: number
+}
+
+/** returns a form draft key for local storage */
+export function getFormDraftKey({ form }: { form: VersionedForm }) {
+  return `surveyDraft_${form.id}_${form.version}`
 }
 
 /** returns a form draft from local storage, if there is one */

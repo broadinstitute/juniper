@@ -6,7 +6,7 @@ import { Button } from 'components/forms/Button'
 import { FormContentEditor } from 'forms/FormContentEditor'
 import LoadedLocalDraftModal from 'forms/designer/modals/LoadedLocalDraftModal'
 import DiscardLocalDraftModal from 'forms/designer/modals/DiscardLocalDraftModal'
-import { deleteDraft, FormDraft, getDraft, saveDraft } from 'forms/designer/utils/formDraftUtils'
+import { deleteDraft, FormDraft, getDraft, getFormDraftKey, saveDraft } from 'forms/designer/utils/formDraftUtils'
 
 type SurveyEditorViewProps = {
   currentForm: VersionedForm
@@ -24,7 +24,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     onSave
   } = props
 
-  const FORM_DRAFT_KEY = `surveyDraft_${currentForm.id}_${currentForm.version}`
+  const FORM_DRAFT_KEY = getFormDraftKey({ form: currentForm })
 
   const [isEditorValid, setIsEditorValid] = useState(true)
   const [saving, setSaving] = useState(false)
