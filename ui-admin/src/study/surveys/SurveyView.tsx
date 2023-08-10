@@ -1,15 +1,15 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
 
 import {  StudyParams } from 'study/StudyRouter'
-import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { StudyEnvContextT, studyEnvFormsPath } from 'study/StudyEnvironmentRouter'
 import Api, { StudyEnvironmentSurvey, Survey } from 'api/api'
 
 import { failureNotification, successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
 import { useUser } from 'user/UserProvider'
-import LoadingSpinner from "../../util/LoadingSpinner";
+import LoadingSpinner from '../../util/LoadingSpinner'
 
 export type SurveyParamsT = StudyParams & {
   surveyStableId: string
@@ -18,7 +18,7 @@ export type SurveyParamsT = StudyParams & {
 /** Handles logic for updating study environment surveys */
 function RawSurveyView({ studyEnvContext, survey, readOnly = false }:
                       {studyEnvContext: StudyEnvContextT, survey: Survey, readOnly?: boolean}) {
-  const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
+  const { portal, study, currentEnv } = studyEnvContext
   const navigate = useNavigate()
   const { user } = useUser()
 
@@ -42,7 +42,6 @@ function RawSurveyView({ studyEnvContext, survey, readOnly = false }:
         `Updated ${currentEnv.environmentName} to version ${updatedSurvey.version}`
       ))
       updateSurveyFromServer(updatedSurvey, updatedConfiguredSurvey)
-      updatedTextContent = updatedSurvey.content
     } catch (e) {
       Store.addNotification(failureNotification(`save failed`))
     }
@@ -61,7 +60,7 @@ function RawSurveyView({ studyEnvContext, survey, readOnly = false }:
     <SurveyEditorView
       currentForm={currentSurvey}
       readOnly={readOnly}
-      onCancel={() => navigate(currentEnvPath)}
+      onCancel={() => navigate(studyEnvFormsPath(portal.shortcode, study.shortcode, currentEnv.environmentName))}
       onSave={createNewVersion}
     />
   )
@@ -81,7 +80,7 @@ function SurveyView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
     return <span>you need to specify the stableId of the survey</span>
   }
   const envSurvey = currentEnv.configuredSurveys
-      .find(s => s.survey.stableId === surveyStableId)?.survey
+    .find(s => s.survey.stableId === surveyStableId)?.survey
   if (!envSurvey) {
     return <span>The survey {surveyStableId} does not exist in this environment</span>
   }
@@ -92,7 +91,7 @@ function SurveyView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
       setSurvey(result)
       setIsLoading(false)
     }).catch(e => {
-      Store.addNotification(failureNotification('could not load survey ' + e.message))
+      Store.addNotification(failureNotification(`could not load survey ${  e.message}`))
     })
   }, [studyEnvContext.portal.shortcode, studyEnvContext.currentEnv.environmentName, surveyStableId])
 
