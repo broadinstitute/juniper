@@ -11,24 +11,17 @@ import Api, {
 
 import { failureNotification, successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
-import { useUser } from 'user/UserProvider'
 
 /** Handles logic for updating study environment surveys */
 function RawConsentView({ studyEnvContext, consent, readOnly = false }:
                          {studyEnvContext: StudyEnvContextT,
                            consent: ConsentForm, readOnly?: boolean}) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
-  const { user } = useUser()
   const navigate = useNavigate()
 
   const [currentForm, setCurrentForm] = useState(consent)
   /** saves the survey as a new version */
   async function createNewVersion({ content: updatedTextContent }: { content: string }): Promise<void> {
-    if (!user.superuser) {
-      Store.addNotification(failureNotification('you do not have permissions to save surveys'))
-      return
-    }
-
     consent.content = updatedTextContent
     try {
       const updatedConsent = await Api.createNewConsentVersion(portal.shortcode, currentForm)

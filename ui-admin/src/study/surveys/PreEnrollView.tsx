@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
 
 import {  StudyParams } from 'study/StudyRouter'
@@ -9,6 +9,8 @@ import Api, { Survey } from 'api/api'
 import { failureNotification, successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
 import LoadingSpinner from 'util/LoadingSpinner'
+import { useLoadedSurvey, useSurveyParams } from './SurveyView'
+
 
 export type SurveyParamsT = StudyParams & {
   surveyStableId: string,
@@ -25,10 +27,6 @@ function RawPreEnrollView({ studyEnvContext, survey, readOnly = false }:
 
   /** saves as a new version and updates the study environment accordingly */
   async function createNewVersion({ content: updatedContent }: { content: string }): Promise<void> {
-    if (!survey || !currentSurvey) {
-      return
-    }
-
     survey.content = updatedContent
     try {
       const updatedSurvey = await Api.createNewSurveyVersion(portal.shortcode, currentSurvey)
@@ -54,35 +52,23 @@ function RawPreEnrollView({ studyEnvContext, survey, readOnly = false }:
 
 /** routable component for survey editing */
 function PreEnrollView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
-  const params = useParams<SurveyParamsT>()
-  const surveyStableId: string | undefined = params.surveyStableId
-  const [survey, setSurvey] = useState<Survey | undefined>()
-  const [isLoading, setIsLoading] = useState(true)
-  const { currentEnv } = studyEnvContext
-  const [searchParams] = useSearchParams()
-  const isReadOnly = searchParams.get('readOnly') === 'true'
+  const { isReadOnly, version, stableId } = useSurveyParams()
+  const { currentEnv, portal } = studyEnvContext
 
-  if (!surveyStableId) {
-    return <span>you need to specify the stableId of the survey</span>
-  }
   const envSurvey = currentEnv.preEnrollSurvey
-  if (!envSurvey) {
-    return <span>The survey {surveyStableId} does not exist in this environment</span>
+  const appliedVersion = version || envSurvey?.version
+  if (!stableId) {
+    return <span>You must specify a stableId for the survey to edit</span>
   }
-  /** load the survey from the server to get answer mappings and ensure we've got the latest content */
-  useEffect(() => {
-    setIsLoading(true)
-    Api.getSurvey(studyEnvContext.portal.shortcode, surveyStableId, envSurvey.version).then(result => {
-      setSurvey(result)
-      setIsLoading(false)
-    }).catch(e => {
-      Store.addNotification(failureNotification(`could not load survey ${  e.message}`))
-    })
-  }, [studyEnvContext.portal.shortcode, studyEnvContext.currentEnv.environmentName, surveyStableId])
+  if (!appliedVersion) {
+    return <span>The survey {stableId} is not already configured for this environment
+      -- you must specify a version</span>
+  }
+  const { isLoading, survey } = useLoadedSurvey(portal.shortcode, stableId, appliedVersion)
 
   return <>
-    {isLoading && <LoadingSpinner/>}
-    {!isLoading && <RawPreEnrollView studyEnvContext={studyEnvContext} survey={survey!} readOnly={isReadOnly}/>}
+    { isLoading && <LoadingSpinner/> }
+    { !isLoading && <RawPreEnrollView studyEnvContext={studyEnvContext} survey={survey!} readOnly={isReadOnly}/> }
   </>
 }
 

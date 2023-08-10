@@ -8,11 +8,11 @@ import Api, { StudyEnvironmentSurvey, Survey } from 'api/api'
 
 import { failureNotification, successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
-import { useUser } from 'user/UserProvider'
-import LoadingSpinner from '../../util/LoadingSpinner'
+import LoadingSpinner from 'util/LoadingSpinner'
 
 export type SurveyParamsT = StudyParams & {
-  surveyStableId: string
+  surveyStableId: string,
+  version?: string
 }
 
 /** Handles logic for updating study environment surveys */
@@ -20,16 +20,10 @@ function RawSurveyView({ studyEnvContext, survey, readOnly = false }:
                       {studyEnvContext: StudyEnvContextT, survey: Survey, readOnly?: boolean}) {
   const { portal, study, currentEnv } = studyEnvContext
   const navigate = useNavigate()
-  const { user } = useUser()
 
   const [currentSurvey, setCurrentSurvey] = useState(survey)
   /** saves the survey as a new version */
   async function createNewVersion({ content: updatedTextContent }: { content: string }): Promise<void> {
-    if (!user.superuser) {
-      Store.addNotification(failureNotification('you do not have permissions to save surveys'))
-      return
-    }
-
     survey.content = updatedTextContent
     try {
       const updatedSurvey = await Api.createNewSurveyVersion(portal.shortcode, currentSurvey)
@@ -66,34 +60,51 @@ function RawSurveyView({ studyEnvContext, survey, readOnly = false }:
   )
 }
 
-/** routable component for survey editing */
-function SurveyView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
-  const params = useParams<SurveyParamsT>()
-  const surveyStableId: string | undefined = params.surveyStableId
+/** loads a survey and associated data (e.g. answer mappings) */
+export const useLoadedSurvey = (portalShortcode: string, stableId: string, version: number) => {
   const [survey, setSurvey] = useState<Survey | undefined>()
   const [isLoading, setIsLoading] = useState(true)
-  const { currentEnv } = studyEnvContext
-  const [searchParams] = useSearchParams()
-  const isReadOnly = searchParams.get('readOnly') === 'true'
 
-  if (!surveyStableId) {
-    return <span>you need to specify the stableId of the survey</span>
-  }
-  const envSurvey = currentEnv.configuredSurveys
-    .find(s => s.survey.stableId === surveyStableId)?.survey
-  if (!envSurvey) {
-    return <span>The survey {surveyStableId} does not exist in this environment</span>
-  }
   /** load the survey from the server to get answer mappings and ensure we've got the latest content */
   useEffect(() => {
     setIsLoading(true)
-    Api.getSurvey(studyEnvContext.portal.shortcode, surveyStableId, envSurvey.version).then(result => {
+    Api.getSurvey(portalShortcode, stableId, version).then(result => {
       setSurvey(result)
       setIsLoading(false)
     }).catch(e => {
       Store.addNotification(failureNotification(`could not load survey ${  e.message}`))
     })
-  }, [studyEnvContext.portal.shortcode, studyEnvContext.currentEnv.environmentName, surveyStableId])
+  }, [portalShortcode, stableId, version])
+
+  return { isLoading, survey }
+}
+
+/** read survey-related url params */
+export const useSurveyParams = () => {
+  const params = useParams<SurveyParamsT>()
+  const [searchParams] = useSearchParams()
+  const isReadOnly = searchParams.get('readOnly') === 'true'
+  const version = params.version ? parseInt(params.version) : undefined
+
+  return { isReadOnly, version, stableId: params.surveyStableId }
+}
+
+/** routable component for survey editing */
+function SurveyView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
+  const { isReadOnly, version, stableId } = useSurveyParams()
+  const { currentEnv, portal } = studyEnvContext
+
+  const envSurvey = currentEnv.configuredSurveys
+    .find(s => s.survey.stableId === stableId)?.survey
+  const appliedVersion = version || envSurvey?.version
+  if (!stableId) {
+    return <span>You must specify a stableId for the survey to edit</span>
+  }
+  if (!appliedVersion) {
+    return <span>The survey {stableId} is not already configured for this environment
+      -- you must specify a version</span>
+  }
+  const { isLoading, survey } = useLoadedSurvey(portal.shortcode, stableId, appliedVersion)
 
   return <>
     { isLoading && <LoadingSpinner/> }
