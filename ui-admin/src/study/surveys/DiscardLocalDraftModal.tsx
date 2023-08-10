@@ -3,7 +3,7 @@ import { Button } from '../../components/forms/Button'
 import React from 'react'
 
 /**
- *
+ * Modal presenting the user with the option to discard a local draft. Shown on Cancel if there is a local draft.
  */
 const DiscardLocalDraftModal = ({ onDismiss, onClose, onDiscard }: {
   onDismiss: () => void

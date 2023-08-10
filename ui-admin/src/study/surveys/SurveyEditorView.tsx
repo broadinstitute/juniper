@@ -134,7 +134,10 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
         )}
         <button className="btn btn-secondary" type="button"
           onClick={onClickCancel}>Cancel</button>
-        {showLoadedDraftModal && <LoadedLocalDraftModal onDismiss={() => setShowLoadedDraftModal(false)} />}
+        {showLoadedDraftModal &&
+            <LoadedLocalDraftModal
+              onDismiss={() => setShowLoadedDraftModal(false)}
+              lastUpdated={getDraft(FORM_DRAFT_KEY)?.date || 0}/>}
         {showDiscardDraftModal &&
             <DiscardLocalDraftModal
               onClose={() => {
