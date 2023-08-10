@@ -5,10 +5,10 @@ import React from 'react'
 /**
  * Modal presenting the user with the option to discard a local draft. Shown on Cancel if there is a local draft.
  */
-const DiscardLocalDraftModal = ({ onDismiss, onClose, onDiscard }: {
+const DiscardLocalDraftModal = ({ formDraftKey, onExit, onDismiss }: {
+  formDraftKey: string
+  onExit: () => void
   onDismiss: () => void
-  onClose: () => void
-  onDiscard: () => void
 }) => {
   return <Modal show={true} onHide={onDismiss}>
     <Modal.Header>
@@ -21,14 +21,19 @@ const DiscardLocalDraftModal = ({ onDismiss, onClose, onDiscard }: {
     <ModalFooter>
       <Button
         variant="primary"
-        onClick={onClose}
+        onClick={() => {
+          onDismiss()
+          onExit()
+        }}
       >
         Exit & save draft
       </Button>
       <Button
         variant="danger"
         onClick={() => {
-          onDiscard()
+          localStorage.removeItem(formDraftKey)
+          onDismiss()
+          onExit()
         }}
       >
         Exit & discard draft

@@ -140,15 +140,8 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
               lastUpdated={getDraft(FORM_DRAFT_KEY)?.date || 0}/>}
         {showDiscardDraftModal &&
             <DiscardLocalDraftModal
-              onClose={() => {
-                setShowDiscardDraftModal(false)
-                onCancel()
-              }}
-              onDiscard={() => {
-                setShowDiscardDraftModal(false)
-                localStorage.removeItem(FORM_DRAFT_KEY)
-                onCancel()
-              }}
+              formDraftKey={FORM_DRAFT_KEY}
+              onExit={() => onCancel()}
               onDismiss={() => setShowDiscardDraftModal(false)}
             />}
       </div>
