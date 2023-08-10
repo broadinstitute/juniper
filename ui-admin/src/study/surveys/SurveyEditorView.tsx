@@ -28,12 +28,6 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     onSave
   } = props
 
-  const [isEditorValid, setIsEditorValid] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [savingDraft, setSavingDraft] = useState(false)
-  const [showLoadedDraftModal, setShowLoadedDraftModal] = useState(false)
-  const [showDiscardDraftModal, setShowDiscardDraftModal] = useState(false)
-
   const getDraft = (key: string) => {
     const draft = localStorage.getItem(key)
     if (!draft) {
@@ -44,7 +38,23 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     }
   }
 
+  const saveDraft = (key: string) => {
+    const saveDate = Date.now()
+    setSavingDraft(true)
+    localStorage.setItem(key, JSON.stringify({ content: editedContentRef.current, date: saveDate }))
+    //Saving a draft happens so quickly that the "Saving draft..." message isn't even visible to the user.
+    //Set a timeout to show it for 2 seconds so the user knows that their drafts are being saved.
+    setTimeout(() => {
+      setSavingDraft(false)
+    }, 2000)
+  }
+
   const FORM_DRAFT_KEY = `surveyDraft_${currentForm.id}_${currentForm.version}`
+  const [isEditorValid, setIsEditorValid] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [savingDraft, setSavingDraft] = useState(false)
+  const [showDiscardDraftModal, setShowDiscardDraftModal] = useState(false)
+  const [showLoadedDraftModal, setShowLoadedDraftModal] = useState(getDraft(FORM_DRAFT_KEY) !== undefined)
   const [editedContent, setEditedContent] = useState<string | undefined>(getDraft(FORM_DRAFT_KEY)?.content)
   const isSaveEnabled = !!editedContent && isEditorValid && !saving
 
@@ -53,20 +63,12 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
 
   useEffect(() => {
     const saveToLocalStorage = () => {
-      const saveDate = Date.now()
       if (editedContentRef.current) {
-        setSavingDraft(true)
-        localStorage.setItem(FORM_DRAFT_KEY, JSON.stringify({ content: editedContentRef.current, date: saveDate }))
-        //Saving a draft happens so quickly that the "Saving draft..." message isn't even visible to the user.
-        //Set a timeout to show it for 2 seconds so the user knows that their drafts are being saved.
-        setTimeout(() => {
-          setSavingDraft(false)
-        }, 2000)
+        saveDraft(FORM_DRAFT_KEY)
       }
     }
 
     const draftSaveInterval = setInterval(saveToLocalStorage, 5000) //save draft every 60 seconds
-
     return () => {
       clearInterval(draftSaveInterval)
     }
@@ -134,14 +136,15 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
         )}
         <button className="btn btn-secondary" type="button"
           onClick={onClickCancel}>Cancel</button>
-        {showLoadedDraftModal &&
+        {showLoadedDraftModal && getDraft(FORM_DRAFT_KEY) &&
             <LoadedLocalDraftModal
               onDismiss={() => setShowLoadedDraftModal(false)}
-              lastUpdated={getDraft(FORM_DRAFT_KEY)?.date || 0}/>}
+              lastUpdated={getDraft(FORM_DRAFT_KEY)?.date}/>}
         {showDiscardDraftModal &&
             <DiscardLocalDraftModal
               formDraftKey={FORM_DRAFT_KEY}
               onExit={() => onCancel()}
+              onSaveDraft={() => saveDraft(FORM_DRAFT_KEY)}
               onDismiss={() => setShowDiscardDraftModal(false)}
             />}
       </div>

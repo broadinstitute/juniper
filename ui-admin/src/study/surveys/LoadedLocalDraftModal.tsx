@@ -6,7 +6,7 @@ import Modal from 'react-bootstrap/Modal'
  */
 const LoadedLocalDraftModal = ({ onDismiss, lastUpdated }: {
   onDismiss: () => void
-  lastUpdated: number
+  lastUpdated: number | undefined
 }) => {
   return <Modal show={true} onHide={onDismiss}>
     <Modal.Header>
@@ -15,7 +15,7 @@ const LoadedLocalDraftModal = ({ onDismiss, lastUpdated }: {
     <Modal.Body>
       <p>A previously unsaved survey draft was automatically loaded.
         Be sure to save the survey in order to publish your changes.</p>
-      <span>This draft was last updated {new Date(lastUpdated).toLocaleString()}</span>
+      {lastUpdated && <span>This draft was last updated {new Date(lastUpdated).toLocaleString()}</span> }
     </Modal.Body>
   </Modal>
 }

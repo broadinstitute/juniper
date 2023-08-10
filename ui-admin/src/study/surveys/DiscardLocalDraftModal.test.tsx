@@ -11,6 +11,7 @@ describe('DiscardLocalDraftModal', () => {
     render(<DiscardLocalDraftModal
       formDraftKey={FORM_DRAFT_KEY}
       onExit={() => jest.fn()}
+      onSaveDraft={() => jest.fn()}
       onDismiss={() => jest.fn()}
     />)
 
@@ -30,6 +31,7 @@ describe('DiscardLocalDraftModal', () => {
     render(<DiscardLocalDraftModal
       formDraftKey={FORM_DRAFT_KEY}
       onExit={() => jest.fn()}
+      onSaveDraft={() => jest.fn()}
       onDismiss={() => jest.fn()}
     />)
 
