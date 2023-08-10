@@ -3,7 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
 
 import {  StudyParams } from 'study/StudyRouter'
-import {StudyEnvContextT, studyEnvFormsPath} from 'study/StudyEnvironmentRouter'
+import { StudyEnvContextT, studyEnvFormsPath } from 'study/StudyEnvironmentRouter'
 import Api, {
   ConsentForm,
   StudyEnvironmentConsent
@@ -16,7 +16,7 @@ import SurveyEditorView from './SurveyEditorView'
 function RawConsentView({ studyEnvContext, consent, readOnly = false }:
                          {studyEnvContext: StudyEnvContextT,
                            consent: ConsentForm, readOnly?: boolean}) {
-  const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
+  const { portal, study, currentEnv } = studyEnvContext
   const navigate = useNavigate()
 
   const [currentForm, setCurrentForm] = useState(consent)
