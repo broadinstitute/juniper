@@ -4,9 +4,9 @@ import { VersionedForm } from 'api/api'
 
 import { Button } from 'components/forms/Button'
 import { FormContentEditor } from 'forms/FormContentEditor'
-import LoadedLocalDraftModal from '../../forms/designer/modals/LoadedLocalDraftModal'
-import DiscardLocalDraftModal from '../../forms/designer/modals/DiscardLocalDraftModal'
-import { deleteDraft, getDraft, saveDraft } from '../../forms/designer/utils/FormDraftUtils'
+import LoadedLocalDraftModal from 'forms/designer/modals/LoadedLocalDraftModal'
+import DiscardLocalDraftModal from 'forms/designer/modals/DiscardLocalDraftModal'
+import { deleteDraft, getDraft, saveDraft } from 'forms/designer/utils/formDraftUtils'
 
 type SurveyEditorViewProps = {
   currentForm: VersionedForm
@@ -30,8 +30,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const [saving, setSaving] = useState(false)
   const [savingDraft, setSavingDraft] = useState(false)
   const [showDiscardDraftModal, setShowDiscardDraftModal] = useState(false)
-  const [showLoadedDraftModal, setShowLoadedDraftModal] = useState(
-    getDraft({ formDraftKey: FORM_DRAFT_KEY }) !== undefined)
+  const [showLoadedDraftModal, setShowLoadedDraftModal] = useState(false)
 
   const [editedContent, setEditedContent] = useState<string | undefined>(
     getDraft({ formDraftKey: FORM_DRAFT_KEY })?.content)
@@ -43,7 +42,11 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   useEffect(() => {
     const saveToLocalStorage = () => {
       if (editedContentRef.current) {
-        saveDraft({ formDraftKey: FORM_DRAFT_KEY, content: editedContentRef.current })
+        saveDraft({
+          formDraftKey: FORM_DRAFT_KEY,
+          content: editedContentRef.current,
+          setSavingDraft
+        })
       }
     }
 
@@ -123,7 +126,11 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
             <DiscardLocalDraftModal
               formDraftKey={FORM_DRAFT_KEY}
               onExit={() => onCancel()}
-              onSaveDraft={() => saveDraft({ formDraftKey: FORM_DRAFT_KEY, content: editedContent })}
+              onSaveDraft={() => saveDraft({
+                formDraftKey: FORM_DRAFT_KEY,
+                content: editedContent,
+                setSavingDraft
+              })}
               onDismiss={() => setShowDiscardDraftModal(false)}
             />}
       </div>
