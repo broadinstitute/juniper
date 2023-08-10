@@ -1,6 +1,6 @@
 import React from 'react'
 import Modal from 'react-bootstrap/Modal'
-import {Button} from "../../../components/forms/Button";
+import { Button } from 'components/forms/Button'
 
 /**
  * Shown to the user if the form editor is opened and we detect a local draft.

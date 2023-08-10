@@ -30,10 +30,13 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const [saving, setSaving] = useState(false)
   const [savingDraft, setSavingDraft] = useState(false)
   const [showDiscardDraftModal, setShowDiscardDraftModal] = useState(false)
-  const [showLoadedDraftModal, setShowLoadedDraftModal] = useState(false)
+
+  //Let the user know if we loaded a draft from local storage when the component first renders. It's important
+  //for them to know if the version of the survey they're seeing are from a draft or are actually published.
+  const [showLoadedDraftModal, setShowLoadedDraftModal] = useState(!!getDraft({ formDraftKey: FORM_DRAFT_KEY }))
 
   const [editedContent, setEditedContent] = useState<string | undefined>(
-    getDraft({ formDraftKey: FORM_DRAFT_KEY })?.content)
+    !readOnly ? getDraft({ formDraftKey: FORM_DRAFT_KEY })?.content : undefined)
   const isSaveEnabled = !!editedContent && isEditorValid && !saving
 
   const editedContentRef = useRef<string | undefined>()
@@ -56,13 +59,12 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     }
   }, [])
 
-  //Let the user know if we loaded a draft from local storage when the component first renders. It's important
-  //for them to know if the version of the survey they're seeing are from a draft or are actually published.
-  useEffect(() => {
-    if (getDraft({ formDraftKey: FORM_DRAFT_KEY })) {
-      setShowLoadedDraftModal(true)
-    }
-  }, [])
+
+  // useEffect(() => {
+  //   if (editedContent) {
+  //     setShowLoadedDraftModal(true)
+  //   }
+  // }, [])
 
   const onClickSave = async () => {
     if (!isSaveEnabled) {

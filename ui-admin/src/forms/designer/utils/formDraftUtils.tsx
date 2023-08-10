@@ -1,9 +1,10 @@
-
 type Draft = {
   content: string
   date: number
 }
-export function getDraft({ formDraftKey }: { formDraftKey: string }) {
+
+/** returns a form draft from local storage, if there is one */
+export function getDraft({ formDraftKey }: { formDraftKey: string }): Draft | undefined {
   const draft = localStorage.getItem(formDraftKey)
   if (!draft) {
     return undefined
@@ -13,6 +14,7 @@ export function getDraft({ formDraftKey }: { formDraftKey: string }) {
   }
 }
 
+/** saves a form draft to local storage with the current timestamp, if there is one */
 export function saveDraft({ formDraftKey, content, setSavingDraft }: {
   formDraftKey: string,
   content: string
@@ -28,6 +30,7 @@ export function saveDraft({ formDraftKey, content, setSavingDraft }: {
   }, 2000)
 }
 
+/** deletes a form draft from local storage */
 export function deleteDraft({ formDraftKey }: { formDraftKey: string }) {
   localStorage.removeItem(formDraftKey)
 }

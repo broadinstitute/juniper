@@ -1,5 +1,5 @@
 import { Modal, ModalFooter } from 'react-bootstrap'
-import { Button } from '../../../components/forms/Button'
+import { Button } from 'components/forms/Button'
 import React from 'react'
 
 /**
