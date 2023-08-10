@@ -1,28 +1,27 @@
-type Draft = {
+export type FormDraft = {
   content: string
   date: number
 }
 
 /** returns a form draft from local storage, if there is one */
-export function getDraft({ formDraftKey }: { formDraftKey: string }): Draft | undefined {
+export function getDraft({ formDraftKey }: { formDraftKey: string }): FormDraft | undefined {
   const draft = localStorage.getItem(formDraftKey)
   if (!draft) {
     return undefined
   } else {
-    const draftParsed: Draft = JSON.parse(draft)
+    const draftParsed: FormDraft = JSON.parse(draft)
     return draftParsed
   }
 }
 
 /** saves a form draft to local storage with the current timestamp, if there is one */
-export function saveDraft({ formDraftKey, content, setSavingDraft }: {
+export function saveDraft({ formDraftKey, draft, setSavingDraft }: {
   formDraftKey: string,
-  content: string
+  draft: FormDraft
   setSavingDraft: (saving: boolean) => void
 }) {
-  const date = Date.now()
   setSavingDraft(true)
-  localStorage.setItem(formDraftKey, JSON.stringify({ content, date }))
+  localStorage.setItem(formDraftKey, JSON.stringify(draft))
   //Saving a draft happens so quickly that the "Saving draft..." message isn't even visible to the user.
   //Set a timeout to show it for 2 seconds so the user knows that their drafts are being saved.
   setTimeout(() => {
