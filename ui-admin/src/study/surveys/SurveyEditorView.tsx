@@ -54,7 +54,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
       }
     }
 
-    const draftSaveInterval = setInterval(saveToLocalStorage, 60000)
+    const draftSaveInterval = setInterval(saveToLocalStorage, 10000)
     return () => {
       clearInterval(draftSaveInterval)
     }
