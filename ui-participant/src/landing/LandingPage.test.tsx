@@ -1,46 +1,49 @@
 import React from 'react'
 import { usePortalEnv } from 'providers/PortalProvider'
+import { render, screen, waitFor } from '@testing-library/react'
+import LandingPage from './LandingPage'
+import { expectNever, setupRouterTest } from 'test-utils/router-testing-utils'
 import {
-    HtmlPage,
-    HtmlSection,
-    LocalSiteContent,
-    NavbarItem,
-    Portal,
-    PortalEnvironment, PortalEnvironmentConfig,
-    PortalStudy, SiteContent, Survey
-} from "@juniper/ui-core";
-import {render, screen} from "@testing-library/react";
-import HtmlPageView from "./HtmlPageView";
-import LandingPage from "./LandingPage";
-import {setupRouterTest} from "../test-utils/router-testing-utils";
-import HubPage from "../hub/HubPage";
+  mockLocalSiteContent,
+  mockPortal,
+  mockPortalEnvironment
+} from 'test-utils/test-portal-factory'
 
-const emptySiteContent: LocalSiteContent = {
-    language: "en",
-    navbarItems: [],
-    landingPage: {
-        title: '',
-        path: '',
-        sections: []
-    },
-    navLogoCleanFileName: '',
-    navLogoVersion: 1
-}
-
-const emptyPortal: Portal = {
-    id: '',
-    name: '',
-    shortcode: '',
-    portalEnvironments: [],
-    portalStudies: []
-}
+jest.mock('providers/PortalProvider', () => {
+  return {
+    ...jest.requireActual('providers/PortalProvider'),
+    usePortalEnv: jest.fn()
+  }
+})
 
 describe('LandingPage', () => {
-    it('handles trivial landing page', () => {
-        const { RoutedComponent } =
-            setupRouterTest(
-                    <LandingPage localContent={emptySiteContent}/>)
-        render(RoutedComponent)
-        expect(screen.getByText('Join Mailing List')).not.toBeVisible()
+  beforeEach(() => {
+    // @ts-expect-error "TS doesn't know about mocks"
+    usePortalEnv.mockReturnValue({
+      portal: mockPortal(),
+      portalEnv: mockPortalEnvironment(),
+      localContent: mockLocalSiteContent()
     })
+  })
+
+  it('handles trivial landing page', () => {
+    const { RoutedComponent } =
+            setupRouterTest(
+              <LandingPage localContent={mockLocalSiteContent()}/>)
+    render(RoutedComponent)
+    // mailing list modal is hidden by default
+    expectNever(() =>
+      expect(screen.getByLabelText('Join mailing list')).toHaveAttribute('aria-hidden', 'false')
+    )
+  })
+
+  it('shows mailing list modal if url param is present', () => {
+    const { RoutedComponent } =
+            setupRouterTest(
+              <LandingPage localContent={mockLocalSiteContent()}/>, ['?showJoinMailingList=true'])
+    render(RoutedComponent)
+    // mailing list modal is hidden by default
+    waitFor(() => expect(screen.getByLabelText('Join mailing list'))
+      .toHaveAttribute('aria-hidden', 'false'))
+  })
 })

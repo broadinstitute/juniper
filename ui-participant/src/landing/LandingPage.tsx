@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import React, { useEffect, useRef } from 'react'
-import {Link, Outlet, useLocation, useSearchParams} from 'react-router-dom'
+import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom'
 import { LocalSiteContent, MailingListModal, HtmlSectionView } from '@juniper/ui-core'
 import _uniqueId from 'lodash/uniqueId'
 import Navbar from '../Navbar'
@@ -15,7 +15,7 @@ function LandingPageView({ localContent }: { localContent: LocalSiteContent }) {
   // see https://blog.openreplay.com/understanding-the-useid-hook-in-react/
   const mailingListModalId = useRef(_uniqueId('mailingListModel'))
   const [searchParams] = useSearchParams()
-  const mailingList = searchParams.get(MAILING_LIST_QUERY_PARAM)
+  const mailingListParamValue = searchParams.get(MAILING_LIST_QUERY_PARAM)
 
   useEffect(() => {
     const mailingListLinks = document.querySelectorAll<HTMLLinkElement>('a[href="#mailing-list"]')
@@ -27,7 +27,7 @@ function LandingPageView({ localContent }: { localContent: LocalSiteContent }) {
 
   useEffect(() => {
     /** if the mailingList query param is present, auto-trigger the modal */
-    if (mailingList !== 'true') {
+    if (mailingListParamValue !== 'true') {
       return
     }
     const modalEl = document.querySelector(`#${mailingListModalId.current}`)
