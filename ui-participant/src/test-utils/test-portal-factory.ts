@@ -7,6 +7,7 @@ import {
   SiteContent
 } from '@juniper/ui-core'
 
+/** mock portal object with one environment */
 export const mockPortal = (): Portal => {
   return {
     name: 'mock portal',
@@ -17,6 +18,7 @@ export const mockPortal = (): Portal => {
   }
 }
 
+/* mock environment with a siteContent */
 export const mockPortalEnvironment = (): PortalEnvironment => {
   return {
     environmentName: 'sandbox',
@@ -25,6 +27,7 @@ export const mockPortalEnvironment = (): PortalEnvironment => {
   }
 }
 
+/** mock config with everything open */
 export const mockPortalEnvironmentConfig = (): PortalEnvironmentConfig => {
   return {
     acceptingRegistration: true,
@@ -34,6 +37,7 @@ export const mockPortalEnvironmentConfig = (): PortalEnvironmentConfig => {
   }
 }
 
+/** mock site content with one localization */
 export const mockSiteContent = (): SiteContent => {
   return {
     defaultLanguage: 'en',
@@ -43,6 +47,7 @@ export const mockSiteContent = (): SiteContent => {
   }
 }
 
+/** mock local content with a single empty landing page */
 export const mockLocalSiteContent = (): LocalSiteContent => {
   return {
     language: 'en',
@@ -53,6 +58,7 @@ export const mockLocalSiteContent = (): LocalSiteContent => {
   }
 }
 
+/** mock empty page */
 export const mockHtmlPage = (): HtmlPage => {
   return {
     title: 'mock home page',
