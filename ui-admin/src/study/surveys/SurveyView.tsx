@@ -108,7 +108,7 @@ function SurveyView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
 
   return <>
     { isLoading && <LoadingSpinner/> }
-    { !isLoading && <RawSurveyView studyEnvContext={studyEnvContext} survey={survey!} readOnly={isReadOnly}/> }
+    { !isLoading && survey && <RawSurveyView studyEnvContext={studyEnvContext} survey={survey} readOnly={isReadOnly}/> }
   </>
 }
 
