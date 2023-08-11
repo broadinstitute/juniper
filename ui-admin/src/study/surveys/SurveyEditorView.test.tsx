@@ -29,7 +29,8 @@ describe('SurveyEditorView', () => {
     />)
 
     //Assert
-    screen.getByText('Survey Draft Loaded')
+    const modalHeader = screen.getByText('Survey Draft Loaded')
+    expect(modalHeader).toBeInTheDocument()
   })
 
   test('checks local storage for a draft', async () => {
