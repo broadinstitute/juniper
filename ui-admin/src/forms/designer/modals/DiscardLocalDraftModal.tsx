@@ -14,11 +14,11 @@ const DiscardLocalDraftModal = ({ formDraftKey, onExit, onSaveDraft, onDismiss }
 }) => {
   return <Modal show={true} onHide={onDismiss}>
     <Modal.Header>
-      <Modal.Title>Discard Changes?</Modal.Title>
+      <Modal.Title>Unsaved Changes</Modal.Title>
     </Modal.Header>
     <Modal.Body>
-      <p>Are you sure you want to cancel? You have an unsaved survey draft. You can
-        discard the draft if it is no longer needed.</p>
+      <p>Are you sure you want to cancel? You have an unsaved survey draft. You can save the
+        draft and return to edit it later, or discard the draft if it is no longer needed.</p>
     </Modal.Body>
     <ModalFooter>
       <Button
