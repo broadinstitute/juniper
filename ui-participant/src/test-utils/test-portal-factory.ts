@@ -18,7 +18,7 @@ export const mockPortal = (): Portal => {
   }
 }
 
-/* mock environment with a siteContent */
+/** mock environment with a siteContent */
 export const mockPortalEnvironment = (): PortalEnvironment => {
   return {
     environmentName: 'sandbox',
