@@ -67,6 +67,7 @@ Open the root folder in IntelliJ.
        * set environment variable: `B2C_CLIENT_ID=<<vault read -field value secret/dsp/ddp/b2c/dev/application_id>>`
        * set environment variable: `B2C_POLICY_NAME=B2C_1A_ddp_participant_signup_signin_dev`
        * set environment variable: `DSM_JWT_SIGNING_SECRET=<<vault read -field jwt_signing_secret secret/dsp/ddp/d2p/dev/dsm>>`
+       * set environment variable: `SENDGRID_API_KEY=<<vault read -field=api_key secret/dsp/ddp/d2p/dev/sendgrid>>`
      * ApiParticipantApp (in api-participant module)
         * set active profiles of "human-readable-logging" and "development"
         * set environment variable: `SENDGRID_API_KEY=<<vault read -field=api_key secret/dsp/ddp/d2p/dev/sendgrid>>`
