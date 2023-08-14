@@ -140,10 +140,7 @@ public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> imp
     }
 
     public void attachAnswerMappings(Survey survey) {
-        survey.getAnswerMappings().clear();
-        survey.getAnswerMappings().addAll(
-                answerMappingDao.findBySurveyId(survey.getId())
-        );
+        survey.setAnswerMappings(answerMappingDao.findBySurveyId(survey.getId()));
     }
 
     public int getNextVersion(String stableId) {
