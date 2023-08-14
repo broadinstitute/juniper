@@ -86,11 +86,9 @@ public class CurrentUserService {
   public record UserWithEnrollees(ParticipantUser user, List<Enrollee> enrollees) {}
 
   @Transactional
-  public void logout(String token) {
-    Optional<ParticipantUser> userOpt = participantUserDao.findByToken(token);
-    ParticipantUser user = userOpt.get();
-    user.setToken(null);
-    participantUserDao.update(user);
+  public void logout(ParticipantUser user) {
+    // we don't store token information locally yet (we might have to later if we take async
+    // actions on their behalf). So for now, this is a no-op, B2C handles the logout mechanics
   }
 
   public Optional<ParticipantUser> findByUsername(
