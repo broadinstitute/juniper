@@ -4,11 +4,10 @@ import bio.terra.pearl.api.participant.api.CurrentUserApi;
 import bio.terra.pearl.api.participant.service.CurrentUserService;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import java.util.Optional;
 import java.util.function.Function;
 import javax.servlet.http.HttpServletRequest;
-
-import bio.terra.pearl.core.model.participant.ParticipantUser;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
