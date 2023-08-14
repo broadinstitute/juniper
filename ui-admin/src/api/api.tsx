@@ -593,7 +593,7 @@ export default {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/kits`
     const response = await fetch(url, this.getGetInit())
     const kits: KitRequest[] = await this.processJsonResponse(response)
-    kits.forEach(kit => kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus))
+    kits.forEach(kit => { kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus) })
     return kits
   },
 
