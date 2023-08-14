@@ -76,15 +76,13 @@ const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {s
     </Modal.Header>
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
-        <label className="form-label"> Survey Name
-          <input type="text" size={50} className="form-control" id="inputSurveyName" value={surveyName}
-            onChange={event => setSurveyName(event.target.value)}/>
-        </label>
-        <label className="form-label"> Survey Stable ID
-          <InfoPopup content={'A stable and unique identifier for the survey. May be shown in exported datasets.'}/>
-          <input type="text" size={50} className="form-control" id="inputSurveyStableId" value={surveyStableId}
-            onChange={event => setSurveyStableId(event.target.value)}/>
-        </label>
+        <label className="form-label" htmlFor="inputSurveyName">Survey Name</label>
+        <input type="text" size={50} className="form-control" id="inputSurveyName" value={surveyName}
+          onChange={event => setSurveyName(event.target.value)}/>
+        <label className="form-label" htmlFor="inputSurveyStableId">Survey Stable ID</label>
+        <InfoPopup content={'A stable and unique identifier for the survey. May be shown in exported datasets.'}/>
+        <input type="text" size={50} className="form-control" id="inputSurveyStableId" value={surveyStableId}
+          onChange={event => setSurveyStableId(event.target.value)}/>
       </form>
     </Modal.Body>
     <Modal.Footer>
