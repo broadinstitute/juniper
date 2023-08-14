@@ -89,7 +89,11 @@ const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {s
     </Modal.Body>
     <Modal.Footer>
       <LoadingSpinner isLoading={isLoading}>
-        <button className="btn btn-primary" onClick={createSurvey}>Create</button>
+        <button
+          className="btn btn-primary"
+          disabled={!surveyName || !surveyStableId}
+          onClick={createSurvey}
+        >Create</button>
         <button className="btn btn-secondary" onClick={() => {
           setShow(false)
           clearFields()
