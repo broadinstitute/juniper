@@ -16,6 +16,8 @@ import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import org.apache.commons.text.StringSubstitutor;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.startsWith;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -99,6 +101,24 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
         assertThat(replacerLive.replace("here's a dashboard link: ${dashboardLink}"),
                 equalTo("here's a dashboard link: <a href=\"https://newstudy.org/hub\">Return to PortalA</a>"));
 
+    }
+
+    @Test
+    public void testMailLinkVariablesReplaced() {
+        Profile profile = Profile.builder().build();
+        Enrollee enrollee = Enrollee.builder().build();
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
+        PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
+                .emailSourceAddress("info@test.edu")
+                .build();
+        PortalEnvironment portalEnv = portalEnvironmentFactory.builder("testMailLinkVariablesReplaced")
+                .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
+        Portal portal = Portal.builder().name("PortalA").build();
+
+        var contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvironmentConfig, null, null);
+        StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
+        assertThat(replacer.replace("Contact us at: ${participantSupportEmailLink}"),
+                equalTo("Contact us at: <a href=\"mailto:info@test.edu\" rel=\"noopener\" target=\"_blank\">info@test.edu</a>"));
     }
 
     @Test

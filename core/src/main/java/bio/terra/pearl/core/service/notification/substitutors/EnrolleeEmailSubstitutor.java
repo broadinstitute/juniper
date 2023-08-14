@@ -9,6 +9,7 @@ import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookup;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
                         contextInfo.portal(), contextInfo.study()),
                 "dashboardUrl", getDashboardUrl(contextInfo.portalEnv(), contextInfo.portal()),
                 "siteLink", getSiteLink(contextInfo.portalEnv(), contextInfo.portal()),
+                "participantSupportEmailLink", getParticipantSupportEmailLink(contextInfo.portalEnv()),
                 "siteImageBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portal().getShortcode()),
                 // providing a study isn't required, since emails might come from the portal, rather than a study
                 // but immutable map doesn't allow nulls
@@ -92,6 +94,15 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         return routingPaths.getParticipantBaseUrl(portalEnvironment, portalShortcode)
                 + "/api/public/portals/v1/" + portalShortcode + "/env/" + portalEnvironment.getEnvironmentName()
                 + "/siteImages";
+    }
+
+    public String getParticipantSupportEmailLink(PortalEnvironment portalEnvironment) {
+        String emailAddress =portalEnvironment.getPortalEnvironmentConfig().getEmailSourceAddress();
+        if (StringUtils.isBlank(emailAddress)) {
+            // if there's nothing configured for the study, default to the site-wide Juniper support email
+            emailAddress = routingPaths.getSupportEmailAddress();
+        }
+        return String.format("<a href=\"mailto:%s\" rel=\"noopener\" target=\"_blank\">%s</a>", emailAddress, emailAddress);
     }
 
 
