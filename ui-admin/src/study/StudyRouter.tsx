@@ -8,7 +8,7 @@ import StudyDashboard from './StudyDashboard'
 import PortalUserList from '../user/PortalUserList'
 import PortalEnvDiffProvider from '../portal/publish/PortalEnvDiffProvider'
 import StudyPublishingView from './publishing/StudyPublishingView'
-import LoadingSpinner from "../util/LoadingSpinner";
+import LoadingSpinner from '../util/LoadingSpinner'
 
 export type StudyContextT = {
   updateStudy: (study: Study) => void
