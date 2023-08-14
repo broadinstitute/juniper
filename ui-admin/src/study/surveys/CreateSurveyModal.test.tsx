@@ -1,4 +1,4 @@
-import {act, render, screen} from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 import CreateSurveyModal from './CreateSurveyModal'
 import { mockStudyEnvContext } from '../../test-utils/mocking-utils'
