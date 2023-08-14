@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 import CreateSurveyModal from './CreateSurveyModal'
 import { mockStudyEnvContext } from 'test-utils/mocking-utils'
-import { setupRouterTest } from '../../test-utils/router-testing-utils'
+import { setupRouterTest } from 'test-utils/router-testing-utils'
 import userEvent from '@testing-library/user-event'
 
 describe('CreateSurveyModal', () => {
