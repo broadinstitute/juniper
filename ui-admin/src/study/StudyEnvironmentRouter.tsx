@@ -96,10 +96,11 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       <Route path="forms">
         <Route path="preEnroll">
           <Route path=":surveyStableId" element={<PreEnrollView studyEnvContext={studyEnvContext}/>}/>
-          <Route path="*" element={<div>Unknown prereg page</div>}/>
+          <Route path="*" element={<div>Unknown preEnroll page</div>}/>
         </Route>
         <Route path="surveys">
           <Route path=":surveyStableId">
+            <Route path=":version" element={<SurveyView studyEnvContext={studyEnvContext}/>}/>
             <Route index element={<SurveyView studyEnvContext={studyEnvContext}/>}/>
           </Route>
           <Route path="scratch" element={<QuestionScratchbox/>}/>

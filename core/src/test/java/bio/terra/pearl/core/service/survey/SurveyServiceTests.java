@@ -76,6 +76,43 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     }
 
     @Test
+    @Transactional
+    public void testCreateNewVersionWithMappings() {
+        AnswerMapping answerMapping = AnswerMapping.builder()
+                .questionStableId("qStableId")
+                .targetField("givenName")
+                .mapType(AnswerMappingMapType.STRING_TO_STRING)
+                .targetType(AnswerMappingTargetType.PROFILE)
+                .build();
+        Survey survey = surveyFactory.buildPersisted("testPublishSurvey", List.of(answerMapping));
+        AdminUser user = adminUserFactory.buildPersisted("testPublishSurvey");
+        String oldContent = survey.getContent();
+        String newContent = String.format("{\"pages\":[],\"title\":\"%s\"}", RandomStringUtils.randomAlphabetic(6));
+        survey.setContent(newContent);
+
+        AnswerMapping answerMappingUpdate = AnswerMapping.builder()
+                .questionStableId("qStableId")
+                .targetField("lastName")
+                .mapType(AnswerMappingMapType.STRING_TO_STRING)
+                .targetType(AnswerMappingTargetType.PROFILE)
+                .build();
+        survey.getAnswerMappings().clear();
+        survey.getAnswerMappings().add(answerMappingUpdate);
+        Survey newSurvey = surveyService.createNewVersion(survey.getPortalId(), survey);
+        surveyService.attachAnswerMappings(newSurvey);
+        // check version was incremented and answer mappings were saved too
+        Assertions.assertEquals(survey.getVersion() + 1, newSurvey.getVersion());
+        Assertions.assertEquals(1, newSurvey.getAnswerMappings().size());
+        Assertions.assertEquals("lastName", newSurvey.getAnswerMappings().get(0).getTargetField());
+
+        // confirm old version answer mappings weren't changed
+        surveyService.attachAnswerMappings(survey);
+        Assertions.assertEquals(1, survey.getAnswerMappings().size());
+        Assertions.assertEquals("givenName", survey.getAnswerMappings().get(0).getTargetField());
+
+    }
+
+    @Test
     public void testGetSurveyQuestionDefinitions() {
         Survey survey = surveyFactory.buildPersisted("testPublishSurvey");
         String surveyContent = """
