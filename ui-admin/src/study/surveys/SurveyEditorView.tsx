@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 import { VersionedForm } from 'api/api'
 
@@ -7,6 +7,7 @@ import { FormContentEditor } from 'forms/FormContentEditor'
 import LoadedLocalDraftModal from 'forms/designer/modals/LoadedLocalDraftModal'
 import DiscardLocalDraftModal from 'forms/designer/modals/DiscardLocalDraftModal'
 import { deleteDraft, FormDraft, getDraft, getFormDraftKey, saveDraft } from 'forms/designer/utils/formDraftUtils'
+import { useAutosaveEffect } from '@juniper/ui-core/build/autoSaveUtils'
 
 type SurveyEditorViewProps = {
   currentForm: VersionedForm
@@ -25,6 +26,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   } = props
 
   const FORM_DRAFT_KEY = getFormDraftKey({ form: currentForm })
+  const FORM_DRAFT_SAVE_INTERVAL = 10000
 
   const [isEditorValid, setIsEditorValid] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -43,22 +45,17 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const draftRef = useRef<FormDraft | undefined>()
   draftRef.current = draft || undefined
 
-  useEffect(() => {
-    const saveToLocalStorage = () => {
-      if (draftRef.current) {
-        saveDraft({
-          formDraftKey: FORM_DRAFT_KEY,
-          draft: draftRef.current,
-          setSavingDraft
-        })
-      }
+  const saveDraftToLocalStorage = () => {
+    if (draftRef.current) {
+      saveDraft({
+        formDraftKey: FORM_DRAFT_KEY,
+        draft: draftRef.current,
+        setSavingDraft
+      })
     }
+  }
 
-    const draftSaveInterval = setInterval(saveToLocalStorage, 10000)
-    return () => {
-      clearInterval(draftSaveInterval)
-    }
-  }, [])
+  useAutosaveEffect(saveDraftToLocalStorage, FORM_DRAFT_SAVE_INTERVAL)
 
   const onClickSave = async () => {
     if (!isSaveEnabled) {

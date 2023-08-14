@@ -28,6 +28,7 @@ import { withErrorBoundary } from 'util/ErrorBoundary'
 import SurveyReviewModeButton from './ReviewModeButton'
 import { SurveyModel } from 'survey-core'
 import { DocumentTitle } from 'util/DocumentTitle'
+import { useAutosaveEffect } from '@juniper/ui-core/build/autoSaveUtils'
 
 const TASK_ID_PARAM = 'taskId'
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
@@ -129,19 +130,7 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
     })
   }
 
-  useEffect(() => {
-    let timeoutHandle: number
-    // auto-save the survey at the specified interval
-    (function loop() {
-      timeoutHandle = window.setTimeout(() => {
-        saveDiff()
-        loop()
-      }, AUTO_SAVE_INTERVAL)
-    })()
-    return () => {
-      window.clearTimeout(timeoutHandle)
-    }
-  }, [])
+  useAutosaveEffect(saveDiff, AUTO_SAVE_INTERVAL)
 
   return (
     <>
