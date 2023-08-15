@@ -91,26 +91,15 @@ public class LivePepperDSMClient implements PepperDSMClient {
      * these possibilities and, when possible, converting them into a useful PepperException.
      */
     private <T> T retrieveAndDeserializeResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec, Class<T> clazz) {
-//        try {
-            // Read the body as a String and manually deserialize so we can capture and log the body if deserialization fails
-            return requestHeadersSpec
-                    .retrieve()
-                    .onStatus(
-                            status -> status.is4xxClientError() || status.is5xxServerError(),
-                            this::deserializePepperError)
-                    .bodyToMono(String.class)
-                    .flatMap(deserializeTo(clazz))
-                    .block();
-//        } catch (RuntimeException e) {
-//            var cause = e.getCause();
-//            // Unwrap a PepperException if it came from handling of 4xx/5xx response or deserialization error
-//            if (cause instanceof PepperException) {
-//                throw (PepperException) cause;
-//            } else {
-//                // A truly unexpected runtime exception
-//                throw e;
-//            }
-//        }
+        // Read the body as a String and manually deserialize so we can capture and log the body if deserialization fails
+        return requestHeadersSpec
+                .retrieve()
+                .onStatus(
+                        status -> status.is4xxClientError() || status.is5xxServerError(),
+                        this::deserializePepperError)
+                .bodyToMono(String.class)
+                .flatMap(deserializeTo(clazz))
+                .block();
     }
 
     /**
