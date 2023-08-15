@@ -147,7 +147,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
               className={classNames(
                 'd-flex',
                 'flex-column align-items-center',
-                'flex-sm-row align-items-sm-start flex-sm-wrap'
+                'flex-sm-row align-items-sm-start flex-sm-wrap row-gap-4'
               )}
             >
               {_.map(logos, (logo, i) => {

@@ -38,6 +38,18 @@
               "version": 1,
               "alt": "Massachusetts General Hospital logo",
               "style": { "height": "40px" }
+            },
+            {
+              "cleanFileName": "hms_logo.png",
+              "version": 1,
+              "alt": "Harvard Medical School",
+              "style": { "height": "40px" }
+            },
+            {
+              "cleanFileName": "stanford_med_logo.png",
+              "version": 1,
+              "alt": "Stanford Medical School",
+              "style": { "height": "40px" }
             }
           ]
         }
