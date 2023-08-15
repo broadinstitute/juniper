@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 
 import { VersionedForm } from 'api/api'
 
@@ -42,17 +42,17 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
 
   const isSaveEnabled = !!draft && isEditorValid && !saving
 
-  const draftRef = useRef<FormDraft | undefined>()
-  draftRef.current = draft || undefined
-
   const saveDraftToLocalStorage = () => {
-    if (draftRef.current) {
-      saveDraft({
-        formDraftKey: FORM_DRAFT_KEY,
-        draft: draftRef.current,
-        setSavingDraft
-      })
-    }
+    setDraft(currentDraft => {
+      if (currentDraft && currentDraft?.content !== getDraft({ formDraftKey: FORM_DRAFT_KEY })?.content) {
+        saveDraft({
+          formDraftKey: FORM_DRAFT_KEY,
+          draft: currentDraft,
+          setSavingDraft
+        })
+      }
+      return currentDraft
+    })
   }
 
   useAutosaveEffect(saveDraftToLocalStorage, FORM_DRAFT_SAVE_INTERVAL)
