@@ -19,7 +19,8 @@ public class ApplicationRoutingPaths {
     @Getter
     private final String participantDashboardPath = "/hub";
     @Getter
-    private final String supportEmailAddress;
+    private final String supportEmailAddress;  // the site-wide support email address (e.g. support@juniper...) NOT study-specific
+
 
     public ApplicationRoutingPaths(Environment env) {
         participantUiHostname = env.getProperty("env.hostnames.participantUi");
