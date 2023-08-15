@@ -38,7 +38,9 @@ public class KitRequestFactory {
 
     public KitRequest buildPersisted(String testName, UUID enrolleeId) throws JsonProcessingException {
         KitType kitType = kitTypeFactory.buildPersisted(testName);
-        return buildPersisted(testName, enrolleeId, kitType.getId());
+        var kitRequest = buildPersisted(testName, enrolleeId, kitType.getId());
+        kitRequest.setKitType(kitType);
+        return kitRequest;
     }
 
     public KitRequest buildPersisted(String testName, UUID enrolleeId, UUID kitTypeId) throws JsonProcessingException {

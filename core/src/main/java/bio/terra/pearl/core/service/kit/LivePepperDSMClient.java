@@ -10,12 +10,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.function.Function;
 
 @Component
 public class LivePepperDSMClient implements PepperDSMClient {
@@ -27,32 +29,39 @@ public class LivePepperDSMClient implements PepperDSMClient {
                                WebClient.Builder webClientBuilder,
                                ObjectMapper objectMapper) {
         this.pepperDSMConfig = pepperDSMConfig;
-        this.webClient = webClientBuilder
-                .baseUrl(this.pepperDSMConfig.getBasePath())
-                .build();
+        this.webClient = webClientBuilder.build();
         this.objectMapper = objectMapper;
     }
 
     @Override
-    public String sendKitRequest(Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address)
-            throws JsonProcessingException {
+    public String sendKitRequest(Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
+        var body = makeKitRequestBody(enrollee, kitRequest, address);
+        var request = webClient
+                .post().uri("%s/shipKit".formatted(pepperDSMConfig.getBasePath()))
+                .header("Authorization", "Bearer " + generateDsmJwt())
+                .bodyValue(body);
+        return retrieveAndDeserializeResponse(request, String.class);
+    }
+
+    private String makeKitRequestBody(Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
         var juniperKitRequest = PepperDSMKitRequest.JuniperKitRequest.builderWithAddress(address)
                 .juniperKitId(kitRequest.getId().toString())
                 .juniperParticipantId(enrollee.getShortcode())
                 .build();
         var pepperDSMKitRequest = PepperDSMKitRequest.builder()
                 .juniperKitRequest(juniperKitRequest)
-                .kitType("SALIVA")
+                .kitType(kitRequest.getKitType().getName())
                 .juniperStudyId("Juniper-mock-guid")
                 .build();
 
-        var body = objectMapper.writeValueAsString(pepperDSMKitRequest);
-        Mono<String> stringMono = webClient
-                .post().uri("/shipKit")
-                .header("Authorization", "Bearer " + generateDsmJwt())
-                .bodyValue(body)
-                .retrieve().bodyToMono(String.class);
-        return stringMono.block();
+        try {
+            return objectMapper.writeValueAsString(pepperDSMKitRequest);
+        } catch (JsonProcessingException e) {
+            // Wrap in a RuntimeException to make it trigger rollback from @Transactional methods. There's no good
+            // reason for PepperDSMKitRequest serialization to fail, so we can't assume that anything in the current
+            // transaction is valid.
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -66,11 +75,73 @@ public class LivePepperDSMClient implements PepperDSMClient {
     }
 
     private String generateDsmJwt() {
-        var fifteenMinutes = 15 * 60 * 1000;
         var now = System.currentTimeMillis();
+        var fifteenMinutes = 15 * 60 * 1000;
         return JWT.create()
                 .withExpiresAt(Instant.ofEpochMilli(now + fifteenMinutes))
                 .sign(Algorithm.HMAC256(pepperDSMConfig.getSecret()));
+    }
+
+    /**
+     * Performs the request defined by the given WebClient specification and deserializes the response to the given
+     * type.
+     *
+     * There are several potential sources of error here, including unchecked exceptions from 4xx/5xx response status
+     * and JSON parsing and deserialization exceptions. This method centralizes the behavior of robustly handling any of
+     * these possibilities and, when possible, converting them into a useful PepperException.
+     */
+    private <T> T retrieveAndDeserializeResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec, Class<T> clazz) {
+//        try {
+            // Read the body as a String and manually deserialize so we can capture and log the body if deserialization fails
+            return requestHeadersSpec
+                    .retrieve()
+                    .onStatus(
+                            status -> status.is4xxClientError() || status.is5xxServerError(),
+                            this::deserializePepperError)
+                    .bodyToMono(String.class)
+                    .flatMap(deserializeTo(clazz))
+                    .block();
+//        } catch (RuntimeException e) {
+//            var cause = e.getCause();
+//            // Unwrap a PepperException if it came from handling of 4xx/5xx response or deserialization error
+//            if (cause instanceof PepperException) {
+//                throw (PepperException) cause;
+//            } else {
+//                // A truly unexpected runtime exception
+//                throw e;
+//            }
+//        }
+    }
+
+    /**
+     * Deserialize a PepperErrorResponse into a PepperException, robustly handling deserialization errors.
+     */
+    private Mono<PepperException> deserializePepperError(ClientResponse clientResponse) {
+        // Read the body as a String and manually deserialize so we can capture and log the body if deserialization fails
+        return clientResponse.bodyToMono(String.class)
+                .flatMap(deserializeTo(PepperErrorResponse.class))
+                .map(pepperErrorResponse -> new PepperException("Error from Pepper", pepperErrorResponse));
+    }
+
+    /**
+     * Returns a function to deserialize a body String to the given type. If we were to use `bodyToMono(clazz)`
+     * directly, deserialization failure would result in a `JsonProcessingException` and we would lose access to the
+     * response body. Therefore, we do the deserialization manually so that we can capture the body for logging and
+     * troubleshooting.
+     */
+    private <T> Function<String, Mono<T>> deserializeTo(Class<T> clazz) {
+        return body -> {
+            // No deserialization needed if the requested response type is String
+            if (clazz.equals(String.class)) {
+                return Mono.just(clazz.cast(body));
+            }
+            try {
+                return Mono.just(objectMapper.readValue(body, clazz));
+            } catch (JsonProcessingException e) {
+                return Mono.error(new PepperException(
+                        "Unable to parse response from Pepper as %s: %s".formatted(clazz.getName(), body), e));
+            }
+        };
     }
 }
 

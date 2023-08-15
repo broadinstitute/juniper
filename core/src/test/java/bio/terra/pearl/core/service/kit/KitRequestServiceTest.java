@@ -13,6 +13,7 @@ import bio.terra.pearl.core.service.participant.ProfileService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,6 +26,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -60,6 +62,36 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         assertThat(objectMapper.readValue(sampleKit.getSentToAddress(), PepperKitAddress.class),
                 equalTo(expectedSentToAddress));
         assertThat(sampleKit.getStatus(), equalTo(KitRequestStatus.CREATED));
+    }
+
+    @Transactional
+    @Test
+    public void testRequestKitError() throws Exception {
+        // Arrange
+        var adminUser = adminUserFactory.buildPersisted("testRequestKit");
+        var kitType = kitTypeFactory.buildPersisted("testRequestKit");
+        var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testRequestKit");
+        var enrollee = enrolleeBundle.enrollee();
+        var profile = enrollee.getProfile();
+        profile.setGivenName("Alex");
+        profile.setFamilyName("Tester");
+        profile.setPhoneNumber("111-222-3333");
+        profile.getMailingAddress().setStreet1("123 Fake Street");
+        profileService.updateWithMailingAddress(profile);
+
+        when(mockPepperDSMClient.sendKitRequest(any(), any(), any())).thenAnswer(invocation -> {
+            var kitRequest = (KitRequest) invocation.getArguments()[1];
+            throw new PepperException("boom",
+                    PepperErrorResponse.builder()
+                            .juniperKitId(kitRequest.getId().toString())
+                            .build());
+        });
+
+        // "Act"
+        Executable act = () -> kitRequestService.requestKit(adminUser, enrollee, kitType.getName());
+
+        // Assert
+        PepperException pepperException = assertThrows(PepperException.class, act);
     }
 
     @Transactional

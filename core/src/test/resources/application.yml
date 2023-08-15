@@ -8,6 +8,9 @@ env:
     password: ${DATABASE_USER_PASSWORD:dbpwd}
     user: ${DATABASE_USER:test_dbuser}
 
+  dsm:
+    basePath: ${DSM_ADDRESS:https://dsm-dev.datadonationplatform.org/ddp}
+    secret: ${DSM_JWT_SIGNING_SECRET:}
   tracing:
     exportEnabled: ${CLOUD_TRACE_ENABLED:false}
     samplingRate: ${SAMPLING_PROBABILITY:0}
