@@ -24,9 +24,11 @@ function RawSurveyView({ studyEnvContext, survey, readOnly = false }:
   const [currentSurvey, setCurrentSurvey] = useState(survey)
   /** saves the survey as a new version */
   async function createNewVersion({ content: updatedTextContent }: { content: string }): Promise<void> {
-    survey.content = updatedTextContent
     try {
-      const updatedSurvey = await Api.createNewSurveyVersion(portal.shortcode, currentSurvey)
+      const updatedSurvey = await Api.createNewSurveyVersion(
+        portal.shortcode,
+        { ...currentSurvey, content: updatedTextContent }
+      )
       const configuredSurvey = currentEnv.configuredSurveys
         .find(s => s.survey.stableId === updatedSurvey.stableId) as StudyEnvironmentSurvey
       const updatedConfig = { ...configuredSurvey, surveyId: updatedSurvey.id, survey: updatedSurvey }
