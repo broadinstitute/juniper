@@ -4,6 +4,7 @@ import bio.terra.pearl.api.participant.api.CurrentUserApi;
 import bio.terra.pearl.api.participant.service.CurrentUserService;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import java.util.Optional;
 import java.util.function.Function;
 import javax.servlet.http.HttpServletRequest;
@@ -48,8 +49,8 @@ public class CurrentUserController implements CurrentUserApi {
      * this currently does a global logout. That may change as we determine how portals interact
      * with each other and how we whitelabel.
      */
-    String token = requestUtilService.requireToken(request);
-    currentUserService.logout(token);
+    ParticipantUser user = requestUtilService.requireUser(request);
+    currentUserService.logout(user);
     return ResponseEntity.noContent().build();
   }
 }
