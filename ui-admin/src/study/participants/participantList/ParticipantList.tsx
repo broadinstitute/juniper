@@ -125,10 +125,11 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     onRowSelectionChange: setRowSelection
   })
 
-  const searchEnrollees = async (facetValues: FacetValue[]) => {
+  const searchEnrollees = async (portalShortcode: string, studyShortcode: string,
+    envName: string, facetValues: FacetValue[]) => {
     setIsLoading(true)
     try {
-      const response = await Api.searchEnrollees(portal.shortcode, study.shortcode, currentEnv.environmentName,
+      const response = await Api.searchEnrollees(portalShortcode, studyShortcode, envName,
         facetValues)
       setParticipantList(response)
     } catch (e) {
@@ -138,8 +139,8 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   }
 
   useEffect(() => {
-    searchEnrollees(facetValues)
-  }, [study.shortcode, currentEnv.environmentName])
+    searchEnrollees(portal.shortcode, study.shortcode, currentEnv.environmentName, facetValues)
+  }, [portal.shortcode, study.shortcode, currentEnv.environmentName])
 
   const numSelected = Object.keys(rowSelection).length
   const allowSendEmail = numSelected > 0

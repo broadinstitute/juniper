@@ -58,6 +58,8 @@ module.exports = {
     'multiline-comment-style': 'off',
     'no-lonely-if': 'off',
     'no-multi-assign': 'warn',
+    'no-return-assign': 'warn',
+    'no-cond-assign': 'warn',
     'no-multiple-empty-lines': 'warn',
     'no-trailing-spaces': 'warn',
     'no-unneeded-ternary': 'warn',

@@ -8,6 +8,7 @@ import StudyDashboard from './StudyDashboard'
 import PortalUserList from '../user/PortalUserList'
 import PortalEnvDiffProvider from '../portal/publish/PortalEnvDiffProvider'
 import StudyPublishingView from './publishing/StudyPublishingView'
+import LoadingSpinner from '../util/LoadingSpinner'
 
 export type StudyContextT = {
   updateStudy: (study: Study) => void
@@ -39,10 +40,16 @@ export default function StudyRouter({ portalContext }: {portalContext: LoadedPor
 function StudyRouterFromShortcode({ shortcode, portalContext }:
                        { shortcode: string, portalContext: LoadedPortalContextT}) {
   const matchedPortalStudy = portalContext.portal.portalStudies.find(portalStudy => {
-    return portalStudy.study.shortcode = shortcode
+    return portalStudy.study.shortcode === shortcode
   })
   if (!matchedPortalStudy) {
-    return <div>Study could not be loaded or found.</div>
+    /**
+     * if we can't match it, this is likely because the user has switched studies, but the corresponding
+     * portal hasn't loaded yet.  This can happen due to race conditions in how StudyRouter and PortalProvider
+     * both listen to urlParams to determine what to load.  As the hub-study-portal relationships continue to mature
+     * we may consider a unified studyPortalRouter that can handle everything with more synchronicity.
+     */
+    return <div><LoadingSpinner/></div>
   }
 
   const study = matchedPortalStudy?.study

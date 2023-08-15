@@ -118,7 +118,7 @@ const InactivityTimer = ({ maxIdleSessionDuration, idleWarningDuration, doSignOu
 
   useEffect(() => {
     const targetEvents = ['click', 'keydown']
-    const updateLastActive = () => lastRecordedActivity.current = Date.now()
+    const updateLastActive = () => { lastRecordedActivity.current = Date.now() }
 
     if (!lastRecordedActivity.current) {
       updateLastActive()
