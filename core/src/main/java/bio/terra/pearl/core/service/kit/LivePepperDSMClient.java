@@ -91,7 +91,6 @@ public class LivePepperDSMClient implements PepperDSMClient {
      * these possibilities and, when possible, converting them into a useful PepperException.
      */
     private <T> T retrieveAndDeserializeResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec, Class<T> clazz) {
-        // Read the body as a String and manually deserialize so we can capture and log the body if deserialization fails
         return requestHeadersSpec
                 .retrieve()
                 .onStatus(
