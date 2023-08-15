@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, {useEffect, useRef} from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context'
 import { usePortalEnv } from 'providers/PortalProvider'
@@ -50,6 +50,7 @@ export const RedirectFromOAuth = () => {
           //   * handle possible study enrollment
           //   * navigate to the hub
           // TODO: remember where the user was trying to go and navigate there instead of hard-coding /hub
+
           const email = auth.user.profile.email as string
           const accessToken = auth.user.access_token
 
@@ -57,6 +58,7 @@ export const RedirectFromOAuth = () => {
           const loginResult = auth.user.profile.newUser
             ? await Api.register({ preRegResponseId, email, accessToken })
             : await Api.tokenLogin(accessToken)
+
           loginUser(loginResult, accessToken)
 
           // Decide if there's a study that has either been explicitly selected or is implicit because it's the only one
@@ -94,7 +96,12 @@ export const RedirectFromOAuth = () => {
     }
 
     handleRedirectFromOauth()
-  })
+    /**
+     * only process redirect logic if the auth token has changed.  Previously, we were redirecting
+     * on all rerenders, which was leading to multiple redirects if, for example, the useUser() was
+     * updated in response to the loginUser() call
+     */
+  }, [auth.user?.access_token])
 
   return <PageLoadingIndicator />
 }
