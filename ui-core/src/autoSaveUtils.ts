@@ -14,5 +14,5 @@ export function useAutosaveEffect(saveFn: () => void, autoSaveInterval: number) 
     return () => {
       window.clearTimeout(timeoutHandle)
     }
-  }, [])
+  }, [saveFn])
 }
