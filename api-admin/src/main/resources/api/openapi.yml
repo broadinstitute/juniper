@@ -129,6 +129,20 @@ paths:
           content: { application/json: { schema: {type: object} } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/surveys/{stableId}:
+    get:
+      summary: gets all versions of the requested survey
+      tags: [ survey ]
+      operationId: getAllVersions
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: survey object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/surveys:
     post:
       summary: creates the requested survey, will fail if the given stableId already exists

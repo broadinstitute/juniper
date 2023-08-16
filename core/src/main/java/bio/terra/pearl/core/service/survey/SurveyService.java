@@ -36,6 +36,10 @@ public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> imp
         return dao.findByStableId(stableId);
     }
 
+    public List<Survey> findByStableIdNoContent(String stableId) {
+        return dao.findByStableIdNoContent(stableId);
+    }
+
     public Optional<Survey> findByStableIdWithMappings(String stableId, int version) {
         return dao.findByStableIdWithMappings(stableId, version);
     }

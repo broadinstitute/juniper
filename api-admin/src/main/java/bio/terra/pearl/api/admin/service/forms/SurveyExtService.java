@@ -41,6 +41,13 @@ public class SurveyExtService {
     return survey;
   }
 
+  public List<Survey> listVersions(String portalShortcode, String stableId, AdminUser adminUser) {
+    Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
+    // TODO: do we need to auth survey to portal here?
+    List<Survey> surveys = surveyService.findByStableIdNoContent(stableId);
+    return surveys;
+  }
+
   public Survey create(String portalShortcode, Survey survey, AdminUser adminUser) {
     Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
     List<Survey> existing = surveyService.findByStableId(survey.getStableId());

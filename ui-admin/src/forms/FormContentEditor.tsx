@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Tab, Tabs } from 'react-bootstrap'
 
-import { FormContent } from '@juniper/ui-core'
+import { FormContent, VersionedForm } from '@juniper/ui-core'
 
 import { FormDesigner } from './FormDesigner'
 import { OnChangeFormContent } from './formEditorTypes'
@@ -12,6 +12,7 @@ import ErrorBoundary from 'util/ErrorBoundary'
 
 type FormContentEditorProps = {
   initialContent: string
+  previewedVersions: VersionedForm[]
   readOnly: boolean
   onChange: OnChangeFormContent
 }
@@ -19,7 +20,7 @@ type FormContentEditorProps = {
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
 export const FormContentEditor = (props: FormContentEditorProps) => {
-  const { initialContent, readOnly, onChange } = props
+  const { initialContent, previewedVersions, readOnly, onChange } = props
 
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [tabsEnabled, setTabsEnabled] = useState(true)
@@ -86,6 +87,15 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             <FormPreview formContent={editedContent} />
           </ErrorBoundary>
         </Tab>
+        { previewedVersions.map(form =>
+          <Tab
+            disabled={activeTab !== `preview${form.version}` && !tabsEnabled}
+            eventKey={`preview${form.version}`}
+            title={`Version ${form.version}`}
+          >
+            <FormPreview formContent={JSON.parse(form.content) as FormContent} />
+          </Tab>
+        )}
       </Tabs>
     </div>
   )
