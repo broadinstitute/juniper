@@ -4,6 +4,10 @@ import { VersionedForm } from 'api/api'
 
 import { Button } from 'components/forms/Button'
 import { FormContentEditor } from 'forms/FormContentEditor'
+import LoadedLocalDraftModal from 'forms/designer/modals/LoadedLocalDraftModal'
+import DiscardLocalDraftModal from 'forms/designer/modals/DiscardLocalDraftModal'
+import { deleteDraft, FormDraft, getDraft, getFormDraftKey, saveDraft } from 'forms/designer/utils/formDraftUtils'
+import { useAutosaveEffect } from '@juniper/ui-core/build/autoSaveUtils'
 
 type SurveyEditorViewProps = {
   currentForm: VersionedForm
@@ -21,10 +25,37 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     onSave
   } = props
 
-  const [editedContent, setEditedContent] = useState<string>()
+  const FORM_DRAFT_KEY = getFormDraftKey({ form: currentForm })
+  const FORM_DRAFT_SAVE_INTERVAL = 10000
+
   const [isEditorValid, setIsEditorValid] = useState(true)
   const [saving, setSaving] = useState(false)
-  const isSaveEnabled = !!editedContent && isEditorValid && !saving
+  const [savingDraft, setSavingDraft] = useState(false)
+
+  //Let the user know if we loaded a draft from local storage when the component first renders. It's important
+  //for them to know if the version of the survey they're seeing are from a draft or are actually published.
+  const [showLoadedDraftModal, setShowLoadedDraftModal] = useState(!!getDraft({ formDraftKey: FORM_DRAFT_KEY }))
+  const [showDiscardDraftModal, setShowDiscardDraftModal] = useState(false)
+
+  const [draft, setDraft] = useState<FormDraft | undefined>(
+    !readOnly ? getDraft({ formDraftKey: FORM_DRAFT_KEY }) : undefined)
+
+  const isSaveEnabled = !!draft && isEditorValid && !saving
+
+  const saveDraftToLocalStorage = () => {
+    setDraft(currentDraft => {
+      if (currentDraft && currentDraft?.content !== getDraft({ formDraftKey: FORM_DRAFT_KEY })?.content) {
+        saveDraft({
+          formDraftKey: FORM_DRAFT_KEY,
+          draft: currentDraft,
+          setSavingDraft
+        })
+      }
+      return currentDraft
+    })
+  }
+
+  useAutosaveEffect(saveDraftToLocalStorage, FORM_DRAFT_SAVE_INTERVAL)
 
   const onClickSave = async () => {
     if (!isSaveEnabled) {
@@ -32,10 +63,21 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     }
     setSaving(true)
     try {
-      await onSave({ content: editedContent })
-      setEditedContent(undefined)
+      await onSave({ content: draft?.content })
+      //Once we've persisted the form draft to the database, there's no need to keep it in local storage.
+      //Future drafts will have different FORM_DRAFT_KEYs anyway, as they're based on the form version number.
+      deleteDraft({ formDraftKey: FORM_DRAFT_KEY })
+      setDraft(undefined)
     } finally {
       setSaving(false)
+    }
+  }
+
+  const onClickCancel = () => {
+    if (draft) {
+      setShowDiscardDraftModal(true)
+    } else {
+      onCancel()
     }
   }
 
@@ -47,12 +89,13 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
             <span className="detail me-2 ms-2">version {currentForm.version}</span>
           </h5>
         </div>
+        { savingDraft && <span className="detail me-2 ms-2">Saving draft...</span> }
         {!readOnly && (
           <Button
             disabled={!isSaveEnabled}
             className="me-md-2"
             tooltip={(() => {
-              if (!editedContent) {
+              if (!draft) {
                 return 'Form is unchanged. Make changes to save.'
               }
               if (!isEditorValid) {
@@ -66,14 +109,31 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
             Save
           </Button>
         )}
-        <button className="btn btn-secondary" type="button" onClick={onCancel}>Cancel</button>
+        <button className="btn btn-secondary" type="button"
+          onClick={onClickCancel}>Cancel</button>
+        { showLoadedDraftModal && draft &&
+            <LoadedLocalDraftModal
+              onDismiss={() => setShowLoadedDraftModal(false)}
+              lastUpdated={draft?.date}/>}
+        { showDiscardDraftModal && draft &&
+            <DiscardLocalDraftModal
+              formDraftKey={FORM_DRAFT_KEY}
+              onExit={() => onCancel()}
+              onSaveDraft={() =>
+                saveDraft({
+                  formDraftKey: FORM_DRAFT_KEY,
+                  draft,
+                  setSavingDraft
+                })}
+              onDismiss={() => setShowDiscardDraftModal(false)}
+            />}
       </div>
       <FormContentEditor
-        initialContent={currentForm.content}
+        initialContent={draft?.content || currentForm.content} //favor loading the draft, if we find one
         readOnly={readOnly}
         onChange={(isValid, newContent) => {
           if (isValid) {
-            setEditedContent(JSON.stringify(newContent))
+            setDraft({ content: JSON.stringify(newContent), date: Date.now() })
           }
           setIsEditorValid(isValid)
         }}
