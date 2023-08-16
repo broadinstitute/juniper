@@ -34,7 +34,7 @@
             "type": "panel",
             "elements": [
               {
-                " type": "html",
+                "type": "html",
                 "name": "oh_oh_basic_intro",
                 "html": "<h2>About You</h2><p>Please answer each question as honestly as possible. There are no right or wrong answers to any of the questions. We are looking for your own answers, and not what you think your doctors, family, or friends want you to say. If you do not want to answer, please select “Prefer not to answer” and move to the next question.</p>"
               }

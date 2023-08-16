@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 public class PopulateExtServiceTests {
   private PopulateExtService emptyService =
-      new PopulateExtService(null, null, null, null, siteContentPopulator, null, null);
+      new PopulateExtService(null, null, null, null, null, null, null);
 
   @Test
   public void baseSeedRequiresAuth() {
@@ -40,6 +40,16 @@ public class PopulateExtServiceTests {
         () ->
             emptyService.populateEnrollee(
                 "ffo", EnvironmentName.live, "dfa", "dfadf", user, false));
+  }
+
+  @Test
+  public void siteContentRequiresAuth() {
+    AdminUser user = new AdminUser();
+    Assertions.assertThrows(
+            PermissionDeniedException.class,
+            () ->
+                    emptyService.populateSiteContent(
+                            "ffo", "dfa", user, false));
   }
 
   @Test
