@@ -24,7 +24,7 @@ import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
 import LoadingSpinner from './util/LoadingSpinner'
 import AdminSidebar from './navbar/AdminSidebar'
 import NavContextProvider from 'navbar/NavContextProvider'
-import PopulateControls from "./populate/PopulateControls";
+import PopulateRouteSelect from './populate/PopulateRouteSelect'
 const HelpRouter = lazy(() => import('./help/HelpRouter'))
 
 
@@ -48,7 +48,7 @@ function App() {
                       <Route element={<ProtectedRoute>
                         <NavContextProvider><PageFrame/></NavContextProvider>
                       </ProtectedRoute>}>
-                        <Route path="populate/*" element={<PopulateControls/>}/>
+                        <Route path="populate/*" element={<PopulateRouteSelect/>}/>
                         <Route path="users" element={<UserList/>}/>
                         <Route path=":portalShortcode/*" element={<PortalProvider><PortalRouter/></PortalProvider>}/>
                         <Route index element={<HomePage/>}/>

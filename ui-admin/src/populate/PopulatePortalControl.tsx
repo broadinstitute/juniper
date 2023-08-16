@@ -1,26 +1,39 @@
-import React, {useState} from 'react'
-import Select from 'react-select'
-import Api from "api/api";
-import {failureNotification, successNotification} from "../util/notifications";
-import {Store} from "react-notifications-component";
-import {useFileNameControl, useOverwriteControl} from "./PopulateControls";
+import React, { useState } from 'react'
+import Api from 'api/api'
+import { failureNotification, successNotification } from '../util/notifications'
+import { Store } from 'react-notifications-component'
+import { OverwriteControl, PopulateButton, useFileNameControl } from './PopulateControls'
+
+/** control for invoking the populate portal API */
 export default function PopulatePortalControl() {
-    const {isOverwrite, overwriteControl} = useOverwriteControl()
-    const {fileName, fileNameControl} = useFileNameControl()
-    const populate = async () => {
-        try {
-            await Api.populatePortal(fileName, isOverwrite)
-            Store.addNotification(successNotification('Populate succeeded'))
-        } catch {
-            Store.addNotification(failureNotification('Populate failed'))
-        }
+  const [isLoading, setIsLoading] = useState(false)
+  const [isOverwrite, setIsOverwrite] = useState(false)
+  const { fileName, fileNameControl } = useFileNameControl()
+  /** execute the command */
+  const populate = async () => {
+    setIsLoading(true)
+    try {
+      await Api.populatePortal(fileName, isOverwrite)
+      Store.addNotification(successNotification('Populate succeeded'))
+    } catch {
+      Store.addNotification(failureNotification('Populate failed'))
     }
-    return <form className="row">
-        <h3 className="h5">Portal</h3>
-        <div className="d-flex flex-column row-gap-2">
-            {fileNameControl}
-            {overwriteControl}
-            <button className="btn btn-primary" type="button" onClick={populate}>Populate</button>
-        </div>
-    </form>
+    setIsLoading(false)
+  }
+  return <form className="row">
+    <h3 className="h5">Portal</h3>
+    <p>Repopulates the entire portal, including all studies contained in the portal. </p>
+    <div className="d-flex flex-column row-gap-2">
+      {fileNameControl}
+      <OverwriteControl isOverwrite={isOverwrite} setIsOverwrite={setIsOverwrite}
+        text={<span>
+                If no, no existing data or forms are touched,
+                except for synthetic participants which are refreshed.<br/>
+                If yes, existing participants, surveys, and site content will be destroyed, and everything reset to
+                from the files.  This method will fail if there are participants in the live environment who
+                have not been withdrawn.
+        </span>}/>
+      <PopulateButton onClick={populate} isLoading={isLoading}/>
+    </div>
+  </form>
 }

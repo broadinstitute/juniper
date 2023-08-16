@@ -821,6 +821,15 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async populateAdminConfig() {
+    const url = `${basePopulateUrl()}/adminConfig`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
   getParticipantLink(portalEnvConfig: PortalEnvironmentConfig, uiHostname: string,
     portalShortcode: string, envName: string): string {
     if (portalEnvConfig?.participantHostname) {
