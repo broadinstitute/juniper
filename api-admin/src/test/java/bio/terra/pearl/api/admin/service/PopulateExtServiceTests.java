@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 public class PopulateExtServiceTests {
   private PopulateExtService emptyService =
-      new PopulateExtService(null, null, null, null, null, null);
+      new PopulateExtService(null, null, null, null, siteContentPopulator, null, null);
 
   @Test
   public void baseSeedRequiresAuth() {

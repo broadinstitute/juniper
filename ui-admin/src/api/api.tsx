@@ -794,6 +794,33 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async populatePortal(fileName: string, overwrite: boolean) {
+    const url = `${basePopulateUrl()}/portal?filePathName=${fileName}&overwrite=${overwrite}`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async populateSurvey(fileName: string, overwrite: boolean, portalShortcode: string) {
+    const url = `${basePopulateUrl()}/survey/${portalShortcode}?filePathName=${fileName}&overwrite=${overwrite}`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async populateSiteContent(fileName: string, overwrite: boolean, portalShortcode: string) {
+    const url = `${basePopulateUrl()}/siteContent/${portalShortcode}?filePathName=${fileName}&overwrite=${overwrite}`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
   getParticipantLink(portalEnvConfig: PortalEnvironmentConfig, uiHostname: string,
     portalShortcode: string, envName: string): string {
     if (portalEnvConfig?.participantHostname) {
@@ -831,4 +858,9 @@ function baseStudyUrl(portalShortcode: string, studyShortcode: string) {
 /** base api path for study-scoped api requests */
 function baseStudyEnvUrl(portalShortcode: string, studyShortcode: string, envName: string) {
   return `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}/env/${envName}`
+}
+
+/** base api path for populate api calls */
+function basePopulateUrl() {
+  return `${API_ROOT}/internal/v1/populate`
 }
