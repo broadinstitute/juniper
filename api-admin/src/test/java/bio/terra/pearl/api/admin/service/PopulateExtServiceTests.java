@@ -46,10 +46,8 @@ public class PopulateExtServiceTests {
   public void siteContentRequiresAuth() {
     AdminUser user = new AdminUser();
     Assertions.assertThrows(
-            PermissionDeniedException.class,
-            () ->
-                    emptyService.populateSiteContent(
-                            "ffo", "dfa", user, false));
+        PermissionDeniedException.class,
+        () -> emptyService.populateSiteContent("ffo", "dfa", user, false));
   }
 
   @Test
