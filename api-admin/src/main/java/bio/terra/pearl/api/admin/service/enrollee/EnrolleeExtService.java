@@ -91,8 +91,7 @@ public class EnrolleeExtService {
     return withdrawnEnrolleeService.withdrawEnrollee(enrollee);
   }
 
-  public KitRequest requestKit(AdminUser adminUser, String enrolleeShortcode, String kitTypeName)
-      throws JsonProcessingException {
+  public KitRequest requestKit(AdminUser adminUser, String enrolleeShortcode, String kitTypeName) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(adminUser, enrolleeShortcode);
     return kitRequestService.requestKit(adminUser, enrollee, kitTypeName);
   }

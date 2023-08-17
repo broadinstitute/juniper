@@ -6,7 +6,6 @@ import lombok.Getter;
 
 @Getter @Builder
 public class PepperDSMKitRequest {
-    @JsonProperty("JuniperKitRequest")
     private JuniperKitRequest juniperKitRequest;
     @JsonProperty("juniperStudyGUID")
     private String juniperStudyId;
@@ -38,6 +37,7 @@ public class PepperDSMKitRequest {
                     .city(address.getCity())
                     .state(address.getState())
                     .postalCode(address.getPostalCode())
+                    .country(address.getCountry())
                     .phoneNumber(address.getPhoneNumber());
         }
     }

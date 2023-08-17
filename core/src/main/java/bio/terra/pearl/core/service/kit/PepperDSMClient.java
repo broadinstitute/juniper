@@ -8,8 +8,16 @@ import java.util.Collection;
 import java.util.UUID;
 
 public interface PepperDSMClient {
-    String sendKitRequest(Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address)
-            throws JsonProcessingException;
+    /**
+     * Sends a sample kit request to Pepper.
+     *
+     * @param enrollee   the enrollee to receive the sample kit
+     * @param kitRequest sample kit request details
+     * @param address    mailing address for the sample kit
+     * @return status result from Pepper
+     * @throws PepperException on error from Pepper or failure to process the Pepper response
+     */
+    String sendKitRequest(Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address);
     PepperKitStatus fetchKitStatus(UUID kitRequestId);
     Collection<PepperKitStatus> fetchKitStatusByStudy(UUID studyId);
 }
