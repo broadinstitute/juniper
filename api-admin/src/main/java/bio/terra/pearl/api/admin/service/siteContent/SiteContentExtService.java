@@ -21,13 +21,14 @@ public class SiteContentExtService {
   }
 
   public Optional<SiteContent> get(
-      String portalShortcode, String stableId, Integer version, AdminUser user) {
+      String portalShortcode, String stableId, Integer version, String language, AdminUser user) {
     Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
-    Optional<SiteContent> siteContent = siteContentService.findByStableId(stableId, version);
-    if (siteContent.isPresent() && !siteContent.get().getPortalId().equals(portal.getId())) {
-      return Optional.empty();
+    Optional<SiteContent> siteContentOpt = siteContentService.findByStableId(stableId, version);
+    if (siteContentOpt.isPresent() && siteContentOpt.get().getPortalId().equals(portal.getId())) {
+      siteContentService.attachChildContent(siteContentOpt.get(), language);
+      return siteContentOpt;
     }
-    return siteContent;
+    return Optional.empty();
   }
 
   public List<SiteContent> versionList(String portalShortcode, String stableId, AdminUser user) {

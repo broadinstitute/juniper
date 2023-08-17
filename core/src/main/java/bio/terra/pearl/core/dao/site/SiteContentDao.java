@@ -52,30 +52,35 @@ public class SiteContentDao extends BaseVersionedJdbiDao<SiteContent> {
     public Optional<SiteContent> findOneFull(UUID siteContentId, String language) {
         Optional<SiteContent> siteContentOpt = find(siteContentId);
         siteContentOpt.ifPresent(siteContent -> {
-            localizedSiteContentDao.findBySiteContent(siteContentId, language).ifPresent(localSite -> {
-                siteContent.getLocalizedSiteContents().add(localSite);
-                List<NavbarItem> navbarItems = navbarItemDao.findByLocalSiteId(localSite.getId());
-                List<HtmlPage> htmlPages = htmlPageDao.findByLocalSite(localSite.getId());
-                List<HtmlSection> htmlSections = htmlSectionDao.findByLocalizedSite(localSite.getId());
-                navbarItems.forEach(item -> {
-                    item.setHtmlPage(htmlPages.stream().filter(page -> page.getId().equals(item.getHtmlPageId()))
-                            .findFirst().orElse(null));
-                });
-                htmlPages.forEach(page -> {
-                    page.getSections().addAll(htmlSections.stream().filter(section ->
-                            page.getId().equals(section.getHtmlPageId())
-                    ).collect(Collectors.toList()));
-                });
-                localSite.setLandingPage(htmlPages.stream()
-                        .filter(page -> page.getId().equals(localSite.getLandingPageId()))
-                        .findFirst().orElse(null));
-                localSite.getNavbarItems().addAll(navbarItems);
-                if (localSite.getFooterSectionId() != null) {
-                    localSite.setFooterSection(htmlSectionDao.find(localSite.getFooterSectionId()).get());
-                }
-            });
+            attachChildContent(siteContent, language);
         });
         return siteContentOpt;
+    }
+
+    /** attaches all the content (pages, sections, navbar) children for the given language to the SiteContent */
+    public void attachChildContent(SiteContent siteContent, String language) {
+        localizedSiteContentDao.findBySiteContent(siteContent.getId(), language).ifPresent(localSite -> {
+            siteContent.getLocalizedSiteContents().add(localSite);
+            List<NavbarItem> navbarItems = navbarItemDao.findByLocalSiteId(localSite.getId());
+            List<HtmlPage> htmlPages = htmlPageDao.findByLocalSite(localSite.getId());
+            List<HtmlSection> htmlSections = htmlSectionDao.findByLocalizedSite(localSite.getId());
+            navbarItems.forEach(item -> {
+                item.setHtmlPage(htmlPages.stream().filter(page -> page.getId().equals(item.getHtmlPageId()))
+                        .findFirst().orElse(null));
+            });
+            htmlPages.forEach(page -> {
+                page.getSections().addAll(htmlSections.stream().filter(section ->
+                        page.getId().equals(section.getHtmlPageId())
+                ).collect(Collectors.toList()));
+            });
+            localSite.setLandingPage(htmlPages.stream()
+                    .filter(page -> page.getId().equals(localSite.getLandingPageId()))
+                    .findFirst().orElse(null));
+            localSite.getNavbarItems().addAll(navbarItems);
+            if (localSite.getFooterSectionId() != null) {
+                localSite.setFooterSection(htmlSectionDao.find(localSite.getFooterSectionId()).get());
+            }
+        });
     }
 
     public int getNextVersion(String cleanFileName, String portalShortcode) {

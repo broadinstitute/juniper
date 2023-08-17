@@ -13,7 +13,7 @@
       "sectionDtos": [{
         "sectionType": "HERO_WITH_IMAGE",
         "sectionConfigJson": {
-          "title": "Help us understand cardiovascular disease risk among South Asian populations.",
+          "title": "Help us 333 understand cardiovascular disease risk among South Asian populations.",
           "blurb": "OurHealth studies health and genetic information of South Asians living in the United States to better prevent and manage cardiovascular disease risk.",
           "fullWidth": true,
           "image": { "cleanFileName": "family.png", "version": 1, "alt": "" },
