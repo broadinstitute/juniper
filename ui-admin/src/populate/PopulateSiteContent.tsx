@@ -32,9 +32,9 @@ export default function PopulateSiteContentControl({ initialPortalShortcode }: {
       {fileNameControl}
       <OverwriteControl isOverwrite={isOverwrite} setIsOverwrite={setIsOverwrite}
         text={<span>
-                    If no, the site content will
-                    be populated to the next available version number for its stable id.<br/>
-                    If yes, existing site content with the same stableId/version will be deleted`
+                    If no, a new version will
+                    be created for its stableId..<br/>
+                    If yes, the existing stableId/version will be replaced.`
         </span>}/>
       <PopulateButton onClick={populate} isLoading={isLoading}/>
     </div>

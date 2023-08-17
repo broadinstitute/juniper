@@ -36,10 +36,10 @@ export default function PopulateSurveyControl({ initialPortalShortcode }: {initi
       {fileNameControl}
       <OverwriteControl isOverwrite={isOverwrite} setIsOverwrite={setIsOverwrite}
         text={<span>
-                If no, the survey will
-                    be populated to the next available version number for its stable id.<br/>
-                    If yes, the survey content will be updated in-place while
-                    preserving the version number.  This should almost never be used in production.
+                If no, a new version will
+                  be created for its stableId..<br/>
+                  If yes, the existing stableId/version will be replaced.
+                  Overwrite should almost never be used in production.
         </span>}/>
       <PopulateButton onClick={populate} isLoading={isLoading}/>
       <PopulateButton onClick={populate} isLoading={isLoading}/>
