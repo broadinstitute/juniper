@@ -1,4 +1,4 @@
-import React, {useEffect, useId, useState} from 'react'
+import React, { useEffect, useId, useState } from 'react'
 import LoadingSpinner from 'util/LoadingSpinner'
 import Api, { SiteContent } from 'api/api'
 import Modal from 'react-bootstrap/Modal'
@@ -58,7 +58,7 @@ export default function SiteContentVersionSelector(props: SiteContentVersionSele
         </p>
         <label htmlFor={selectId}>Select version to edit</label>
         <Select inputId={selectId} options={versionOpts} value={selectedOpt} onChange={opt =>
-        setSelectedVersion(opt?.value)}/>
+          setSelectedVersion(opt?.value)}/>
 
       </LoadingSpinner>
     </Modal.Body>
