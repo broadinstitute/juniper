@@ -44,6 +44,15 @@ public class SiteContentController implements SiteContentApi {
   }
 
   @Override
+  public ResponseEntity<Object> create(String portalShortcode, String stableId, Object body) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    SiteContent siteContent = objectMapper.convertValue(body, SiteContent.class);
+    SiteContent savedContent =
+        siteContentExtService.create(portalShortcode, stableId, siteContent, adminUser);
+    return ResponseEntity.ok(savedContent);
+  }
+
+  @Override
   public ResponseEntity<Object> versionList(String portalShortcode, String stableId) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     List<SiteContent> contents =

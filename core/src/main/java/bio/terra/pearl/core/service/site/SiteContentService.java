@@ -2,8 +2,12 @@ package bio.terra.pearl.core.service.site;
 
 import bio.terra.pearl.core.dao.site.SiteContentDao;
 import bio.terra.pearl.core.model.site.*;
+
+import bio.terra.pearl.core.model.survey.AnswerMapping;
+import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.ImmutableEntityService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
