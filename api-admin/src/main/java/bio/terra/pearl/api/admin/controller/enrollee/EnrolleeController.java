@@ -73,7 +73,7 @@ public class EnrolleeController implements EnrolleeApi {
       KitRequest sampleKit = enrolleeExtService.requestKit(adminUser, enrolleeShortcode, kitType);
       return ResponseEntity.ok(sampleKit);
     } catch (PepperException e) {
-      log.warn("Error requesting sample kit from Pepper", e);
+      log.error("Error requesting sample kit from Pepper", e);
       // In the case of a PepperException, we can do better than this because we'll likely know what
       // Pepper was unhappy
       // about, such as an address failing to validate.
