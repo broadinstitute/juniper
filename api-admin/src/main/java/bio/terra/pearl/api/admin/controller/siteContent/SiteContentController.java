@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.site.SiteContent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,6 +30,15 @@ public class SiteContentController implements SiteContentApi {
     this.siteContentExtService = siteContentExtService;
   }
 
+  @Override
+  public ResponseEntity<Object> get(String portalShortcode, String stableId, Integer version) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    Optional<SiteContent> siteContent =
+        siteContentExtService.get(portalShortcode, stableId, version, adminUser);
+    return ResponseEntity.of(siteContent.map(content -> content));
+  }
+
+  @Override
   public ResponseEntity<Object> versionList(String portalShortcode, String stableId) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     List<SiteContent> contents =

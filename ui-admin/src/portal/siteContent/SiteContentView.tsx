@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { NavbarItemInternal, PortalEnvironment } from 'api/api'
+import React, {useEffect, useState} from 'react'
+import Api, { NavbarItemInternal, PortalEnvironment } from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
@@ -7,6 +7,9 @@ import HtmlPageEditView from './HtmlPageEditView'
 import { HtmlPage, LocalSiteContent, ApiProvider, SiteContent, ApiContextT } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
 import SiteContentVersionSelector from "./SiteContentVersionSelector";
+import LoadingSpinner from "../../util/LoadingSpinner";
+import {failureNotification} from "../../util/notifications";
+import {Store} from "react-notifications-component";
 
 type NavbarOption = {label: string, value: string | null}
 const landingPageOption = { label: 'Landing page', value: null }
@@ -117,10 +120,12 @@ export const InitializedSiteContentView = ({ siteContent, previewApi, setSiteCon
 
 /** shows a view for editing site content pages */
 const SiteContentView = ({ portalEnv, portalShortcode }: {portalEnv: PortalEnvironment, portalShortcode: string}) => {
+  const [isLoading, setIsLoading] = useState(true)
   const [siteContent, setSiteContent] = useState(portalEnv.siteContent)
   if (!siteContent) {
     return <div>no site content configured</div>
   }
+
   /** uses the admin image retrieval endpoint */
   const getImageUrl = (cleanFileName: string, version: number) =>
     `/api/public/portals/v1/${portalShortcode}/env/${portalEnv.environmentName}/siteImages/${version}/${cleanFileName}`
@@ -129,8 +134,20 @@ const SiteContentView = ({ portalEnv, portalShortcode }: {portalEnv: PortalEnvir
     submitMailingListContact: () => Promise.resolve({})
   }
 
-  return <InitializedSiteContentView siteContent={siteContent} setSiteContent={setSiteContent}
-                                     previewApi={previewApi} portalShortcode={portalShortcode}/>
+  useEffect(() => {
+    Api.getSiteContent(portalShortcode, siteContent.stableId, siteContent.version).then(response => {
+      //setSiteContent(response)
+      setIsLoading(false)
+    }).catch(() => {
+      Store.addNotification(failureNotification('Could not load site content'))
+    })
+  }, [siteContent.stableId, siteContent.version])
+
+  return <>
+    { !isLoading && <InitializedSiteContentView siteContent={siteContent} setSiteContent={setSiteContent}
+                                     previewApi={previewApi} portalShortcode={portalShortcode}/> }
+    { isLoading && <LoadingSpinner/> }
+  </>
 }
 
 export default SiteContentView

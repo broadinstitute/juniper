@@ -235,7 +235,7 @@ paths:
           content: { application/json: { schema: { schema: { type: object } } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/siteContents/{stableId}/versions:
+  /api/portals/v1/{portalShortcode}/siteContents/{stableId}:
     get:
       summary: Returns available versions of the given site content with the stableID
       tags: [ siteContent ]
@@ -246,6 +246,21 @@ paths:
       responses:
         '200':
           description: list of (shallow) SiteContent objects
+          content: { application/json: { schema: { schema: { type: object } } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/siteContents/{stableId}/{version}:
+    get:
+      summary: Returns the site content with the given stableId/version
+      tags: [ siteContent ]
+      operationId: get
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: true, schema: { type: string } }
+        - { name: version, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: SiteContent object with all dependent relations attached
           content: { application/json: { schema: { schema: { type: object } } } }
         '500':
           $ref: '#/components/responses/ServerError'

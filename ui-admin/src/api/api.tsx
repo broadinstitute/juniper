@@ -521,8 +521,14 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async getSiteContent(portalShortcode: string, stableId: string, version: number) {
+    const response = await fetch(`${basePortalUrl(portalShortcode)}/siteContents/${stableId}/${version}`,
+        this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   async getSiteContentVersions(portalShortcode: string, stableId: string) {
-    const response = await fetch(`${basePortalUrl(portalShortcode)}/siteContents/${stableId}/versions`,
+    const response = await fetch(`${basePortalUrl(portalShortcode)}/siteContents/${stableId}`,
         this.getGetInit())
     return await this.processJsonResponse(response)
   },

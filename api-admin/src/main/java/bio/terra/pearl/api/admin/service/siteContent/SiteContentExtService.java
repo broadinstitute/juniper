@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +18,16 @@ public class SiteContentExtService {
       AuthUtilService authUtilService, SiteContentService siteContentService) {
     this.authUtilService = authUtilService;
     this.siteContentService = siteContentService;
+  }
+
+  public Optional<SiteContent> get(
+      String portalShortcode, String stableId, Integer version, AdminUser user) {
+    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
+    Optional<SiteContent> siteContent = siteContentService.findByStableId(stableId, version);
+    if (siteContent.isPresent() && !siteContent.get().getPortalId().equals(portal.getId())) {
+      return Optional.empty();
+    }
+    return siteContent;
   }
 
   public List<SiteContent> versionList(String portalShortcode, String stableId, AdminUser user) {

@@ -33,7 +33,7 @@ export default function SiteContentVersionSelector({ portalShortcode, stableId, 
 
     return <Modal show={true} onHide={onDismiss}>
         <Modal.Header closeButton>
-            <Modal.Title>Change version to edit</Modal.Title>
+            <Modal.Title>Select version to edit</Modal.Title>
         </Modal.Header>
         <Modal.Body>
             <LoadingSpinner isLoading={isLoading}>
