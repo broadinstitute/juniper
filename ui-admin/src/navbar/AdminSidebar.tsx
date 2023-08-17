@@ -47,8 +47,11 @@ const AdminSidebar = () => {
 
       {user.superuser && <CollapsableMenu header={'Superuser functions'} content={
         <ul className="list-unstyled">
-          <li>
+          <li className="mb-3">
             <NavLink to="/users" className="text-white">All users</NavLink>
+          </li>
+          <li>
+            <NavLink to="/populate" className="text-white">Populate</NavLink>
           </li>
         </ul>}/>}
     </>}

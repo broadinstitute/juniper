@@ -4,6 +4,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.populate.service.*;
@@ -21,6 +22,7 @@ public class PopulateExtService {
   private EnrolleePopulator enrolleePopulator;
   private SurveyPopulator surveyPopulator;
   private PortalPopulator portalPopulator;
+  private SiteContentPopulator siteContentPopulator;
   private PortalParticipantUserPopulator portalParticipantUserPopulator;
   private AdminConfigPopulator adminConfigPopulator;
 
@@ -29,12 +31,14 @@ public class PopulateExtService {
       EnrolleePopulator enrolleePopulator,
       SurveyPopulator surveyPopulator,
       PortalPopulator portalPopulator,
+      SiteContentPopulator siteContentPopulator,
       PortalParticipantUserPopulator portalParticipantUserPopulator,
       AdminConfigPopulator adminConfigPopulator) {
     this.baseSeedPopulator = baseSeedPopulator;
     this.enrolleePopulator = enrolleePopulator;
     this.surveyPopulator = surveyPopulator;
     this.portalPopulator = portalPopulator;
+    this.siteContentPopulator = siteContentPopulator;
     this.portalParticipantUserPopulator = portalParticipantUserPopulator;
     this.adminConfigPopulator = adminConfigPopulator;
   }
@@ -74,6 +78,18 @@ public class PopulateExtService {
         new PortalPopulateContext(filePathName, portalShortcode, null, new HashMap<>());
     try {
       return surveyPopulator.populate(config, overwrite);
+    } catch (IOException e) {
+      throw new IllegalArgumentException("populate failed", e);
+    }
+  }
+
+  public SiteContent populateSiteContent(
+      String portalShortcode, String filePathName, AdminUser user, boolean overwrite) {
+    authorizeUser(user);
+    PortalPopulateContext config =
+        new PortalPopulateContext(filePathName, portalShortcode, null, new HashMap<>());
+    try {
+      return siteContentPopulator.populate(config, overwrite);
     } catch (IOException e) {
       throw new IllegalArgumentException("populate failed", e);
     }
