@@ -20,5 +20,5 @@ test('populate control can set params', async () => {
   await userEvent.click(screen.getByText('Populate'))
   expect(Api.populateSiteContent).toHaveBeenCalledTimes(1)
   expect(Api.populateSiteContent)
-      .toHaveBeenCalledWith('portals/ourhealth/siteContent/siteContent.json', true, 'ourhealth')
+    .toHaveBeenCalledWith('portals/ourhealth/siteContent/siteContent.json', true, 'ourhealth')
 })

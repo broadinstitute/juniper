@@ -18,14 +18,14 @@ test('enables live-preview text editing', async () => {
 
   const sectionInput = screen.getByRole('textbox')
   const aboutUsHeading = screen.queryAllByRole('heading')
-      .find(el => el.textContent === 'about us')
+    .find(el => el.textContent === 'about us')
   expect(aboutUsHeading).toBeInTheDocument()
   userEvent.pointer({ target: sectionInput, offset: 22, keys: '[MouseLeft]' })
   userEvent.keyboard('!!')
 
   await waitFor(() => {
     const aboutUsNewHeading = screen.queryAllByRole('heading')
-        .find(el => el.textContent === 'about us!!')
+      .find(el => el.textContent === 'about us!!')
     return expect(aboutUsNewHeading).toBeInTheDocument()
   })
 })
