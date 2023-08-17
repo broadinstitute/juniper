@@ -16,9 +16,9 @@ test('populate control can set params', async () => {
   expect(screen.getByLabelText('Yes')).toBeChecked()
 
   await userEvent.type(screen.getByLabelText('Portal shortcode'), 'ourhealth')
-  await userEvent.type(screen.getByLabelText('File path (from /populate/src/main/resources/seed)'), 'foo.json')
 
   await userEvent.click(screen.getByText('Populate'))
   expect(Api.populateSiteContent).toHaveBeenCalledTimes(1)
-  expect(Api.populateSiteContent).toHaveBeenCalledWith('foo.json', true, 'ourhealth')
+  expect(Api.populateSiteContent)
+      .toHaveBeenCalledWith('portals/ourhealth/siteContent/siteContent.json', true, 'ourhealth')
 })

@@ -17,9 +17,15 @@ test('enables live-preview text editing', async () => {
   expect(screen.getByText('Landing page')).toBeInTheDocument()
 
   const sectionInput = screen.getByRole('textbox')
-  expect(screen.getByRole('heading').textContent).toEqual('about us')
+  const aboutUsHeading = screen.queryAllByRole('heading')
+      .find(el => el.textContent === 'about us')
+  expect(aboutUsHeading).toBeInTheDocument()
   userEvent.pointer({ target: sectionInput, offset: 22, keys: '[MouseLeft]' })
   userEvent.keyboard('!!')
 
-  await waitFor(() => expect(screen.getByRole('heading')).toHaveTextContent('about us!!'))
+  await waitFor(() => {
+    const aboutUsNewHeading = screen.queryAllByRole('heading')
+        .find(el => el.textContent === 'about us!!')
+    return expect(aboutUsNewHeading).toBeInTheDocument()
+  })
 })
