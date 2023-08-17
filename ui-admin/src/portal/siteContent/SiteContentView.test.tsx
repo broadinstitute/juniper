@@ -9,7 +9,8 @@ import userEvent from '@testing-library/user-event'
 test('enables live-preview text editing', async () => {
   const siteContent = mockSiteContent()
   const { RoutedComponent } = setupRouterTest(
-    <InitializedSiteContentView siteContent={siteContent} previewApi={emptyApi}/>)
+    <InitializedSiteContentView siteContent={siteContent} previewApi={emptyApi}
+                                setSiteContent={() => 1} portalShortcode="foo"/>)
   render(RoutedComponent)
 
   expect(screen.getByText('Landing page')).toBeInTheDocument()

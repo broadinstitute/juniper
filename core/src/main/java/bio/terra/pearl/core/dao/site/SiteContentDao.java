@@ -37,6 +37,10 @@ public class SiteContentDao extends BaseVersionedJdbiDao<SiteContent> {
         return findByTwoProperties("stable_id", stableId, "version", version);
     }
 
+    public List<SiteContent> findByStableId(String stableId) {
+        return findAllByProperty("stable_id", stableId);
+    }
+
     public List<SiteContent> findByPortalId(UUID portalId) {
         return findAllByProperty("portal_id", portalId);
     }

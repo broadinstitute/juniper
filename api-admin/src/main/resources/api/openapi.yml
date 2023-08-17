@@ -235,6 +235,21 @@ paths:
           content: { application/json: { schema: { schema: { type: object } } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/siteContents/{stableId}/versions:
+    get:
+      summary: Returns available versions of the given site content with the stableID
+      tags: [ siteContent ]
+      operationId: versionList
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: list of (shallow) SiteContent objects
+          content: { application/json: { schema: { schema: { type: object } } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/kitTypes:
     get:
       summary: Gets the kit types for a study

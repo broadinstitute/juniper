@@ -3,6 +3,7 @@ export type SiteContent = {
   localizedSiteContents: LocalSiteContent[]
   stableId: string
   version: number
+  createdAt: number
 }
 
 export type LocalSiteContent = {

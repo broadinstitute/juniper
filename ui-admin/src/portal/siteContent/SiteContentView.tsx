@@ -6,17 +6,20 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import HtmlPageEditView from './HtmlPageEditView'
 import { HtmlPage, LocalSiteContent, ApiProvider, SiteContent, ApiContextT } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
+import SiteContentVersionSelector from "./SiteContentVersionSelector";
 
 type NavbarOption = {label: string, value: string | null}
 const landingPageOption = { label: 'Landing page', value: null }
 
 /** shows a site content in editable form with a live preview.  Defaults to english-only for now */
-export const InitializedSiteContentView = ({ siteContent, previewApi }:
-                                      {siteContent: SiteContent, previewApi: ApiContextT}) => {
+export const InitializedSiteContentView = ({ siteContent, previewApi, setSiteContent, portalShortcode }:
+                                               {siteContent: SiteContent, previewApi: ApiContextT,
+                                                 setSiteContent: (content: SiteContent) => void,
+                                                portalShortcode: string}) => {
   const selectedLanguage = 'en'
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
   const [workingContent, setWorkingContent] = useState<SiteContent>(siteContent)
-
+  const [showVersionSelector, setShowVersionSelector] = useState(false)
   const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage)
   if (!localContent) {
     return <div>no content for language {selectedLanguage}</div>
@@ -76,6 +79,14 @@ export const InitializedSiteContentView = ({ siteContent, previewApi }:
 
   return <div className="d-flex bg-white p-3">
     <div className="ps-3">
+      <div className="d-flex mb-2 align-items-baseline">
+        <h2 className="h5">Website content</h2>
+        <div className="ms-3 text-muted">
+          version {siteContent.version}
+          <button className="btn btn-secondary"
+                  onClick={() => setShowVersionSelector(!showVersionSelector)}>change</button>
+        </div>
+      </div>
       <div className="d-flex mb-3 w-100">
         <div>
           <Select options={pageOpts} value={selectedNavOpt}
@@ -95,14 +106,20 @@ export const InitializedSiteContentView = ({ siteContent, previewApi }:
           </ApiProvider>}
       </div>
     </div>
+    { showVersionSelector &&
+        <SiteContentVersionSelector portalShortcode={portalShortcode} stableId={siteContent.stableId}
+                                    current={siteContent}
+                                onDismiss={() => setShowVersionSelector(false)} updateVersion={() => 1}/>
+    }
   </div>
 }
 
 
 /** shows a view for editing site content pages */
 const SiteContentView = ({ portalEnv, portalShortcode }: {portalEnv: PortalEnvironment, portalShortcode: string}) => {
-  if (!portalEnv.siteContent) {
-    return <div>no site content configured yet</div>
+  const [siteContent, setSiteContent] = useState(portalEnv.siteContent)
+  if (!siteContent) {
+    return <div>no site content configured</div>
   }
   /** uses the admin image retrieval endpoint */
   const getImageUrl = (cleanFileName: string, version: number) =>
@@ -112,7 +129,8 @@ const SiteContentView = ({ portalEnv, portalShortcode }: {portalEnv: PortalEnvir
     submitMailingListContact: () => Promise.resolve({})
   }
 
-  return <InitializedSiteContentView siteContent={portalEnv.siteContent} previewApi={previewApi}/>
+  return <InitializedSiteContentView siteContent={siteContent} setSiteContent={setSiteContent}
+                                     previewApi={previewApi} portalShortcode={portalShortcode}/>
 }
 
 export default SiteContentView

@@ -9,7 +9,8 @@ export const mockSiteContent = (): SiteContent => {
     version: 1,
     localizedSiteContents: [
       mockLocalSiteContent()
-    ]
+    ],
+    createdAt: 0
   }
 }
 
