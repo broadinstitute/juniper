@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: update_saliva_kit_type_name
+      author: breilly
+      changes:
+        - update:
+            tableName: kit_type
+            columns:
+              - column:
+                  { name: name, value: "SALIVA" }
+            where: name='saliva'

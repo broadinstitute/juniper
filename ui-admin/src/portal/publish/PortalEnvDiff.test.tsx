@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import React from 'react'
-
 import { mockPortalContext } from 'test-utils/mocking-utils'
 import PortalEnvDiffView, { emptyChangeSet } from './PortalEnvDiffView'
 import { setupRouterTest } from 'test-utils/router-testing-utils'

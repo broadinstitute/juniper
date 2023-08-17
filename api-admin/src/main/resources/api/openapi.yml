@@ -783,6 +783,24 @@ paths:
                 type: object
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/internal/v1/populate/siteContent/{portalShortcode}:
+    post:
+      summary: Populates a siteContent to a given portal
+      tags: [ populate ]
+      operationId: populateSiteContent
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: filePathName, in: query, required: true, schema: { type: string } }
+        - { name: overwrite, in: query, required: false, schema: { type: boolean } }
+      responses:
+        '201':
+          description: siteContent object
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/internal/v1/populate/survey/{portalShortcode}:
     post:
       summary: Populates a survey to a given portal

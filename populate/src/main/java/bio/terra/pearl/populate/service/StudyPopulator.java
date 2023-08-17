@@ -174,7 +174,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
             StudyEnvironment destEnv = portalDiffService.
                     loadStudyEnvForProcessing(existingStudy.getShortcode(), EnvironmentName.sandbox);
             PortalEnvironment destPortalEnv = portalEnvironmentService
-                    .findOne(context.getPortalShortcode(), context.getEnvironmentName()).get();
+                    .findOne(context.getPortalShortcode(), EnvironmentName.sandbox).get();
             try {
                 var studyEnvChange = portalDiffService.diffStudyEnvs(existingStudy.getShortcode(),
                         sourceEnv, destEnv);

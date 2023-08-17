@@ -60,10 +60,19 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
 
     /**
      * Send a request for a sample kit to Pepper.
+     *
+     * 1. Create and save the sample kit request in the Juniper database
+     * 2. Send the sample kit request to Pepper
+     * 3. Record the status response from Pepper in the Juniper database
+     *
+     * These steps are all performed in a single transaction. However, each could fail independently. If there's an
+     * error from Pepper, then the sample kit request will not be saved in Juniper, and it's safe to assume that there
+     * is no new request in Pepper. If there's an error saving the status response from Pepper, then it's possible for
+     * there to be a request in Pepper that does not exist in Juniper. We could potentially split that step into its own
+     * transaction to help avoid that potential inconsistency.
      */
     @Transactional
-    public KitRequest requestKit(AdminUser adminUser, Enrollee enrollee, String kitTypeName)
-            throws JsonProcessingException {
+    public KitRequest requestKit(AdminUser adminUser, Enrollee enrollee, String kitTypeName) {
         // create and save kit request
         Profile profile = profileService.loadWithMailingAddress(enrollee.getProfileId())
                 .orElseThrow(() -> new RuntimeException("Missing profile for enrollee: " + enrollee.getShortcode()));
@@ -191,16 +200,26 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             AdminUser adminUser,
             Enrollee enrollee,
             PepperKitAddress pepperKitAddress,
-            String kitTypeName) throws JsonProcessingException {
+            String kitTypeName) {
         KitType kitType = kitTypeDao.findByName(kitTypeName).get();
+        String addressJson = null;
+        try {
+            addressJson = objectMapper.writeValueAsString(pepperKitAddress);
+        } catch (JsonProcessingException e) {
+            // Wrap in a RuntimeException to make it trigger rollback from @Transactional methods. There's no good
+            // reason for PepperKitAddress serialization to fail, so we can't assume that anything in the current
+            // transaction is valid.
+            throw new RuntimeException(e);
+        }
         KitRequest kitRequest = KitRequest.builder()
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee.getId())
                 .kitTypeId(kitType.getId())
-                .sentToAddress(objectMapper.writeValueAsString(pepperKitAddress))
+                .sentToAddress(addressJson)
                 .status(KitRequestStatus.CREATED)
                 .build();
         KitRequest savedKitRequest = dao.create(kitRequest);
+        savedKitRequest.setKitType(kitType);
         logger.info("SampleKit created. id: {}, enrollee: {}", savedKitRequest.getId(), savedKitRequest.getEnrolleeId());
         return savedKitRequest;
     }

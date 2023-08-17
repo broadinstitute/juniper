@@ -7,14 +7,19 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.service.kit.PepperException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 @Controller
 public class EnrolleeController implements EnrolleeApi {
+  Logger log = LoggerFactory.getLogger(EnrolleeController.class);
+
   private AuthUtilService authUtilService;
   private EnrolleeExtService enrolleeExtService;
   private HttpServletRequest request;
@@ -67,7 +72,11 @@ public class EnrolleeController implements EnrolleeApi {
     try {
       KitRequest sampleKit = enrolleeExtService.requestKit(adminUser, enrolleeShortcode, kitType);
       return ResponseEntity.ok(sampleKit);
-    } catch (JsonProcessingException e) {
+    } catch (PepperException e) {
+      log.error("Error requesting sample kit from Pepper", e);
+      // In the case of a PepperException, we can do better than this because we'll likely know what
+      // Pepper was unhappy
+      // about, such as an address failing to validate.
       return ResponseEntity.internalServerError().body(e.getMessage());
     }
   }
