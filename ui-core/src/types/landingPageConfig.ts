@@ -1,4 +1,5 @@
 export type SiteContent = {
+  id: string
   defaultLanguage: string
   localizedSiteContents: LocalSiteContent[]
   stableId: string

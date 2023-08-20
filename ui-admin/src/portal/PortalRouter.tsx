@@ -5,10 +5,20 @@ import PortalDashboard from './PortalDashboard'
 import { LoadedPortalContextT, PortalContext, PortalParams } from './PortalProvider'
 import MailingListView from './MailingListView'
 import PortalEnvView from './PortalEnvView'
-import SiteContentView from './siteContent/SiteContentView'
+import SiteContentEditor from './siteContent/SiteContentEditor'
 import PortalEnvConfigView from './PortalEnvConfigView'
 import PortalUserList from '../user/PortalUserList'
 import PortalParticipantsView from './PortalParticipantView'
+import { Portal, PortalEnvironment } from '@juniper/ui-core'
+import SiteContentLoader from './siteContent/SiteContentLoader'
+
+export type PortalEnvContext = {
+  portal: Portal
+  updatePortal: (portal: Portal) => void  // this updates the UI -- it does not handle server-side operations
+  reloadPortal: (shortcode: string) => Promise<Portal>
+  portalEnv: PortalEnvironment
+  updatePortalEnv: (portalEnv: PortalEnvironment) => void // this updates the UI -- not server-side operations
+}
 
 /** controls routes for within a portal */
 export default function PortalRouter() {
@@ -36,12 +46,17 @@ function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT
     return <div>No environment matches {portalEnvName}</div>
   }
 
+  const portalEnvContext: PortalEnvContext = {
+    ...portalContext,
+    portalEnv
+  }
+
   return <>
     <Routes>
       <Route path="config" element={<PortalEnvConfigView portal={portal} portalEnv={portalEnv}
         updatePortal={portalContext.updatePortal}/>}/>
       <Route path="participants" element={<PortalParticipantsView portalEnv={portalEnv} portal={portal}/>}/>
-      <Route path="siteContent" element={<SiteContentView portalEnv={portalEnv} portalShortcode={portal.shortcode}/>}/>
+      <Route path="siteContent" element={<SiteContentLoader portalEnvContext={portalEnvContext}/>}/>
       <Route path="mailingList" element={<MailingListView portalContext={portalContext}
         portalEnv={portalEnv}/>}/>
       <Route index element={<PortalEnvView portal={portal} portalEnv={portalEnv}/>}/>
@@ -93,3 +108,4 @@ export const studyContentPath = (portalShortcode: string, studyShortcode: string
 export const portalParticipantsPath = (portalShortcode: string, envName: string) => {
   return `/${portalShortcode}/env/${envName}/participants`
 }
+
