@@ -802,14 +802,14 @@ export default {
 
   async fetchEnvDiff(portalShortcode: string, sourceEnvName: string, destEnvName: string):
     Promise<PortalEnvironmentChange> {
-    const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/update/diff?sourceEnv=${sourceEnvName}`
+    const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/diff?sourceEnv=${sourceEnvName}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
   async applyEnvChanges(portalShortcode: string, destEnvName: string, changes: PortalEnvironmentChange):
     Promise<PortalEnvironment> {
-    const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/update/apply`
+    const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/diff/apply`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),

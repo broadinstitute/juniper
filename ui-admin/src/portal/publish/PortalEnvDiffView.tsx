@@ -9,7 +9,6 @@ import StudyEnvDiff from './StudyEnvDiff'
 import { ConfigChangeListView, ConfigChanges, renderNotificationConfig, VersionChangeView } from './diffComponents'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { portalHomePath } from '../PortalRouter'
 import _cloneDeep from 'lodash/cloneDeep'
 
 export const emptyChangeSet: PortalEnvironmentChange = {
@@ -82,7 +81,7 @@ type EnvironmentDiffProps = {
  * loads and displays the differences between two portal environments
  * */
 export default function PortalEnvDiffView(
-  { changeSet, portal, destEnvName, applyChanges, sourceEnvName }: EnvironmentDiffProps) {
+  { changeSet, destEnvName, applyChanges, sourceEnvName }: EnvironmentDiffProps) {
   const [selectedChanges, setSelectedChanges] = useState<PortalEnvironmentChange>(getDefaultPortalEnvChanges(changeSet))
 
   const updateSelectedStudyEnvChanges = (update: StudyEnvironmentChange) => {
@@ -159,7 +158,11 @@ export default function PortalEnvDiffView(
     </div>
     <div className="d-flex justify-content-center mt-2 pb-5">
       <button className="btn btn-primary" onClick={() => applyChanges(selectedChanges)}>Copy changes</button>
-      <Link className="btn btn-cancel" to={portalHomePath(portal.shortcode)}>Cancel</Link>
+      {
+        // eslint-disable-next-line
+        // @ts-ignore  Link to type also supports numbers for back operations
+        <Link className="btn btn-cancel" to={-1}>Cancel</Link>
+      }
     </div>
   </div>
 }

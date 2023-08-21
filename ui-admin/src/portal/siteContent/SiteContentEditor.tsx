@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Api, { NavbarItemInternal } from 'api/api'
+import { NavbarItemInternal } from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
@@ -14,7 +14,6 @@ const landingPageOption = { label: 'Landing page', value: null }
 type InitializedSiteContentViewProps = {
   siteContent: SiteContent
   previewApi: ApiContextT
-  setSiteContent: (content: SiteContent) => void
   loadSiteContent: (stableId: string, version: number) => void
   createNewVersion: (content: SiteContent) => void
   portalShortcode: string
@@ -22,7 +21,7 @@ type InitializedSiteContentViewProps = {
 
 /** shows a site content in editable form with a live preview.  Defaults to english-only for now */
 const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
-  const { siteContent, previewApi, setSiteContent, portalShortcode, loadSiteContent, createNewVersion } = props
+  const { siteContent, previewApi, portalShortcode, loadSiteContent, createNewVersion } = props
   const selectedLanguage = 'en'
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
   const [workingContent, setWorkingContent] = useState<SiteContent>(siteContent)
@@ -103,7 +102,11 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           <FontAwesomeIcon icon={faPlus}/> Add page
         </button>
         <button className="btn btn-primary ms-auto" onClick={() => createNewVersion(workingContent)}>Save</button>
-        <Link className="btn btn-secondary" to={'../..'}>Cancel</Link>
+        {
+          // eslint-disable-next-line
+          // @ts-ignore  Link to type also supports numbers for back operations
+          <Link className="btn btn-cancel" to={-1}>Cancel</Link>
+        }
       </div>
       <div>
         {pageToRender &&

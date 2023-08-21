@@ -17,13 +17,12 @@ import ExportDataBrowser from './participants/export/ExportDataBrowser'
 import StudyEnvMetricsView from './metrics/StudyEnvMetricsView'
 import DatasetDashboard from './participants/datarepo/DatasetDashboard'
 import DatasetList from './participants/datarepo/DatasetList'
-import SiteContentEditor from '../portal/siteContent/SiteContentEditor'
 import Select from 'react-select'
 import MailingListView from '../portal/MailingListView'
 import StudySettings from './StudySettings'
 import { ENVIRONMENT_ICON_MAP } from './publishing/StudyPublishingView'
 import NotificationContent from './notifications/NotificationContent'
-import SiteContentLoader from "../portal/siteContent/SiteContentLoader";
+import SiteContentLoader from '../portal/siteContent/SiteContentLoader'
 
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }

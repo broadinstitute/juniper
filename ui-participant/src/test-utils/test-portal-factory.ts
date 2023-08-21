@@ -40,6 +40,7 @@ export const mockPortalEnvironmentConfig = (): PortalEnvironmentConfig => {
 /** mock site content with one localization */
 export const mockSiteContent = (): SiteContent => {
   return {
+    id: 'fakeID1',
     defaultLanguage: 'en',
     localizedSiteContents: [mockLocalSiteContent()],
     stableId: 'mockContent',

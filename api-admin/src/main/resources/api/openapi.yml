@@ -704,7 +704,7 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{targetEnv}:
+  /api/portals/v1/{portalShortcode}/env/{targetEnv}/diff:
     get:
       summary: Gets the diff between one environment and another
       tags: [ portalEnvironment ]
@@ -719,7 +719,7 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{targetEnv}/update/apply:
+  /api/portals/v1/{portalShortcode}/env/{targetEnv}/diff/apply:
     post:
       summary: Updates a portal environment according to the update object obtained from a diff operation
       tags: [ portalEnvironment ]

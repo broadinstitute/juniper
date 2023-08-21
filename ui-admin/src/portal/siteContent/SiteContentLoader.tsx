@@ -10,7 +10,7 @@ import SiteContentEditor from './SiteContentEditor'
 
 /** logic for loading, changing, and saving SiteContent objects */
 const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvContext}) => {
-  const { updatePortal, portal, portalEnv } = portalEnvContext
+  const { portal, portalEnv } = portalEnvContext
   const portalShortcode = portal.shortcode
   const [isLoading, setIsLoading] = useState(true)
   const [siteContent, setSiteContent] = useState(portalEnv.siteContent)
@@ -54,6 +54,7 @@ const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvCon
       }
       updatedEnv = await Api.updatePortalEnv(portalShortcode, portalEnv.environmentName, updatedEnv)
       portalEnvContext.updatePortalEnv({
+        ...portalEnv,
         ...updatedEnv,
         siteContent: newVersion
       })
@@ -72,7 +73,6 @@ const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvCon
 
   return <>
     { !isLoading && <SiteContentEditor siteContent={siteContent}
-      setSiteContent={setSiteContent}
       createNewVersion={createNewVersion}
       loadSiteContent={loadSiteContent}
       previewApi={previewApi}
