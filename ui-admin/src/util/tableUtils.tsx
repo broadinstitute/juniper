@@ -69,17 +69,22 @@ function Filter<A>({
 
 /**
  * returns a SelectFilter to handle fields filtered by dropdown
+ * controlled by 'filterOptions'  field in column meta
  * */
 function SelectFilter<A>({
   column
 }: {
   column: Column<A>
 }) {
-  const [selectedValue, setSelectedValue] = useState<{ value: boolean | string, label: string }>()
+
+  const options = column.columnDef.meta?.filterOptions || []
+  const initialValue = options.find(opt => opt.value === column.getFilterValue())
+  const [selectedValue, setSelectedValue] =
+      useState<{ value: boolean | string, label: string } | undefined>(initialValue)
 
   return <div>
     <Select
-      options={column.columnDef.meta?.filterOptions || []}
+      options={options}
       isClearable={true}
       styles={{
         control: baseStyles => ({
@@ -297,5 +302,6 @@ declare module '@tanstack/table-core' {
     filterType?: FilterType
     //Specifies the Select options if using a dropdown filter (i.e. for booleans)
     filterOptions?: { value: boolean | string, label: string }[]
+    filterInitialValue?: string | boolean
   }
 }
