@@ -113,11 +113,6 @@
               "blurb": "Co-Investigator, OurHealth\n\nAssistant Professor of Medicine and Associate Epidemiologist\nHarvard Medical School and Brigham and Women's Hospital",
               "image": { "cleanFileName": "shilpa_bhupathiraju.jpg", "version": 1}
             },{
-              "name": "Puneet Batra",
-              "title": "PhD",
-              "blurb": "Senior Principal, Flagship Pioneering",
-              "image": { "cleanFileName": "puneet_batra.jpg", "version": 1}
-            },{
               "name": "Sara Haidermota",
               "title": "BS",
               "blurb": "Project Manager, Massachusetts General Hospital",
@@ -131,7 +126,7 @@
               "name": "Shriie Ganesh",
               "title": "BS",
               "blurb": "Clinical Research Coordinator, Massachusetts General Hospital",
-              "image": { "cleanFileName": "shriee_ganesh.jpg", "version": 1}
+              "image": { "cleanFileName": "shriie_ganesh.jpg", "version": 1}
             },{
               "name": "Aarushi Bhatnagar",
               "title": "BA",
@@ -145,6 +140,11 @@
           },{
             "title": "Advisors",
             "photoBios": [{
+            "name": "Puneet Batra",
+            "title": "PhD",
+            "blurb": "Senior Principal, Flagship Pioneering",
+            "image": { "cleanFileName": "puneet_batra.jpg", "version": 1}
+            },{
               "name": "Alka Kanaya",
               "title": "MD",
               "blurb": "Professor of Medicine, UCSF\n\nCo-PI, MASALA Study",
