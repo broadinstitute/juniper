@@ -59,7 +59,7 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
         var kit = kitRequestFactory.buildPersisted("testFetchKitStatusByStudy", enrollee.getId());
 
         // Act
-        var kitStatuses = stubPepperDSMClient.fetchKitStatusByStudy(study.getName());
+        var kitStatuses = stubPepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
 
         // Assert
         assertThat(kitStatuses.size(), equalTo(1));

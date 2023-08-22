@@ -186,9 +186,9 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .errorMessage("Something went wrong")
                 .errorDate(DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault()).format(Instant.now()))
                 .build();
-        when(mockPepperDSMClient.fetchKitStatusByStudy(study.getPepperStudyName()))
+        when(mockPepperDSMClient.fetchKitStatusByStudy(study.getShortcode()))
                 .thenReturn(List.of(kitStatus1a, kitStatus1b));
-        when(mockPepperDSMClient.fetchKitStatusByStudy(study2.getPepperStudyName()))
+        when(mockPepperDSMClient.fetchKitStatusByStudy(study2.getShortcode()))
                 .thenReturn(List.of(kitStatus2));
 
         /* Finally, exercise the unit under test! */

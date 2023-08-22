@@ -125,9 +125,6 @@ databaseChangeLog:
   - include:
       file: changesets/2023_08_15_update_saliva_kit_type_name.yaml
       relativeToChangelogFile: true
-  - include:
-      file: changesets/2023_08_21_pepper_study_name.yaml
-      relativeToChangelogFile: true
 
 
 

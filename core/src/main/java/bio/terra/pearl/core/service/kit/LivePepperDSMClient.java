@@ -52,10 +52,14 @@ public class LivePepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public Collection<PepperKitStatus> fetchKitStatusByStudy(String pepperStudyName) {
-        var request = buildAuthedGetRequest("kitStatus/study/%s".formatted(pepperStudyName));
+    public Collection<PepperKitStatus> fetchKitStatusByStudy(String studyShortcode) {
+        var request = buildAuthedGetRequest("kitStatus/study/%s".formatted(makePepperStudyName(studyShortcode)));
         var response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
         return Arrays.asList(response.getKits());
+    }
+
+    private String makePepperStudyName(String studyShortcode) {
+        return "juniper-" + studyShortcode;
     }
 
     private String makeKitRequestBody(Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {

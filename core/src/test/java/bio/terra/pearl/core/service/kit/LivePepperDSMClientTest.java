@@ -174,13 +174,13 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(pepperResponse));
 
         // Act
-        var studyName = "test_study";
-        var fetchedKitStatuses = client.fetchKitStatusByStudy(studyName);
+        var studyShortcode = "test_study";
+        var fetchedKitStatuses = client.fetchKitStatusByStudy(studyShortcode);
 
         // Assert
         assertThat(fetchedKitStatuses.size(), equalTo(2));
         assertThat(fetchedKitStatuses, contains(kitStatus1, kitStatus2));
-        verifyRequestForPath("/kitStatus/study/%s".formatted(studyName));
+        verifyRequestForPath("/kitStatus/study/juniper-%s".formatted(studyShortcode));
     }
 
     private static void mockPepperResponse(HttpStatus status, String pepperResponse) {

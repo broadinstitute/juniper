@@ -18,5 +18,5 @@ public interface PepperDSMClient {
      */
     String sendKitRequest(Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address);
     PepperKitStatus fetchKitStatus(UUID kitRequestId);
-    Collection<PepperKitStatus> fetchKitStatusByStudy(String pepperStudyName);
+    Collection<PepperKitStatus> fetchKitStatusByStudy(String studyShortcode);
 }

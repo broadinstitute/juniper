@@ -106,24 +106,4 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
     public void deleteByStudyId(UUID studyId) {
         deleteByProperty("study_id", studyId);
     }
-
-    /**
-     * Returns the StudyEnvironment matching the given Pepper study name and environment name.
-     */
-    public Optional<StudyEnvironment> findByPepperStudyName(String pepperStudyName, EnvironmentName environmentName) {
-        var sql = """
-                    select %1$s
-                    from study_environment
-                    join study on study.id = %2$s.study_id
-                    where study.name = :pepperStudyName
-                    and %2$s.environment_name = :environmentName
-                    """
-                .formatted(prefixedGetQueryColumns(getTableName()), getTableName());
-        return jdbi.withHandle(handle ->
-                handle.createQuery(sql)
-                        .bind("pepperStudyName", pepperStudyName)
-                        .bind("environmentName", environmentName)
-                        .mapTo(clazz)
-                        .findOne());
-    }
 }

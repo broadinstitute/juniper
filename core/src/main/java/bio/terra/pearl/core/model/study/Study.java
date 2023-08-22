@@ -16,7 +16,6 @@ import java.util.Set;
 public class Study extends BaseEntity {
     private String name;
     private String shortcode;
-    private String pepperStudyName;
     @Builder.Default
     private Set<StudyEnvironment> studyEnvironments = new HashSet<>();
     @Builder.Default
