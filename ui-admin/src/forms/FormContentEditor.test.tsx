@@ -3,6 +3,7 @@ import React from 'react'
 
 import { FormContentEditor } from './FormContentEditor'
 
+//This is valid JSON, but invalid survey JSON
 const formContent: string = JSON.stringify({
   title: 'Test survey',
   pages: [
