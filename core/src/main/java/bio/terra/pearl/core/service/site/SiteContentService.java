@@ -1,8 +1,7 @@
 package bio.terra.pearl.core.service.site;
 
 import bio.terra.pearl.core.dao.site.SiteContentDao;
-import bio.terra.pearl.core.model.site.LocalizedSiteContent;
-import bio.terra.pearl.core.model.site.SiteContent;
+import bio.terra.pearl.core.model.site.*;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import org.springframework.stereotype.Service;

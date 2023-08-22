@@ -527,8 +527,6 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-<<<<<<< HEAD
-=======
   async createNewSiteContentVersion(portalShortcode: string, stableId: string, siteContent: SiteContent) {
     const response = await fetch(`${basePortalUrl(portalShortcode)}/siteContents/${stableId}`, {
       method: 'POST',
@@ -538,7 +536,6 @@ export default {
     return await this.processJsonResponse(response)
   },
 
->>>>>>> e4d6a161 (environment update working)
   async getSiteContentVersions(portalShortcode: string, stableId: string) {
     const response = await fetch(`${basePortalUrl(portalShortcode)}/siteContents/${stableId}`,
       this.getGetInit())
