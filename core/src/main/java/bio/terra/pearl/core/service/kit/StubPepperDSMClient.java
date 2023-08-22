@@ -48,7 +48,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
 
     @Override
     public Collection<PepperKitStatus> fetchKitStatusByStudy(String pepperStudyName) {
-        var studyEnvironment = studyEnvironmentDao.findByPepperStudyName(pepperStudyName, EnvironmentName.sandbox);
+        var studyEnvironment = studyEnvironmentDao.findByPepperStudyName(pepperStudyName, EnvironmentName.sandbox).get();
         return kitRequestService.findIncompleteKits(studyEnvironment.getId()).stream().map(kit -> {
             PepperKitStatus status = PepperKitStatus.builder()
                     .kitId(kit.getId().toString())

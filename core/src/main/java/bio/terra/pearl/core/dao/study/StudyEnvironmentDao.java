@@ -107,7 +107,10 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
         deleteByProperty("study_id", studyId);
     }
 
-    public StudyEnvironment findByPepperStudyName(String pepperStudyName, EnvironmentName environmentName) {
+    /**
+     * Returns the StudyEnvironment matching the given Pepper study name and environment name.
+     */
+    public Optional<StudyEnvironment> findByPepperStudyName(String pepperStudyName, EnvironmentName environmentName) {
         var sql = """
                     select %1$s
                     from study_environment
@@ -121,6 +124,6 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
                         .bind("pepperStudyName", pepperStudyName)
                         .bind("environmentName", environmentName)
                         .mapTo(clazz)
-                        .one());
+                        .findOne());
     }
 }
