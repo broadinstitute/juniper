@@ -139,7 +139,7 @@ paths:
         - { name: stableId, in: path, required: true, schema: { type: string } }
       responses:
         '200':
-          description: survey object
+          description: list of survey version metadata
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'

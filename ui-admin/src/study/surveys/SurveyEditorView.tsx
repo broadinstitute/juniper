@@ -11,8 +11,10 @@ import { useAutosaveEffect } from '@juniper/ui-core/build/autoSaveUtils'
 import { faClockRotateLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import VersionSelector from './VersionSelector'
+import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 
 type SurveyEditorViewProps = {
+  studyEnvContext: StudyEnvContextT
   currentForm: VersionedForm
   readOnly?: boolean
   onCancel: () => void
@@ -22,6 +24,7 @@ type SurveyEditorViewProps = {
 /** renders a survey for editing/viewing */
 const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const {
+    studyEnvContext,
     currentForm,
     readOnly = false,
     onCancel,
@@ -30,6 +33,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
 
   const FORM_DRAFT_KEY = getFormDraftKey({ form: currentForm })
   const FORM_DRAFT_SAVE_INTERVAL = 10000
+  //returns portal context
 
   const [isEditorValid, setIsEditorValid] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -136,7 +140,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
               onDismiss={() => setShowDiscardDraftModal(false)}
             />}
         { showVersionSelector && <VersionSelector
-          portalShortcode={'ourhealth'}
+          portalShortcode={studyEnvContext.portal.shortcode}
           previewedVersions={previewedVersions}
           setPreviewedVersions={setPreviewedVersions}
           stableId={currentForm.stableId}

@@ -54,6 +54,7 @@ function RawSurveyView({ studyEnvContext, survey, readOnly = false }:
 
   return (
     <SurveyEditorView
+      studyEnvContext={studyEnvContext}
       currentForm={currentSurvey}
       readOnly={readOnly}
       onCancel={() => navigate(studyEnvFormsPath(portal.shortcode, study.shortcode, currentEnv.environmentName))}
