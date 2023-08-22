@@ -521,6 +521,18 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async getSiteContent(portalShortcode: string, stableId: string, version: number) {
+    const response = await fetch(`${basePortalUrl(portalShortcode)}/siteContents/${stableId}/${version}`,
+      this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async getSiteContentVersions(portalShortcode: string, stableId: string) {
+    const response = await fetch(`${basePortalUrl(portalShortcode)}/siteContents/${stableId}`,
+      this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   async searchEnrollees(portalShortcode: string, studyShortcode: string, envName: string, facetValues: FacetValue[]):
     Promise<EnrolleeSearchResult[]> {
     const facetString = encodeURIComponent(facetValuesToString(facetValues))
@@ -852,6 +864,10 @@ export function getImageUrl(portalShortcode: string, cleanFileName: string, vers
 /** base api path for study-scoped api requests */
 function basePortalEnvUrl(portalShortcode: string, envName: string) {
   return `${API_ROOT}/portals/v1/${portalShortcode}/env/${envName}`
+}
+
+function basePortalUrl(portalShortcode: string) {
+  return `${API_ROOT}/portals/v1/${portalShortcode}`
 }
 
 /** base api path for study-scoped api requests */

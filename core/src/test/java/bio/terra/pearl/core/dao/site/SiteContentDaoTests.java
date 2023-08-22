@@ -22,7 +22,7 @@ public class SiteContentDaoTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testFindOneFull() {
+    public void testAttachChildren() {
         HtmlSection helloSection = HtmlSection.builder()
                 .rawContent("helloSection").build();
         HtmlSection goodbyeSection = HtmlSection.builder()
@@ -51,7 +51,11 @@ public class SiteContentDaoTests extends BaseSpringBootTest {
                 .build();
         SiteContent savedContent = siteContentService.create(content);
 
-        SiteContent loadedContent = siteContentDao.findOneFull(savedContent.getId(), "en").get();
+        SiteContent loadedContent = siteContentService.find(savedContent.getId()).get();
+        // this load should be shallow
+        Assertions.assertEquals(0, loadedContent.getLocalizedSiteContents().size());
+
+        siteContentDao.attachChildContent(loadedContent, "en");
 
         Assertions.assertEquals(1, loadedContent.getLocalizedSiteContents().size());
         LocalizedSiteContent loadedLocal = loadedContent.getLocalizedSiteContents().stream().findFirst().get();

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Button } from 'components/forms/Button'
 import LoadingSpinner from 'util/LoadingSpinner'
 
@@ -24,32 +24,25 @@ export const OverwriteControl = ({ text, isOverwrite, setIsOverwrite }:
 /**
  * renders a control for specifying a file name --this could be updated to handle the conventions of the various paths
  */
-export const useFileNameControl = () => {
-  const [fileName, setFileName] = useState('')
-  return {
-    fileName,
-    fileNameControl: <label className="form-label">
+export const FileNameControl = ({ fileName, setFileName }: {fileName: string, setFileName: (n: string) => void}) => {
+  return <label className="form-label">
             File path (from <code>/populate/src/main/resources/seed</code>)
-      <input type="text" value={fileName} className="form-control"
-        onChange={e => setFileName(e.target.value)}/>
-    </label>
-  }
+    <input type="text" value={fileName} className="form-control"
+      onChange={e => setFileName(e.target.value)}/>
+  </label>
 }
 
 /**
  * renders a control for specifying portal shortcodes.  For now it's freetext, to lessen the likelihood of selecting
  * the wrong portal by mistake
  */
-export const usePortalShortcodeControl = (initialShortcode: string) => {
-  const [portalShortcode, setPortalShortcode] = useState(initialShortcode)
-  return {
-    portalShortcode,
-    shortcodeControl: <label className="form-label">
-            Portal shortcode
-      <input type="text" value={portalShortcode} className="form-control"
-        onChange={e => setPortalShortcode(e.target.value)}/>
-    </label>
-  }
+export const PortalShortcodeControl = ({ portalShortcode, setPortalShortcode } :
+                                           {portalShortcode: string, setPortalShortcode: (s: string) => void}) => {
+  return <label className="form-label">
+          Portal shortcode
+    <input type="text" value={portalShortcode} className="form-control"
+      onChange={e => setPortalShortcode(e.target.value)}/>
+  </label>
 }
 
 /** button that disables itself and shows a spinner if loading */

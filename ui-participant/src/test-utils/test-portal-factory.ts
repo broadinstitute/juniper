@@ -43,7 +43,8 @@ export const mockSiteContent = (): SiteContent => {
     defaultLanguage: 'en',
     localizedSiteContents: [mockLocalSiteContent()],
     stableId: 'mockContent',
-    version: 1
+    version: 1,
+    createdAt: 0
   }
 }
 

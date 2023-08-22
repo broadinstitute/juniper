@@ -1,22 +1,34 @@
-import React, { useState } from 'react'
-import { NavbarItemInternal, PortalEnvironment } from 'api/api'
+import React, { useEffect, useState } from 'react'
+import Api, { NavbarItemInternal, PortalEnvironment } from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import HtmlPageEditView from './HtmlPageEditView'
 import { HtmlPage, LocalSiteContent, ApiProvider, SiteContent, ApiContextT } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
+import SiteContentVersionSelector from './SiteContentVersionSelector'
+import LoadingSpinner from '../../util/LoadingSpinner'
+import { failureNotification } from '../../util/notifications'
+import { Store } from 'react-notifications-component'
 
 type NavbarOption = {label: string, value: string | null}
 const landingPageOption = { label: 'Landing page', value: null }
 
+type InitializedSiteContentViewProps = {
+  siteContent: SiteContent
+  previewApi: ApiContextT
+  setSiteContent: (content: SiteContent) => void,
+  loadSiteContent: (stableId: string, version: number) => void
+  portalShortcode: string
+}
+
 /** shows a site content in editable form with a live preview.  Defaults to english-only for now */
-export const InitializedSiteContentView = ({ siteContent, previewApi }:
-                                      {siteContent: SiteContent, previewApi: ApiContextT}) => {
+export const InitializedSiteContentView = (props: InitializedSiteContentViewProps) => {
+  const { siteContent, previewApi, portalShortcode, loadSiteContent } = props
   const selectedLanguage = 'en'
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
   const [workingContent, setWorkingContent] = useState<SiteContent>(siteContent)
-
+  const [showVersionSelector, setShowVersionSelector] = useState(false)
   const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage)
   if (!localContent) {
     return <div>no content for language {selectedLanguage}</div>
@@ -76,6 +88,14 @@ export const InitializedSiteContentView = ({ siteContent, previewApi }:
 
   return <div className="d-flex bg-white p-3">
     <div className="ps-3">
+      <div className="d-flex mb-2 align-items-baseline">
+        <h2 className="h5">Website content</h2>
+        <div className="ms-3 text-muted">
+          version {siteContent.version}
+        </div>
+        <button className="btn btn-secondary"
+          onClick={() => setShowVersionSelector(!showVersionSelector)}>select</button>
+      </div>
       <div className="d-flex mb-3 w-100">
         <div>
           <Select options={pageOpts} value={selectedNavOpt}
@@ -95,15 +115,23 @@ export const InitializedSiteContentView = ({ siteContent, previewApi }:
           </ApiProvider>}
       </div>
     </div>
+    { showVersionSelector &&
+        <SiteContentVersionSelector portalShortcode={portalShortcode} stableId={siteContent.stableId}
+          current={siteContent} loadSiteContent={loadSiteContent}
+          onDismiss={() => setShowVersionSelector(false)}/>
+    }
   </div>
 }
 
 
 /** shows a view for editing site content pages */
 const SiteContentView = ({ portalEnv, portalShortcode }: {portalEnv: PortalEnvironment, portalShortcode: string}) => {
-  if (!portalEnv.siteContent) {
-    return <div>no site content configured yet</div>
+  const [isLoading, setIsLoading] = useState(true)
+  const [siteContent, setSiteContent] = useState(portalEnv.siteContent)
+  if (!siteContent) {
+    return <div>no site content configured</div>
   }
+
   /** uses the admin image retrieval endpoint */
   const getImageUrl = (cleanFileName: string, version: number) =>
     `/api/public/portals/v1/${portalShortcode}/env/${portalEnv.environmentName}/siteImages/${version}/${cleanFileName}`
@@ -112,7 +140,26 @@ const SiteContentView = ({ portalEnv, portalShortcode }: {portalEnv: PortalEnvir
     submitMailingListContact: () => Promise.resolve({})
   }
 
-  return <InitializedSiteContentView siteContent={portalEnv.siteContent} previewApi={previewApi}/>
+  const loadSiteContent = async (stableId: string, version: number) => {
+    setIsLoading(true)
+    Api.getSiteContent(portalShortcode, stableId, version).then(response => {
+      setSiteContent(response)
+      setIsLoading(false)
+    }).catch(() => {
+      Store.addNotification(failureNotification('Could not load site content'))
+    })
+  }
+
+  useEffect(() => {
+    loadSiteContent(siteContent.stableId, siteContent.version)
+  }, [portalEnv.environmentName, portalShortcode])
+
+  return <>
+    { !isLoading && <InitializedSiteContentView siteContent={siteContent} setSiteContent={setSiteContent}
+      loadSiteContent={loadSiteContent}
+      previewApi={previewApi} portalShortcode={portalShortcode}/> }
+    { isLoading && <LoadingSpinner/> }
+  </>
 }
 
 export default SiteContentView

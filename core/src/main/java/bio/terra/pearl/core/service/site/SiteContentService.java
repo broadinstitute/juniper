@@ -25,6 +25,15 @@ public class SiteContentService extends ImmutableEntityService<SiteContent, Site
         return dao.findOne(stableId, version);
     }
 
+    public List<SiteContent> findByStableId(String stableId) {
+        return dao.findByStableId(stableId);
+    }
+
+    /** attaches all the content (pages, sections, navbar) children for the given language to the SiteContent */
+    public void attachChildContent(SiteContent siteContent, String language) {
+        dao.attachChildContent(siteContent, language);
+    }
+
     @Override
     public SiteContent create(SiteContent siteContent) {
         SiteContent savedSite = dao.create(siteContent);
