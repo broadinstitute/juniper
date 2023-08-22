@@ -75,6 +75,15 @@ public class SurveyExtServiceTests {
   }
 
   @Test
+  public void listVersionsRequiresPortalAuth() {
+    AdminUser user = AdminUser.builder().superuser(false).build();
+    when(mockAuthUtilService.authUserToPortal(user, "foo"))
+        .thenThrow(new PermissionDeniedException("test1"));
+    Assertions.assertThrows(
+        PermissionDeniedException.class, () -> surveyExtService.listVersions("foo", "blah", user));
+  }
+
+  @Test
   public void getRequiresSurveyMatchedToPortal() {
     AdminUser user = AdminUser.builder().superuser(false).build();
     Portal portal = Portal.builder().shortcode("testSurveyGet").id(UUID.randomUUID()).build();

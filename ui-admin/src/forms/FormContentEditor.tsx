@@ -89,7 +89,6 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
         </Tab>
         { visibleVersionPreviews.map(form =>
           <Tab
-            disabled={activeTab !== `preview${form.version}` && !tabsEnabled}
             key={`preview${form.version}`}
             eventKey={`preview${form.version}`}
             title={`Version ${form.version}`}
