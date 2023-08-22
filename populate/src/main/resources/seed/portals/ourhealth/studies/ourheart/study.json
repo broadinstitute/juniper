@@ -76,7 +76,8 @@
         "enrollees/newEnrollee.json",
         "enrollees/consentedEnrollee.json",
         "enrollees/basicsDone.json",
-        "enrollees/withdrawn.json"
+        "enrollees/withdrawn.json",
+        "enrollees/kitEligible.json"
       ],
       "preEnrollmentResponseDtos": [{
           "qualified": false,

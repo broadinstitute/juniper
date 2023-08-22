@@ -38,6 +38,7 @@ const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {s
           allowParticipantReedit: true,
           allowParticipantStart: true,
           id: '',
+          required: false,
           prepopulate: false,
           recurrenceIntervalDays: 0,
           recur: false,

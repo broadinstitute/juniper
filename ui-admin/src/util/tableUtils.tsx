@@ -1,8 +1,9 @@
 import React, { HTMLProps, useEffect, useState } from 'react'
-import { Column, flexRender, Header, RowData, Table } from '@tanstack/react-table'
+import {CellContext, Column, flexRender, Header, RowData, Table} from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCaretDown, faCaretUp, faColumns } from '@fortawesome/free-solid-svg-icons'
+import {faCaretDown, faCaretUp, faCheck, faColumns} from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
+import {Enrollee} from "../api/api";
 
 /**
  * Returns a debounced input react component
@@ -149,8 +150,11 @@ export function tableHeader<A, B>(
 
   return <th key={header.id}
     aria-sort={ariaSort} style={{ verticalAlign: 'top' }}>
-    { options.sortable ? sortableTableHeader(header) : null }
-    { options.filterable ? filterableTableHeader(header) : null }
+    <div className="d-flex flex-column justify-content-between" style={{minHeight: '100%', height: 'auto'}}>
+      { options.sortable ? sortableTableHeader(header) : null }
+      { options.filterable ? filterableTableHeader(header) : null }
+    </div>
+
   </th>
 }
 
@@ -159,7 +163,7 @@ export function tableHeader<A, B>(
  * adapted from https://tanstack.com/table/v8/docs/examples/react/sorting
  * */
 export function sortableTableHeader<A, B>(header: Header<A, B>) {
-  return <div className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
+  return <div className={header.column.getCanSort() ? 'cursor-pointer select-none flex-grow-1' : 'flex-grow-1'}
     onClick={header.column.getToggleSortingHandler()} role="button">
     {flexRender(header.column.columnDef.header, header.getContext())}
     {{
@@ -292,6 +296,9 @@ export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig = 
     </tbody>
   </table>
 }
+
+export const checkboxColumnCell = <R, T>(props: CellContext<R, T>) =>
+    props.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
 
 declare module '@tanstack/table-core' {
   //Extra column metadata for extending the built-in filter functionality of react-table

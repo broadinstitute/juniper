@@ -84,6 +84,7 @@ export const mockConfiguredSurvey: () => StudyEnvironmentSurvey = () => {
     id: 'fakeGuid',
     surveyId: 'surveyId1',
     surveyOrder: 1,
+    required: false,
     recur: false,
     recurrenceIntervalDays: 0,
     allowAdminEdit: true,

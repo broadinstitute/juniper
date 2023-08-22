@@ -1,9 +1,10 @@
 import React from 'react'
-import { Link, Navigate, Route, Routes } from 'react-router-dom'
+import {Link, Navigate, NavLink, Route, Routes} from 'react-router-dom'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
 import { studyKitsPath } from 'portal/PortalRouter'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import KitManager from './KitManager'
+import KitEnrolleeSelection from "./KitEnrolleeSelection";
+import KitList from "./KitList";
 
 /** Router for kit management screens. */
 export default function KitsRouter({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -13,14 +14,35 @@ export default function KitsRouter({ studyEnvContext }: {studyEnvContext: StudyE
     study: { shortcode: studyShortcode }
   } = studyEnvContext
 
+  const tabLinkStyle = ({isActive}: {isActive: boolean}) => ({
+    borderBottom: isActive ? '3px solid #333': '',
+    background: isActive ? '#ddd' : ''
+  })
+
   return <>
     <NavBreadcrumb value={studyEnvContext.currentEnvPath}>
       <Link to={studyKitsPath(portalShortcode, studyShortcode, environmentName)}>kits</Link>
     </NavBreadcrumb>
-    <Routes>
-      <Route index element={<Navigate to='byEnrollee' replace={true}/>}/>
-      <Route path="byEnrollee" element={<KitManager studyEnvContext={studyEnvContext} tab='byEnrollee'/>}/>
-      <Route path="byKit" element={<KitManager studyEnvContext={studyEnvContext} tab='byKit'/>}/>
-    </Routes>
+    <div className="container">
+      <div className="d-flex w-100" style={{backgroundColor: '#ccc'}}>
+
+        <NavLink to="eligible" style={tabLinkStyle}>
+          <div className="py-3 px-5">
+            Eligible for kit
+          </div>
+        </NavLink>
+        <NavLink to="requested" style={tabLinkStyle}>
+          <div className="py-3 px-5">
+            Requested
+          </div>
+        </NavLink>
+      </div>
+      <Routes>
+        <Route index element={<Navigate to='eligible' replace={true}/>}/>
+        <Route path="eligible" element={<KitEnrolleeSelection studyEnvContext={studyEnvContext}/>}/>
+        <Route path="requested" element={<KitList studyEnvContext={studyEnvContext}/>}/>
+      </Routes>
+    </div>
+
   </>
 }

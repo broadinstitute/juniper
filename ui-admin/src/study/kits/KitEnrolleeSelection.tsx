@@ -9,14 +9,14 @@ import {
   ColumnFiltersState,
   getCoreRowModel,
   getFilteredRowModel,
-  getSortedRowModel,
+  getSortedRowModel, SortingState,
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
 
 import Api, { Enrollee } from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { basicTableLayout, ColumnVisibilityControl, IndeterminateCheckbox } from 'util/tableUtils'
+import {basicTableLayout, checkboxColumnCell, ColumnVisibilityControl, IndeterminateCheckbox} from 'util/tableUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { instantToDateString } from 'util/timeUtils'
 import RequestKitModal from '../participants/RequestKitModal'
@@ -32,9 +32,17 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
   const [isLoading, setIsLoading] = useState(true)
   const [enrollees, setEnrollees] = useState<EnrolleeRow[]>([])
+  const [sorting, setSorting] = React.useState<SortingState>([
+    {id: 'optionalSurveys', desc: true},
+    {id: 'createdAt', desc: true}
+  ])
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
+    {id: 'consented', value: true},
+    {id: 'kitRequested', value: false},
+    {id: 'requiredSurveysComplete', value: true}
+  ])
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
 
   const loadEnrollees = async () => {
@@ -75,29 +83,20 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   const numSelected = Object.keys(rowSelection).length
   const enableActionButtons = numSelected > 0
 
-  const studyColumns: ColumnDef<EnrolleeRow, string | boolean>[] = currentEnv.configuredSurveys.length === 0 ? [] :
-    currentEnv.configuredSurveys
-      .map(configuredSurvey => {
-        const survey = configuredSurvey.survey
-        return {
-          id: survey.stableId,
-          header: survey.name,
-          accessorFn: enrollee => enrollee.taskCompletionStatus[survey.stableId],
-          meta: {
-            columnType: 'boolean',
-            filterOptions: [
-              { value: true, label: 'Completed' },
-              { value: false, label: 'Not Completed' }
-            ]
-          },
-          filterFn: 'equals',
-          cell: ({ row: { original: enrollee } }) => enrollee.taskCompletionStatus[survey.stableId]
-            ? <FontAwesomeIcon icon={faCheck}/>
-            : ''
-        }
-      })
+  const requiredSurveys = currentEnv.configuredSurveys.filter(survey => survey.required)
+  const hasCompletedAllRequiredSurveys = (enrollee: Enrollee) => {
+    return enrollee.participantTasks.filter(
+        task => task.blocksHub && task.status === 'COMPLETE' && task.taskType === 'SURVEY'
+    ).length === requiredSurveys.length
+  }
+  const optionalSurveysCompleted = (enrollee: Enrollee) => {
+    return enrollee.participantTasks.filter(
+        task => !task.blocksHub && task.status === 'COMPLETE' && task.taskType === 'SURVEY'
+    ).length
+  }
 
-  const columns: ColumnDef<EnrolleeRow, string | boolean>[] = [{
+
+  const columns: ColumnDef<EnrolleeRow, string | boolean | number>[] = [{
     id: 'select',
     header: ({ table }) => <IndeterminateCheckbox
       checked={table.getIsAllRowsSelected()} indeterminate={table.getIsSomeRowsSelected()}
@@ -131,10 +130,28 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
       ]
     },
     filterFn: 'equals',
-    cell: data => data.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
-  },
-  ...studyColumns, {
+    cell: checkboxColumnCell
+  }, {
+    header: 'Required surveys complete',
+    id: 'requiredSurveysComplete',
+    accessorFn: enrollee => hasCompletedAllRequiredSurveys(enrollee),
+    meta: {
+      columnType: 'boolean',
+      filterOptions: [
+        { value: true, label: 'Yes' },
+        { value: false, label: 'No' }
+      ]
+    },
+    filterFn: 'equals',
+    cell: checkboxColumnCell
+  }, {
+    header: '# Optional surveys complete',
+    id: 'optionalSurveys',
+    accessorFn: enrollee => optionalSurveysCompleted(enrollee),
+    filterFn: 'equals'
+  }, {
     header: 'Kit requested',
+    id: 'kitRequested',
     accessorFn: enrollee => enrollee.kitRequests.length !== 0,
     meta: {
       columnType: 'boolean',
@@ -144,16 +161,15 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
       ]
     },
     filterFn: 'equals',
-    cell: ({ row: { original: enrollee } }) => enrollee.kitRequests.length !== 0
-      ? <FontAwesomeIcon icon={faCheck}/>
-      : ''
+    cell: checkboxColumnCell
   }]
 
   const table = useReactTable({
     data: enrollees,
     columns,
-    state: { columnVisibility, rowSelection, columnFilters },
+    state: { columnVisibility, rowSelection, columnFilters, sorting },
     enableRowSelection: true,
+    onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,
     onColumnVisibilityChange: setColumnVisibility,
     onColumnFiltersChange: setColumnFilters,
@@ -164,7 +180,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
 
   return <>
     <LoadingSpinner isLoading={isLoading}>
-      <div className="d-flex align-items-center justify-content-between">
+      <div className="d-flex align-items-center justify-content-between py-3">
         <div className="d-flex align-items-center">
           <span className="me-2">
             {numSelected} of{' '}
