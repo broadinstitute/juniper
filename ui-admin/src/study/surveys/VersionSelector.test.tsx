@@ -16,9 +16,8 @@ jest.mock('api/api', () => ({
 
 describe('VersionSelector', () => {
 
-  test('renders the list of form versions', async () => {
+  test('renders a list of form versions that can be selected', async () => {
     //Arrange
-    const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
     render(<VersionSelector
       portalShortcode={studyEnvContext.portal.shortcode}
@@ -31,38 +30,10 @@ describe('VersionSelector', () => {
 
     //Act
     await waitFor(() => expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument())
-    const versionSelect = screen.getByLabelText('Select version to preview') as HTMLSelectElement
     await select(screen.getByLabelText('Select version to preview'), ['1'])
+    const openPreviewButton = screen.getByText('Open version')
 
     //Assert
-    expect(versionSelect).toHaveValue(1)
+    expect(openPreviewButton).toBeEnabled()
   })
-
-  // test('does not let the user preview the same form version twice', () => {
-  //   //Arrange
-  //   jest.mock('api/api', () => ({
-  //     getSurveyVersions: () => {
-  //       return Promise.resolve(tail(mockSurveyVersionsList()))
-  //     }
-  //   }))
-  //
-  //   const studyEnvContext = mockStudyEnvContext()
-  //   render(<VersionSelector
-  //     portalShortcode={studyEnvContext.portal.shortcode}
-  //     stableId={mockSurvey().stableId}
-  //     show={true}
-  //     setShow={jest.fn()}
-  //     previewedVersions={[head(mockSurveyVersionsList())!]}
-  //     setPreviewedVersions={jest.fn()}
-  //   />)
-  //
-  //   //Assert
-  //   const versionDropdown = screen.getByText('Select version to preview') as HTMLSelectElement
-  //
-  //   console.log(versionDropdown.options)
-  //
-  //   mockSurveyVersionsList().forEach((survey) => {
-  //     expect(versionDropdown.options.namedItem(survey.version.toString())).toBeInTheDocument()
-  //   })
-  // })
 })

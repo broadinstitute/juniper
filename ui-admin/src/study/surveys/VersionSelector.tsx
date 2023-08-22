@@ -66,6 +66,7 @@ export default function VersionSelector({
     <Modal.Footer>
       <Button
         variant="primary"
+        disabled={!selectedVersion}
         onClick={() => {
           if (selectedVersion) {
             loadVersion(selectedVersion)
