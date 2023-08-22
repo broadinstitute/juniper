@@ -23,6 +23,7 @@ public class SurveyDao extends BaseVersionedJdbiDao<Survey> {
         });
         return surveyOpt;
     }
+
     public List<Survey> findByStableIdNoContent(String stableId) {
         List<Survey> surveys = jdbi.withHandle(handle ->
                 handle.createQuery("select id, name, created_at, last_updated_at, version, stable_id from survey where stable_id = :stableId;")

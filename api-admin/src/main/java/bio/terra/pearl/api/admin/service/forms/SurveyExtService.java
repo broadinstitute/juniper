@@ -44,6 +44,9 @@ public class SurveyExtService {
   public List<Survey> listVersions(String portalShortcode, String stableId, AdminUser adminUser) {
     Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
     // TODO: do we need to auth survey to portal here?
+    //This is used to power the version selector in the admin UI. It's not necessary to return the surveys
+    //with any content or answer mappings- the response will be too large. Instead, just get the individual
+    //versions as content is needed.
     List<Survey> surveys = surveyService.findByStableIdNoContent(stableId);
     return surveys;
   }
