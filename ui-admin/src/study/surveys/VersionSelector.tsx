@@ -26,7 +26,7 @@ export default function VersionSelector({
     Api.getSurveyVersions(portalShortcode, stableId).then(result => {
       setVersionList(result.sort((a, b) => b.version - a.version))
     }).catch(() => {
-      Store.addNotification(failureNotification('Error loading form versions'))
+      Store.addNotification(failureNotification('Error loading form history'))
       setShow(false)
     })
     setIsLoading(false)
