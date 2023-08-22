@@ -2,7 +2,7 @@ import React, { useEffect, useId, useState } from 'react'
 import LoadingSpinner from 'util/LoadingSpinner'
 import Api, { VersionedForm } from 'api/api'
 import Modal from 'react-bootstrap/Modal'
-import { Button } from '../../components/forms/Button'
+import { Button } from 'components/forms/Button'
 import { instantToDefaultString } from 'util/timeUtils'
 import Select from 'react-select'
 import { failureNotification } from 'util/notifications'
@@ -11,12 +11,12 @@ import { Store } from 'react-notifications-component'
 /** component for selecting versions of a form */
 export default function VersionSelector({
   portalShortcode, stableId, show, setShow,
-  previewedVersions, setPreviewedVersions
+  visibleVersionPreviews, setVisibleVersionPreviews
 }:
                                           {portalShortcode: string, stableId: string,
                                             show: boolean, setShow: (show: boolean) => void
-                                            previewedVersions: VersionedForm[],
-                                            setPreviewedVersions: (versions: VersionedForm[]) => void}) {
+                                            visibleVersionPreviews: VersionedForm[],
+                                            setVisibleVersionPreviews: (versions: VersionedForm[]) => void}) {
   const [versionList, setVersionList] = useState<VersionedForm[]>([])
   const [selectedVersion, setSelectedVersion] = useState<number>()
   const [isLoading, setIsLoading] = useState(true)
@@ -35,7 +35,7 @@ export default function VersionSelector({
 
   function loadVersion(version: number) {
     Api.getSurvey(portalShortcode, stableId, version).then(result => {
-      setPreviewedVersions([...previewedVersions, result])
+      setVisibleVersionPreviews([...visibleVersionPreviews, result])
     })
   }
 
@@ -47,7 +47,7 @@ export default function VersionSelector({
       </span>
     </span>,
     value: formVersion.version
-  })).filter(opt => previewedVersions.every(previewedVersion => previewedVersion.version !== opt.value))
+  })).filter(opt => visibleVersionPreviews.every(previewedVersion => previewedVersion.version !== opt.value))
 
   const selectedOpt = versionOpts.find(opt => opt.value === selectedVersion)
 

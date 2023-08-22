@@ -479,7 +479,6 @@ export default {
   },
 
   async getSurveyVersions(portalShortcode: string, stableId: string): Promise<Survey[]> {
-    console.log('wtf')
     const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/surveys/${stableId}`, this.getGetInit())
     return await this.processJsonResponse(response)
   },

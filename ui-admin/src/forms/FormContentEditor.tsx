@@ -12,7 +12,7 @@ import ErrorBoundary from 'util/ErrorBoundary'
 
 type FormContentEditorProps = {
   initialContent: string
-  previewedVersions: VersionedForm[]
+  visibleVersionPreviews: VersionedForm[]
   readOnly: boolean
   onChange: OnChangeFormContent
 }
@@ -20,7 +20,7 @@ type FormContentEditorProps = {
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
 export const FormContentEditor = (props: FormContentEditorProps) => {
-  const { initialContent, previewedVersions, readOnly, onChange } = props
+  const { initialContent, visibleVersionPreviews, readOnly, onChange } = props
 
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [tabsEnabled, setTabsEnabled] = useState(true)
@@ -87,7 +87,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             <FormPreview formContent={editedContent} />
           </ErrorBoundary>
         </Tab>
-        { previewedVersions.map(form =>
+        { visibleVersionPreviews.map(form =>
           <Tab
             disabled={activeTab !== `preview${form.version}` && !tabsEnabled}
             key={`preview${form.version}`}

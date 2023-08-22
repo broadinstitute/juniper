@@ -33,7 +33,6 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
 
   const FORM_DRAFT_KEY = getFormDraftKey({ form: currentForm })
   const FORM_DRAFT_SAVE_INTERVAL = 10000
-  //returns portal context
 
   const [isEditorValid, setIsEditorValid] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -44,7 +43,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const [showLoadedDraftModal, setShowLoadedDraftModal] = useState(!!getDraft({ formDraftKey: FORM_DRAFT_KEY }))
   const [showDiscardDraftModal, setShowDiscardDraftModal] = useState(false)
   const [showVersionSelector, setShowVersionSelector] = useState(false)
-  const [previewedVersions, setPreviewedVersions] = useState<VersionedForm[]>([])
+  const [visibleVersionPreviews, setVisibleVersionPreviews] = useState<VersionedForm[]>([])
 
   const [draft, setDraft] = useState<FormDraft | undefined>(
     !readOnly ? getDraft({ formDraftKey: FORM_DRAFT_KEY }) : undefined)
@@ -141,8 +140,8 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
             />}
         { showVersionSelector && <VersionSelector
           portalShortcode={studyEnvContext.portal.shortcode}
-          previewedVersions={previewedVersions}
-          setPreviewedVersions={setPreviewedVersions}
+          visibleVersionPreviews={visibleVersionPreviews}
+          setVisibleVersionPreviews={setVisibleVersionPreviews}
           stableId={currentForm.stableId}
           setShow={setShowVersionSelector}
           show={showVersionSelector}/>
@@ -150,7 +149,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
       </div>
       <FormContentEditor
         initialContent={draft?.content || currentForm.content} //favor loading the draft, if we find one
-        previewedVersions={previewedVersions}
+        visibleVersionPreviews={visibleVersionPreviews}
         readOnly={readOnly}
         onChange={(isValid, newContent) => {
           if (isValid) {

@@ -1,7 +1,6 @@
-import { act, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import { mockStudyEnvContext, mockSurvey, mockSurveyVersionsList } from 'test-utils/mocking-utils'
-import userEvent from '@testing-library/user-event'
 import VersionSelector from './VersionSelector'
 import { select } from 'react-select-event'
 
@@ -24,8 +23,8 @@ describe('VersionSelector', () => {
       stableId={mockSurvey().stableId}
       show={true}
       setShow={jest.fn()}
-      previewedVersions={[]}
-      setPreviewedVersions={jest.fn()}
+      visibleVersionPreviews={[]}
+      setVisibleVersionPreviews={jest.fn()}
     />)
 
     //Act
