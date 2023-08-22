@@ -5,6 +5,8 @@ import Modal from 'react-bootstrap/Modal'
 import { Button } from '../../components/forms/Button'
 import { instantToDefaultString } from 'util/timeUtils'
 import Select from 'react-select'
+import { failureNotification } from 'util/notifications'
+import { Store } from 'react-notifications-component'
 
 /** component for selecting versions of a form */
 export default function VersionSelector({
@@ -23,8 +25,11 @@ export default function VersionSelector({
     setIsLoading(true)
     Api.getSurveyVersions(portalShortcode, stableId).then(result => {
       setVersionList(result.sort((a, b) => b.version - a.version))
-      setIsLoading(false)
+    }).catch(() => {
+      Store.addNotification(failureNotification('Error loading form versions'))
+      setShow(false)
     })
+    setIsLoading(false)
   }, [])
 
   function loadVersion(version: number) {
