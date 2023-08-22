@@ -14,7 +14,6 @@ jest.mock('api/api', () => ({
 }))
 
 describe('VersionSelector', () => {
-
   test('renders a list of form versions that can be selected', async () => {
     //Arrange
     const studyEnvContext = mockStudyEnvContext()
