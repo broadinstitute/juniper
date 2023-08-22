@@ -147,8 +147,8 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   }, {
     header: '# Optional surveys complete',
     id: 'optionalSurveys',
-    accessorFn: enrollee => optionalSurveysCompleted(enrollee),
-    filterFn: 'equals'
+    enableColumnFilter: false,
+    accessorFn: enrollee => optionalSurveysCompleted(enrollee)
   }, {
     header: 'Kit requested',
     id: 'kitRequested',

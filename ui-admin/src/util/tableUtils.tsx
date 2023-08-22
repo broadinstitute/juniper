@@ -149,8 +149,8 @@ export function tableHeader<A, B>(
     sortDirection ? (sortDirection === 'desc' ? 'descending' : 'ascending') : 'none' : undefined
 
   return <th key={header.id}
-    aria-sort={ariaSort} style={{ verticalAlign: 'top' }}>
-    <div className="d-flex flex-column justify-content-between" style={{minHeight: '100%', height: 'auto'}}>
+    aria-sort={ariaSort}>
+    <div>
       { options.sortable ? sortableTableHeader(header) : null }
       { options.filterable ? filterableTableHeader(header) : null }
     </div>
@@ -182,7 +182,7 @@ export function filterableTableHeader<A, B>(header: Header<A, B>) {
     <div>
       <Filter column={header.column}/>
     </div>
-  ) : null
+  ) : <div style={{height: '2em'}}> &nbsp;</div>
 }
 
 /**
