@@ -8,6 +8,7 @@ import {
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
+  SiteContent,
   StudyEnvironmentConsent,
   StudyEnvironmentSurvey,
   SurveyResponse,
