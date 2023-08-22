@@ -12,7 +12,7 @@ const formContent: string = JSON.stringify({
 })
 
 describe('FormContentEditor', () => {
-  it('should trap errors in an ErrorBoundary', () => {
+  it('should trap FormDesigner errors in an ErrorBoundary', () => {
     // Arrange
     const { container } = render(<FormContentEditor
       initialContent={formContent} readOnly={false} onChange={jest.fn()}
