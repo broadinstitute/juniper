@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "pepper_study_name"
+      author: breilly
+      changes:
+        - addColumn:
+            tableName: study
+            columns:
+              - column: { name: pepper_study_name, type: text }

@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.kit;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.kit.KitRequestDao;
+import bio.terra.pearl.core.dao.study.StudyDao;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.kit.KitRequestFactory;
@@ -152,6 +153,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
          */
         var adminUser = adminUserFactory.buildPersisted("testSyncAllKitStatusesFromPepper");
         var studyEnvironment = studyEnvironmentFactory.buildPersisted("testSyncAllKitStatusesFromPepper");
+        var study = studyDao.find(studyEnvironment.getStudyId()).get();
         var kitType = kitTypeFactory.buildPersisted("testSyncAllKitStatusesFromPepper");
         var enrollee1a = enrolleeFactory.buildPersisted("testSyncAllKitStatusesFromPepper", studyEnvironment);
         var enrollee1b = enrolleeFactory.buildPersisted("testSyncAllKitStatusesFromPepper", studyEnvironment);
@@ -160,6 +162,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         var kitRequest1b = kitRequestFactory.buildPersisted("testSyncAllKitStatusesFromPepper",
             enrollee1b.getId(), kitType.getId(), adminUser.getId());
         var studyEnvironment2 = studyEnvironmentFactory.buildPersisted("testSyncAllKitStatusesFromPepper2");
+        var study2 = studyDao.find(studyEnvironment2.getStudyId()).get();
         var enrollee2 = enrolleeFactory.buildPersisted("testSyncAllKitStatusesFromPepper", studyEnvironment2);
         var kitRequest2 = kitRequestFactory.buildPersisted("testSyncAllKitStatusesFromPepper",
             enrollee2.getId(), kitType.getId(), adminUser.getId());
@@ -183,9 +186,9 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .errorMessage("Something went wrong")
                 .errorDate(DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault()).format(Instant.now()))
                 .build();
-        when(mockPepperDSMClient.fetchKitStatusByStudy(studyEnvironment.getStudyId()))
+        when(mockPepperDSMClient.fetchKitStatusByStudy(study.getPepperStudyName()))
                 .thenReturn(List.of(kitStatus1a, kitStatus1b));
-        when(mockPepperDSMClient.fetchKitStatusByStudy(studyEnvironment2.getStudyId()))
+        when(mockPepperDSMClient.fetchKitStatusByStudy(study2.getPepperStudyName()))
                 .thenReturn(List.of(kitStatus2));
 
         /* Finally, exercise the unit under test! */
@@ -225,6 +228,8 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     private ObjectMapper objectMapper;
     @Autowired
     private ProfileService profileService;
+    @Autowired
+    private StudyDao studyDao;
     @Autowired
     private StudyEnvironmentFactory studyEnvironmentFactory;
 }

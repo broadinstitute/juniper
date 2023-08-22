@@ -157,6 +157,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
         if (existingStudy == null) {
             existingStudy = studyService.create(popDto);
         }
+        existingStudy.setPepperStudyName(popDto.getPepperStudyName());
 
         for (String kitTypeName : popDto.getKitTypeNames()) {
             var kitType = kitTypeDao.findByName(kitTypeName).get();

@@ -160,7 +160,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         for (Study study : studies) {
 
             // This assumes that DSM is configured with a single study backing all environments of the Juniper study
-            var pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getId());
+            var pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getPepperStudyName());
             var pepperStatusFetchedAt = Instant.now();
             var pepperKitStatusByKitId = pepperKitStatuses.stream().collect(
                     Collectors.toMap(PepperKitStatus::getKitId, Function.identity()));

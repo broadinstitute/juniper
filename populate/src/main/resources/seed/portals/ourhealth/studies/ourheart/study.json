@@ -1,6 +1,7 @@
 {
   "name": "OurHealth",
   "shortcode": "ourheart",
+  "pepperStudyName": "juniper-ourhealth",
   "surveyFiles": [
     "surveys/preEnroll.json",
     "surveys/cardioHistory.json",

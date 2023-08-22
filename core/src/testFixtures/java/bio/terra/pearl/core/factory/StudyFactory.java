@@ -18,7 +18,8 @@ public class StudyFactory {
     public Study.StudyBuilder builder(String testName) {
         return Study.builder()
                 .name(testName + RandomStringUtils.randomAlphabetic(6))
-                .shortcode(RandomStringUtils.randomAlphabetic(7));
+                .shortcode(RandomStringUtils.randomAlphabetic(7))
+                .pepperStudyName(RandomStringUtils.randomAlphabetic(6));
     }
 
     public Study.StudyBuilder builderWithDependencies(String testName) {
