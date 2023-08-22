@@ -25,11 +25,12 @@ export default function VersionSelector({
     setIsLoading(true)
     Api.getSurveyVersions(portalShortcode, stableId).then(result => {
       setVersionList(result.sort((a, b) => b.version - a.version))
+      setIsLoading(false)
     }).catch(() => {
       Store.addNotification(failureNotification('Error loading form history'))
       setShow(false)
+      setIsLoading(false)
     })
-    setIsLoading(false)
   }, [])
 
   function loadVersion(version: number) {
@@ -48,8 +49,7 @@ export default function VersionSelector({
     value: formVersion.version
   })).filter(opt => previewedVersions.every(previewedVersion => previewedVersion.version !== opt.value))
 
-  const selectedOpt = versionOpts
-    .find(opt => opt.value === selectedVersion!)
+  const selectedOpt = versionOpts.find(opt => opt.value === selectedVersion)
 
   return <Modal show={show} onHide={() => setShow(false)}>
     <Modal.Header closeButton>

@@ -57,6 +57,28 @@ export const mockSurvey: () => Survey = () => ({
   createdAt: 0
 })
 
+/** returns a list of survey versions */
+export const mockSurveyVersionsList: () => Survey[] = () => ([
+  {
+    id: 'surveyId1',
+    stableId: 'survey1',
+    version: 1,
+    content: '{}',
+    name: 'Survey number one',
+    lastUpdatedAt: 0,
+    createdAt: 0
+  },
+  {
+    id: 'surveyId1',
+    stableId: 'survey1',
+    version: 2,
+    content: '{}',
+    name: 'Survey number one',
+    lastUpdatedAt: 0,
+    createdAt: 0
+  }
+])
+
 /** returns a simple studyEnvContext object for use/extension in tests */
 export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
   study: { name: 'Fake study', studyEnvironments: [], shortcode: 'fakeStudy' },
