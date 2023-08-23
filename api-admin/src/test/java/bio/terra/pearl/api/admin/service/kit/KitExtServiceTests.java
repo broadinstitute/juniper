@@ -8,6 +8,7 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
+import java.util.Arrays;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class KitExtServiceTests extends BaseSpringBootTest {
   @Autowired private KitExtService kitExtService;
+
+  @Test
+  @Transactional
+  public void testRequestKitsRequiresAdmin() {
+    when(mockAuthUtilService.authUserToStudy(any(), any(), any()))
+        .thenThrow(new PermissionDeniedException(""));
+    AdminUser adminUser = new AdminUser();
+    Assertions.assertThrows(
+        PermissionDeniedException.class,
+        () ->
+            kitExtService.requestKits(
+                adminUser,
+                "someportal",
+                "somestudy",
+                EnvironmentName.sandbox,
+                Arrays.asList("enrollee1", "enrollee2"),
+                "kitType"));
+  }
 
   @Test
   @Transactional

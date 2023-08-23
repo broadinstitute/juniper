@@ -5,6 +5,8 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.kit.KitExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -14,12 +16,17 @@ public class KitController implements KitApi {
   private final AuthUtilService authUtilService;
   private final KitExtService kitExtService;
   private final HttpServletRequest request;
+  private final ObjectMapper objectMapper;
 
   public KitController(
-      AuthUtilService authUtilService, KitExtService kitExtService, HttpServletRequest request) {
+      AuthUtilService authUtilService,
+      KitExtService kitExtService,
+      HttpServletRequest request,
+      ObjectMapper objectMapper) {
     this.authUtilService = authUtilService;
     this.kitExtService = kitExtService;
     this.request = request;
+    this.objectMapper = objectMapper;
   }
 
   @Override
@@ -33,5 +40,24 @@ public class KitController implements KitApi {
             adminUser, portalShortcode, studyShortcode, environmentName);
 
     return ResponseEntity.ok(kits);
+  }
+
+  @Override
+  public ResponseEntity<Object> requestKits(
+      String kitType, String portalShortcode, String studyShortcode, String envName, Object body) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+
+    var enrolleeShortcodes = Arrays.asList(objectMapper.convertValue(body, String[].class));
+    var result =
+        kitExtService.requestKits(
+            adminUser,
+            portalShortcode,
+            studyShortcode,
+            environmentName,
+            enrolleeShortcodes,
+            kitType);
+
+    return ResponseEntity.ok(result);
   }
 }
