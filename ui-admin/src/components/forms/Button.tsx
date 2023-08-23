@@ -3,7 +3,7 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import classNames from 'classnames'
 import React, { useRef, useState } from 'react'
 import { Overlay, Tooltip } from 'react-bootstrap'
-import {Placement} from "react-bootstrap/types";
+import { Placement } from 'react-bootstrap/types'
 
 type ButtonVariant =
   | 'primary'

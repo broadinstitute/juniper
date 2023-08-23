@@ -1,10 +1,9 @@
 import { FormContent } from '@juniper/ui-core'
-import {isPlainObject} from "lodash";
-import {getTableOfContentsTree} from "./FormTableOfContents";
+import { isPlainObject } from 'lodash'
+import { getTableOfContentsTree } from './FormTableOfContents'
 
 /** Validate that an object is valid FormContent. */
 export const validateFormContent = (rawFormContent: unknown): FormContent => {
-
   let parsedFormContent: FormContent
   try {
     parsedFormContent = JSON.parse(rawFormContent as string) as FormContent
