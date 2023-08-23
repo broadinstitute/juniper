@@ -63,4 +63,17 @@ public class PortalExtService {
     config = portalEnvironmentConfigService.update(config);
     return config;
   }
+
+  /** updates a portal environment, currently only supports updating the siteContent */
+  public PortalEnvironment updateEnvironment(
+      String portalShortcode,
+      EnvironmentName envName,
+      PortalEnvironment updatedEnv,
+      AdminUser user) {
+
+    authUtilService.authUserToPortal(user, portalShortcode);
+    PortalEnvironment portalEnv = portalEnvironmentService.findOne(portalShortcode, envName).get();
+    portalEnv.setSiteContentId(updatedEnv.getSiteContentId());
+    return portalEnvironmentService.update(portalEnv);
+  }
 }

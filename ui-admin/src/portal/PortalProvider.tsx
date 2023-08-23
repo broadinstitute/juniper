@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, ReactNode, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import Api, { Portal } from 'api/api'
+import Api, { Portal, PortalEnvironment } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import AdminUserProvider from '../providers/AdminUserProvider'
 import { emptyContextAlertFunction } from '../util/contextUtils'
@@ -8,7 +8,8 @@ import { emptyContextAlertFunction } from '../util/contextUtils'
 
 export type PortalContextT = {
   updatePortal: (portal: Portal) => void
-  reloadPortal: (shortcode: string) => Promise<Portal | null>,
+  reloadPortal: (shortcode: string) => Promise<Portal | null>
+  updatePortalEnv: (portalEnv: PortalEnvironment) => void
   portal: Portal | null,
   isLoading: boolean,
   isError: boolean
@@ -17,6 +18,7 @@ export type PortalContextT = {
 export type LoadedPortalContextT = {
   updatePortal: (portal: Portal) => void
   reloadPortal: (shortcode: string) => Promise<Portal>
+  updatePortalEnv: (portalEnv: PortalEnvironment) => void
   portal: Portal
 }
 
@@ -28,6 +30,7 @@ export type PortalParams = {
 export const PortalContext = React.createContext<PortalContextT>({
   updatePortal: emptyContextAlertFunction,
   reloadPortal: emptyContextAlertFunction,
+  updatePortalEnv: emptyContextAlertFunction,
   portal: null,
   isLoading: true,
   isError: false
@@ -58,6 +61,17 @@ function RawPortalProvider({ shortcode, children }:
     setPortalState(updatedPortal)
   }
 
+  const updatePortalEnv = (portalEnv: PortalEnvironment) => {
+    if (!portalState) {
+      return
+    }
+    const envIndex = portalState.portalEnvironments
+      .findIndex(env => env.environmentName === portalEnv.environmentName)
+    portalState.portalEnvironments = [...portalState.portalEnvironments]
+    portalState.portalEnvironments[envIndex] = portalEnv
+    updatePortal(portalState)
+  }
+
   /** grabs the latest from the server and updates the portal object */
   function reloadPortal(shortcode: string): Promise<Portal> {
     setIsLoading(true)
@@ -81,6 +95,7 @@ function RawPortalProvider({ shortcode, children }:
   const portalContext: PortalContextT  = {
     portal: portalState,
     updatePortal,
+    updatePortalEnv,
     reloadPortal,
     isLoading,
     isError

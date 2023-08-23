@@ -7,6 +7,7 @@ import userEvent from '@testing-library/user-event'
 
 const mockSiteContents = [
   {
+    id: 'fakeId1',
     stableId: 'foo',
     version: 1,
     localizedSiteContents: [],
@@ -14,6 +15,7 @@ const mockSiteContents = [
     createdAt: 0
   },
   {
+    id: 'fakeId2',
     stableId: 'foo',
     version: 2,
     localizedSiteContents: [],

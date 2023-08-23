@@ -27,8 +27,9 @@ export const mockPortal: () => Portal = () => ({
 /** returns a simple portalContext, loosely modeled on OurHealth */
 export const mockPortalContext: () => LoadedPortalContextT = () => ({
   portal: mockPortal(),
-  updatePortal: () => null,
+  updatePortal: jest.fn(),
   reloadPortal: () => Promise.resolve(mockPortal()),
+  updatePortalEnv: jest.fn(),
   isError: false,
   isLoading: false
 })

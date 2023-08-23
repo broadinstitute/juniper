@@ -8,6 +8,7 @@ import {
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
+  SiteContent,
   StudyEnvironmentConsent,
   StudyEnvironmentSurvey,
   SurveyResponse,
@@ -527,6 +528,15 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async createNewSiteContentVersion(portalShortcode: string, stableId: string, siteContent: SiteContent) {
+    const response = await fetch(`${basePortalUrl(portalShortcode)}/siteContents/${stableId}`, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(siteContent)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async getSiteContentVersions(portalShortcode: string, stableId: string) {
     const response = await fetch(`${basePortalUrl(portalShortcode)}/siteContents/${stableId}`,
       this.getGetInit())
@@ -778,16 +788,26 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async updatePortalEnv(portalShortcode: string, envName: string, update: PortalEnvironment) {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}`
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(update)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async fetchEnvDiff(portalShortcode: string, sourceEnvName: string, destEnvName: string):
     Promise<PortalEnvironmentChange> {
-    const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/update/diff?sourceEnv=${sourceEnvName}`
+    const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/diff?sourceEnv=${sourceEnvName}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
   async applyEnvChanges(portalShortcode: string, destEnvName: string, changes: PortalEnvironmentChange):
     Promise<PortalEnvironment> {
-    const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/update/apply`
+    const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/diff/apply`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),

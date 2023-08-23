@@ -6,6 +6,8 @@ import bio.terra.pearl.core.model.site.*;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +49,7 @@ public class SiteContentDaoTests extends BaseSpringBootTest {
 
         SiteContent content = siteContentFactory
                 .builderWithDependencies("testSiteContentCrud")
-                .localizedSiteContents(new HashSet<>(Arrays.asList(lsc)))
+                .localizedSiteContents(List.of(lsc))
                 .build();
         SiteContent savedContent = siteContentService.create(content);
 

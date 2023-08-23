@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: "siteContentNotNulls"
+      author: dbush
+      changes:
+        - addNotNullConstraint:
+            tableName: site_content
+            columnName: stable_id
+        - addNotNullConstraint:
+            tableName: site_content
+            columnName: version

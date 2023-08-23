@@ -687,9 +687,26 @@ paths:
                 $ref: '#/components/schemas/RoleList'
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{targetEnv}/update/diff:
+  /api/portals/v1/{portalShortcode}/env/{envName}:
+    patch:
+      summary: Updates an environment (shallow), such as to change site content.
+      tags: [ portalEnvironment ]
+      operationId: update
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: PortalEnvironmentChangeRecord object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{targetEnv}/diff:
     get:
-      summary: Gets the changes between one environment and another
+      summary: Gets the diff between one environment and another
       tags: [ portalEnvironment ]
       operationId: diff
       parameters:
@@ -702,9 +719,9 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{targetEnv}/update/apply:
+  /api/portals/v1/{portalShortcode}/env/{targetEnv}/diff/apply:
     post:
-      summary: Updates a portal environment according to the update object
+      summary: Updates a portal environment according to the update object obtained from a diff operation
       tags: [ portalEnvironment ]
       operationId: apply
       parameters:
@@ -722,7 +739,7 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{env}/config:
     patch:
-      summary: Updates a portal environment according to the update object
+      summary: Updates a portal environment config according to the update object
       tags: [ portalEnvironmentConfig ]
       operationId: update
       parameters:

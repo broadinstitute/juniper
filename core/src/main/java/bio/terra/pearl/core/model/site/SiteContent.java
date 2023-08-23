@@ -8,9 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /** Top level construct for representing a home page of a portal or study.
  * Contains landing pages and associated links and content, in multiple translations */
@@ -19,7 +17,7 @@ public class SiteContent extends BaseEntity implements Versioned {
     private String stableId;
     private int version;
     @Builder.Default
-    private Set<LocalizedSiteContent> localizedSiteContents = new HashSet<>();
+    private List<LocalizedSiteContent> localizedSiteContents = new ArrayList<>();
     @Builder.Default
     private String defaultLanguage = "en";
 

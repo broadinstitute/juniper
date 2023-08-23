@@ -17,12 +17,12 @@ import ExportDataBrowser from './participants/export/ExportDataBrowser'
 import StudyEnvMetricsView from './metrics/StudyEnvMetricsView'
 import DatasetDashboard from './participants/datarepo/DatasetDashboard'
 import DatasetList from './participants/datarepo/DatasetList'
-import SiteContentView from '../portal/siteContent/SiteContentView'
 import Select from 'react-select'
 import MailingListView from '../portal/MailingListView'
 import StudySettings from './StudySettings'
 import { ENVIRONMENT_ICON_MAP } from './publishing/StudyPublishingView'
 import NotificationContent from './notifications/NotificationContent'
+import SiteContentLoader from '../portal/siteContent/SiteContentLoader'
 
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
@@ -35,7 +35,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
   const portal = portalContext.portal
   const navigate = useNavigate()
 
-  const updateEnv = (newEnv?: string) => {
+  const changeEnv = (newEnv?: string) => {
     if (!newEnv) {
       return
     }
@@ -61,6 +61,10 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
   const portalEnv = portal.portalEnvironments
     .find(env => env.environmentName === currentEnv.environmentName) as PortalEnvironment
   const studyEnvContext: StudyEnvContextT = { study, currentEnv, currentEnvPath, portal }
+  const portalEnvContext = {
+    ...portalContext, portalEnv
+  }
+
   return <div className="StudyView d-flex flex-column flex-grow-1">
     <NavBreadcrumb value={currentEnvPath}>
       <Select options={envOpts}
@@ -72,7 +76,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
             minWidth: '9em'
           })
         }}
-        onChange={opt => updateEnv(opt?.value)}
+        onChange={opt => changeEnv(opt?.value)}
       />
     </NavBreadcrumb>
     <Routes>
@@ -83,7 +87,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       </Route>
       <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
       <Route path="kits/*" element={<KitsRouter studyEnvContext={studyEnvContext}/>}/>
-      <Route path="siteContent" element={<SiteContentView portalEnv={portalEnv} portalShortcode={portal.shortcode}/>}/>
+      <Route path="siteContent" element={<SiteContentLoader portalEnvContext={portalEnvContext}/>}/>
       <Route path="metrics" element={<StudyEnvMetricsView studyEnvContext={studyEnvContext}/>}/>
       <Route path="mailingList" element={<MailingListView portalContext={portalContext}
         portalEnv={portalEnv}/>}/>
