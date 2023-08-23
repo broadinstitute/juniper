@@ -8,7 +8,7 @@ import {
   getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState
 } from '@tanstack/react-table'
 
-import Api, {KitRequest, PepperKitStatus} from 'api/api'
+import Api, { KitRequest, PepperKitStatus } from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { basicTableLayout, ColumnVisibilityControl } from 'util/tableUtils'
