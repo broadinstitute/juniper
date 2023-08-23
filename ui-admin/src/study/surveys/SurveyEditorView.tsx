@@ -106,11 +106,11 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
             disabled={!isSaveEnabled}
             className="me-md-2"
             tooltip={(() => {
-              if (!draft) {
-                return 'Form is unchanged. Make changes to save.'
-              }
               if (validationError) {
                 return validationError
+              }
+              if (!draft) {
+                return 'Form is unchanged. Make changes to save.'
               }
               return 'Save changes'
             })()}
