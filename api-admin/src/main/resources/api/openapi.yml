@@ -282,7 +282,7 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/requestKits:
     post:
-      summary: Request a sample kit for an enrollee
+      summary: Request sample kits for a batch of enrollees
       tags: [ kit ]
       operationId: requestKits
       parameters:
@@ -292,6 +292,7 @@ paths:
         - { name: kitType, in: query, required: true, schema: { type: string } }
       requestBody:
         required: true
+        description: JSON array of enrollee shortcodes
         content: { application/json: { schema: { type: object } } }
       responses:
         '200':
