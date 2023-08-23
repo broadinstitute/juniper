@@ -1,10 +1,10 @@
 import React from 'react'
-import {Link, Navigate, NavLink, Route, Routes} from 'react-router-dom'
+import { Link, Navigate, NavLink, Route, Routes } from 'react-router-dom'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
 import { studyKitsPath } from 'portal/PortalRouter'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import KitEnrolleeSelection from "./KitEnrolleeSelection";
-import KitList from "./KitList";
+import KitEnrolleeSelection from './KitEnrolleeSelection'
+import KitList from './KitList'
 
 /** Router for kit management screens. */
 export default function KitsRouter({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -14,7 +14,7 @@ export default function KitsRouter({ studyEnvContext }: {studyEnvContext: StudyE
     study: { shortcode: studyShortcode }
   } = studyEnvContext
 
-  const tabLinkStyle = ({isActive}: {isActive: boolean}) => ({
+  const tabLinkStyle = ({ isActive }: {isActive: boolean}) => ({
     borderBottom: isActive ? '3px solid #333': '',
     background: isActive ? '#ddd' : ''
   })
@@ -24,7 +24,7 @@ export default function KitsRouter({ studyEnvContext }: {studyEnvContext: StudyE
       <Link to={studyKitsPath(portalShortcode, studyShortcode, environmentName)}>kits</Link>
     </NavBreadcrumb>
     <div className="container">
-      <div className="d-flex w-100" style={{backgroundColor: '#ccc'}}>
+      <div className="d-flex w-100" style={{ backgroundColor: '#ccc' }}>
 
         <NavLink to="eligible" style={tabLinkStyle}>
           <div className="py-3 px-5">

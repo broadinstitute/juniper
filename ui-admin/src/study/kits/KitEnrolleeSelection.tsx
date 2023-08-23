@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import _keyBy from 'lodash/keyBy'
 import _mapValues from 'lodash/mapValues'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import { Link } from 'react-router-dom'
 import {
   ColumnDef,
@@ -16,7 +14,7 @@ import {
 
 import Api, { Enrollee } from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import {basicTableLayout, checkboxColumnCell, ColumnVisibilityControl, IndeterminateCheckbox} from 'util/tableUtils'
+import { basicTableLayout, checkboxColumnCell, ColumnVisibilityControl, IndeterminateCheckbox } from 'util/tableUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { instantToDateString } from 'util/timeUtils'
 import RequestKitModal from '../participants/RequestKitModal'
@@ -33,15 +31,15 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   const [isLoading, setIsLoading] = useState(true)
   const [enrollees, setEnrollees] = useState<EnrolleeRow[]>([])
   const [sorting, setSorting] = React.useState<SortingState>([
-    {id: 'optionalSurveys', desc: true},
-    {id: 'createdAt', desc: true}
+    { id: 'optionalSurveys', desc: true },
+    { id: 'createdAt', desc: true }
   ])
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
-    {id: 'consented', value: true},
-    {id: 'kitRequested', value: false},
-    {id: 'requiredSurveysComplete', value: true}
+    { id: 'consented', value: true },
+    { id: 'kitRequested', value: false },
+    { id: 'requiredSurveysComplete', value: true }
   ])
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
 
@@ -86,12 +84,12 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   const requiredSurveys = currentEnv.configuredSurveys.filter(survey => survey.required)
   const hasCompletedAllRequiredSurveys = (enrollee: Enrollee) => {
     return enrollee.participantTasks.filter(
-        task => task.blocksHub && task.status === 'COMPLETE' && task.taskType === 'SURVEY'
+      task => task.blocksHub && task.status === 'COMPLETE' && task.taskType === 'SURVEY'
     ).length === requiredSurveys.length
   }
   const optionalSurveysCompleted = (enrollee: Enrollee) => {
     return enrollee.participantTasks.filter(
-        task => !task.blocksHub && task.status === 'COMPLETE' && task.taskType === 'SURVEY'
+      task => !task.blocksHub && task.status === 'COMPLETE' && task.taskType === 'SURVEY'
     ).length
   }
 

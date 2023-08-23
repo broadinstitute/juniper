@@ -1,9 +1,8 @@
 import React, { HTMLProps, useEffect, useState } from 'react'
-import {CellContext, Column, flexRender, Header, RowData, Table} from '@tanstack/react-table'
+import { CellContext, Column, flexRender, Header, RowData, Table } from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faCaretDown, faCaretUp, faCheck, faColumns} from '@fortawesome/free-solid-svg-icons'
+import { faCaretDown, faCaretUp, faCheck, faColumns } from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
-import {Enrollee} from "../api/api";
 
 /**
  * Returns a debounced input react component
@@ -77,7 +76,6 @@ function SelectFilter<A>({
 }: {
   column: Column<A>
 }) {
-
   const options = column.columnDef.meta?.filterOptions || []
   const initialValue = options.find(opt => opt.value === column.getFilterValue())
   const [selectedValue, setSelectedValue] =
@@ -182,7 +180,7 @@ export function filterableTableHeader<A, B>(header: Header<A, B>) {
     <div>
       <Filter column={header.column}/>
     </div>
-  ) : <div style={{height: '2em'}}> &nbsp;</div>
+  ) : <div style={{ height: '2em' }}> &nbsp;</div>
 }
 
 /**
@@ -297,8 +295,9 @@ export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig = 
   </table>
 }
 
+/** renders a boolean value as a checkmark (true)  or a blank (false) */
 export const checkboxColumnCell = <R, T>(props: CellContext<R, T>) =>
-    props.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
+  props.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
 
 declare module '@tanstack/table-core' {
   //Extra column metadata for extending the built-in filter functionality of react-table
