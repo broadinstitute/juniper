@@ -117,7 +117,7 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
       onSelect={setActiveTab}
     >
       { statusTabs.map(tab => {
-        const kits = kitsByStatus[tab.status] || [];
+        const kits = kitsByStatus[tab.status] || []
         return <Tab
           key={tab.status}
           title={`${kits?.length} ${tab.label}`}
