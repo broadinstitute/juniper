@@ -48,10 +48,11 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
               onChange={newContent => {
                 setEditedContent(newContent)
                 try {
-                  validateFormContent(newContent)
-                  onChange(undefined, newContent)
+                  const validatedFormContent = validateFormContent(JSON.stringify(newContent)) //TODO this is silly
+                  onChange(undefined, validatedFormContent)
                 } catch (err) {
-                  onChange(undefined, undefined) //TODO
+                  // @ts-ignore
+                  onChange(err.message, undefined)
                 }
               }}
             />
@@ -67,7 +68,6 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
               initialValue={editedContent}
               readOnly={readOnly}
               onChange={(validationError, newContent) => {
-                console.log('validationError', validationError)
                 if (!validationError) {
                   setEditedContent(newContent!)
                   onChange(undefined, newContent)

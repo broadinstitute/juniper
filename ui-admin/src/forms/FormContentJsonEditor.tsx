@@ -26,7 +26,6 @@ export const FormContentJsonEditor = (props: FormContentJsonEditorProps) => {
       onChange(undefined, validatedFormContent)
       //@ts-ignore
     } catch (e: Error) {
-      console.log('caught an error')
       setValidationError(e.message)
       onChange(e.message, undefined)
     }
