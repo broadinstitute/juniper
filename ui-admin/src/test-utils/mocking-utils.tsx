@@ -121,7 +121,7 @@ export const mockKitType: () => KitType = () => ({
 /** returns a mock kit request */
 export const mockKitRequest: (args?: {
   enrollee?: Enrollee,
-  dsmStatus?: string,
+  dsmStatus?: string
 }) => KitRequest = ({ enrollee, dsmStatus } = {}) => ({
   id: 'kitRequestId',
   createdAt: 1,
@@ -139,7 +139,16 @@ export const mockKitRequest: (args?: {
     country: 'US'
   }),
   status: 'CREATED',
-  dsmStatus
+  dsmStatus,
+  pepperStatus: {
+    kitId: '',
+    currentStatus: '(unknown)',
+    labelDate: '',
+    scanDate: '',
+    receiveDate: '',
+    trackingNumber: '',
+    returnTrackingNumber: ''
+  }
 })
 
 /** returns a simple mock enrollee loosely based on the jsalk.json synthetic enrollee */

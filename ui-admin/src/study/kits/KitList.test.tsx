@@ -3,6 +3,7 @@ import { act, render, screen } from '@testing-library/react'
 import { mockEnrollee, mockKitRequest, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import KitList from './KitList'
 import { BrowserRouter } from 'react-router-dom'
+import userEvent from '@testing-library/user-event'
 
 jest.mock('api/api', () => ({
   fetchKitsByStudyEnvironment: () => {
@@ -15,6 +16,7 @@ jest.mock('api/api', () => ({
 
 describe('KitList', () => {
   it('gracefully handles unexpected JSON from Pepper', async () => {
+    const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
 
     await act(async () => render(
@@ -22,8 +24,7 @@ describe('KitList', () => {
         <KitList studyEnvContext={studyEnvContext}/>
       </BrowserRouter>
     ))
-
-    // screen.debug()
+    await user.click(screen.getByText(/Issues/))
 
     expect(screen.getByText('(unknown)')).toBeInTheDocument()
   })

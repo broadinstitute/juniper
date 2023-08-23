@@ -31,6 +31,9 @@ export function currentIsoDate() {
 /**
  * Returns the equivilant of a java Instant given an ISO date. Useful for passing an ISO date into other util functions.
  */
-export function isoToInstant(isoDate: string) {
+export function isoToInstant(isoDate?: string): number | undefined {
+  if (!isoDate) {
+    return undefined
+  }
   return Date.parse(isoDate) / 1000
 }

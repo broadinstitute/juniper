@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import _fromPairs from 'lodash/fromPairs'
 import _groupBy from 'lodash/groupBy'
-import _keys from 'lodash/keys'
 import { Tab, Tabs } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import {
@@ -9,13 +8,14 @@ import {
   getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState
 } from '@tanstack/react-table'
 
-import Api, { KitRequest } from 'api/api'
+import Api, {KitRequest, PepperKitStatus} from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { basicTableLayout, ColumnVisibilityControl } from 'util/tableUtils'
 import { instantToDateString, isoToInstant } from 'util/timeUtils'
 
 type KitStatusTabConfig = {
+  status: string,
   label: string,
   additionalColumns?: string[]
 }
@@ -28,55 +28,69 @@ const defaultColumns = {
   'pepperStatus_trackingNumber': false,
   'pepperStatus_scanDate': false,
   'pepperStatus_returnTrackingNumber': false,
-  'pepperStatus_receiveDate': false
+  'pepperStatus_receiveDate': false,
+  'pepperStatus': false
 }
 
-const statusTabs: Record<string, KitStatusTabConfig> = {
-  'CREATED': {
+const statusTabs: KitStatusTabConfig[] = [
+  {
+    status: 'CREATED',
     label: 'Created',
     additionalColumns: []
   },
-  'LABELED': {
+  {
+    status: 'LABELED',
     label: 'Labeled',
     additionalColumns: [
       'pepperStatus_labelDate', 'pepperStatus_trackingNumber'
     ]
   },
-  'SCANNED': {
+  {
+    status: 'SCANNED',
     label: 'Sent',
     additionalColumns: [
       'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
       'pepperStatus_scanDate', 'pepperStatus_returnTrackingNumber'
     ]
   },
-  'RECEIVED': {
+  {
+    status: 'RECEIVED',
     label: 'Returned',
     additionalColumns: [
       'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
       'pepperStatus_scanDate', 'pepperStatus_returnTrackingNumber',
       'pepperStatus_receiveDate'
     ]
+  },
+  {
+    status: 'ERROR',
+    label: 'Issues',
+    additionalColumns: [
+      'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
+      'pepperStatus_scanDate', 'pepperStatus_returnTrackingNumber',
+      'pepperStatus_receiveDate',
+      'pepperStatus'
+    ]
   }
-}
+]
 
-const initialColumnVisibility = (status: string): VisibilityState => {
+const initialColumnVisibility = (tab: KitStatusTabConfig): VisibilityState => {
   return {
     ...defaultColumns,
-    ..._fromPairs(statusTabs[status].additionalColumns?.map(c => { return [c, true] }))
+    ..._fromPairs(tab.additionalColumns?.map(c => { return [c, true] }))
   }
 }
 
-const pepperStatusToHumanStatus = (dsmStatus?: string): string => {
-  return dsmStatus
-    ? (statusTabs[dsmStatus]?.label || (`(${dsmStatus})`))
-    : '(unknown)'
+const pepperStatusToHumanStatus = (pepperStatus?: PepperKitStatus): string => {
+  const tab = statusTabs.find(tab => tab.status === pepperStatus?.currentStatus)
+  return tab?.label || pepperStatus?.currentStatus || '(unknown)'
 }
 
 /** Loads sample kits for a study and shows them as a list. */
 export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) {
   const { portal, study, currentEnv } = studyEnvContext
   const [isLoading, setIsLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<string | null>(_keys(statusTabs)[0])
+  const [activeTab, setActiveTab] = useState<string | null>(statusTabs[0].status)
   const [kits, setKits] = useState<KitRequest[]>([])
 
   const loadKits = async () => {
@@ -91,7 +105,9 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
     loadKits()
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
-  const kitsByStatus = _groupBy(kits, kit => kit.pepperStatus?.currentStatus || '')
+  const kitsByStatus = _groupBy(kits, kit => {
+    return statusTabs.find(tab => tab.status === kit.pepperStatus?.currentStatus)?.status || 'ERROR'
+  })
 
   return <LoadingSpinner isLoading={isLoading}>
     <Tabs
@@ -100,12 +116,17 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
       unmountOnExit
       onSelect={setActiveTab}
     >
-      { _keys(statusTabs).map(status => {
+      { statusTabs.map(tab => {
+        const kits = kitsByStatus[tab.status] || [];
         return <Tab
-          key={status}
-          title={`${kitsByStatus[status]?.length || 0} ${pepperStatusToHumanStatus(status)}`}
-          eventKey={status}>
-          <KitListView studyEnvContext={studyEnvContext} kits={kitsByStatus[status] || []} status={status}/>
+          key={tab.status}
+          title={`${kits?.length} ${tab.label}`}
+          eventKey={tab.status}
+          aria-label={tab.status}>
+          <KitListView
+            studyEnvContext={studyEnvContext}
+            kits={kits}
+            initialColumnVisibility={initialColumnVisibility(tab)}/>
         </Tab>
       })}
     </Tabs>
@@ -113,13 +134,13 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
 }
 
 /** Renders a table with a list of kits. */
-function KitListView({ studyEnvContext, kits, status }: {
+function KitListView({ studyEnvContext, kits, initialColumnVisibility }: {
   studyEnvContext: StudyEnvContextT,
   kits: KitRequest[],
-  status: string
+  initialColumnVisibility: VisibilityState
 }) {
   const { currentEnvPath } = studyEnvContext
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialColumnVisibility(status))
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialColumnVisibility)
   const [sorting, setSorting] = React.useState<SortingState>([])
 
   const columns: ColumnDef<KitRequest, string>[] = [{
@@ -161,6 +182,11 @@ function KitListView({ studyEnvContext, kits, status }: {
     header: 'Returned',
     accessorKey: 'pepperStatus.receiveDate',
     cell: data => instantToDateString(isoToInstant(data.getValue())),
+    enableColumnFilter: false
+  }, {
+    header: 'Status',
+    accessorKey: 'pepperStatus',
+    cell: data => pepperStatusToHumanStatus(data.row.original.pepperStatus),
     enableColumnFilter: false
   }]
 
