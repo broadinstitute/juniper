@@ -49,9 +49,9 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
                 setEditedContent(newContent)
                 try {
                   validateFormContent(newContent)
-                  onChange(true, newContent)
+                  onChange(undefined, newContent)
                 } catch (err) {
-                  onChange(false, undefined)
+                  onChange(undefined, undefined) //TODO
                 }
               }}
             />
@@ -66,14 +66,15 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             <FormContentJsonEditor
               initialValue={editedContent}
               readOnly={readOnly}
-              onChange={(isValid, newContent) => {
-                if (isValid) {
-                  setEditedContent(newContent)
-                  onChange(true, newContent)
+              onChange={(validationError, newContent) => {
+                console.log('validationError', validationError)
+                if (!validationError) {
+                  setEditedContent(newContent!)
+                  onChange(undefined, newContent)
                 } else {
-                  onChange(false, undefined)
+                  onChange(validationError, undefined)
                 }
-                setTabsEnabled(isValid)
+                setTabsEnabled(!validationError)
               }}
             />
           </ErrorBoundary>

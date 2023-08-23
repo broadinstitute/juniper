@@ -34,7 +34,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const FORM_DRAFT_KEY = getFormDraftKey({ form: currentForm })
   const FORM_DRAFT_SAVE_INTERVAL = 10000
 
-  const [isEditorValid, setIsEditorValid] = useState(true)
+  const [validationError, setValidationError] = useState<string>()
   const [saving, setSaving] = useState(false)
   const [savingDraft, setSavingDraft] = useState(false)
 
@@ -48,7 +48,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const [draft, setDraft] = useState<FormDraft | undefined>(
     !readOnly ? getDraft({ formDraftKey: FORM_DRAFT_KEY }) : undefined)
 
-  const isSaveEnabled = !!draft && isEditorValid && !saving
+  const isSaveEnabled = !!draft && !validationError && !saving
 
   const saveDraftToLocalStorage = () => {
     setDraft(currentDraft => {
@@ -109,12 +109,13 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
               if (!draft) {
                 return 'Form is unchanged. Make changes to save.'
               }
-              if (!isEditorValid) {
-                return 'Form is invalid. Correct to save.'
+              if (validationError) {
+                return validationError
               }
               return 'Save changes'
             })()}
-            variant="primary"
+            tooltipPlacement={'left'}
+            variant={validationError ? 'danger' : 'primary'}
             onClick={onClickSave}
           >
             Save
@@ -151,11 +152,11 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
         initialContent={draft?.content || currentForm.content} //favor loading the draft, if we find one
         visibleVersionPreviews={visibleVersionPreviews}
         readOnly={readOnly}
-        onChange={(isValid, newContent) => {
-          if (isValid) {
+        onChange={(validationError, newContent) => {
+          if (!validationError) {
             setDraft({ content: JSON.stringify(newContent), date: Date.now() })
           }
-          setIsEditorValid(isValid)
+          setValidationError(validationError)
         }}
       />
     </div>

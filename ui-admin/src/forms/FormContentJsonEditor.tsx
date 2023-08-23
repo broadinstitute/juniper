@@ -17,24 +17,25 @@ type FormContentJsonEditorProps = {
 export const FormContentJsonEditor = (props: FormContentJsonEditorProps) => {
   const { initialValue, readOnly = false, onChange } = props
   const [editorValue, _setEditorValue] = useState(() => JSON.stringify(initialValue, null, 2))
-  const [isValid, setIsValid] = useState(true)
+  const [validationError, setValidationError] = useState()
   const setEditorValue = useCallback((newEditorValue: string) => {
     _setEditorValue(newEditorValue)
     try {
-      const formContent = JSON.parse(newEditorValue)
-      validateFormContent(formContent)
-      setIsValid(true)
-      onChange(true, formContent)
-    } catch (e) {
-      setIsValid(false)
-      onChange(false, undefined)
+      const validatedFormContent = validateFormContent(newEditorValue)
+      setValidationError(undefined)
+      onChange(undefined, validatedFormContent)
+      //@ts-ignore
+    } catch (e: Error) {
+      console.log('caught an error')
+      setValidationError(e.message)
+      onChange(e.message, undefined)
     }
   }, [])
 
   return (
     <div className="d-flex flex-column flex-grow-1">
       <textarea
-        className={classNames('w-100 flex-grow-1 form-control font-monospace', { 'is-invalid': !isValid })}
+        className={classNames('w-100 flex-grow-1 form-control font-monospace', { 'is-invalid': validationError })}
         readOnly={readOnly}
         style={{
           overflowX: 'auto',

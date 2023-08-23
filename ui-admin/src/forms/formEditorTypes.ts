@@ -1,3 +1,7 @@
 import { FormContent } from '@juniper/ui-core'
 
-export type OnChangeFormContent = (...args: [valid: true, newValue: FormContent] | [false, undefined]) => void
+export type OnChangeFormContent = (...args:
+                                     [validationError: string | undefined, newValue: FormContent] |
+                                     [validationError: string, newValue: undefined] |
+                                     [undefined, undefined]
+) => void
