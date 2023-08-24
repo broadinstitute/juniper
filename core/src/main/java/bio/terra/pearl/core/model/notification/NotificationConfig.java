@@ -50,7 +50,7 @@ public class NotificationConfig extends BaseEntity implements VersionedEntityCon
     @Builder.Default
     private int reminderIntervalMinutes = (int) Duration.ofHours(72).toMinutes();
     @Builder.Default
-    private int maxNumReminders = -1; // -1 means to keep reminding indefinitely
+    private int maxNumReminders = 5; // -1 means to keep reminding indefinitely
 
     @Override
     public Versioned versionedEntity() {
