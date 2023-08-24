@@ -1,0 +1,18 @@
+{
+  "participantUser": {
+    "username": "kitEligible@test.com"
+  },
+  "profile": {
+    "givenName": "Kitt",
+    "familyName": "Eligible",
+    "contactEmail": "kitEligible@test.com",
+    "sexAtBirth": "male",
+    "mailingAddress": {
+      "street1": "45 South Street",
+      "city": "Cambridge",
+      "state": "MA",
+      "country": "US",
+      "postalCode": "02142"
+    }
+  }
+}

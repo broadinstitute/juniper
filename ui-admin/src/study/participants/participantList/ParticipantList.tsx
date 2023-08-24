@@ -29,7 +29,9 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   const [participantList, setParticipantList] = useState<EnrolleeSearchResult[]>([])
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([
+    { id: 'createdAt', desc: true }
+  ])
   const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
     'givenName': false,
@@ -62,6 +64,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     cell: info => <Link to={`${currentEnvPath}/participants/${info.getValue()}`}>{info.getValue()}</Link>
   }, {
     header: 'Created',
+    id: 'createdAt',
     accessorKey: 'enrollee.createdAt',
     enableColumnFilter: false,
     cell: info => instantToDefaultString(info.getValue() as unknown as number)
