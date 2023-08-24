@@ -20,7 +20,7 @@ type InitializedSiteContentViewProps = {
 }
 
 /** shows a site content in editable form with a live preview.  Defaults to english-only for now */
-export const InitializedSiteContentView = (props: InitializedSiteContentViewProps) => {
+const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const { siteContent, previewApi, portalShortcode, loadSiteContent, createNewVersion } = props
   const selectedLanguage = 'en'
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
@@ -107,7 +107,6 @@ export const InitializedSiteContentView = (props: InitializedSiteContentViewProp
           // @ts-ignore  Link to type also supports numbers for back operations
           <Link className="btn btn-cancel" to={-1}>Cancel</Link>
         }
-
       </div>
       <div>
         {pageToRender &&
@@ -125,4 +124,5 @@ export const InitializedSiteContentView = (props: InitializedSiteContentViewProp
   </div>
 }
 
-export default InitializedSiteContentView
+export default SiteContentEditor
+

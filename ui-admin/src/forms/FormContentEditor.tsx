@@ -8,6 +8,7 @@ import { OnChangeFormContent } from './formEditorTypes'
 import { FormContentJsonEditor } from './FormContentJsonEditor'
 import { FormPreview } from './FormPreview'
 import { validateFormContent } from './formContentValidation'
+import ErrorBoundary from 'util/ErrorBoundary'
 
 type FormContentEditorProps = {
   initialContent: string
@@ -39,45 +40,51 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           eventKey="designer"
           title="Designer"
         >
-          <FormDesigner
-            readOnly={readOnly}
-            value={editedContent}
-            onChange={newContent => {
-              setEditedContent(newContent)
-              try {
-                validateFormContent(newContent)
-                onChange(true, newContent)
-              } catch (err) {
-                onChange(false, undefined)
-              }
-            }}
-          />
+          <ErrorBoundary>
+            <FormDesigner
+              readOnly={readOnly}
+              value={editedContent}
+              onChange={newContent => {
+                setEditedContent(newContent)
+                try {
+                  validateFormContent(newContent)
+                  onChange(true, newContent)
+                } catch (err) {
+                  onChange(false, undefined)
+                }
+              }}
+            />
+          </ErrorBoundary>
         </Tab>
         <Tab
           disabled={activeTab !== 'json' && !tabsEnabled}
           eventKey="json"
           title="JSON Editor"
         >
-          <FormContentJsonEditor
-            initialValue={editedContent}
-            readOnly={readOnly}
-            onChange={(isValid, newContent) => {
-              if (isValid) {
-                setEditedContent(newContent)
-                onChange(true, newContent)
-              } else {
-                onChange(false, undefined)
-              }
-              setTabsEnabled(isValid)
-            }}
-          />
+          <ErrorBoundary>
+            <FormContentJsonEditor
+              initialValue={editedContent}
+              readOnly={readOnly}
+              onChange={(isValid, newContent) => {
+                if (isValid) {
+                  setEditedContent(newContent)
+                  onChange(true, newContent)
+                } else {
+                  onChange(false, undefined)
+                }
+                setTabsEnabled(isValid)
+              }}
+            />
+          </ErrorBoundary>
         </Tab>
         <Tab
           disabled={activeTab !== 'preview' && !tabsEnabled}
           eventKey="preview"
           title="Preview"
         >
-          <FormPreview formContent={editedContent} />
+          <ErrorBoundary>
+            <FormPreview formContent={editedContent} />
+          </ErrorBoundary>
         </Tab>
       </Tabs>
     </div>
