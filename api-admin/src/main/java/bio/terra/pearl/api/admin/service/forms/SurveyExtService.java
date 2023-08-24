@@ -49,7 +49,11 @@ public class SurveyExtService {
     // to return the surveys with any content or answer mappings, the response will
     // be too large. Instead, just get the individual versions as content is needed.
     List<Survey> surveys = surveyService.findByStableIdNoContent(stableId);
-    List<Survey> surveysInPortal = surveys.stream().map().filter(survey -> portal.getId().equals(survey.getPortalId())).toList();
+    List<Survey> surveysInPortal =
+        surveys.stream()
+            .map()
+            .filter(survey -> portal.getId().equals(survey.getPortalId()))
+            .toList();
     return surveysInPortal;
   }
 
