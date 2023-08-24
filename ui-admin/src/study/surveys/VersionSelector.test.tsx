@@ -29,9 +29,11 @@ describe('VersionSelector', () => {
     //Act
     await waitFor(() => expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument())
     await select(screen.getByLabelText('Select version to preview'), ['1'])
-    const openPreviewButton = screen.getByText('Open version')
+    const openPreviewButton = screen.getByText('View preview')
+    const openEditorButton = screen.getByText('Open read-only editor')
 
     //Assert
     expect(openPreviewButton).toBeEnabled()
+    expect(openEditorButton).toBeEnabled()
   })
 })
