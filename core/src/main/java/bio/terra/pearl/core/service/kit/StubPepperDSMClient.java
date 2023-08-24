@@ -1,5 +1,7 @@
 package bio.terra.pearl.core.service.kit;
 
+import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -13,11 +15,14 @@ import java.util.UUID;
 @Component
 public class StubPepperDSMClient implements PepperDSMClient {
     private final KitRequestService kitRequestService;
+    private final StudyEnvironmentDao studyEnvironmentDao;
     private final ObjectMapper objectMapper;
 
     public StubPepperDSMClient(@Lazy KitRequestService kitRequestService,
+                               StudyEnvironmentDao studyEnvironmentDao,
                                ObjectMapper objectMapper) {
         this.kitRequestService = kitRequestService;
+        this.studyEnvironmentDao = studyEnvironmentDao;
         this.objectMapper = objectMapper;
     }
 
@@ -42,8 +47,9 @@ public class StubPepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public Collection<PepperKitStatus> fetchKitStatusByStudy(UUID studyEnvironmentId) {
-        return kitRequestService.findIncompleteKits(studyEnvironmentId).stream().map(kit -> {
+    public Collection<PepperKitStatus> fetchKitStatusByStudy(String studyShortcode) {
+        var studyEnvironment = studyEnvironmentDao.findByStudy(studyShortcode, EnvironmentName.sandbox).get();
+        return kitRequestService.findIncompleteKits(studyEnvironment.getId()).stream().map(kit -> {
             PepperKitStatus status = PepperKitStatus.builder()
                     .kitId(kit.getId().toString())
                     .currentStatus("SHIPPED")

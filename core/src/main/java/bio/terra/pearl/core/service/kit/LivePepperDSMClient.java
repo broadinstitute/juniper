@@ -15,6 +15,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Function;
@@ -35,12 +36,30 @@ public class LivePepperDSMClient implements PepperDSMClient {
 
     @Override
     public String sendKitRequest(Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
-        var body = makeKitRequestBody(enrollee, kitRequest, address);
-        var request = webClient
-                .post().uri("%s/shipKit".formatted(pepperDSMConfig.getBasePath()))
-                .header("Authorization", "Bearer " + generateDsmJwt())
-                .bodyValue(body);
+        var request = buildAuthedPostRequest("shipKit", makeKitRequestBody(enrollee, kitRequest, address));
         return retrieveAndDeserializeResponse(request, String.class);
+    }
+
+    @Override
+    public PepperKitStatus fetchKitStatus(UUID kitRequestId) {
+        var request = buildAuthedGetRequest("kitStatus/kit/%s".formatted(kitRequestId));
+        var response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
+        if (response.getKits().length != 1) {
+            throw new PepperException("Expected a single result from fetchKitStatus by ID (%s), got %d".formatted(
+                    kitRequestId, response.getKits().length));
+        }
+        return response.getKits()[0];
+    }
+
+    @Override
+    public Collection<PepperKitStatus> fetchKitStatusByStudy(String studyShortcode) {
+        var request = buildAuthedGetRequest("kitStatus/study/%s".formatted(makePepperStudyName(studyShortcode)));
+        var response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
+        return Arrays.asList(response.getKits());
+    }
+
+    private String makePepperStudyName(String studyShortcode) {
+        return "juniper-" + studyShortcode;
     }
 
     private String makeKitRequestBody(Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
@@ -64,14 +83,25 @@ public class LivePepperDSMClient implements PepperDSMClient {
         }
     }
 
-    @Override
-    public PepperKitStatus fetchKitStatus(UUID kitRequestId) {
-        return null;
+    private WebClient.RequestHeadersSpec<?> buildAuthedGetRequest(String path) {
+        return webClient.get()
+                .uri(buildUri(path))
+                .header("Authorization", buildAuthorizationHeader());
     }
 
-    @Override
-    public Collection<PepperKitStatus> fetchKitStatusByStudy(UUID studyId) {
-        return null;
+    private WebClient.RequestHeadersSpec<?> buildAuthedPostRequest(String path, String body) {
+        return webClient.post()
+                .uri(buildUri(path))
+                .header("Authorization", buildAuthorizationHeader())
+                .bodyValue(body);
+    }
+
+    private String buildUri(String path) {
+        return "%s/%s".formatted(pepperDSMConfig.getBasePath(), path);
+    }
+
+    private String buildAuthorizationHeader() {
+        return "Bearer " + generateDsmJwt();
     }
 
     private String generateDsmJwt() {
@@ -131,17 +161,17 @@ public class LivePepperDSMClient implements PepperDSMClient {
             }
         };
     }
-}
 
-@Component
-@Getter
-@Setter
-class PepperDSMConfig {
-    private String basePath;
-    private String secret;
+    @Component
+    @Getter
+    @Setter
+    public static class PepperDSMConfig {
+        private String basePath;
+        private String secret;
 
-    public PepperDSMConfig(Environment environment) {
-        this.basePath = environment.getProperty("env.dsm.basePath");
-        this.secret = environment.getProperty("env.dsm.secret");
+        public PepperDSMConfig(Environment environment) {
+            this.basePath = environment.getProperty("env.dsm.basePath");
+            this.secret = environment.getProperty("env.dsm.secret");
+        }
     }
 }
