@@ -3,7 +3,7 @@ package bio.terra.pearl.api.admin.service.siteContent;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
-import bio.terra.pearl.core.model.site.SiteContent;
+import bio.terra.pearl.core.model.site.*;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +29,14 @@ public class SiteContentExtService {
       return siteContentOpt;
     }
     return Optional.empty();
+  }
+
+  public SiteContent create(
+      String portalShortcode, String stableId, SiteContent siteContent, AdminUser user) {
+    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
+    siteContent.setPortalId(portal.getId());
+    siteContent.setStableId(stableId);
+    return siteContentService.createNewVersion(siteContent);
   }
 
   public List<SiteContent> versionList(String portalShortcode, String stableId, AdminUser user) {
