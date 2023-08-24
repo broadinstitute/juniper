@@ -31,8 +31,9 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   const [isLoading, setIsLoading] = useState(true)
   const [enrollees, setEnrollees] = useState<EnrolleeRow[]>([])
   const [sorting, setSorting] = React.useState<SortingState>([
-    { id: 'optionalSurveys', desc: true },
-    { id: 'createdAt', desc: true }
+    { id: 'createdAt', desc: true },
+    { id: 'optionalSurveys', desc: true }
+
   ])
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
