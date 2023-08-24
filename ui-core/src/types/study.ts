@@ -68,6 +68,7 @@ export type NotificationConfig = {
 }
 
 export type EmailTemplate = {
+  id?: string  // id may not be present if the template is newly created client-side
   subject: string
   body: string
   name: string
