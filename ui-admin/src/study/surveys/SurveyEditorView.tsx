@@ -139,7 +139,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
               onDismiss={() => setShowDiscardDraftModal(false)}
             />}
         { showVersionSelector && <VersionSelector
-          portalShortcode={studyEnvContext.portal.shortcode}
+          studyEnvContext={studyEnvContext}
           visibleVersionPreviews={visibleVersionPreviews}
           setVisibleVersionPreviews={setVisibleVersionPreviews}
           stableId={currentForm.stableId}

@@ -18,7 +18,7 @@ describe('VersionSelector', () => {
     //Arrange
     const studyEnvContext = mockStudyEnvContext()
     render(<VersionSelector
-      portalShortcode={studyEnvContext.portal.shortcode}
+      studyEnvContext={studyEnvContext}
       stableId={mockSurvey().stableId}
       show={true}
       setShow={jest.fn()}

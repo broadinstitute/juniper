@@ -9,13 +9,14 @@ import { failureNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { StudyEnvContextT, studyEnvFormsPath } from '../StudyEnvironmentRouter'
 
 /** component for selecting versions of a form */
 export default function VersionSelector({
-  portalShortcode, stableId, show, setShow,
+  studyEnvContext, stableId, show, setShow,
   visibleVersionPreviews, setVisibleVersionPreviews
 }:
-                                          {portalShortcode: string, stableId: string,
+                                          {studyEnvContext: StudyEnvContextT, stableId: string,
                                             show: boolean, setShow: (show: boolean) => void
                                             visibleVersionPreviews: VersionedForm[],
                                             setVisibleVersionPreviews: (versions: VersionedForm[]) => void}) {
@@ -26,7 +27,7 @@ export default function VersionSelector({
 
   useEffect(() => {
     setIsLoading(true)
-    Api.getSurveyVersions(portalShortcode, stableId).then(result => {
+    Api.getSurveyVersions(studyEnvContext.portal.shortcode, stableId).then(result => {
       setVersionList(result.sort((a, b) => b.version - a.version))
       setIsLoading(false)
     }).catch(() => {
@@ -37,7 +38,7 @@ export default function VersionSelector({
   }, [])
 
   function loadVersion(version: number) {
-    Api.getSurvey(portalShortcode, stableId, version).then(result => {
+    Api.getSurvey(studyEnvContext.portal.shortcode, stableId, version).then(result => {
       setVisibleVersionPreviews([...visibleVersionPreviews, result])
     })
   }
@@ -85,7 +86,12 @@ export default function VersionSelector({
         disabled={!selectedVersion}
         onClick={() => {
           if (selectedVersion) {
-            window.open(`../${stableId}/${selectedVersion}?readOnly=true`)
+            const path = `${studyEnvFormsPath(
+              studyEnvContext.portal.shortcode,
+              studyEnvContext.study.shortcode,
+              studyEnvContext.currentEnv.environmentName
+            )}/surveys/${stableId}/${selectedVersion}?readOnly=true`
+            window.open(path, '_blank')
           }
           setShow(false)
         }}
