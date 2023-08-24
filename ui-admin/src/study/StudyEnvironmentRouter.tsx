@@ -11,7 +11,6 @@ import PreEnrollView from './surveys/PreEnrollView'
 import StudyContent from './StudyContent'
 import KitsRouter from './kits/KitsRouter'
 import ParticipantsRouter from './participants/ParticipantsRouter'
-import NotificationConfigView from './notifications/NotificationConfigView'
 import QuestionScratchbox from './surveys/editor/QuestionScratchbox'
 import ExportDataBrowser from './participants/export/ExportDataBrowser'
 import StudyEnvMetricsView from './metrics/StudyEnvMetricsView'
@@ -76,8 +75,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       />
     </NavBreadcrumb>
     <Routes>
-      <Route path="notificationContent/*" element={<NotificationContent studyEnvContext={studyEnvContext}
-                                                                        portalContext={portalContext}/>}/>
+      <Route path="notificationContent/*" element={<NotificationContent studyEnvContext={studyEnvContext}/>}/>
       <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
       <Route path="kits/*" element={<KitsRouter studyEnvContext={studyEnvContext}/>}/>
       <Route path="siteContent" element={<SiteContentView portalEnv={portalEnv} portalShortcode={portal.shortcode}/>}/>

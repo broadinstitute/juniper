@@ -1,11 +1,11 @@
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { DatasetDetails, Enrollee, KitRequest, KitType, ParticipantNote, Portal } from 'api/api'
+import { DatasetDetails, Enrollee, KitRequest, KitType, NotificationConfig, ParticipantNote, Portal } from 'api/api'
 import { Survey } from '@juniper/ui-core/build/types/forms'
 import { ParticipantTask } from '@juniper/ui-core/build/types/task'
 
 import _times from 'lodash/times'
 import _random from 'lodash/random'
-import { StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
+import { EmailTemplate, StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
 import { LoadedPortalContextT } from '../portal/PortalProvider'
 import { PortalEnvironment } from '@juniper/ui-core/build/types/portal'
 
@@ -202,5 +202,38 @@ export const mockParticipantNote = (): ParticipantNote => {
     createdAt: 0,
     lastUpdatedAt: 0,
     text: 'some note text'
+  }
+}
+
+/** mock NotificationConfig */
+export const mockNotificationConfig = (): NotificationConfig => {
+  return {
+    id: 'noteId1',
+    notificationType: 'EVENT',
+    eventType: 'CONSENT',
+    deliveryType: 'EMAIL',
+    taskType: '',
+    portalEnvironmentId: 'portalEnvId',
+    studyEnvironmentId: 'studyEnvId',
+    maxNumReminders: -1,
+    afterMinutesIncomplete: -1,
+    reminderIntervalMinutes: 10,
+    taskTargetStableId: '',
+    active: true,
+    emailTemplateId: 'emailTemplateId',
+    emailTemplate: mockEmailTemplate(),
+    rule: ''
+  }
+}
+
+/** Mock EmailTemplate */
+export const mockEmailTemplate = (): EmailTemplate => {
+  return {
+    id: 'emailTemplate1',
+    name: 'Mock template',
+    subject: 'Mock subject',
+    stableId: 'mock1',
+    version: 1,
+    body: 'Mock email message'
   }
 }

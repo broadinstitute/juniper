@@ -1,25 +1,22 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import {useNavigate, useParams} from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import Select from 'react-select'
 import TestEmailSender from './TestEmailSender'
-import { cloneDeep } from 'lodash'
-import Api from "../../api/api";
-import {LoadedPortalContextT, PortalContextT} from "../../portal/PortalProvider";
-import {failureNotification, successNotification} from "../../util/notifications";
-import {Store} from "react-notifications-component";
+import Api from 'api/api'
+import { failureNotification, successNotification } from 'util/notifications'
+import { Store } from 'react-notifications-component'
 
 const configTypeOptions = [{ label: 'Event', value: 'EVENT' }, { label: 'Task reminder', value: 'TASK_REMINDER' },
   { label: 'Ad hoc', value: 'AD_HOC' }]
 const deliveryTypeOptions = [{ label: 'Email', value: 'EMAIL' }]
 const eventTypeOptions = [{ label: 'Study Enrollment', value: 'STUDY_ENROLLMENT' },
-  { label: 'Study Consent', value: 'STUDY_CONSENT'}, {label: 'Survey Response', value: 'SURVEY_RESPONSE' }]
+  { label: 'Study Consent', value: 'STUDY_CONSENT' }, { label: 'Survey Response', value: 'SURVEY_RESPONSE' }]
 const taskTypeOptions = [{ label: 'Survey', value: 'SURVEY' }, { label: 'Consent', value: 'CONSENT' }]
 
 
 /** for viewing and editing a notification config.  saving not yet implemented */
-export default function NotificationConfigView({ studyEnvContext, portalContext }:
-{studyEnvContext: StudyEnvContextT, portalContext: LoadedPortalContextT}) {
+export default function NotificationConfigView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { currentEnv, portal, study, currentEnvPath } = studyEnvContext
   const [showSendModal, setShowSendModal] = useState(false)
   const navigate = useNavigate()
@@ -34,19 +31,13 @@ export default function NotificationConfigView({ studyEnvContext, portalContext 
   const isTaskReminder = config.notificationType === 'TASK_REMINDER'
   const isEventConfig = config.notificationType === 'EVENT'
 
-  const updateEmailBody = (newBody: string) => {
-    const newConfig = cloneDeep(config)
-    newConfig.emailTemplate.body = newBody
-    setConfig(newConfig)
-  }
-
   const saveConfig = async () => {
     if (!matchedConfig) {
       return
     }
     try {
       const savedConfig = await Api.updateNotificationConfig(portal.shortcode,
-          currentEnv.environmentName, study.shortcode, matchedConfig.id, config)
+        currentEnv.environmentName, study.shortcode, matchedConfig.id, config)
       Store.addNotification(successNotification('Notification saved'))
       const matchedConfigIndex = currentEnv.notificationConfigs.findIndex(cfig => cfig.id === configId)
       if (!matchedConfigIndex) {
@@ -60,13 +51,15 @@ export default function NotificationConfigView({ studyEnvContext, portalContext 
     }
   }
 
-  const loadConfig = async (configId: string) => {
+  const loadConfig = async () => {
+    // we'll want to load the config from the server in the future to not be dependent on initial bulk study loads
+    // for now, we just pull it off the study
     setConfig(matchedConfig)
   }
 
   useEffect(() => {
     if (configId) {
-      loadConfig(configId)
+      loadConfig()
     }
   }, [configId])
 
@@ -95,9 +88,9 @@ export default function NotificationConfigView({ studyEnvContext, portalContext 
           <label className="form-label">Remind after:
             <div className="d-flex align-items-center">
               <input className="form-control me-2" type="text" value={config.afterMinutesIncomplete}
-                     onChange={e => setConfig(
-                         {...config, afterMinutesIncomplete: parseInt(e.target.value) || 0}
-               )}/>
+                onChange={e => setConfig(
+                  { ...config, afterMinutesIncomplete: parseInt(e.target.value) || 0 }
+                )}/>
               minutes
             </div>
           </label>
@@ -106,9 +99,9 @@ export default function NotificationConfigView({ studyEnvContext, portalContext 
           <label className="form-label">Repeat reminder after:
             <div className="d-flex align-items-center">
               <input className="form-control me-2" type="text" value={config.reminderIntervalMinutes}
-                     onChange={e => setConfig(
-                         {...config, reminderIntervalMinutes: parseInt(e.target.value) || 0}
-                     )}
+                onChange={e => setConfig(
+                  { ...config, reminderIntervalMinutes: parseInt(e.target.value) || 0 }
+                )}
               />
               minutes</div>
           </label>
@@ -117,7 +110,7 @@ export default function NotificationConfigView({ studyEnvContext, portalContext 
           <label className="form-label">Max reminders:
             <input className="form-control" type="text" value={config.maxNumReminders}
               onChange={e => setConfig(
-                  {...config, maxNumReminders: parseInt(e.target.value) || 0}
+                { ...config, maxNumReminders: parseInt(e.target.value) || 0 }
               )}/>
           </label>
         </div>

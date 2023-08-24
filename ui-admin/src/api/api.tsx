@@ -642,7 +642,7 @@ export default {
   },
 
   async updateNotificationConfig(portalShortcode: string, envName: string, studyShortcode: string,
-                               oldConfigId: string, updatedConfig: NotificationConfig): Promise<NotificationConfig> {
+    oldConfigId: string, updatedConfig: NotificationConfig): Promise<NotificationConfig> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/notificationConfigs/${oldConfigId}`
     const response = await fetch(url, {
       method: 'PATCH',
