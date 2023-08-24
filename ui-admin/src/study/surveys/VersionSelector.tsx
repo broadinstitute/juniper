@@ -7,6 +7,8 @@ import { instantToDefaultString } from 'util/timeUtils'
 import Select from 'react-select'
 import { failureNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
+import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 /** component for selecting versions of a form */
 export default function VersionSelector({
@@ -21,6 +23,7 @@ export default function VersionSelector({
   const [selectedVersion, setSelectedVersion] = useState<number>()
   const [isLoading, setIsLoading] = useState(true)
   const selectId = useId()
+
   useEffect(() => {
     setIsLoading(true)
     Api.getSurveyVersions(portalShortcode, stableId).then(result => {
@@ -57,7 +60,8 @@ export default function VersionSelector({
     </Modal.Header>
     <Modal.Body>
       <LoadingSpinner isLoading={isLoading}>
-        <p>Selecting a previous form version will allow you to preview it in a new tab of the form editor.</p>
+        <p>Viewing as a preview will open a new tab in the current editor.
+        Opening in read-only mode will allow you to view the full editor in an entirely new browser tab.</p>
         <label htmlFor={selectId}>Select version to preview</label>
         <Select inputId={selectId} options={versionOpts} value={selectedOpt} onChange={opt =>
           setSelectedVersion(opt?.value)}/>
@@ -74,7 +78,19 @@ export default function VersionSelector({
           setShow(false)
         }}
       >
-        Open version
+        View preview
+      </Button>
+      <Button
+        variant="light"
+        disabled={!selectedVersion}
+        onClick={() => {
+          if (selectedVersion) {
+            window.open(`../${stableId}/${selectedVersion}?readOnly=true`)
+          }
+          setShow(false)
+        }}
+      >
+        Open read-only editor <FontAwesomeIcon icon={faArrowRightFromBracket}/>
       </Button>
       <Button
         variant="secondary"
