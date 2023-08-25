@@ -49,8 +49,9 @@ export default function PortalProvider({ children }: { children: React.ReactNode
       <div className="position-absolute top-50 start-50 translate-middle">Loading...</div>
     </div>}
     {isError && <div className="bg-white h-100 w-100">
-      <div className="position-absolute top-50 start-50 translate-middle">
-        The page you are looking for does not exist
+      <div className="position-absolute top-50 start-50 translate-middle text-center">
+        There is no Juniper site configured for this url.<br/>
+        If this is an error, contact <a href="mailto:support@juniper.terra.bio">support@juniper.terra.bio</a>.
       </div>
     </div>}
     {!isLoading && !isError && <PortalContext.Provider value={envState}>

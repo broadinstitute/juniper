@@ -249,6 +249,22 @@ paths:
           content: { application/json: { schema: { schema: { type: object } } } }
         '500':
           $ref: '#/components/responses/ServerError'
+    post:
+      summary: Saves a new version of the given sitecontent.  Returns the saved content
+      tags: [ siteContent ]
+      operationId: create
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { schema: { type: object } } } }
+      responses:
+        '200':
+          description: list of (shallow) SiteContent objects
+          content: { application/json: { schema: { schema: { type: object } } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/siteContents/{stableId}/{version}:
     get:
       summary: Returns the site content with the given stableId/version, along with all child content in the specified language (english is default)

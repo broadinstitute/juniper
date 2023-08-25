@@ -18,8 +18,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -31,7 +34,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
     private PepperKitAddress address;
 
     @MockBean
-    private PepperDSMConfig pepperDSMConfig;
+    private LivePepperDSMClient.PepperDSMConfig pepperDSMConfig;
 
     // select the LivePepperDSMClient @Component, not PepperDSMClientProvider.getLivePepperDSMClient()
     // (which should be exactly the same thing in this case, but Spring can't know that)
@@ -58,23 +61,6 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
     @AfterEach void shutdown() throws Exception {
         mockWebServer.shutdown();
-    }
-
-    @Transactional
-    @Test
-    public void testSuccessResponseFromPepper() throws Exception {
-        // Arrange
-        PepperKitStatus kitStatus = PepperKitStatus.builder()
-                .kitId(kitRequest.getId().toString())
-                .currentStatus("New")
-                .build();
-        mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(kitStatus));
-
-        // Act
-        var response = client.sendKitRequest(enrollee, kitRequest, address);
-
-        assertThat(response, containsString(kitStatus.getKitId()));
-        assertThat(response, containsString("New"));
     }
 
     @Transactional
@@ -130,11 +116,84 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         assertThat(pepperException.getMessage(), containsString(errorResponseBody));
     }
 
+    @Transactional
+    @Test
+    public void testSendKitRequest() throws Exception {
+        // Arrange
+        PepperKitStatus kitStatus = PepperKitStatus.builder()
+                .kitId(kitRequest.getId().toString())
+                .currentStatus("New")
+                .build();
+        mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(kitStatus));
+
+        // Act
+        var response = client.sendKitRequest(enrollee, kitRequest, address);
+
+        // Assert
+        assertThat(response, containsString(kitStatus.getKitId()));
+        assertThat(response, containsString("New"));
+        verifyRequestForPath("/shipKit");
+    }
+
+    @Transactional
+    @Test
+    public void testFetchKitStatus() throws Exception {
+        // Arrange
+        PepperKitStatus kitStatus = PepperKitStatus.builder()
+                .kitId("testFetchKitStatusByStudy1")
+                .build();
+        PepperKitStatus[] kits = { kitStatus };
+        var pepperResponse = PepperKitStatusResponse.builder()
+                .kits(kits)
+                .build();
+        mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(pepperResponse));
+
+        // Act
+        var kitId = UUID.randomUUID();
+        var fetchedKitStatus = client.fetchKitStatus(kitId);
+
+        // Assert
+        assertThat(fetchedKitStatus, equalTo(kitStatus));
+        verifyRequestForPath("/kitStatus/kit/%s".formatted(kitId));
+    }
+
+    @Transactional
+    @Test
+    public void testFetchKitStatusByStudy() throws Exception {
+        // Arrange
+        PepperKitStatus kitStatus1 = PepperKitStatus.builder()
+                .kitId("testFetchKitStatusByStudy_kit1")
+                .build();
+        PepperKitStatus kitStatus2 = PepperKitStatus.builder()
+                .kitId("testFetchKitStatusByStudy_kit2")
+                .build();
+        PepperKitStatus[] kits = { kitStatus1, kitStatus2 };
+        var pepperResponse = PepperKitStatusResponse.builder()
+                .kits(kits)
+                .build();
+        mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(pepperResponse));
+
+        // Act
+        var studyShortcode = "test_study";
+        var fetchedKitStatuses = client.fetchKitStatusByStudy(studyShortcode);
+
+        // Assert
+        assertThat(fetchedKitStatuses.size(), equalTo(2));
+        assertThat(fetchedKitStatuses, contains(kitStatus1, kitStatus2));
+        verifyRequestForPath("/kitStatus/study/juniper-%s".formatted(studyShortcode));
+    }
+
     private static void mockPepperResponse(HttpStatus status, String pepperResponse) {
         mockWebServer.enqueue(new MockResponse()
                 .addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON)
                 .setResponseCode(status.value())
                 .setBody(pepperResponse));
+    }
+
+    private void verifyRequestForPath(String path) throws Exception {
+        var recordedRequest = mockWebServer.takeRequest(5, TimeUnit.SECONDS);
+        assertThat(recordedRequest.getPath(), equalTo(path));
+        assertThat(recordedRequest.getHeader("Authorization"), matchesRegex("Bearer .+"));
     }
 
     @Autowired

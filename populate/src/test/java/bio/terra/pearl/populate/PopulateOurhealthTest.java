@@ -51,7 +51,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
                 .findFirst().get().getId();
 
         List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
-        Assertions.assertEquals(4, enrollees.size());
+        Assertions.assertEquals(5, enrollees.size());
         checkOurhealthSurveys(enrollees);
         checkParticipantNotes(enrollees);
         checkOurhealthSiteContent(portal.getId());
@@ -104,7 +104,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
         List<ModuleExportInfo> moduleInfos = enrolleeExportService.generateModuleInfos(options, portalId, sandboxEnvironmentId);
         List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(portalId, sandboxEnvironmentId, moduleInfos, options.limit());
 
-        assertThat(exportData, hasSize(4));
+        assertThat(exportData, hasSize(5));
         Map<String, String> jsalkMap = exportData.stream().filter(map -> "OHSALK".equals(map.get("enrollee.shortcode")))
                 .findFirst().get();
         assertThat(jsalkMap.get("profile.mailingAddress.street1"), equalTo("415 Main Street"));

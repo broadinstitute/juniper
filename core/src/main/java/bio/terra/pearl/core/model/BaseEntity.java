@@ -25,7 +25,10 @@ public abstract class BaseEntity {
 
     /**
      * clears the id field, and resets the createdAt, and lastUpdatedAt fields of the object.
-     * returns itself for easy chaining
+     * returns itself for easy chaining.
+     *
+     * This is *not* intended to be recursive.  Logic about whether entities should point to the same
+     * child entities as their copy, should be handled at the service level
      */
     public <T extends BaseEntity> T cleanForCopying() {
         setLastUpdatedAt(Instant.now());
