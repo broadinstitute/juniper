@@ -114,7 +114,8 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
         <hr/>
         <div>
           For more information about download formats,
-          see the <Link to={'/help/export'} target="_blank">help page</Link>.
+          see the <Link to="https://broad-juniper.zendesk.com/hc/en-us/articles/18259824756123" target="_blank">
+          help page</Link>.
         </div>
       </form>
     </Modal.Body>

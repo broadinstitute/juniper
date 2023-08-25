@@ -25,7 +25,6 @@ import LoadingSpinner from './util/LoadingSpinner'
 import AdminSidebar from './navbar/AdminSidebar'
 import NavContextProvider from 'navbar/NavContextProvider'
 import PopulateRouteSelect from './populate/PopulateRouteSelect'
-const HelpRouter = lazy(() => import('./help/HelpRouter'))
 
 
 /** container for the app including the router  */
@@ -42,9 +41,6 @@ function App() {
                 <BrowserRouter>
                   <Routes>
                     <Route path="/">
-                      <Route path="help/*" element={<Suspense fallback={<LoadingSpinner/>}>
-                        <HelpRouter />
-                      </Suspense>} />
                       <Route element={<ProtectedRoute>
                         <NavContextProvider><PageFrame/></NavContextProvider>
                       </ProtectedRoute>}>
