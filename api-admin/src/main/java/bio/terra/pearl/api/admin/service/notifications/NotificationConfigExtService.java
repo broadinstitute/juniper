@@ -1,7 +1,6 @@
 package bio.terra.pearl.api.admin.service.notifications;
 
 import bio.terra.pearl.api.admin.service.AuthUtilService;
-import bio.terra.pearl.core.dao.publishing.PortalEnvironmentChangeRecordDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
