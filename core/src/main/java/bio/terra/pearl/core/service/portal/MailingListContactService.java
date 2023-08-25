@@ -24,6 +24,7 @@ public class MailingListContactService extends ImmutableEntityService<MailingLis
         return dao.findByPortalEnv(portalEnvId, emailAddress);
     }
 
+    @Transactional
     public void deleteByPortalEnvId(UUID portalEnvId) {
         dao.deleteByPortalEnvId(portalEnvId);
     }

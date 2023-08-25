@@ -146,7 +146,7 @@ export default function MailingListView({ portalContext, portalEnv }:
           <div className="pt-3">This operation CANNOT BE UNDONE.</div>
         </Modal.Body>
         <Modal.Footer>
-          <button type="button" className="btn btn-primary" onClick={performDelete}>
+          <button type="button" className="btn btn-danger" onClick={performDelete}>
             Delete
           </button>
           <button type="button" className="btn btn-secondary" onClick={() => setShowDeleteConfirm(false)}>
