@@ -85,9 +85,9 @@ export default function NotificationConfigView({ studyEnvContext }: {studyEnvCon
           </label>
         </div>
         <div>
-          <label className="form-label">Remind after:
+          <label className="form-label">Remind after
             <div className="d-flex align-items-center">
-              <input className="form-control me-2" type="text" value={config.afterMinutesIncomplete}
+              <input className="form-control me-2" type="number" value={config.afterMinutesIncomplete}
                 onChange={e => setConfig(
                   { ...config, afterMinutesIncomplete: parseInt(e.target.value) || 0 }
                 )}/>
@@ -96,9 +96,9 @@ export default function NotificationConfigView({ studyEnvContext }: {studyEnvCon
           </label>
         </div>
         <div>
-          <label className="form-label">Repeat reminder after:
+          <label className="form-label">Repeat reminder after
             <div className="d-flex align-items-center">
-              <input className="form-control me-2" type="text" value={config.reminderIntervalMinutes}
+              <input className="form-control me-2" type="number" value={config.reminderIntervalMinutes}
                 onChange={e => setConfig(
                   { ...config, reminderIntervalMinutes: parseInt(e.target.value) || 0 }
                 )}
@@ -107,8 +107,8 @@ export default function NotificationConfigView({ studyEnvContext }: {studyEnvCon
           </label>
         </div>
         <div>
-          <label className="form-label">Max reminders:
-            <input className="form-control" type="text" value={config.maxNumReminders}
+          <label className="form-label">Max reminders
+            <input className="form-control" type="number" value={config.maxNumReminders}
               onChange={e => setConfig(
                 { ...config, maxNumReminders: parseInt(e.target.value) || 0 }
               )}/>

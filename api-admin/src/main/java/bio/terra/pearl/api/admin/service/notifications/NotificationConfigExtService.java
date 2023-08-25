@@ -23,19 +23,16 @@ public class NotificationConfigExtService {
   private AuthUtilService authUtilService;
   private StudyEnvironmentService studyEnvironmentService;
   private PortalEnvironmentService portalEnvironmentService;
-  private PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao;
 
   public NotificationConfigExtService(
       NotificationConfigService notificationConfigService,
       AuthUtilService authUtilService,
       StudyEnvironmentService studyEnvironmentService,
-      PortalEnvironmentService portalEnvironmentService,
-      PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao) {
+      PortalEnvironmentService portalEnvironmentService) {
     this.notificationConfigService = notificationConfigService;
     this.authUtilService = authUtilService;
     this.studyEnvironmentService = studyEnvironmentService;
     this.portalEnvironmentService = portalEnvironmentService;
-    this.portalEnvironmentChangeRecordDao = portalEnvironmentChangeRecordDao;
   }
 
   public List<NotificationConfig> findForStudy(

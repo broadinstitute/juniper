@@ -16,17 +16,17 @@ const CONFIG_GROUPS = [
 export default function NotificationContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const currentEnv = studyEnvContext.currentEnv
   const navigate = useNavigate()
-  const [prevEnv, setPrevEnv] = useState<string>(currentEnv.environmentName)
+  const [previousEnv, setPreviousEnv] = useState<string>(currentEnv.environmentName)
   /** styles links as bold if they are the current path */
   const navStyleFunc = ({ isActive }: {isActive: boolean}) => {
     return isActive ? { fontWeight: 'bold' } : {}
   }
 
   useEffect(() => {
-    if (prevEnv !== currentEnv.environmentName) {
+    if (previousEnv !== currentEnv.environmentName) {
       // the user has changed the environment -- we need to clear the id off the path if there
       navigate(`${studyEnvContext.currentEnvPath}/notificationContent`)
-      setPrevEnv(currentEnv.environmentName)
+      setPreviousEnv(currentEnv.environmentName)
     }
   }, [currentEnv.environmentName])
 
