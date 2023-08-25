@@ -5,6 +5,9 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.notifications.NotificationConfigExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.notification.NotificationConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -14,14 +17,17 @@ public class NotificationConfigController implements NotificationConfigApi {
   private AuthUtilService authUtilService;
   private HttpServletRequest request;
   private NotificationConfigExtService notificationConfigExtService;
+  private ObjectMapper objectMapper;
 
   public NotificationConfigController(
       AuthUtilService authUtilService,
       HttpServletRequest request,
-      NotificationConfigExtService notificationConfigExtService) {
+      NotificationConfigExtService notificationConfigExtService,
+      ObjectMapper objectMapper) {
     this.authUtilService = authUtilService;
     this.request = request;
     this.notificationConfigExtService = notificationConfigExtService;
+    this.objectMapper = objectMapper;
   }
 
   @Override
@@ -33,5 +39,17 @@ public class NotificationConfigController implements NotificationConfigApi {
         notificationConfigExtService.findForStudy(
             adminUser, portalShortcode, studyShortcode, environmentName);
     return ResponseEntity.ok(configs);
+  }
+
+  @Override
+  public ResponseEntity<Object> replace(
+      String portalShortcode, String studyShortcode, String envName, UUID configId, Object body) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    NotificationConfig config = objectMapper.convertValue(body, NotificationConfig.class);
+    NotificationConfig newConfig =
+        notificationConfigExtService.replace(
+            portalShortcode, studyShortcode, environmentName, configId, config, adminUser);
+    return ResponseEntity.ok(newConfig);
   }
 }
