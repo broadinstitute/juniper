@@ -581,6 +581,20 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/mailingList/{contactId}:
+    delete:
+      summary: Removes an entry from the mailing list
+      tags: [ mailingList ]
+      operationId: delete
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: contactId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '204':
+          description: indication of successful deletion
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/current-user/v1/unauthed/login:
     post:
       summary: Unauthenticated login (dev only)

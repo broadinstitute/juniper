@@ -14,8 +14,9 @@
 }
 
 .btn-secondary[aria-disabled="true"] {
-  color: #666;
+  color: #444;
   font-style: italic;
+  background: none;
 }
 
 .btn-secondary:focus, .btn-secondary:hover {

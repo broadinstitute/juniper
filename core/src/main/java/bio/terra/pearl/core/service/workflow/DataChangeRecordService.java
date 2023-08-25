@@ -23,9 +23,18 @@ public class DataChangeRecordService extends ImmutableEntityService<DataChangeRe
         return dao.findByEnrolleeId(enrolleeId);
     }
 
+    public List<DataChangeRecord> findByPortalEnvironmentId(UUID portalEnvId) {
+        return dao.findByPortalEnvironmentId(portalEnvId);
+    }
+
     @Transactional
     public void deleteByPortalParticipantUserId(UUID ppUserId) {
         dao.deleteByPortalParticipantUserId(ppUserId);
+    }
+
+    @Transactional
+    public void deleteByPortalEnvironmentId(UUID portalEnvId) {
+        dao.deleteByPortalEnvironmentId(portalEnvId);
     }
     @Transactional
     public void deleteByEnrolleeId(UUID enrolleeId) {
