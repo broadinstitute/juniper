@@ -1,6 +1,6 @@
-package bio.terra.pearl.core.service.participant;
+package bio.terra.pearl.core.service.workflow;
 
-import bio.terra.pearl.core.dao.participant.ParticipantTaskDao;
+import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.admin.AdminUserService;

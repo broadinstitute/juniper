@@ -4,7 +4,6 @@ import bio.terra.pearl.core.dao.admin.AdminUserDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.consent.ConsentResponseDto;
@@ -17,9 +16,7 @@ import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
-import bio.terra.pearl.core.model.workflow.HubResponse;
-import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import bio.terra.pearl.core.model.workflow.TaskType;
+import bio.terra.pearl.core.model.workflow.*;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
@@ -33,7 +30,8 @@ import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
-import bio.terra.pearl.populate.dao.EnrolleePopulateDao;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import bio.terra.pearl.populate.dao.TimeShiftPopulateDao;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
 import bio.terra.pearl.populate.dto.kit.KitRequestPopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
@@ -74,11 +72,11 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     private EnrollmentService enrollmentService;
     private ProfileService profileService;
     private WithdrawnEnrolleeService withdrawnEnrolleeService;
-    private ParticipantNoteService participantNoteService;
-    private EnrolleePopulateDao enrolleePopulateDao;
+    private TimeShiftPopulateDao timeShiftPopulateDao;
     private KitRequestService kitRequestService;
     private KitTypeDao kitTypeDao;
     private AdminUserDao adminUserDao;
+    private ParticipantNotePopulator participantNotePopulator;
 
 
     public EnrolleePopulator(EnrolleeService enrolleeService,
@@ -92,9 +90,10 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                              NotificationConfigService notificationConfigService,
                              NotificationService notificationService, AnswerProcessingService answerProcessingService,
                              EnrollmentService enrollmentService, ProfileService profileService,
-                             WithdrawnEnrolleeService withdrawnEnrolleeService, ParticipantNoteService participantNoteService,
-                             EnrolleePopulateDao enrolleePopulateDao,
-                             KitRequestService kitRequestService, KitTypeDao kitTypeDao, AdminUserDao adminUserDao) {
+                             WithdrawnEnrolleeService withdrawnEnrolleeService,
+                             TimeShiftPopulateDao timeShiftPopulateDao,
+                             KitRequestService kitRequestService, KitTypeDao kitTypeDao, AdminUserDao adminUserDao,
+                             ParticipantNotePopulator participantNotePopulator) {
         this.portalParticipantUserService = portalParticipantUserService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.surveyService = surveyService;
@@ -111,8 +110,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         this.enrollmentService = enrollmentService;
         this.profileService = profileService;
         this.withdrawnEnrolleeService = withdrawnEnrolleeService;
-        this.participantNoteService = participantNoteService;
-        this.enrolleePopulateDao = enrolleePopulateDao;
+        this.participantNotePopulator = participantNotePopulator;
+        this.timeShiftPopulateDao = timeShiftPopulateDao;
         this.kitRequestService = kitRequestService;
         this.kitTypeDao = kitTypeDao;
         this.adminUserDao = adminUserDao;
@@ -152,9 +151,9 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                     .updateResponse(response, ppUser.getParticipantUserId(), ppUser, enrollee, task.getId());
             savedResponse = hubResponse.getResponse();
             if (responsePopDto.isTimeShifted()) {
-                enrolleePopulateDao.changeSurveyResponseTime(savedResponse.getId(), responsePopDto.shiftedInstant());
+                timeShiftPopulateDao.changeSurveyResponseTime(savedResponse.getId(), responsePopDto.shiftedInstant());
                 if (responsePopDto.isComplete()) {
-                    enrolleePopulateDao.changeTaskCompleteTime(task.getId(), responsePopDto.shiftedInstant());
+                    timeShiftPopulateDao.changeTaskCompleteTime(task.getId(), responsePopDto.shiftedInstant());
                 }
             }
         } else {
@@ -254,29 +253,10 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 .build();
         kitRequest = kitRequestService.create(kitRequest);
         if (kitRequestPopDto.getCreatedAt() != null) {
-            enrolleePopulateDao.changeKitCreationTime(kitRequest.getId(), kitRequestPopDto.getCreatedAt());
+            timeShiftPopulateDao.changeKitCreationTime(kitRequest.getId(), kitRequestPopDto.getCreatedAt());
         }
         enrollee.getKitRequests().add(kitRequest);
         return kitRequest;
-    }
-
-    private ParticipantNote populateParticipantNote(Enrollee enrollee, ParticipantNotePopDto notePopDto) {
-        AdminUser creatingUser = adminUserDao.findByUsername(notePopDto.getCreatingAdminUsername()).get();
-        UUID kitRequestId = null;
-        if (notePopDto.getKitRequestIndex() != null) {
-            kitRequestId = enrollee.getKitRequests().get(notePopDto.getKitRequestIndex()).getId();
-        }
-        ParticipantNote participantNote = ParticipantNote.builder()
-            .enrolleeId(enrollee.getId())
-            .creatingAdminUserId(creatingUser.getId())
-            .kitRequestId(kitRequestId)
-            .text(notePopDto.getText())
-            .build();
-        participantNote = participantNoteService.create(participantNote);
-        if (notePopDto.isTimeShifted()) {
-            enrolleePopulateDao.changeParticipantNoteTime(participantNote.getId(), notePopDto.shiftedInstant());
-        }
-        return participantNote;
     }
 
     private String getTargetName(TaskType taskType, String stableId, int version) {
@@ -388,7 +368,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         }
         populateNotifications(enrollee, popDto, attachedEnv.getId(), ppUser);
         for (ParticipantNotePopDto notePopDto : popDto.getParticipantNoteDtos()) {
-            populateParticipantNote(enrollee, notePopDto);
+            participantNotePopulator.populate(enrollee, notePopDto);
         }
 
         /**
@@ -401,7 +381,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         profile.setDoNotEmail(isDoNotEmail);
         profileService.update(profile);
         if (popDto.isTimeShifted()) {
-            enrolleePopulateDao.changeEnrolleeCreationTime(enrollee.getId(), popDto.shiftedInstant());
+            timeShiftPopulateDao.changeEnrolleeCreationTime(enrollee.getId(), popDto.shiftedInstant());
         }
         if (popDto.isWithdrawn()) {
             withdrawnEnrolleeService.withdrawEnrollee(enrollee);

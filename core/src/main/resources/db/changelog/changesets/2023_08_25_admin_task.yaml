@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: "adminTask"
+      author: dbush
+      changes:
+        - createTable:
+            tableName: admin_task
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: completed_at, type: datetime }
+              - column: { name: task_type, type: text, constraints: { nullable: false } }
+              - column: { name: status, type: text, constraints: { nullable: false } }
+              - column: { name: study_environment_id, type: uuid, constraints:
+                { nullable: false, foreignKeyName: fk_admin_task_study_env, references: study_environment(id) }
+              }
+              - column: { name: participant_note_id, type: uuid, constraints:
+                { foreignKeyName: fk_admin_task_participant_note, references: participant_note(id) }
+              }
+              - column: { name: enrollee_id, type: uuid, constraints:
+                { foreignKeyName: fk_admin_task_enrollee, references: enrollee(id) }
+              }
+              - column: { name: assigned_admin_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_admin_task_creating_admin_user, references: admin_user(id) }
+              }
+              - column: { name: creating_admin_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_admin_task_assigned_admin_user, references: admin_user(id) }
+              }

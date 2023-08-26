@@ -3,7 +3,7 @@ package bio.terra.pearl.core.factory.participant;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
-import bio.terra.pearl.core.service.participant.ParticipantTaskService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

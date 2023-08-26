@@ -9,7 +9,6 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
-import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.survey.EnrolleeSurveyEvent;

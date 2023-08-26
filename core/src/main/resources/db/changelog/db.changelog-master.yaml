@@ -128,6 +128,9 @@ databaseChangeLog:
   - include:
       file: changesets/2023_08_21_add_site_content_constraint.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2023_08_25_admin_task.yaml
+      relativeToChangelogFile: true
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements
 # are atomic. When they are grouped in a changeset and one fails the changeset cannot be

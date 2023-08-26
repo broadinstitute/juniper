@@ -94,6 +94,8 @@
   "participantNoteDtos": [{
     "creatingAdminUsername": "staff@ourhealth.org",
     "text": "Phone call: asked to delay kit shipment as they are travelling for next two months",
+    "assignedToUsername": "staff2@ourhealth.org",
+    "taskType": "FOLLOW_UP",
     "kitRequestIndex": 0,
     "submittedHoursAgo": 3
   },{

@@ -57,7 +57,8 @@
     }
   ],
   "adminUsers": [
-    {"username": "staff@ourhealth.org"}
+    {"username": "staff@ourhealth.org"},
+    {"username": "staff2@ourhealth.org"}
   ],
   "siteImageDtos": [{
     "populateFileName": "images/Banner-image.png"

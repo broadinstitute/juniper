@@ -6,7 +6,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.participant.ParticipantTaskService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import com.auth0.jwt.JWT;

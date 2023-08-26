@@ -5,11 +5,11 @@ import java.util.UUID;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
-/** collection of methods for altering enrollee records in otherwise unpermissible ways */
+/** collection of methods for timeshifting records in otherwise unpermissible ways */
 @Component
-public class EnrolleePopulateDao {
+public class TimeShiftPopulateDao {
   private Jdbi jdbi;
-  public EnrolleePopulateDao(Jdbi jdbi) {
+  public TimeShiftPopulateDao(Jdbi jdbi) {
     this.jdbi = jdbi;
   }
 
@@ -61,6 +61,15 @@ public class EnrolleePopulateDao {
     jdbi.withHandle(handle ->
             handle.createUpdate("update kit_request set created_at = :creationTime where id = :kitRequestId;")
                     .bind("kitRequestId", kitRequestId)
+                    .bind("creationTime", creationTime)
+                    .execute()
+    );
+  }
+
+  public void changeAdminTaskCreationTime(UUID adminTaskId, Instant creationTime) {
+    jdbi.withHandle(handle ->
+            handle.createUpdate("update admin_task set created_at = :creationTime where id = :adminTaskId;")
+                    .bind("adminTaskId", adminTaskId)
                     .bind("creationTime", creationTime)
                     .execute()
     );
