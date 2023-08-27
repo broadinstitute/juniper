@@ -3,6 +3,7 @@ plugins {
     id 'java'
     id 'org.liquibase.gradle' version '2.1.0'
     id "java-test-fixtures"
+    id 'jacoco'
 }
 
 group = 'bio.terra.pearl.core'
@@ -58,6 +59,16 @@ test {
         // By default, exclude `@IntegrationTest`s
         excludeTags "integration"
     }
+    finalizedBy jacocoTestReport // report is always generated after tests run
+}
+
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+}
+
+jacoco {
+    toolVersion = "0.8.9"
+    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
 }
 
 // Explicitly run `@IntegrationTest`s that are excluded from default test runs: `./gradlew integrationTest`
