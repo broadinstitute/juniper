@@ -14,17 +14,17 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class ConfiguredSurveyController implements ConfiguredSurveyApi {
-  private AuthUtilService requestService;
+  private AuthUtilService authUtilService;
   private HttpServletRequest request;
   private ObjectMapper objectMapper;
   private SurveyExtService surveyExtService;
 
   public ConfiguredSurveyController(
-      AuthUtilService requestService,
+      AuthUtilService authUtilService,
       HttpServletRequest request,
       ObjectMapper objectMapper,
       SurveyExtService surveyExtService) {
-    this.requestService = requestService;
+    this.authUtilService = authUtilService;
     this.request = request;
     this.objectMapper = objectMapper;
     this.surveyExtService = surveyExtService;
@@ -37,7 +37,7 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
       String envName,
       UUID configuredSurveyId,
       Object body) {
-    AdminUser adminUser = requestService.requireAdminUser(request);
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     StudyEnvironmentSurvey configuredSurvey =
         objectMapper.convertValue(body, StudyEnvironmentSurvey.class);
@@ -51,7 +51,7 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
   @Override
   public ResponseEntity<Object> create(
       String portalShortcode, String studyShortcode, String envName, Object body) {
-    AdminUser adminUser = requestService.requireAdminUser(request);
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     StudyEnvironmentSurvey configuredSurvey =
         objectMapper.convertValue(body, StudyEnvironmentSurvey.class);
