@@ -1,6 +1,7 @@
 plugins {
     id "io.freefair.lombok" version "5.3.3.3"
     id 'java'
+    id 'jacoco'
 }
 
 group = 'bio.terra.pearl.core'
@@ -34,4 +35,14 @@ dependencies {
 
 test {
     useJUnitPlatform ()
+    finalizedBy jacocoTestReport // report is always generated after tests run
+}
+
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+}
+
+jacoco {
+    toolVersion = "0.8.9"
+    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
 }
