@@ -24,11 +24,20 @@ public class SurveyDao extends BaseVersionedJdbiDao<Survey> {
         return surveyOpt;
     }
 
+    public List<Survey> findByStableIdNoContent(String stableId) {
+        List<Survey> surveys = jdbi.withHandle(handle ->
+                handle.createQuery("select id, name, created_at, last_updated_at, version, stable_id, portal_id from survey where stable_id = :stableId;")
+                        .bind("stableId", stableId)
+                        .mapTo(clazz)
+                        .list()
+        );
+        return surveys;
+    }
+
     public List<Survey> findByPortalId(UUID portalId) {
         return findAllByProperty("portal_id", portalId);
     }
 
-    /** omits the content from the return object to save space/fetch time */
     public List<Survey> findByPortalIdNoContent(UUID portalId) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select id, name, version, stable_id from survey where portal_id = :portalId;")

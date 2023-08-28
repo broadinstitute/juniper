@@ -478,8 +478,8 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async getSurveyVersions(studyShortname: string, stableId: string) {
-    const response = await fetch(`${API_ROOT}/studies/${studyShortname}/surveys/${stableId}`, this.getGetInit())
+  async getSurveyVersions(portalShortcode: string, stableId: string): Promise<Survey[]> {
+    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/surveys/${stableId}`, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 

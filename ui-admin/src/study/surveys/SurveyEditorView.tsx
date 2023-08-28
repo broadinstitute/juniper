@@ -8,8 +8,13 @@ import LoadedLocalDraftModal from 'forms/designer/modals/LoadedLocalDraftModal'
 import DiscardLocalDraftModal from 'forms/designer/modals/DiscardLocalDraftModal'
 import { deleteDraft, FormDraft, getDraft, getFormDraftKey, saveDraft } from 'forms/designer/utils/formDraftUtils'
 import { useAutosaveEffect } from '@juniper/ui-core/build/autoSaveUtils'
+import { faClockRotateLeft } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import VersionSelector from './VersionSelector'
+import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 
 type SurveyEditorViewProps = {
+  studyEnvContext: StudyEnvContextT
   currentForm: VersionedForm
   readOnly?: boolean
   onCancel: () => void
@@ -19,6 +24,7 @@ type SurveyEditorViewProps = {
 /** renders a survey for editing/viewing */
 const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const {
+    studyEnvContext,
     currentForm,
     readOnly = false,
     onCancel,
@@ -36,6 +42,8 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   //for them to know if the version of the survey they're seeing are from a draft or are actually published.
   const [showLoadedDraftModal, setShowLoadedDraftModal] = useState(!!getDraft({ formDraftKey: FORM_DRAFT_KEY }))
   const [showDiscardDraftModal, setShowDiscardDraftModal] = useState(false)
+  const [showVersionSelector, setShowVersionSelector] = useState(false)
+  const [visibleVersionPreviews, setVisibleVersionPreviews] = useState<VersionedForm[]>([])
 
   const [draft, setDraft] = useState<FormDraft | undefined>(
     !readOnly ? getDraft({ formDraftKey: FORM_DRAFT_KEY }) : undefined)
@@ -87,6 +95,9 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
         <div className="d-flex flex-grow-1">
           <h5>{currentForm.name}
             <span className="detail me-2 ms-2">version {currentForm.version}</span>
+            <button className="btn btn-secondary" onClick={() => setShowVersionSelector(true)}>
+              <FontAwesomeIcon icon={faClockRotateLeft}/> History
+            </button>
           </h5>
         </div>
         { savingDraft && <span className="detail me-2 ms-2">Saving draft...</span> }
@@ -127,9 +138,18 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
                 })}
               onDismiss={() => setShowDiscardDraftModal(false)}
             />}
+        { showVersionSelector && <VersionSelector
+          studyEnvContext={studyEnvContext}
+          visibleVersionPreviews={visibleVersionPreviews}
+          setVisibleVersionPreviews={setVisibleVersionPreviews}
+          stableId={currentForm.stableId}
+          setShow={setShowVersionSelector}
+          show={showVersionSelector}/>
+        }
       </div>
       <FormContentEditor
         initialContent={draft?.content || currentForm.content} //favor loading the draft, if we find one
+        visibleVersionPreviews={visibleVersionPreviews}
         readOnly={readOnly}
         onChange={(isValid, newContent) => {
           if (isValid) {

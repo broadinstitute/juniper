@@ -41,6 +41,17 @@ public class SurveyExtService {
     return survey;
   }
 
+  public List<Survey> listVersions(String portalShortcode, String stableId, AdminUser adminUser) {
+    Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
+    // This is used to populate the version selector in the admin UI. It's not necessary
+    // to return the surveys with any content or answer mappings, the response will
+    // be too large. Instead, just get the individual versions as content is needed.
+    List<Survey> surveys = surveyService.findByStableIdNoContent(stableId);
+    List<Survey> surveysInPortal =
+        surveys.stream().filter(survey -> portal.getId().equals(survey.getPortalId())).toList();
+    return surveysInPortal;
+  }
+
   public Survey create(String portalShortcode, Survey survey, AdminUser adminUser) {
     Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
     List<Survey> existing = surveyService.findByStableId(survey.getStableId());
