@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react'
+import React from 'react'
 import 'react-notifications-component/dist/theme.css'
 import 'styles/notifications.css'
 import 'survey-core/defaultV2.min.css'
@@ -21,11 +21,9 @@ import UserList from './user/UserList'
 import InvestigatorTermsOfUsePage from './terms/InvestigatorTermsOfUsePage'
 import PrivacyPolicyPage from 'terms/PrivacyPolicyPage'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
-import LoadingSpinner from './util/LoadingSpinner'
 import AdminSidebar from './navbar/AdminSidebar'
 import NavContextProvider from 'navbar/NavContextProvider'
 import PopulateRouteSelect from './populate/PopulateRouteSelect'
-const HelpRouter = lazy(() => import('./help/HelpRouter'))
 
 
 /** container for the app including the router  */
@@ -42,9 +40,6 @@ function App() {
                 <BrowserRouter>
                   <Routes>
                     <Route path="/">
-                      <Route path="help/*" element={<Suspense fallback={<LoadingSpinner/>}>
-                        <HelpRouter />
-                      </Suspense>} />
                       <Route element={<ProtectedRoute>
                         <NavContextProvider><PageFrame/></NavContextProvider>
                       </ProtectedRoute>}>

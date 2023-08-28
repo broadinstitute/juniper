@@ -35,7 +35,11 @@ function AdminNavbar() {
             <div className="dropdown-menu dropdown-menu-end p-3">
               <ul className="list-unstyled">
                 <li>
-                  <Link className="dropdown-item" to="/help" target="_blank">Help pages</Link>
+                  <Link className="dropdown-item" to="https://broad-juniper.zendesk.com" target="_blank">
+                    Help pages
+                  </Link>
+                </li>
+                <li className="pt-2">
                   <a className="dropdown-item" onClick={() => setShowContactModal(!showContactModal)}>
                     Contact support
                   </a>
