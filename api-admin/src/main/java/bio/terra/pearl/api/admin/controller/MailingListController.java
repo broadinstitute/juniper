@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.MailingListContact;
 import java.util.List;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -34,5 +35,13 @@ public class MailingListController implements MailingListApi {
     List<MailingListContact> contacts =
         mailingListExtService.getAll(portalShortcode, environmentName, user);
     return ResponseEntity.ok(contacts);
+  }
+
+  @Override
+  public ResponseEntity<Void> delete(String portalShortcode, String envName, UUID contactId) {
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    AdminUser user = authUtilService.requireAdminUser(request);
+    mailingListExtService.delete(portalShortcode, environmentName, contactId, user);
+    return ResponseEntity.noContent().build();
   }
 }

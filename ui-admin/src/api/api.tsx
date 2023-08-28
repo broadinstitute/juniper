@@ -213,6 +213,7 @@ export type Config = {
 }
 
 export type MailingListContact = {
+  id: string,
   name: string,
   email: string,
   createdAt: number
@@ -347,6 +348,13 @@ export default {
     const obj = await response.json()
     if (response.ok) {
       return obj
+    }
+    return Promise.reject(response)
+  },
+
+  async processResponse(response: Response) {
+    if (response.ok) {
+      return response
     }
     return Promise.reject(response)
   },
@@ -775,6 +783,15 @@ export default {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
+  },
+
+  async deleteMailingListContact(portalShortcode: string, envName: string, contactId: string): Promise<Response> {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList/${contactId}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
   },
 
   async fetchAdminUsers(): Promise<AdminUser[]> {

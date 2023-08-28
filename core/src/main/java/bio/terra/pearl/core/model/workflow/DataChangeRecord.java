@@ -18,6 +18,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 public class DataChangeRecord extends BaseEntity {
+    private UUID portalEnvironmentId; // id of the associated portal, for operations not tied to an enrollee
     private UUID responsibleUserId; // id of the user making the change, if it was a participant
     private UUID responsibleAdminUserId; // id of the user making the change, if it was an admin
     private UUID enrolleeId; // id of impacted enrollee (may be null)

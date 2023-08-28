@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: data_change_record_portal_env
+      author: dbush
+      changes:
+        - dropNotNullConstraint: # drop null constraint since fieldName could be null if the change is a delete
+            columnName: field_name
+            tableName: data_change_record
+        - dropNotNullConstraint: # drop null constraint since portal participant user could be null if the change is a mailing list
+            columnName: portal_participant_user_id
+            tableName: data_change_record
+        - addColumn:
+            tableName: data_change_record
+            columns:
+              - column:
+                  name: portal_environment_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_change_record_portal_env_id
+                    references: portal_environment(id)
+

@@ -15,6 +15,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
     private PreregistrationResponseDao preregistrationResponseDao;
     private NotificationConfigService notificationConfigService;
     private MailingListContactService mailingListContactService;
+    private DataChangeRecordService dataChangeRecordService;
 
     public PortalEnvironmentService(PortalEnvironmentDao portalEnvironmentDao,
                                     PortalEnvironmentConfigService portalEnvironmentConfigService,
@@ -33,7 +36,8 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
                                     ParticipantUserService participantUserService,
                                     PreregistrationResponseDao preregistrationResponseDao,
                                     NotificationConfigService notificationConfigService,
-                                    MailingListContactService mailingListContactService) {
+                                    MailingListContactService mailingListContactService,
+                                    DataChangeRecordService dataChangeRecordService) {
         super(portalEnvironmentDao);
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.portalParticipantUserService = portalParticipantUserService;
@@ -41,6 +45,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         this.preregistrationResponseDao = preregistrationResponseDao;
         this.notificationConfigService = notificationConfigService;
         this.mailingListContactService = mailingListContactService;
+        this.dataChangeRecordService = dataChangeRecordService;
     }
 
     public List<PortalEnvironment> findByPortal(UUID portalId) {
@@ -92,6 +97,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         }
         notificationConfigService.deleteByPortalEnvironmentId(id);
         mailingListContactService.deleteByPortalEnvId(id);
+        dataChangeRecordService.deleteByPortalEnvironmentId(id);
         dao.delete(id);
         portalEnvironmentConfigService.delete(envConfigId, cascades);
     }

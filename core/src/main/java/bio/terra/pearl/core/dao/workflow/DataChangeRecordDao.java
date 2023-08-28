@@ -23,8 +23,16 @@ public class DataChangeRecordDao extends BaseJdbiDao<DataChangeRecord> {
         return findAllByProperty("enrollee_id", enrolleeId);
     }
 
+    public List<DataChangeRecord> findByPortalEnvironmentId(UUID portalEnvId) {
+        return findAllByProperty("portal_environment_id", portalEnvId);
+    }
+
     public void deleteByPortalParticipantUserId(UUID ppUserId) {
         deleteByProperty("portal_participant_user_id", ppUserId);
+    }
+
+    public void deleteByPortalEnvironmentId(UUID portalEnvId) {
+        deleteByProperty("portal_environment_id", portalEnvId);
     }
 
     public void deleteByEnrolleeId(UUID enrolleeId) {
