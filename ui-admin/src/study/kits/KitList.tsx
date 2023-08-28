@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import _fromPairs from 'lodash/fromPairs'
 import _groupBy from 'lodash/groupBy'
-import { Tab, Tabs } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import { Link, Navigate, NavLink, Route, Routes } from 'react-router-dom'
 import {
   ColumnDef,
   getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState
@@ -109,27 +108,35 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
     return statusTabs.find(tab => tab.status === kit.pepperStatus?.currentStatus)?.status || 'ERROR'
   })
 
+  const tabLinkStyle = ({ isActive }: {isActive: boolean}) => ({
+    borderBottom: isActive ? '3px solid #333': '',
+    background: isActive ? '#ddd' : ''
+  })
+
   return <LoadingSpinner isLoading={isLoading}>
-    <Tabs
-      activeKey={activeTab ?? undefined}
-      mountOnEnter
-      unmountOnExit
-      onSelect={setActiveTab}
-    >
-      { statusTabs.map(tab => {
-        const kits = kitsByStatus[tab.status] || []
-        return <Tab
-          key={tab.status}
-          title={`${kits?.length} ${tab.label}`}
-          eventKey={tab.status}
-          aria-label={tab.status}>
-          <KitListView
-            studyEnvContext={studyEnvContext}
-            kits={kits}
-            initialColumnVisibility={initialColumnVisibility(tab)}/>
-        </Tab>
-      })}
-    </Tabs>
+    <div className="container">
+      <div className="d-flex w-100" style={{ backgroundColor: '#ccc' }}>
+        { statusTabs.map(tab => {
+          const kits = kitsByStatus[tab.status] || []
+          return <NavLink key={tab.status} to={tab.status} style={tabLinkStyle}>
+            <div className="py-3 px-5">
+              {kits?.length} {tab.label}
+            </div>
+          </NavLink>
+        })}
+      </div>
+      <Routes>
+        <Route index element={<Navigate to='CREATED' replace={true}/>}/>
+        { statusTabs.map(tab => {
+          return <Route key={tab.status} path={tab.status} element={
+            <KitListView
+              studyEnvContext={studyEnvContext}
+              kits={kitsByStatus[tab.status] || []}
+              initialColumnVisibility={initialColumnVisibility(tab)}/>
+          }/>
+        })}
+      </Routes>
+    </div>
   </LoadingSpinner>
 }
 
@@ -142,6 +149,8 @@ function KitListView({ studyEnvContext, kits, initialColumnVisibility }: {
   const { currentEnvPath } = studyEnvContext
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialColumnVisibility)
   const [sorting, setSorting] = React.useState<SortingState>([])
+
+  console.log('initialColumnVisibility', initialColumnVisibility)
 
   const columns: ColumnDef<KitRequest, string>[] = [{
     header: 'Enrollee shortcode',
