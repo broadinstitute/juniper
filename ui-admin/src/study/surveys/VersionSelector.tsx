@@ -81,23 +81,19 @@ export default function VersionSelector({
       >
         View preview
       </Button>
-      <Button
-        variant="light"
-        disabled={!selectedVersion}
-        onClick={() => {
-          if (selectedVersion) {
-            const path = `${studyEnvFormsPath(
-              studyEnvContext.portal.shortcode,
-              studyEnvContext.study.shortcode,
-              studyEnvContext.currentEnv.environmentName
-            )}/surveys/${stableId}/${selectedVersion}?readOnly=true`
-            window.open(path, '_blank')
-          }
-          setShow(false)
-        }}
+      <a href={`${studyEnvFormsPath(
+        studyEnvContext.portal.shortcode,
+        studyEnvContext.study.shortcode,
+        studyEnvContext.currentEnv.environmentName
+      )}/surveys/${stableId}/${selectedVersion}?readOnly=true`}
+      className="btn btn-secondary"
+      aria-disabled={!selectedVersion}
+      style={{ pointerEvents: selectedVersion ? undefined : 'none' }}
+      onClick={() => setShow(false)}
+      target="_blank"
       >
         Open read-only editor <FontAwesomeIcon icon={faArrowRightFromBracket}/>
-      </Button>
+      </a>
       <Button
         variant="secondary"
         onClick={() => setShow(false)}
