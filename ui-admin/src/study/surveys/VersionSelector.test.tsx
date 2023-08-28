@@ -30,10 +30,12 @@ describe('VersionSelector', () => {
     await waitFor(() => expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument())
     await select(screen.getByLabelText('Select version to preview'), ['1'])
     const openPreviewButton = screen.getByText('View preview')
-    const openEditorButton = screen.getByText('Open read-only editor')
+    const openEditorLink = screen.getByText('Open read-only editor')
 
     //Assert
     expect(openPreviewButton).toBeEnabled()
-    expect(openEditorButton).toBeEnabled()
+    expect(openEditorLink).toBeEnabled()
+    expect(openEditorLink)
+      .toHaveAttribute('href', '/portalCode/studies/fakeStudy/env/sandbox/forms/surveys/survey1/1?readOnly=true')
   })
 })

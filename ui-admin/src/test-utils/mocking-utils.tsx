@@ -60,22 +60,16 @@ export const mockSurvey: () => Survey = () => ({
 /** returns a list of survey versions */
 export const mockSurveyVersionsList: () => Survey[] = () => ([
   {
+    ...mockSurvey(),
     id: 'surveyId1',
     stableId: 'survey1',
-    version: 1,
-    content: '{}',
-    name: 'Survey number one',
-    lastUpdatedAt: 0,
-    createdAt: 0
+    version: 1
   },
   {
-    id: 'surveyId1',
+    ...mockSurvey(),
+    id: 'surveyId2',
     stableId: 'survey1',
-    version: 2,
-    content: '{}',
-    name: 'Survey number one',
-    lastUpdatedAt: 0,
-    createdAt: 0
+    version: 2
   }
 ])
 
