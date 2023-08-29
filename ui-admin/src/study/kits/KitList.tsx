@@ -131,6 +131,7 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
           return <Route key={tab.status} path={tab.status} element={
             <KitListView
               studyEnvContext={studyEnvContext}
+              tab={tab.status}
               kits={kitsByStatus[tab.status] || []}
               initialColumnVisibility={initialColumnVisibility(tab)}/>
           }/>
@@ -141,16 +142,23 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
 }
 
 /** Renders a table with a list of kits. */
-function KitListView({ studyEnvContext, kits, initialColumnVisibility }: {
+function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
   studyEnvContext: StudyEnvContextT,
+  tab: string
   kits: KitRequest[],
   initialColumnVisibility: VisibilityState
 }) {
   const { currentEnvPath } = studyEnvContext
+  const [currentTab, setCurrentTab] = useState(tab)
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialColumnVisibility)
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = useState<SortingState>([])
 
   console.log('initialColumnVisibility', initialColumnVisibility)
+
+  if (tab !== currentTab) {
+    setColumnVisibility(initialColumnVisibility)
+    setCurrentTab(tab)
+  }
 
   const columns: ColumnDef<KitRequest, string>[] = [{
     header: 'Enrollee shortcode',
