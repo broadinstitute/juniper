@@ -78,6 +78,28 @@ describe('ChoicesList', () => {
     })
   })
 
+  it('automatically generates values based on text', () => {
+    // Arrange
+    const onChange = jest.fn()
+    render(<ChoicesList question={question} readOnly={false} onChange={onChange} />)
+
+    const barChoice = screen.getAllByRole('listitem')[1]
+
+    // Act
+    const barLabelInput = getByLabelText(barChoice, 'Text')
+    fireEvent.change(barLabelInput, { target: { value: 'This is a test question' } })
+
+    // Assert
+    expect(onChange).toHaveBeenCalledWith({
+      ...question,
+      choices: [
+        { value: 'foo', text: 'Foo' },
+        { value: 'thisIsATestQuestion', text: 'This is a test question' },
+        { value: 'baz', text: 'Baz' }
+      ]
+    })
+  })
+
   it('allows reordering choices', async () => {
     // Arrange
     const user = userEvent.setup()
