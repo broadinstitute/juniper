@@ -104,4 +104,20 @@ public class AuthUtilService {
     }
     return enrolleeService.findOneByShortcode(enrolleeShortcode).get();
   }
+
+  /**
+   * returns the enrollee if the user is authorized to access/modify it, throws an error otherwise
+   */
+  public Enrollee authEnrollee(AdminUser user, String enrolleeShortcode) {
+    // find what portal(s) the enrollee is in, and then check that the adminUser is authorized in at
+    // least one
+    List<PortalStudy> portalStudies = portalStudyService.findByEnrollee(enrolleeShortcode);
+    List<UUID> portalIds = portalStudies.stream().map(PortalStudy::getPortalId).toList();
+    if (!portalService.checkAdminInAtLeastOnePortal(user, portalIds)) {
+      throw new PermissionDeniedException(
+          "User %s does not have permissions on enrollee %s or enrollee does not exist"
+              .formatted(user.getUsername(), enrolleeShortcode));
+    }
+    return enrolleeService.findOneByShortcode(enrolleeShortcode).get();
+  }
 }

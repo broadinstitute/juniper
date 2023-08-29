@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import Api, { Enrollee, ParticipantNote } from 'api/api'
+import React, {useEffect, useState} from 'react'
+import Api, {AdminTask, AdminUser, Enrollee, ParticipantNote} from 'api/api'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
@@ -7,6 +7,8 @@ import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { failureNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { ParticipantNoteView } from './ParticipantNoteView'
+import Select from 'react-select'
+import AdminUserSelect from "../../../user/AdminUserSelect";
 
 type ParticipantNotesViewProps = {
   enrollee: Enrollee,
@@ -18,23 +20,40 @@ type ParticipantNotesViewProps = {
 /** shows a list of participant notes, with the ability to add a new note */
 const ParticipantNotesView = ({ enrollee, notes, studyEnvContext, onUpdate }: ParticipantNotesViewProps) => {
   const [showAdd, setShowAdd] = useState(false)
+  const [linkedTasks, setLinkedTasks] = useState<AdminTask[]>([])
   const [newNoteText, setNewNoteText] = useState('')
+  const [newNoteAssignee, setNewNoteAssignee] = useState<AdminUser>()
   const { users } = useAdminUserContext()
   const sortedNotes = [...notes].sort((a, b) => b.createdAt - a.createdAt)
 
   const createNote = async () => {
     try {
       await Api.createParticipantNote(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
-        studyEnvContext.currentEnv.environmentName, enrollee.shortcode, newNoteText)
+        studyEnvContext.currentEnv.environmentName, enrollee.shortcode, {
+        text: newNoteText, assignedAdminUserId: newNoteAssignee?.id
+      })
       setShowAdd(false)
       setNewNoteText('')
     } catch (e) {
       Store.addNotification(failureNotification('could not save note'))
     }
-
-
     onUpdate()
+    loadTasks()
   }
+
+  const loadTasks = () => {
+    Api.fetchEnrolleeAdminTasks(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
+        studyEnvContext.currentEnv.environmentName, enrollee.shortcode).then(result => {
+      setLinkedTasks(result)
+    }).catch(() => {
+      Store.addNotification(failureNotification('Error loading linked admin tasks'))
+    })
+  }
+
+  useEffect(() => {
+    loadTasks()
+  }, [enrollee.shortcode])
+
   return <div>
     <h3 className="h6">Notes
       <button className="btn btn-secondary" onClick={() => setShowAdd(!showAdd)}>
@@ -43,13 +62,20 @@ const ParticipantNotesView = ({ enrollee, notes, studyEnvContext, onUpdate }: Pa
     </h3>
     {showAdd && <div className="pb-3">
       <textarea rows={5} cols={80} value={newNoteText} onChange={e => setNewNoteText(e.target.value)}/>
-      <div>
+      <label>
+        Assign to:
+        <AdminUserSelect selectedUser={newNoteAssignee} setSelectedUser={setNewNoteAssignee} users={users}/>
+      </label>
+      <div className="mt-2">
         <button className="btn btn-primary" onClick={createNote}>Save</button>
       </div>
     </div>}
     { sortedNotes.map(note =>
-      <ParticipantNoteView enrollee={enrollee} note={note} currentEnvPath={studyEnvContext.currentEnvPath} users={users}
-        key={note.id}/>
+      <ParticipantNoteView enrollee={enrollee} note={note}
+                           currentEnvPath={studyEnvContext.currentEnvPath}
+                           linkedTasks={linkedTasks}
+                           users={users}
+                           key={note.id}/>
     )}
   </div>
 }

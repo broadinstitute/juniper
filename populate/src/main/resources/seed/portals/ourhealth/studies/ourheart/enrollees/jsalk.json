@@ -94,13 +94,13 @@
   "participantNoteDtos": [{
     "creatingAdminUsername": "staff@ourhealth.org",
     "text": "Phone call: asked to delay kit shipment as they are travelling for next two months",
-    "assignedToUsername": "staff2@ourhealth.org",
-    "taskType": "FOLLOW_UP",
     "kitRequestIndex": 0,
     "submittedHoursAgo": 3
   },{
     "creatingAdminUsername": "staff@ourhealth.org",
-    "text": "Reviewed survey responses, many are incomplete, sent additional reminder email",
-    "submittedHoursAgo": 20
+    "text": "Reviewed survey responses, many are incomplete, send additional reminder email",
+    "submittedHoursAgo": 20,
+    "assignedToUsername": "staff2@ourhealth.org",
+    "taskType": "FOLLOW_UP"
   }]
 }

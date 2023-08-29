@@ -1,6 +1,8 @@
 package bio.terra.pearl.core.model.workflow;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.ParticipantNote;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,4 +29,5 @@ public class AdminTask extends BaseEntity {
     private UUID participantNoteId;
     private UUID creatingAdminUserId;
     private UUID assignedAdminUserId;
+    private String dispositionNote;
 }

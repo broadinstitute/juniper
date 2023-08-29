@@ -24,7 +24,8 @@ test('renders a note with the admin user name', async () => {
     enrolleeId: enrollee.id
   }
   const { RoutedComponent } = setupRouterTest(
-    <ParticipantNoteView enrollee={enrollee} currentEnvPath="path1" note={note} users={users}/>)
+    <ParticipantNoteView enrollee={enrollee} currentEnvPath="path1" note={note} users={users}
+    linkedTasks={[]}/>)
   render(RoutedComponent)
   expect(screen.getByText('user3 username')).toBeInTheDocument()
   expect(screen.getByText('some note text')).toBeInTheDocument()

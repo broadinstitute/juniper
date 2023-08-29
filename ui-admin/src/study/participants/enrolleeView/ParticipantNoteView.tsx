@@ -1,37 +1,57 @@
-import { AdminUser, Enrollee, ParticipantNote } from 'api/api'
+import {AdminTask, AdminUser, Enrollee, ParticipantNote} from 'api/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser } from '@fortawesome/free-solid-svg-icons'
+import {faCaretDown, faUser} from '@fortawesome/free-solid-svg-icons'
 import { instantToDefaultString } from 'util/timeUtils'
 import { Link } from 'react-router-dom'
 import { enrolleeKitRequestPath } from './EnrolleeView'
-import React from 'react'
+import React, {useState} from 'react'
+import {AdminTaskEditModal} from "study/adminTasks/AdminTaskEditor";
 
 
 type ParticipantNoteViewProps = {
   enrollee: Enrollee,
   note: ParticipantNote,
   currentEnvPath: string,
+  linkedTasks: AdminTask[],
   users: AdminUser[]
 }
 /** renders a single note, with the admin user name and a link to the kit request, if it exists */
-export function ParticipantNoteView({ enrollee, note, users, currentEnvPath }: ParticipantNoteViewProps) {
+export function ParticipantNoteView({ enrollee, note, users, currentEnvPath, linkedTasks }: ParticipantNoteViewProps) {
   const matchedUser = users.find(user => user.id === note.creatingAdminUserId)
   /**
    * we might not have the username if the user list hasn't loaded, or if the user is no longer associated with the
    * portal. eventually, we might want more elegant handling, for now, just show the id instead
    */
-  const usernameString = matchedUser?.username ?? note.creatingAdminUserId
+  const usernameString = matchedUser?.username ?? `superuser (${note.creatingAdminUserId.slice(-4)})`
+  const matchedTask = linkedTasks.find(task => task.participantNoteId === note.id)
+  const [showTaskEdit, setShowTaskEdit] = useState(false)
+  const [updatedTask, setUpdatedTask] = useState(matchedTask)
+
   return <div className="mb-3">
-    <div>
-      <span className="fw-bold text-muted">
+    <div className="d-flex align-items-center">
+      <div className="fw-bold text-muted">
         <FontAwesomeIcon icon={faUser} className="mx-2"/>
         {usernameString}
-      </span>
-      <span className="text-muted ms-3">{instantToDefaultString(note.createdAt)}</span>
+      </div>
+      <div className="text-muted ms-3">{instantToDefaultString(note.createdAt)}</div>
+      { matchedTask && <button className="badge ms-auto btn-secondary"
+                                 style={{backgroundColor: '#eee'}}
+                                 onClick={() => setShowTaskEdit(!showTaskEdit)}>
+          Assigned: {users.find(user => user.id === matchedTask.assignedAdminUserId)?.username}
+          <FontAwesomeIcon icon={faCaretDown} className="fa-sm ms-2"/>
+        </button>
+      }
     </div>
+    { (showTaskEdit && matchedTask) && <div>
+      <AdminTaskEditModal task={matchedTask} users={users} onDismiss={() => setShowTaskEdit(false)}/>
+    </div> }
     <div className="mt-1">{note.text}</div>
     { note.kitRequestId && <Link to={enrolleeKitRequestPath(currentEnvPath, enrollee.shortcode)}>
       Kit requests
     </Link>}
+
+
   </div>
 }
+
+

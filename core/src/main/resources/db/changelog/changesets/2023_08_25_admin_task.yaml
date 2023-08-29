@@ -12,6 +12,7 @@ databaseChangeLog:
               - column: { name: completed_at, type: datetime }
               - column: { name: task_type, type: text, constraints: { nullable: false } }
               - column: { name: status, type: text, constraints: { nullable: false } }
+              - column: { name: disposition_note, type: text }
               - column: { name: study_environment_id, type: uuid, constraints:
                 { nullable: false, foreignKeyName: fk_admin_task_study_env, references: study_environment(id) }
               }

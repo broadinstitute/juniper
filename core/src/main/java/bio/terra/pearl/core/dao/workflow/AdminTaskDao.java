@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.workflow;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.AdminTask;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
@@ -40,6 +41,10 @@ public class AdminTaskDao extends BaseMutableJdbiDao<AdminTask> {
 
     public List<AdminTask> findByAssignee(UUID adminUserId) {
         return findAllByProperty("assigned_admin_user_id", adminUserId);
+    }
+
+    public List<AdminTask> findByStudyEnvironmentId(UUID studyEnvId) {
+        return findAllByProperty("study_environment_id", studyEnvId);
     }
 
     public void deleteByStudyEnvironmentId(UUID studyEnvId) {
