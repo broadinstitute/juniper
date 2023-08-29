@@ -432,7 +432,7 @@ paths:
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/kitRequests:
     get:
       summary: List kit requests for an enrollee
-      tags: [ enrollee ]
+      tags: [ kit ]
       operationId: getKitRequests
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
@@ -448,7 +448,7 @@ paths:
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/requestKit:
     post:
       summary: Request a sample kit for an enrollee
-      tags: [ enrollee ]
+      tags: [ kit ]
       operationId: requestKit
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
