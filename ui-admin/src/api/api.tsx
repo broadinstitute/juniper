@@ -638,7 +638,28 @@ export default {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit?${params}`
     const response = await fetch(url, { method: 'POST', headers: this.getInitHeaders() })
-    return await this.processJsonResponse(response)
+    const kit = await this.processJsonResponse(response)
+    kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus)
+    return kit
+  },
+
+  async requestKits(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: string,
+    enrolleeShortcodes: string[],
+    kitType: string
+  ): Promise<KitRequest[]> {
+    const params = new URLSearchParams({ kitType })
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/requestKits?${params}`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(enrolleeShortcodes)
+    })
+    const kits: KitRequest[] = await this.processJsonResponse(response)
+    kits.forEach(kit => { kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus) })
+    return kits
   },
 
   async fetchEnrolleeKitRequests(

@@ -70,10 +70,8 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
       .map(key => enrollees[parseInt(key)].shortcode)
 
     // This iteration should be happening server-side: JN-460
-    for (const shortcode of enrolleesSelected) {
-      await Api.createKitRequest(
-        portal.shortcode, study.shortcode, currentEnv.environmentName, shortcode, kitType)
-    }
+    await Api.requestKits(
+      portal.shortcode, study.shortcode, currentEnv.environmentName, enrolleesSelected, kitType)
 
     setShowRequestKitModal(false)
     loadEnrollees()
