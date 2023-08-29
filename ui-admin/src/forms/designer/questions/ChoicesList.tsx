@@ -6,6 +6,7 @@ import { CheckboxQuestion, DropdownQuestion, RadiogroupQuestion } from '@juniper
 
 import { Button, IconButton } from 'components/forms/Button'
 import { TextInput } from 'components/forms/TextInput'
+import { getValueForChoice } from 'util/pearlSurveyUtils'
 
 type QuestionWithChoices = CheckboxQuestion | DropdownQuestion | RadiogroupQuestion
 
@@ -53,7 +54,7 @@ export const ChoicesList = (props: ChoicesListProps) => {
                       ...question,
                       choices: [
                         ...question.choices.slice(0, i),
-                        { ...question.choices[i], text: value },
+                        { text: value, value: getValueForChoice(value) },
                         ...question.choices.slice(i + 1)
                       ]
                     })
