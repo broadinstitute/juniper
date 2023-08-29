@@ -8,11 +8,10 @@ import LoadedLocalDraftModal from 'forms/designer/modals/LoadedLocalDraftModal'
 import DiscardLocalDraftModal from 'forms/designer/modals/DiscardLocalDraftModal'
 import { deleteDraft, FormDraft, getDraft, getFormDraftKey, saveDraft } from 'forms/designer/utils/formDraftUtils'
 import { useAutosaveEffect } from '@juniper/ui-core/build/autoSaveUtils'
-import { faClockRotateLeft } from '@fortawesome/free-solid-svg-icons'
+import { faClockRotateLeft, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import VersionSelector from './VersionSelector'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
 import { isEmpty } from 'lodash'
 
 type SurveyEditorViewProps = {
