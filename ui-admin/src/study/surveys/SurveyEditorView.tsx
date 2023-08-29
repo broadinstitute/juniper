@@ -36,7 +36,6 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const FORM_DRAFT_KEY = getFormDraftKey({ form: currentForm })
   const FORM_DRAFT_SAVE_INTERVAL = 10000
 
-  const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
   const [savingDraft, setSavingDraft] = useState(false)
 
@@ -51,6 +50,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const [draft, setDraft] = useState<FormDraft | undefined>(
     !readOnly ? getDraft({ formDraftKey: FORM_DRAFT_KEY }) : undefined)
 
+  const [validationErrors, setValidationErrors] = useState<string[]>([])
   const isSaveEnabled = !!draft && isEmpty(validationErrors) && !saving
 
   const saveDraftToLocalStorage = () => {

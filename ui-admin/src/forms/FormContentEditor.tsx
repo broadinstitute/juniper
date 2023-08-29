@@ -52,8 +52,8 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
                   const errors = validateFormContent(newContent)
                   onChange(errors, newContent)
                 } catch (err) {
-                  // @ts-ignore
-                  onChange(err.message, undefined)
+                  //@ts-ignore
+                  onChange([err.message], undefined)
                 }
               }}
             />
@@ -69,8 +69,8 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
               initialValue={editedContent}
               readOnly={readOnly}
               onChange={(validationErrors, newContent) => {
-                if (isEmpty(validationErrors)) {
-                  setEditedContent(newContent!)
+                if (isEmpty(validationErrors) && newContent) {
+                  setEditedContent(newContent)
                   onChange(validationErrors, newContent)
                 } else {
                   onChange(validationErrors, undefined)
