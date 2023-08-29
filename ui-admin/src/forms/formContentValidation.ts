@@ -1,40 +1,47 @@
-import { FormContent, TemplatedQuestion } from '@juniper/ui-core'
+import { FormContent, Question, TemplatedQuestion } from '@juniper/ui-core'
 import { getTableOfContentsTree } from './FormTableOfContents'
 
-/** Validate that an object is valid FormContent. */
-export const validateFormContent = (rawFormContent: unknown): FormContent => {
-  let parsedFormContent: FormContent
-
+/** Returns a validated FormContent object, or throws an error if invalid. */
+export const validateFormJson = (rawFormContent: unknown): FormContent => {
   //Checks for basic JSON validity, and returns the syntax error if invalid
   //As a result, the error message is not very user-friendly because it's
   //the underlying exception message, but it can provide some useful context
   try {
-    parsedFormContent = JSON.parse(rawFormContent as string) as FormContent
+    return JSON.parse(rawFormContent as string) as FormContent
   } catch (e) {
     // @ts-ignore
     throw new Error(`${e.name}: ${e.message}`)
   }
+}
 
-  //This will ensure that. It takes advantage of the fact that the
-  //table of contents tree will fail to render. Ideally, the ToC would
-  //be resilient but for the moment I'm just gonna use that as a shortcut
+/** Validate that an object is valid FormContent. */
+export const validateFormContent = (formContent: FormContent): string[] => {
+  const validationErrors: string[] = []
+  const questions = getAllQuestions(formContent)
+
+  //This piggybacks off of the table of contents generator, which
+  //ensures that all pages and panels have `elements` properties.
+  //It would probably be better to have a separate validator for this,
+  //but for now this is a quick way to ensure that all pages and panels
+  //have elements.
   try {
-    getTableOfContentsTree(parsedFormContent)
+    getTableOfContentsTree(formContent)
   } catch (e) {
     // @ts-ignore
-    throw new Error(`Error: a page or panel is misconfigured. ${e.message}`)
+    validationErrors.push('A page or panel is misconfigured. ' +
+      'This may be due to a page or panel missing the `elements` property.')
   }
 
-  //Validates that all templated questions references a template name
-  //that actually exists.
-  try {
-    validateQuestionTemplates(parsedFormContent)
-  } catch (e) {
-    // @ts-ignore
-    throw new Error(`Error: ${e.message}`)
-  }
+  //Validates that all templated questions references a template name that actually exists.
+  validationErrors.push(...validateQuestionTemplates(formContent, questions))
 
-  return parsedFormContent
+  //Validates that all questions have a 'name' field
+  validationErrors.push(...validateQuestionNamesExist(questions))
+
+  //Validates that all questions have a 'type' field
+  validationErrors.push(...validateQuestionTypesExist(questions))
+
+  return validationErrors
 }
 
 type InvalidQuestionTemplate = {
@@ -42,18 +49,17 @@ type InvalidQuestionTemplate = {
   referencedTemplateId: string
 }
 
-const validateQuestionTemplates = (formContent: FormContent): void => {
+const validateQuestionTemplates = (formContent: FormContent, questions: Question[]): string[] => {
   const questionTemplates = formContent.questionTemplates
   if (!questionTemplates) {
-    return
+    return []
   }
 
   const questionTemplateNames = questionTemplates.map(qt => qt.name)
 
-  const templatedQuestions: TemplatedQuestion[] = formContent.pages.flatMap(page =>
-    page.elements.filter(element =>
-      Object.hasOwnProperty.call(element, 'questionTemplateName')
-    )
+  //calls getAllQuestions and returns those that have a question template name
+  const templatedQuestions: TemplatedQuestion[] = questions.filter(question =>
+    Object.hasOwnProperty.call(question, 'questionTemplateName')
   ) as TemplatedQuestion[]
 
   const questionsWithInvalidTemplates: InvalidQuestionTemplate[] = templatedQuestions.filter(question =>
@@ -65,11 +71,51 @@ const validateQuestionTemplates = (formContent: FormContent): void => {
     }
   })
 
-  if (questionsWithInvalidTemplates.length > 0) {
-    throw new Error(
-      `The following question(s) reference a question template that doesn't exist: 
-      ${questionsWithInvalidTemplates.map(q =>
-        `${q.questionStableId} (references template ${q.referencedTemplateId})`).join(', ')}`
-    )
+  return questionsWithInvalidTemplates.map(q =>
+    `'${q.questionStableId}' references non-existent template '${q.referencedTemplateId}'`)
+}
+
+const validateQuestionTypesExist = (questions: Question[]): string[] => {
+  const missingFields: string[] = []
+  questions.forEach(question => {
+    //@ts-ignore
+    if (!question.type && !question.questionTemplateName) {
+      missingFields.push(`Question ${question.name} is missing a 'type' field.`)
+    }
+  })
+  return missingFields
+}
+
+const validateQuestionNamesExist = (questions: Question[]) => {
+  const questionsWithoutName: Question[] = []
+  questions.forEach(question => {
+    if (!question.name) {
+      questionsWithoutName.push(question)
+    }
+  })
+
+  //It's hard to reference individual questions that don't have names, so just return the count
+  if (questionsWithoutName.length === 0) {
+    return []
+  } else if (questionsWithoutName.length === 1) {
+    return [`1 question is missing a 'name' field.`]
+  } else {
+    return [`${questionsWithoutName.length} questions are missing a 'name' field.`]
   }
+}
+
+const getAllQuestions = (formContent: FormContent): Question[] => {
+  const questions: Question[] = []
+  formContent.pages.forEach(page => {
+    page.elements.forEach(element => {
+      if ('type' in element && element.type === 'panel') {
+        element.elements.forEach(panelElement => {
+          questions.push(panelElement as Question)
+        })
+      } else {
+        questions.push(element as Question)
+      }
+    })
+  })
+  return questions
 }

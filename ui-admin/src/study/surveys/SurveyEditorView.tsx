@@ -12,6 +12,8 @@ import { faClockRotateLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import VersionSelector from './VersionSelector'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
+import { isEmpty } from 'lodash'
 
 type SurveyEditorViewProps = {
   studyEnvContext: StudyEnvContextT
@@ -34,7 +36,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const FORM_DRAFT_KEY = getFormDraftKey({ form: currentForm })
   const FORM_DRAFT_SAVE_INTERVAL = 10000
 
-  const [validationError, setValidationError] = useState<string>()
+  const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
   const [savingDraft, setSavingDraft] = useState(false)
 
@@ -44,11 +46,12 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const [showDiscardDraftModal, setShowDiscardDraftModal] = useState(false)
   const [showVersionSelector, setShowVersionSelector] = useState(false)
   const [visibleVersionPreviews, setVisibleVersionPreviews] = useState<VersionedForm[]>([])
+  const [showErrors, setShowErrors] = useState(false)
 
   const [draft, setDraft] = useState<FormDraft | undefined>(
     !readOnly ? getDraft({ formDraftKey: FORM_DRAFT_KEY }) : undefined)
 
-  const isSaveEnabled = !!draft && !validationError && !saving
+  const isSaveEnabled = !!draft && isEmpty(validationErrors) && !saving
 
   const saveDraftToLocalStorage = () => {
     setDraft(currentDraft => {
@@ -89,6 +92,8 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     }
   }
 
+  console.log(validationErrors)
+
   return (
     <div className="SurveyView d-flex flex-column flex-grow-1 mx-1 mb-1">
       <div className="d-flex p-2 align-items-center">
@@ -101,13 +106,35 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           </h5>
         </div>
         { savingDraft && <span className="detail me-2 ms-2">Saving draft...</span> }
+        { validationErrors && !isEmpty(validationErrors) &&
+            <div className="position-relative ms-auto me-2 ms-2">
+              <button className="btn btn-outline-danger"
+                onClick={() => setShowErrors(!showErrors)} aria-label="view errors">
+                    View errors <FontAwesomeIcon icon={faExclamationCircle} className="fa-lg"/>
+              </button>
+              { showErrors && <div className="position-absolute border border-gray rounded bg-white p-3"
+                style={{ width: '750px', right: 0 }}>
+                <div className="border-b border-black">
+                  <label>
+                    <span>The following error(s) were found in your survey:</span>
+                  </label>
+                </div>
+                <hr/>
+                { !isEmpty(validationErrors) && validationErrors.map((error, index) => {
+                  return (
+                    <li key={`error-${index}`}>{error}</li>
+                  )
+                })}
+              </div> }
+            </div>
+        }
         {!readOnly && (
           <Button
             disabled={!isSaveEnabled}
             className="me-md-2"
             tooltip={(() => {
-              if (validationError) {
-                return validationError
+              if (!isEmpty(validationErrors)) {
+                return 'Please correct errors before saving.'
               }
               if (!draft) {
                 return 'Form is unchanged. Make changes to save.'
@@ -115,7 +142,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
               return 'Save changes'
             })()}
             tooltipPlacement={'left'}
-            variant={validationError ? 'danger' : 'primary'}
+            variant={isEmpty(validationErrors) ? 'primary' : 'danger'}
             onClick={onClickSave}
           >
             Save
@@ -152,11 +179,12 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
         initialContent={draft?.content || currentForm.content} //favor loading the draft, if we find one
         visibleVersionPreviews={visibleVersionPreviews}
         readOnly={readOnly}
-        onChange={(validationError, newContent) => {
-          if (!validationError) {
+        onChange={(newValidationErrors, newContent) => {
+          setShowErrors(false)
+          if (isEmpty(newValidationErrors)) {
             setDraft({ content: JSON.stringify(newContent), date: Date.now() })
           }
-          setValidationError(validationError)
+          setValidationErrors(newValidationErrors)
         }}
       />
     </div>
