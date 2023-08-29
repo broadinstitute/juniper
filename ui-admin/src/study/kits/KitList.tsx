@@ -89,7 +89,6 @@ const pepperStatusToHumanStatus = (pepperStatus?: PepperKitStatus): string => {
 export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) {
   const { portal, study, currentEnv } = studyEnvContext
   const [isLoading, setIsLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<string | null>(statusTabs[0].status)
   const [kits, setKits] = useState<KitRequest[]>([])
 
   const loadKits = async () => {
@@ -118,7 +117,7 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
       <div className="d-flex w-100" style={{ backgroundColor: '#ccc' }}>
         { statusTabs.map(tab => {
           const kits = kitsByStatus[tab.status] || []
-          return <NavLink key={tab.status} to={tab.status} style={tabLinkStyle}>
+          return <NavLink key={tab.label} to={tab.label.toLowerCase()} style={tabLinkStyle}>
             <div className="py-3 px-5">
               {kits?.length} {tab.label}
             </div>
@@ -126,12 +125,12 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
         })}
       </div>
       <Routes>
-        <Route index element={<Navigate to='CREATED' replace={true}/>}/>
+        <Route index element={<Navigate to={statusTabs[0].label.toLowerCase()} replace={true}/>}/>
         { statusTabs.map(tab => {
-          return <Route key={tab.status} path={tab.status} element={
+          return <Route key={tab.label} path={tab.label.toLowerCase()} element={
             <KitListView
               studyEnvContext={studyEnvContext}
-              tab={tab.status}
+              tab={tab.label}
               kits={kitsByStatus[tab.status] || []}
               initialColumnVisibility={initialColumnVisibility(tab)}/>
           }/>
@@ -152,8 +151,6 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
   const [currentTab, setCurrentTab] = useState(tab)
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialColumnVisibility)
   const [sorting, setSorting] = useState<SortingState>([])
-
-  console.log('initialColumnVisibility', initialColumnVisibility)
 
   if (tab !== currentTab) {
     setColumnVisibility(initialColumnVisibility)
