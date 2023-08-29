@@ -1,5 +1,4 @@
-import { FormContent, Question, TemplatedQuestion } from '@juniper/ui-core'
-import { getTableOfContentsTree } from './FormTableOfContents'
+import {FormContent, Question, TemplatedQuestion} from '@juniper/ui-core'
 
 /** Returns a validated FormContent object, or throws an error if invalid. */
 export const validateFormJson = (rawFormContent: unknown): FormContent => {
@@ -14,108 +13,86 @@ export const validateFormJson = (rawFormContent: unknown): FormContent => {
   }
 }
 
-/** Validate that an object is valid FormContent. */
+/** Reasonable attempt to validate that an object is valid FormContent.
+ *  This may not cover all cases, but it will catch the common/critical cases */
 export const validateFormContent = (formContent: FormContent): string[] => {
   const validationErrors: string[] = []
+
+  //Also validates that all pages and panels have an 'elements' property.
   const questions = getAllQuestions(formContent)
 
-  //This piggybacks off of the table of contents generator, which
-  //ensures that all pages and panels have `elements` properties.
-  //It would probably be better to have a separate validator for this,
-  //but for now this is a quick way to ensure that all pages and panels
-  //have elements.
-  try {
-    getTableOfContentsTree(formContent)
-  } catch (e) {
-    // @ts-ignore
-    validationErrors.push('A page or panel is misconfigured. ' +
-      'This may be due to a page or panel missing the `elements` property.')
-  }
-
   //Validates that all templated questions references a template name that actually exists.
-  validationErrors.push(...validateQuestionTemplates(formContent, questions))
+  validationErrors.push(...validateTemplatedQuestions(formContent, questions))
 
-  //Validates that all questions have a 'name' field
-  validationErrors.push(...validateQuestionNamesExist(questions))
+  //Validates that all questions have a 'name' field.
+  validationErrors.push(...validateQuestionNames(questions))
 
-  //Validates that all questions have a 'type' field
-  validationErrors.push(...validateQuestionTypesExist(questions))
+  //Validates that all questions have a 'type' field.
+  validationErrors.push(...validateQuestionTypes(questions))
 
   return validationErrors
 }
 
-type InvalidQuestionTemplate = {
-  questionStableId: string
-  referencedTemplateId: string
-}
-
-const validateQuestionTemplates = (formContent: FormContent, questions: Question[]): string[] => {
-  const questionTemplates = formContent.questionTemplates
-  if (!questionTemplates) {
-    return []
-  }
-
+export const validateTemplatedQuestions = (formContent: FormContent, questions: Question[]): string[] => {
+  const questionTemplates = formContent.questionTemplates || []
   const questionTemplateNames = questionTemplates.map(qt => qt.name)
 
-  //calls getAllQuestions and returns those that have a question template name
   const templatedQuestions: TemplatedQuestion[] = questions.filter(question =>
     Object.hasOwnProperty.call(question, 'questionTemplateName')
   ) as TemplatedQuestion[]
 
-  const questionsWithInvalidTemplates: InvalidQuestionTemplate[] = templatedQuestions.filter(question =>
+  return templatedQuestions.filter(question =>
     !questionTemplateNames.includes(question.questionTemplateName)
   ).map(question => {
-    return {
-      questionStableId: question.name,
-      referencedTemplateId: question.questionTemplateName
-    }
+    return `'${question.name}' references non-existent template '${question.questionTemplateName}'`
   })
-
-  return questionsWithInvalidTemplates.map(q =>
-    `'${q.questionStableId}' references non-existent template '${q.referencedTemplateId}'`)
 }
 
-const validateQuestionTypesExist = (questions: Question[]): string[] => {
-  const missingFields: string[] = []
+export const validateQuestionTypes = (questions: Question[]): string[] => {
+  const errors: string[] = []
   questions.forEach(question => {
     //@ts-ignore
     if (!question.type && !question.questionTemplateName) {
-      missingFields.push(`Question ${question.name} is missing a 'type' field.`)
+      errors.push(`Question ${question.name} is missing a 'type' field.`)
     }
   })
-  return missingFields
+  return errors
 }
 
-const validateQuestionNamesExist = (questions: Question[]) => {
-  const questionsWithoutName: Question[] = []
+export const validateQuestionNames = (questions: Question[]) => {
+  const errors: Question[] = []
   questions.forEach(question => {
     if (!question.name) {
-      questionsWithoutName.push(question)
+      errors.push(question)
     }
   })
 
-  //It's hard to reference individual questions that don't have names, so just return the count
-  if (questionsWithoutName.length === 0) {
+  //It's hard to reference individual questions that don't have names, so just return the count.
+  if (errors.length === 0) {
     return []
-  } else if (questionsWithoutName.length === 1) {
+  } else if (errors.length === 1) {
     return [`1 question is missing a 'name' field.`]
   } else {
-    return [`${questionsWithoutName.length} questions are missing a 'name' field.`]
+    return [`${errors.length} questions are missing a 'name' field.`]
   }
 }
 
-const getAllQuestions = (formContent: FormContent): Question[] => {
+export const getAllQuestions = (formContent: FormContent): Question[] => {
   const questions: Question[] = []
-  formContent.pages.forEach(page => {
-    page.elements.forEach(element => {
-      if ('type' in element && element.type === 'panel') {
-        element.elements.forEach(panelElement => {
-          questions.push(panelElement as Question)
-        })
-      } else {
-        questions.push(element as Question)
-      }
+  try {
+    formContent.pages.forEach(page => {
+      page.elements.forEach(element => {
+        if ('type' in element && element.type === 'panel') {
+          element.elements.forEach(panelElement => {
+            questions.push(panelElement as Question)
+          })
+        } else {
+          questions.push(element as Question)
+        }
+      })
     })
-  })
+  } catch (e) {
+    throw new Error(`Error parsing form. Please ensure that all pages and panels have an 'elements' property.`)
+  }
   return questions
 }

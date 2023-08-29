@@ -92,8 +92,6 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     }
   }
 
-  console.log(validationErrors)
-
   return (
     <div className="SurveyView d-flex flex-column flex-grow-1 mx-1 mb-1">
       <div className="d-flex p-2 align-items-center">
@@ -141,7 +139,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
               }
               return 'Save changes'
             })()}
-            tooltipPlacement={'left'}
+            tooltipPlacement={'bottom'}
             variant={isEmpty(validationErrors) ? 'primary' : 'danger'}
             onClick={onClickSave}
           >
