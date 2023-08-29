@@ -1,4 +1,4 @@
-import {FormContent, Question, TemplatedQuestion} from '@juniper/ui-core'
+import { FormContent, Question, TemplatedQuestion } from '@juniper/ui-core'
 
 /** Returns a validated FormContent object, or throws an error if invalid. */
 export const validateFormJson = (rawFormContent: unknown): FormContent => {
@@ -33,6 +33,7 @@ export const validateFormContent = (formContent: FormContent): string[] => {
   return validationErrors
 }
 
+/** Returns an array of error messages for all templated questions that reference a template name that doesn't exist. */
 export const validateTemplatedQuestions = (formContent: FormContent, questions: Question[]): string[] => {
   const questionTemplates = formContent.questionTemplates || []
   const questionTemplateNames = questionTemplates.map(qt => qt.name)
@@ -48,6 +49,7 @@ export const validateTemplatedQuestions = (formContent: FormContent, questions: 
   })
 }
 
+/** Returns an array of error messages for all questions that don't have a 'type' field. */
 export const validateQuestionTypes = (questions: Question[]): string[] => {
   const errors: string[] = []
   questions.forEach(question => {
@@ -59,6 +61,7 @@ export const validateQuestionTypes = (questions: Question[]): string[] => {
   return errors
 }
 
+/** Returns a message with the number of questions that don't have a 'name' field. */
 export const validateQuestionNames = (questions: Question[]) => {
   const errors: Question[] = []
   questions.forEach(question => {
@@ -77,6 +80,7 @@ export const validateQuestionNames = (questions: Question[]) => {
   }
 }
 
+/** Returns an array of all Questions in a form, including those in panels. */
 export const getAllQuestions = (formContent: FormContent): Question[] => {
   const questions: Question[] = []
   try {
