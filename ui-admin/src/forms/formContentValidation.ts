@@ -5,12 +5,7 @@ export const validateFormJson = (rawFormContent: unknown): FormContent => {
   //Checks for basic JSON validity, and returns the syntax error if invalid
   //As a result, the error message is not very user-friendly because it's
   //the underlying exception message, but it can provide some useful context
-  try {
-    return JSON.parse(rawFormContent as string) as FormContent
-  } catch (e) {
-    // @ts-ignore
-    throw new Error(`${e.name}: ${e.message}`)
-  }
+  return JSON.parse(rawFormContent as string) as FormContent
 }
 
 /** Reasonable attempt to validate that an object is valid FormContent.
