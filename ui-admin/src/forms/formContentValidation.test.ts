@@ -97,7 +97,7 @@ describe('validateFormContent', () => {
     }
 
     const questions = getAllQuestions(formContent)
-    expect(questions.length).toBe(2)
+    expect(questions).toHaveLength(2)
     expect(questions[0].name).toBe('test')
     expect(questions[1].name).toBe('test2')
   })
@@ -123,7 +123,7 @@ describe('validateFormContent', () => {
 
     const questions = getAllQuestions(formContent)
     const errors = validateQuestionNames(questions)
-    expect(errors.length).toBe(1)
+    expect(errors).toHaveLength(1)
     expect(errors[0]).toBe(`2 questions are missing a 'name' field.`)
   })
 
@@ -150,7 +150,7 @@ describe('validateFormContent', () => {
 
     const questions = getAllQuestions(formContent)
     const errors = validateQuestionNames(questions)
-    expect(errors.length).toBe(1)
+    expect(errors).toHaveLength(1)
     expect(errors[0]).toBe(`Duplicate question name: test`)
   })
 
@@ -175,7 +175,7 @@ describe('validateFormContent', () => {
 
     const questions = getAllQuestions(formContent)
     const errors = validateQuestionTypes(questions)
-    expect(errors.length).toBe(2)
+    expect(errors).toHaveLength(2)
     expect(errors[0]).toBe(`Question oh_test is missing a 'type' field.`)
     expect(errors[1]).toBe(`Question oh_test2 is missing a 'type' field.`)
   })
@@ -198,7 +198,7 @@ describe('validateFormContent', () => {
 
     const questions = getAllQuestions(formContent)
     const errors = validateQuestionTypes(questions)
-    expect(errors.length).toBe(0)
+    expect(errors).toHaveLength(0)
   })
 
   it('validateTemplatedQuestions returns an error if a' +
@@ -220,7 +220,7 @@ describe('validateFormContent', () => {
 
     const questions = getAllQuestions(formContent)
     const errors = validateTemplatedQuestions(formContent, questions)
-    expect(errors.length).toBe(1)
+    expect(errors).toHaveLength(1)
     expect(errors[0]).toBe(`'oh_test' references non-existent template 'testTemplate'`)
   })
 })
