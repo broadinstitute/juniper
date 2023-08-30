@@ -1,7 +1,7 @@
 import {
-  getAllQuestions,
-  validateQuestionNames,
-  validateQuestionTypes,
+  getAllElements,
+  validateElementNames,
+  validateElementTypes,
   validateTemplatedQuestions
 } from './formContentValidation'
 import { FormContent } from '@juniper/ui-core'
@@ -12,7 +12,7 @@ describe('validateFormContent', () => {
       title: 'test'
     } as unknown as FormContent //cast in order to simulate invalid form content
 
-    expect(() => getAllQuestions(formContent)).toThrowError(
+    expect(() => getAllElements(formContent)).toThrowError(
       `Error parsing form. Please ensure that the form has a 'pages' property.`
     )
   })
@@ -38,7 +38,7 @@ describe('validateFormContent', () => {
       ]
     } as unknown as FormContent //cast in order to simulate invalid form content
 
-    expect(() => getAllQuestions(formContent)).toThrowError(
+    expect(() => getAllElements(formContent)).toThrowError(
       `Error parsing form. Please ensure that all panels have an 'elements' property.`
     )
   })
@@ -64,7 +64,7 @@ describe('validateFormContent', () => {
       ]
     } as unknown as FormContent //cast in order to simulate invalid form content
 
-    expect(() => getAllQuestions(formContent)).toThrowError(
+    expect(() => getAllElements(formContent)).toThrowError(
       `Error parsing form. Please ensure that all pages have an 'elements' property.`
     )
   })
@@ -95,7 +95,7 @@ describe('validateFormContent', () => {
       ]
     }
 
-    const questions = getAllQuestions(formContent)
+    const questions = getAllElements(formContent)
     expect(questions).toHaveLength(2)
     expect(questions[0].name).toBe('test')
     expect(questions[1].name).toBe('test2')
@@ -120,10 +120,10 @@ describe('validateFormContent', () => {
       ]
     } as unknown as FormContent //cast in order to simulate invalid form content
 
-    const questions = getAllQuestions(formContent)
-    const errors = validateQuestionNames(questions)
+    const questions = getAllElements(formContent)
+    const errors = validateElementNames(questions)
     expect(errors).toHaveLength(1)
-    expect(errors[0]).toBe(`2 questions are missing a 'name' field.`)
+    expect(errors[0]).toBe(`2 elements are missing a 'name' field.`)
   })
 
   it('validateQuestionNames returns an error if two questions have a duplicate name', () => {
@@ -147,13 +147,13 @@ describe('validateFormContent', () => {
       ]
     } as FormContent
 
-    const questions = getAllQuestions(formContent)
-    const errors = validateQuestionNames(questions)
+    const questions = getAllElements(formContent)
+    const errors = validateElementNames(questions)
     expect(errors).toHaveLength(1)
-    expect(errors[0]).toBe(`Duplicate question name: test`)
+    expect(errors[0]).toBe(`Duplicate element name: test`)
   })
 
-  it('validateQuestionTypes returns an error if a question is missing a type', () => {
+  it('validateQuestionTypes returns an error if an element is missing a type', () => {
     const formContent: FormContent = {
       title: 'test',
       pages: [
@@ -172,11 +172,11 @@ describe('validateFormContent', () => {
       ]
     } as unknown as FormContent //cast in order to simulate invalid form content
 
-    const questions = getAllQuestions(formContent)
-    const errors = validateQuestionTypes(questions)
+    const questions = getAllElements(formContent)
+    const errors = validateElementTypes(questions)
     expect(errors).toHaveLength(2)
-    expect(errors[0]).toBe(`Question oh_test is missing a 'type' field.`)
-    expect(errors[1]).toBe(`Question oh_test2 is missing a 'type' field.`)
+    expect(errors[0]).toBe(`Element oh_test is missing a 'type' field.`)
+    expect(errors[1]).toBe(`Element oh_test2 is missing a 'type' field.`)
   })
 
   it('validateQuestionTypes does not return an error if a TemplatedQuestion is missing a type', () => {
@@ -195,8 +195,8 @@ describe('validateFormContent', () => {
       ]
     } as unknown as FormContent //cast in order to simulate invalid form content
 
-    const questions = getAllQuestions(formContent)
-    const errors = validateQuestionTypes(questions)
+    const questions = getAllElements(formContent)
+    const errors = validateElementTypes(questions)
     expect(errors).toHaveLength(0)
   })
 
@@ -217,9 +217,9 @@ describe('validateFormContent', () => {
       ]
     } as unknown as FormContent //cast in order to simulate invalid form content
 
-    const questions = getAllQuestions(formContent)
+    const questions = getAllElements(formContent)
     const errors = validateTemplatedQuestions(formContent, questions)
     expect(errors).toHaveLength(1)
-    expect(errors[0]).toBe(`'oh_test' references non-existent template 'testTemplate'`)
+    expect(errors[0]).toBe(`'oh_test' references non-existent question template 'testTemplate'`)
   })
 })
