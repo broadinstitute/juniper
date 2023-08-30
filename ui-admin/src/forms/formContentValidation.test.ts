@@ -1,6 +1,5 @@
 import {
   getAllQuestions,
-  validateFormContent,
   validateQuestionNames,
   validateQuestionTypes,
   validateTemplatedQuestions
