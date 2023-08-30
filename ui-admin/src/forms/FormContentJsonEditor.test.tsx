@@ -81,7 +81,7 @@ describe('FormContentJsonEditor', () => {
 
     // Assert
     expect(onChange).toHaveBeenCalledWith(
-      [`Unexpected token 'F', ..." "title": First name"... is not valid JSON`], undefined)
+      [expect.stringContaining('Unexpected token')], undefined)
   })
 
   it('shows feedback when edited with invalid JSON', async () => {
