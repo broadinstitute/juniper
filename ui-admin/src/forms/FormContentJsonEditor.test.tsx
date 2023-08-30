@@ -64,7 +64,7 @@ describe('FormContentJsonEditor', () => {
     const expectedEditedContent = cloneDeep(formContent)
     ;(expectedEditedContent.pages[0].elements[0] as Question).title = 'Given name'
 
-    expect(onChange).toHaveBeenCalledWith(true, expectedEditedContent)
+    expect(onChange).toHaveBeenCalledWith([], expectedEditedContent)
   })
 
   it('calls onChange when edited with invalid JSON', async () => {
@@ -80,7 +80,8 @@ describe('FormContentJsonEditor', () => {
     await act(() => user.type(textArea, 'First name', { initialSelectionStart: 158, initialSelectionEnd: 170 }))
 
     // Assert
-    expect(onChange).toHaveBeenCalledWith(false, undefined)
+    expect(onChange).toHaveBeenCalledWith(
+      [`SyntaxError: Unexpected token 'F', ..." "title": First name"... is not valid JSON`], undefined)
   })
 
   it('shows feedback when edited with invalid JSON', async () => {
