@@ -7,7 +7,7 @@ import {
 import { FormContent } from '@juniper/ui-core'
 
 describe('validateFormContent', () => {
-  it('getAllQuestions throws an exception if a form is missing a pages property', () => {
+  it('getAllElements throws an exception if a form is missing a pages property', () => {
     const formContent: FormContent = {
       title: 'test'
     } as unknown as FormContent //cast in order to simulate invalid form content
@@ -17,7 +17,7 @@ describe('validateFormContent', () => {
     )
   })
 
-  it('getAllQuestions throws an exception if a panel is missing `elements` property', () => {
+  it('getAllElements throws an exception if a panel is missing `elements` property', () => {
     const formContent: FormContent = {
       title: 'test',
       pages: [
@@ -43,7 +43,7 @@ describe('validateFormContent', () => {
     )
   })
 
-  it('getAllQuestions throws an exception if a page is missing `elements` property', () => {
+  it('getAllElements throws an exception if a page is missing `elements` property', () => {
     const formContent: FormContent = {
       title: 'test',
       pages: [
@@ -69,7 +69,7 @@ describe('validateFormContent', () => {
     )
   })
 
-  it('getAllQuestions returns all questions in the form, including those in panels', () => {
+  it('getAllElements returns all elements in the form, including those in panels', () => {
     const formContent: FormContent = {
       title: 'test',
       pages: [
@@ -87,6 +87,11 @@ describe('validateFormContent', () => {
                   name: 'test2',
                   type: 'text',
                   title: 'test title 2'
+                },
+                {
+                  name: 'test_html',
+                  type: 'html',
+                  html: '<strong>test title 2</strong>'
                 }
               ]
             }
@@ -96,12 +101,13 @@ describe('validateFormContent', () => {
     }
 
     const questions = getAllElements(formContent)
-    expect(questions).toHaveLength(2)
+    expect(questions).toHaveLength(3)
     expect(questions[0].name).toBe('test')
     expect(questions[1].name).toBe('test2')
+    expect(questions[2].name).toBe('test_html')
   })
 
-  it('validateQuestionNames returns an error if a question is missing a name', () => {
+  it('validateElementNames returns an error if an element is missing a name', () => {
     const formContent: FormContent = {
       title: 'test',
       pages: [
@@ -120,13 +126,13 @@ describe('validateFormContent', () => {
       ]
     } as unknown as FormContent //cast in order to simulate invalid form content
 
-    const questions = getAllElements(formContent)
-    const errors = validateElementNames(questions)
+    const elements = getAllElements(formContent)
+    const errors = validateElementNames(elements)
     expect(errors).toHaveLength(1)
     expect(errors[0]).toBe(`2 elements are missing a 'name' field.`)
   })
 
-  it('validateQuestionNames returns an error if two questions have a duplicate name', () => {
+  it('validateElementNames returns an error if two elements have a duplicate name', () => {
     const formContent: FormContent = {
       title: 'test',
       pages: [
@@ -147,13 +153,13 @@ describe('validateFormContent', () => {
       ]
     } as FormContent
 
-    const questions = getAllElements(formContent)
-    const errors = validateElementNames(questions)
+    const elements = getAllElements(formContent)
+    const errors = validateElementNames(elements)
     expect(errors).toHaveLength(1)
     expect(errors[0]).toBe(`Duplicate element name: test`)
   })
 
-  it('validateQuestionTypes returns an error if an element is missing a type', () => {
+  it('validateElementTypes returns an error if an element is missing a type', () => {
     const formContent: FormContent = {
       title: 'test',
       pages: [
@@ -172,14 +178,14 @@ describe('validateFormContent', () => {
       ]
     } as unknown as FormContent //cast in order to simulate invalid form content
 
-    const questions = getAllElements(formContent)
-    const errors = validateElementTypes(questions)
+    const elements = getAllElements(formContent)
+    const errors = validateElementTypes(elements)
     expect(errors).toHaveLength(2)
     expect(errors[0]).toBe(`Element oh_test is missing a 'type' field.`)
     expect(errors[1]).toBe(`Element oh_test2 is missing a 'type' field.`)
   })
 
-  it('validateQuestionTypes does not return an error if a TemplatedQuestion is missing a type', () => {
+  it('validateElementTypes does not return an error if a TemplatedQuestion is missing a type', () => {
     const formContent: FormContent = {
       title: 'test',
       pages: [
@@ -195,8 +201,8 @@ describe('validateFormContent', () => {
       ]
     } as unknown as FormContent //cast in order to simulate invalid form content
 
-    const questions = getAllElements(formContent)
-    const errors = validateElementTypes(questions)
+    const elements = getAllElements(formContent)
+    const errors = validateElementTypes(elements)
     expect(errors).toHaveLength(0)
   })
 

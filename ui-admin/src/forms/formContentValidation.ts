@@ -1,4 +1,4 @@
-import {FormContent, FormElement, HtmlElement, Question, TemplatedQuestion} from '@juniper/ui-core'
+import { FormContent, HtmlElement, Question, TemplatedQuestion } from '@juniper/ui-core'
 
 /** Returns a validated FormContent object, or throws an error if invalid. */
 export const validateFormJson = (rawFormContent: unknown): FormContent => {
