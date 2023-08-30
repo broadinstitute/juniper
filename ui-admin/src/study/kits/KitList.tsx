@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import _capitalize from 'lodash/capitalize'
 import _fromPairs from 'lodash/fromPairs'
 import _groupBy from 'lodash/groupBy'
 import { Link, Navigate, NavLink, Route, Routes } from 'react-router-dom'
@@ -15,11 +16,15 @@ import { instantToDateString, isoToInstant } from 'util/timeUtils'
 
 type KitStatusTabConfig = {
   status: string,
-  label: string,
+  key: string,
   additionalColumns?: string[]
 }
 
-const defaultColumns = {
+/**
+ * Default column visibility, showing only columns relevant for any status. All columns should be listed here since
+ * columns to hide must be explicitly configured.
+ */
+const defaultColumns: VisibilityState = {
   'enrollee_shortcode': true,
   'kitType_displayName': true,
   'createdAt': true,
@@ -31,22 +36,25 @@ const defaultColumns = {
   'pepperStatus': false
 }
 
+/**
+ * List of status tab properties in the order that they should apper on screen.
+ */
 const statusTabs: KitStatusTabConfig[] = [
   {
     status: 'CREATED',
-    label: 'Created',
+    key: 'created',
     additionalColumns: []
   },
   {
     status: 'LABELED',
-    label: 'Labeled',
+    key: 'labeled',
     additionalColumns: [
       'pepperStatus_labelDate', 'pepperStatus_trackingNumber'
     ]
   },
   {
     status: 'SCANNED',
-    label: 'Sent',
+    key: 'sent',
     additionalColumns: [
       'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
       'pepperStatus_scanDate', 'pepperStatus_returnTrackingNumber'
@@ -54,7 +62,7 @@ const statusTabs: KitStatusTabConfig[] = [
   },
   {
     status: 'RECEIVED',
-    label: 'Returned',
+    key: 'returned',
     additionalColumns: [
       'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
       'pepperStatus_scanDate', 'pepperStatus_returnTrackingNumber',
@@ -63,7 +71,7 @@ const statusTabs: KitStatusTabConfig[] = [
   },
   {
     status: 'ERROR',
-    label: 'Issues',
+    key: 'issues',
     additionalColumns: [
       'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
       'pepperStatus_scanDate', 'pepperStatus_returnTrackingNumber',
@@ -73,6 +81,11 @@ const statusTabs: KitStatusTabConfig[] = [
   }
 ]
 
+/**
+ * Determines a relevant set of columns to display based on the tab being rendered.
+ * Some columns are always relevant, i.e. enrollee shortcode, kit type, and created date, and are represented in
+ * `defaultColumns`. Additional columns to display are listed in KitStatusTabConfig.additionalColumns.
+ */
 const initialColumnVisibility = (tab: KitStatusTabConfig): VisibilityState => {
   return {
     ...defaultColumns,
@@ -82,7 +95,7 @@ const initialColumnVisibility = (tab: KitStatusTabConfig): VisibilityState => {
 
 const pepperStatusToHumanStatus = (pepperStatus?: PepperKitStatus): string => {
   const tab = statusTabs.find(tab => tab.status === pepperStatus?.currentStatus)
-  return tab?.label || pepperStatus?.currentStatus || '(unknown)'
+  return _capitalize(tab?.key) || pepperStatus?.currentStatus || '(unknown)'
 }
 
 /** Loads sample kits for a study and shows them as a list. */
@@ -117,20 +130,20 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
       <div className="d-flex w-100" style={{ backgroundColor: '#ccc' }}>
         { statusTabs.map(tab => {
           const kits = kitsByStatus[tab.status] || []
-          return <NavLink key={tab.label} to={tab.label.toLowerCase()} style={tabLinkStyle}>
+          return <NavLink key={tab.key} to={tab.key} style={tabLinkStyle}>
             <div className="py-3 px-5">
-              {kits?.length} {tab.label}
+              {kits?.length} {_capitalize(tab.key)}
             </div>
           </NavLink>
         })}
       </div>
       <Routes>
-        <Route index element={<Navigate to={statusTabs[0].label.toLowerCase()} replace={true}/>}/>
+        <Route index element={<Navigate to={statusTabs[0].key} replace={true}/>}/>
         { statusTabs.map(tab => {
-          return <Route key={tab.label} path={tab.label.toLowerCase()} element={
+          return <Route key={tab.key} path={tab.key} element={
             <KitListView
               studyEnvContext={studyEnvContext}
-              tab={tab.label}
+              tab={tab.key}
               kits={kitsByStatus[tab.status] || []}
               initialColumnVisibility={initialColumnVisibility(tab)}/>
           }/>
