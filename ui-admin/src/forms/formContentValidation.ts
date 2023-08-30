@@ -51,6 +51,7 @@ export const validateElementTypes = (elements: (Question | HtmlElement)[]): stri
   const filterUndefined = elements.filter(q => q.name !== undefined)
   filterUndefined.forEach(element => {
     // @ts-ignore
+    //If the element is a TemplatedQuestion, it's ok if it doesn't have a type
     if (!element.type && !element.questionTemplateName) {
       errors.push(`Element ${element.name} is missing a 'type' field.`)
     }
@@ -58,7 +59,7 @@ export const validateElementTypes = (elements: (Question | HtmlElement)[]): stri
   return errors
 }
 
-/** Returns a message with the number of elements that don't have a 'name' field. */
+/** Returns the number of elements that don't have a 'name' field and the number of duplicate names, if any. */
 export const validateElementNames = (elements: (Question | HtmlElement)[]) => {
   const errorMessages: string[] = []
 
@@ -95,9 +96,7 @@ export const getAllElements = (formContent: FormContent): (Question | HtmlElemen
     throw new Error(`Error parsing form. Please ensure that the form has a 'pages' property.`)
   }
 
-  const pages = formContent.pages
-
-  const pageElements = pages.flatMap(page => {
+  const pageElements = formContent.pages.flatMap(page => {
     if (!('elements' in page)) {
       throw new Error(`Error parsing form. Please ensure that all pages have an 'elements' property.`)
     } else {
