@@ -81,7 +81,7 @@ describe('FormContentJsonEditor', () => {
 
     // Assert
     expect(onChange).toHaveBeenCalledWith(
-      [`SyntaxError: Unexpected token 'F', ..." "title": First name"... is not valid JSON`], undefined)
+      [`Unexpected token 'F', ..." "title": First name"... is not valid JSON`], undefined)
   })
 
   it('shows feedback when edited with invalid JSON', async () => {
