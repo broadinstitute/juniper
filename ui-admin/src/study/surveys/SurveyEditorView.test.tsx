@@ -52,4 +52,22 @@ describe('SurveyEditorView', () => {
     expect(localStorage.getItem).toHaveBeenCalledWith(FORM_DRAFT_KEY)
     expect(screen.queryByText('Survey Draft Loaded')).not.toBeInTheDocument()
   })
+
+  test('allows the user to download the JSON file', async () => {
+    //Arrange
+    render(<SurveyEditorView
+      studyEnvContext={mockStudyEnvContext()}
+      currentForm={mockForm}
+      onCancel={jest.fn()}
+      onSave={jest.fn()}
+    />)
+
+    //Act
+    const downloadButton = screen.getByRole('button', { name: 'Download JSON' })
+    downloadButton.click()
+
+    //Assert
+    expect(downloadButton).toBeInTheDocument()
+    expect(downloadButton).toBeEnabled()
+  })
 })
