@@ -16,30 +16,30 @@ export const validateFormJson = (rawFormContent: unknown): FormContent => {
 /** Reasonable attempt to validate that an object is valid FormContent.
  *  This may not cover all cases, but it will catch the common/critical cases */
 export const validateFormContent = (formContent: FormContent): string[] => {
-  const validationErrors: string[] = []
+  const errorMessages: string[] = []
 
-  //Gets all questions and validates that all pages and panels have an 'elements' property.
-  const questions = getAllElements(formContent)
+  //Gets all elements and validates that all pages and panels have an 'elements' property.
+  const elements = getAllElements(formContent)
 
   //Validates that all templated questions references a template name that actually exists.
-  validationErrors.push(...validateTemplatedQuestions(formContent, questions))
+  errorMessages.push(...validateTemplatedQuestions(formContent, elements))
 
-  //Validates that all questions have a 'name' field and there are no duplicate names.
-  validationErrors.push(...validateElementNames(questions))
+  //Validates that all elements have a 'name' field and there are no duplicate names.
+  errorMessages.push(...validateElementNames(elements))
 
-  //Validates that all questions have a 'type' field.
-  validationErrors.push(...validateElementTypes(questions))
+  //Validates that all elements have a 'type' field.
+  errorMessages.push(...validateElementTypes(elements))
 
-  return validationErrors
+  return errorMessages
 }
 
 /** Returns an array of error messages for all templated questions that reference a template name that doesn't exist. */
-export const validateTemplatedQuestions = (formContent: FormContent, questions: Question[]): string[] => {
+export const validateTemplatedQuestions = (formContent: FormContent, elements: (Question| HtmlElement)[]): string[] => {
   const questionTemplates = formContent.questionTemplates || []
   const questionTemplateNames = questionTemplates.map(qt => qt.name)
 
-  const templatedQuestions: TemplatedQuestion[] = questions.filter(question =>
-    Object.hasOwnProperty.call(question, 'questionTemplateName')
+  const templatedQuestions: TemplatedQuestion[] = elements.filter(element =>
+    Object.hasOwnProperty.call(element, 'questionTemplateName')
   ) as TemplatedQuestion[]
 
   return templatedQuestions.filter(question =>
@@ -52,7 +52,9 @@ export const validateTemplatedQuestions = (formContent: FormContent, questions: 
 /** Returns an array of error messages for all elements that don't have a 'type' field. */
 export const validateElementTypes = (elements: (Question | HtmlElement)[]): string[] => {
   const errors: string[] = []
-  elements.forEach(element => {
+  //filter elements that don't have names, as this can lead to redundant errors
+  const filterUndefined = elements.filter(q => q.name !== undefined)
+  filterUndefined.forEach(element => {
     // @ts-ignore
     if (!element.type && !element.questionTemplateName) {
       errors.push(`Element ${element.name} is missing a 'type' field.`)
@@ -70,8 +72,8 @@ export const validateElementNames = (elements: (Question | HtmlElement)[]) => {
     return elements.findIndex(e => e.name === element.name) !== index
   }).filter(q => q.name !== undefined) //filter elements that don't have names, as this can lead to redundant errors
 
-  duplicateNames.map(question => {
-    errorMessages.push(`Duplicate element name: ${ question.name }`)
+  duplicateNames.map(element => {
+    errorMessages.push(`Duplicate element name: ${ element.name }`)
   })
 
   //Find all elements that don't have a name
@@ -92,8 +94,8 @@ export const validateElementNames = (elements: (Question | HtmlElement)[]) => {
   return errorMessages
 }
 
-/** Returns an array of all Questions in a form, including those in panels. */
-export const getAllElements = (formContent: FormContent): Question[] => {
+/** Returns an array of all elements in a form, including those in panels. */
+export const getAllElements = (formContent: FormContent): (Question | HtmlElement)[] => {
   if (!('pages' in formContent)) {
     throw new Error(`Error parsing form. Please ensure that the form has a 'pages' property.`)
   }
@@ -116,9 +118,9 @@ export const getAllElements = (formContent: FormContent): Question[] => {
         return element.elements
       }
     } else {
-      return element as Question
+      return element
     }
   })
 
-  return flattenedElements as Question[]
+  return flattenedElements
 }

@@ -130,11 +130,11 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
             disabled={!isSaveEnabled}
             className="me-md-2"
             tooltip={(() => {
-              if (!isEmpty(validationErrors)) {
-                return 'Please correct errors before saving.'
-              }
               if (!draft) {
                 return 'Form is unchanged. Make changes to save.'
+              }
+              if (!isEmpty(validationErrors)) {
+                return 'Form is invalid. Correct to save.'
               }
               return 'Save changes'
             })()}
@@ -177,8 +177,8 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
         visibleVersionPreviews={visibleVersionPreviews}
         readOnly={readOnly}
         onChange={(newValidationErrors, newContent) => {
-          setShowErrors(false)
           if (isEmpty(newValidationErrors)) {
+            setShowErrors(false)
             setDraft({ content: JSON.stringify(newContent), date: Date.now() })
           }
           setValidationErrors(newValidationErrors)
