@@ -18,13 +18,13 @@ export const validateFormJson = (rawFormContent: unknown): FormContent => {
 export const validateFormContent = (formContent: FormContent): string[] => {
   const validationErrors: string[] = []
 
-  //Also validates that all pages and panels have an 'elements' property.
+  //Gets all questions and validates that all pages and panels have an 'elements' property.
   const questions = getAllQuestions(formContent)
 
   //Validates that all templated questions references a template name that actually exists.
   validationErrors.push(...validateTemplatedQuestions(formContent, questions))
 
-  //Validates that all questions have a 'name' field.
+  //Validates that all questions have a 'name' field and there are no duplicate names.
   validationErrors.push(...validateQuestionNames(questions))
 
   //Validates that all questions have a 'type' field.
@@ -64,6 +64,15 @@ export const validateQuestionTypes = (questions: Question[]): string[] => {
 /** Returns a message with the number of questions that don't have a 'name' field. */
 export const validateQuestionNames = (questions: Question[]) => {
   const errors: Question[] = []
+  const errorMessages: string[] = []
+  const duplicateNames = questions.filter((question, index) => {
+    return questions.findIndex(q => q.name === question.name) !== index
+  }).filter(q => q.name !== undefined) //filter questions that don't have names, as this can lead to redundant errors
+
+  duplicateNames.map(question => {
+    errorMessages.push(`Duplicate question name: ${ question.name }`)
+  })
+
   questions.forEach(question => {
     if (!question.name) {
       errors.push(question)
@@ -71,32 +80,42 @@ export const validateQuestionNames = (questions: Question[]) => {
   })
 
   //It's hard to reference individual questions that don't have names, so just return the count.
-  if (errors.length === 0) {
-    return []
-  } else if (errors.length === 1) {
-    return [`1 question is missing a 'name' field.`]
-  } else {
-    return [`${errors.length} questions are missing a 'name' field.`]
+  if (errors.length === 1) {
+    errorMessages.push(`1 question is missing a 'name' field.`)
+  } else if (errors.length > 1) {
+    errorMessages.push(`${errors.length} questions are missing a 'name' field.`)
   }
+
+  return errorMessages
 }
 
 /** Returns an array of all Questions in a form, including those in panels. */
 export const getAllQuestions = (formContent: FormContent): Question[] => {
-  const questions: Question[] = []
-  try {
-    formContent.pages.forEach(page => {
-      page.elements.forEach(element => {
-        if ('type' in element && element.type === 'panel') {
-          element.elements.forEach(panelElement => {
-            questions.push(panelElement as Question)
-          })
-        } else {
-          questions.push(element as Question)
-        }
-      })
-    })
-  } catch (e) {
-    throw new Error(`Error parsing form. Please ensure that all pages and panels have an 'elements' property.`)
+  if (!('pages' in formContent)) {
+    throw new Error(`Error parsing form. Please ensure that the form has a 'pages' property.`)
   }
-  return questions
+
+  const pages = formContent.pages
+
+  const pageElements = pages.flatMap(page => {
+    if (!('elements' in page)) {
+      throw new Error(`Error parsing form. Please ensure that all pages have an 'elements' property.`)
+    } else {
+      return page.elements
+    }
+  })
+
+  const flattenedElements = pageElements.flatMap(element => {
+    if ('type' in element && element.type === 'panel') {
+      if (!('elements' in element)) {
+        throw new Error(`Error parsing form. Please ensure that all panels have an 'elements' property.`)
+      } else {
+        return element.elements
+      }
+    } else {
+      return element as Question
+    }
+  })
+
+  return flattenedElements as Question[]
 }

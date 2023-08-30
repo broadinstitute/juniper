@@ -8,6 +8,16 @@ import {
 import { FormContent } from '@juniper/ui-core'
 
 describe('validateFormContent', () => {
+  it('getAllQuestions throws an exception if a form is missing a pages property', () => {
+    const formContent: FormContent = {
+      title: 'test'
+    } as unknown as FormContent //cast in order to simulate invalid form content
+
+    expect(() => getAllQuestions(formContent)).toThrowError(
+      `Error parsing form. Please ensure that the form has a 'pages' property.`
+    )
+  })
+
   it('getAllQuestions throws an exception if a panel is missing `elements` property', () => {
     const formContent: FormContent = {
       title: 'test',
@@ -30,7 +40,7 @@ describe('validateFormContent', () => {
     } as unknown as FormContent //cast in order to simulate invalid form content
 
     expect(() => getAllQuestions(formContent)).toThrowError(
-      `Error parsing form. Please ensure that all pages and panels have an 'elements' property.`
+      `Error parsing form. Please ensure that all panels have an 'elements' property.`
     )
   })
 
@@ -56,7 +66,7 @@ describe('validateFormContent', () => {
     } as unknown as FormContent //cast in order to simulate invalid form content
 
     expect(() => getAllQuestions(formContent)).toThrowError(
-      `Error parsing form. Please ensure that all pages and panels have an 'elements' property.`
+      `Error parsing form. Please ensure that all pages have an 'elements' property.`
     )
   })
 
@@ -115,6 +125,33 @@ describe('validateFormContent', () => {
     const errors = validateQuestionNames(questions)
     expect(errors.length).toBe(1)
     expect(errors[0]).toBe(`2 questions are missing a 'name' field.`)
+  })
+
+  it('validateQuestionNames returns an error if two questions have a duplicate name', () => {
+    const formContent: FormContent = {
+      title: 'test',
+      pages: [
+        {
+          elements: [
+            {
+              name: 'test',
+              type: 'text',
+              title: 'test title'
+            },
+            {
+              name: 'test',
+              type: 'text',
+              title: 'test title 2'
+            }
+          ]
+        }
+      ]
+    } as FormContent
+
+    const questions = getAllQuestions(formContent)
+    const errors = validateQuestionNames(questions)
+    expect(errors.length).toBe(1)
+    expect(errors[0]).toBe(`Duplicate question name: test`)
   })
 
   it('validateQuestionTypes returns an error if a question is missing a type', () => {
