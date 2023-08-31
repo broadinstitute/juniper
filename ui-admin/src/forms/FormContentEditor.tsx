@@ -9,6 +9,7 @@ import { FormContentJsonEditor } from './FormContentJsonEditor'
 import { FormPreview } from './FormPreview'
 import { validateFormContent } from './formContentValidation'
 import ErrorBoundary from 'util/ErrorBoundary'
+import { isEmpty } from 'lodash'
 
 type FormContentEditorProps = {
   initialContent: string
@@ -48,10 +49,11 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
               onChange={newContent => {
                 setEditedContent(newContent)
                 try {
-                  validateFormContent(newContent)
-                  onChange(true, newContent)
+                  const errors = validateFormContent(newContent)
+                  onChange(errors, newContent)
                 } catch (err) {
-                  onChange(false, undefined)
+                  //@ts-ignore
+                  onChange([err.message], undefined)
                 }
               }}
             />
@@ -66,14 +68,14 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             <FormContentJsonEditor
               initialValue={editedContent}
               readOnly={readOnly}
-              onChange={(isValid, newContent) => {
-                if (isValid) {
+              onChange={(validationErrors, newContent) => {
+                if (isEmpty(validationErrors) && newContent) {
                   setEditedContent(newContent)
-                  onChange(true, newContent)
+                  onChange(validationErrors, newContent)
                 } else {
-                  onChange(false, undefined)
+                  onChange(validationErrors, undefined)
                 }
-                setTabsEnabled(isValid)
+                setTabsEnabled(isEmpty(validationErrors))
               }}
             />
           </ErrorBoundary>
