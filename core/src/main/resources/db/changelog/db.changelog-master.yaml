@@ -131,6 +131,9 @@ databaseChangeLog:
   - include:
       file: changesets/2023_08_24_data_change_record_portal.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2023_08_30_publish_versions.yaml
+      relativeToChangelogFile: true
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements
 # are atomic. When they are grouped in a changeset and one fails the changeset cannot be

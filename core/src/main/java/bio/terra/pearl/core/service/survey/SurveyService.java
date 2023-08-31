@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> implements VersionedEntityService<Survey> {
+public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
     private AnswerMappingDao answerMappingDao;
     private SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
 
@@ -26,14 +26,6 @@ public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> imp
         super(surveyDao);
         this.answerMappingDao = answerMappingDao;
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
-    }
-
-    public Optional<Survey> findByStableId(String stableId, int version) {
-        return dao.findByStableId(stableId, version);
-    }
-
-    public List<Survey> findByStableId(String stableId) {
-        return dao.findByStableId(stableId);
     }
 
     public List<Survey> findByStableIdNoContent(String stableId) {
@@ -129,7 +121,7 @@ public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> imp
     @Transactional
     public Survey createNewVersion(UUID portalId, Survey survey) {
         Survey newSurvey = new Survey();
-        BeanUtils.copyProperties(survey, newSurvey, "id", "createdAt", "lastUpdatedAt", "answerMappings");
+        BeanUtils.copyProperties(survey, newSurvey, "id", "createdAt", "lastUpdatedAt", "answerMappings", "publishedVersion");
         newSurvey.setPortalId(portalId);
         int nextVersion = dao.getNextVersion(survey.getStableId());
         newSurvey.setVersion(nextVersion);
@@ -147,7 +139,5 @@ public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> imp
         survey.setAnswerMappings(answerMappingDao.findBySurveyId(survey.getId()));
     }
 
-    public int getNextVersion(String stableId) {
-        return dao.getNextVersion(stableId);
-    }
+
 }

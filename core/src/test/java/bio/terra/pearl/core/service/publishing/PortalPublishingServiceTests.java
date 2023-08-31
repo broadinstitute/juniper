@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class PortalUpdateServiceTests extends BaseSpringBootTest {
+public class PortalPublishingServiceTests extends BaseSpringBootTest {
     @Autowired
     private PortalDiffService portalDiffService;
     @Autowired
@@ -38,16 +38,16 @@ public class PortalUpdateServiceTests extends BaseSpringBootTest {
         assertThat(config.getPassword(), equalTo("bar"));
     }
 
-    public static class NonPersistentPortalUpdateService extends PortalUpdateService {
+    public static class NonPersistentPortalUpdateService extends PortalPublishingService {
         protected NonPersistentPortalUpdateService(PortalDiffService portalDiffService, PortalEnvironmentService portalEnvironmentService,
                                                    PortalEnvironmentConfigService portalEnvironmentConfigService,
                                                    PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao,
                                                    NotificationConfigService notificationConfigService, SurveyService surveyService,
                                                    EmailTemplateService emailTemplateService, SiteContentService siteContentService,
-                                                   StudyUpdateService studyUpdateService, ObjectMapper objectMapper) {
+                                                   StudyPublishingService studyPublishingService, ObjectMapper objectMapper) {
             super(portalDiffService, portalEnvironmentService, portalEnvironmentConfigService,
                     portalEnvironmentChangeRecordDao, notificationConfigService,
-                    surveyService, emailTemplateService, siteContentService, studyUpdateService, objectMapper);
+                    surveyService, emailTemplateService, siteContentService, studyPublishingService, objectMapper);
 
 
         }
@@ -61,7 +61,7 @@ public class PortalUpdateServiceTests extends BaseSpringBootTest {
             SurveyService mockSurvService = mock(SurveyService.class);
             EmailTemplateService mockEmailTempService = mock(EmailTemplateService.class);
             SiteContentService mockSiteConService = mock(SiteContentService.class);
-            StudyUpdateService mockStudyUpService = mock(StudyUpdateService.class);
+            StudyPublishingService mockStudyUpService = mock(StudyPublishingService.class);
             return new NonPersistentPortalUpdateService(portalDiffService, mockPortalEnvService, mockPortalEnvConfigService,
                     mockPortalEnvChangeRecordDao, mockNotifConfigService, mockSurvService,
                     mockEmailTempService, mockSiteConService, mockStudyUpService, objectMapper);

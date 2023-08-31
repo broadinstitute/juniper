@@ -57,6 +57,8 @@ public class NotificationConfig extends BaseEntity implements VersionedEntityCon
         return emailTemplate;
     }
     @Override
+    public UUID versionedEntityId() { return emailTemplateId; }
+    @Override
     public void updateVersionedEntityId(UUID emailTemplateId) {
         setEmailTemplateId(emailTemplateId);
     }

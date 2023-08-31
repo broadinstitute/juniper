@@ -3,11 +3,14 @@ package bio.terra.pearl.core.service.publishing;
 import bio.terra.pearl.core.dao.publishing.PortalEnvironmentChangeRecordDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.publishing.*;
+import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
@@ -24,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /** dedicated service for applying deltas to portal environments */
 @Service
-public class PortalUpdateService {
+public class PortalPublishingService {
     private PortalDiffService portalDiffService;
     private PortalEnvironmentService portalEnvironmentService;
     private PortalEnvironmentConfigService portalEnvironmentConfigService;
@@ -33,17 +36,17 @@ public class PortalUpdateService {
     private SurveyService surveyService;
     private EmailTemplateService emailTemplateService;
     private SiteContentService siteContentService;
-    private StudyUpdateService studyUpdateService;
+    private StudyPublishingService studyPublishingService;
     private ObjectMapper objectMapper;
 
 
-    public PortalUpdateService(PortalDiffService portalDiffService,
-                               PortalEnvironmentService portalEnvironmentService,
-                               PortalEnvironmentConfigService portalEnvironmentConfigService,
-                               PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao,
-                               NotificationConfigService notificationConfigService, SurveyService surveyService,
-                               EmailTemplateService emailTemplateService, SiteContentService siteContentService,
-                               StudyUpdateService studyUpdateService, ObjectMapper objectMapper) {
+    public PortalPublishingService(PortalDiffService portalDiffService,
+                                   PortalEnvironmentService portalEnvironmentService,
+                                   PortalEnvironmentConfigService portalEnvironmentConfigService,
+                                   PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao,
+                                   NotificationConfigService notificationConfigService, SurveyService surveyService,
+                                   EmailTemplateService emailTemplateService, SiteContentService siteContentService,
+                                   StudyPublishingService studyPublishingService, ObjectMapper objectMapper) {
         this.portalDiffService = portalDiffService;
         this.portalEnvironmentService = portalEnvironmentService;
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
@@ -52,7 +55,7 @@ public class PortalUpdateService {
         this.surveyService = surveyService;
         this.emailTemplateService = emailTemplateService;
         this.siteContentService = siteContentService;
-        this.studyUpdateService = studyUpdateService;
+        this.studyPublishingService = studyPublishingService;
         this.objectMapper = objectMapper;
     }
 
@@ -73,7 +76,7 @@ public class PortalUpdateService {
         applyChangesToNotificationConfigs(destEnv, envChanges.notificationConfigChanges());
         for(StudyEnvironmentChange studyEnvChange : envChanges.studyEnvChanges()) {
             StudyEnvironment studyEnv = portalDiffService.loadStudyEnvForProcessing(studyEnvChange.studyShortcode(), destEnv.getEnvironmentName());
-            studyUpdateService.applyChanges(studyEnv, studyEnvChange, destEnv.getId());
+            studyPublishingService.applyChanges(studyEnv, studyEnvChange, destEnv.getId());
         }
 
         var changeRecord = PortalEnvironmentChangeRecord.builder()
@@ -96,7 +99,7 @@ public class PortalUpdateService {
         return portalEnvironmentConfigService.update(destEnv.getPortalEnvironmentConfig());
     }
 
-        protected PortalEnvironment applyChangesToPreRegSurvey(PortalEnvironment destEnv, VersionedEntityChange change) throws Exception {
+        protected PortalEnvironment applyChangesToPreRegSurvey(PortalEnvironment destEnv, VersionedEntityChange<Survey> change) throws Exception {
             if (!change.isChanged()) {
                 return destEnv;
             }
@@ -105,10 +108,11 @@ public class PortalUpdateService {
                 newSurveyId = surveyService.findByStableId(change.newStableId(), change.newVersion()).get().getId();
             }
             destEnv.setPreRegSurveyId(newSurveyId);
+            PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), change, surveyService);
             return portalEnvironmentService.update(destEnv);
         }
 
-    protected PortalEnvironment applyChangesToSiteContent(PortalEnvironment destEnv, VersionedEntityChange change) throws Exception {
+    protected PortalEnvironment applyChangesToSiteContent(PortalEnvironment destEnv, VersionedEntityChange<SiteContent> change) throws Exception {
         if (!change.isChanged()) {
             return destEnv;
         }
@@ -117,22 +121,25 @@ public class PortalUpdateService {
             newDocumentId = siteContentService.findByStableId(change.newStableId(), change.newVersion()).get().getId();
         }
         destEnv.setSiteContentId(newDocumentId);
+        PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), change, siteContentService);
         return portalEnvironmentService.update(destEnv);
     }
 
     protected void applyChangesToNotificationConfigs(PortalEnvironment destEnv, ListChange<NotificationConfig,
-            VersionedConfigChange> listChange) throws Exception {
+            VersionedConfigChange<EmailTemplate>> listChange) throws Exception {
         for(NotificationConfig config : listChange.addedItems()) {
             config.setPortalEnvironmentId(destEnv.getId());
             notificationConfigService.create(config.cleanForCopying());
             destEnv.getNotificationConfigs().add(config);
+            PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), config, emailTemplateService);
         }
         for(NotificationConfig config : listChange.removedItems()) {
             notificationConfigService.delete(config.getId(), CascadeProperty.EMPTY_SET);
             destEnv.getNotificationConfigs().remove(config);
         }
-        for(VersionedConfigChange change : listChange.changedItems()) {
-            StudyUpdateService.applyChangesToVersionedConfig(change, notificationConfigService, emailTemplateService);
+        for(VersionedConfigChange<EmailTemplate> change : listChange.changedItems()) {
+            PublishingUtils.applyChangesToVersionedConfig(change, notificationConfigService, emailTemplateService, destEnv.getEnvironmentName());
         }
     }
+
 }

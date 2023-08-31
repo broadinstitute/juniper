@@ -1,11 +1,20 @@
 package bio.terra.pearl.core.service.publishing;
 
 import bio.terra.pearl.core.dao.publishing.PortalEnvironmentChangeRecordDao;
+import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.Versioned;
+import bio.terra.pearl.core.model.consent.ConsentForm;
+import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
+import bio.terra.pearl.core.model.notification.EmailTemplate;
+import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.publishing.*;
+import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
+import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
@@ -59,11 +68,11 @@ public class PortalDiffService {
     }
 
     public PortalEnvironmentChange diffPortalEnvs(PortalEnvironment sourceEnv, PortalEnvironment destEnv) throws Exception {
-        var preRegRecord = new VersionedEntityChange(sourceEnv.getPreRegSurvey(), destEnv.getPreRegSurvey());
-        var siteContentRecord = new VersionedEntityChange(sourceEnv.getSiteContent(), destEnv.getSiteContent());
+        var preRegRecord = new VersionedEntityChange<Survey>(sourceEnv.getPreRegSurvey(), destEnv.getPreRegSurvey());
+        var siteContentRecord = new VersionedEntityChange<SiteContent>(sourceEnv.getSiteContent(), destEnv.getSiteContent());
         var envConfigChanges = ConfigChange.allChanges(sourceEnv.getPortalEnvironmentConfig(),
                 destEnv.getPortalEnvironmentConfig(), CONFIG_IGNORE_PROPS);
-        var notificationConfigChanges = diffConfigLists(sourceEnv.getNotificationConfigs(),
+        ListChange<NotificationConfig, VersionedConfigChange<EmailTemplate>> notificationConfigChanges = diffConfigLists(sourceEnv.getNotificationConfigs(),
                 destEnv.getNotificationConfigs(),
                 CONFIG_IGNORE_PROPS);
 
@@ -102,13 +111,13 @@ public class PortalDiffService {
         return portalEnv;
     }
 
-    public static <C extends VersionedEntityConfig> ListChange<C, VersionedConfigChange> diffConfigLists(
+    public static <C extends VersionedEntityConfig, T extends BaseEntity & Versioned> ListChange<C, VersionedConfigChange<T>> diffConfigLists(
             List<C> sourceConfigs,
             List<C> destConfigs,
             List<String> ignoreProps)
     throws Exception {
         List<C> unmatchedDestConfigs = new ArrayList<>(destConfigs);
-        List<VersionedConfigChange> changedRecords = new ArrayList();
+        List<VersionedConfigChange<T>> changedRecords = new ArrayList<>();
         List<C> addedConfigs = new ArrayList<>();
         for (C sourceConfig : sourceConfigs) {
             var matchedConfig = unmatchedDestConfigs.stream().filter(
@@ -120,10 +129,10 @@ public class PortalDiffService {
                 // this remove only works if the config has an ID, since that's how BaseEntity equality works
                 // that's fine, since we're only working with already-persisted entities in this list.
                 unmatchedDestConfigs.remove(matchedConfig);
-                var changeRecord = new VersionedConfigChange(
+                var changeRecord = new VersionedConfigChange<T>(
                         sourceConfig.getId(), matchedConfig.getId(),
                         ConfigChange.allChanges(sourceConfig, matchedConfig, ignoreProps),
-                        new VersionedEntityChange(sourceConfig.versionedEntity(), matchedConfig.versionedEntity())
+                        new VersionedEntityChange<T>(sourceConfig.versionedEntity(), matchedConfig.versionedEntity())
                 );
                 if (changeRecord.isChanged()) {
                     changedRecords.add(changeRecord);
@@ -156,16 +165,16 @@ public class PortalDiffService {
                 sourceEnv.getStudyEnvironmentConfig(),
                 destEnv.getStudyEnvironmentConfig(),
                 CONFIG_IGNORE_PROPS);
-        var preEnrollChange = new VersionedEntityChange(sourceEnv.getPreEnrollSurvey(), destEnv.getPreEnrollSurvey());
-        var consentChanges = diffConfigLists(
+        var preEnrollChange = new VersionedEntityChange<Survey>(sourceEnv.getPreEnrollSurvey(), destEnv.getPreEnrollSurvey());
+        ListChange<StudyEnvironmentConsent, VersionedConfigChange<ConsentForm>> consentChanges = diffConfigLists(
                 sourceEnv.getConfiguredConsents(),
                 destEnv.getConfiguredConsents(),
                 CONFIG_IGNORE_PROPS);
-        var surveyChanges = diffConfigLists(
+        ListChange<StudyEnvironmentSurvey, VersionedConfigChange<Survey>> surveyChanges = diffConfigLists(
                 sourceEnv.getConfiguredSurveys(),
                 destEnv.getConfiguredSurveys(),
                 CONFIG_IGNORE_PROPS);
-        var notificationConfigChanges = diffConfigLists(
+        ListChange<NotificationConfig, VersionedConfigChange<EmailTemplate>> notificationConfigChanges = diffConfigLists(
                 sourceEnv.getNotificationConfigs(),
                 destEnv.getNotificationConfigs(),
                 CONFIG_IGNORE_PROPS);

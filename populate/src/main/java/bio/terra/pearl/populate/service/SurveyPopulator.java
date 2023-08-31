@@ -87,6 +87,7 @@ public class SurveyPopulator extends BasePopulator<Survey, SurveyPopDto, PortalP
         existingObj.setContent(popDto.getContent());
         existingObj.setName(popDto.getName());
         existingObj.setFooter(popDto.getFooter());
+        existingObj.setPublishedVersion(popDto.getPublishedVersion());
         surveyPopulateDao.update(existingObj);
         updateAnswerMappings(existingObj, popDto);
         surveyQuestionDefinitionDao.deleteBySurveyId(existingObj.getId());
