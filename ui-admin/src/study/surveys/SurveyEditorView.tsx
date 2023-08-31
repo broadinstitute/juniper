@@ -103,7 +103,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           </h5>
         </div>
         { savingDraft && <span className="detail me-2 ms-2">Saving draft...</span> }
-        { validationErrors && !isEmpty(validationErrors) &&
+        { !isEmpty(validationErrors) &&
             <div className="position-relative ms-auto me-2 ms-2">
               <button className="btn btn-outline-danger"
                 onClick={() => setShowErrors(!showErrors)} aria-label="view errors">
