@@ -10,7 +10,7 @@ test('enables live-preview text editing', async () => {
   const siteContent = mockSiteContent()
   const createNewVersionFunc = jest.fn()
   const { RoutedComponent } = setupRouterTest(
-    <SiteContentEditor siteContent={siteContent} previewApi={emptyApi}
+    <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
       loadSiteContent={jest.fn()} createNewVersion={createNewVersionFunc} portalShortcode="foo"/>)
   render(RoutedComponent)
 
@@ -35,4 +35,15 @@ test('enables live-preview text editing', async () => {
     title: 'about us!!', blurb: 'we are the best'
   }, null, 2)
   expect(createNewVersionFunc).toHaveBeenCalledWith(expectedSaveObj)
+})
+
+test('readOnly hides save button', async () => {
+  const siteContent = mockSiteContent()
+  const createNewVersionFunc = jest.fn()
+  const { RoutedComponent } = setupRouterTest(
+    <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={true}
+      loadSiteContent={jest.fn()} createNewVersion={createNewVersionFunc} portalShortcode="foo"/>)
+  render(RoutedComponent)
+  expect(screen.getByText('Landing page')).toBeInTheDocument()
+  expect(screen.queryByText('Save')).not.toBeInTheDocument()
 })

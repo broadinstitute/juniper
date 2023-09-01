@@ -7,6 +7,7 @@ import HtmlPageEditView from './HtmlPageEditView'
 import { HtmlPage, LocalSiteContent, ApiProvider, SiteContent, ApiContextT } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
 import SiteContentVersionSelector from './SiteContentVersionSelector'
+import { Button } from '../../components/forms/Button'
 
 type NavbarOption = {label: string, value: string | null}
 const landingPageOption = { label: 'Landing page', value: null }
@@ -17,11 +18,12 @@ type InitializedSiteContentViewProps = {
   loadSiteContent: (stableId: string, version: number) => void
   createNewVersion: (content: SiteContent) => void
   portalShortcode: string
+  readOnly: boolean
 }
 
 /** shows a site content in editable form with a live preview.  Defaults to english-only for now */
 const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
-  const { siteContent, previewApi, portalShortcode, loadSiteContent, createNewVersion } = props
+  const { siteContent, previewApi, portalShortcode, loadSiteContent, createNewVersion, readOnly } = props
   const selectedLanguage = 'en'
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
   const [workingContent, setWorkingContent] = useState<SiteContent>(siteContent)
@@ -101,7 +103,10 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
         <button className="btn btn-secondary" onClick={() => alert('not yet implemented')}>
           <FontAwesomeIcon icon={faPlus}/> Add page
         </button>
-        <button className="btn btn-primary ms-auto" onClick={() => createNewVersion(workingContent)}>Save</button>
+        {!readOnly && <Button className="ms-auto" variant="primary"
+          onClick={() => createNewVersion(workingContent)}>
+          Save
+        </Button>}
         {
           // eslint-disable-next-line
           // @ts-ignore  Link to type also supports numbers for back operations
@@ -111,7 +116,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
       <div>
         {pageToRender &&
           <ApiProvider api={previewApi}>
-            <HtmlPageEditView htmlPage={pageToRender}
+            <HtmlPageEditView htmlPage={pageToRender} readOnly={readOnly}
               updatePage={page => updatePage(page, currentNavBarItem?.id)}/>
           </ApiProvider>}
       </div>

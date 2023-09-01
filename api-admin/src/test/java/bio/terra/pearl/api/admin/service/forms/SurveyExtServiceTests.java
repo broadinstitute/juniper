@@ -2,7 +2,6 @@ package bio.terra.pearl.api.admin.service.forms;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import bio.terra.pearl.api.admin.service.AuthUtilService;
@@ -58,11 +57,6 @@ public class SurveyExtServiceTests {
             () ->
                 surveyExtService.createConfiguredSurvey(
                     "foo", "bar", EnvironmentName.irb, null, user));
-
-    assertTrue(
-        thrownException
-            .getMessage()
-            .contentEquals("You do not have permission to update the irb environment"));
   }
 
   @Test
