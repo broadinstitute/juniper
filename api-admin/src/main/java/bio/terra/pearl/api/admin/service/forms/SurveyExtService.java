@@ -7,8 +7,6 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.exception.NotFoundException;
-import bio.terra.pearl.core.service.exception.PermissionDeniedException;
-import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import java.util.List;
@@ -21,17 +19,14 @@ public class SurveyExtService {
   private AuthUtilService authUtilService;
   private SurveyService surveyService;
   private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
-  private StudyEnvironmentService studyEnvironmentService;
 
   public SurveyExtService(
       AuthUtilService authUtilService,
       SurveyService surveyService,
-      StudyEnvironmentSurveyService studyEnvironmentSurveyService,
-      StudyEnvironmentService studyEnvironmentService) {
+      StudyEnvironmentSurveyService studyEnvironmentSurveyService) {
     this.authUtilService = authUtilService;
     this.surveyService = surveyService;
     this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
-    this.studyEnvironmentService = studyEnvironmentService;
   }
 
   public Survey get(String portalShortcode, String stableId, int version, AdminUser adminUser) {
@@ -75,11 +70,11 @@ public class SurveyExtService {
       StudyEnvironmentSurvey surveyToConfigure,
       AdminUser user) {
     authUtilService.authUserToPortal(user, portalShortcode);
-    if (user.isSuperuser() || EnvironmentName.sandbox.equals(envName)) {
-      return studyEnvironmentSurveyService.create(surveyToConfigure);
+    if (!EnvironmentName.sandbox.equals(envName)) {
+      throw new IllegalArgumentException(
+          "Updates can only be made directly to the sandbox environment".formatted(envName));
     }
-    throw new PermissionDeniedException(
-        "You do not have permission to update the %s environment".formatted(envName));
+    return studyEnvironmentSurveyService.create(surveyToConfigure);
   }
 
   public StudyEnvironmentSurvey updateConfiguredSurvey(
@@ -88,14 +83,13 @@ public class SurveyExtService {
       StudyEnvironmentSurvey updatedObj,
       AdminUser user) {
     authUtilService.authUserToPortal(user, portalShortcode);
-    if (user.isSuperuser() || EnvironmentName.sandbox.equals(envName)) {
-      StudyEnvironmentSurvey existing =
-          studyEnvironmentSurveyService.find(updatedObj.getId()).get();
-      BeanUtils.copyProperties(updatedObj, existing);
-      return studyEnvironmentSurveyService.update(existing);
+    if (!EnvironmentName.sandbox.equals(envName)) {
+      throw new IllegalArgumentException(
+          "Updates can only be made directly to the sandbox environment".formatted(envName));
     }
-    throw new PermissionDeniedException(
-        "You do not have permission to update the %s environment".formatted(envName));
+    StudyEnvironmentSurvey existing = studyEnvironmentSurveyService.find(updatedObj.getId()).get();
+    BeanUtils.copyProperties(updatedObj, existing);
+    return studyEnvironmentSurveyService.update(existing);
   }
 
   /** confirms that the Survey is accessible from the given portal */

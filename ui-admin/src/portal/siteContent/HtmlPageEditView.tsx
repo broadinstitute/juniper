@@ -18,12 +18,13 @@ const SECTION_TYPES = [
 ]
 
 type HtmlPageViewProps = {
-  htmlPage: HtmlPage,
+  htmlPage: HtmlPage
+  readOnly: boolean
   updatePage: (page: HtmlPage) => void
 }
 
 /** Enables editing of a given page, showing the config and a preview for each section */
-const HtmlPageView = ({ htmlPage, updatePage }: HtmlPageViewProps) => {
+const HtmlPageView = ({ htmlPage, updatePage, readOnly }: HtmlPageViewProps) => {
   const updateSectionConfig = (sectionIndex: number, newConfig: string) => {
     try {
       JSON.parse(newConfig)
@@ -55,6 +56,7 @@ const HtmlPageView = ({ htmlPage, updatePage }: HtmlPageViewProps) => {
             <Select options={SECTION_TYPES} value={sectionTypeOpt}/>
           </div>
           <textarea value={textValue} style={{ height: 'calc(100% - 2em)', width: '100%' }}
+            readOnly={readOnly}
             onChange={e => updateSectionConfig(index, e.target.value)}/>
         </div>
         <div className="col-md-8">

@@ -96,7 +96,7 @@ export const useSurveyParams = () => {
 function SurveyView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { isReadOnly, version, stableId } = useSurveyParams()
   const { currentEnv, portal } = studyEnvContext
-
+  const applyReadOnly = isReadOnly || currentEnv.environmentName !== 'sandbox'
   const envSurvey = currentEnv.configuredSurveys
     .find(s => s.survey.stableId === stableId)?.survey
   const appliedVersion = version || envSurvey?.version
@@ -111,7 +111,8 @@ function SurveyView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
 
   return <>
     { isLoading && <LoadingSpinner/> }
-    { !isLoading && survey && <RawSurveyView studyEnvContext={studyEnvContext} survey={survey} readOnly={isReadOnly}/> }
+    { !isLoading && survey && <RawSurveyView studyEnvContext={studyEnvContext}
+      survey={survey} readOnly={applyReadOnly}/> }
   </>
 }
 

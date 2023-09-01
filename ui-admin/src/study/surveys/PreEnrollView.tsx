@@ -55,6 +55,7 @@ function RawPreEnrollView({ studyEnvContext, survey, readOnly = false }:
 function PreEnrollView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { isReadOnly, version, stableId } = useSurveyParams()
   const { currentEnv, portal } = studyEnvContext
+  const appliedReadOnly = isReadOnly || currentEnv.environmentName !== 'sandbox'
 
   const envSurvey = currentEnv.preEnrollSurvey
   const appliedVersion = version || envSurvey?.version
@@ -69,7 +70,7 @@ function PreEnrollView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT})
 
   return <>
     { isLoading && <LoadingSpinner/> }
-    { !isLoading && <RawPreEnrollView studyEnvContext={studyEnvContext} survey={survey!} readOnly={isReadOnly}/> }
+    { !isLoading && <RawPreEnrollView studyEnvContext={studyEnvContext} survey={survey!} readOnly={appliedReadOnly}/> }
   </>
 }
 

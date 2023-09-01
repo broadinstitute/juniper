@@ -66,9 +66,13 @@ const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvCon
       ))
     }
   }
+  const readOnly = portalEnv.environmentName !== 'sandbox'
 
   useEffect(() => {
-    loadSiteContent(siteContent.stableId, siteContent.version)
+    if (!portalEnv.siteContent) {
+      return
+    }
+    loadSiteContent(portalEnv.siteContent.stableId, portalEnv.siteContent.version)
   }, [portalEnv.environmentName, portalShortcode])
 
   return <>
@@ -76,7 +80,9 @@ const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvCon
       createNewVersion={createNewVersion}
       loadSiteContent={loadSiteContent}
       previewApi={previewApi}
-      portalShortcode={portalShortcode}/> }
+      portalShortcode={portalShortcode}
+      readOnly={readOnly}
+    /> }
     { isLoading && <LoadingSpinner/> }
   </>
 }
