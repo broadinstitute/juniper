@@ -1,6 +1,5 @@
 package bio.terra.pearl.core.dao.survey;
 
-import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.dao.BaseVersionedJdbiDao;
 import bio.terra.pearl.core.model.survey.Survey;
 import java.util.List;

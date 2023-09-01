@@ -97,7 +97,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
             <span className="fs-6 text-muted fst-italic me-2 ms-2">
               (v{currentForm.version}
               { currentForm.publishedVersion && <span className="ms-1">
-                - published v{currentForm.publishedVersion})
+                - published v{currentForm.publishedVersion}
               </span> }
               )
             </span>
