@@ -22,7 +22,7 @@ public abstract class BaseVersionedJdbiDao<T extends BaseEntity & Versioned> ext
         return findAllByProperty("stable_id", stableId);
     }
 
-    /** gets 1 plus the previous highest version, or 1 if no published version already exists */
+    /** gets 1 plus the previous highest version, or 1 if no version already exists */
     public int getNextVersion(String stableId) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select max(version) from " + tableName + " where stable_id = :stableId")
