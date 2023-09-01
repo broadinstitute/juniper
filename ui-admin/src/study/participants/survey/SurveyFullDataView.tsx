@@ -4,10 +4,10 @@ import { Question } from 'survey-core'
 import { surveyJSModelFromForm, makeSurveyJsData } from '@juniper/ui-core'
 import { Answer, ConsentForm, Survey } from 'api/api'
 import InfoPopup from 'components/forms/InfoPopup'
-import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import PrintFormModal from './PrintFormModal'
+import { Link, Route, Routes } from 'react-router-dom'
 type SurveyFullDataViewProps = {
   answers: Answer[],
   survey: Survey | ConsentForm,
@@ -18,7 +18,6 @@ type SurveyFullDataViewProps = {
 /** renders every item in a survey response */
 export default function SurveyFullDataView({ answers, resumeData, survey, userId }:
   SurveyFullDataViewProps) {
-  const [isPrintMode, setIsPrintMode] = useState(false)
   const [showAllQuestions, setShowAllQuestions] = useState(true)
   const [showFullQuestions, setShowFullQuestions] = useState(false)
   const surveyJsData = makeSurveyJsData(resumeData, answers, userId)
@@ -52,22 +51,23 @@ export default function SurveyFullDataView({ answers, resumeData, survey, userId
         <InfoPopup content="Whether truncate question texts longer than 100 characters below"/>
       </div>
       <div className="ms-auto">
-        <Button variant="secondary" onClick={() => setIsPrintMode(!isPrintMode)}>
+        <Link to="print">
           <FontAwesomeIcon icon={faDownload}/> print/download
-        </Button>
+        </Link>
       </div>
     </div>
     <hr/>
-    { isPrintMode && <PrintFormModal answers={answers}
-      resumeData={resumeData}
-      survey={survey}
-      onDismiss={() => setIsPrintMode(false)}
-    />}
-    { !isPrintMode && <dl>
-      {questions.map((question, index) =>
-        <ItemDisplay key={index} question={question} answerMap={answerMap}
-          surveyVersion={survey.version} showFullQuestions={showFullQuestions}/>)}
-    </dl> }
+    <Routes>
+      <Route path="print" element={<PrintFormModal answers={answers}
+        resumeData={resumeData}
+        survey={survey}/>
+      }/>
+      <Route index element={<dl>
+        {questions.map((question, index) =>
+          <ItemDisplay key={index} question={question} answerMap={answerMap}
+            surveyVersion={survey.version} showFullQuestions={showFullQuestions}/>)}
+      </dl>}/>
+    </Routes>
   </div>
 }
 

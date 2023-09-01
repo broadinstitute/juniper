@@ -12,19 +12,18 @@ import {
 
 import { Answer } from 'api/api'
 import Modal from 'react-bootstrap/Modal'
-import { Button } from 'components/forms/Button'
+import { Link } from 'react-router-dom'
 
 
 type DownloadFormViewProps = {
     answers: Answer[],
     resumeData?: string,
-    survey: Survey | ConsentForm,
-    onDismiss: () => void
+    survey: Survey | ConsentForm
 }
 
 
 /** renders the form in a fullscreen modal, and pops up the print dialog */
-const PrintFormModal = ({ survey, answers, resumeData, onDismiss }: DownloadFormViewProps) => {
+const PrintFormModal = ({ survey, answers, resumeData }: DownloadFormViewProps) => {
   const surveyJsData = makeSurveyJsData(resumeData, answers, undefined)
   const surveyJsModel = surveyJSModelFromForm(survey)
   surveyJsModel.data = surveyJsData.data
@@ -34,12 +33,14 @@ const PrintFormModal = ({ survey, answers, resumeData, onDismiss }: DownloadForm
   }, [surveyJsModel])
 
 
-  return <Modal show={true} onHide={onDismiss} fullscreen={true}>
+  return <Modal show={true} fullscreen={true}>
     <Modal.Body className="m-0 p-0">
       <div className="d-print-none d-flex justify-content-center py-2">
-        <Button variant="secondary" className="d-print-none" onClick={onDismiss}>
-                    Done
-        </Button>
+        {
+          // eslint-disable-next-line
+          // @ts-ignore  Link to type also supports numbers for back operations
+          <Link className="btn btn-secondary" to={-1}>Done</Link>
+        }
         <hr/>
       </div>
       <SurveyComponent model={surveyJsModel} />

@@ -156,19 +156,18 @@ export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                 <Route path="profile" element={<EnrolleeProfile enrollee={enrollee}
                   studyEnvContext={studyEnvContext}
                   onUpdate={onUpdate}/>}/>
-                <Route path="consents" element={<div>consents</div>}/>
-                { currentEnv.preEnrollSurvey && <Route path="preRegistration" element={
+                { currentEnv.preEnrollSurvey && <Route path="preRegistration/*" element={
                   <PreEnrollmentView preEnrollSurvey={currentEnv.preEnrollSurvey}
                     preEnrollResponse={enrollee.preEnrollmentResponse}/>
                 }/> }
                 <Route path="surveys">
-                  <Route path=":surveyStableId" element={<EnrolleeSurveyView enrollee={enrollee}
+                  <Route path=":surveyStableId/*" element={<EnrolleeSurveyView enrollee={enrollee}
                     responseMap={responseMap}/>}/>
                   <Route path="*" element={<div>Unknown participant survey page</div>}/>
                 </Route>
                 <Route path="tasks" element={<ParticipantTaskView enrollee={enrollee}/>}/>
                 <Route path="consents">
-                  <Route path=":consentStableId" element={<EnrolleeConsentView enrollee={enrollee}
+                  <Route path=":consentStableId/*" element={<EnrolleeConsentView enrollee={enrollee}
                     responseMap={consentMap}/>}/>
                   <Route path="*" element={<div>Unknown participant survey page</div>}/>
                 </Route>
