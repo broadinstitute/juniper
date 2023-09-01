@@ -23,9 +23,8 @@ type DownloadFormViewProps = {
 }
 
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
-const DownloadFormModal = ({ survey, answers, resumeData, onDismiss }: DownloadFormViewProps) => {
+/** renders the form in a fullscreen modal, and pops up the print dialog */
+const PrintFormModal = ({ survey, answers, resumeData, onDismiss }: DownloadFormViewProps) => {
   const surveyJsData = makeSurveyJsData(resumeData, answers, undefined)
   const surveyJsModel = surveyJSModelFromForm(survey)
   surveyJsModel.data = surveyJsData.data
@@ -48,4 +47,4 @@ const DownloadFormModal = ({ survey, answers, resumeData, onDismiss }: DownloadF
   </Modal>
 }
 
-export default DownloadFormModal
+export default PrintFormModal

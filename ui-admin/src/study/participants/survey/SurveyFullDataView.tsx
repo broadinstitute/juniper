@@ -7,7 +7,7 @@ import InfoPopup from 'components/forms/InfoPopup'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
-import DownloadFormView from './DownloadFormView'
+import PrintFormModal from './PrintFormModal'
 type SurveyFullDataViewProps = {
   answers: Answer[],
   survey: Survey | ConsentForm,
@@ -58,16 +58,16 @@ export default function SurveyFullDataView({ answers, resumeData, survey, userId
       </div>
     </div>
     <hr/>
-    { isPrintMode && <DownloadFormView answers={answers}
+    { isPrintMode && <PrintFormModal answers={answers}
       resumeData={resumeData}
       survey={survey}
       onDismiss={() => setIsPrintMode(false)}
     />}
-    <dl>
+    { !isPrintMode && <dl>
       {questions.map((question, index) =>
         <ItemDisplay key={index} question={question} answerMap={answerMap}
           surveyVersion={survey.version} showFullQuestions={showFullQuestions}/>)}
-    </dl>
+    </dl> }
   </div>
 }
 

@@ -12,6 +12,9 @@
     .modal-fullscreen .modal-body {
         overflow-y: visible;
     }
+    header,footer {
+        display: none;
+    }
 }
 
 
