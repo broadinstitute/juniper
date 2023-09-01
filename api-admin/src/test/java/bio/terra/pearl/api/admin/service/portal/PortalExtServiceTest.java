@@ -26,10 +26,18 @@ public class PortalExtServiceTest {
   @MockBean private PortalEnvironmentConfigService portalEnvironmentConfigService;
 
   @Test
-  public void updateRequiresSuperuser() {
+  public void updateConfigRequiresSuperuser() {
     AdminUser user = AdminUser.builder().superuser(false).build();
     Assertions.assertThrows(
         PermissionDeniedException.class,
         () -> portalExtService.updateConfig("foo", EnvironmentName.live, null, user));
+  }
+
+  @Test
+  public void updateEnvRequiresSandbox() {
+    AdminUser user = AdminUser.builder().superuser(true).build();
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> portalExtService.updateEnvironment("foo", EnvironmentName.irb, null, user));
   }
 }

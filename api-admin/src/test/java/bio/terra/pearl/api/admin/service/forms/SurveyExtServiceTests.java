@@ -52,9 +52,9 @@ public class SurveyExtServiceTests {
   @Test
   public void createConfiguredOnlyInSandbox() {
     AdminUser user = AdminUser.builder().superuser(false).build();
-    PermissionDeniedException thrownException =
+    IllegalArgumentException thrownException =
         Assertions.assertThrows(
-            PermissionDeniedException.class,
+            IllegalArgumentException.class,
             () ->
                 surveyExtService.createConfiguredSurvey(
                     "foo", "bar", EnvironmentName.irb, null, user));
