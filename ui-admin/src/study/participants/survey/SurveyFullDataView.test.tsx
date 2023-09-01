@@ -1,9 +1,12 @@
-import { render, screen } from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
 import React from 'react'
 
-import { getDisplayValue } from './SurveyFullDataView'
+import SurveyFullDataView, { getDisplayValue } from './SurveyFullDataView'
 import { Question } from 'survey-core'
 import { Answer } from '@juniper/ui-core/build/types/forms'
+import {setupRouterTest} from "../../../test-utils/router-testing-utils";
+import {mockSurvey} from "../../../test-utils/mocking-utils";
+import userEvent from "@testing-library/user-event/index";
 
 
 describe('getDisplayValue', () => {
@@ -48,4 +51,16 @@ describe('getDisplayValue', () => {
     render(<span>{getDisplayValue(answer, question)}</span>)
     expect(screen.getByText('["option 2","option 4"]')).toBeTruthy()
   })
+})
+
+test('shows the download/print modal', async () => {
+  const printSpy = jest.spyOn(window, 'print').mockImplementation(() => {});
+  const { RoutedComponent } = setupRouterTest(
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      <SurveyFullDataView answers={[]} survey={mockSurvey()}/>)
+  render(RoutedComponent)
+  expect(screen.queryByText('Done')).not.toBeInTheDocument()
+  await userEvent.click(screen.getByText('print/download'))
+  expect(screen.getByText('Done')).toBeVisible()
+  await waitFor(() => expect(printSpy).toHaveBeenCalledTimes(1))
 })

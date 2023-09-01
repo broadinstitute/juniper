@@ -4,6 +4,10 @@ import { Question } from 'survey-core'
 import { surveyJSModelFromForm, makeSurveyJsData } from '@juniper/ui-core'
 import { Answer, ConsentForm, Survey } from 'api/api'
 import InfoPopup from 'components/forms/InfoPopup'
+import { Button } from 'components/forms/Button'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faDownload } from '@fortawesome/free-solid-svg-icons'
+import DownloadFormView from './DownloadFormView'
 type SurveyFullDataViewProps = {
   answers: Answer[],
   survey: Survey | ConsentForm,
@@ -14,6 +18,7 @@ type SurveyFullDataViewProps = {
 /** renders every item in a survey response */
 export default function SurveyFullDataView({ answers, resumeData, survey, userId }:
   SurveyFullDataViewProps) {
+  const [isPrintMode, setIsPrintMode] = useState(false)
   const [showAllQuestions, setShowAllQuestions] = useState(true)
   const [showFullQuestions, setShowFullQuestions] = useState(false)
   const surveyJsData = makeSurveyJsData(resumeData, answers, userId)
@@ -29,7 +34,7 @@ export default function SurveyFullDataView({ answers, resumeData, survey, userId
   }
 
   return <div>
-    <div className="d-flex">
+    <div className="d-flex d-print-none">
       <div className="d-flex align-items-center">
         <label>
           <input type="checkbox" className="me-2"
@@ -46,8 +51,18 @@ export default function SurveyFullDataView({ answers, resumeData, survey, userId
         </label>
         <InfoPopup content="Whether truncate question texts longer than 100 characters below"/>
       </div>
+      <div className="ms-auto">
+        <Button variant="secondary" onClick={() => setIsPrintMode(!isPrintMode)}>
+          <FontAwesomeIcon icon={faDownload}/> print/download
+        </Button>
+      </div>
     </div>
     <hr/>
+    { isPrintMode && <DownloadFormView answers={answers}
+      resumeData={resumeData}
+      survey={survey}
+      onDismiss={() => setIsPrintMode(false)}
+    />}
     <dl>
       {questions.map((question, index) =>
         <ItemDisplay key={index} question={question} answerMap={answerMap}

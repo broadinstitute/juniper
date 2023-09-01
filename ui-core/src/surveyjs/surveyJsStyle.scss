@@ -34,3 +34,40 @@
 .sd-element--invisible {
   opacity: 1;
 }
+
+@media print {
+  .sd-root-modern {
+    background: none;
+  }
+
+  .sd-body--static {
+    max-width: none !important;
+  }
+
+  .sd-element--with-frame {
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .sd-element--nested.sd-panel {
+    border: none !important;
+    padding: 0 !important;
+  }
+
+  .sd-page__row {
+    page-break-after: always;
+    margin-top: 0 !important;
+  }
+  .sd-page__row:last-child {
+    page-break-after: unset;
+  }
+
+  .sd-item--disabled.sd-item--disabled .sd-item__decorator {
+    print-color-adjust: exact;
+    background-color: #eee;
+  }
+  .sd-item--disabled.sd-item--disabled .sd-item__decorator::after {
+    print-color-adjust: exact;
+    background-color: #666;
+  }
+}
