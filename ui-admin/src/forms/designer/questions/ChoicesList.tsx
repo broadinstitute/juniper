@@ -27,6 +27,8 @@ export const ChoicesList = (props: ChoicesListProps) => {
       <p className="mb-2" id={labelId}>Choices</p>
       <ol aria-labelledby={labelId} className="list-group mb-1">
         {question.choices.map((choice, i) => {
+          const isValueEditedByUser: boolean = choice.value !== getValueForChoice(choice.text)
+
           return (
             <li
               key={i}
@@ -53,8 +55,11 @@ export const ChoicesList = (props: ChoicesListProps) => {
                     onChange({
                       ...question,
                       choices: [
-                        ...question.choices.slice(0, i),
-                        { text: value, value: getValueForChoice(value) },
+                        ...question.choices.slice(0, i), {
+                          text: value, value: isValueEditedByUser ?
+                            question.choices[i].value :
+                            getValueForChoice(value)
+                        },
                         ...question.choices.slice(i + 1)
                       ]
                     })
