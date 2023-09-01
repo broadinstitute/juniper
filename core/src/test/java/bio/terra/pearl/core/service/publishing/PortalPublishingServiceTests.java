@@ -1,77 +1,78 @@
 package bio.terra.pearl.core.service.publishing;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.dao.publishing.PortalEnvironmentChangeRecordDao;
+import bio.terra.pearl.core.factory.admin.AdminUserFactory;
+import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
+import bio.terra.pearl.core.factory.portal.PortalFactory;
+import bio.terra.pearl.core.factory.survey.SurveyFactory;
+import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
-import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
-import bio.terra.pearl.core.model.publishing.ConfigChange;
-import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
-import bio.terra.pearl.core.service.notification.NotificationConfigService;
+import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.survey.SurveyService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Test;
-import static org.mockito.Mockito.mock;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class PortalPublishingServiceTests extends BaseSpringBootTest {
+    @Test
+    public void testApplyPortalConfigChanges() throws Exception {
+        AdminUser user = adminUserFactory.buildPersisted("testApplyPortalConfigChanges", true);
+        Portal portal = portalFactory.buildPersisted("testApplyPortalConfigChanges");
+        PortalEnvironment irbEnv = portalEnvironmentFactory.buildPersisted("testApplyPortalConfigChanges", EnvironmentName.irb, portal.getId());
+        PortalEnvironment liveEnv = portalEnvironmentFactory.buildPersisted("testApplyPortalConfigChanges", EnvironmentName.live, portal.getId());
+
+        var irbConfig = portalEnvironmentConfigService.find(irbEnv.getPortalEnvironmentConfigId()).get();
+        irbConfig.setPassword("foobar");
+        irbConfig.setEmailSourceAddress("info@demo.com");
+        portalEnvironmentConfigService.update(irbConfig);
+
+        var changes = portalDiffService.diffPortalEnvs(portal.getShortcode(), EnvironmentName.irb, EnvironmentName.live);
+        portalPublishingService.applyChanges(portal.getShortcode(), EnvironmentName.live, changes, user);
+        var liveConfig = portalEnvironmentConfigService.find(liveEnv.getPortalEnvironmentConfigId()).get();
+        assertThat(liveConfig.getPassword(), equalTo("foobar"));
+        assertThat(liveConfig.getEmailSourceAddress(), equalTo("info@demo.com"));
+    }
+
+    @Test
+    public void testPublishesSurveyPortalChanges() throws Exception {
+        AdminUser user = adminUserFactory.buildPersisted("testPublishesSurveyPortalChanges", true);
+        Portal portal = portalFactory.buildPersisted("testPublishesSurveyPortalChanges");
+        Survey survey = surveyFactory.buildPersisted("testPublishesSurveyPortalChanges");
+        PortalEnvironment irbEnv = portalEnvironmentFactory.buildPersisted("testPublishesSurveyPortalChanges", EnvironmentName.irb, portal.getId());
+        PortalEnvironment liveEnv = portalEnvironmentFactory.buildPersisted("testPublishesSurveyPortalChanges", EnvironmentName.live, portal.getId());
+        irbEnv.setPreRegSurveyId(survey.getId());
+        portalEnvironmentService.update(irbEnv);
+
+        var changes = portalDiffService.diffPortalEnvs(portal.getShortcode(), EnvironmentName.irb, EnvironmentName.live);
+        portalPublishingService.applyChanges(portal.getShortcode(), EnvironmentName.live, changes, user);
+
+        PortalEnvironment updatedLiveEnv = portalEnvironmentService.find(liveEnv.getId()).get();
+        assertThat(updatedLiveEnv.getPreRegSurveyId(), equalTo(survey.getId()));
+        survey = surveyService.find(survey.getId()).get();
+        assertThat(survey.getPublishedVersion(), equalTo(1));
+    }
+
     @Autowired
     private PortalDiffService portalDiffService;
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Test
-    public void testApplyConfigChanges() throws Exception {
-        ConfigChange change = new ConfigChange("password", (Object) "foo", (Object)"bar");
-        PortalEnvironmentConfig config = PortalEnvironmentConfig.builder()
-                .password("foo").build();
-        PortalEnvironment portalEnvironment = PortalEnvironment.builder()
-                        .portalEnvironmentConfig(config).build();
-        NonPersistentPortalUpdateService npPortalUpdateService = NonPersistentPortalUpdateService
-                .newInstance(portalDiffService, objectMapper);
-        npPortalUpdateService.applyChangesToEnvConfig(portalEnvironment, List.of(change));
-        assertThat(config.getPassword(), equalTo("bar"));
-    }
-
-    public static class NonPersistentPortalUpdateService extends PortalPublishingService {
-        protected NonPersistentPortalUpdateService(PortalDiffService portalDiffService, PortalEnvironmentService portalEnvironmentService,
-                                                   PortalEnvironmentConfigService portalEnvironmentConfigService,
-                                                   PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao,
-                                                   NotificationConfigService notificationConfigService, SurveyService surveyService,
-                                                   EmailTemplateService emailTemplateService, SiteContentService siteContentService,
-                                                   StudyPublishingService studyPublishingService, ObjectMapper objectMapper) {
-            super(portalDiffService, portalEnvironmentService, portalEnvironmentConfigService,
-                    portalEnvironmentChangeRecordDao, notificationConfigService,
-                    surveyService, emailTemplateService, siteContentService, studyPublishingService, objectMapper);
-
-
-        }
-
-        /** we use a static constructor so the mocks can be initialized in the running test context */
-        public static NonPersistentPortalUpdateService newInstance(PortalDiffService portalDiffService, ObjectMapper objectMapper) {
-            PortalEnvironmentService mockPortalEnvService = mock(PortalEnvironmentService.class);
-            PortalEnvironmentConfigService mockPortalEnvConfigService = mock(PortalEnvironmentConfigService.class);
-            PortalEnvironmentChangeRecordDao mockPortalEnvChangeRecordDao = mock(PortalEnvironmentChangeRecordDao.class);
-            NotificationConfigService mockNotifConfigService = mock(NotificationConfigService.class);
-            SurveyService mockSurvService = mock(SurveyService.class);
-            EmailTemplateService mockEmailTempService = mock(EmailTemplateService.class);
-            SiteContentService mockSiteConService = mock(SiteContentService.class);
-            StudyPublishingService mockStudyUpService = mock(StudyPublishingService.class);
-            return new NonPersistentPortalUpdateService(portalDiffService, mockPortalEnvService, mockPortalEnvConfigService,
-                    mockPortalEnvChangeRecordDao, mockNotifConfigService, mockSurvService,
-                    mockEmailTempService, mockSiteConService, mockStudyUpService, objectMapper);
-        }
-
-
-    }
-
-
-
-
-
+    private PortalPublishingService portalPublishingService;
+    @Autowired
+    private SurveyFactory surveyFactory;
+    @Autowired
+    private PortalFactory portalFactory;
+    @Autowired
+    private PortalEnvironmentFactory portalEnvironmentFactory;
+    @Autowired
+    private AdminUserFactory adminUserFactory;
+    @Autowired
+    private PortalEnvironmentService portalEnvironmentService;
+    @Autowired
+    private SurveyService surveyService;
+    @Autowired
+    private PortalEnvironmentConfigService portalEnvironmentConfigService;
 }

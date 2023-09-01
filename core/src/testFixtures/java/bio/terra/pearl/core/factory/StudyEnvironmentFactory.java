@@ -13,6 +13,8 @@ import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class StudyEnvironmentFactory {
     @Autowired
@@ -49,10 +51,15 @@ public class StudyEnvironmentFactory {
 
     public StudyEnvironment buildPersisted(PortalEnvironment portalEnvironment, String testName) {
         Study study = studyFactory.buildPersisted(portalEnvironment.getPortalId(), testName);
+        return buildPersisted(portalEnvironment.getEnvironmentName(), study.getId(), testName);
+    }
+
+    public StudyEnvironment buildPersisted(EnvironmentName envName, UUID studyId, String testName) {
         StudyEnvironment studyEnv = StudyEnvironment.builder()
-                .studyId(study.getId())
-                .environmentName(portalEnvironment.getEnvironmentName())
+                .studyId(studyId)
+                .environmentName(envName)
                 .studyEnvironmentConfig(new StudyEnvironmentConfig()).build();
         return studyEnvironmentService.create(studyEnv);
     }
+
 }
