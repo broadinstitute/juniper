@@ -3,9 +3,10 @@ import { Modal } from 'react-bootstrap'
 import Api, { NewAdminUser, Portal } from 'api/api'
 import { useUser } from './UserProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { failureNotification, successNotification } from 'util/notifications'
+import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import Select from 'react-select'
+import { doApiLoad } from '../util/api-utils'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -22,16 +23,12 @@ const CreateUserModal = ({ onDismiss, portals, userCreated }:
   const selectedPortalOpt = portalOpts.find(portalOpt => portalOpt.value === portalShortcode)
 
   const createUser = async () => {
-    setIsLoading(true)
-    try {
+    doApiLoad(async () => {
       const createdUser = await Api.createUser(newUser)
       Store.addNotification(successNotification(`${createdUser.username} created`))
       userCreated()
       onDismiss()
-    } catch (e) {
-      Store.addNotification(failureNotification('Error creating user'))
-    }
-    setIsLoading(false)
+    }, { setIsLoading })
   }
   // username must be email-like, and either be a superuser or associated with a Portal (we're not yet supporting
   // mutliselect for users spanning multiple portals)

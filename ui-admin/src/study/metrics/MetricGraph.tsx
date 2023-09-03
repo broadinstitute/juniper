@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import Api, { BasicMetricDatum } from '../../api/api'
-import { Store } from 'react-notifications-component'
-import { failureNotification } from '../../util/notifications'
-import LoadingSpinner from '../../util/LoadingSpinner'
+import Api, { BasicMetricDatum } from 'api/api'
+import LoadingSpinner from 'util/LoadingSpinner'
 import { cloneDeep } from 'lodash'
 import { MetricInfo } from './StudyEnvMetricsView'
 import Plot from 'react-plotly.js'
-import { instantToDefaultString } from '../../util/timeUtils'
+import { instantToDefaultString } from 'util/timeUtils'
+import { useLoadingEffect } from 'util/api-utils'
 
 const EXPORT_DELIMITER = '\t'
 
@@ -19,17 +18,12 @@ export default function MetricGraph({ studyEnvContext, metricInfo }: {studyEnvCo
   metricInfo: MetricInfo}) {
   const [metricData, setMetricData] = useState<BasicMetricDatum[] | null>(null)
   const [plotlyTraces, setPlotlyTraces] = useState<PlotlyTimeTrace[] | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  useEffect(() => {
-    setIsLoading(true)
-    Api.fetchMetric(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
-      studyEnvContext.currentEnv.environmentName, metricInfo.name).then(result => {
-      setPlotlyTraces(makePlotlyTraces(result))
-      setMetricData(result)
-      setIsLoading(false)
-    }).catch(e => {
-      Store.addNotification(failureNotification(e.message))
-    })
+
+  const { isLoading } = useLoadingEffect(async () => {
+    const result = await Api.fetchMetric(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
+      studyEnvContext.currentEnv.environmentName, metricInfo.name)
+    setPlotlyTraces(makePlotlyTraces(result))
+    setMetricData(result)
   }, [metricInfo.name, studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
   const copyRawData = () => {

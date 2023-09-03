@@ -14,8 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faPlus } from '@fortawesome/free-solid-svg-icons'
 import CreateUserModal from './CreateUserModal'
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/** lists all admin users */
 const UserList = () => {
   const [users, setUsers] = useState<AdminUser[]>([])
   const [isLoading, setIsLoading] = useState(true)

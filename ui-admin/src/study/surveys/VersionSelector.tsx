@@ -5,8 +5,6 @@ import Modal from 'react-bootstrap/Modal'
 import { Button } from 'components/forms/Button'
 import { instantToDefaultString } from 'util/timeUtils'
 import Select from 'react-select'
-import { failureNotification } from 'util/notifications'
-import { Store } from 'react-notifications-component'
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { StudyEnvContextT, studyEnvFormsPath } from '../StudyEnvironmentRouter'
@@ -29,12 +27,10 @@ export default function VersionSelector({
     setIsLoading(true)
     Api.getSurveyVersions(studyEnvContext.portal.shortcode, stableId).then(result => {
       setVersionList(result.sort((a, b) => b.version - a.version))
-      setIsLoading(false)
     }).catch(() => {
-      Store.addNotification(failureNotification('Error loading form history'))
       setShow(false)
-      setIsLoading(false)
     })
+    setIsLoading(false)
   }, [])
 
   function loadVersion(version: number) {

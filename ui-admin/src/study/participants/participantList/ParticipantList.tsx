@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import Api, { EnrolleeSearchResult } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { Store } from 'react-notifications-component'
-import { failureNotification } from 'util/notifications'
 import { Link, useSearchParams } from 'react-router-dom'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
@@ -22,6 +20,7 @@ import { facetValuesFromString, SAMPLE_FACETS, FacetValue }
   from 'api/enrolleeSearch'
 import { Button } from 'components/forms/Button'
 import { instantToDefaultString } from 'util/timeUtils'
+import { doApiLoad } from '../../../util/api-utils'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -130,15 +129,11 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
 
   const searchEnrollees = async (portalShortcode: string, studyShortcode: string,
     envName: string, facetValues: FacetValue[]) => {
-    setIsLoading(true)
-    try {
+    doApiLoad(async () => {
       const response = await Api.searchEnrollees(portalShortcode, studyShortcode, envName,
         facetValues)
       setParticipantList(response)
-    } catch (e) {
-      Store.addNotification(failureNotification('Error loading participants'))
-    }
-    setIsLoading(false)
+    }, { setIsLoading })
   }
 
   useEffect(() => {
