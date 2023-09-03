@@ -1,6 +1,6 @@
+import React, { useEffect, useState } from 'react'
 import { failureNotification } from './notifications'
 import { Store } from 'react-notifications-component'
-import { useEffect, useState } from 'react'
 
 export type ApiErrorResponse = {
     message: string,
@@ -16,13 +16,19 @@ const errorSuffix = 'If this error persists, please contact support@juniper.terr
 export const defaultApiErrorHandle = (error: ApiErrorResponse,
   errorHeader = 'An unexpected error occurred. ') => {
   if (error.statusCode === 401 || error.statusCode === 403) {
-    Store.addNotification(failureNotification(
-            `${errorHeader}\n\nRequest could not be authorized
-             -- you may need to log in again\n\n${errorSuffix}`
+    Store.addNotification(failureNotification(<div>
+      <div>{errorHeader}</div>
+      <div>Request could not be authorized
+                -- you may need to log in again </div>
+      <div>{errorSuffix}</div>
+    </div>
     ))
   } else {
-    Store.addNotification(failureNotification(
-            `${errorHeader}\n\n${error.message}\n\n${errorSuffix}`
+    Store.addNotification(failureNotification(<div>
+      <div>{errorHeader}</div>
+      <div>{error.message}</div>
+      <div>{errorSuffix}</div>
+    </div>
     ))
   }
 }
