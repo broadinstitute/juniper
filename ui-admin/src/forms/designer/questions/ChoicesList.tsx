@@ -12,13 +12,14 @@ type QuestionWithChoices = CheckboxQuestion | DropdownQuestion | RadiogroupQuest
 
 type ChoicesListProps = {
   question: QuestionWithChoices
+  isNewQuestion: boolean
   readOnly: boolean
   onChange: (newValue: QuestionWithChoices) => void
 }
 
 /** UI for editing the list of choices for a question. */
 export const ChoicesList = (props: ChoicesListProps) => {
-  const { question, readOnly, onChange } = props
+  const { question, isNewQuestion, readOnly, onChange } = props
 
   const labelId = useId()
 
@@ -27,7 +28,7 @@ export const ChoicesList = (props: ChoicesListProps) => {
       <p className="mb-2" id={labelId}>Choices</p>
       <ol aria-labelledby={labelId} className="list-group mb-1">
         {question.choices.map((choice, i) => {
-          const isValueEditedByUser: boolean = choice.value !== getValueForChoice(choice.text)
+          const enableAutoFillValue: boolean = isNewQuestion && choice.value == getValueForChoice(choice.text)
 
           return (
             <li
@@ -56,9 +57,9 @@ export const ChoicesList = (props: ChoicesListProps) => {
                       ...question,
                       choices: [
                         ...question.choices.slice(0, i), {
-                          text: value, value: isValueEditedByUser ?
-                            question.choices[i].value :
-                            getValueForChoice(value)
+                          text: value, value: enableAutoFillValue ?
+                            getValueForChoice(value) :
+                            question.choices[i].value
                         },
                         ...question.choices.slice(i + 1)
                       ]

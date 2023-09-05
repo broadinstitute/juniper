@@ -20,7 +20,7 @@ describe('ChoicesList', () => {
 
   it('renders list of choices with inputs for text and value', () => {
     // Act
-    render(<ChoicesList question={question} readOnly={false} onChange={jest.fn()} />)
+    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={jest.fn()} />)
 
     // Assert
     const choiceListItems = screen.getAllByRole('listitem')
@@ -37,7 +37,7 @@ describe('ChoicesList', () => {
   it('allows changing choice labels', () => {
     // Arrange
     const onChange = jest.fn()
-    render(<ChoicesList question={question} readOnly={false} onChange={onChange} />)
+    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={onChange} />)
 
     const barChoice = screen.getAllByRole('listitem')[1]
 
@@ -59,7 +59,7 @@ describe('ChoicesList', () => {
   it('allows changing choice values', () => {
     // Arrange
     const onChange = jest.fn()
-    render(<ChoicesList question={question} readOnly={false} onChange={onChange} />)
+    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={onChange} />)
 
     const barChoice = screen.getAllByRole('listitem')[1]
 
@@ -78,10 +78,10 @@ describe('ChoicesList', () => {
     })
   })
 
-  it('automatically generates values based on text', () => {
+  it('automatically generates values based on text if question is new', () => {
     // Arrange
     const onChange = jest.fn()
-    render(<ChoicesList question={question} readOnly={false} onChange={onChange} />)
+    render(<ChoicesList question={question} isNewQuestion={true} readOnly={false} onChange={onChange} />)
 
     const barChoice = screen.getAllByRole('listitem')[1]
 
@@ -105,7 +105,7 @@ describe('ChoicesList', () => {
     const user = userEvent.setup()
 
     const onChange = jest.fn()
-    render(<ChoicesList question={question} readOnly={false} onChange={onChange} />)
+    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={onChange} />)
 
     const barChoice = screen.getAllByRole('listitem')[1]
     const moveUpButton = getByLabelText(barChoice, 'Move this choice before the previous one')
@@ -143,7 +143,7 @@ describe('ChoicesList', () => {
     const user = userEvent.setup()
 
     const onChange = jest.fn()
-    render(<ChoicesList question={question} readOnly={false} onChange={onChange} />)
+    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={onChange} />)
 
     const barChoice = screen.getAllByRole('listitem')[1]
     const deleteButton = getByLabelText(barChoice, 'Delete this choice')
