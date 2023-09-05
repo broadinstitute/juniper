@@ -96,3 +96,10 @@ export function makeSurveyJsData(resumeData: string | undefined,
   }
 }
 
+/** sets surveyjs model with print-friendly settings */
+export const configureModelForPrint = (surveyModel: SurveyModel) => {
+  surveyModel.mode = 'display'
+  surveyModel.questionsOnPageMode = 'singlePage'
+  surveyModel.showProgressBar = 'off'
+}
+

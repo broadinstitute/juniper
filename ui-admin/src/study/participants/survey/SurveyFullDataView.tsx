@@ -4,6 +4,10 @@ import { Question } from 'survey-core'
 import { surveyJSModelFromForm, makeSurveyJsData } from '@juniper/ui-core'
 import { Answer, ConsentForm, Survey } from 'api/api'
 import InfoPopup from 'components/forms/InfoPopup'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faDownload } from '@fortawesome/free-solid-svg-icons'
+import PrintFormModal from './PrintFormModal'
+import { Link, Route, Routes } from 'react-router-dom'
 type SurveyFullDataViewProps = {
   answers: Answer[],
   survey: Survey | ConsentForm,
@@ -29,7 +33,7 @@ export default function SurveyFullDataView({ answers, resumeData, survey, userId
   }
 
   return <div>
-    <div className="d-flex">
+    <div className="d-flex d-print-none">
       <div className="d-flex align-items-center">
         <label>
           <input type="checkbox" className="me-2"
@@ -46,13 +50,24 @@ export default function SurveyFullDataView({ answers, resumeData, survey, userId
         </label>
         <InfoPopup content="Whether truncate question texts longer than 100 characters below"/>
       </div>
+      <div className="ms-auto">
+        <Link to="print">
+          <FontAwesomeIcon icon={faDownload}/> print/download
+        </Link>
+      </div>
     </div>
     <hr/>
-    <dl>
-      {questions.map((question, index) =>
-        <ItemDisplay key={index} question={question} answerMap={answerMap}
-          surveyVersion={survey.version} showFullQuestions={showFullQuestions}/>)}
-    </dl>
+    <Routes>
+      <Route path="print" element={<PrintFormModal answers={answers}
+        resumeData={resumeData}
+        survey={survey}/>
+      }/>
+      <Route index element={<dl>
+        {questions.map((question, index) =>
+          <ItemDisplay key={index} question={question} answerMap={answerMap}
+            surveyVersion={survey.version} showFullQuestions={showFullQuestions}/>)}
+      </dl>}/>
+    </Routes>
   </div>
 }
 

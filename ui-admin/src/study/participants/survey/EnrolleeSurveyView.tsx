@@ -7,6 +7,7 @@ import SurveyEditView from './SurveyEditView'
 import { ResponseMapT } from '../enrolleeView/EnrolleeView'
 import { EnrolleeParams } from '../enrolleeView/EnrolleeLoader'
 import { instantToDefaultString } from 'util/timeUtils'
+import DocumentTitle from 'util/DocumentTitle'
 
 /** Show responses for a survey based on url param */
 export default function EnrolleeSurveyView({ enrollee, responseMap }:
@@ -41,6 +42,7 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, responses }:
   }
 
   return <div>
+    <DocumentTitle title={`${enrollee.shortcode} - ${configSurvey.survey.name}`}/>
     <h6>{configSurvey.survey.name}</h6>
     <div>
       <span className="fst-italic">

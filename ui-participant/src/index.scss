@@ -162,30 +162,4 @@ a {
   .navbar {
     display: none !important;
   }
-
-  .sd-root-modern {
-    background: none;
-  }
-
-  .sd-body--static {
-    max-width: none !important;
-  }
-
-  .sd-element--with-frame {
-    padding: 0 !important;
-    box-shadow: none !important;
-  }
-
-  .sd-element--nested.sd-panel {
-    border: none !important;
-    padding: 0 !important;
-  }
-
-  .sd-page__row {
-    page-break-after: always;
-
-    &:last-child {
-      page-break-after: unset;
-    }
-  }
 }
