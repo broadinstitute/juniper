@@ -14,7 +14,6 @@ import { Answer } from 'api/api'
 import Modal from 'react-bootstrap/Modal'
 import { Link } from 'react-router-dom'
 
-
 type DownloadFormViewProps = {
     answers: Answer[],
     resumeData?: string,

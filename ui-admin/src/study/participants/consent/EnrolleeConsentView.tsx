@@ -10,6 +10,7 @@ import SurveyFullDataView from 'study/participants/survey/SurveyFullDataView'
 import { ConsentResponseMapT } from '../enrolleeView/EnrolleeView'
 import { EnrolleeParams } from '../enrolleeView/EnrolleeLoader'
 import { instantToDefaultString } from 'util/timeUtils'
+import DocumentTitle from 'util/DocumentTitle'
 
 /** shows consent forms for a given enrollee, based on url params specifying the form */
 export default function EnrolleeConsentView({ enrollee, responseMap }:
@@ -41,6 +42,7 @@ export function RawEnrolleeConsentView({ enrollee, configConsent, responses }:
   const answers: Answer[] = JSON.parse(lastResponse.fullData)
 
   return <div>
+    <DocumentTitle title={`${enrollee.shortcode} - ${configConsent.consentForm.name}`}/>
     <h6>{configConsent.consentForm.name}</h6>
     <div>
       <span className="fst-italic">completed {instantToDefaultString(lastResponse.createdAt)}</span>
