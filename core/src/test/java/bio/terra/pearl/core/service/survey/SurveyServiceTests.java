@@ -58,8 +58,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testCreateNewVersion() {
-        Survey survey = surveyFactory.buildPersisted("testPublishSurvey");
-        AdminUser user = adminUserFactory.buildPersisted("testPublishSurvey");
+        Survey survey = surveyFactory.buildPersisted("testCreateNewVersion");
         String oldContent = survey.getContent();
         String newContent = String.format("{\"pages\":[],\"title\":\"%s\"}", RandomStringUtils.randomAlphabetic(6));
         survey.setContent(newContent);
@@ -74,6 +73,28 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         Survey fetchedOriginal = surveyService.find(survey.getId()).get();
         Assertions.assertEquals(oldContent, fetchedOriginal.getContent());
     }
+
+    @Test
+    @Transactional
+    public void testAssignPublishedVersion() {
+        Survey survey = surveyFactory.buildPersisted("testAssignPublishedVersion");
+        surveyService.assignPublishedVersion(survey.getId());
+        survey = surveyService.find(survey.getId()).get();
+        assertThat(survey.getPublishedVersion(), equalTo(1));
+
+        String newContent = String.format("{\"pages\":[],\"title\":\"%s\"}", RandomStringUtils.randomAlphabetic(6));
+        survey.setContent(newContent);
+        Survey newSurvey = surveyService.createNewVersion(survey.getPortalId(), survey);
+
+        Assertions.assertNotEquals(newSurvey.getId(), survey.getId());
+        // check published version was NOT copied
+        assertThat(newSurvey.getPublishedVersion(), equalTo(null));
+
+        surveyService.assignPublishedVersion(newSurvey.getId());
+        newSurvey = surveyService.find(newSurvey.getId()).get();
+        assertThat(newSurvey.getPublishedVersion(), equalTo(2));
+    }
+
 
     @Test
     @Transactional

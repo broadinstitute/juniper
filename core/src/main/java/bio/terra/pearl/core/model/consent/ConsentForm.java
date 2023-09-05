@@ -18,6 +18,7 @@ public class ConsentForm extends BaseEntity implements Versioned {
     private String stableId;
     @Builder.Default
     private int version = 1;
+    private Integer publishedVersion;
     private String content;
     private String name;
     // used to keep forms attached to their portal even if they are not on an environment currently

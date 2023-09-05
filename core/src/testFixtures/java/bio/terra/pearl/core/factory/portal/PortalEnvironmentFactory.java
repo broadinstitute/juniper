@@ -10,6 +10,8 @@ import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class PortalEnvironmentFactory {
     @Autowired
@@ -25,28 +27,32 @@ public class PortalEnvironmentFactory {
                 .environmentName(envName);
     }
 
-    public PortalEnvironment.PortalEnvironmentBuilder builderWithDependencies(String testName, EnvironmentName envName) {
-        Portal portal = portalFactory.buildPersisted(testName);
+    public PortalEnvironment.PortalEnvironmentBuilder builderWithDependencies(String testName, EnvironmentName envName, UUID portalId) {
         environmentFactory.buildPersisted(testName, envName);
         return builder(testName)
-                .portalId(portal.getId())
+                .portalId(portalId)
                 .portalEnvironmentConfig(new PortalEnvironmentConfig())
                 .environmentName(envName);
     }
 
-    public PortalEnvironment.PortalEnvironmentBuilder builderWithDependencies(String testName) {
+    public PortalEnvironment.PortalEnvironmentBuilder builderWithDependencies(String testName, EnvironmentName envName) {
         Portal portal = portalFactory.buildPersisted(testName);
-        return builder(testName)
-                .portalId(portal.getId())
-                .portalEnvironmentConfig(new PortalEnvironmentConfig())
-                .environmentName(environmentFactory.buildPersisted(testName).getName());
+        return builderWithDependencies(testName, envName, portal.getId());
+    }
+
+    public PortalEnvironment.PortalEnvironmentBuilder builderWithDependencies(String testName) {
+        return builderWithDependencies(testName, EnvironmentName.values()[RandomUtils.nextInt(0, 3)]);
     }
 
     public PortalEnvironment buildPersisted(String testName) {
-        return portalEnvironmentService.create(builderWithDependencies(testName).build());
+        return buildPersisted(testName, EnvironmentName.values()[RandomUtils.nextInt(0, 3)]);
     }
 
     public PortalEnvironment buildPersisted(String testName, EnvironmentName envName) {
         return portalEnvironmentService.create(builderWithDependencies(testName, envName).build());
+    }
+
+    public PortalEnvironment buildPersisted(String testName, EnvironmentName envName, UUID portalId) {
+        return portalEnvironmentService.create(builderWithDependencies(testName, envName, portalId).build());
     }
 }

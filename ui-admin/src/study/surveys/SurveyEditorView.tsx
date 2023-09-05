@@ -96,7 +96,13 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
       <div className="d-flex p-2 align-items-center">
         <div className="d-flex flex-grow-1">
           <h5>{currentForm.name}
-            <span className="detail me-2 ms-2">version {currentForm.version}</span>
+            <span className="fs-6 text-muted fst-italic me-2 ms-2">
+              (v{currentForm.version}
+              { currentForm.publishedVersion && <span className="ms-1">
+                - published v{currentForm.publishedVersion}
+              </span> }
+              )
+            </span>
             <button className="btn btn-secondary" onClick={() => setShowVersionSelector(true)}>
               <FontAwesomeIcon icon={faClockRotateLeft}/> History
             </button>

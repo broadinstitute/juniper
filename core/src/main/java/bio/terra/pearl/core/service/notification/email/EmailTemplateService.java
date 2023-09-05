@@ -9,17 +9,9 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmailTemplateService extends ImmutableEntityService<EmailTemplate, EmailTemplateDao> implements VersionedEntityService<EmailTemplate> {
+public class EmailTemplateService extends VersionedEntityService<EmailTemplate, EmailTemplateDao> {
     public EmailTemplateService(EmailTemplateDao dao) {
         super(dao);
-    }
-
-    public Optional<EmailTemplate> findByStableId(String stableId, int version) {
-        return dao.findByStableId(stableId, version);
-    }
-
-    public int getNextVersion(String stableId) {
-        return dao.getNextVersion(stableId);
     }
 
     public void deleteByPortalId(UUID portalId) {
