@@ -36,11 +36,11 @@ const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are c
 /**
  * display a single survey form to a participant.
  */
-function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, taskId, activeResponse }:
-                         {
-                           form: Survey, enrollee: Enrollee, taskId: string, activeResponse?: SurveyResponse,
-                           resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string
-                         }) {
+export function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, taskId, activeResponse }:
+{
+  form: Survey, enrollee: Enrollee, taskId: string, activeResponse?: SurveyResponse,
+  resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string
+}) {
   const navigate = useNavigate()
   const { updateEnrollee } = useUser()
   const prevSave = useRef(resumableData?.data ?? {})
@@ -52,7 +52,7 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
       return
     }
     const responseDto = {
-      resumeData: getResumeData(surveyModel, enrollee.participantUserId),
+      resumeData: getResumeData(surveyModel, enrollee.participantUserId, true),
       enrolleeId: enrollee.id,
       // submitting re-saves the entire form.  This is as insurance against any answers getting lost or misrepresented
       // in the diffing process
@@ -161,11 +161,11 @@ export function SurveyFooter({ survey, surveyModel }: { survey: Survey, surveyMo
 
 
 /** handles paging the form */
-function PagedSurveyView({ form, activeResponse, enrollee, studyShortcode, taskId }:
-                           {
-                             form: StudyEnvironmentSurvey, activeResponse?: SurveyResponse, enrollee: Enrollee,
-                             studyShortcode: string, taskId: string
-                           }) {
+export function PagedSurveyView({ form, activeResponse, enrollee, studyShortcode, taskId }:
+{
+  form: StudyEnvironmentSurvey, activeResponse?: SurveyResponse, enrollee: Enrollee,
+  studyShortcode: string, taskId: string
+}) {
   const resumableData = makeSurveyJsData(activeResponse?.resumeData,
     activeResponse?.answers, enrollee.participantUserId)
 

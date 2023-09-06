@@ -1,4 +1,4 @@
-import { Survey } from 'api/api'
+import { StudyEnvironmentSurvey, Survey } from 'api/api'
 
 /** simplest survey.  one page, no interactive elements */
 export function generateSurvey(overrideObj?: any): Survey { // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -46,4 +46,21 @@ export function generateThreePageSurvey(overrideObj?: any): Survey { // eslint-d
   }
   const survey = generateSurvey({ content: JSON.stringify(surveyContent) })
   return Object.assign(survey, overrideObj)
+}
+
+/** mock StudyEnvironmentSurvey object */
+export const mockConfiguredSurvey = (): StudyEnvironmentSurvey => {
+  return {
+    id: 'fakeGuid',
+    surveyId: 'surveyId1',
+    surveyOrder: 1,
+    required: false,
+    recur: false,
+    recurrenceIntervalDays: 0,
+    allowAdminEdit: true,
+    allowParticipantStart: true,
+    allowParticipantReedit: true,
+    prepopulate: true,
+    survey: generateSurvey()
+  }
 }
