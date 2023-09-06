@@ -7,14 +7,13 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
   ColumnDef,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable, VisibilityState
 } from '@tanstack/react-table'
-import { ColumnVisibilityControl, IndeterminateCheckbox, tableHeader } from 'util/tableUtils'
+import { basicTableLayout, ColumnVisibilityControl, IndeterminateCheckbox } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import AdHocEmailModal from '../AdHocEmailModal'
@@ -151,7 +150,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     .filter(key => rowSelection[key])
     .map(key => participantList[parseInt(key)].enrollee.shortcode)
 
-  return <div className="ParticipantList container pt-2">
+  return <div className="ParticipantList container-fluid pt-2">
     <div className="row">
       <div className="col-12 align-items-baseline d-flex">
         <h2 className="h4 text-center me-4">{study.name} Participants</h2>
@@ -177,28 +176,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
               <ColumnVisibilityControl table={table}/>
             </div>
           </div>
-          <table className="table table-striped">
-            <thead>
-              <tr>
-                {table.getFlatHeaders().map(header => tableHeader(header, { sortable: true, filterable: true }))}
-              </tr>
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map(row => {
-                return (
-                  <tr key={row.id}>
-                    {row.getVisibleCells().map(cell => {
-                      return (
-                        <td key={cell.id}>
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
-                      )
-                    })}
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+          { basicTableLayout(table, { filterable: true })}
           { participantList.length === 0 && <span className="text-muted fst-italic">No participants</span>}
         </LoadingSpinner>
       </div>

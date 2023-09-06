@@ -17,7 +17,7 @@ function AdminNavbar() {
     return <div></div>
   }
   return <>
-    <nav className="Navbar navbar navbar-expand-lg navbar-light" style={{ maxWidth: '100vw' }}>
+    <nav className="Navbar navbar navbar-expand-lg navbar-light">
       <div className="collapse navbar-collapse" id="navbarNavDropdown">
         <ul className="navbar-nav ms-3">
           { breadCrumbs.map((crumb, index) => <li key={index}
@@ -26,7 +26,10 @@ function AdminNavbar() {
               <FontAwesomeIcon icon={faChevronRight} className="fa-xs text-muted"/>}
           </li>)}
         </ul>
-        <ul className="navbar-nav ms-auto">
+        <ul className="navbar-nav ms-auto" style={{
+          position: 'sticky',
+          right: 0
+        }}>
           <li className="nav-item dropdown">
             <a className="nav-link" href="#"
               role="button" data-bs-toggle="dropdown" aria-expanded="false">
