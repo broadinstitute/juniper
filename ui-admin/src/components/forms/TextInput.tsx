@@ -1,7 +1,9 @@
 import classNames from 'classnames'
 import React, { useId } from 'react'
+import InfoPopup from './InfoPopup'
 
 export type TextInputProps = Omit<JSX.IntrinsicElements['input'], 'onChange'> & {
+  infoContent?: React.ReactNode,
   description?: string
   label: string
   labelClassname?: string,
@@ -10,7 +12,7 @@ export type TextInputProps = Omit<JSX.IntrinsicElements['input'], 'onChange'> & 
 
 /** A text input with label and description. */
 export const TextInput = (props: TextInputProps) => {
-  const { description, label, labelClassname, ...inputProps } = props
+  const { infoContent, description, label, labelClassname, ...inputProps } = props
   const { className, disabled, id, value, onChange } = inputProps
 
   const generatedId = useId()
@@ -25,6 +27,9 @@ export const TextInput = (props: TextInputProps) => {
       >
         {label}
       </label>
+      {infoContent &&
+        //@ts-ignore
+        <InfoPopup content={infoContent}/>}
       <input
         type="text"
         {...inputProps}
