@@ -168,7 +168,7 @@ export function getResumeData(surveyJSModel: SurveyModel,
   resetPageNumber = false): string {
   const resumeData: Record<string, UserResumeData> = {}
   if (participantUserId) {
-    // if this is a complete submission, the user will expect to come back to the
+    // if this is a complete submission, the user will expect to come back to the beginning
     const currentPageNo = resetPageNumber ? 1 : surveyJSModel.currentPageNo + 1
     resumeData[participantUserId] = { currentPageNo }
   }
