@@ -19,8 +19,10 @@ export const Textarea = (props: TextareaProps) => {
 
   return (
     <>
-      <label className="form-label" htmlFor={inputId}>{label}</label>
-      {required && <span className="text-danger">*</span>}
+      <label className="form-label" htmlFor={inputId}>
+        {label}
+        {required && <span className="text-danger">*</span>}
+      </label>
       <textarea
         {...inputProps}
         aria-describedby={description ? descriptionId : undefined}

@@ -15,7 +15,7 @@ describe('FormContentEditor', () => {
   it('should trap FormDesigner errors in an ErrorBoundary', () => {
     // Arrange
     const { container } = render(<FormContentEditor
-      initialContent={formContent} visibleVersionPreviews={[]} readOnly={false} isValid={true} onChange={jest.fn()}
+      initialContent={formContent} visibleVersionPreviews={[]} readOnly={false} designerIsValid={true} onChange={jest.fn()}
     />)
 
     // Assert

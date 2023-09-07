@@ -15,21 +15,19 @@ type FormContentEditorProps = {
   initialContent: string
   visibleVersionPreviews: VersionedForm[]
   readOnly: boolean
-  isValid: boolean
+  designerIsValid: boolean
   onChange: OnChangeFormContent
 }
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
 export const FormContentEditor = (props: FormContentEditorProps) => {
-  const { initialContent, visibleVersionPreviews, readOnly, isValid, onChange } = props
+  const { initialContent, visibleVersionPreviews, readOnly, designerIsValid, onChange } = props
 
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [tabsEnabled, setTabsEnabled] = useState(true)
 
   const [editedContent, setEditedContent] = useState(() => JSON.parse(initialContent) as FormContent)
-
-  const ughDuplicate = tabsEnabled && isValid
 
   return (
     <div className="FormContentEditor d-flex flex-column flex-grow-1">
@@ -41,7 +39,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
         onSelect={setActiveTab}
       >
         <Tab
-          disabled={activeTab !== 'designer' && !ughDuplicate}
+          disabled={activeTab !== 'designer' && (!tabsEnabled || !designerIsValid)}
           eventKey="designer"
           title="Designer"
         >
@@ -49,7 +47,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             <FormDesigner
               readOnly={readOnly}
               value={editedContent}
-              isValid={isValid}
+              isValid={designerIsValid}
               onChange={newContent => {
                 setEditedContent(newContent)
                 try {
@@ -64,7 +62,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           </ErrorBoundary>
         </Tab>
         <Tab
-          disabled={activeTab !== 'json' && !ughDuplicate}
+          disabled={activeTab !== 'json' && (!tabsEnabled || !designerIsValid)}
           eventKey="json"
           title="JSON Editor"
         >
@@ -85,7 +83,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           </ErrorBoundary>
         </Tab>
         <Tab
-          disabled={activeTab !== 'preview' && !ughDuplicate}
+          disabled={activeTab !== 'preview' && (!tabsEnabled || !designerIsValid)}
           eventKey="preview"
           title="Preview"
         >
