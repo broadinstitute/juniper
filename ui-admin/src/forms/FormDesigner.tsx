@@ -14,12 +14,13 @@ import { PageListDesigner } from './designer/PageListDesigner'
 type FormDesignerProps = {
   readOnly?: boolean
   value: FormContent
+  isValid: boolean
   onChange: (editedContent: FormContent) => void
 }
 
 /** UI for editing forms. */
 export const FormDesigner = (props: FormDesignerProps) => {
-  const { readOnly = false, value, onChange } = props
+  const { readOnly = false, value, isValid, onChange } = props
 
   const [selectedElementPath, setSelectedElementPath] = useState<string>()
 
@@ -28,6 +29,7 @@ export const FormDesigner = (props: FormDesignerProps) => {
       <div className="flex-shrink-0 border-end" style={{ width: 400, overflowY: 'scroll' }}>
         <FormTableOfContents
           formContent={value}
+          isValid={isValid}
           selectedElementPath={selectedElementPath}
           onSelectElement={setSelectedElementPath}
         />

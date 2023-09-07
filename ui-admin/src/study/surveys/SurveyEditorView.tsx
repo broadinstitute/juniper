@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { VersionedForm } from 'api/api'
 
@@ -49,8 +49,14 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const [draft, setDraft] = useState<FormDraft | undefined>(
     !readOnly ? getDraft({ formDraftKey: FORM_DRAFT_KEY }) : undefined)
 
-  const [validationErrors, setValidationErrors] = useState<string[]>([])
-  const isSaveEnabled = !!draft && isEmpty(validationErrors) && !saving
+  const [jsonValidationErrors, setJsonValidationErrors] = useState<string[]>([])
+  const [designerIsValid, setDesignerIsValid] = useState(false)
+  const isSaveEnabled = !!draft && isEmpty(jsonValidationErrors) && !saving && designerIsValid
+
+  useEffect(() => {
+    const invalidFields = document.querySelectorAll('.is-invalid')
+    setDesignerIsValid(isEmpty(invalidFields))
+  }, [draft])
 
   const saveDraftToLocalStorage = () => {
     setDraft(currentDraft => {
@@ -109,7 +115,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           </h5>
         </div>
         { savingDraft && <span className="detail me-2 ms-2">Saving draft...</span> }
-        { !isEmpty(validationErrors) &&
+        { !isEmpty(jsonValidationErrors) &&
             <div className="position-relative ms-auto me-2 ms-2">
               <button className="btn btn-outline-danger"
                 onClick={() => setShowErrors(!showErrors)} aria-label="view errors">
@@ -123,7 +129,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
                   </label>
                 </div>
                 <hr/>
-                { !isEmpty(validationErrors) && validationErrors.map((error, index) => {
+                { !isEmpty(jsonValidationErrors) && jsonValidationErrors.map((error, index) => {
                   return (
                     <li key={`error-${index}`}>{error}</li>
                   )
@@ -139,13 +145,13 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
               if (!draft) {
                 return 'Form is unchanged. Make changes to save.'
               }
-              if (!isEmpty(validationErrors)) {
+              if (!isEmpty(jsonValidationErrors) || !designerIsValid) {
                 return 'Form is invalid. Correct to save.'
               }
               return 'Save changes'
             })()}
             tooltipPlacement={'bottom'}
-            variant={isEmpty(validationErrors) ? 'primary' : 'danger'}
+            variant={isEmpty(jsonValidationErrors) ? 'primary' : 'danger'}
             onClick={onClickSave}
           >
             Save
@@ -181,13 +187,14 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
       <FormContentEditor
         initialContent={draft?.content || currentForm.content} //favor loading the draft, if we find one
         visibleVersionPreviews={visibleVersionPreviews}
+        isValid={designerIsValid}
         readOnly={readOnly}
         onChange={(newValidationErrors, newContent) => {
           if (isEmpty(newValidationErrors)) {
             setShowErrors(false)
             setDraft({ content: JSON.stringify(newContent), date: Date.now() })
           }
-          setValidationErrors(newValidationErrors)
+          setJsonValidationErrors(newValidationErrors)
         }}
       />
     </div>

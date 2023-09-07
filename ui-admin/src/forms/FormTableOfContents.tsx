@@ -80,26 +80,37 @@ export const getTableOfContentsTree = (formContent: FormContent): FormContentTab
 
 type FormTableOfContentsProps = {
   formContent: FormContent
+  isValid: boolean
   selectedElementPath: string | undefined
   onSelectElement: (path: string) => void
 }
 
 /** Render a table of contents for a form. */
 export const FormTableOfContents = (props: FormTableOfContentsProps) => {
-  const { formContent, selectedElementPath, onSelectElement } = props
+  const { formContent, isValid, selectedElementPath, onSelectElement } = props
 
-  return (
-    <Tree
-      id="form-table-of-contents"
-      isItemSelected={item => item.data.path === selectedElementPath}
-      label="Table of contents"
-      rootItem={getTableOfContentsTree(formContent)}
-      onClickItem={item => {
-        const { isSelectable, path } = item.data
-        if (isSelectable) {
-          onSelectElement(path)
-        }
-      }}
-    />
-  )
+  if (isValid) {
+    return (
+      <Tree
+        id="form-table-of-contents"
+        isItemSelected={item => item.data.path === selectedElementPath}
+        label="Table of contents"
+        rootItem={getTableOfContentsTree(formContent)}
+        onClickItem={item => {
+          const { isSelectable, path } = item.data
+          if (isSelectable) {
+            onSelectElement(path)
+          }
+        }}
+      />
+    )
+  } else {
+    return (
+      <div className="alert alert-warning" role="alert">
+        <h4 className="alert-heading">Incomplete question</h4>
+        <p>At least one required field is missing from the current question. Please ensure that
+          all required fields are filled out before proceeding.</p>
+      </div>
+    )
+  }
 }

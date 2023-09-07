@@ -49,6 +49,7 @@ export const ChoicesList = (props: ChoicesListProps) => {
                 <TextInput
                   className="form-control"
                   disabled={readOnly}
+                  required={true}
                   label="Text"
                   labelClassname="mb-0"
                   value={choice.text}
@@ -68,6 +69,7 @@ export const ChoicesList = (props: ChoicesListProps) => {
                 />
                 <TextInput
                   disabled={readOnly}
+                  required={true}
                   label="Value"
                   labelClassname="mb-0"
                   value={choice.value}

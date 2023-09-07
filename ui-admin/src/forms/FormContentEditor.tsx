@@ -15,18 +15,21 @@ type FormContentEditorProps = {
   initialContent: string
   visibleVersionPreviews: VersionedForm[]
   readOnly: boolean
+  isValid: boolean
   onChange: OnChangeFormContent
 }
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
 export const FormContentEditor = (props: FormContentEditorProps) => {
-  const { initialContent, visibleVersionPreviews, readOnly, onChange } = props
+  const { initialContent, visibleVersionPreviews, readOnly, isValid, onChange } = props
 
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [tabsEnabled, setTabsEnabled] = useState(true)
 
   const [editedContent, setEditedContent] = useState(() => JSON.parse(initialContent) as FormContent)
+
+  const ughDuplicate = tabsEnabled && isValid
 
   return (
     <div className="FormContentEditor d-flex flex-column flex-grow-1">
@@ -38,7 +41,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
         onSelect={setActiveTab}
       >
         <Tab
-          disabled={activeTab !== 'designer' && !tabsEnabled}
+          disabled={activeTab !== 'designer' && !ughDuplicate}
           eventKey="designer"
           title="Designer"
         >
@@ -46,6 +49,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             <FormDesigner
               readOnly={readOnly}
               value={editedContent}
+              isValid={isValid}
               onChange={newContent => {
                 setEditedContent(newContent)
                 try {
@@ -60,7 +64,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           </ErrorBoundary>
         </Tab>
         <Tab
-          disabled={activeTab !== 'json' && !tabsEnabled}
+          disabled={activeTab !== 'json' && !ughDuplicate}
           eventKey="json"
           title="JSON Editor"
         >
@@ -81,7 +85,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           </ErrorBoundary>
         </Tab>
         <Tab
-          disabled={activeTab !== 'preview' && !tabsEnabled}
+          disabled={activeTab !== 'preview' && !ughDuplicate}
           eventKey="preview"
           title="Preview"
         >
