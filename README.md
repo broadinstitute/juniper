@@ -57,6 +57,8 @@ Open the root folder in IntelliJ.
       * Preferences > Build, Execution, Deployment > Build Tools > Gradle > Gradle Projects > \[this project\] > Gradle JVM
          * Recommended setting for this is "Project SDK"
    * In Preferences > Build, Execution, Deployment > Compiler > Annotation Processors, make sure annotation processing is enabled (otherwise lombok getters/setters won't work)
+   * Open https://console.cloud.google.com/security/secret-manager/secret/study-manager-config/versions?project=broad-ddp-dev,
+     inspect the latest version, and find the `juniper` section. You'll need the value of `juniper.secret`.
    * Create two Spring Boot Run/Debug Configurations.
      * ApiAdminApp (in api-admin module)
        * set active profiles of "human-readable-logging" and "development"
@@ -66,7 +68,7 @@ Open the root folder in IntelliJ.
        * set environment variable: `B2C_TENANT_NAME=ddpdevb2c`
        * set environment variable: `B2C_CLIENT_ID=<<vault read -field value secret/dsp/ddp/b2c/dev/application_id>>`
        * set environment variable: `B2C_POLICY_NAME=B2C_1A_ddp_participant_signup_signin_dev`
-       * set environment variable: `DSM_JWT_SIGNING_SECRET=<<vault read -field jwt_signing_secret secret/dsp/ddp/d2p/dev/dsm>>`
+       * set environment variable: `DSM_JWT_SIGNING_SECRET=<<`**`juniper.secret`**`value from Secret Manager described above>>`
        * set environment variable: `SENDGRID_API_KEY=<<vault read -field=api_key secret/dsp/ddp/d2p/dev/sendgrid>>`
      * ApiParticipantApp (in api-participant module)
         * set active profiles of "human-readable-logging" and "development"

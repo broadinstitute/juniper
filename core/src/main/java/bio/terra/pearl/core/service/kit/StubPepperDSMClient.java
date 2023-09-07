@@ -27,9 +27,9 @@ public class StubPepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public String sendKitRequest(Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
+    public String sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
         var statusBuilder = PepperKitStatus.builder()
-                .kitId(kitRequest.getId().toString())
+                .juniperKitId(kitRequest.getId().toString())
                 .currentStatus("CREATED");
         try {
             return objectMapper.writeValueAsString(statusBuilder.build());
@@ -41,7 +41,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
     @Override
     public PepperKitStatus fetchKitStatus(UUID kitRequestId) {
         return PepperKitStatus.builder()
-                .kitId(kitRequestId.toString())
+                .juniperKitId(kitRequestId.toString())
                 .currentStatus("SHIPPED")
                 .build();
     }
@@ -51,7 +51,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
         var studyEnvironment = studyEnvironmentDao.findByStudy(studyShortcode, EnvironmentName.sandbox).get();
         return kitRequestService.findIncompleteKits(studyEnvironment.getId()).stream().map(kit -> {
             PepperKitStatus status = PepperKitStatus.builder()
-                    .kitId(kit.getId().toString())
+                    .juniperKitId(kit.getId().toString())
                     .currentStatus("SHIPPED")
                     .build();
             return status;

@@ -65,17 +65,44 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testMalformedErrorResponseFromPepper() throws Exception {
+    public void testBadErrorResponseFromPepper() throws Exception {
         // Arrange
-        var unexpectedJsonBody = "{\"error\": \"boom\"}";
+        var unexpectedJsonBody = "{\"unexpected\": \"boom\"}";
         mockPepperResponse(HttpStatus.BAD_REQUEST, unexpectedJsonBody);
 
         // "Act"
-        Executable act = () -> client.sendKitRequest(enrollee, kitRequest, address);
+        Executable act = () -> client.sendKitRequest("testStudy", enrollee, kitRequest, address);
 
         // Assert
         PepperException pepperException = assertThrows(PepperException.class, act);
         assertThat(pepperException.getMessage(), containsString(unexpectedJsonBody));
+    }
+
+    @Transactional
+    @Test
+    public void testErrorResponseFromPepperWithUnexpectedAttributes() throws Exception {
+        // Arrange
+        var unexpectedJsonBody = """
+                {
+                  "errorMessage": "unknown kit",
+                  "value": "12345",
+                  "juniperKitId": "12345",
+                  "isError": "true",
+                  "unexpected": "boom"
+                }
+                """;
+        mockPepperResponse(HttpStatus.BAD_REQUEST, unexpectedJsonBody);
+
+        // "Act"
+        Executable act = () -> client.sendKitRequest("testStudy", enrollee, kitRequest, address);
+
+        // Assert
+        PepperException pepperException = assertThrows(PepperException.class, act);
+        assertThat(pepperException.getMessage(), pepperException.getErrorResponse(), notNullValue());
+        assertThat(pepperException.getErrorResponse().getErrorMessage(), equalTo("unknown kit"));
+        assertThat(pepperException.getErrorResponse().getValue(), equalTo("12345"));
+        assertThat(pepperException.getErrorResponse().getJuniperKitId(), equalTo("12345"));
+        assertThat(pepperException.getErrorResponse().getIsError(), equalTo(true));
     }
 
     @Transactional
@@ -93,7 +120,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         ));
 
         // "Act"
-        Executable act = () -> client.sendKitRequest(enrollee, kitRequest, address);
+        Executable act = () -> client.sendKitRequest("testStudy", enrollee, kitRequest, address);
 
         // Assert
         var pepperException = assertThrows(PepperException.class, act);
@@ -109,7 +136,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         mockPepperResponse(HttpStatus.INTERNAL_SERVER_ERROR, errorResponseBody);
 
         // "Act"
-        Executable act = () -> client.sendKitRequest(enrollee, kitRequest, address);
+        Executable act = () -> client.sendKitRequest("testStudy", enrollee, kitRequest, address);
 
         // Assert
         var pepperException = assertThrows(PepperException.class, act);
@@ -121,16 +148,16 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
     public void testSendKitRequest() throws Exception {
         // Arrange
         PepperKitStatus kitStatus = PepperKitStatus.builder()
-                .kitId(kitRequest.getId().toString())
+                .juniperKitId(kitRequest.getId().toString())
                 .currentStatus("New")
                 .build();
         mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(kitStatus));
 
         // Act
-        var response = client.sendKitRequest(enrollee, kitRequest, address);
+        var response = client.sendKitRequest("testStudy", enrollee, kitRequest, address);
 
         // Assert
-        assertThat(response, containsString(kitStatus.getKitId()));
+        assertThat(response, containsString(kitStatus.getJuniperKitId()));
         assertThat(response, containsString("New"));
         verifyRequestForPath("/shipKit");
     }
@@ -140,11 +167,12 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
     public void testFetchKitStatus() throws Exception {
         // Arrange
         PepperKitStatus kitStatus = PepperKitStatus.builder()
-                .kitId("testFetchKitStatusByStudy1")
+                .juniperKitId("testFetchKitStatusByStudy1")
                 .build();
         PepperKitStatus[] kits = { kitStatus };
         var pepperResponse = PepperKitStatusResponse.builder()
                 .kits(kits)
+                .isError(false)
                 .build();
         mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(pepperResponse));
 
@@ -154,7 +182,8 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
         // Assert
         assertThat(fetchedKitStatus, equalTo(kitStatus));
-        verifyRequestForPath("/kitStatus/kit/%s".formatted(kitId));
+        // TODO: change "juniperKit" to "juniperkit" after DSM updates this path
+        verifyRequestForPath("/kitstatus/juniperKit/%s".formatted(kitId));
     }
 
     @Transactional
@@ -162,14 +191,15 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
     public void testFetchKitStatusByStudy() throws Exception {
         // Arrange
         PepperKitStatus kitStatus1 = PepperKitStatus.builder()
-                .kitId("testFetchKitStatusByStudy_kit1")
+                .juniperKitId("testFetchKitStatusByStudy_kit1")
                 .build();
         PepperKitStatus kitStatus2 = PepperKitStatus.builder()
-                .kitId("testFetchKitStatusByStudy_kit2")
+                .juniperKitId("testFetchKitStatusByStudy_kit2")
                 .build();
         PepperKitStatus[] kits = { kitStatus1, kitStatus2 };
         var pepperResponse = PepperKitStatusResponse.builder()
                 .kits(kits)
+                .isError(false)
                 .build();
         mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(pepperResponse));
 
@@ -180,7 +210,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         // Assert
         assertThat(fetchedKitStatuses.size(), equalTo(2));
         assertThat(fetchedKitStatuses, contains(kitStatus1, kitStatus2));
-        verifyRequestForPath("/kitStatus/study/juniper-%s".formatted(studyShortcode));
+        verifyRequestForPath("/kitstatus/study/juniper-%s".formatted(studyShortcode));
     }
 
     private static void mockPepperResponse(HttpStatus status, String pepperResponse) {
