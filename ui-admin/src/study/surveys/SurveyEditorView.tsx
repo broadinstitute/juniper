@@ -108,8 +108,8 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
               <FontAwesomeIcon icon={faClockRotateLeft}/> History
             </button>
             <Button variant="secondary"
-              disabled={!isEditorValid}
-              tooltip={isEditorValid ?
+              disabled={!isEmpty(validationErrors)}
+              tooltip={isEmpty(validationErrors) ?
                 'Download the current contents of the JSON Editor as a JSON file.' :
                 'The form contains invalid JSON. Please correct the errors before downloading.'
               }
@@ -120,7 +120,9 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
                 const blob = new Blob(
                   [JSON.stringify(JSON.parse(content), null, 2)],
                   { type: 'application/json' })
-                saveBlobAsDownload(blob, `${currentForm.stableId}_v${currentForm.version}_${Date.now()}.json`)
+                const filename = !draft ? `${currentForm.stableId}_v${currentForm.version}.json` :
+                  `${currentForm.stableId}_v${currentForm.version}_draft_${Date.now()}.json`
+                saveBlobAsDownload(blob, filename)
               }}>
               <FontAwesomeIcon icon={faDownload}/> Download JSON
             </Button>
