@@ -47,7 +47,9 @@ run `./local-dev/run_postgres.sh start`
 This will start a postgres container with a schema and user configured
 
 #### IDE Setup
-Open the root folder in IntelliJ.  
+In IntelliJ, File -> New -> Protject from Existing Sources.  When importing the project, make sure it's set as a gradle project  
+![image](https://github.com/broadinstitute/juniper/assets/2800795/dd2cf363-f761-47bc-9620-28e47a20feff)
+
 
 * **server:**
 
