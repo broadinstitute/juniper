@@ -72,7 +72,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      * transaction to help avoid that potential inconsistency.
      */
     @Transactional
-    public KitRequest requestKit(AdminUser adminUser, Enrollee enrollee, String kitTypeName) {
+    public KitRequest requestKit(AdminUser adminUser, String studyShortcode, Enrollee enrollee, String kitTypeName) {
         // create and save kit request
         Profile profile = profileService.loadWithMailingAddress(enrollee.getProfileId())
                 .orElseThrow(() -> new RuntimeException("Missing profile for enrollee: " + enrollee.getShortcode()));
@@ -80,7 +80,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         var kitRequest = createKitRequest(adminUser, enrollee, pepperKitAddress, kitTypeName);
 
         // send kit request to DSM
-        var result = pepperDSMClient.sendKitRequest(enrollee, kitRequest, pepperKitAddress);
+        var result = pepperDSMClient.sendKitRequest(studyShortcode, enrollee, kitRequest, pepperKitAddress);
 
         // save DSM response/status with Juniper KitRequest
         kitRequest.setDsmStatus(result);
@@ -163,7 +163,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             var pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
             var pepperStatusFetchedAt = Instant.now();
             var pepperKitStatusByKitId = pepperKitStatuses.stream().collect(
-                    Collectors.toMap(PepperKitStatus::getKitId, Function.identity()));
+                    Collectors.toMap(PepperKitStatus::getJuniperKitId, Function.identity()));
 
             var studyEnvironments = studyEnvironmentService.findByStudy(study.getId());
             for (StudyEnvironment studyEnvironment : studyEnvironments) {

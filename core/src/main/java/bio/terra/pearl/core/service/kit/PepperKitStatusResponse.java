@@ -7,8 +7,8 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @ToString
-public class PepperKitStatusResponse {
+public class PepperKitStatusResponse extends PepperResponse {
     private PepperKitStatus[] kits;
 }

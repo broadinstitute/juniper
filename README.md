@@ -59,7 +59,7 @@ In IntelliJ, File -> New -> Protject from Existing Sources.  When importing the 
       * Preferences > Build, Execution, Deployment > Build Tools > Gradle > Gradle Projects > \[this project\] > Gradle JVM
          * Recommended setting for this is "Project SDK"
    * In Preferences > Build, Execution, Deployment > Compiler > Annotation Processors, make sure annotation processing is enabled (otherwise lombok getters/setters won't work)
-   * Create these two Spring Boot Run/Debug Configurations by going to Run > Edit Configurations > + > Spring Boot
+   * Create two Spring Boot Run/Debug Configurations (Run > Edit Configurations > + > Spring Boot)
      * ApiAdminApp (in api-admin module)
        * Set the Active profiles field to: `human-readable-logging, development`
        * Disable launch optimization by clicking `Modify options > Disable launch optimization`
@@ -82,7 +82,7 @@ In IntelliJ, File -> New -> Protject from Existing Sources.  When importing the 
 ### Running the application
 #### Admin tool (study manager, population)
 ##### Admin API (api-admin module)
-In intelliJ, you can either run ApiAdminApp (from the api-admin module) directly, or execute the "bootRun" gradle task.
+In IntelliJ, you can either run ApiAdminApp directly (use the Run menu to choose ApiAdminApp), or execute the "bootRun" gradle task.
 In basic development mode, this will only serve the API, not the frontend assets.
 
 To make the application useful, you will want to populate some users and studies.  After the admin API is running, 
@@ -104,7 +104,7 @@ Then go to `localhost:3000`
 #### Participant tool
 
 ##### Participant API (api-participant module)
-In intelliJ, you can either run ApiParticipantApp (from the api-participant module) directly, or execute the "bootRun" gradle task.
+In IntelliJ, you can either run ApiParticipantApp directly (use the Run menu to choose ApiParticipantApp), or execute the "bootRun" gradle task.
 In basic development mode, this will only serve the API, not the frontend assets.
 
 ##### Participant UI (ui-participant module)
