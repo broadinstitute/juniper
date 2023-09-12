@@ -16,6 +16,11 @@ ADMIN_API_ENV_VARS=(
   "DSM_JWT_SIGNING_SECRET:vault:vault read -field jwt_signing_secret secret/dsp/ddp/d2p/dev/dsm"
   "SENDGRID_API_KEY:vault:vault read -field=api_key secret/dsp/ddp/d2p/dev/sendgrid"
   "TDR_SA_CREDS:vault:vault read -field=sa-key.json.b64 secret/dsp/ddp/d2p/dev/d2p-tdr-sa"
+  "TDR_EXPORT_ENABLED:static:false"
+  "TDR_EXPORT_STORAGE_ACCOUNT_NAME:vault:vault read -field=storage_account_name secret/dsp/ddp/d2p/dev/tdr-export-storage-account"
+  "TDR_EXPORT_STORAGE_ACCOUNT_KEY:vault:vault read -field=storage_account_key secret/dsp/ddp/d2p/dev/tdr-export-storage-account"
+  "TDR_EXPORT_STORAGE_CONTAINER_NAME:static:juniper-dataset-ingest"
+  "DEPLOYMENT_ZONE:static:local"
 )
 
 PARTICIPANT_API_ENV_VARS=(
