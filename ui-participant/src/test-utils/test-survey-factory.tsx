@@ -34,7 +34,10 @@ export function generateThreePageSurvey(overrideObj?: any): Survey { // eslint-d
       },
       {
         elements: [
-          { type: 'html', html: '<span>You are on page2</span>' }
+          { type: 'html', html: '<span>You are on page2</span>' },
+          {
+            type: 'text', title: 'text input', name: 'text1'
+          }
         ]
       },
       {
@@ -47,6 +50,50 @@ export function generateThreePageSurvey(overrideObj?: any): Survey { // eslint-d
   const survey = generateSurvey({ content: JSON.stringify(surveyContent) })
   return Object.assign(survey, overrideObj)
 }
+
+/** survey with a hidden question -- uses surveyjs default clear-on-submit behavior */
+export function mockSurveyWithHiddenQuestion(): Survey {
+  const surveyContent =  {
+    pages: [{
+      elements: [
+        { type: 'html', html: '<span>You are on page1</span>' },
+        {
+          type: 'radiogroup', title: 'radio input', name: 'radio1',
+          choices: [{ text: 'Green', value: 'green' }, { text: 'Blue', value: 'blue' }]
+        },
+        {
+          type: 'radiogroup', title: 'green follower', name: 'greenFollow',
+          choices: [{ text: 'light green', value: 'lightGreen' }, { text: 'forest green', value: 'forest' }],
+          visibleIf: '{radio1} = "green"'
+        }
+      ]
+    }]
+  }
+  return generateSurvey({ content: JSON.stringify(surveyContent) })
+}
+
+/** survey with a hidden question and hidden questions set to clear values as soon as they are invisible */
+export function mockSurveyWithHiddenQuestionClearOnHidden(): Survey {
+  const surveyContent =  {
+    'clearInvisibleValues': 'onHiddenContainer',
+    pages: [{
+      elements: [
+        { type: 'html', html: '<span>You are on page1</span>' },
+        {
+          type: 'radiogroup', title: 'radio input', name: 'radio1',
+          choices: [{ text: 'Green', value: 'green' }, { text: 'Blue', value: 'blue' }]
+        },
+        {
+          type: 'radiogroup', title: 'green follower', name: 'greenFollow',
+          choices: [{ text: 'light green', value: 'lightGreen' }, { text: 'forest green', value: 'forest' }],
+          visibleIf: '{radio1} = "green"'
+        }
+      ]
+    }]
+  }
+  return generateSurvey({ content: JSON.stringify(surveyContent) })
+}
+
 
 /** mock StudyEnvironmentSurvey object */
 export const mockConfiguredSurvey = (): StudyEnvironmentSurvey => {

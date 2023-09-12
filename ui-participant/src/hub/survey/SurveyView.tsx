@@ -13,7 +13,6 @@ import Api, {
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import {
   getResumeData,
-  getSurveyJsAnswerList,
   getUpdatedAnswers,
   PageNumberControl,
   useRoutablePageNumber,
@@ -36,10 +35,14 @@ const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are c
 /**
  * display a single survey form to a participant.
  */
-export function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, taskId, activeResponse }:
+export function RawSurveyView({
+  form, enrollee, resumableData, pager,
+  studyShortcode, taskId, activeResponse, autoSaveInterval=AUTO_SAVE_INTERVAL
+}:
 {
   form: Survey, enrollee: Enrollee, taskId: string, activeResponse?: SurveyResponse,
-  resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string
+  resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string,
+  autoSaveInterval?: number
 }) {
   const navigate = useNavigate()
   const { updateEnrollee } = useUser()
@@ -61,7 +64,7 @@ export function RawSurveyView({ form, enrollee, resumableData, pager, studyShort
     } as SurveyResponse
 
     try {
-      const response = await Api.submitSurveyResponse({
+      const response = await Api.updateSurveyResponse({
         studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
         version: form.version, response: responseDto, taskId, alertErrors: true
       })
@@ -103,7 +106,7 @@ export function RawSurveyView({ form, enrollee, resumableData, pager, studyShort
     } as SurveyResponse
     // only log & alert if this is the first autosave problem to avoid spamming logs & alerts
     const alertErrors =  !lastAutoSaveErrored.current
-    Api.submitSurveyResponse({
+    Api.updateSurveyResponse({
       studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
       version: form.version, response: responseDto, taskId, alertErrors
     }).then(response => {
@@ -130,7 +133,7 @@ export function RawSurveyView({ form, enrollee, resumableData, pager, studyShort
     })
   }
 
-  useAutosaveEffect(saveDiff, AUTO_SAVE_INTERVAL)
+  useAutosaveEffect(saveDiff, autoSaveInterval)
 
   return (
     <>
@@ -161,10 +164,13 @@ export function SurveyFooter({ survey, surveyModel }: { survey: Survey, surveyMo
 
 
 /** handles paging the form */
-export function PagedSurveyView({ form, activeResponse, enrollee, studyShortcode, taskId }:
+export function PagedSurveyView({
+  form, activeResponse, enrollee, studyShortcode,
+  taskId, autoSaveInterval=AUTO_SAVE_INTERVAL
+}:
 {
   form: StudyEnvironmentSurvey, activeResponse?: SurveyResponse, enrollee: Enrollee,
-  studyShortcode: string, taskId: string
+  studyShortcode: string, taskId: string, autoSaveInterval?: number
 }) {
   const resumableData = makeSurveyJsData(activeResponse?.resumeData,
     activeResponse?.answers, enrollee.participantUserId)
@@ -172,7 +178,7 @@ export function PagedSurveyView({ form, activeResponse, enrollee, studyShortcode
   const pager = useRoutablePageNumber()
 
   return <RawSurveyView enrollee={enrollee} form={form.survey} taskId={taskId} activeResponse={activeResponse}
-    resumableData={resumableData} pager={pager} studyShortcode={studyShortcode}/>
+    resumableData={resumableData} pager={pager} studyShortcode={studyShortcode} autoSaveInterval={autoSaveInterval}/>
 }
 
 /** handles loading the survey form and responses from the server */
