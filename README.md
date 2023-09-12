@@ -67,7 +67,7 @@ In IntelliJ, File -> New -> Protject from Existing Sources.  When importing the 
          * The output should be a list of environment variables, separated by semi-colons. 
          * Copy this output into the "Environment variables" field of the run configuration. (Click `Modify options > Environment variables` if this is not visible)
        * Your final Run Configuration should look similar to this:
-         * ![image](https://raw.githubusercontent.com/broadinstitute/juniper/98da04431683eef17d1507b8db714e2bc8ac538c/api_admin_app_run_config.png)
+        * <img width="840" alt="Admin API run configuration" src="https://github.com/broadinstitute/juniper/assets/7257391/ae82332c-628f-40e1-8917-b7536af1eb02">
      * ApiParticipantApp (in api-participant module)
         * Set the Active profiles field to: `human-readable-logging, development`
         * Disable launch optimization by clicking `Modify options > Disable launch optimization`
@@ -75,7 +75,8 @@ In IntelliJ, File -> New -> Protject from Existing Sources.  When importing the 
           * The output should be a semicolon-separated list of environment variables.
           * Copy this output into the "Environment variables" field of the run configuration. (Click `Modify options > Environment variables` if this is not visible)
         * Your final Run Configuration should look similar to this:
-          * ![image](https://raw.githubusercontent.com/broadinstitute/juniper/98da04431683eef17d1507b8db714e2bc8ac538c/api_participant_app_run_config.png)
+        * <img width="840" alt="Participant API run configuration" src="https://github.com/broadinstitute/juniper/assets/7257391/b8e006fe-65a7-4731-9ab1-bda8d38b480b">
+
 
 
 ### Running the application
