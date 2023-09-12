@@ -66,17 +66,6 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
 
     @Transactional
     @IntegrationTest
-    public void temp() throws Exception {
-        /*
-        {"kits":[{"error":false,"juniperKitId":"13ee49ba-712c-45d8-afb6-0382f9b039d7","dsmShippingLabel":"T7C4D54IXX4YX05","participantId":"BVESCI","labelByEmail":"","scanByEmail":"","deactivationByEmail":"","trackingScanBy":"","errorMessage":"","discardBy":""}],"isError":false}
-         */
-        var status = livePepperDSMClient.fetchKitStatus(UUID.fromString("13ee49ba-712c-45d8-afb6-0382f9b039d7"));
-        log.info(status.toString());
-        log.info(status.statusFromDates().toString());
-    }
-
-    @Transactional
-    @IntegrationTest
     public void testSendKitRequestParsesPepperError() throws Exception {
         // Arrange
         var enrollee = enrolleeFactory.buildPersisted("testSendKitRequestParsesPepperError");
