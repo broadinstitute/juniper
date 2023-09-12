@@ -63,7 +63,7 @@ In IntelliJ, File -> New -> Protject from Existing Sources.  When importing the 
      * ApiAdminApp (in api-admin module)
        * Set the Active profiles field to: `human-readable-logging, development`
        * Disable launch optimization by clicking `Modify options > Disable launch optimization`
-       * Render environment variables with `./local-dev/render_environment_vars.sh ApiAdminApp <YOUR_EMAIL>`
+       * Render environment variables with `bash ./local-dev/render_environment_vars.sh ApiAdminApp <YOUR_EMAIL>`
          * The output should be a semicolon-separated list of environment variables.
          * Copy this output into the "Environment variables" field of the run configuration. (Click `Modify options > Environment variables` if this is not visible)
        * Your final Run Configuration should look similar to this:
@@ -71,7 +71,7 @@ In IntelliJ, File -> New -> Protject from Existing Sources.  When importing the 
      * ApiParticipantApp (in api-participant module)
         * Set the Active profiles field to: `human-readable-logging, development`
         * Disable launch optimization by clicking `Modify options > Disable launch optimization`
-        * Render environment variables with `./local-dev/render_environment_vars.sh ApiParticipantApp <YOUR_EMAIL>`
+        * Render environment variables with `bash ./local-dev/render_environment_vars.sh ApiParticipantApp <YOUR_EMAIL>`
           * The output should be a semicolon-separated list of environment variables.
           * Copy this output into the "Environment variables" field of the run configuration. (Click `Modify options > Environment variables` if this is not visible)
         * Your final Run Configuration should look similar to this:
