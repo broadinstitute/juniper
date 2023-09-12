@@ -5,6 +5,7 @@ import bio.terra.pearl.core.IntegrationTest;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.function.Executable;
 import org.slf4j.Logger;
@@ -19,6 +20,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+/**
+ * Integration tests for kit integration with Pepper (DSM).
+ *
+ * These tests need a signing secret to generate valid JWTs to talk to Pepper. See the project-level README.md for
+ * details about setting the DSM_JWT_SIGNING_SECRET environment variable.
+ */
 public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
 
     public static final Logger log = LoggerFactory.getLogger(LivePepperDSMClientIntegrationTest.class);
@@ -47,15 +54,25 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
                 .country("USA")
                 .build();
 
-        // "Act"
-        Executable act = () -> {
-            var newKitStatus = livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, enrollee, kitRequest, address);
-            log.info(newKitStatus);
-        };
+        // Act
+        var sendKitResponse = livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, enrollee, kitRequest, address);
+        log.info(sendKitResponse);
 
         // Assert
-        PepperException pepperException = assertThrows(PepperException.class, act);
-        assertThat(pepperException.getErrorResponse().getErrorMessage(), equalTo("UNKNOWN_KIT_TYPE"));
+        var status = objectMapper.readValue(sendKitResponse, PepperKitStatusResponse.class);
+        assertThat(status.getKits().length, equalTo(1));
+        assertThat(status.getKits()[0].getError(), equalTo(false));
+    }
+
+    @Transactional
+    @IntegrationTest
+    public void temp() throws Exception {
+        /*
+        {"kits":[{"error":false,"juniperKitId":"13ee49ba-712c-45d8-afb6-0382f9b039d7","dsmShippingLabel":"T7C4D54IXX4YX05","participantId":"BVESCI","labelByEmail":"","scanByEmail":"","deactivationByEmail":"","trackingScanBy":"","errorMessage":"","discardBy":""}],"isError":false}
+         */
+        var status = livePepperDSMClient.fetchKitStatus(UUID.fromString("13ee49ba-712c-45d8-afb6-0382f9b039d7"));
+        log.info(status.toString());
+        log.info(status.statusFromDates().toString());
     }
 
     @Transactional
@@ -138,4 +155,6 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
     private KitRequestFactory kitRequestFactory;
     @Autowired
     private KitTypeDao kitTypeDao;
+    @Autowired
+    private ObjectMapper objectMapper;
 }
