@@ -52,7 +52,7 @@ In IntelliJ, File -> New -> Protject from Existing Sources.  When importing the 
 ![image](https://github.com/broadinstitute/juniper/assets/2800795/dd2cf363-f761-47bc-9620-28e47a20feff)
 
 
-* **server:**
+* **Server:**
 
    * Make sure IntelliJ is set to Java 17 in *two* places
       * Project Structure > Project Settings > Project > SDK
@@ -80,7 +80,7 @@ In IntelliJ, File -> New -> Protject from Existing Sources.  When importing the 
 
 ### Running the application
 #### Admin tool (study manager, population)
-* API (api-admin module)
+##### Admin API (api-admin module)
 In intelliJ, you can either run ApiAdminApp (from the api-admin module) directly, or execute the "bootRun" gradle task.
 In basic development mode, this will only serve the API, not the frontend assets.
 
@@ -99,6 +99,8 @@ From the command line:
   ```
 (note that you can just run `npm -w ui-admin start` if you don't need to test B2C login functionality)
 Then go to `localhost:3000` 
+
+#### Participant tool
 
 ##### Participant API (api-participant module)
 In intelliJ, you can either run ApiParticipantApp (from the api-participant module) directly, or execute the "bootRun" gradle task.
@@ -119,11 +121,11 @@ Then go to `sandbox.ourhealth.localhost:3001`
 
 ### Unit tests
 
-Server:
+#### Server:
 * To run all backend unit tests, you can run `./gradlew test` from the command line.
 * You can also run individual tests or test suites from IntelliJ by right-clicking on the test or test suite and selecting "Run".
 
-UI:
+#### UI:
 * You can run all frontend tests by running `npm --workspace=ui-core --workspace=ui-admin --workspace=ui-participant test` from the command line.
 * You can also run individual tests or test suites from IntelliJ by right-clicking on the test or test suite and selecting "Run".
 
