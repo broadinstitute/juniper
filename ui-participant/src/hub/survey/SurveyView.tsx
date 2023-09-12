@@ -54,18 +54,17 @@ export function RawSurveyView({ form, enrollee, resumableData, pager, studyShort
     const responseDto = {
       resumeData: getResumeData(surveyModel, enrollee.participantUserId, true),
       enrolleeId: enrollee.id,
-      // submitting re-saves the entire form.  This is as insurance against any answers getting lost or misrepresented
-      // in the diffing process
-      answers: getSurveyJsAnswerList(surveyModel),
+      answers: getUpdatedAnswers(prevSave.current as Record<string, object>, surveyModel.data),
       creatingParticipantId: enrollee.participantUserId,
       surveyId: form.id,
       complete: true
     } as SurveyResponse
 
-    await Api.submitSurveyResponse({
-      studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
-      version: form.version, response: responseDto, taskId, alertErrors: true
-    }).then(response => {
+    try {
+      const response = await Api.submitSurveyResponse({
+        studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
+        version: form.version, response: responseDto, taskId, alertErrors: true
+      })
       response.enrollee.participantTasks = response.tasks
       response.enrollee.profile = response.profile
       const hubUpdate: HubUpdate = {
@@ -74,10 +73,11 @@ export function RawSurveyView({ form, enrollee, resumableData, pager, studyShort
           type: 'success'
         }
       }
-      updateEnrollee(response.enrollee).then(() => { navigate('/hub', { state: hubUpdate }) })
-    }).catch(() => {
+      await updateEnrollee(response.enrollee)
+      navigate('/hub', { state: hubUpdate })
+    } catch {
       refreshSurvey(surveyModel, null)
-    })
+    }
   }
 
   const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData,
