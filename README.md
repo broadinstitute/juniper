@@ -64,7 +64,7 @@ In IntelliJ, File -> New -> Protject from Existing Sources.  When importing the 
        * Set the Active profiles field to: `human-readable-logging, development`
        * Disable launch optimization by clicking `Modify options > Disable launch optimization`
        * Render environment variables with `./local-dev/render_environment_vars.sh ApiAdminApp <YOUR_EMAIL>`
-         * The output should be a list of environment variables, separated by semi-colons. 
+         * The output should be a semicolon-separated list of environment variables.
          * Copy this output into the "Environment variables" field of the run configuration. (Click `Modify options > Environment variables` if this is not visible)
        * Your final Run Configuration should look similar to this:
         * <img width="840" alt="Admin API run configuration" src="https://github.com/broadinstitute/juniper/assets/7257391/ae82332c-628f-40e1-8917-b7536af1eb02">
