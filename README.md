@@ -43,12 +43,9 @@ DTOs, and populate services.  the PopulateCliApp can be used to populate specifi
 ### Setup
 
 #### Database setup
-run `./local-dev/run_postgres.sh start`
-This will start a Postgres container with a schema and user configured. This Postgres container is utilized by both the
-local development environment and the tests.
-
-Ensure that you don't have another instance of Postgres running on your machine, otherwise the ports will likely
-conflict and you
+Run `./local-dev/run_postgres.sh start`
+This will start a Postgres container with a schema and database user configured. This Postgres container is utilized by both the
+local development environment and the unit/integration tests.
 
 #### IDE Setup
 In IntelliJ, File -> New -> Protject from Existing Sources.  When importing the project, make sure it's set as a gradle project  
@@ -62,25 +59,25 @@ In IntelliJ, File -> New -> Protject from Existing Sources.  When importing the 
       * Preferences > Build, Execution, Deployment > Build Tools > Gradle > Gradle Projects > \[this project\] > Gradle JVM
          * Recommended setting for this is "Project SDK"
    * In Preferences > Build, Execution, Deployment > Compiler > Annotation Processors, make sure annotation processing is enabled (otherwise lombok getters/setters won't work)
-   * Create two Spring Boot Run/Debug Configurations by going to Run > Edit Configurations > + > Spring Boot
+   * Create these two Spring Boot Run/Debug Configurations by going to Run > Edit Configurations > + > Spring Boot
      * ApiAdminApp (in api-admin module)
-       * Set active profiles to: `human-readable-logging, development`
-       * Disable launch optimization: `Modify options > Disable launch optimization`
+       * Set the Active profiles field to: `human-readable-logging, development`
+       * Disable launch optimization by clicking `Modify options > Disable launch optimization`
        * Render environment variables with `./local-dev/render_environment_vars.sh ApiAdminApp <YOUR_EMAIL>`
          * The output should be a list of environment variables, separated by semi-colons. 
-         * Copy this output into the "Environment Variables" field of the run configuration.
+         * Copy this output into the "Environment variables" field of the run configuration. (Click `Modify options > Environment variables` if this is not visible)
        * Your final Run Configuration should look similar to this:
          * ![image](https://raw.githubusercontent.com/broadinstitute/juniper/98da04431683eef17d1507b8db714e2bc8ac538c/api_admin_app_run_config.png)
      * ApiParticipantApp (in api-participant module)
-        * Set active profiles to: `human-readable-logging, development`
-        * Disable launch optimization: `Modify options > Disable launch optimization`
+        * Set the Active profiles field to: `human-readable-logging, development`
+        * Disable launch optimization by clicking `Modify options > Disable launch optimization`
         * Render environment variables with `./local-dev/render_environment_vars.sh ApiParticipantApp <YOUR_EMAIL>`
           * The output should be a semicolon-separated list of environment variables.
-          * Copy this output into the "Environment Variables" field of the run configuration. (Click `Modify options > Environment variables` if this is not visible)
+          * Copy this output into the "Environment variables" field of the run configuration. (Click `Modify options > Environment variables` if this is not visible)
         * Your final Run Configuration should look similar to this:
           * ![image](https://raw.githubusercontent.com/broadinstitute/juniper/98da04431683eef17d1507b8db714e2bc8ac538c/api_participant_app_run_config.png)
-        
-         
+
+
 ### Running the application
 #### Admin tool (study manager, population)
 * API (api-admin module)
@@ -120,6 +117,9 @@ If on OS X, try running `brew install pkg-config cairo pango libpng jpeg giflib 
 Then go to `sandbox.ourhealth.localhost:3001`
 (Notice how you need the environment name and portal name as subdomains)
 
+### Unit tests
+
+TODO
 
 ### Feature Development 
 
