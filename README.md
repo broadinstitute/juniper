@@ -119,7 +119,13 @@ Then go to `sandbox.ourhealth.localhost:3001`
 
 ### Unit tests
 
-TODO
+Server:
+* To run all backend unit tests, you can run `./gradlew test` from the command line.
+* You can also run individual tests or test suites from IntelliJ by right-clicking on the test or test suite and selecting "Run".
+
+UI:
+* You can run all frontend tests by running `npm --workspace=ui-core --workspace=ui-admin --workspace=ui-participant test` from the command line.
+* You can also run individual tests or test suites from IntelliJ by right-clicking on the test or test suite and selecting "Run".
 
 ### Feature Development 
 
