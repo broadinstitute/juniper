@@ -57,7 +57,7 @@ Open the root folder in IntelliJ.
       * Preferences > Build, Execution, Deployment > Build Tools > Gradle > Gradle Projects > \[this project\] > Gradle JVM
          * Recommended setting for this is "Project SDK"
    * In Preferences > Build, Execution, Deployment > Compiler > Annotation Processors, make sure annotation processing is enabled (otherwise lombok getters/setters won't work)
-   * Create two Spring Boot Run/Debug Configurations.
+   * Create two Spring Boot Run/Debug Configurations (Run > Edit Configurations)
      * ApiAdminApp (in api-admin module)
        * set active profiles of "human-readable-logging" and "development"
        * disable launch optimization
@@ -82,7 +82,7 @@ Open the root folder in IntelliJ.
 ### Running the application
 #### Admin tool (study manager, population)
 * API (api-admin module)
-In intelliJ, you can either run ApiAdminApp (from the api-admin module) directly, or execute the "bootRun" gradle task.
+In intelliJ, you can either run ApiAdminApp directly (use the Run menu to choose ApiAdminApp), or execute the "bootRun" gradle task.
 In basic development mode, this will only serve the API, not the frontend assets.
 
 To make the application useful, you will want to populate some users and studies.  After the admin API is running, 
@@ -102,7 +102,7 @@ From the command line:
 Then go to `localhost:3000` 
 
 ##### Participant API (api-participant module)
-In intelliJ, you can either run ApiParticipantApp (from the api-participant module) directly, or execute the "bootRun" gradle task.
+In intelliJ, you can either run ApiParticipantApp directly (use the Run menu to choose ApiParticipantApp), or execute the "bootRun" gradle task.
 In basic development mode, this will only serve the API, not the frontend assets.
 
 ##### Participant UI (ui-participant module)

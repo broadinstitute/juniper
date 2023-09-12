@@ -30,7 +30,7 @@ public class BaseSeedPopulator {
                     "adminUsers/myanaman.json", "adminUsers/kkaratza.json",
                     "adminUsers/jkorte.json", "adminUsers/egwozdz.json",
                     "adminUsers/mflinn.json", "adminUsers/nwatts.json",
-                    "adminUsers/mbemis.json");
+                    "adminUsers/mbemis.json", "adminUsers/cunningh.json");
     public static final List<String> ENVIRONMENTS_TO_POPULATE =
             Arrays.asList("environments/sandbox.json", "environments/irb.json", "environments/live.json");
 
