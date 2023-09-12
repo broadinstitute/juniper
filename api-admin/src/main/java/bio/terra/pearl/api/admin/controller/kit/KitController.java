@@ -53,7 +53,8 @@ public class KitController implements KitApi {
       String kitType) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     try {
-      KitRequest sampleKit = kitExtService.requestKit(adminUser, enrolleeShortcode, kitType);
+      KitRequest sampleKit =
+          kitExtService.requestKit(adminUser, studyShortcode, enrolleeShortcode, kitType);
       return ResponseEntity.ok(sampleKit);
     } catch (PepperException e) {
       log.error("Error requesting sample kit from Pepper", e);

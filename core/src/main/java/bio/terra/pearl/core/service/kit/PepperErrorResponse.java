@@ -1,15 +1,18 @@
 package bio.terra.pearl.core.service.kit;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import javax.validation.constraints.NotNull;
+
 @Getter @Setter
 @SuperBuilder @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @ToString
-public class PepperErrorResponse {
+public class PepperErrorResponse extends PepperResponse {
+    @NotNull
     private String errorMessage;
+    @NotNull
     private String juniperKitId;
     private String value;
 }

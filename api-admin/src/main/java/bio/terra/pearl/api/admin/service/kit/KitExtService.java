@@ -37,7 +37,7 @@ public class KitExtService {
     authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
 
     return enrolleeShortcodes.stream()
-        .map(enrolleeShortcode -> requestKit(adminUser, enrolleeShortcode, kitType))
+        .map(enrolleeShortcode -> requestKit(adminUser, studyShortcode, enrolleeShortcode, kitType))
         .toList();
   }
 
@@ -54,9 +54,10 @@ public class KitExtService {
     return kitRequestService.getSampleKitsByStudyEnvironment(studyEnvironment);
   }
 
-  public KitRequest requestKit(AdminUser adminUser, String enrolleeShortcode, String kitTypeName) {
+  public KitRequest requestKit(
+      AdminUser adminUser, String studyShortcode, String enrolleeShortcode, String kitTypeName) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(adminUser, enrolleeShortcode);
-    return kitRequestService.requestKit(adminUser, enrollee, kitTypeName);
+    return kitRequestService.requestKit(adminUser, studyShortcode, enrollee, kitTypeName);
   }
 
   public Collection<KitRequest> getKitRequests(AdminUser adminUser, String enrolleeShortcode) {
