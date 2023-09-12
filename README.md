@@ -44,7 +44,11 @@ DTOs, and populate services.  the PopulateCliApp can be used to populate specifi
 
 #### Database setup
 run `./local-dev/run_postgres.sh start`
-This will start a postgres container with a schema and user configured
+This will start a Postgres container with a schema and user configured. This Postgres container is utilized by both the
+local development environment and the tests.
+
+Ensure that you don't have another instance of Postgres running on your machine, otherwise the ports will likely
+conflict and you
 
 #### IDE Setup
 In IntelliJ, File -> New -> Protject from Existing Sources.  When importing the project, make sure it's set as a gradle project  
@@ -54,31 +58,27 @@ In IntelliJ, File -> New -> Protject from Existing Sources.  When importing the 
 * **server:**
 
    * Make sure IntelliJ is set to Java 17 in *two* places
-
       * Project Structure > Project Settings > Project > SDK
       * Preferences > Build, Execution, Deployment > Build Tools > Gradle > Gradle Projects > \[this project\] > Gradle JVM
          * Recommended setting for this is "Project SDK"
    * In Preferences > Build, Execution, Deployment > Compiler > Annotation Processors, make sure annotation processing is enabled (otherwise lombok getters/setters won't work)
-   * Create two Spring Boot Run/Debug Configurations.
+   * Create two Spring Boot Run/Debug Configurations by going to Run > Edit Configurations > + > Spring Boot
      * ApiAdminApp (in api-admin module)
-       * set active profiles of "human-readable-logging" and "development"
-       * disable launch optimization
-       * set environment variable: `REDIRECT_ALL_EMAILS_TO=<<your email address>>`
-       * set environment variable: `TDR_SA_CREDS=<<vault read -field=sa-key.json.b64 secret/dsp/ddp/d2p/dev/d2p-tdr-sa>>`
-       * set environment variable: `B2C_TENANT_NAME=ddpdevb2c`
-       * set environment variable: `B2C_CLIENT_ID=<<vault read -field value secret/dsp/ddp/b2c/dev/application_id>>`
-       * set environment variable: `B2C_POLICY_NAME=B2C_1A_ddp_participant_signup_signin_dev`
-       * set environment variable: `DSM_JWT_SIGNING_SECRET=<<vault read -field jwt_signing_secret secret/dsp/ddp/d2p/dev/dsm>>`
-       * set environment variable: `SENDGRID_API_KEY=<<vault read -field=api_key secret/dsp/ddp/d2p/dev/sendgrid>>`
+       * Set active profiles to: `human-readable-logging, development`
+       * Disable launch optimization: `Modify options > Disable launch optimization`
+       * Render environment variables with `./local-dev/render_environment_vars.sh ApiAdminApp <YOUR_EMAIL>`
+         * The output should be a list of environment variables, separated by semi-colons. 
+         * Copy this output into the "Environment Variables" field of the run configuration.
+       * Your final Run Configuration should look similar to this:
+         * ![image](https://raw.githubusercontent.com/broadinstitute/juniper/98da04431683eef17d1507b8db714e2bc8ac538c/api_admin_app_run_config.png)
      * ApiParticipantApp (in api-participant module)
-        * set active profiles of "human-readable-logging" and "development"
-        * set environment variable: `SENDGRID_API_KEY=<<vault read -field=api_key secret/dsp/ddp/d2p/dev/sendgrid>>`
-        * set environment variable: `REDIRECT_ALL_EMAILS_TO=<<your email address>>`
-        * set environment variable: `B2C_TENANT_NAME=ddpdevb2c`
-        * set environment variable: `B2C_CLIENT_ID=<<vault read -field value secret/dsp/ddp/b2c/dev/application_id>>`
-        * set environment variable: `B2C_POLICY_NAME=B2C_1A_ddp_participant_signup_signin_dev`
-        * set environment variable: `B2C_CHANGE_PASSWORD_POLICY_NAME=B2C_1A_ddp_participant_change_password_dev`
-        * disable launch optimization
+        * Set active profiles to: `human-readable-logging, development`
+        * Disable launch optimization: `Modify options > Disable launch optimization`
+        * Render environment variables with `./local-dev/render_environment_vars.sh ApiParticipantApp <YOUR_EMAIL>`
+          * The output should be a semicolon-separated list of environment variables.
+          * Copy this output into the "Environment Variables" field of the run configuration. (Click `Modify options > Environment variables` if this is not visible)
+        * Your final Run Configuration should look similar to this:
+          * ![image](https://raw.githubusercontent.com/broadinstitute/juniper/98da04431683eef17d1507b8db714e2bc8ac538c/api_participant_app_run_config.png)
         
          
 ### Running the application
