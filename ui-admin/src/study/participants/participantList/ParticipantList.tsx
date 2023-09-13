@@ -12,7 +12,7 @@ import {
   SortingState,
   useReactTable, VisibilityState
 } from '@tanstack/react-table'
-import { ColumnVisibilityControl, IndeterminateCheckbox, tableHeader } from 'util/tableUtils'
+import {basicTableLayout, ColumnVisibilityControl, IndeterminateCheckbox, tableHeader} from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import AdHocEmailModal from '../AdHocEmailModal'
@@ -20,14 +20,13 @@ import { facetValuesFromString, SAMPLE_FACETS, FacetValue }
   from 'api/enrolleeSearch'
 import { Button } from 'components/forms/Button'
 import { instantToDefaultString } from 'util/timeUtils'
-import { doApiLoad } from '../../../util/api-utils'
+import {doApiLoad, useLoadingEffect} from '../../../util/api-utils'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
   const [participantList, setParticipantList] = useState<EnrolleeSearchResult[]>([])
   const [showEmailModal, setShowEmailModal] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: 'createdAt', desc: true }
   ])
@@ -127,17 +126,10 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     onRowSelectionChange: setRowSelection
   })
 
-  const searchEnrollees = async (portalShortcode: string, studyShortcode: string,
-    envName: string, facetValues: FacetValue[]) => {
-    doApiLoad(async () => {
-      const response = await Api.searchEnrollees(portalShortcode, studyShortcode, envName,
-        facetValues)
-      setParticipantList(response)
-    }, { setIsLoading })
-  }
-
-  useEffect(() => {
-    searchEnrollees(portal.shortcode, study.shortcode, currentEnv.environmentName, facetValues)
+  const {isLoading, reload} = useLoadingEffect(async () => {
+    const response = await Api.searchEnrollees(portal.shortcode,
+        study.shortcode, currentEnv.environmentName, facetValues)
+    setParticipantList(response)
   }, [portal.shortcode, study.shortcode, currentEnv.environmentName])
 
   const numSelected = Object.keys(rowSelection).length
@@ -172,28 +164,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
               <ColumnVisibilityControl table={table}/>
             </div>
           </div>
-          <table className="table table-striped">
-            <thead>
-              <tr>
-                {table.getFlatHeaders().map(header => tableHeader(header, { sortable: true, filterable: true }))}
-              </tr>
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map(row => {
-                return (
-                  <tr key={row.id}>
-                    {row.getVisibleCells().map(cell => {
-                      return (
-                        <td key={cell.id}>
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
-                      )
-                    })}
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+          { basicTableLayout(table, { filterable: true})}
           { participantList.length === 0 && <span className="text-muted fst-italic">No participants</span>}
         </LoadingSpinner>
       </div>

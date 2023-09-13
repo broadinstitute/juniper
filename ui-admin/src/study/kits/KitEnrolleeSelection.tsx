@@ -18,6 +18,7 @@ import { basicTableLayout, checkboxColumnCell, ColumnVisibilityControl, Indeterm
 import LoadingSpinner from 'util/LoadingSpinner'
 import { instantToDateString } from 'util/timeUtils'
 import RequestKitModal from '../participants/RequestKitModal'
+import {useLoadingEffect} from "../../util/api-utils";
 
 type EnrolleeRow = Enrollee & {
   taskCompletionStatus: Record<string, boolean>
@@ -28,7 +29,6 @@ type EnrolleeRow = Enrollee & {
  */
 export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
-  const [isLoading, setIsLoading] = useState(true)
   const [enrollees, setEnrollees] = useState<EnrolleeRow[]>([])
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: 'createdAt', desc: true },
@@ -44,24 +44,19 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   ])
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
 
-  const loadEnrollees = async () => {
-    setIsLoading(true)
+
+  const { isLoading, reload } = useLoadingEffect(async () => {
     const enrollees = await Api.fetchEnrolleesWithKits(
-      portal.shortcode, study.shortcode, currentEnv.environmentName)
+        portal.shortcode, study.shortcode, currentEnv.environmentName)
     const enrolleeRows = enrollees.map(enrollee => {
       const taskCompletionStatus = _mapValues(
-        _keyBy(enrollee.participantTasks, task => task.targetStableId),
-        task => task.status === 'COMPLETE'
+          _keyBy(enrollee.participantTasks, task => task.targetStableId),
+          task => task.status === 'COMPLETE'
       )
 
       return { ...enrollee, taskCompletionStatus }
     })
     setEnrollees(enrolleeRows)
-    setIsLoading(false)
-  }
-
-  useEffect(() => {
-    loadEnrollees()
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
   const onSubmit = async (kitType: string) => {
@@ -74,7 +69,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
       portal.shortcode, study.shortcode, currentEnv.environmentName, enrolleesSelected, kitType)
 
     setShowRequestKitModal(false)
-    loadEnrollees()
+    reload()
   }
 
   const numSelected = Object.keys(rowSelection).length
