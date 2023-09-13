@@ -10,6 +10,7 @@ export * from './types/task'
 
 export * from './reactUtils'
 export * from './surveyUtils'
+export * from './waitForImages'
 
 export * from './participant/landing/sections/HtmlSectionView'
 export * from './participant/landing/Markdown'

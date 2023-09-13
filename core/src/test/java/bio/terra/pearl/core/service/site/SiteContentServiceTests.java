@@ -3,7 +3,9 @@ package bio.terra.pearl.core.service.site;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.site.SiteContentFactory;
+import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.site.*;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -95,6 +97,25 @@ public class SiteContentServiceTests extends BaseSpringBootTest {
         var originalLsc = originalContent.getLocalizedSiteContents().get(0);
         assertThat(originalLsc.getNavbarItems().get(0).getHref(), equalTo("url1.com"));
         assertThat(originalLsc.getLandingPage().getSections().get(0).getRawContent(), equalTo("hello"));
+    }
 
+    @Test
+    @Transactional
+    public void testAssignPublishedVersion() {
+        SiteContent form = siteContentFactory.buildPersisted("testPublishConsent");
+        siteContentService.assignPublishedVersion(form.getId());
+        form = siteContentService.find(form.getId()).get();
+        assertThat(form.getPublishedVersion(), equalTo(1));
+
+        form.setDefaultLanguage("zzz");
+        SiteContent newForm = siteContentService.createNewVersion(form);
+
+        Assertions.assertNotEquals(newForm.getId(), form.getId());
+        // check published version was NOT copied
+        assertThat(newForm.getPublishedVersion(), equalTo(null));
+
+        siteContentService.assignPublishedVersion(newForm.getId());
+        newForm = siteContentService.find(newForm.getId()).get();
+        assertThat(newForm.getPublishedVersion(), equalTo(2));
     }
 }

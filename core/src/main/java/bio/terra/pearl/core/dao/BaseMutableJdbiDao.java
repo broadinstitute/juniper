@@ -60,6 +60,17 @@ public abstract class BaseMutableJdbiDao<T extends BaseEntity> extends BaseJdbiD
 
     /** updates a single property.  This will also update the lastUpdatedAt property too */
     protected void updateProperty(UUID id, String propertyColumn, Object propertyValue) {
+        updateProperty(id, propertyColumn, propertyValue, tableName, jdbi);
+    }
+
+    /**
+     * static method for use in DAOs that do not extend this class.  for example, if only one property
+     * of an object is intended to be mutable, that DAO can implement an explicit method for setting that property
+     * using this method.
+     *
+     * This method sets the given property and also updates lastUpdatedAt to now()
+     */
+    public static void updateProperty(UUID id, String propertyColumn, Object propertyValue, String tableName, Jdbi jdbi) {
         jdbi.withHandle(handle ->
                 handle.createUpdate("update " + tableName + " set " + propertyColumn +
                                 " = :propertyValue, last_updated_at = :lastUpdatedAt where id = :id;")

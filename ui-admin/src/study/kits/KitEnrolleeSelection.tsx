@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import _keyBy from 'lodash/keyBy'
 import _mapValues from 'lodash/mapValues'
 import { Link } from 'react-router-dom'
@@ -18,7 +18,7 @@ import { basicTableLayout, checkboxColumnCell, ColumnVisibilityControl, Indeterm
 import LoadingSpinner from 'util/LoadingSpinner'
 import { instantToDateString } from 'util/timeUtils'
 import RequestKitModal from '../participants/RequestKitModal'
-import {useLoadingEffect} from "../../util/api-utils";
+import { useLoadingEffect } from 'api/api-utils'
 
 type EnrolleeRow = Enrollee & {
   taskCompletionStatus: Record<string, boolean>
@@ -47,11 +47,11 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
 
   const { isLoading, reload } = useLoadingEffect(async () => {
     const enrollees = await Api.fetchEnrolleesWithKits(
-        portal.shortcode, study.shortcode, currentEnv.environmentName)
+      portal.shortcode, study.shortcode, currentEnv.environmentName)
     const enrolleeRows = enrollees.map(enrollee => {
       const taskCompletionStatus = _mapValues(
-          _keyBy(enrollee.participantTasks, task => task.targetStableId),
-          task => task.status === 'COMPLETE'
+        _keyBy(enrollee.participantTasks, task => task.targetStableId),
+        task => task.status === 'COMPLETE'
       )
 
       return { ...enrollee, taskCompletionStatus }

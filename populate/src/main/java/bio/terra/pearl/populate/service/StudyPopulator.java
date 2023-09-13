@@ -16,7 +16,7 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.publishing.PortalDiffService;
-import bio.terra.pearl.core.service.publishing.StudyUpdateService;
+import bio.terra.pearl.core.service.publishing.StudyPublishingService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -43,7 +43,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
     private EmailTemplatePopulator emailTemplatePopulator;
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
     private PortalDiffService portalDiffService;
-    private StudyUpdateService studyUpdateService;
+    private StudyPublishingService studyPublishingService;
     private PortalEnvironmentService portalEnvironmentService;
     private KitTypeDao kitTypeDao;
     private StudyKitTypeDao studyKitTypeDao;
@@ -54,7 +54,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
                           ConsentFormPopulator consentFormPopulator,
                           EmailTemplatePopulator emailTemplatePopulator,
                           PreEnrollmentResponseDao preEnrollmentResponseDao,
-                          PortalDiffService portalDiffService, StudyUpdateService studyUpdateService,
+                          PortalDiffService portalDiffService, StudyPublishingService studyPublishingService,
                           PortalEnvironmentService portalEnvironmentService, KitTypeDao kitTypeDao,
                           StudyKitTypeDao studyKitTypeDao) {
         this.studyService = studyService;
@@ -66,7 +66,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
         this.emailTemplatePopulator = emailTemplatePopulator;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.portalDiffService = portalDiffService;
-        this.studyUpdateService = studyUpdateService;
+        this.studyPublishingService = studyPublishingService;
         this.portalEnvironmentService = portalEnvironmentService;
         this.kitTypeDao = kitTypeDao;
         this.studyKitTypeDao = studyKitTypeDao;
@@ -178,7 +178,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
             try {
                 var studyEnvChange = portalDiffService.diffStudyEnvs(existingStudy.getShortcode(),
                         sourceEnv, destEnv);
-                studyUpdateService.applyChanges(destEnv, studyEnvChange, destPortalEnv.getId());
+                studyPublishingService.applyChanges(destEnv, studyEnvChange, destPortalEnv.getId());
             } catch (Exception e) {
                 // we probably want to move this to some sort of "PopulateException"
                 throw new IOException(e);

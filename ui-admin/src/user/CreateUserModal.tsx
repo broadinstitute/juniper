@@ -6,7 +6,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import Select from 'react-select'
-import { doApiLoad } from '../util/api-utils'
+import { doApiLoad } from '../api/api-utils'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc

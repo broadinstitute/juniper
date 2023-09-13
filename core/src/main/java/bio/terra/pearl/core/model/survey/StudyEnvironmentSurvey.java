@@ -44,6 +44,8 @@ public class StudyEnvironmentSurvey extends BaseEntity implements VersionedEntit
         return survey;
     }
     @Override
+    public UUID versionedEntityId() { return surveyId; }
+    @Override
     public void updateVersionedEntityId(UUID surveyId) {
         setSurveyId(surveyId);
     }

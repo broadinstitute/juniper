@@ -1,26 +1,24 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import Api, { EnrolleeSearchResult } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { Link, useSearchParams } from 'react-router-dom'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
   ColumnDef,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable, VisibilityState
 } from '@tanstack/react-table'
-import {basicTableLayout, ColumnVisibilityControl, IndeterminateCheckbox, tableHeader} from 'util/tableUtils'
+import { basicTableLayout, ColumnVisibilityControl, IndeterminateCheckbox } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import AdHocEmailModal from '../AdHocEmailModal'
-import { facetValuesFromString, SAMPLE_FACETS, FacetValue }
-  from 'api/enrolleeSearch'
+import { facetValuesFromString, SAMPLE_FACETS } from 'api/enrolleeSearch'
 import { Button } from 'components/forms/Button'
 import { instantToDefaultString } from 'util/timeUtils'
-import {doApiLoad, useLoadingEffect} from '../../../util/api-utils'
+import { useLoadingEffect } from 'api/api-utils'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -126,9 +124,9 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     onRowSelectionChange: setRowSelection
   })
 
-  const {isLoading, reload} = useLoadingEffect(async () => {
+  const { isLoading } = useLoadingEffect(async () => {
     const response = await Api.searchEnrollees(portal.shortcode,
-        study.shortcode, currentEnv.environmentName, facetValues)
+      study.shortcode, currentEnv.environmentName, facetValues)
     setParticipantList(response)
   }, [portal.shortcode, study.shortcode, currentEnv.environmentName])
 
@@ -138,7 +136,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     .filter(key => rowSelection[key])
     .map(key => participantList[parseInt(key)].enrollee.shortcode)
 
-  return <div className="ParticipantList container pt-2">
+  return <div className="ParticipantList container-fluid pt-2">
     <div className="row">
       <div className="col-12 align-items-baseline d-flex">
         <h2 className="h4 text-center me-4">{study.name} Participants</h2>
@@ -164,7 +162,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
               <ColumnVisibilityControl table={table}/>
             </div>
           </div>
-          { basicTableLayout(table, { filterable: true})}
+          { basicTableLayout(table, { filterable: true })}
           { participantList.length === 0 && <span className="text-muted fst-italic">No participants</span>}
         </LoadingSpinner>
       </div>

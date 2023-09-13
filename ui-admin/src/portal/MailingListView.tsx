@@ -16,7 +16,7 @@ import { escapeCsvValue, saveBlobAsDownload } from 'util/downloadUtils'
 import { failureNotification, successNotification } from '../util/notifications'
 import { Store } from 'react-notifications-component'
 import Modal from 'react-bootstrap/Modal'
-import { useLoadingEffect } from '../util/api-utils'
+import { useLoadingEffect } from '../api/api-utils'
 
 
 /** show the mailing list in table */

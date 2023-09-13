@@ -1,22 +1,20 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Api, { ExportData } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import {
-  ColumnDef, flexRender,
+  ColumnDef,
   getCoreRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
-import {basicTableLayout, tableHeader} from 'util/tableUtils'
-import { Store } from 'react-notifications-component'
-import { failureNotification } from 'util/notifications'
+import { basicTableLayout } from 'util/tableUtils'
 import ExportDataControl from './ExportDataControl'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
-import {useLoadingEffect} from "../../../util/api-utils";
+import { useLoadingEffect } from 'api/api-utils'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -65,11 +63,11 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
     onRowSelectionChange: setRowSelection
   })
 
-  const {isLoading} = useLoadingEffect(async () => {
+  const { isLoading } = useLoadingEffect(async () => {
     const response = await Api.exportEnrollees(
-        studyEnvContext.portal.shortcode,
-        studyEnvContext.study.shortcode,
-        studyEnvContext.currentEnv.environmentName, { fileFormat: 'JSON', limit: 10 })
+      studyEnvContext.portal.shortcode,
+      studyEnvContext.study.shortcode,
+      studyEnvContext.currentEnv.environmentName, { fileFormat: 'JSON', limit: 10 })
     const result = await response.json()
     setData(result)
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])

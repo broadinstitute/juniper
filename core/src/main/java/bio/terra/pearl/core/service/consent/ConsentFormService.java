@@ -13,13 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ConsentFormService extends ImmutableEntityService<ConsentForm, ConsentFormDao> implements VersionedEntityService<ConsentForm> {
+public class ConsentFormService extends VersionedEntityService<ConsentForm, ConsentFormDao> {
     public ConsentFormService(ConsentFormDao dao) {
         super(dao);
-    }
-
-    public Optional<ConsentForm> findByStableId(String stableId, int version) {
-        return dao.findByStableId(stableId, version);
     }
 
     @Transactional
@@ -33,7 +29,7 @@ public class ConsentFormService extends ImmutableEntityService<ConsentForm, Cons
     @Transactional
     public ConsentForm createNewVersion(UUID portalId, ConsentForm consentForm) {
         ConsentForm newConsent = new ConsentForm();
-        BeanUtils.copyProperties(consentForm, newConsent, "id", "version", "createdAt", "lastUpdatedAt");
+        BeanUtils.copyProperties(consentForm, newConsent, "id", "version", "createdAt", "lastUpdatedAt", "publishedVersion");
         newConsent.setPortalId(portalId);
         int nextVersion = dao.getNextVersion(consentForm.getStableId());
         newConsent.setVersion(nextVersion);

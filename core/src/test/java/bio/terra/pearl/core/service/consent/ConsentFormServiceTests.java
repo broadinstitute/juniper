@@ -5,11 +5,15 @@ import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.consent.ConsentFormFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.consent.ConsentForm;
+import bio.terra.pearl.core.model.survey.Survey;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 public class ConsentFormServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -34,20 +38,42 @@ public class ConsentFormServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testCreateNewVersion() {
-        ConsentForm survey = consentFormFactory.buildPersisted("testPublishConsent");
+        ConsentForm form = consentFormFactory.buildPersisted("testPublishConsent");
         AdminUser user = adminUserFactory.buildPersisted("testPublishConsent");
-        String oldContent = survey.getContent();
+        String oldContent = form.getContent();
         String newContent = "totally different " + RandomStringUtils.randomAlphabetic(6);
-        survey.setContent(newContent);
-        ConsentForm newSurvey = consentFormService.createNewVersion(survey.getPortalId(), survey);
+        form.setContent(newContent);
+        ConsentForm newSurvey = consentFormService.createNewVersion(form.getPortalId(), form);
 
-        Assertions.assertNotEquals(newSurvey.getId(), survey.getId());
+        Assertions.assertNotEquals(newSurvey.getId(), form.getId());
         // check version was incremented and content was modified
-        Assertions.assertEquals(survey.getVersion() + 1, newSurvey.getVersion());
+        Assertions.assertEquals(form.getVersion() + 1, newSurvey.getVersion());
         Assertions.assertEquals(newContent, newSurvey.getContent());
 
         // confirm the existing survey wasn't modified
-        ConsentForm fetchedOriginal = consentFormService.find(survey.getId()).get();
+        ConsentForm fetchedOriginal = consentFormService.find(form.getId()).get();
         Assertions.assertEquals(oldContent, fetchedOriginal.getContent());
     }
+
+    @Test
+    @Transactional
+    public void testAssignPublishedVersion() {
+        ConsentForm form = consentFormFactory.buildPersisted("testPublishConsent");
+        consentFormService.assignPublishedVersion(form.getId());
+        form = consentFormService.find(form.getId()).get();
+        assertThat(form.getPublishedVersion(), equalTo(1));
+
+        String newContent = String.format("{\"pages\":[],\"title\":\"%s\"}", RandomStringUtils.randomAlphabetic(6));
+        form.setContent(newContent);
+        ConsentForm  newForm = consentFormService.createNewVersion(form.getPortalId(), form);
+
+        Assertions.assertNotEquals(newForm.getId(), form.getId());
+        // check published version was NOT copied
+        assertThat(newForm.getPublishedVersion(), equalTo(null));
+
+        consentFormService.assignPublishedVersion(newForm.getId());
+        newForm = consentFormService.find(newForm.getId()).get();
+        assertThat(newForm.getPublishedVersion(), equalTo(2));
+    }
+
 }

@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.site.*;
 
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.ImmutableEntityService;
+import bio.terra.pearl.core.service.VersionedEntityService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,20 +15,12 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-public class SiteContentService extends ImmutableEntityService<SiteContent, SiteContentDao> {
+public class SiteContentService extends VersionedEntityService<SiteContent, SiteContentDao> {
     private LocalizedSiteContentService localizedSiteContentService;
 
     public SiteContentService(SiteContentDao dao, LocalizedSiteContentService localizedSiteContentService) {
         super(dao);
         this.localizedSiteContentService = localizedSiteContentService;
-    }
-
-    public Optional<SiteContent> findByStableId(String stableId, int version) {
-        return dao.findOne(stableId, version);
-    }
-
-    public List<SiteContent> findByStableId(String stableId) {
-        return dao.findByStableId(stableId);
     }
 
     /** attaches all the content (pages, sections, navbar) children for the given language to the SiteContent */
@@ -76,14 +69,11 @@ public class SiteContentService extends ImmutableEntityService<SiteContent, Site
         }
     }
 
-    public int getNextVersion(String stableId) {
-        return dao.getNextVersion(stableId);
-    }
-
     /** strip out all ids so fresh copies of everything will be made in the DB */
     @Override
     public SiteContent cleanForCopying(SiteContent siteContent) {
         siteContent.cleanForCopying();
+        siteContent.setPublishedVersion(null);
         siteContent.getLocalizedSiteContents().stream().forEach(lsc -> cleanForCopying(lsc));
         return siteContent;
     }

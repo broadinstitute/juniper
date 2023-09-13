@@ -6,7 +6,7 @@ import { cloneDeep } from 'lodash'
 import { MetricInfo } from './StudyEnvMetricsView'
 import Plot from 'react-plotly.js'
 import { instantToDefaultString } from 'util/timeUtils'
-import { useLoadingEffect } from 'util/api-utils'
+import { useLoadingEffect } from 'api/api-utils'
 
 const EXPORT_DELIMITER = '\t'
 

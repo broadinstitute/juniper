@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
 
@@ -9,7 +9,7 @@ import Api, { StudyEnvironmentSurvey, Survey } from 'api/api'
 import { failureNotification, successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
 import LoadingSpinner from 'util/LoadingSpinner'
-import {useLoadingEffect} from "../../util/api-utils";
+import { useLoadingEffect } from '../../api/api-utils'
 
 export type SurveyParamsT = StudyParams & {
   surveyStableId: string,
@@ -69,7 +69,7 @@ export const useLoadedSurvey = (portalShortcode: string, stableId: string, versi
   const [survey, setSurvey] = useState<Survey | undefined>()
 
   /** load the survey from the server to get answer mappings and ensure we've got the latest content */
-  const {isLoading} = useLoadingEffect( async () => {
+  const { isLoading } = useLoadingEffect(async () => {
     const survey = await Api.getSurvey(portalShortcode, stableId, version)
     setSurvey(survey)
   }, [portalShortcode, stableId, version])

@@ -10,7 +10,7 @@ import { successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { useLoadedSurvey, useSurveyParams } from './SurveyView'
-import { doApiLoad } from '../../util/api-utils'
+import { doApiLoad } from '../../api/api-utils'
 
 
 export type SurveyParamsT = StudyParams & {

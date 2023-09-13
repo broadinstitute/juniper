@@ -3,6 +3,7 @@ import 'react-notifications-component/dist/theme.css'
 import 'styles/notifications.css'
 import 'survey-core/defaultV2.min.css'
 import './App.css'
+import './print.css'
 
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
 import { ReactNotifications } from 'react-notifications-component'
@@ -69,7 +70,7 @@ function PageFrame() {
   return (
     <div className="d-flex">
       <AdminSidebar/>
-      <div className="flex-grow-1 d-flex flex-column">
+      <div className="flex-grow-1 d-flex flex-column" style={{ backgroundColor: '#ededed' }}>
         <AdminNavbar/>
         <Outlet/>
       </div>

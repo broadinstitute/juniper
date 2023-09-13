@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import _capitalize from 'lodash/capitalize'
 import _fromPairs from 'lodash/fromPairs'
 import _groupBy from 'lodash/groupBy'
@@ -13,7 +13,7 @@ import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { basicTableLayout, ColumnVisibilityControl } from 'util/tableUtils'
 import { instantToDateString, isoToInstant } from 'util/timeUtils'
-import {useLoadingEffect} from "../../util/api-utils";
+import { useLoadingEffect } from '../../api/api-utils'
 
 type KitStatusTabConfig = {
   status: string,

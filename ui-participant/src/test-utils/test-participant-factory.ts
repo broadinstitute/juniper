@@ -1,4 +1,5 @@
-import { Enrollee, ParticipantUser } from 'api/api'
+import { Enrollee, HubResponse, ParticipantUser, Profile } from 'api/api'
+
 
 /** gets a mock ParticipantUser */
 export const mockParticipantUser: () => ParticipantUser = () => {
@@ -28,5 +29,22 @@ export const mockEnrollee: () => Enrollee = () => {
     createdAt: 0,
     lastUpdatedAt: 0,
     studyEnvironmentId: 'studyEnv1'
+  }
+}
+
+/** mock enrollee profile */
+export const mockProfile = (): Profile => {
+  return {
+    sexAtBirth: 'female'
+  }
+}
+
+/** mock hub response including no tasks and a mock enrollee */
+export const mockHubResponse = (): HubResponse => {
+  return {
+    enrollee: mockEnrollee(),
+    tasks: [],
+    response: {},
+    profile: mockProfile()
   }
 }

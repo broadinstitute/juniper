@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { failureNotification } from './notifications'
+import { failureNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 
 export type ApiErrorResponse = {
