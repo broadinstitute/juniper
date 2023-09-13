@@ -101,12 +101,12 @@ describe('Renders a survey', () => {
     const { submitSpy } = setupSurveyTest(generateThreePageSurvey())
 
     await userEvent.click(screen.getByText('Green'))
-    await new Promise(r => setTimeout(r, 300))
+    await new Promise(r => setTimeout(r, 250))
     await userEvent.click(screen.getByText('Next'))
     expect(screen.getByText('You are on page2')).toBeInTheDocument()
     await userEvent.type(screen.getByText('text input'), 'my Text')
     await userEvent.click(screen.getByText('Next'))
-    await new Promise(r => setTimeout(r, 300))
+    await new Promise(r => setTimeout(r, 250))
 
     expect(submitSpy).toHaveBeenCalledTimes(2)
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
@@ -125,10 +125,10 @@ describe('Renders a survey', () => {
     const { submitSpy } = setupSurveyTest(generateThreePageSurvey())
     await userEvent.click(screen.getByText('Green'))
     await userEvent.click(screen.getByText('Next'))
-    await new Promise(r => setTimeout(r, 300))
+    await new Promise(r => setTimeout(r, 250))
     await userEvent.click(screen.getByText('Previous'))
     await userEvent.click(screen.getByText('Blue'))
-    await new Promise(r => setTimeout(r, 300))
+    await new Promise(r => setTimeout(r, 250))
 
     expect(submitSpy).toHaveBeenCalledTimes(2)
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
@@ -147,9 +147,9 @@ describe('Renders a survey', () => {
     const { submitSpy } = setupSurveyTest(mockSurveyWithHiddenQuestion())
     await userEvent.click(screen.getByText('Green'))
     await userEvent.click(screen.getByText('forest green'))
-    await new Promise(r => setTimeout(r, 300))
+    await new Promise(r => setTimeout(r, 250))
     await userEvent.click(screen.getByText('Blue'))
-    await new Promise(r => setTimeout(r, 300))
+    await new Promise(r => setTimeout(r, 250))
     await userEvent.click(screen.getByText('Complete'))
 
     expect(submitSpy).toHaveBeenCalledTimes(3)
@@ -175,9 +175,9 @@ describe('Renders a survey', () => {
     const { submitSpy } = setupSurveyTest(mockSurveyWithHiddenQuestionClearOnHidden())
     await userEvent.click(screen.getByText('Green'))
     await userEvent.click(screen.getByText('forest green'))
-    await new Promise(r => setTimeout(r, 300))
+    await new Promise(r => setTimeout(r, 250))
     await userEvent.click(screen.getByText('Blue'))
-    await new Promise(r => setTimeout(r, 300))
+    await new Promise(r => setTimeout(r, 250))
     await userEvent.click(screen.getByText('Complete'))
 
     expect(submitSpy).toHaveBeenCalledTimes(3)
