@@ -19,6 +19,9 @@ public class FacetValueFactory {
       ),
       "participantTask", Map.of(
           "status", new FacetDefinition(CombinedStableIdFacetValue.class, new ParticipantTaskFacetSqlGenerator())
+      ),
+      "keyword", Map.of(
+              "keyword", new FacetDefinition(StringFacetValue.class, new ParticipantTaskFacetSqlGenerator())
       )
   );
 

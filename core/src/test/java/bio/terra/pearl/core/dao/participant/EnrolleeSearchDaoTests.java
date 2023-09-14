@@ -19,10 +19,8 @@ import bio.terra.pearl.core.service.participant.search.facets.CombinedStableIdFa
 import bio.terra.pearl.core.service.participant.search.facets.IntRangeFacetValue;
 import bio.terra.pearl.core.service.participant.search.facets.StableIdStringFacetValue;
 import bio.terra.pearl.core.service.participant.search.facets.StringFacetValue;
-import bio.terra.pearl.core.service.participant.search.facets.sql.ParticipantTaskFacetSqlGenerator;
-import bio.terra.pearl.core.service.participant.search.facets.sql.ProfileAgeFacetSqlGenerator;
-import bio.terra.pearl.core.service.participant.search.facets.sql.ProfileFacetSqlGenerator;
-import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
+import bio.terra.pearl.core.service.participant.search.facets.sql.*;
+
 import java.time.LocalDate;
 import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -94,6 +92,30 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
     assertThat(result, hasSize(1));
     assertThat(result.get(0).getEnrollee().getShortcode(), equalTo(maleEnrollee.getShortcode()));
     assertThat(result.get(0).getProfile().getSexAtBirth(), equalTo("male"));
+  }
+
+  @Test
+  @Transactional
+  public void testKeywordSearch() {
+    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted("testKeywordSearch");
+
+    Profile profile = Profile.builder().givenName("mark").build();
+    Enrollee markGivenNameEnrollee = enrolleeFactory.buildPersisted("testKeywordSearch", studyEnv, profile);
+    Profile profile2 = Profile.builder().givenName("matt").build();
+    Enrollee mattGivenNameEnrollee = enrolleeFactory.buildPersisted("testKeywordSearch", studyEnv, profile2);
+    Profile profile3 = Profile.builder().givenName("steve").build();
+    enrolleeFactory.buildPersisted("testKeywordSearch", studyEnv, profile3);
+
+    SqlSearchableFacet facet = new SqlSearchableFacet(new StringFacetValue(
+            "keyword", List.of("mark")), new KeywordFacetSqlGenerator());
+    var result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
+    assertThat(result, hasSize(1));
+    assertThat(result.get(0).getEnrollee().getShortcode(), equalTo(markGivenNameEnrollee.getShortcode()));
+
+    facet = new SqlSearchableFacet(new StringFacetValue(
+            "keyword", List.of("ma")), new KeywordFacetSqlGenerator());
+    result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
+    assertThat(result, hasSize(2));
   }
 
   @Test

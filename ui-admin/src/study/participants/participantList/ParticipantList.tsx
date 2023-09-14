@@ -19,6 +19,7 @@ import { facetValuesFromString, SAMPLE_FACETS } from 'api/enrolleeSearch'
 import { Button } from 'components/forms/Button'
 import { instantToDefaultString } from 'util/timeUtils'
 import { useLoadingEffect } from 'api/api-utils'
+import EnrolleeSearchFacets from "./facets/EnrolleeSearchFacets";
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -141,7 +142,10 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
       <div className="col-12 align-items-baseline d-flex">
         <h2 className="h4 text-center me-4">{study.name} Participants</h2>
       </div>
-      <div className="col-12">
+      <div className="col-3">
+        <EnrolleeSearchFacets facets={facetValues} facetValues={facetValues} updateFacetValues={}
+      </div>
+      <div className="col-9">
         <LoadingSpinner isLoading={isLoading}>
           <div>
             <div className="d-flex align-items-center">

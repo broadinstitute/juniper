@@ -2,6 +2,7 @@ package bio.terra.pearl.api.admin.service.forms;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.mockito.Mockito.when;
 
 import bio.terra.pearl.api.admin.service.AuthUtilService;
@@ -14,10 +15,13 @@ import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -57,6 +61,21 @@ public class SurveyExtServiceTests {
             () ->
                 surveyExtService.createConfiguredSurvey(
                     "foo", "bar", EnvironmentName.irb, null, user));
+  }
+
+  @Test
+  public void createAssignsDateAndVersion() {
+    AdminUser user = AdminUser.builder().superuser(true).build();
+    when(mockAuthUtilService.authUserToPortal(user, "foo"))
+        .thenReturn(Portal.builder().id(UUID.randomUUID()).build());
+    Survey survey =
+        Survey.builder().stableId("createAssignsDate").name("createAssignsDate Test").build();
+    surveyExtService.create("foo", survey, user);
+    ArgumentCaptor<Survey> argumentCaptor = ArgumentCaptor.forClass(Survey.class);
+
+    Mockito.verify(mockSurveyService).create(argumentCaptor.capture());
+    assertThat(
+        argumentCaptor.getValue().getCreatedAt(), greaterThan(Instant.now().minusMillis(200)));
   }
 
   @Test
