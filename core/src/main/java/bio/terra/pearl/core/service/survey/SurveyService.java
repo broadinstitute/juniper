@@ -12,7 +12,6 @@ import bio.terra.pearl.core.service.VersionedEntityService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.time.Instant;
 import java.util.*;
 import org.springframework.beans.BeanUtils;
@@ -52,7 +51,6 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         Instant now = Instant.now();
         survey.setCreatedAt(now);
         survey.setLastUpdatedAt(now);
-
         Survey savedSurvey = dao.create(survey);
         for (AnswerMapping answerMapping : survey.getAnswerMappings()) {
             answerMapping.setSurveyId(savedSurvey.getId());

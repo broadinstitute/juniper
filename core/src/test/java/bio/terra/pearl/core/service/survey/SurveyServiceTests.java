@@ -14,7 +14,6 @@ import static org.hamcrest.Matchers.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.List;
 
 public class SurveyServiceTests extends BaseSpringBootTest {
