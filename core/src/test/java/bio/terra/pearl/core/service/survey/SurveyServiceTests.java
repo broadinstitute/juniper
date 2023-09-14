@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 
 public class SurveyServiceTests extends BaseSpringBootTest {
@@ -27,6 +28,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testCreateSurvey() {
+        Instant now = Instant.now();
         Survey survey = surveyFactory.builder("testPublishSurvey").build();
         Survey savedSurvey = surveyService.create(survey);
         DaoTestUtils.assertGeneratedProperties(savedSurvey);
@@ -34,6 +36,8 @@ public class SurveyServiceTests extends BaseSpringBootTest {
 
         Survey fetchedSurvey = surveyService.findByStableId(savedSurvey.getStableId(), savedSurvey.getVersion()).get();
         Assertions.assertEquals(fetchedSurvey.getId(), savedSurvey.getId());
+        assertThat(survey.getCreatedAt(), greaterThan(now));
+        assertThat(survey.getLastUpdatedAt(), greaterThan(now));
     }
 
     @Test
