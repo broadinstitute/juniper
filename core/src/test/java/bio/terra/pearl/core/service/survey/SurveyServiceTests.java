@@ -28,16 +28,15 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testCreateSurvey() {
-        Instant now = Instant.now();
         Survey survey = surveyFactory.builder("testPublishSurvey").build();
+        survey.setCreatedAt(null);
+        survey.setLastUpdatedAt(null);
         Survey savedSurvey = surveyService.create(survey);
         DaoTestUtils.assertGeneratedProperties(savedSurvey);
         Assertions.assertEquals(savedSurvey.getName(), survey.getName());
 
         Survey fetchedSurvey = surveyService.findByStableId(savedSurvey.getStableId(), savedSurvey.getVersion()).get();
         Assertions.assertEquals(fetchedSurvey.getId(), savedSurvey.getId());
-        assertThat(survey.getCreatedAt(), greaterThan(now));
-        assertThat(survey.getLastUpdatedAt(), greaterThan(now));
     }
 
     @Test

@@ -9,7 +9,6 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.BeanUtils;
@@ -56,9 +55,6 @@ public class SurveyExtService {
     }
     survey.setPortalId(portal.getId());
     survey.setVersion(1);
-    Instant now = Instant.now();
-    survey.setCreatedAt(now);
-    survey.setLastUpdatedAt(now);
     return surveyService.create(survey);
   }
 
