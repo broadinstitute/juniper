@@ -15,14 +15,13 @@ type FormContentEditorProps = {
   initialContent: string
   visibleVersionPreviews: VersionedForm[]
   readOnly: boolean
-  designerIsValid: boolean
   onChange: OnChangeFormContent
 }
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
 export const FormContentEditor = (props: FormContentEditorProps) => {
-  const { initialContent, visibleVersionPreviews, readOnly, designerIsValid, onChange } = props
+  const { initialContent, visibleVersionPreviews, readOnly, onChange } = props
 
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [tabsEnabled, setTabsEnabled] = useState(true)
@@ -39,7 +38,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
         onSelect={setActiveTab}
       >
         <Tab
-          disabled={activeTab !== 'designer' && (!tabsEnabled || !designerIsValid)}
+          disabled={activeTab !== 'designer' && !tabsEnabled}
           eventKey="designer"
           title="Designer"
         >
@@ -47,7 +46,6 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             <FormDesigner
               readOnly={readOnly}
               value={editedContent}
-              isValid={designerIsValid}
               onChange={newContent => {
                 setEditedContent(newContent)
                 try {
@@ -62,7 +60,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           </ErrorBoundary>
         </Tab>
         <Tab
-          disabled={activeTab !== 'json' && (!tabsEnabled || !designerIsValid)}
+          disabled={activeTab !== 'json' && !tabsEnabled}
           eventKey="json"
           title="JSON Editor"
         >
@@ -83,7 +81,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           </ErrorBoundary>
         </Tab>
         <Tab
-          disabled={activeTab !== 'preview' && (!tabsEnabled || !designerIsValid)}
+          disabled={activeTab !== 'preview' && !tabsEnabled}
           eventKey="preview"
           title="Preview"
         >
