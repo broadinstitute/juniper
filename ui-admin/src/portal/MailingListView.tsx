@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import Api, { MailingListContact, PortalEnvironment } from 'api/api'
 import { LoadedPortalContextT } from './PortalProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
@@ -16,13 +16,13 @@ import { escapeCsvValue, saveBlobAsDownload } from 'util/downloadUtils'
 import { failureNotification, successNotification } from '../util/notifications'
 import { Store } from 'react-notifications-component'
 import Modal from 'react-bootstrap/Modal'
+import { useLoadingEffect } from '../api/api-utils'
 
 
 /** show the mailing list in table */
 export default function MailingListView({ portalContext, portalEnv }:
 {portalContext: LoadedPortalContextT, portalEnv: PortalEnvironment}) {
   const [contacts, setContacts] = useState<MailingListContact[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -83,17 +83,10 @@ export default function MailingListView({ portalContext, portalEnv }:
   }
   const numSelected = Object.keys(rowSelection).length
 
-  const loadMailingList = () => {
-    setIsLoading(true)
-    setRowSelection({})
-    Api.fetchMailingList(portalContext.portal.shortcode, portalEnv.environmentName).then(result => {
-      setContacts(result)
-      setIsLoading(false)
-    }).catch((e: Error) => {
-      alert(`error loading mailing list ${  e}`)
-      setIsLoading(false)
-    })
-  }
+  const { isLoading, reload } = useLoadingEffect(async () => {
+    const result = await Api.fetchMailingList(portalContext.portal.shortcode, portalEnv.environmentName)
+    setContacts(result)
+  }, [portalContext.portal.shortcode, portalEnv.environmentName])
 
   const performDelete = async () => {
     const contactsSelected = Object.keys(rowSelection)
@@ -111,13 +104,9 @@ export default function MailingListView({ portalContext, portalEnv }:
     } catch {
       Store.addNotification(failureNotification('Error: some entries could not be removed'))
     }
-    loadMailingList() // just reload the whole thing to be safe
+    reload() // just reload the whole thing to be safe
     setShowDeleteConfirm(false)
   }
-
-  useEffect(() => {
-    loadMailingList()
-  }, [portalContext.portal.shortcode, portalEnv.environmentName])
 
   return <div className="container p-3">
     <h1 className="h4">Mailing list </h1>

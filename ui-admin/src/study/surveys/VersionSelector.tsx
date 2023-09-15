@@ -1,15 +1,14 @@
-import React, { useEffect, useId, useState } from 'react'
+import React, { useId, useState } from 'react'
 import LoadingSpinner from 'util/LoadingSpinner'
 import Api, { VersionedForm } from 'api/api'
 import Modal from 'react-bootstrap/Modal'
 import { Button } from 'components/forms/Button'
 import { instantToDefaultString } from 'util/timeUtils'
 import Select from 'react-select'
-import { failureNotification } from 'util/notifications'
-import { Store } from 'react-notifications-component'
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { StudyEnvContextT, studyEnvFormsPath } from '../StudyEnvironmentRouter'
+import { useLoadingEffect } from '../../api/api-utils'
 
 /** component for selecting versions of a form */
 export default function VersionSelector({
@@ -22,20 +21,12 @@ export default function VersionSelector({
                                             setVisibleVersionPreviews: (versions: VersionedForm[]) => void}) {
   const [versionList, setVersionList] = useState<VersionedForm[]>([])
   const [selectedVersion, setSelectedVersion] = useState<number>()
-  const [isLoading, setIsLoading] = useState(true)
   const selectId = useId()
 
-  useEffect(() => {
-    setIsLoading(true)
-    Api.getSurveyVersions(studyEnvContext.portal.shortcode, stableId).then(result => {
-      setVersionList(result.sort((a, b) => b.version - a.version))
-      setIsLoading(false)
-    }).catch(() => {
-      Store.addNotification(failureNotification('Error loading form history'))
-      setShow(false)
-      setIsLoading(false)
-    })
-  }, [])
+  const { isLoading } = useLoadingEffect(async () => {
+    const result = await Api.getSurveyVersions(studyEnvContext.portal.shortcode, stableId)
+    setVersionList(result.sort((a, b) => b.version - a.version))
+  }, [stableId])
 
   function loadVersion(version: number) {
     Api.getSurvey(studyEnvContext.portal.shortcode, stableId, version).then(result => {

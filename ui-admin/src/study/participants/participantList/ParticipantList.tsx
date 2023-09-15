@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import Api, { EnrolleeSearchResult } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { Store } from 'react-notifications-component'
-import { failureNotification } from 'util/notifications'
 import { Link, useSearchParams } from 'react-router-dom'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
@@ -17,17 +15,16 @@ import { basicTableLayout, ColumnVisibilityControl, IndeterminateCheckbox } from
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import AdHocEmailModal from '../AdHocEmailModal'
-import { facetValuesFromString, SAMPLE_FACETS, FacetValue }
-  from 'api/enrolleeSearch'
+import { facetValuesFromString, SAMPLE_FACETS } from 'api/enrolleeSearch'
 import { Button } from 'components/forms/Button'
 import { instantToDefaultString } from 'util/timeUtils'
+import { useLoadingEffect } from 'api/api-utils'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
   const [participantList, setParticipantList] = useState<EnrolleeSearchResult[]>([])
   const [showEmailModal, setShowEmailModal] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: 'createdAt', desc: true }
   ])
@@ -127,21 +124,10 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     onRowSelectionChange: setRowSelection
   })
 
-  const searchEnrollees = async (portalShortcode: string, studyShortcode: string,
-    envName: string, facetValues: FacetValue[]) => {
-    setIsLoading(true)
-    try {
-      const response = await Api.searchEnrollees(portalShortcode, studyShortcode, envName,
-        facetValues)
-      setParticipantList(response)
-    } catch (e) {
-      Store.addNotification(failureNotification('Error loading participants'))
-    }
-    setIsLoading(false)
-  }
-
-  useEffect(() => {
-    searchEnrollees(portal.shortcode, study.shortcode, currentEnv.environmentName, facetValues)
+  const { isLoading } = useLoadingEffect(async () => {
+    const response = await Api.searchEnrollees(portal.shortcode,
+      study.shortcode, currentEnv.environmentName, facetValues)
+    setParticipantList(response)
   }, [portal.shortcode, study.shortcode, currentEnv.environmentName])
 
   const numSelected = Object.keys(rowSelection).length

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import _capitalize from 'lodash/capitalize'
 import _fromPairs from 'lodash/fromPairs'
 import _groupBy from 'lodash/groupBy'
@@ -13,6 +13,7 @@ import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { basicTableLayout, ColumnVisibilityControl } from 'util/tableUtils'
 import { instantToDateString, isoToInstant } from 'util/timeUtils'
+import { useLoadingEffect } from '../../api/api-utils'
 
 type KitStatusTabConfig = {
   status: string,
@@ -101,19 +102,11 @@ const pepperStatusToHumanStatus = (pepperStatus?: PepperKitStatus): string => {
 /** Loads sample kits for a study and shows them as a list. */
 export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) {
   const { portal, study, currentEnv } = studyEnvContext
-  const [isLoading, setIsLoading] = useState(true)
   const [kits, setKits] = useState<KitRequest[]>([])
 
-  const loadKits = async () => {
-    setIsLoading(true)
-    const kits = await Api.fetchKitsByStudyEnvironment(
-      portal.shortcode, study.shortcode, currentEnv.environmentName)
+  const { isLoading } = useLoadingEffect(async () => {
+    const kits= await Api.fetchKitsByStudyEnvironment(portal.shortcode, study.shortcode, currentEnv.environmentName)
     setKits(kits)
-    setIsLoading(false)
-  }
-
-  useEffect(() => {
-    loadKits()
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
   const kitsByStatus = _groupBy(kits, kit => {

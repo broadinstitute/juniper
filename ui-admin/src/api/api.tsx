@@ -349,7 +349,7 @@ export default {
     if (response.ok) {
       return obj
     }
-    return Promise.reject(response)
+    return Promise.reject(obj)
   },
 
   async processResponse(response: Response) {
