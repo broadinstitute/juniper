@@ -28,6 +28,8 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testCreateSurvey() {
         Survey survey = surveyFactory.builder("testPublishSurvey").build();
+        survey.setCreatedAt(null);
+        survey.setLastUpdatedAt(null);
         Survey savedSurvey = surveyService.create(survey);
         DaoTestUtils.assertGeneratedProperties(savedSurvey);
         Assertions.assertEquals(savedSurvey.getName(), survey.getName());
