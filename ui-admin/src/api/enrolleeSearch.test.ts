@@ -3,7 +3,7 @@ import {
   IntRangeFacetValue,
   newFacetValue,
   facetValuesToString, StableIdStringArrayFacetValue,
-  StringFacetValue, facetValuesFromString
+  StringOptionsFacetValue, facetValuesFromString
 } from './enrolleeSearch'
 
 const rangeFacet: Facet = {
@@ -61,13 +61,14 @@ describe('enrolleeSearch newFacetValue', () => {
   })
 
   it('gets a default value for string facets', () => {
-    const facetVal: StringFacetValue = newFacetValue(stringFacet) as StringFacetValue
+    const facetVal: StringOptionsFacetValue = newFacetValue(stringFacet) as StringOptionsFacetValue
     expect(facetVal.isDefault()).toEqual(true)
     expect(facetVal.values).toEqual([])
   })
 
   it('gets a facet value with specified value for string values', () => {
-    const facetVal: StringFacetValue = newFacetValue(stringFacet, { values: ['male'] }) as StringFacetValue
+    const facetVal: StringOptionsFacetValue =
+        newFacetValue(stringFacet, { values: ['male'] }) as StringOptionsFacetValue
     expect(facetVal.isDefault()).toEqual(false)
     expect(facetVal.values).toEqual(['male'])
   })
@@ -92,12 +93,13 @@ describe('enrolleeSearch facetValuesToString', () => {
   })
 
   it('renders an empty object for facet list only containing defaults', () => {
-    const facetVal: StringFacetValue = newFacetValue(stringFacet) as StringFacetValue
+    const facetVal: StringOptionsFacetValue = newFacetValue(stringFacet) as StringOptionsFacetValue
     expect(facetValuesToString([facetVal])).toEqual('{}')
   })
 
   it('renders an object for facet list containing non-default values', () => {
-    const facetVal: StringFacetValue = newFacetValue(stringFacet, { values: ['male'] }) as StringFacetValue
+    const facetVal: StringOptionsFacetValue = newFacetValue(stringFacet,
+      { values: ['male'] }) as StringOptionsFacetValue
     expect(facetValuesToString([facetVal])).toEqual('{"profile":{"sexAtBirth":{"values":["male"]}}}')
   })
 })

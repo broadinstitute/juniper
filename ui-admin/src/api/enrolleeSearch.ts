@@ -3,12 +3,12 @@ export interface IFacetValue {
   facet: Facet
 }
 export type StringFacetValueFields = { values: string[] }
-export class StringFacetValue implements IFacetValue {
+export class StringOptionsFacetValue implements IFacetValue {
   values: string[]
 
-  facet: StringOptionsFacet | StringFacet
+  facet: StringOptionsFacet
 
-  constructor(facet: StringOptionsFacet | StringFacet, facetVal: StringFacetValueFields = { values: [] }) {
+  constructor(facet: StringOptionsFacet, facetVal: StringFacetValueFields = { values: [] }) {
     this.values = facetVal.values
     this.facet = facet
   }
@@ -17,6 +17,22 @@ export class StringFacetValue implements IFacetValue {
     return this.values.length === 0
   }
 }
+
+export class StringFacetValue implements IFacetValue {
+  values: string[]
+
+  facet: StringFacet
+
+  constructor(facet: StringFacet, facetVal: StringFacetValueFields = { values: [] }) {
+    this.values = facetVal.values
+    this.facet = facet
+  }
+
+  isDefault() {
+    return this.values.length === 0
+  }
+}
+
 export type IntRangeFacetValueFields = {
   min: number | null
   max: number | null
@@ -69,7 +85,8 @@ export class StableIdStringArrayFacetValue implements IFacetValue {
   }
 }
 
-export type FacetValue =  StringFacetValue | IntRangeFacetValue | StableIdStringArrayFacetValue
+export type FacetValue =  StringOptionsFacetValue | IntRangeFacetValue |
+    StableIdStringArrayFacetValue | StringFacetValue
 
 export type FacetType = | 'INT_RANGE' | 'STRING' | 'STRING_OPTIONS' | 'STABLEID_STRING'
 
@@ -91,7 +108,9 @@ export type FacetOption = {
 }
 
 export type StringFacet = BaseFacet & {
-  type: 'STRING'
+  type: 'STRING',
+  title: string,
+  placeholder: string
 }
 
 export type StringOptionsFacet = BaseFacet & {
@@ -146,7 +165,9 @@ export const KEYWORD_FACET: Facet = {
   category: 'keyword',
   keyName: 'keyword',
   label: 'Keyword',
-  type: 'STRING'
+  type: 'STRING',
+  title: 'search name, email and shortcode',
+  placeholder: 'Search name, email and shortcode...'
 }
 
 export const ALL_FACETS = [
@@ -174,7 +195,7 @@ export const newFacetValue = (facet: Facet, facetValue?: object): FacetValue => 
     ) : []
     return new StableIdStringArrayFacetValue(facet, { values: newValues })
   } else if (facetType === 'STRING_OPTIONS') {
-    return new StringFacetValue(facet, facetValue as StringFacetValueFields)
+    return new StringOptionsFacetValue(facet, facetValue as StringFacetValueFields)
   } else if (facetType === 'STRING') {
     return new StringFacetValue(facet, facetValue as StringFacetValueFields)
   }

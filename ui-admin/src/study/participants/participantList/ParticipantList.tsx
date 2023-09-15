@@ -13,20 +13,19 @@ import {
 } from '@tanstack/react-table'
 import { basicTableLayout, ColumnVisibilityControl, IndeterminateCheckbox } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faSearch } from '@fortawesome/free-solid-svg-icons'
+import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import AdHocEmailModal from '../AdHocEmailModal'
 import {
   ALL_FACETS,
   FacetValue,
   facetValuesFromString,
   facetValuesToString,
-  KEYWORD_FACET,
-  newFacetValue, StringFacetValue
+  KEYWORD_FACET
 } from 'api/enrolleeSearch'
 import { Button } from 'components/forms/Button'
 import { instantToDefaultString } from 'util/timeUtils'
 import { useLoadingEffect } from 'api/api-utils'
-import { getUpdatedFacetValues } from './facets/EnrolleeSearchFacets'
+import { FacetView, getUpdatedFacetValues } from './facets/EnrolleeSearchFacets'
 
 
 /** Shows a list of (for now) enrollees */
@@ -46,9 +45,8 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   const [searchParams, setSearchParams] = useSearchParams()
 
   const facetValues = facetValuesFromString(searchParams.get('facets') ?? '{}', ALL_FACETS)
-  const keywordFacet = facetValues.find(facet => facet.facet.category === 'keyword') as StringFacetValue
-  const initialKeywordVal = keywordFacet?.values[0] ?? ''
-  const [keywordFieldValue, setKeywordFieldValue] = useState(initialKeywordVal)
+  const keywordFacetIndex = facetValues.findIndex(facet => facet.facet.category === 'keyword')
+  const keywordFacetValue = facetValues[keywordFacetIndex]
 
 
   const columns = useMemo<ColumnDef<EnrolleeSearchResult, string>[]>(() => [{
@@ -141,13 +139,8 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     setSearchParams(searchParams)
   }
 
-  const updateKeyword = (keyword: string) => {
-    const keywordFacetIndex = facetValues.findIndex(facet => facet.facet.category === 'keyword')
-    let keywordFacetValue = null
-    if (keyword && keyword.length) {
-      keywordFacetValue = newFacetValue(KEYWORD_FACET, { values: [keyword] })
-    }
-    updateFacetValues(getUpdatedFacetValues(keywordFacetValue, keywordFacetIndex, facetValues))
+  const updateKeywordFacet = (facetValue: FacetValue | null) => {
+    updateFacetValues(getUpdatedFacetValues(facetValue ?? null, keywordFacetIndex, facetValues))
   }
 
   const { isLoading } = useLoadingEffect(async () => {
@@ -168,21 +161,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
         <h2 className="h4 text-center me-4 fw-bold">Participant List</h2>
       </div>
       <div className="col-12 align-items-baseline d-flex mb-3">
-        <form className="rounded-5" onSubmit={e => {
-          e.preventDefault()
-          updateKeyword(keywordFieldValue)
-        }} style={{ border: '1px solid #bbb', backgroundColor: '#fff', padding: '0.25em 0.75em 0em' }}>
-          <button type="submit" title="submit search" className="btn btn-secondary">
-            <FontAwesomeIcon icon={faSearch}/>
-          </button>
-          <input type="text" value={keywordFieldValue} size={40}
-            title="search name, email and shortcode"
-            style={{ border: 'none', outline: 'none' }}
-            placeholder="Search names, email, or shortcode..."
-            onChange={e => setKeywordFieldValue(e.target.value)}/>
-
-        </form>
-
+        <FacetView facet={KEYWORD_FACET} facetValue={keywordFacetValue} updateValue={updateKeywordFacet}/>
       </div>
       <div className="col-12">
         <LoadingSpinner isLoading={isLoading}>

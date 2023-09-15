@@ -56,7 +56,7 @@ test('filters participants based on shortcode', async () => {
 
   //Search for some unknown shortcode
   await act(() =>
-    userEvent.type(screen.getAllByPlaceholderText('Filter...')[0], 'UNKNOWN SHORTCODE')
+    userEvent.type(screen.getAllByPlaceholderText('Filter ...')[0], 'UNKNOWN SHORTCODE')
   )
 
   //Assert that JOSALK is no longer visible in the table

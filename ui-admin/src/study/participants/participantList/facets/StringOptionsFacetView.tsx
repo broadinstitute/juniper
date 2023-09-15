@@ -1,10 +1,10 @@
-import { FacetValue, StringFacetValue } from 'api/enrolleeSearch'
+import { FacetValue, StringOptionsFacetValue } from 'api/enrolleeSearch'
 import React from 'react'
 
 /** renders a facet which is a set of string values (e.g. a checkbox set for 'sexAtBirth')
  * as a set of multiselect string checkboxes */
 const StringOptionsFacetView = ({ facetValue, updateValue }:
-                           {facetValue: StringFacetValue,
+                           {facetValue: StringOptionsFacetValue,
                              updateValue: (facetValue: FacetValue | null) => void}) => {
   const values = facetValue.values
   /* updates whether a given value is checked */
@@ -15,10 +15,7 @@ const StringOptionsFacetView = ({ facetValue, updateValue }:
     } else if (!checked) {
       newValues = newValues.filter(val => val !== value)
     }
-    updateValue(new StringFacetValue(facetValue.facet, { values: newValues }))
-  }
-  if (facetValue.facet.type === 'STRING') {
-    return <div>Not supported</div>
+    updateValue(new StringOptionsFacetValue(facetValue.facet, { values: newValues }))
   }
   return <div>
     {facetValue.facet.options.map(option => {

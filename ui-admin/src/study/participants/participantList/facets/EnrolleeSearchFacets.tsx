@@ -6,12 +6,13 @@ import {
   checkExhaustiveFacetType,
   Facet,
   FacetValue, IntRangeFacetValue,
-  newFacetValue, StableIdStringArrayFacetValue,
-  StringFacetValue
+  newFacetValue, StableIdStringArrayFacetValue, StringFacetValue,
+  StringOptionsFacetValue
 } from 'api/enrolleeSearch'
 import IntRangeFacetView from './IntRangeFacetView'
 import StableIdStringFacetView from './StableIdStringFacetView'
-import StringFacetView from './StringOptionsFacetView'
+import StringOptionsFacetView from './StringOptionsFacetView'
+import StringFacetView from './StringFacetView'
 
 type EnrolleeSearchFacetsProps = {
   facets: Facet[]
@@ -75,14 +76,14 @@ export default function EnrolleeSearchFacets({ facets, facetValues, updateFacetV
 
 type FacetViewProps = {
   facet: Facet,
-  facetValue: FacetValue | undefined,
+  facetValue?: FacetValue,
   updateValue: (facetValue: FacetValue | null) => void
 }
 
 /**
  * Renders a facet with the appropriate component for the facet type.
  */
-const FacetView = ({ facet, facetValue, updateValue }: FacetViewProps) => {
+export const FacetView = ({ facet, facetValue, updateValue }: FacetViewProps) => {
   const facetType = facet.type
   if (!facetValue) {
     facetValue = newFacetValue(facet)
@@ -94,7 +95,7 @@ const FacetView = ({ facet, facetValue, updateValue }: FacetViewProps) => {
     return <StringFacetView facetValue={facetValue as StringFacetValue}
       updateValue={updateValue}/>
   } else if (facetType === 'STRING_OPTIONS') {
-    return <StringFacetView facetValue={facetValue as StringFacetValue}
+    return <StringOptionsFacetView facetValue={facetValue as StringOptionsFacetValue}
       updateValue={updateValue}/>
   } else if (facetType === 'STABLEID_STRING') {
     return <StableIdStringFacetView facetValue={facetValue as StableIdStringArrayFacetValue}
