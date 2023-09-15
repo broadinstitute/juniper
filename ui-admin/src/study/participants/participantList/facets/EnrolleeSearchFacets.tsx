@@ -11,7 +11,7 @@ import {
 } from 'api/enrolleeSearch'
 import IntRangeFacetView from './IntRangeFacetView'
 import StableIdStringFacetView from './StableIdStringFacetView'
-import StringFacetView from './StringFacetView'
+import StringFacetView from './StringOptionsFacetView'
 
 type EnrolleeSearchFacetsProps = {
   facets: Facet[]
@@ -20,27 +20,32 @@ type EnrolleeSearchFacetsProps = {
 }
 
 /**
+ *  returns a new array with updates to the value at the given index in the facetValues array.
+ *  -1 as an index will add a new value to the array
+ * if the facetValue is null, it has the effect of clearing the facetValue from the array (which will cause the
+ * facet to revert to default values
+ */
+export const getUpdatedFacetValues = (facetValue: FacetValue | null, index: number, facetValues: FacetValue[]) => {
+  const newValues = _cloneDeep(facetValues)
+  if (facetValue === null) {
+    newValues.splice(index, 1)
+  } else {
+    if (index === -1) {
+      newValues.push(facetValue)
+    } else {
+      newValues[index] = facetValue
+    }
+  }
+  return newValues
+}
+
+/**
  * Renders a list of facets in an accordion.  Takes an array of facet values -- this array should represent only
  * those facets that have user-specified non-default values.
  */
 export default function EnrolleeSearchFacets({ facets, facetValues, updateFacetValues }: EnrolleeSearchFacetsProps) {
-  /**
-   *  updates the value at the given index in the facetValue array.  -1 as an index will add a new value to the array
-   * if the facetValue is null, it has the effect of clearing the facetValue from the array (which will cause the
-   * facet to revert to default values
-   */
   const updateFacetValue = (facetValue: FacetValue | null, index: number) => {
-    const newValues = _cloneDeep(facetValues)
-    if (facetValue === null) {
-      newValues.splice(index, 1)
-    } else {
-      if (index === -1) {
-        newValues.push(facetValue)
-      } else {
-        newValues[index] = facetValue
-      }
-    }
-    updateFacetValues(newValues)
+    updateFacetValues(getUpdatedFacetValues(facetValue, index, facetValues))
   }
 
   /** clear all resets everything to defaults */
@@ -86,6 +91,9 @@ const FacetView = ({ facet, facetValue, updateValue }: FacetViewProps) => {
     return <IntRangeFacetView facetValue={facetValue as IntRangeFacetValue}
       updateValue={updateValue}/>
   } else if (facetType === 'STRING') {
+    return <StringFacetView facetValue={facetValue as StringFacetValue}
+      updateValue={updateValue}/>
+  } else if (facetType === 'STRING_OPTIONS') {
     return <StringFacetView facetValue={facetValue as StringFacetValue}
       updateValue={updateValue}/>
   } else if (facetType === 'STABLEID_STRING') {

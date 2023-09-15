@@ -3,8 +3,9 @@ import React from 'react'
 
 /** renders a facet which is a set of string values (e.g. a checkbox set for 'sexAtBirth')
  * as a set of multiselect string checkboxes */
-const StringFacetView = ({ facetValue, updateValue }:
-                           {facetValue: StringFacetValue, updateValue: (facetValue: FacetValue | null) => void}) => {
+const StringOptionsFacetView = ({ facetValue, updateValue }:
+                           {facetValue: StringFacetValue,
+                             updateValue: (facetValue: FacetValue | null) => void}) => {
   const values = facetValue.values
   /* updates whether a given value is checked */
   const setValue = (value: string, checked: boolean) => {
@@ -15,6 +16,9 @@ const StringFacetView = ({ facetValue, updateValue }:
       newValues = newValues.filter(val => val !== value)
     }
     updateValue(new StringFacetValue(facetValue.facet, { values: newValues }))
+  }
+  if (facetValue.facet.type === 'STRING') {
+    return <div>Not supported</div>
   }
   return <div>
     {facetValue.facet.options.map(option => {
@@ -28,4 +32,4 @@ const StringFacetView = ({ facetValue, updateValue }:
   </div>
 }
 
-export default StringFacetView
+export default StringOptionsFacetView

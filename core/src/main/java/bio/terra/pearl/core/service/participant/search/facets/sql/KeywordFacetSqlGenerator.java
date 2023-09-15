@@ -39,10 +39,10 @@ public class KeywordFacetSqlGenerator implements FacetSqlGenerator<StringFacetVa
                     return """
                             (profile.given_name ilike :%s 
                               OR profile.family_name ilike :%s
-                              OR profile.contactEmail ilike :%s
+                              OR profile.contact_email ilike :%s
                               OR enrollee.shortcode ilike :%s)
                             """
-                            .formatted(paramName, paramName);
+                            .formatted(paramName, paramName, paramName, paramName);
                 })
                 .collect(Collectors.joining(" AND"));
     }

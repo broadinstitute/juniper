@@ -19,7 +19,7 @@ const stringFacet: Facet = {
   category: 'profile',
   keyName: 'sexAtBirth',
   label: 'Sex at birth',
-  type: 'STRING',
+  type: 'STRING_OPTIONS',
   options: [
     { value: 'male', label: 'male' },
     { value: 'female', label: 'female' },

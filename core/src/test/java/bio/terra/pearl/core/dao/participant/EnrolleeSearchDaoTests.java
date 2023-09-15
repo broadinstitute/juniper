@@ -96,15 +96,15 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testKeywordSearch() {
+  public void testKeywordSearchGivenFamilyName() {
     StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted("testKeywordSearch");
 
-    Profile profile = Profile.builder().givenName("mark").build();
+    Profile profile = Profile.builder().givenName("mark").familyName("stewart").build();
     Enrollee markGivenNameEnrollee = enrolleeFactory.buildPersisted("testKeywordSearch", studyEnv, profile);
-    Profile profile2 = Profile.builder().givenName("matt").build();
+    Profile profile2 = Profile.builder().givenName("matt").familyName("stover").build();
     Enrollee mattGivenNameEnrollee = enrolleeFactory.buildPersisted("testKeywordSearch", studyEnv, profile2);
-    Profile profile3 = Profile.builder().givenName("steve").build();
-    enrolleeFactory.buildPersisted("testKeywordSearch", studyEnv, profile3);
+    Profile profile3 = Profile.builder().givenName("steve").familyName("mallory").build();
+    Enrollee steveGivenNameEnrollee = enrolleeFactory.buildPersisted("testKeywordSearch", studyEnv, profile3);
 
     SqlSearchableFacet facet = new SqlSearchableFacet(new StringFacetValue(
             "keyword", List.of("mark")), new KeywordFacetSqlGenerator());
@@ -114,6 +114,34 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
 
     facet = new SqlSearchableFacet(new StringFacetValue(
             "keyword", List.of("ma")), new KeywordFacetSqlGenerator());
+    result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
+    assertThat(result, hasSize(3));
+
+    facet = new SqlSearchableFacet(new StringFacetValue(
+            "keyword", List.of("allo")), new KeywordFacetSqlGenerator());
+    result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
+    assertThat(result, hasSize(1));
+    assertThat(result.get(0).getEnrollee().getShortcode(), equalTo(steveGivenNameEnrollee.getShortcode()));
+  }
+
+  @Test
+  @Transactional
+  public void testKeywordSearchEmailShortcode() {
+    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted("testKeywordSearch");
+
+    Profile profile = Profile.builder().contactEmail("m@a.com").build();
+    Enrollee maEmail = enrolleeFactory.buildPersisted("testKeywordSearch", studyEnv, profile);
+    Profile profile2 = Profile.builder().contactEmail("foo@a.com").familyName("stover").build();
+    Enrollee fooEmail = enrolleeFactory.buildPersisted("testKeywordSearch", studyEnv, profile2);
+
+    SqlSearchableFacet facet = new SqlSearchableFacet(new StringFacetValue(
+            "keyword", List.of(maEmail.getShortcode())), new KeywordFacetSqlGenerator());
+    var result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
+    assertThat(result, hasSize(1));
+    assertThat(result.get(0).getEnrollee().getShortcode(), equalTo(maEmail.getShortcode()));
+
+    facet = new SqlSearchableFacet(new StringFacetValue(
+            "keyword", List.of("a.com")), new KeywordFacetSqlGenerator());
     result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
     assertThat(result, hasSize(2));
   }

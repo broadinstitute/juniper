@@ -13,13 +13,20 @@ import {
 } from '@tanstack/react-table'
 import { basicTableLayout, ColumnVisibilityControl, IndeterminateCheckbox } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faSearch } from '@fortawesome/free-solid-svg-icons'
 import AdHocEmailModal from '../AdHocEmailModal'
-import { facetValuesFromString, SAMPLE_FACETS } from 'api/enrolleeSearch'
+import {
+  ALL_FACETS,
+  FacetValue,
+  facetValuesFromString,
+  facetValuesToString,
+  KEYWORD_FACET,
+  newFacetValue
+} from 'api/enrolleeSearch'
 import { Button } from 'components/forms/Button'
 import { instantToDefaultString } from 'util/timeUtils'
 import { useLoadingEffect } from 'api/api-utils'
-import EnrolleeSearchFacets from "./facets/EnrolleeSearchFacets";
+import { getUpdatedFacetValues } from './facets/EnrolleeSearchFacets'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -35,9 +42,9 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     'familyName': false,
     'contactEmail': false
   })
-  const [searchParams] = useSearchParams()
-
-  const facetValues = facetValuesFromString(searchParams.get('facets') ?? '{}', SAMPLE_FACETS)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [keywordFieldValue, setKeywordFieldValue] = useState('')
+  const facetValues = facetValuesFromString(searchParams.get('facets') ?? '{}', ALL_FACETS)
 
 
   const columns = useMemo<ColumnDef<EnrolleeSearchResult, string>[]>(() => [{
@@ -125,11 +132,26 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     onRowSelectionChange: setRowSelection
   })
 
+  const updateFacetValues = (facetValues: FacetValue[]) => {
+    searchParams.set('facets', facetValuesToString(facetValues))
+    setSearchParams(searchParams)
+  }
+
+  const updateKeyword = (keyword: string) => {
+    const keywordFacetIndex = facetValues.findIndex(facet => facet.facet.category === 'keyword')
+    let keywordFacetValue = null
+    if (keyword && keyword.length) {
+      keywordFacetValue = newFacetValue(KEYWORD_FACET, { values: [keyword] })
+    }
+    updateFacetValues(getUpdatedFacetValues(keywordFacetValue, keywordFacetIndex, facetValues))
+  }
+
+
   const { isLoading } = useLoadingEffect(async () => {
     const response = await Api.searchEnrollees(portal.shortcode,
       study.shortcode, currentEnv.environmentName, facetValues)
     setParticipantList(response)
-  }, [portal.shortcode, study.shortcode, currentEnv.environmentName])
+  }, [portal.shortcode, study.shortcode, currentEnv.environmentName, searchParams.get('facets')])
 
   const numSelected = Object.keys(rowSelection).length
   const allowSendEmail = numSelected > 0
@@ -138,14 +160,28 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     .map(key => participantList[parseInt(key)].enrollee.shortcode)
 
   return <div className="ParticipantList container-fluid pt-2">
-    <div className="row">
-      <div className="col-12 align-items-baseline d-flex">
-        <h2 className="h4 text-center me-4">{study.name} Participants</h2>
+    <div className="row ps-3">
+      <div className="col-12 align-items-baseline d-flex mb-2">
+        <h2 className="h4 text-center me-4 fw-bold">Participant List</h2>
       </div>
-      <div className="col-3">
-        <EnrolleeSearchFacets facets={facetValues} facetValues={facetValues} updateFacetValues={}
+      <div className="col-12 align-items-baseline d-flex mb-3">
+        <form className="rounded-5" onSubmit={e => {
+          e.preventDefault()
+          updateKeyword(keywordFieldValue)
+        }} style={{ border: '1px solid #bbb', backgroundColor: '#fff', padding: '0.25em 0.75em 0em' }}>
+          <button type="submit" title="submit search" className="btn btn-secondary">
+            <FontAwesomeIcon icon={faSearch}/>
+          </button>
+          <input type="text" value={keywordFieldValue} size={40}
+            title="search name, email and shortcode"
+            style={{ border: 'none', outline: 'none' }}
+            placeholder="Search..."
+            onChange={e => setKeywordFieldValue(e.target.value)}/>
+
+        </form>
+
       </div>
-      <div className="col-9">
+      <div className="col-12">
         <LoadingSpinner isLoading={isLoading}>
           <div>
             <div className="d-flex align-items-center">

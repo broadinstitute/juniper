@@ -1,9 +1,6 @@
 package bio.terra.pearl.core.service.participant.search.facets;
 
-import bio.terra.pearl.core.service.participant.search.facets.sql.ParticipantTaskFacetSqlGenerator;
-import bio.terra.pearl.core.service.participant.search.facets.sql.ProfileAgeFacetSqlGenerator;
-import bio.terra.pearl.core.service.participant.search.facets.sql.ProfileFacetSqlGenerator;
-import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
+import bio.terra.pearl.core.service.participant.search.facets.sql.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
@@ -21,7 +18,7 @@ public class FacetValueFactory {
           "status", new FacetDefinition(CombinedStableIdFacetValue.class, new ParticipantTaskFacetSqlGenerator())
       ),
       "keyword", Map.of(
-              "keyword", new FacetDefinition(StringFacetValue.class, new ParticipantTaskFacetSqlGenerator())
+              "keyword", new FacetDefinition(StringFacetValue.class, new KeywordFacetSqlGenerator())
       )
   );
 

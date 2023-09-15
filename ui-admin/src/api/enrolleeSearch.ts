@@ -6,9 +6,9 @@ export type StringFacetValueFields = { values: string[] }
 export class StringFacetValue implements IFacetValue {
   values: string[]
 
-  facet: StringFacet
+  facet: StringOptionsFacet | StringFacet
 
-  constructor(facet: StringFacet, facetVal: StringFacetValueFields = { values: [] }) {
+  constructor(facet: StringOptionsFacet | StringFacet, facetVal: StringFacetValueFields = { values: [] }) {
     this.values = facetVal.values
     this.facet = facet
   }
@@ -71,7 +71,7 @@ export class StableIdStringArrayFacetValue implements IFacetValue {
 
 export type FacetValue =  StringFacetValue | IntRangeFacetValue | StableIdStringArrayFacetValue
 
-export type FacetType = | 'INT_RANGE' | 'STRING' | 'STABLEID_STRING'
+export type FacetType = | 'INT_RANGE' | 'STRING' | 'STRING_OPTIONS' | 'STABLEID_STRING'
 
 export type BaseFacet = {
   keyName: string,
@@ -91,7 +91,11 @@ export type FacetOption = {
 }
 
 export type StringFacet = BaseFacet & {
-  type: 'STRING',
+  type: 'STRING'
+}
+
+export type StringOptionsFacet = BaseFacet & {
+  type: 'STRING_OPTIONS',
   options: FacetOption[]
 }
 
@@ -101,9 +105,9 @@ export type StableIdStringArrayFacet = BaseFacet & {
   stableIdOptions: FacetOption[]
 }
 
-export type Facet = StringFacet | StableIdStringArrayFacet | IntRangeFacet
+export type Facet = StringFacet | StringOptionsFacet | StableIdStringArrayFacet | IntRangeFacet
 
-export const SAMPLE_FACETS: Facet[] = [{
+export const ADVANCED_FACETS: Facet[] = [{
   category: 'profile',
   keyName: 'age',
   label: 'Age',
@@ -114,7 +118,7 @@ export const SAMPLE_FACETS: Facet[] = [{
   category: 'profile',
   keyName: 'sexAtBirth',
   label: 'Sex at birth',
-  type: 'STRING',
+  type: 'STRING_OPTIONS',
   options: [
     { value: 'male', label: 'male' },
     { value: 'female', label: 'female' },
@@ -138,6 +142,18 @@ export const SAMPLE_FACETS: Facet[] = [{
   ]
 }]
 
+export const KEYWORD_FACET: Facet = {
+  category: 'keyword',
+  keyName: 'keyword',
+  label: 'Keyword',
+  type: 'STRING'
+}
+
+export const ALL_FACETS = [
+  ...ADVANCED_FACETS,
+  KEYWORD_FACET
+]
+
 /** helper function for making sure a function addresses all facet types.
  * returnPlaceholder isn't used, but is helpful for when this is needed at the end of a function for return type */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -157,6 +173,8 @@ export const newFacetValue = (facet: Facet, facetValue?: object): FacetValue => 
       new StableIdStringValue(stableIdVal.stableId, stableIdVal.values)
     ) : []
     return new StableIdStringArrayFacetValue(facet, { values: newValues })
+  } else if (facetType === 'STRING_OPTIONS') {
+    return new StringFacetValue(facet, facetValue as StringFacetValueFields)
   } else if (facetType === 'STRING') {
     return new StringFacetValue(facet, facetValue as StringFacetValueFields)
   }
