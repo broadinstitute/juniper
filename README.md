@@ -39,6 +39,7 @@ DTOs, and populate services.  the PopulateCliApp can be used to populate specifi
 * IntelliJ
 * Node v16+
 * Docker
+* Homebrew 4+
 
 ### Setup
 
