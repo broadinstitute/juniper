@@ -68,4 +68,13 @@ describe('Textarea', () => {
     const description = screen.getByText('More information')
     expect(input).toHaveAttribute('aria-describedby', description.id)
   })
+
+  it('renders a required Textarea', async () => {
+    // Act
+    render(<Textarea label="My required text" value="" required={true}/>)
+
+    // Assert
+    const textarea = screen.getByLabelText('My required text*')
+    expect(textarea).toHaveClass('is-invalid')
+  })
 })
