@@ -86,7 +86,7 @@ describe('VisibilityFields', () => {
       render(<VisibilityFields disabled={false} question={question} onChange={jest.fn()} />)
 
       // Assert
-      const input = screen.getByLabelText('Visibility expression')
+      const input = screen.getByLabelText('Visibility expression*')
       expect((input as HTMLInputElement).value).toBe('{other_question} = "Yes"')
     })
 
@@ -96,7 +96,7 @@ describe('VisibilityFields', () => {
       render(<VisibilityFields disabled={false} question={question} onChange={onChange} />)
 
       // Act
-      const input = screen.getByLabelText('Visibility expression')
+      const input = screen.getByLabelText('Visibility expression*')
       fireEvent.change(input, { target: { value: 'true' } })
 
       // Assert
