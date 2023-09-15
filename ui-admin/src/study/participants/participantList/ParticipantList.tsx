@@ -28,6 +28,7 @@ import { instantToDefaultString } from 'util/timeUtils'
 import { useLoadingEffect } from 'api/api-utils'
 import { getUpdatedFacetValues } from './facets/EnrolleeSearchFacets'
 
+
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
@@ -148,7 +149,6 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     }
     updateFacetValues(getUpdatedFacetValues(keywordFacetValue, keywordFacetIndex, facetValues))
   }
-
 
   const { isLoading } = useLoadingEffect(async () => {
     const response = await Api.searchEnrollees(portal.shortcode,
