@@ -26,10 +26,10 @@ describe('ChoicesList', () => {
     const choiceListItems = screen.getAllByRole('listitem')
 
     ;['Foo', 'Bar', 'Baz'].forEach((label, index) => {
-      const labelInput = getByLabelText(choiceListItems[index], 'Text')
+      const labelInput = getByLabelText(choiceListItems[index], 'Text*')
       expect((labelInput as HTMLInputElement).value).toBe(label)
 
-      const valueInput = getByLabelText(choiceListItems[index], 'Value')
+      const valueInput = getByLabelText(choiceListItems[index], 'Value*')
       expect((valueInput as HTMLInputElement).value).toBe(label.toLowerCase())
     })
   })
@@ -42,7 +42,7 @@ describe('ChoicesList', () => {
     const barChoice = screen.getAllByRole('listitem')[1]
 
     // Act
-    const barLabelInput = getByLabelText(barChoice, 'Text')
+    const barLabelInput = getByLabelText(barChoice, 'Text*')
     fireEvent.change(barLabelInput, { target: { value: 'BAR' } })
 
     // Assert
@@ -64,7 +64,7 @@ describe('ChoicesList', () => {
     const barChoice = screen.getAllByRole('listitem')[1]
 
     // Act
-    const barLabelInput = getByLabelText(barChoice, 'Value')
+    const barLabelInput = getByLabelText(barChoice, 'Value*')
     fireEvent.change(barLabelInput, { target: { value: 'BAR' } })
 
     // Assert
@@ -86,7 +86,7 @@ describe('ChoicesList', () => {
     const barChoice = screen.getAllByRole('listitem')[1]
 
     // Act
-    const barLabelInput = getByLabelText(barChoice, 'Text')
+    const barLabelInput = getByLabelText(barChoice, 'Text*')
     fireEvent.change(barLabelInput, { target: { value: 'This is a test question' } })
 
     // Assert
