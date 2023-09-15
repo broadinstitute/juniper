@@ -178,7 +178,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
           <input type="text" value={keywordFieldValue} size={40}
             title="search name, email and shortcode"
             style={{ border: 'none', outline: 'none' }}
-            placeholder="Search..."
+            placeholder="Search names, email, or shortcode..."
             onChange={e => setKeywordFieldValue(e.target.value)}/>
 
         </form>

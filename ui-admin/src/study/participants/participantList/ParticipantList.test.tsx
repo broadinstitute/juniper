@@ -41,7 +41,7 @@ test('renders filters for participant columns', async () => {
   render(RoutedComponent)
 
   //There are 3 default columns shown, 2 of which allow text search
-  const searchInputs = await screen.findAllByPlaceholderText('Search...')
+  const searchInputs = await screen.findAllByPlaceholderText('Filter...')
   expect(searchInputs).toHaveLength(2)
 })
 
@@ -56,7 +56,7 @@ test('filters participants based on shortcode', async () => {
 
   //Search for some unknown shortcode
   await act(() =>
-    userEvent.type(screen.getAllByPlaceholderText('Search...')[0], 'UNKNOWN SHORTCODE')
+    userEvent.type(screen.getAllByPlaceholderText('Filter...')[0], 'UNKNOWN SHORTCODE')
   )
 
   //Assert that JOSALK is no longer visible in the table
