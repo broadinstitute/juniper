@@ -15,7 +15,8 @@ public class KeywordFacetSqlGenerator implements FacetSqlGenerator<StringFacetVa
 
     @Override
     public String getTableName() {
-        return "keyword";
+        // this facet is only tied to enrollee and Profile tables that are already joined
+        return "";
     }
 
     @Override

@@ -21,7 +21,7 @@ import {
   facetValuesFromString,
   facetValuesToString,
   KEYWORD_FACET,
-  newFacetValue
+  newFacetValue, StringFacetValue
 } from 'api/enrolleeSearch'
 import { Button } from 'components/forms/Button'
 import { instantToDefaultString } from 'util/timeUtils'
@@ -43,8 +43,11 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     'contactEmail': false
   })
   const [searchParams, setSearchParams] = useSearchParams()
-  const [keywordFieldValue, setKeywordFieldValue] = useState('')
+
   const facetValues = facetValuesFromString(searchParams.get('facets') ?? '{}', ALL_FACETS)
+  const keywordFacet = facetValues.find(facet => facet.facet.category === 'keyword') as StringFacetValue
+  const initialKeywordVal = keywordFacet?.values[0] ?? ''
+  const [keywordFieldValue, setKeywordFieldValue] = useState(initialKeywordVal)
 
 
   const columns = useMemo<ColumnDef<EnrolleeSearchResult, string>[]>(() => [{
