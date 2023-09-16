@@ -7,6 +7,7 @@ import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import userEvent from '@testing-library/user-event'
 import { act } from 'react-dom/test-utils'
+import {KEYWORD_FACET} from "../../../api/enrolleeSearch";
 
 const mockSearchApi = () => {
   return jest.spyOn(Api, 'searchEnrollees')
@@ -90,6 +91,6 @@ test('keyword search sends search api request', async () => {
   await userEvent.click(screen.getByTitle('submit search'))
   expect(searchSpy).toHaveBeenCalledTimes(2)
   expect(searchSpy).toHaveBeenNthCalledWith(2, 'portalCode', 'fakeStudy', 'sandbox', [
-    { facet: { category: 'keyword', keyName: 'keyword', label: 'Keyword', type: 'STRING' }, values: ['foo'] }
+    { facet: KEYWORD_FACET, values: ['foo'] }
   ])
 })

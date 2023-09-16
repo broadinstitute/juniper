@@ -59,7 +59,6 @@ public class SurveyExtServiceTests {
                     "foo", "bar", EnvironmentName.irb, null, user));
   }
 
-
   @Test
   public void getRequiresPortalAuth() {
     AdminUser user = AdminUser.builder().superuser(false).build();

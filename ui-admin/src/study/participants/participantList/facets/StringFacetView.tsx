@@ -1,15 +1,21 @@
 import { FacetValue, StringFacetValue } from 'api/enrolleeSearch'
-import React, { useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
 
-/** renders a facet which is a single or set of string values as a text field */
+/**
+ * renders a facet which is a single or set of string values as a text field
+ * This manages its own state so that the facet will not be live-updated, but rather wait for submit
+ * */
 const StringFacetView = ({ facetValue, updateValue }:
                                     {facetValue: StringFacetValue,
                                         updateValue: (facetValue: FacetValue | null) => void}) => {
   const valueString = facetValue.values.join(', ')
   const [keywordFieldValue, setKeywordFieldValue] = useState(valueString)
 
+  useEffect(() => {
+    setKeywordFieldValue(valueString)
+  }, [valueString])
   /* updates whether a given value is checked */
   const updateKeyword = (keyword: string) => {
     const newValues = keyword?.split(/[ ,]+/) ?? []
