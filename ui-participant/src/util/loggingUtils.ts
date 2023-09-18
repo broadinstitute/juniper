@@ -39,7 +39,7 @@ export const logError = (detail: ErrorEventDetail, stackTrace: string) => {
   Api.log({
     eventType: 'ERROR',
     eventName: 'jserror',
-    eventDetail: JSON.stringify(detail) + '\n' + window.location.href,
+    eventDetail: `${JSON.stringify(detail)}\n${window.location.href}`,
     stackTrace
   })
 }
