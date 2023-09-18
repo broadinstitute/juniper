@@ -7,7 +7,7 @@ import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import userEvent from '@testing-library/user-event'
 import { act } from 'react-dom/test-utils'
-import {KEYWORD_FACET} from "../../../api/enrolleeSearch";
+import { KEYWORD_FACET } from '../../../api/enrolleeSearch'
 
 const mockSearchApi = () => {
   return jest.spyOn(Api, 'searchEnrollees')

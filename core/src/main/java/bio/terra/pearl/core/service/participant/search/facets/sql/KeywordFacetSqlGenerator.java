@@ -38,12 +38,12 @@ public class KeywordFacetSqlGenerator implements FacetSqlGenerator<StringFacetVa
                 .mapToObj(index -> {
                     String paramName = EnrolleeSearchUtils.getSqlParamName("keyword", facetValue.getKeyName(), index);
                     return """
-                            (profile.given_name ilike :%s 
-                              OR profile.family_name ilike :%s
-                              OR profile.contact_email ilike :%s
-                              OR enrollee.shortcode ilike :%s)
+                            (profile.given_name ilike :%1$s 
+                              OR profile.family_name ilike :%1$s
+                              OR profile.contact_email ilike :%1$s
+                              OR enrollee.shortcode ilike :%1$s)
                             """
-                            .formatted(paramName, paramName, paramName, paramName);
+                            .formatted(paramName);
                 })
                 .collect(Collectors.joining(" AND"));
     }
