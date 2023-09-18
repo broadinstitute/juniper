@@ -143,6 +143,19 @@
               "image": { "cleanFileName": "nina_kathiresan.jpg", "version": 1}
             }]
           },{
+            "title": "Core Collaborating Centers",
+            "photoBios": [{
+              "name": "Latha Palaniappan",
+              "title": "MD",
+              "blurb": "Professor of Medicine\nStanford University School of Medicine\n\nProfessor of Epidemiology and Population Health\n\nScientific Director\nPrecision Genomics and Pharmacogenomics in Primary Care\n\nCo-Founder and Co-Director\nStanford Center for Asian Health Research and Education (CARE)",
+              "image": { "cleanFileName": "latha_palaniappan.jpg", "version": 1}
+            },{
+              "name": "Rohan Khera",
+              "title": "MD MS",
+              "blurb": "Assistant Professor Cardiovascular Medicine \nYale School of Medicine\n\nAssistant Professor Health Informatics\nYale School of Public Health \n\nDirector Cardiovascular Data Science Lab \n\nClinical Director\nCenter for Health Informatics and Analytics\n\nAssociate Editor JAMA ",
+              "image": { "cleanFileName": "rohan_khera.jpg", "version": 1}
+            }]
+          },{
             "title": "Advisors",
             "photoBios": [{
             "name": "Puneet Batra",
