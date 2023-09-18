@@ -130,7 +130,7 @@ function SearchFilter<A>({
       type="text"
       value={(column.getFilterValue() ?? '') as string}
       onChange={value => column.setFilterValue(value)}
-      placeholder={`Search...`}
+      placeholder={`Filter...`}
     />
     <div className="h-1" />
   </div>
