@@ -152,7 +152,9 @@
   }, {
     "populateFileName": "images/logos/hms_logo.png"
   }, {
-    "populateFileName": "images/logos/stanford_med_logo.png"
+    "populateFileName": "images/logos/stanford_med.svg"
+  }, {
+    "populateFileName": "images/logos/yale_med.png"
   },{
     "populateFileName": "images/globe_and_hearts.png"
   }, {
