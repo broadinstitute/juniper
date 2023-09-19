@@ -5,6 +5,7 @@ import InfoPopup from './InfoPopup'
 export type TextInputProps = Omit<JSX.IntrinsicElements['input'], 'onChange'> & {
   infoContent?: React.ReactNode,
   description?: string
+  required?: boolean
   label: string
   labelClassname?: string,
   onChange?: (value: string) => void
@@ -12,7 +13,7 @@ export type TextInputProps = Omit<JSX.IntrinsicElements['input'], 'onChange'> & 
 
 /** A text input with label and description. */
 export const TextInput = (props: TextInputProps) => {
-  const { infoContent, description, label, labelClassname, ...inputProps } = props
+  const { infoContent, description, required, label, labelClassname, ...inputProps } = props
   const { className, disabled, id, value, onChange } = inputProps
 
   const generatedId = useId()
@@ -26,6 +27,7 @@ export const TextInput = (props: TextInputProps) => {
         htmlFor={inputId}
       >
         {label}
+        {required && <span className="text-danger">*</span>}
       </label>
       {infoContent &&
         //@ts-ignore
@@ -35,7 +37,7 @@ export const TextInput = (props: TextInputProps) => {
         {...inputProps}
         aria-describedby={description ? descriptionId : undefined}
         aria-disabled={disabled}
-        className={classNames('form-control', { disabled }, className)}
+        className={classNames('form-control', { disabled }, className, { 'is-invalid': required && value === '' })}
         disabled={undefined}
         id={inputId}
         // Allow value to be undefined without triggering a React warning about uncontrolled input.

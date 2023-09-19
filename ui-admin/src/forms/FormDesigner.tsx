@@ -98,7 +98,6 @@ export const FormDesigner = (props: FormDesignerProps) => {
                         ? update(
                           parentElementsListPath,
                           elements => {
-                            console.log(elements)
                             return [
                               ...elements.slice(0, indexOfSelectedElement + 1),
                               removedElement,

@@ -65,6 +65,7 @@ export const VisibilityFields = (props: VisibilityFieldsProps) => {
             description={'Expression for this question\'s visibility. If this expression evaluates to true, the question will be shown.'}
             disabled={disabled}
             label="Visibility expression"
+            required={true}
             value={question.visibleIf}
             onChange={value => {
               onChange({

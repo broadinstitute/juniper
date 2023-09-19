@@ -21,6 +21,7 @@ export const BaseFields = (props: BaseFieldsProps) => {
         <Textarea
           disabled={disabled}
           label="Question text"
+          required={!Object.hasOwnProperty.call(question, 'questionTemplateName')}
           rows={2}
           value={question.title || ''}
           onChange={value => {

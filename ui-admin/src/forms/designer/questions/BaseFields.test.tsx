@@ -20,7 +20,7 @@ describe('BaseFields', () => {
     render(<BaseFields disabled={false} question={question} onChange={jest.fn()} />)
 
     // Assert
-    const input = screen.getByLabelText('Question text')
+    const input = screen.getByLabelText('Question text*')
     expect((input as HTMLInputElement).value).toBe('What?')
   })
 
@@ -30,7 +30,7 @@ describe('BaseFields', () => {
     render(<BaseFields disabled={false} question={question} onChange={onChange} />)
 
     // Act
-    const input = screen.getByLabelText('Question text')
+    const input = screen.getByLabelText('Question text*')
     fireEvent.change(input, { target: { value: 'Why?' } })
 
     // Assert

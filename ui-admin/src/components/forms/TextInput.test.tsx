@@ -69,4 +69,13 @@ describe('TextInput', () => {
     const description = screen.getByText('More information')
     expect(input).toHaveAttribute('aria-describedby', description.id)
   })
+
+  it('renders a required TextInput', async () => {
+    // Act
+    render(<TextInput label="My required value" value="" required={true}/>)
+
+    // Assert
+    const input = screen.getByLabelText('My required value*')
+    expect(input).toHaveClass('is-invalid')
+  })
 })
