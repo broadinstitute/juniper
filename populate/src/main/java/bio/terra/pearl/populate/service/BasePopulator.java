@@ -24,8 +24,12 @@ public abstract class BasePopulator<T extends BaseEntity, D extends T, P extends
     }
 
     public T populateFromString(String fileString, P context, boolean overwrite) throws IOException {
-        D popDto = objectMapper.readValue(fileString, getDtoClazz());
+        D popDto = readValue(fileString);
         return populateFromDto(popDto, context, overwrite);
+    }
+
+    public D readValue(String popDtoString) throws IOException {
+        return objectMapper.readValue(popDtoString, getDtoClazz());
     }
 
     public T populateFromDto(D popDto, P context, boolean overwrite) throws IOException {
