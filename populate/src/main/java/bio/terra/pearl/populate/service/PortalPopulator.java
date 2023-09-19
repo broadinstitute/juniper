@@ -180,7 +180,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
     public void populateImages(String portalFilePath, boolean overwrite) throws IOException {
         FilePopulateContext fileContext = new FilePopulateContext(portalFilePath);
         String portalFileString = filePopulateService.readFile(fileContext.getRootFileName(), fileContext);
-        PortalPopDto popDto = objectMapper.readValue(portalFileString, PortalPopDto.class);
+        PortalPopDto popDto = readValue(portalFileString);
         PortalPopulateContext portalPopContext = new PortalPopulateContext(fileContext, popDto.getShortcode(), null);
         for (SiteImagePopDto imagePopDto : popDto.getSiteImageDtos()) {
             siteImagePopulator.populateFromDto(imagePopDto, portalPopContext, overwrite);
