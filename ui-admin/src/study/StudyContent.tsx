@@ -68,7 +68,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
           </div>
           <div className="flex-grow-1 p-3">
             <ul className="list-unstyled">
-              {currentEnv.configuredSurveys.map((surveyConfig, index) => {
+              { currentEnv.configuredSurveys.map((surveyConfig, index) => {
                 const survey = surveyConfig.survey
                 return (
                   <li className="p-1 d-flex align-items-center" key={index}>

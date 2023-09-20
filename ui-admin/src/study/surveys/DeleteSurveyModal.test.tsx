@@ -18,7 +18,6 @@ describe('DeleteSurveyModal', () => {
     render(RoutedComponent)
 
     //Act
-    //gets the confirmation prompt input
     const confirmDeleteSurveyInput = screen.getByLabelText('Confirm by typing "delete Survey number one" below.')
     const deleteButton = screen.getByText('Delete survey')
     expect(deleteButton).toBeDisabled()

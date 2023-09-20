@@ -144,7 +144,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     delete:
-      summary: deletes the specified survey, will fail if the survey has any existing responses
+      summary: deletes the specified survey, will fail if the survey has any responses or is in use by a non-sandbox environment
       tags: [ survey ]
       operationId: delete
       parameters:
