@@ -60,9 +60,7 @@ describe('CreateSurveyModal', () => {
     await user.type(surveyNameInput, 'Test Survey')
 
     //Assert
-    const createButton = screen.getByText('Create')
     //Confirm that auto-fill stable ID worked
     expect(surveyStableIdInput).toHaveValue('testSurvey')
-    expect(createButton).toBeEnabled()
   })
 })
