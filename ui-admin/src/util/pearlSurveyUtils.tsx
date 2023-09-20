@@ -35,10 +35,16 @@ export type QuestionObj = {
   isRequired?: boolean
 }
 
+/** converts the specified text into a suitable stableId */
+export function generateStableId(text: string) {
+  let value =_camelCase(text)
+  value = value.replace(/[^a-zA-Z\d]/g, '')
+  return value
+}
+
 /** renders a choice text into a stableId-suitable string */
 export function getValueForChoice(choiceText: string) {
-  let value =_camelCase(choiceText)
-  value = value.replace(/[^a-zA-Z\d]/g, '')
+  let value = generateStableId(choiceText)
   if (CHOICE_VALUE_MAPPINGS[value]) {
     value = CHOICE_VALUE_MAPPINGS[value]
   }

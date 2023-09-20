@@ -42,4 +42,27 @@ describe('CreateSurveyModal', () => {
     const createButton = screen.getByText('Create')
     expect(createButton).toBeEnabled()
   })
+
+  test('should autofill the stable ID as the user fills in the survey name', async () => {
+    //Arrange
+    const user = userEvent.setup()
+    const studyEnvContext = mockStudyEnvContext()
+    const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
+      studyEnvContext={studyEnvContext}
+      isReadOnlyEnv={false}
+      show={true}
+      setShow={jest.fn()}/>)
+    render(RoutedComponent)
+
+    //Act
+    const surveyNameInput = screen.getByLabelText('Survey Name')
+    const surveyStableIdInput = screen.getByLabelText('Survey Stable ID')
+    await user.type(surveyNameInput, 'Test Survey')
+
+    //Assert
+    const createButton = screen.getByText('Create')
+    //Confirm that auto-fill stable ID worked
+    expect(surveyStableIdInput).toHaveValue('testSurvey')
+    expect(createButton).toBeEnabled()
+  })
 })
