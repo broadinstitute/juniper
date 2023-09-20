@@ -18,6 +18,9 @@ import java.util.Map;
 public class PepperKitStatusResponse extends PepperResponse {
     private PepperKitStatus[] kits;
 
+    /**
+     * Minimally parses the given JSON as a PepperKitStatusResponse to extract the list of kits.
+     */
     public static List<Object> extractUntypedKitStatuses(String json, ObjectMapper objectMapper) throws JsonProcessingException {
         var parsedResponse = objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {});
         // This cast won't fail as long as kits is an array
