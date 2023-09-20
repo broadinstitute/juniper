@@ -5,6 +5,10 @@ import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
 import CreateSurveyModal from './surveys/CreateSurveyModal'
+import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
+import RemoveSurveyModal from './surveys/RemoveSurveyModal'
+import DeleteSurveyModal from './surveys/DeleteSurveyModal'
+import { StudyEnvironmentSurvey } from '@juniper/ui-core'
 
 /** renders the main configuration page for a study environment */
 function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -17,6 +21,9 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
   const preEnrollSurvey = currentEnv.preEnrollSurvey
   const isReadOnlyEnv = !(currentEnv.environmentName === 'sandbox')
   const [showCreateSurveyModal, setShowCreateSurveyModal] = useState(false)
+  const [showRemoveSurveyModal, setShowRemoveSurveyModal] = useState(false)
+  const [showDeleteSurveyModal, setShowDeleteSurveyModal] = useState(false)
+  const [selectedSurveyConfig, setSelectedSurveyConfig] = useState<StudyEnvironmentSurvey>()
 
   currentEnv.configuredSurveys
     .sort((a, b) => a.surveyOrder - b.surveyOrder)
@@ -61,14 +68,45 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
           </div>
           <div className="flex-grow-1 p-3">
             <ul className="list-unstyled">
-              { currentEnv.configuredSurveys.map((surveyConfig, index) => {
+              {currentEnv.configuredSurveys.map((surveyConfig, index) => {
                 const survey = surveyConfig.survey
-                return <li className="p-1" key={index}>
-                  <Link to={`surveys/${survey.stableId}?readOnly=${isReadOnlyEnv}`}>
-                    {survey.name} <span className="detail">v{survey.version}</span>
-                  </Link>
-                </li>
-              }) }
+                return (
+                  <li className="p-1 d-flex align-items-center" key={index}>
+                    <div className="d-flex align-items-center">
+                      <Link to={`surveys/${survey.stableId}?readOnly=${isReadOnlyEnv}`}>
+                        {survey.name} <span className="detail">v{survey.version}</span>
+                      </Link>
+                    </div>
+                    { !isReadOnlyEnv && <div className="nav-item dropdown ms-1">
+                      <a className="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <FontAwesomeIcon icon={faEllipsisH} title="configure survey menu"/>
+                      </a>
+                      <div className="dropdown-menu">
+                        <ul className="list-unstyled">
+                          <li>
+                            <button className="dropdown-item"
+                              onClick={() => {
+                                setShowRemoveSurveyModal(!showRemoveSurveyModal)
+                                setSelectedSurveyConfig(surveyConfig)
+                              }}>
+                              Remove from study
+                            </button>
+                          </li>
+                          <li className="pt-2">
+                            <button className="dropdown-item"
+                              onClick={() => {
+                                setShowDeleteSurveyModal(!showDeleteSurveyModal)
+                                setSelectedSurveyConfig(surveyConfig)
+                              }}>
+                              Delete
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    </div> }
+                  </li>
+                )
+              })}
               <li>
                 <button className="btn btn-secondary" data-testid={'addSurvey'} onClick={() => {
                   setShowCreateSurveyModal(!showCreateSurveyModal)
@@ -77,7 +115,6 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                 </button>
               </li>
             </ul>
-
           </div>
 
         </li>
@@ -86,6 +123,14 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
         isReadOnlyEnv={isReadOnlyEnv}
         show={showCreateSurveyModal}
         setShow={setShowCreateSurveyModal}/> }
+      { selectedSurveyConfig && <RemoveSurveyModal studyEnvContext={studyEnvContext}
+        selectedSurveyConfig={selectedSurveyConfig}
+        show={showRemoveSurveyModal}
+        setShow={setShowRemoveSurveyModal}/> }
+      { selectedSurveyConfig && <DeleteSurveyModal studyEnvContext={studyEnvContext}
+        selectedSurveyConfig={selectedSurveyConfig}
+        show={showDeleteSurveyModal}
+        setShow={setShowDeleteSurveyModal}/> }
       { !currentEnv.studyEnvironmentConfig.initialized && <div>Not yet initialized</div> }
     </div>
   </div>
