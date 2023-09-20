@@ -176,7 +176,8 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         var pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
         var pepperStatusFetchedAt = Instant.now();
         var pepperKitStatusByKitId = pepperKitStatuses.stream().collect(
-                Collectors.toMap(PepperKitStatus::getJuniperKitId, Function.identity()));
+                Collectors.toMap(PepperKitStatus::getJuniperKitId, Function.identity(),
+                        (kit1, kit2) -> !kit1.getCurrentStatus().equals("Deactivated") ? kit1 : kit2));
 
         var studyEnvironments = studyEnvironmentService.findByStudy(study.getId());
         for (StudyEnvironment studyEnvironment : studyEnvironments) {
