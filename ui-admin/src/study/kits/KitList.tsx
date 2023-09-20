@@ -96,11 +96,6 @@ const initialColumnVisibility = (tab: KitStatusTabConfig): VisibilityState => {
   }
 }
 
-const pepperStatusToHumanStatus = (pepperStatus?: PepperKitStatus): string => {
-  const tab = statusTabs.find(tab => tab.status === pepperStatus?.currentStatus.toLowerCase())
-  return _capitalize(tab?.key) || pepperStatus?.currentStatus || '(unknown)'
-}
-
 /** Loads sample kits for a study and shows them as a list. */
 export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) {
   const { portal, study, currentEnv } = studyEnvContext
