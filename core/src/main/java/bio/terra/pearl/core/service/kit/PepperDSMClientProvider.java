@@ -20,7 +20,7 @@ public class PepperDSMClientProvider {
     @Primary
     @Bean
     public PepperDSMClient getPepperDSMClient() {
-        return getStubPepperDSMClient();
+        return getLivePepperDSMClient();
     }
 
     @Bean

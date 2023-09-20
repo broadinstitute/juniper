@@ -8,6 +8,8 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { instantToDefaultString } from 'util/timeUtils'
 import { useUser } from 'user/UserProvider'
+import InfoPopup from 'components/forms/InfoPopup'
+import KitStatusCell from './KitStatusCell'
 
 /** Component for rendering the address a kit was sent to based on JSON captured at the time of the kit request. */
 function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string }) {
@@ -19,24 +21,6 @@ function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string })
     <div>{address.city}, {address.state} {address.postalCode} {address.country}</div>
   </div>
 }
-
-const columns: ColumnDef<KitRequest, string>[] = [{
-  header: 'Kit type',
-  accessorKey: 'kitType.displayName'
-}, {
-  header: 'Status',
-  accessorKey: 'status'
-}, {
-  header: 'Created',
-  accessorKey: 'createdAt',
-  accessorFn: data => instantToDefaultString(data.createdAt)
-}, {
-  header: 'Address',
-  cell: ({ row }) => <KitRequestAddress sentToAddressJson={row.original.sentToAddress}/>
-}, {
-  header: 'DSM Status',
-  accessorKey: 'dsmStatus'
-}]
 
 /** Shows a list of all kit requests for an enrollee. */
 export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
@@ -55,6 +39,26 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
     setShowRequestKitModal(false)
     onUpdate()
   }
+
+  const columns: ColumnDef<KitRequest, string>[] = [{
+    header: 'Kit type',
+    accessorKey: 'kitType.displayName'
+  }, {
+    header: 'Status',
+    accessorKey: 'status',
+    cell: ({ row }) => <KitStatusCell kitRequest={row.original} infoPlacement='right'/>
+  }, {
+    header: 'Created',
+    accessorKey: 'createdAt',
+    accessorFn: data => instantToDefaultString(data.createdAt)
+  }, {
+    header: 'Address',
+    cell: ({ row }) => <KitRequestAddress sentToAddressJson={row.original.sentToAddress}/>
+  }, {
+    header: 'DSM Status',
+    accessorKey: 'dsmStatus',
+    cell: ({ row }) => <InfoPopup content={row.original.dsmStatus} placement='left'/>
+  }]
 
   const table = useReactTable({
     data: enrollee.kitRequests || [],

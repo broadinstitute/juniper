@@ -80,11 +80,18 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         var kitRequest = createKitRequest(adminUser, enrollee, pepperKitAddress, kitTypeName);
 
         // send kit request to DSM
-        var result = pepperDSMClient.sendKitRequest(studyShortcode, enrollee, kitRequest, pepperKitAddress);
+        var response = pepperDSMClient.sendKitRequest(studyShortcode, enrollee, kitRequest, pepperKitAddress);
 
         // save DSM response/status with Juniper KitRequest
-        kitRequest.setDsmStatus(result);
-        dao.update(kitRequest);
+        try {
+            var untypedStatuses = PepperKitStatusResponse.extractUntypedKitStatuses(response, objectMapper);
+            // Pepper response from requesting it kit must have one and only one kit status
+            var pepperStatusJson = objectMapper.writeValueAsString(untypedStatuses.get(0));
+            kitRequest.setDsmStatus(pepperStatusJson);
+            saveKitStatus(kitRequest, pepperStatusJson, kitRequest.getCreatedAt());
+        } catch (JsonProcessingException e) {
+            throw new PepperException("Unable to parse response from Pepper: %s".formatted(response), e);
+        }
 
         return kitRequest;
     }
@@ -158,24 +165,29 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     public void syncAllKitStatusesFromPepper() {
         var studies = studyService.findAll();
         for (Study study : studies) {
+            syncKitStatusesForStudy(study);
+        }
+    }
 
-            // This assumes that DSM is configured with a single study backing all environments of the Juniper study
-            var pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
-            var pepperStatusFetchedAt = Instant.now();
-            var pepperKitStatusByKitId = pepperKitStatuses.stream().collect(
-                    Collectors.toMap(PepperKitStatus::getJuniperKitId, Function.identity()));
+    @Transactional
+    public void syncKitStatusesForStudy(Study study) {
+        // This assumes that DSM is configured with a single study backing all environments of the Juniper study
+        // TODO: delay deserializing to a PepperKitStatus until after it's been recorded on the kit request
+        var pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
+        var pepperStatusFetchedAt = Instant.now();
+        var pepperKitStatusByKitId = pepperKitStatuses.stream().collect(
+                Collectors.toMap(PepperKitStatus::getJuniperKitId, Function.identity()));
 
-            var studyEnvironments = studyEnvironmentService.findByStudy(study.getId());
-            for (StudyEnvironment studyEnvironment : studyEnvironments) {
-                var incompleteKits = findIncompleteKits(studyEnvironment.getId());
+        var studyEnvironments = studyEnvironmentService.findByStudy(study.getId());
+        for (StudyEnvironment studyEnvironment : studyEnvironments) {
+            var incompleteKits = findIncompleteKits(studyEnvironment.getId());
 
-                // The set of kits returned from DSM may be different from the set of incomplete kits in Juniper, but
-                // we want to update the records in Juniper so those are the ones we want to iterate here.
-                for (KitRequest kit : incompleteKits) {
-                    var pepperKitStatus = pepperKitStatusByKitId.get(kit.getId().toString());
-                    if (pepperKitStatus != null) {
-                        saveKitStatus(kit, pepperKitStatus, pepperStatusFetchedAt);
-                    }
+            // The set of kits returned from DSM may be different from the set of incomplete kits in Juniper, but
+            // we want to update the records in Juniper so those are the ones we want to iterate here.
+            for (KitRequest kit : incompleteKits) {
+                var pepperKitStatus = pepperKitStatusByKitId.get(kit.getId().toString());
+                if (pepperKitStatus != null) {
+                    saveKitStatus(kit, pepperKitStatus, pepperStatusFetchedAt);
                 }
             }
         }
@@ -228,6 +240,28 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      * Saves updated kit status. This is called from a batch job, so exceptions are caught and logged instead of thrown
      * to allow the rest of the batch to be processed.
      */
+    private void saveKitStatus(KitRequest kit, String statusJson, Instant pepperStatusFetchedAt) {
+        // Set raw status JSON
+        kit.setDsmStatus(statusJson);
+        kit.setDsmStatusFetchedAt(pepperStatusFetchedAt);
+
+        // Set Juniper kit status if we can parse the Pepper status
+        try {
+            var kitStatus = objectMapper.readValue(statusJson, PepperKitStatus.class);
+            kit.setStatus(statusFromDSMStatus(kitStatus.getCurrentStatus()));
+        } catch (JsonProcessingException e) {
+            logger.warn(
+                    "Unable to deserialize status JSON for kit %s: %s".formatted(kit.getId(), statusJson.toString()),
+                    e);
+        }
+
+        dao.update(kit);
+    }
+
+    /**
+     * Saves updated kit status. This is called from a batch job, so exceptions are caught and logged instead of thrown
+     * to allow the rest of the batch to be processed.
+     */
     private void saveKitStatus(KitRequest kit, PepperKitStatus pepperKitStatus, Instant pepperStatusFetchedAt) {
         try {
             kit.setDsmStatus(objectMapper.writeValueAsString(pepperKitStatus));
@@ -242,7 +276,9 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     }
 
     private KitRequestStatus statusFromDSMStatus(String currentStatus) {
-        if (PEPPER_COMPLETED_STATUSES.contains(currentStatus)) {
+        if (currentStatus == null) {
+            return KitRequestStatus.CREATED;
+        } else if (PEPPER_COMPLETED_STATUSES.contains(currentStatus)) {
             return KitRequestStatus.COMPLETE;
         } else if (PEPPER_FAILED_STATUSES.contains(currentStatus)) {
             return KitRequestStatus.FAILED;

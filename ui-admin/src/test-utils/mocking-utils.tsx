@@ -164,7 +164,8 @@ export const mockKitRequest: (args?: {
     scanDate: '',
     receiveDate: '',
     trackingNumber: '',
-    returnTrackingNumber: ''
+    returnTrackingNumber: '',
+    errorMessage: ''
   }
 })
 

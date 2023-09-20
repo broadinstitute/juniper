@@ -14,6 +14,8 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { basicTableLayout, ColumnVisibilityControl } from 'util/tableUtils'
 import { instantToDateString, isoToInstant } from 'util/timeUtils'
 import { useLoadingEffect } from '../../api/api-utils'
+import { enrolleeKitRequestPath } from '../participants/enrolleeView/EnrolleeView'
+import KitStatusCell from '../participants/KitStatusCell'
 
 type KitStatusTabConfig = {
   status: string,
@@ -42,19 +44,19 @@ const defaultColumns: VisibilityState = {
  */
 const statusTabs: KitStatusTabConfig[] = [
   {
-    status: 'CREATED',
+    status: 'kit without label',
     key: 'created',
     additionalColumns: []
   },
   {
-    status: 'LABELED',
+    status: 'queue',
     key: 'labeled',
     additionalColumns: [
       'pepperStatus_labelDate', 'pepperStatus_trackingNumber'
     ]
   },
   {
-    status: 'SCANNED',
+    status: 'sent',
     key: 'sent',
     additionalColumns: [
       'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
@@ -62,7 +64,7 @@ const statusTabs: KitStatusTabConfig[] = [
     ]
   },
   {
-    status: 'RECEIVED',
+    status: 'received',
     key: 'returned',
     additionalColumns: [
       'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
@@ -71,7 +73,7 @@ const statusTabs: KitStatusTabConfig[] = [
     ]
   },
   {
-    status: 'ERROR',
+    status: 'error',
     key: 'issues',
     additionalColumns: [
       'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
@@ -95,7 +97,7 @@ const initialColumnVisibility = (tab: KitStatusTabConfig): VisibilityState => {
 }
 
 const pepperStatusToHumanStatus = (pepperStatus?: PepperKitStatus): string => {
-  const tab = statusTabs.find(tab => tab.status === pepperStatus?.currentStatus)
+  const tab = statusTabs.find(tab => tab.status === pepperStatus?.currentStatus.toLowerCase())
   return _capitalize(tab?.key) || pepperStatus?.currentStatus || '(unknown)'
 }
 
@@ -110,7 +112,7 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
   const kitsByStatus = _groupBy(kits, kit => {
-    return statusTabs.find(tab => tab.status === kit.pepperStatus?.currentStatus)?.status || 'ERROR'
+    return statusTabs.find(tab => tab.status === kit.pepperStatus?.currentStatus.toLowerCase())?.status || 'error'
   })
 
   const tabLinkStyle = ({ isActive }: {isActive: boolean}) => ({
@@ -169,7 +171,9 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
     meta: {
       columnType: 'string'
     },
-    cell: data => <Link to={`${currentEnvPath}/participants/${data.getValue()}`}>{data.getValue()}</Link>,
+    cell: data => <Link to={enrolleeKitRequestPath(currentEnvPath, data.getValue().toString())}>
+      {data.getValue()}
+    </Link>,
     enableColumnFilter: false
   }, {
     header: 'Kit type',
@@ -206,7 +210,7 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
   }, {
     header: 'Status',
     accessorKey: 'pepperStatus',
-    cell: data => pepperStatusToHumanStatus(data.row.original.pepperStatus),
+    cell: data => <KitStatusCell kitRequest={data.row.original} infoPlacement='left'/>,
     enableColumnFilter: false
   }]
 

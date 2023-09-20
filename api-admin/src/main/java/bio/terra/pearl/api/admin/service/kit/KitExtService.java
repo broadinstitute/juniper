@@ -6,8 +6,10 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import bio.terra.pearl.core.service.study.StudyService;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -17,14 +19,17 @@ public class KitExtService {
   private final AuthUtilService authUtilService;
   private final KitRequestService kitRequestService;
   private final StudyEnvironmentService studyEnvironmentService;
+  private final StudyService studyService;
 
   public KitExtService(
       AuthUtilService authUtilService,
       KitRequestService kitRequestService,
-      StudyEnvironmentService studyEnvironmentService) {
+      StudyEnvironmentService studyEnvironmentService,
+      StudyService studyService) {
     this.authUtilService = authUtilService;
     this.kitRequestService = kitRequestService;
     this.studyEnvironmentService = studyEnvironmentService;
+    this.studyService = studyService;
   }
 
   public List<KitRequest> requestKits(
@@ -63,5 +68,15 @@ public class KitExtService {
   public Collection<KitRequest> getKitRequests(AdminUser adminUser, String enrolleeShortcode) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(adminUser, enrolleeShortcode);
     return kitRequestService.getKitRequests(enrollee);
+  }
+
+  public void refreshKitStatuses(
+      AdminUser adminUser, String portalShortcode, String studyShortcode) {
+    if (!adminUser.isSuperuser()) {
+      throw new PermissionDeniedException("You do not have permissions to perform this operation");
+    }
+    var portalStudy = authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
+    var study = studyService.find(portalStudy.getStudyId()).get();
+    kitRequestService.syncKitStatusesForStudy(study);
   }
 }

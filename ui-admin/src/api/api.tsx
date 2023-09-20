@@ -153,7 +153,8 @@ export type PepperKitStatus = {
   scanDate: string,
   receiveDate: string,
   trackingNumber: string,
-  returnTrackingNumber: string
+  returnTrackingNumber: string,
+  errorMessage: string
 }
 
 const emptyPepperKitStatus: PepperKitStatus = {
@@ -163,7 +164,8 @@ const emptyPepperKitStatus: PepperKitStatus = {
   scanDate: '',
   receiveDate: '',
   trackingNumber: '',
-  returnTrackingNumber: ''
+  returnTrackingNumber: '',
+  errorMessage: ''
 }
 
 /**
@@ -177,12 +179,11 @@ function parsePepperKitStatus(json: string | undefined): PepperKitStatus {
   if (json) {
     try {
       const pepperStatus = JSON.parse(json)
-      if (pepperStatus.kitId && pepperStatus.currentStatus) {
-        return {
-          ...emptyPepperKitStatus,
-          ..._pick(pepperStatus,
-            'kitId', 'currentStatus', 'labelDate', 'scanDate', 'receiveDate', 'trackingNumber', 'returnTrackingNumber')
-        }
+      return {
+        ...emptyPepperKitStatus,
+        ..._pick(pepperStatus,
+          'juniperKitId', 'currentStatus', 'labelDate', 'scanDate', 'receiveDate', 'trackingNumber',
+          'returnTrackingNumber', 'errorMessage')
       }
     } catch {
       // ignore; fall-through to result for unexpected value
@@ -563,7 +564,9 @@ export default {
     Promise<Enrollee> {
     const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}`
     const response = await fetch(url, this.getGetInit())
-    return await this.processJsonResponse(response)
+    const enrollee: Enrollee = await this.processJsonResponse(response)
+    enrollee.kitRequests?.forEach(kit => { kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus) })
+    return enrollee
   },
 
   async fetchEnrolleeNotifications(portalShortcode: string, studyShortcode: string, envName: string,

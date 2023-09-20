@@ -90,4 +90,11 @@ public class KitController implements KitApi {
 
     return ResponseEntity.ok(result);
   }
+
+  @Override
+  public ResponseEntity<Void> refreshKitStatuses(String portalShortcode, String studyShortcode) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    kitExtService.refreshKitStatuses(adminUser, portalShortcode, studyShortcode);
+    return ResponseEntity.noContent().build();
+  }
 }
