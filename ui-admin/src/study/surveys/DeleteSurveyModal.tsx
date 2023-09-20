@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
-import Api, {StudyEnvironmentSurvey} from 'api/api'
+import Api, { StudyEnvironmentSurvey } from 'api/api'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from '../../util/notifications'
 import { PortalContext, PortalContextT } from 'portal/PortalProvider'
@@ -26,7 +26,7 @@ const DeleteSurveyModal = ({
 
     await Api.deleteSurvey(studyEnvContext.portal.shortcode,
       selectedSurveyConfig.survey.stableId
-    ).catch(e =>
+    ).catch(() =>
       Store.addNotification(failureNotification('Error deleting survey'))
     )
 

@@ -12,7 +12,6 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
-import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import java.util.*;
 import org.springframework.beans.BeanUtils;
@@ -24,19 +23,16 @@ public class SurveyExtService {
   private SurveyService surveyService;
   private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
   private StudyEnvironmentService studyEnvironmentService;
-  private StudyService studyService;
 
   public SurveyExtService(
       AuthUtilService authUtilService,
       SurveyService surveyService,
       StudyEnvironmentSurveyService studyEnvironmentSurveyService,
-      StudyEnvironmentService studyEnvironmentService,
-      StudyService studyService) {
+      StudyEnvironmentService studyEnvironmentService) {
     this.authUtilService = authUtilService;
     this.surveyService = surveyService;
     this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
     this.studyEnvironmentService = studyEnvironmentService;
-    this.studyService = studyService;
   }
 
   public Survey get(String portalShortcode, String stableId, int version, AdminUser adminUser) {

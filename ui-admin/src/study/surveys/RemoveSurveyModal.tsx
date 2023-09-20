@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
-import Api, {StudyEnvironmentSurvey} from 'api/api'
+import Api, { StudyEnvironmentSurvey } from 'api/api'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from '../../util/notifications'
 import { PortalContext, PortalContextT } from 'portal/PortalProvider'
@@ -28,7 +28,7 @@ const RemoveSurveyModal = ({
       studyEnvContext.study.shortcode,
       studyEnvContext.currentEnv.environmentName,
       selectedSurveyConfig.id
-    ).catch(e =>
+    ).catch(() =>
       Store.addNotification(failureNotification('Error removing survey'))
     )
 
