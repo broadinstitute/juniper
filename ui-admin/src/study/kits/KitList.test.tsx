@@ -24,8 +24,8 @@ describe('KitList', () => {
         <KitList studyEnvContext={studyEnvContext}/>
       </BrowserRouter>
     ))
-    await user.click(screen.getByText(/Issues/))
 
-    expect(screen.getByText('(unknown)')).toBeInTheDocument()
+    expect(screen.getByText('JOSALK')).toBeInTheDocument()
+    expect(screen.getByText('Test kit')).toBeInTheDocument()
   })
 })
