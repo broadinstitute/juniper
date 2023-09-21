@@ -9,8 +9,7 @@ test('renders kit requsets', async () => {
   const enrollee = mockEnrollee()
   const studyEnvContext = mockStudyEnvContext()
   const { RoutedComponent } = setupRouterTest(
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <KitRequests enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {}}/>)
+    <KitRequests enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={jest.fn()}/>)
   render(RoutedComponent)
   await waitFor(() => {
     expect(screen.getByText('Kit requests')).toBeInTheDocument()

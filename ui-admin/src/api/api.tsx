@@ -669,7 +669,7 @@ export default {
     portalShortcode: string,
     studyShortcode: string,
     envName: string) {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/kitds/refreshKitStatuses`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/kits/refreshKitStatuses`
     return await this.processResponse(await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()
