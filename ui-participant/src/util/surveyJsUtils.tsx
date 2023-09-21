@@ -221,3 +221,16 @@ export function getUpdatedAnswers(original: Record<string, SurveyJsValueType>,
 
   return dedupedKeys.map(key => makeAnswer(updated[key], key, updated))
 }
+
+export function getDataWithCalculatedValues(model: SurveyModel) {
+  const calculatedHash: Record<string, any> = {}
+  model.calculatedValues.forEach(val => {
+    if (val.includeIntoResult) {
+      calculatedHash[val.name] = val.value
+    }
+  })
+  return {
+    ...model.data,
+    ...calculatedHash
+  }
+}

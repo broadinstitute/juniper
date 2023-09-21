@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
 public class SurveyParseUtilsTests extends BaseSpringBootTest {
 
     @Test
@@ -143,5 +146,57 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
                 [{"stableId":"foo","text":"foo"},{"stableId":"bar","text":"bar"},{"stableId":"baz","text":"baz"}]""";
 
         Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testDetermineUpstreamStableId() throws Exception {
+        String simpleDerivedQString = """
+                {
+                  "name": "someQuestion",
+                  "expression": "df {upstreamQ} = 'foo'"
+                }""";
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode questionNode = mapper.readTree(simpleDerivedQString);
+        String upstreamStableId = SurveyParseUtils.getUpstreamStableId(questionNode);
+        assertThat(upstreamStableId, equalTo("upstreamQ"));
+    }
+
+    @Test
+    public void testDetermineUpstreamStableIdTrim() throws Exception {
+        String simpleDerivedQString = """
+                {
+                  "name": "someQuestion",
+                  "expression": "{ upstreamQ } = 'foo'"
+                }""";
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode questionNode = mapper.readTree(simpleDerivedQString);
+        String upstreamStableId = SurveyParseUtils.getUpstreamStableId(questionNode);
+        assertThat(upstreamStableId, equalTo("upstreamQ"));
+    }
+
+    @Test
+    public void testDetermineUpstreamStableIdHandlesMultiple() throws Exception {
+        String simpleDerivedQString = """
+                {
+                  "name": "someQuestion",
+                  "expression": "{ upstreamQ } = 'foo' && {otherQ} = 4"
+                }""";
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode questionNode = mapper.readTree(simpleDerivedQString);
+        String upstreamStableId = SurveyParseUtils.getUpstreamStableId(questionNode);
+        assertThat(upstreamStableId, equalTo("upstreamQ"));
+    }
+
+    @Test
+    public void testDetermineUpstreamStableIdHandlesNone() throws Exception {
+        String simpleDerivedQString = """
+                {
+                  "name": "someQuestion",
+                  "expression": "blah blah blah"
+                }""";
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode questionNode = mapper.readTree(simpleDerivedQString);
+        String upstreamStableId = SurveyParseUtils.getUpstreamStableId(questionNode);
+        assertThat(upstreamStableId, equalTo(null));
     }
 }

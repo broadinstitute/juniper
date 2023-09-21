@@ -45,7 +45,14 @@ export function generateThreePageSurvey(overrideObj?: any): Survey { // eslint-d
           { type: 'html', html: '<span>You are on page3</span>' }
         ]
       }
-    ]
+    ],
+    "calculatedValues": [
+      {
+        "name": "colorCode",
+        "expression": "iif({radio1} = 'green', '#0F0', '#00F')",
+        "includeIntoResult": true
+      }
+  ]
   }
   const survey = generateSurvey({ content: JSON.stringify(surveyContent) })
   return Object.assign(survey, overrideObj)

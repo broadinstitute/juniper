@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.survey;
 import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
@@ -14,6 +15,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.stream.IntStream;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -102,10 +106,44 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         for (int i = 0; i < questions.size(); i++) {
             JsonNode question = questions.get(i);
             questionDefinitions.add(SurveyParseUtils.unmarshalSurveyQuestion(survey, question,
-                    questionTemplates, i));
+                    questionTemplates, i,false));
         }
 
+        // add any questions from calculatedValues
+        processDerivedQuestions(survey, surveyContent, questionDefinitions);
+
         return questionDefinitions;
+    }
+
+    /**
+     * parses calculatedValues from the surveyContent and adds them as SurveyQuestionDefinitions
+     * to the appropriate place in the questionDefinitions array.  they will be attempted to be
+     * inserted following the question they are computed from
+     */
+    protected void processDerivedQuestions(Survey survey,
+                                           JsonNode surveyContent,
+                                           List<SurveyQuestionDefinition> questionDefinitions) {
+        List<JsonNode> derivedQuestions = SurveyParseUtils.getCalculatedValues(surveyContent);
+        if (derivedQuestions.isEmpty()) {
+            return;
+        }
+        /**
+         * iterate through each question, inserting it into questionDefinitions following a
+         * question on which it is derived from
+         */
+        for (JsonNode derivedQuestion : derivedQuestions) {
+            String upstreamStableId = SurveyParseUtils.getUpstreamStableId(derivedQuestion);
+            int upstreamIndex = IntStream.range(0, questionDefinitions.size())
+                    .filter(i -> questionDefinitions.get(i).getQuestionStableId().equals(upstreamStableId))
+                    .findFirst().orElse(questionDefinitions.size() - 1);
+            questionDefinitions.add(upstreamIndex + 1,
+                    SurveyParseUtils.unmarshalSurveyQuestion(survey, derivedQuestion,
+                            Map.of(), upstreamIndex + 1,true));
+        }
+        // reassign the export orders
+        IntStream.range(0, questionDefinitions.size()).forEach(i -> {
+            questionDefinitions.get(i).setExportOrder(i);
+        });
     }
 
     @Transactional
