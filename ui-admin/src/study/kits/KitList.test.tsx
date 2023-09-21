@@ -8,8 +8,6 @@ import userEvent from '@testing-library/user-event'
 import Api from 'api/api'
 import { ReactNotifications } from 'react-notifications-component'
 
-
-
 describe('KitList', () => {
   it('gracefully handles unexpected JSON from Pepper', async () => {
     mockFetchKits()
