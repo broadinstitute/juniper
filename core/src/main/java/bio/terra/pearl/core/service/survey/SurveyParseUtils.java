@@ -117,6 +117,7 @@ public class SurveyParseUtils {
     }
 
 
+    /** gets any calculated value nodes that should be included in results */
     public static List<JsonNode> getCalculatedValues(JsonNode surveyJsDef) {
         List<JsonNode> calculatedValues = new ArrayList<>();
         if(surveyJsDef.has("calculatedValues")) {
@@ -131,8 +132,13 @@ public class SurveyParseUtils {
 
 
     public static final Pattern EXPRESSION_DEPENDENCY = Pattern.compile(".*\\{(.+?)\\}.*");
-    public static String getUpstreamStableId(JsonNode derivedQuestion) {
-        String expression = derivedQuestion.get("expression").asText();
+
+    /** returns the last stableId that this calculatedValue is dependent on, or null
+     * if it is independent.
+     * e.g. if the expression is "{heightInInches} * 2.54", this will return "heightInInches"
+     */
+    public static String getUpstreamStableId(JsonNode calculatedValue) {
+        String expression = calculatedValue.get("expression").asText();
         Matcher matcher = EXPRESSION_DEPENDENCY.matcher(expression);
         matcher.find();
         return matcher.matches() ? matcher.group(1).trim() : null;

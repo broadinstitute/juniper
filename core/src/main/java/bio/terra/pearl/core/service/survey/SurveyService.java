@@ -110,7 +110,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         }
 
         // add any questions from calculatedValues
-        processDerivedQuestions(survey, surveyContent, questionDefinitions);
+        processCalculatedValues(survey, surveyContent, questionDefinitions);
 
         return questionDefinitions;
     }
@@ -120,7 +120,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
      * to the appropriate place in the questionDefinitions array.  they will be attempted to be
      * inserted following the question they are computed from
      */
-    protected void processDerivedQuestions(Survey survey,
+    protected void processCalculatedValues(Survey survey,
                                            JsonNode surveyContent,
                                            List<SurveyQuestionDefinition> questionDefinitions) {
         List<JsonNode> derivedQuestions = SurveyParseUtils.getCalculatedValues(surveyContent);
@@ -133,6 +133,8 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
          */
         for (JsonNode derivedQuestion : derivedQuestions) {
             String upstreamStableId = SurveyParseUtils.getUpstreamStableId(derivedQuestion);
+            // the upstream index is either the occurrence of the question this calculatedValue depends on,
+            // or the last item in the list if there is no dependency
             int upstreamIndex = IntStream.range(0, questionDefinitions.size())
                     .filter(i -> questionDefinitions.get(i).getQuestionStableId().equals(upstreamStableId))
                     .findFirst().orElse(questionDefinitions.size() - 1);

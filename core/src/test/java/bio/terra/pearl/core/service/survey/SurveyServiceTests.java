@@ -211,7 +211,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
                   "calculatedValues": [{
                     "name": "computedHeight",
                     "includeIntoResult": true,
-                    "expression": "iff({oh_oh_basic_heightUnit} = 'in', {oh_oh_basic_rawHeight} * 2.54, {oh_oh_basic_rawHeight}"
+                    "expression": "iif({oh_oh_basic_heightUnit} = 'in', {oh_oh_basic_rawHeight} * 2.54, {oh_oh_basic_rawHeight}"
                    }]
                  }""";
 

@@ -70,7 +70,7 @@ describe('Renders a survey', () => {
       response: expect.objectContaining({
         answers: [{ questionStableId: 'radio1', stringValue: 'green' },
           { questionStableId: 'text1', stringValue: 'my Text' },
-          { questionStableId: 'colorCode', stringValue: '#0F0'}],
+          { questionStableId: 'colorCode', stringValue: '#0F0' }],
         complete: true,
         resumeData: '{"user1":{"currentPageNo":1}}'
       })
@@ -91,7 +91,7 @@ describe('Renders a survey', () => {
     expect(submitSpy).toHaveBeenCalledWith(expect.objectContaining({
       response: expect.objectContaining({
         answers: [{ questionStableId: 'radio1', stringValue: 'green' },
-          { questionStableId: 'colorCode', stringValue: '#0F0'},
+          { questionStableId: 'colorCode', stringValue: '#0F0' },
           { questionStableId: 'text1', stringValue: 'my Text' }],
         complete: false,
         resumeData: '{"user1":{"currentPageNo":3}}'
@@ -114,7 +114,7 @@ describe('Renders a survey', () => {
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
       response: expect.objectContaining({
         answers: [{ questionStableId: 'radio1', stringValue: 'green' },
-          { questionStableId: 'colorCode', stringValue: '#0F0'}]
+          { questionStableId: 'colorCode', stringValue: '#0F0' }]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(2, expect.objectContaining({
@@ -137,13 +137,13 @@ describe('Renders a survey', () => {
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
       response: expect.objectContaining({
         answers: [{ questionStableId: 'radio1', stringValue: 'green' },
-          { questionStableId: 'colorCode', stringValue: '#0F0'}]
+          { questionStableId: 'colorCode', stringValue: '#0F0' }]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(2, expect.objectContaining({
       response: expect.objectContaining({
         answers: [{ questionStableId: 'radio1', stringValue: 'blue' },
-          { questionStableId: 'colorCode', stringValue: '#00F'}]
+          { questionStableId: 'colorCode', stringValue: '#00F' }]
       })
     }))
   })
