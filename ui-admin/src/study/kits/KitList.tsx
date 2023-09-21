@@ -8,14 +8,19 @@ import {
   getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState
 } from '@tanstack/react-table'
 
-import Api, { KitRequest, PepperKitStatus } from 'api/api'
+import Api, { KitRequest } from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { basicTableLayout, ColumnVisibilityControl } from 'util/tableUtils'
 import { instantToDateString, isoToInstant } from 'util/timeUtils'
-import { useLoadingEffect } from '../../api/api-utils'
+import { doApiLoad, useLoadingEffect } from 'api/api-utils'
 import { enrolleeKitRequestPath } from '../participants/enrolleeView/EnrolleeView'
 import KitStatusCell from '../participants/KitStatusCell'
+import { Button } from 'components/forms/Button'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faRefresh } from '@fortawesome/free-solid-svg-icons'
+import { successNotification } from 'util/notifications'
+import { Store } from 'react-notifications-component'
 
 type KitStatusTabConfig = {
   status: string,
@@ -99,9 +104,10 @@ const initialColumnVisibility = (tab: KitStatusTabConfig): VisibilityState => {
 /** Loads sample kits for a study and shows them as a list. */
 export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) {
   const { portal, study, currentEnv } = studyEnvContext
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const [kits, setKits] = useState<KitRequest[]>([])
 
-  const { isLoading } = useLoadingEffect(async () => {
+  const { isLoading, reload } = useLoadingEffect(async () => {
     const kits= await Api.fetchKitsByStudyEnvironment(portal.shortcode, study.shortcode, currentEnv.environmentName)
     setKits(kits)
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
@@ -111,21 +117,38 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
   })
 
   const tabLinkStyle = ({ isActive }: {isActive: boolean}) => ({
-    borderBottom: isActive ? '3px solid #333': '',
+    borderBottom: isActive ? '2px solid #666': '',
     background: isActive ? '#ddd' : ''
   })
 
+  const refreshStatuses = async () => {
+    doApiLoad(async () => {
+      await Api.refreshKitStatuses(portal.shortcode, study.shortcode, currentEnv.environmentName)
+      await reload()
+      Store.addNotification(successNotification('kit statuses refreshed'))
+    }, {
+      setIsLoading: setIsRefreshing,
+      customErrorMsg: 'kit statuses could not be refreshed'
+    })
+  }
+
   return <LoadingSpinner isLoading={isLoading}>
-    <div className="container">
-      <div className="d-flex w-100" style={{ backgroundColor: '#ccc' }}>
+    <div className="container p-0 mt-2">
+      <div className="d-flex w-100 align-items-center" style={{ backgroundColor: '#ccc' }}>
         { statusTabs.map(tab => {
           const kits = kitsByStatus[tab.status] || []
           return <NavLink key={tab.key} to={tab.key} style={tabLinkStyle}>
-            <div className="py-3 px-5">
+            <div className="py-2 px-4">
               {kits?.length} {_capitalize(tab.key)}
             </div>
           </NavLink>
         })}
+        <div className="ms-auto">
+          <Button variant="secondary" onClick={refreshStatuses}>
+            {!isRefreshing && <span>Refresh <FontAwesomeIcon icon={faRefresh}/></span>}
+            {isRefreshing && <LoadingSpinner/>}
+          </Button>
+        </div>
       </div>
       <Routes>
         <Route index element={<Navigate to={statusTabs[0].key} replace={true}/>}/>

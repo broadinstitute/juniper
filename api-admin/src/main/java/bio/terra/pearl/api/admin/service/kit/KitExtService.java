@@ -6,7 +6,6 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
@@ -72,9 +71,6 @@ public class KitExtService {
 
   public void refreshKitStatuses(
       AdminUser adminUser, String portalShortcode, String studyShortcode) {
-    if (!adminUser.isSuperuser()) {
-      throw new PermissionDeniedException("You do not have permissions to perform this operation");
-    }
     var portalStudy = authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
     var study = studyService.find(portalStudy.getStudyId()).get();
     kitRequestService.syncKitStatusesForStudy(study);
