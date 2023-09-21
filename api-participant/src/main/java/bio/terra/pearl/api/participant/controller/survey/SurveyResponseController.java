@@ -49,7 +49,7 @@ public class SurveyResponseController implements SurveyResponseApi {
   }
 
   @Override
-  public ResponseEntity<Object> response(
+  public ResponseEntity<Object> update(
       String portalShortcode,
       String envName,
       String studyShortcode,
@@ -62,7 +62,7 @@ public class SurveyResponseController implements SurveyResponseApi {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     SurveyResponse responseDto = objectMapper.convertValue(body, SurveyResponse.class);
     HubResponse hubResponse =
-        surveyResponseExtService.submitResponse(
+        surveyResponseExtService.updateResponse(
             user, portalShortcode, environmentName, responseDto, enrolleeShortcode, taskId);
     return ResponseEntity.ok(hubResponse);
   }

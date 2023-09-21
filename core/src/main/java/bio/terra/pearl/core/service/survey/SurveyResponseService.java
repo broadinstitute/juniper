@@ -142,7 +142,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
      * is authorized to update the given task/enrollee, and that the task corresponds to the snapshot
      */
     @Transactional
-    protected SurveyResponse findOrCreateResponse(ParticipantTask task, Enrollee enrollee,
+    public SurveyResponse findOrCreateResponse(ParticipantTask task, Enrollee enrollee,
                                                   UUID participantUserId, SurveyResponse responseDto) {
         UUID taskResponseId = task.getSurveyResponseId();
         Survey survey = surveyService.findByStableId(task.getTargetStableId(), task.getTargetAssignedVersion()).get();
@@ -177,7 +177,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
 
     /** Creates and attaches the answers to the response. */
     @Transactional
-    protected List<Answer> createOrUpdateAnswers(List<Answer> answers, SurveyResponse response,
+    public List<Answer> createOrUpdateAnswers(List<Answer> answers, SurveyResponse response,
                                                  Survey survey, PortalParticipantUser ppUser) {
         List<String> updatedStableIds = answers.stream().map(Answer::getQuestionStableId).toList();
         // bulk-fetch any existingAnswers that will need to be updated
@@ -204,7 +204,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     }
 
     @Transactional
-    protected Answer updateAnswer(Answer existing, Answer updated, SurveyResponse response,
+    public Answer updateAnswer(Answer existing, Answer updated, SurveyResponse response,
                                   Survey survey, PortalParticipantUser ppUser, List<DataChangeRecord> changeRecords) {
         if (existing.valuesEqual(updated)) {
             // if the values are the same, don't bother with an update
@@ -226,8 +226,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         return answerService.update(existing);
     }
 
-    @Transactional
-    protected Answer createAnswer(Answer answer, SurveyResponse response,
+    private Answer createAnswer(Answer answer, SurveyResponse response,
                                   Survey survey, PortalParticipantUser ppUser) {
         answer.setCreatingParticipantUserId(ppUser.getParticipantUserId());
         answer.setSurveyResponseId(response.getId());
