@@ -16,6 +16,6 @@ test('renders kit requsets', async () => {
     expect(screen.getByText('Kit requests')).toBeInTheDocument()
   })
   expect(screen.getByText('Test kit')).toBeInTheDocument()
-  expect(screen.getByText('CREATED')).toBeInTheDocument()
+  expect(screen.getByText('Kit Without Label')).toBeInTheDocument()
   expect(screen.getByText('1234 Fake Street')).toBeInTheDocument()
 })

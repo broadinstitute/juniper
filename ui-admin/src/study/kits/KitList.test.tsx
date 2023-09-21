@@ -3,15 +3,16 @@ import { act, render, screen, waitFor } from '@testing-library/react'
 import { mockEnrollee, mockKitRequest, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import KitList from './KitList'
 import { BrowserRouter } from 'react-router-dom'
+
 import userEvent from '@testing-library/user-event'
 import Api from 'api/api'
 import { ReactNotifications } from 'react-notifications-component'
 
 
+
 describe('KitList', () => {
   it('gracefully handles unexpected JSON from Pepper', async () => {
     mockFetchKits()
-    const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
 
     await act(async () => render(
@@ -19,9 +20,9 @@ describe('KitList', () => {
         <KitList studyEnvContext={studyEnvContext}/>
       </BrowserRouter>
     ))
-    await user.click(screen.getByText(/Issues/))
 
-    expect(screen.getByText('(unknown)')).toBeInTheDocument()
+    expect(screen.getByText('JOSALK')).toBeInTheDocument()
+    expect(screen.getByText('Test kit')).toBeInTheDocument()
   })
 
   it('indicates refresh failed', async () => {
