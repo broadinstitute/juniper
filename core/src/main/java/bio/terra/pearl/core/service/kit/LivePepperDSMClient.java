@@ -199,7 +199,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
         private String secret;
 
         public PepperDSMConfig(Environment environment) {
-            this.useLiveDsm = environment.getProperty("env.dsm.useLiveDsm", Boolean.class);
+            this.useLiveDsm = environment.getProperty("env.dsm.useLiveDsm", Boolean.class, false);
             this.basePath = environment.getProperty("env.dsm.basePath");
             this.issuerClaim = environment.getProperty("env.dsm.issuerClaim");
             this.secret = environment.getProperty("env.dsm.secret");
