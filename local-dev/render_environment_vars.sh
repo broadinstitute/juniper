@@ -12,7 +12,7 @@ ADMIN_API_ENV_VARS=(
   "REDIRECT_ALL_EMAILS_TO:static:$DEV_EMAIL"
   "B2C_TENANT_NAME:static:ddpdevb2c"
   "B2C_CLIENT_ID:vault:vault read -field value secret/dsp/ddp/b2c/dev/application_id"
-  "B2C_POLICY_NAME:static:B2C_1A_ddp_participant_signup_signin_dev"
+  "B2C_POLICY_NAME:static:B2C_1A_ddp_admin_signup_signin_dev"
   "DSM_JWT_SIGNING_SECRET:vault:vault read -field jwt_signing_secret secret/dsp/ddp/d2p/dev/dsm"
   "SENDGRID_API_KEY:vault:vault read -field=api_key secret/dsp/ddp/d2p/dev/sendgrid"
   "TDR_SA_CREDS:vault:vault read -field=sa-key.json.b64 secret/dsp/ddp/d2p/dev/d2p-tdr-sa"
