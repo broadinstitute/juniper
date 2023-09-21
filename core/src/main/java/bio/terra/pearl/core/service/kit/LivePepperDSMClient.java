@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -191,11 +192,14 @@ public class LivePepperDSMClient implements PepperDSMClient {
     @Getter
     @Setter
     public static class PepperDSMConfig {
+        @Accessors(fluent = true)
+        private boolean useLiveDsm = false;
         private String basePath;
         private String issuerClaim;
         private String secret;
 
         public PepperDSMConfig(Environment environment) {
+            this.useLiveDsm = environment.getProperty("env.dsm.useLiveDsm", Boolean.class);
             this.basePath = environment.getProperty("env.dsm.basePath");
             this.issuerClaim = environment.getProperty("env.dsm.issuerClaim");
             this.secret = environment.getProperty("env.dsm.secret");
