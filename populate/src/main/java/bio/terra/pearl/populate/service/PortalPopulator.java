@@ -172,4 +172,18 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
 
         return portal;
     }
+
+    /**
+     * just populates the images from the given portal.json file.
+     * Useful for populating/updating site content, which may rely on images form the root file
+     * */
+    public void populateImages(String portalFilePath, boolean overwrite) throws IOException {
+        FilePopulateContext fileContext = new FilePopulateContext(portalFilePath);
+        String portalFileString = filePopulateService.readFile(fileContext.getRootFileName(), fileContext);
+        PortalPopDto popDto = readValue(portalFileString);
+        PortalPopulateContext portalPopContext = new PortalPopulateContext(fileContext, popDto.getShortcode(), null);
+        for (SiteImagePopDto imagePopDto : popDto.getSiteImageDtos()) {
+            siteImagePopulator.populateFromDto(imagePopDto, portalPopContext, overwrite);
+        }
+    }
 }

@@ -89,6 +89,10 @@ public class PopulateExtService {
     PortalPopulateContext config =
         new PortalPopulateContext(filePathName, portalShortcode, null, new HashMap<>());
     try {
+      // first, repopulate images to cove any new/changed images.
+      String portalFilePath = "portals/%s/portal.json".formatted(portalShortcode);
+      portalPopulator.populateImages(portalFilePath, overwrite);
+      // then repopulate the sitecontent itself
       return siteContentPopulator.populate(config, overwrite);
     } catch (IOException e) {
       throw new IllegalArgumentException("populate failed", e);

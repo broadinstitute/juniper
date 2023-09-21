@@ -1,21 +1,29 @@
 import React, { useEffect, useId, useState } from 'react'
 import LoadingSpinner from 'util/LoadingSpinner'
-import Api, { SiteContent } from 'api/api'
+import Api, { PortalEnvironment, SiteContent } from 'api/api'
 import Modal from 'react-bootstrap/Modal'
 import { instantToDefaultString } from 'util/timeUtils'
 import Select from 'react-select'
+import { Button } from 'components/forms/Button'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faRotate } from '@fortawesome/free-solid-svg-icons'
 
 type SiteContentVersionSelectorProps = {
-    portalShortcode: string
-    stableId: string
-    current: SiteContent
-    onDismiss: () => void
-    loadSiteContent: (stableId: string, version: number) => void
+  portalShortcode: string
+  portalEnv: PortalEnvironment
+  stableId: string
+  current: SiteContent
+  onDismiss: () => void
+  loadSiteContent: (stableId: string, version: number) => void
+  switchToVersion: (id: string, stableId: string, version: number) => void
 }
 
 /** component for selecting versions of a survey */
 export default function SiteContentVersionSelector(props: SiteContentVersionSelectorProps) {
-  const { portalShortcode, stableId, current, onDismiss, loadSiteContent } = props
+  const {
+    portalShortcode, stableId, current, portalEnv, onDismiss,
+    loadSiteContent, switchToVersion
+  } = props
   const [versionList, setVersionList] = useState<SiteContent[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [selectedVersion, setSelectedVersion] = useState<SiteContent>()
@@ -38,9 +46,16 @@ export default function SiteContentVersionSelector(props: SiteContentVersionSele
     })
   }, [])
 
-  const selectVersion = () => {
+  const editSelectedVersion = () => {
     if (selectedVersion) {
       loadSiteContent(selectedVersion.stableId, selectedVersion.version)
+      onDismiss()
+    }
+  }
+
+  const doVersionSwitch = () => {
+    if (selectedVersion) {
+      switchToVersion(selectedVersion.id, selectedVersion.stableId, selectedVersion.version)
       onDismiss()
     }
   }
@@ -56,17 +71,22 @@ export default function SiteContentVersionSelector(props: SiteContentVersionSele
           <br/>
           <span>created {instantToDefaultString(current.createdAt)}</span>.
         </p>
-        <label htmlFor={selectId}>Select version to edit</label>
+        <label htmlFor={selectId}>Select version</label>
         <Select inputId={selectId} options={versionOpts} value={selectedOpt} onChange={opt =>
           setSelectedVersion(opt?.value)}/>
-
       </LoadingSpinner>
     </Modal.Body>
-    <Modal.Footer>
-      {selectedVersion && <button type="button" className="btn btn-primary" onClick={selectVersion}>
+    <Modal.Footer className="flex-column">
+      {selectedVersion && <>
+        <Button variant="primary" className="w-100" onClick={editSelectedVersion}>
                 Edit version { selectedVersion.version }
-      </button> }
-      <button type="button" className="btn btn-secondary" onClick={onDismiss}>Cancel</button>
+        </Button>
+        {portalEnv.environmentName === 'sandbox' &&
+            <Button type="button" variant="secondary" onClick={doVersionSwitch}>
+          Switch sandbox to version { selectedVersion.version } <FontAwesomeIcon icon={faRotate}/>
+            </Button>}
+      </>
+      }
     </Modal.Footer>
   </Modal>
 }
