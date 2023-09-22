@@ -21,6 +21,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faRefresh } from '@fortawesome/free-solid-svg-icons'
 import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
+import {useUser} from "../../user/UserProvider";
 
 type KitStatusTabConfig = {
   status: string,
@@ -106,7 +107,7 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
   const { portal, study, currentEnv } = studyEnvContext
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [kits, setKits] = useState<KitRequest[]>([])
-
+  const { user } = useUser()
   const { isLoading, reload } = useLoadingEffect(async () => {
     const kits= await Api.fetchKitsByStudyEnvironment(portal.shortcode, study.shortcode, currentEnv.environmentName)
     setKits(kits)
@@ -144,10 +145,10 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
           </NavLink>
         })}
         <div className="ms-auto">
-          <Button variant="secondary" onClick={refreshStatuses}>
+          {user.superuser && <Button variant="secondary" onClick={refreshStatuses}>
             {!isRefreshing && <span>Refresh <FontAwesomeIcon icon={faRefresh}/></span>}
             {isRefreshing && <LoadingSpinner/>}
-          </Button>
+          </Button> }
         </div>
       </div>
       <Routes>
