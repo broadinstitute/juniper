@@ -46,9 +46,9 @@ export default function SurveyFullDataView({ answers, resumeData, survey, userId
         <label className="ms-4">
           <input type="checkbox" className="me-2"
             checked={showFullQuestions} onChange={() => setShowFullQuestions(!showFullQuestions)}/>
-          Show full question texts
+          Show full question text
         </label>
-        <InfoPopup content="Whether truncate question texts longer than 100 characters below"/>
+        <InfoPopup content="Show full question text vs. truncated to first 100 characters"/>
       </div>
       <div className="ms-auto">
         <Link to="print">
