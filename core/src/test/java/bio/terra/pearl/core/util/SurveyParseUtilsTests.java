@@ -184,7 +184,7 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode questionNode = mapper.readTree(simpleDerivedQString);
         String upstreamStableId = SurveyParseUtils.getUpstreamStableId(questionNode);
-        assertThat(upstreamStableId, equalTo("upstreamQ"));
+        assertThat(upstreamStableId, equalTo("otherQ"));
     }
 
     @Test

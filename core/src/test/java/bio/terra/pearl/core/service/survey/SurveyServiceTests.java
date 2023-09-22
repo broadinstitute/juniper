@@ -219,8 +219,8 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         List<SurveyQuestionDefinition> defs = surveyService.getSurveyQuestionDefinitions(survey);
         assertThat(defs, hasSize(5));
         // check that the question got inserted after the first one it is derived from
-        assertThat(defs.get(1).getQuestionStableId(), equalTo("computedHeight"));
-        assertThat(defs.get(1).getQuestionType(), equalTo(SurveyParseUtils.DERIVED_QUESTION_TYPE));
+        assertThat(defs.get(2).getQuestionStableId(), equalTo("computedHeight"));
+        assertThat(defs.get(2).getQuestionType(), equalTo(SurveyParseUtils.DERIVED_QUESTION_TYPE));
     }
 
 }

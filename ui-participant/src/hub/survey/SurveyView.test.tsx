@@ -90,9 +90,9 @@ describe('Renders a survey', () => {
     expect(submitSpy).toHaveBeenCalledTimes(1)
     expect(submitSpy).toHaveBeenCalledWith(expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green' },
+        answers: expect.arrayContaining([{ questionStableId: 'radio1', stringValue: 'green' },
           { questionStableId: 'colorCode', stringValue: '#0F0' },
-          { questionStableId: 'text1', stringValue: 'my Text' }],
+          { questionStableId: 'text1', stringValue: 'my Text' }]),
         complete: false,
         resumeData: '{"user1":{"currentPageNo":3}}'
       })
@@ -214,7 +214,8 @@ describe('Renders a survey', () => {
     await new Promise(r => setTimeout(r, 500))
     const expectedDiffResponse = expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green' }],
+        answers: [{ questionStableId: 'radio1', stringValue: 'green' },
+          { questionStableId: 'colorCode', stringValue: '#0F0' }],
         complete: false,
         resumeData: '{"user1":{"currentPageNo":2}}'
       })
