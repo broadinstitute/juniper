@@ -108,7 +108,7 @@
             "type": "text",
             "name": "oh_oh_basic_rawWeight",
             "visibleIf": "{oh_oh_basic_weightUnit} notempty",
-            "title": "Weight in {weightUnit}",
+            "title": "Weight in {oh_oh_basic_weightUnit}",
             "isRequired": true,
             "validators": [
               {
