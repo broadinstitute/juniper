@@ -5,9 +5,10 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import Api, { VersionedForm } from 'api/api'
 import { useNavigate } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
-import { failureNotification } from '../../util/notifications'
-import { PortalContext, PortalContextT } from '../../portal/PortalProvider'
-import InfoPopup from '../../components/forms/InfoPopup'
+import { failureNotification } from 'util/notifications'
+import { PortalContext, PortalContextT } from 'portal/PortalProvider'
+import InfoPopup from 'components/forms/InfoPopup'
+import { generateStableId } from 'util/pearlSurveyUtils'
 
 /** renders a modal that creates a new survey in a portal and configures it to the current study env */
 const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {studyEnvContext: StudyEnvContextT,
@@ -15,6 +16,7 @@ const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {s
   const [isLoading, setIsLoading] = useState(false)
   const [surveyName, setSurveyName] = useState('')
   const [surveyStableId, setSurveyStableId] = useState('')
+  const [enableAutofillStableId, setEnableAutofillStableId] = useState(true)
 
   const portalContext = useContext(PortalContext) as PortalContextT
   const navigate = useNavigate()
@@ -62,6 +64,7 @@ const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {s
   const clearFields = () => {
     setSurveyName('')
     setSurveyStableId('')
+    setEnableAutofillStableId(true)
   }
 
   return <Modal show={show}
@@ -79,11 +82,21 @@ const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {s
       <form onSubmit={e => e.preventDefault()}>
         <label className="form-label" htmlFor="inputSurveyName">Survey Name</label>
         <input type="text" size={50} className="form-control" id="inputSurveyName" value={surveyName}
-          onChange={event => setSurveyName(event.target.value)}/>
+          onChange={event => {
+            setSurveyName(event.target.value)
+            if (enableAutofillStableId) {
+              setSurveyStableId(generateStableId(event.target.value))
+            }
+          }}/>
         <label className="form-label mt-3" htmlFor="inputSurveyStableId">Survey Stable ID</label>
         <InfoPopup content={'A stable and unique identifier for the survey. May be shown in exported datasets.'}/>
         <input type="text" size={50} className="form-control" id="inputSurveyStableId" value={surveyStableId}
-          onChange={event => setSurveyStableId(event.target.value)}/>
+          onChange={event => {
+            setSurveyStableId(event.target.value)
+            //Once the user has modified the stable ID on their own, disable autofill in order to prevent overwriting
+            setEnableAutofillStableId(false)
+          }
+          }/>
       </form>
     </Modal.Body>
     <Modal.Footer>
