@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
 import Api, { PortalEnvironmentChange } from 'api/api'
 import { Store } from 'react-notifications-component'
@@ -24,7 +24,6 @@ const PortalEnvDiffProvider = ({ portal, studyShortcode, updatePortal }: PortalE
   const destEnvName = params.destEnvName
   const [isLoading, setIsLoading] = useState(true)
   const [diffResult, setDiffResult] = useState<PortalEnvironmentChange>()
-  const navigate = useNavigate()
 
   const applyChanges = (changeSet: PortalEnvironmentChange) => {
     Api.applyEnvChanges(portal.shortcode, destEnvName!, changeSet).then(result => {
@@ -33,7 +32,8 @@ const PortalEnvDiffProvider = ({ portal, studyShortcode, updatePortal }: PortalE
       const envIndex = updatedPortal.portalEnvironments.findIndex(env => env.environmentName === result.environmentName)
       updatedPortal.portalEnvironments[envIndex] = result
       updatePortal(updatedPortal)
-      navigate(studyPublishingPath(portal.shortcode, studyShortcode))
+      // for now, do a hard reload to make sure all changes are propagated
+      window.location.pathname = studyPublishingPath(portal.shortcode, studyShortcode)
     }).catch(e => {
       Store.addNotification(failureNotification(`Update failed: ${  e.message}`))
     })

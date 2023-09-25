@@ -129,7 +129,7 @@ export default function PortalEnvDiffView(
                   })}/>
                 <VersionChangeView record={changeSet.siteContentChange}/>
               </label>}
-          { !changeSet.siteContentChange && <VersionChangeView record={changeSet.siteContentChange}/> }
+          { !changeSet.siteContentChange.changed && <VersionChangeView record={changeSet.siteContentChange}/> }
         </div>
       </div>
       <div className="my-2">
