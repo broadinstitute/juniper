@@ -141,7 +141,7 @@
             "type": "text",
             "name": "oh_oh_basic_rawHeightCm",
             "visibleIf": "{oh_oh_basic_heightUnit} = 'cm'",
-            "title": "Height in {heightUnit}",
+            "title": "Height in {oh_oh_basic_heightUnit}",
             "isRequired": true,
             "validators": [
               {
