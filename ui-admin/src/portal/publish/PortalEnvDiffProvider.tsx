@@ -2,23 +2,23 @@ import { useNavigate, useParams } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
 import Api, { PortalEnvironmentChange } from 'api/api'
 import { Store } from 'react-notifications-component'
-import { failureNotification, successNotification } from 'util/notifications'
-import _cloneDeep from 'lodash/cloneDeep'
+import { successNotification } from 'util/notifications'
 import LoadingSpinner from 'util/LoadingSpinner'
 import PortalEnvDiffView from './PortalEnvDiffView'
 import { Portal } from '@juniper/ui-core/build/types/portal'
 import { studyPublishingPath } from '../../study/StudyRouter'
+import { doApiLoad } from '../../api/api-utils'
 
 type PortalEnvDiffProviderProps = {
   portal: Portal,
   studyShortcode: string,
-  updatePortal: (portal: Portal) => void
+  reloadPortal: () => void
 }
 /**
  * loads a diff between two environments, based on the passed-in environment and an environment name in a url param
  * also contains logic for updating an environment with a changeset
  */
-const PortalEnvDiffProvider = ({ portal, studyShortcode, updatePortal }: PortalEnvDiffProviderProps) => {
+const PortalEnvDiffProvider = ({ portal, studyShortcode, reloadPortal }: PortalEnvDiffProviderProps) => {
   const params = useParams()
   const sourceEnvName = params.sourceEnvName
   const destEnvName = params.destEnvName
@@ -26,16 +26,12 @@ const PortalEnvDiffProvider = ({ portal, studyShortcode, updatePortal }: PortalE
   const [diffResult, setDiffResult] = useState<PortalEnvironmentChange>()
   const navigate = useNavigate()
 
-  const applyChanges = (changeSet: PortalEnvironmentChange) => {
-    Api.applyEnvChanges(portal.shortcode, destEnvName!, changeSet).then(result => {
+  const applyChanges = async (changeSet: PortalEnvironmentChange) => {
+    doApiLoad(async () => {
+      await Api.applyEnvChanges(portal.shortcode, destEnvName!, changeSet)
       Store.addNotification(successNotification(`${destEnvName} environment updated`))
-      const updatedPortal = _cloneDeep(portal)
-      const envIndex = updatedPortal.portalEnvironments.findIndex(env => env.environmentName === result.environmentName)
-      updatedPortal.portalEnvironments[envIndex] = result
-      updatePortal(updatedPortal)
+      await reloadPortal()
       navigate(studyPublishingPath(portal.shortcode, studyShortcode))
-    }).catch(e => {
-      Store.addNotification(failureNotification(`Update failed: ${  e.message}`))
     })
   }
 

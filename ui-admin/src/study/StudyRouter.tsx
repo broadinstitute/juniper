@@ -59,7 +59,8 @@ function StudyRouterFromShortcode({ shortcode, portalContext }:
       <Route path="env/:studyEnv/*" element={<StudyEnvironmentRouter study={study}/>}/>
       <Route path="diff/:sourceEnvName/:destEnvName" element={
         <PortalEnvDiffProvider portal={portalContext.portal}
-          updatePortal={portalContext.updatePortal} studyShortcode={study.shortcode}/>}/>
+          reloadPortal={() => portalContext.reloadPortal(portalContext.portal.shortcode)}
+          studyShortcode={study.shortcode}/>}/>
       <Route path="publishing" element={<StudyPublishingView portal={portalContext.portal}
         studyShortcode={study.shortcode}/>}/>
       <Route path="users" element={<PortalUserList portal={portalContext.portal}/>}/>
