@@ -49,6 +49,10 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
         return findAllByProperty("survey_id", surveyId);
     }
 
+    public void deleteBySurveyId(UUID surveyId) {
+        deleteByProperty("survey_id", surveyId);
+    }
+
     /** finds by a surveyId and studyEnvironment */
     public Optional<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, UUID surveyId) {
         return findByTwoProperties("study_environment_id",studyEnvId,

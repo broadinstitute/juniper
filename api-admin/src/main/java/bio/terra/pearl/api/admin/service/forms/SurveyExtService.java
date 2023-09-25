@@ -16,6 +16,7 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import java.util.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SurveyExtService {
@@ -64,6 +65,7 @@ public class SurveyExtService {
     return surveyService.create(survey);
   }
 
+  @Transactional
   public void delete(String portalShortcode, String surveyStableId, AdminUser adminUser) {
     Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
     List<Survey> existingVersions = surveyService.findByStableId(surveyStableId);
@@ -87,14 +89,10 @@ public class SurveyExtService {
 
     // Resolve all of the study environments that contain the configured surveys
     List<StudyEnvironment> referencingStudyEnvs =
-        referencingSurveys.stream()
-            .map(
-                configuredSurvey -> {
-                  return studyEnvironmentService
-                      .find(configuredSurvey.getStudyEnvironmentId())
-                      .get();
-                })
-            .toList();
+        studyEnvironmentService.findAll(
+            referencingSurveys.stream()
+                .map(StudyEnvironmentSurvey::getStudyEnvironmentId)
+                .toList());
 
     if (referencingStudyEnvs.stream()
         .anyMatch(r -> !EnvironmentName.sandbox.equals(r.getEnvironmentName()))) {
@@ -103,11 +101,7 @@ public class SurveyExtService {
     } else {
       // At this point, only sandbox environments reference the survey, so we can unlink
       // the survey from each env to prepare for full deletion.
-      referencingSurveys.forEach(
-          configuredSurvey -> {
-            studyEnvironmentSurveyService.delete(
-                configuredSurvey.getId(), CascadeProperty.EMPTY_SET);
-          });
+      existingVersionIds.forEach(id -> studyEnvironmentSurveyService.deleteBySurveyId(id));
 
       // Delete the survey
       for (Survey survey : existingVersions) {

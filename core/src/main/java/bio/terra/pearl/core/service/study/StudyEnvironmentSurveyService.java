@@ -33,4 +33,8 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
         return dao.findBySurveyId(surveyId);
     }
 
+    public void deleteBySurveyId(UUID surveyId) {
+        dao.deleteBySurveyId(surveyId);
+    }
+
 }
