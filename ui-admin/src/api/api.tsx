@@ -452,6 +452,15 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async deleteSurvey(portalShortcode: string, stableId: string): Promise<Response> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys/${stableId}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
+  },
+
   async createNewSurveyVersion(portalShortcode: string, survey: Survey): Promise<Survey> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys/${survey.stableId}/newVersion`
 
@@ -502,6 +511,17 @@ export default {
       body: JSON.stringify(configuredSurvey)
     })
     return await this.processJsonResponse(response)
+  },
+
+  async removeConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string,
+    configuredSurveyId: string): Promise<Response> {
+    const url =`${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
+        `/env/${environmentName}/configuredSurveys/${configuredSurveyId}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
   },
 
   async updateConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string,
