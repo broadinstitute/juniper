@@ -29,8 +29,8 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
         return configs.stream().findFirst();
     }
 
-    public List<StudyEnvironmentSurvey> findAllStudyEnvsWithSurveyId(UUID surveyId) {
-        return dao.findAllStudyEnvsWithSurveyId(surveyId);
+    public List<StudyEnvironmentSurvey> findBySurveyId(UUID surveyId) {
+        return dao.findBySurveyId(surveyId);
     }
 
 }

@@ -67,11 +67,12 @@ public class SurveyExtService {
   public void delete(String portalShortcode, String surveyStableId, AdminUser adminUser) {
     Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
     List<Survey> existingVersions = surveyService.findByStableId(surveyStableId);
-    List<UUID> existingVersionIds = existingVersions.stream().map(BaseEntity::getId).toList();
 
-    if (existingVersionIds.size() == 0) {
-      throw new NotFoundException("Survey not found in portal " + portal.getName());
+    if (existingVersions.size() == 0) {
+      throw new NotFoundException("Survey not found");
     }
+
+    List<UUID> existingVersionIds = existingVersions.stream().map(BaseEntity::getId).toList();
 
     // Find all of the configured surveys that use any version of the specified survey
     List<StudyEnvironmentSurvey> referencingSurveys =
@@ -79,7 +80,7 @@ public class SurveyExtService {
             .flatMap(
                 surveyId -> {
                   List<StudyEnvironmentSurvey> configuredSurveys =
-                      studyEnvironmentSurveyService.findAllStudyEnvsWithSurveyId(surveyId);
+                      studyEnvironmentSurveyService.findBySurveyId(surveyId);
                   return configuredSurveys.stream();
                 })
             .toList();
