@@ -180,9 +180,9 @@ describe('Renders a survey', () => {
     const { submitSpy } = setupSurveyTest(mockSurveyWithHiddenQuestionClearOnHidden())
     await userEvent.click(screen.getByText('Green'))
     await userEvent.click(screen.getByText('forest green'))
-    await new Promise(r => setTimeout(r, 250))
+    await new Promise(r => setTimeout(r, 200))
     await userEvent.click(screen.getByText('Blue'))
-    await new Promise(r => setTimeout(r, 250))
+    await new Promise(r => setTimeout(r, 200))
     await userEvent.click(screen.getByText('Complete'))
     
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
