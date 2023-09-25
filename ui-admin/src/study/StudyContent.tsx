@@ -124,9 +124,9 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
         show={showCreateSurveyModal}
         setShow={setShowCreateSurveyModal}/> }
       { selectedSurveyConfig && <ArchiveSurveyModal studyEnvContext={studyEnvContext}
-                                                    selectedSurveyConfig={selectedSurveyConfig}
-                                                    show={showArchiveSurveyModal}
-                                                    setShow={setShowArchiveSurveyModal}/> }
+        selectedSurveyConfig={selectedSurveyConfig}
+        show={showArchiveSurveyModal}
+        setShow={setShowArchiveSurveyModal}/> }
       { selectedSurveyConfig && <DeleteSurveyModal studyEnvContext={studyEnvContext}
         selectedSurveyConfig={selectedSurveyConfig}
         show={showDeleteSurveyModal}
