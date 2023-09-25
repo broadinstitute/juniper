@@ -68,7 +68,11 @@ public class SurveyExtService {
   @Transactional
   public void delete(String portalShortcode, String surveyStableId, AdminUser adminUser) {
     Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
-    List<Survey> existingVersions = surveyService.findByStableId(surveyStableId);
+    // Find all of the versions of the specified survey that are in the specified portal
+    List<Survey> existingVersions =
+        surveyService.findByStableId(surveyStableId).stream()
+            .filter(survey -> portal.getId().equals(survey.getPortalId()))
+            .toList();
 
     if (existingVersions.size() == 0) {
       throw new NotFoundException("Survey not found");
@@ -103,12 +107,9 @@ public class SurveyExtService {
       // the survey from each env to prepare for full deletion.
       existingVersionIds.forEach(id -> studyEnvironmentSurveyService.deleteBySurveyId(id));
 
-      // Delete the survey
-      for (Survey survey : existingVersions) {
-        if (portal.getId().equals(survey.getPortalId())) {
-          surveyService.delete(survey.getId(), CascadeProperty.EMPTY_SET);
-        }
-      }
+      // Delete all survey versions
+      existingVersions.forEach(
+          survey -> surveyService.delete(survey.getId(), CascadeProperty.EMPTY_SET));
     }
   }
 
