@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
 import CreateSurveyModal from './surveys/CreateSurveyModal'
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
-import RemoveSurveyModal from './surveys/RemoveSurveyModal'
+import ArchiveSurveyModal from './surveys/ArchiveSurveyModal'
 import DeleteSurveyModal from './surveys/DeleteSurveyModal'
 import { StudyEnvironmentSurvey } from '@juniper/ui-core'
 
@@ -21,7 +21,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
   const preEnrollSurvey = currentEnv.preEnrollSurvey
   const isReadOnlyEnv = !(currentEnv.environmentName === 'sandbox')
   const [showCreateSurveyModal, setShowCreateSurveyModal] = useState(false)
-  const [showRemoveSurveyModal, setShowRemoveSurveyModal] = useState(false)
+  const [showArchiveSurveyModal, setShowArchiveSurveyModal] = useState(false)
   const [showDeleteSurveyModal, setShowDeleteSurveyModal] = useState(false)
   const [selectedSurveyConfig, setSelectedSurveyConfig] = useState<StudyEnvironmentSurvey>()
 
@@ -86,10 +86,10 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                           <li>
                             <button className="dropdown-item"
                               onClick={() => {
-                                setShowRemoveSurveyModal(!showRemoveSurveyModal)
+                                setShowArchiveSurveyModal(!showArchiveSurveyModal)
                                 setSelectedSurveyConfig(surveyConfig)
                               }}>
-                              Remove from study
+                              Archive
                             </button>
                           </li>
                           <li className="pt-2">
@@ -123,10 +123,10 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
         isReadOnlyEnv={isReadOnlyEnv}
         show={showCreateSurveyModal}
         setShow={setShowCreateSurveyModal}/> }
-      { selectedSurveyConfig && <RemoveSurveyModal studyEnvContext={studyEnvContext}
-        selectedSurveyConfig={selectedSurveyConfig}
-        show={showRemoveSurveyModal}
-        setShow={setShowRemoveSurveyModal}/> }
+      { selectedSurveyConfig && <ArchiveSurveyModal studyEnvContext={studyEnvContext}
+                                                    selectedSurveyConfig={selectedSurveyConfig}
+                                                    show={showArchiveSurveyModal}
+                                                    setShow={setShowArchiveSurveyModal}/> }
       { selectedSurveyConfig && <DeleteSurveyModal studyEnvContext={studyEnvContext}
         selectedSurveyConfig={selectedSurveyConfig}
         show={showDeleteSurveyModal}

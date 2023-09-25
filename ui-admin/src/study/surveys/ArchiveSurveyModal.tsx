@@ -7,8 +7,8 @@ import { Store } from 'react-notifications-component'
 import { failureNotification } from '../../util/notifications'
 import { PortalContext, PortalContextT } from 'portal/PortalProvider'
 
-/** renders a modal that allows removing a survey from the current study env */
-const RemoveSurveyModal = ({
+/** renders a modal that allows archiving a survey from the current study env */
+const ArchiveSurveyModal = ({
   studyEnvContext, selectedSurveyConfig, show, setShow
 }: {
   studyEnvContext: StudyEnvContextT, selectedSurveyConfig: StudyEnvironmentSurvey,
@@ -17,11 +17,11 @@ const RemoveSurveyModal = ({
 
   const portalContext = useContext(PortalContext) as PortalContextT
 
-  const [confirmRemoveSurvey, setConfirmRemoveSurvey] = useState('')
-  const removeString = `remove ${selectedSurveyConfig.survey.name}`
-  const canRemove = confirmRemoveSurvey.toLowerCase() === removeString.toLowerCase()
+  const [confirmArchiveSurvey, setConfirmArchiveSurvey] = useState('')
+  const archiveString = `archive ${selectedSurveyConfig.survey.name}`
+  const canArchive = confirmArchiveSurvey.toLowerCase() === archiveString.toLowerCase()
 
-  const removeSurvey = async () => {
+  const archiveSurvey = async () => {
     setIsLoading(true)
 
     await Api.removeConfiguredSurvey(studyEnvContext.portal.shortcode,
@@ -42,22 +42,22 @@ const RemoveSurveyModal = ({
       setShow(false)
     }}>
     <Modal.Header closeButton>
-      <Modal.Title>Remove Survey</Modal.Title>
+      <Modal.Title>Archive Survey</Modal.Title>
       <div className="ms-4">
         {studyEnvContext.study.name}: {studyEnvContext.currentEnv.environmentName}
       </div>
     </Modal.Header>
     <Modal.Body>
       <div className="mb-3">
-        Are you sure you want to remove the <strong>{selectedSurveyConfig.survey.name}</strong> survey
+        Are you sure you want to archive the <strong>{selectedSurveyConfig.survey.name}</strong> survey
         from the {studyEnvContext.currentEnv.environmentName} environment? This will not
         delete existing participant responses to this survey.
       </div>
       <form onSubmit={e => e.preventDefault()}>
         <label className="form-label">
-          Confirm by typing &quot;{removeString}&quot; below.<br/>
-          <input type="text" size={50} className="form-control" id="inputSurveyRemoval" value={confirmRemoveSurvey}
-            onChange={event => setConfirmRemoveSurvey(event.target.value)}/>
+          Confirm by typing &quot;{archiveString}&quot; below.<br/>
+          <input type="text" size={50} className="form-control" id="inputSurveyRemoval" value={confirmArchiveSurvey}
+            onChange={event => setConfirmArchiveSurvey(event.target.value)}/>
         </label>
       </form>
     </Modal.Body>
@@ -65,9 +65,9 @@ const RemoveSurveyModal = ({
       <LoadingSpinner isLoading={isLoading}>
         <button
           className="btn btn-danger"
-          disabled={!canRemove}
-          onClick={removeSurvey}
-        >Remove survey from {studyEnvContext.study.name}: {studyEnvContext.currentEnv.environmentName}</button>
+          disabled={!canArchive}
+          onClick={archiveSurvey}
+        >Archive survey from {studyEnvContext.study.name}: {studyEnvContext.currentEnv.environmentName}</button>
         <button className="btn btn-secondary" onClick={() => {
           setShow(false)
         }}>Cancel</button>
@@ -76,4 +76,4 @@ const RemoveSurveyModal = ({
   </Modal>
 }
 
-export default RemoveSurveyModal
+export default ArchiveSurveyModal
