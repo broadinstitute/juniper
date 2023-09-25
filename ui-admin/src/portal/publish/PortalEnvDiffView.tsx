@@ -119,8 +119,17 @@ export default function PortalEnvDiffView(
       <div className="my-2">
         <h2 className="h6">
           Site content</h2>
-        <div className="ms-4">
-          <VersionChangeView record={changeSet.siteContentChange}/>
+        <div className="ms-4 ">
+          { changeSet.siteContentChange.changed &&
+              <label className="d-flex">
+                <input type="checkbox" className="me-3" checked={selectedChanges.siteContentChange.changed}
+                  onChange={e => setSelectedChanges({
+                    ...selectedChanges,
+                    siteContentChange: e.target.checked ? changeSet.siteContentChange : { changed: false }
+                  })}/>
+                <VersionChangeView record={changeSet.siteContentChange}/>
+              </label>}
+          { !changeSet.siteContentChange && <VersionChangeView record={changeSet.siteContentChange}/> }
         </div>
       </div>
       <div className="my-2">
