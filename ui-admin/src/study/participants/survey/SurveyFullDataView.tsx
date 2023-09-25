@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Question } from 'survey-core'
+import { Question, SurveyModel, CalculatedValue } from 'survey-core'
 
 import { surveyJSModelFromForm, makeSurveyJsData } from '@juniper/ui-core'
 import { Answer, ConsentForm, Survey } from 'api/api'
@@ -27,7 +27,7 @@ export default function SurveyFullDataView({ answers, resumeData, survey, userId
   answers.forEach(answer => {
     answerMap[answer.questionStableId] = answer
   })
-  let questions = surveyJsModel.getAllQuestions().filter(q => q.getType() !== 'html')
+  let questions = getQuestionsWithComputedValues(surveyJsModel)
   if (!showAllQuestions) {
     questions = questions.filter(q => !!answerMap[q.name])
   }
@@ -72,7 +72,7 @@ export default function SurveyFullDataView({ answers, resumeData, survey, userId
 }
 
 type ItemDisplayProps = {
-  question: Question,
+  question: Question | CalculatedValue,
   answerMap: Record<string, Answer>,
   surveyVersion: number,
   showFullQuestions: boolean
@@ -85,6 +85,9 @@ const ItemDisplay = ({ question, answerMap, surveyVersion, showFullQuestions }: 
   if (answer && answer.surveyVersion !== surveyVersion) {
     stableIdText = `${answer.questionStableId} v${answer.surveyVersion}`
   }
+  if ((question as CalculatedValue).expression) {
+    stableIdText += ' -- derived'
+  }
   return <>
     <dt className="fw-normal">
       {renderQuestionText(answer, question, showFullQuestions)}
@@ -95,30 +98,31 @@ const ItemDisplay = ({ question, answerMap, surveyVersion, showFullQuestions }: 
 }
 
 /** renders the value of the answer, either as plaintext, a matched choice, or an image for signatures */
-export const getDisplayValue = (answer: Answer, question: Question | QuestionWithChoices): React.ReactNode => {
+export const getDisplayValue = (answer: Answer,
+  question: Question | QuestionWithChoices | CalculatedValue): React.ReactNode => {
+  const isCalculatedValue = !!(question as CalculatedValue).expression
   if (!answer) {
-    if (!question.isVisible) {
+    if (!(question as Question).isVisible || isCalculatedValue) {
       return <span className="text-muted fst-italic fw-normal">n/a</span>
     } else {
       return <span className="text-muted fst-italic fw-normal">no answer</span>
     }
   }
   const answerValue = answer.stringValue ?? answer.numberValue ?? answer.objectValue ?? answer.booleanValue
-  if (!question) {
-    // if the answer represents a computedValue, we won't have a question for it
-    return answerValue?.toString() ?? ''
-  }
+
   let displayValue: React.ReactNode = answerValue
-  if (question.choices) {
+  if ((question as Question).choices) {
     if (answer.objectValue) {
       const valueArray = JSON.parse(answer.objectValue)
-      const textArray = valueArray.map((value: string | number) => getTextForChoice(value, question))
+      const textArray = valueArray.map((value: string | number) => getTextForChoice(value, question as Question))
       displayValue = JSON.stringify(textArray)
     } else {
-      displayValue = getTextForChoice(answerValue, question)
+      displayValue = getTextForChoice(answerValue, question as Question)
     }
   }
-
+  if (answer.booleanValue !== undefined) {
+    displayValue = answer.booleanValue ? 'True' : 'False'
+  }
   if (answer.questionStableId.endsWith('signature')) {
     displayValue = <img src={answer.stringValue}/>
   }
@@ -140,14 +144,47 @@ type ItemValue = { text: string, value: string }
 
 
 /** gets the question text -- truncates it at 100 chars */
-export const renderQuestionText = (answer: Answer, question: Question, showFullQuestions: boolean) => {
+export const renderQuestionText = (answer: Answer,
+  question: Question | CalculatedValue,
+  showFullQuestions: boolean) => {
   if (!question) {
     return <span>-</span>
   }
-  const questionText = question?.title
+  const questionText = (question as Question).title
   if (questionText && questionText.length > 100 && !showFullQuestions) {
     const truncatedText = `${questionText.substring(0, 100)  }...`
     return <span title={questionText}>{truncatedText}</span>
   }
   return <span>{questionText}</span>
 }
+
+/**
+ * returns the last stableId that this calculatedValue is dependent on, or null
+ * if it is independent.
+ * e.g. if the expression is "{heightInInches} * 2.54", this will return "heightInInches"
+ * This should match the logic in SurveyParseUtils.java
+ */
+export function getUpstreamStableId(calculatedValue: CalculatedValue): string | undefined {
+  const match = calculatedValue.expression.match(/.*\{(.+?)\}.*/)
+  return match ? match[1] : undefined
+}
+
+/**
+ * returns an array of the questions for display, which excludes html elements, and includes
+ * calculatedValues
+ */
+export function getQuestionsWithComputedValues(model: SurveyModel) {
+  const questionsAndVals: (Question | CalculatedValue)[] = model
+    .getAllQuestions().filter(q => q.getType() !== 'html')
+  model.calculatedValues.forEach(val => {
+    const upstreamStableId = getUpstreamStableId(val)
+    if (!upstreamStableId) {
+      questionsAndVals.push(val)
+    } else {
+      const spliceIndex = questionsAndVals.findIndex(question => question.name === upstreamStableId)
+      questionsAndVals.splice(spliceIndex, 0, val)
+    }
+  })
+  return questionsAndVals
+}
+

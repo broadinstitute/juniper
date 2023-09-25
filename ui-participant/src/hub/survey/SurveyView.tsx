@@ -12,6 +12,7 @@ import Api, {
 
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import {
+  getDataWithCalculatedValues,
   getResumeData,
   getUpdatedAnswers,
   PageNumberControl,
@@ -54,10 +55,11 @@ export function RawSurveyView({
     if (!surveyModel || !refreshSurvey) {
       return
     }
+    const currentModelValues = getDataWithCalculatedValues(surveyModel)
     const responseDto = {
       resumeData: getResumeData(surveyModel, enrollee.participantUserId, true),
       enrolleeId: enrollee.id,
-      answers: getUpdatedAnswers(prevSave.current as Record<string, object>, surveyModel.data),
+      answers: getUpdatedAnswers(prevSave.current as Record<string, object>, currentModelValues),
       creatingParticipantId: enrollee.participantUserId,
       surveyId: form.id,
       complete: true
@@ -88,13 +90,14 @@ export function RawSurveyView({
 
   /** if the survey has been updated, save the updated answers. */
   const saveDiff = () => {
-    const updatedAnswers = getUpdatedAnswers(prevSave.current as Record<string, object>, surveyModel.data)
+    const currentModelValues = getDataWithCalculatedValues(surveyModel)
+    const updatedAnswers = getUpdatedAnswers(prevSave.current as Record<string, object>, currentModelValues)
     if (updatedAnswers.length < 1) {
       // don't bother saving if there are no changes
       return
     }
     const prevPrevSave = prevSave.current
-    prevSave.current = surveyModel.data
+    prevSave.current = currentModelValues
 
     const responseDto = {
       resumeData: getResumeData(surveyModel, enrollee.participantUserId),

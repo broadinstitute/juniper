@@ -182,4 +182,45 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         Assertions.assertEquals(4, actual.size());
     }
 
+    @Test
+    public void testProcessDerivedQuestions() {
+        Survey survey = new Survey();
+        String surveyContent = """
+                {
+                  "title": "The Basics",
+                  "pages": [{
+                    "name": "page1",
+                    "elements": [{
+                      "type": "text",
+                      "name": "oh_oh_basic_heightUnit",
+                      "title": "Height unit (cm or in)"
+                     },{
+                      "type": "text",
+                      "name": "oh_oh_basic_rawHeight",
+                      "title": "Height"
+                     },{
+                      "type": "text",
+                      "name": "oh_oh_basic_weightUnit",
+                      "title": "Weight unit (lbs or kg)"
+                     },{
+                      "type": "text",
+                      "name": "oh_oh_basic_rawWeight",
+                      "title": "Weight"
+                     }]
+                   }],
+                  "calculatedValues": [{
+                    "name": "computedHeight",
+                    "includeIntoResult": true,
+                    "expression": "iif({oh_oh_basic_heightUnit} = 'in', {oh_oh_basic_rawHeight} * 2.54, {oh_oh_basic_rawHeight}"
+                   }]
+                 }""";
+
+        survey.setContent(surveyContent);
+        List<SurveyQuestionDefinition> defs = surveyService.getSurveyQuestionDefinitions(survey);
+        assertThat(defs, hasSize(5));
+        // check that the question got inserted after the first one it is derived from
+        assertThat(defs.get(2).getQuestionStableId(), equalTo("computedHeight"));
+        assertThat(defs.get(2).getQuestionType(), equalTo(SurveyParseUtils.DERIVED_QUESTION_TYPE));
+    }
+
 }

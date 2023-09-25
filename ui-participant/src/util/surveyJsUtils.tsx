@@ -221,3 +221,17 @@ export function getUpdatedAnswers(original: Record<string, SurveyJsValueType>,
 
   return dedupedKeys.map(key => makeAnswer(updated[key], key, updated))
 }
+
+/** get a merge of both the explicit answer data and the calculated values */
+export function getDataWithCalculatedValues(model: SurveyModel) {
+  const calculatedHash: Record<string, object> = {}
+  model.calculatedValues.forEach(val => {
+    if (val.includeIntoResult) {
+      calculatedHash[val.name] = val.value
+    }
+  })
+  return {
+    ...model.data,
+    ...calculatedHash
+  }
+}
