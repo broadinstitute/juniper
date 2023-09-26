@@ -1,11 +1,11 @@
-import React, {useEffect} from 'react'
+import React, { useEffect } from 'react'
 import 'react-notifications-component/dist/theme.css'
 import 'styles/notifications.css'
 import 'survey-core/defaultV2.min.css'
 import './App.css'
 import './print.css'
 
-import {BrowserRouter, Outlet, Route, Routes, useLocation} from 'react-router-dom'
+import { BrowserRouter, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { ReactNotifications } from 'react-notifications-component'
 
 import { RedirectFromOAuth } from 'login/RedirectFromOAuth'
@@ -28,12 +28,12 @@ import PopulateRouteSelect from './populate/PopulateRouteSelect'
 
 /** auto-scroll-to-top on any navigation */
 const ScrollToTop = () => {
-    const location = useLocation()
-    useEffect(() => {
-        // @ts-expect-error TS thinks "instant" isn't a valid scroll behavior.
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
-    }, [location.pathname])
-    return null
+  const location = useLocation()
+  useEffect(() => {
+    // @ts-expect-error TS thinks "instant" isn't a valid scroll behavior.
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [location.pathname])
+  return null
 }
 
 
