@@ -46,15 +46,15 @@
               "style": { "height": "40px" }
             },
             {
-              "cleanFileName": "yale_med.png",
+              "cleanFileName": "stanford_med.png",
               "version": 1,
-              "alt": "Yale Medical School",
+              "alt": "Stanford Medical School",
               "style": { "height": "40px" }
             },
             {
-              "cleanFileName": "stanford_med.svg",
+              "cleanFileName": "yale_med.png",
               "version": 1,
-              "alt": "Stanford Medical School",
+              "alt": "Yale Medical School",
               "style": { "height": "40px" }
             }
           ]
