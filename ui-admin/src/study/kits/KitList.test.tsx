@@ -7,7 +7,7 @@ import { BrowserRouter } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import Api from 'api/api'
 import { ReactNotifications } from 'react-notifications-component'
-import {MockSuperuserProvider} from "../../test-utils/user-mocking-utils";
+import { MockSuperuserProvider } from 'test-utils/user-mocking-utils'
 
 describe('KitList', () => {
   it('gracefully handles unexpected JSON from Pepper', async () => {
