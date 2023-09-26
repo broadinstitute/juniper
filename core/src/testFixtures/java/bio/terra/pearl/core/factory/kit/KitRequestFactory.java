@@ -58,7 +58,7 @@ public class KitRequestFactory {
         var savedKitRequest = kitRequestDao.create(kitRequest);
         var dsmStatus = PepperKitStatus.builder()
                 .currentStatus("CREATED")
-                .kitId(savedKitRequest.getId().toString())
+                .juniperKitId(savedKitRequest.getId().toString())
                 .build();
         savedKitRequest.setDsmStatus(objectMapper.writeValueAsString(dsmStatus));
         savedKitRequest.setDsmStatusFetchedAt(Instant.now());

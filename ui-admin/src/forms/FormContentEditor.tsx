@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Tab, Tabs } from 'react-bootstrap'
 
-import { FormContent } from '@juniper/ui-core'
+import { FormContent, VersionedForm } from '@juniper/ui-core'
 
 import { FormDesigner } from './FormDesigner'
 import { OnChangeFormContent } from './formEditorTypes'
@@ -9,9 +9,11 @@ import { FormContentJsonEditor } from './FormContentJsonEditor'
 import { FormPreview } from './FormPreview'
 import { validateFormContent } from './formContentValidation'
 import ErrorBoundary from 'util/ErrorBoundary'
+import { isEmpty } from 'lodash'
 
 type FormContentEditorProps = {
   initialContent: string
+  visibleVersionPreviews: VersionedForm[]
   readOnly: boolean
   onChange: OnChangeFormContent
 }
@@ -19,7 +21,7 @@ type FormContentEditorProps = {
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
 export const FormContentEditor = (props: FormContentEditorProps) => {
-  const { initialContent, readOnly, onChange } = props
+  const { initialContent, visibleVersionPreviews, readOnly, onChange } = props
 
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [tabsEnabled, setTabsEnabled] = useState(true)
@@ -47,10 +49,11 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
               onChange={newContent => {
                 setEditedContent(newContent)
                 try {
-                  validateFormContent(newContent)
-                  onChange(true, newContent)
+                  const errors = validateFormContent(newContent)
+                  onChange(errors, newContent)
                 } catch (err) {
-                  onChange(false, undefined)
+                  //@ts-ignore
+                  onChange([err.message], undefined)
                 }
               }}
             />
@@ -65,14 +68,14 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             <FormContentJsonEditor
               initialValue={editedContent}
               readOnly={readOnly}
-              onChange={(isValid, newContent) => {
-                if (isValid) {
+              onChange={(validationErrors, newContent) => {
+                if (isEmpty(validationErrors) && newContent) {
                   setEditedContent(newContent)
-                  onChange(true, newContent)
+                  onChange(validationErrors, newContent)
                 } else {
-                  onChange(false, undefined)
+                  onChange(validationErrors, undefined)
                 }
-                setTabsEnabled(isValid)
+                setTabsEnabled(isEmpty(validationErrors))
               }}
             />
           </ErrorBoundary>
@@ -86,6 +89,15 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             <FormPreview formContent={editedContent} />
           </ErrorBoundary>
         </Tab>
+        { visibleVersionPreviews.map(form =>
+          <Tab
+            key={`preview${form.version}`}
+            eventKey={`preview${form.version}`}
+            title={`Version ${form.version}`}
+          >
+            <FormPreview formContent={JSON.parse(form.content) as FormContent} />
+          </Tab>
+        )}
       </Tabs>
     </div>
   )

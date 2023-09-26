@@ -52,4 +52,39 @@ describe('PortalEnvDiff', () => {
     expect(spyApplyChanges).toHaveBeenCalledTimes(2)
     expect(spyApplyChanges).toHaveBeenCalledWith(changeSet)
   })
+
+  it('handles changes with siteContent', () => {
+    const { portal } = mockPortalContext()
+    const changeSet: PortalEnvironmentChange = {
+      ...emptyChangeSet,
+      siteContentChange: {
+        changed: true,
+        newVersion: 2,
+        oldVersion: 1,
+        newStableId: 'contentId',
+        oldStableId: 'contentId'
+      }
+    }
+    const spyApplyChanges = jest.fn(() => 1)
+    const { RoutedComponent } = setupRouterTest(<PortalEnvDiffView
+      portal={portal}
+      destEnvName={portal.portalEnvironments[0].environmentName}
+      applyChanges={spyApplyChanges}
+      sourceEnvName="sourceEnv"
+      changeSet={changeSet}/>)
+    render(RoutedComponent)
+    expect(screen.queryAllByText('no changes')).toHaveLength(3)
+    expect(screen.queryAllByRole('checkbox')).toHaveLength(1)
+
+    // if we save without making any changes, the result should be an empty changeset
+    fireEvent.click(screen.getByText('Copy changes'))
+    expect(spyApplyChanges).toHaveBeenCalledTimes(1)
+    expect(spyApplyChanges).toHaveBeenCalledWith(emptyChangeSet)
+
+    // if we save after clicking the password field, we should save with a config change
+    fireEvent.click(screen.getByText('contentId v1'))
+    fireEvent.click(screen.getByText('Copy changes'))
+    expect(spyApplyChanges).toHaveBeenCalledTimes(2)
+    expect(spyApplyChanges).toHaveBeenCalledWith(changeSet)
+  })
 })

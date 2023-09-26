@@ -7,22 +7,22 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.publishing.PortalEnvironmentChange;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.publishing.PortalDiffService;
-import bio.terra.pearl.core.service.publishing.PortalUpdateService;
+import bio.terra.pearl.core.service.publishing.PortalPublishingService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PortalPublishingExtService {
   private AuthUtilService authUtilService;
   private PortalDiffService portalDiffService;
-  private PortalUpdateService portalUpdateService;
+  private PortalPublishingService portalPublishingService;
 
   public PortalPublishingExtService(
       AuthUtilService authUtilService,
       PortalDiffService portalDiffService,
-      PortalUpdateService portalUpdateService) {
+      PortalPublishingService portalPublishingService) {
     this.authUtilService = authUtilService;
     this.portalDiffService = portalDiffService;
-    this.portalUpdateService = portalUpdateService;
+    this.portalPublishingService = portalPublishingService;
   }
 
   public PortalEnvironmentChange diff(
@@ -45,7 +45,7 @@ public class PortalPublishingExtService {
       throw new PermissionDeniedException("You do not have permission to update environments");
     }
     try {
-      return portalUpdateService.applyChanges(portalShortcode, destEnv, change, user);
+      return portalPublishingService.applyChanges(portalShortcode, destEnv, change, user);
     } catch (Exception e) {
       throw new IllegalArgumentException(e);
     }

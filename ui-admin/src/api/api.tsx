@@ -153,7 +153,8 @@ export type PepperKitStatus = {
   scanDate: string,
   receiveDate: string,
   trackingNumber: string,
-  returnTrackingNumber: string
+  returnTrackingNumber: string,
+  errorMessage: string
 }
 
 export type AdminTaskListDto = {
@@ -183,7 +184,8 @@ const emptyPepperKitStatus: PepperKitStatus = {
   scanDate: '',
   receiveDate: '',
   trackingNumber: '',
-  returnTrackingNumber: ''
+  returnTrackingNumber: '',
+  errorMessage: ''
 }
 
 /**
@@ -197,12 +199,11 @@ function parsePepperKitStatus(json: string | undefined): PepperKitStatus {
   if (json) {
     try {
       const pepperStatus = JSON.parse(json)
-      if (pepperStatus.kitId && pepperStatus.currentStatus) {
-        return {
-          ...emptyPepperKitStatus,
-          ..._pick(pepperStatus,
-            'kitId', 'currentStatus', 'labelDate', 'scanDate', 'receiveDate', 'trackingNumber', 'returnTrackingNumber')
-        }
+      return {
+        ...emptyPepperKitStatus,
+        ..._pick(pepperStatus,
+          'juniperKitId', 'currentStatus', 'labelDate', 'scanDate', 'receiveDate', 'trackingNumber',
+          'returnTrackingNumber', 'errorMessage')
       }
     } catch {
       // ignore; fall-through to result for unexpected value
@@ -233,6 +234,7 @@ export type Config = {
 }
 
 export type MailingListContact = {
+  id: string,
   name: string,
   email: string,
   createdAt: number
@@ -368,6 +370,13 @@ export default {
     if (response.ok) {
       return obj
     }
+    return Promise.reject(obj)
+  },
+
+  async processResponse(response: Response) {
+    if (response.ok) {
+      return response
+    }
     return Promise.reject(response)
   },
 
@@ -464,6 +473,15 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async deleteSurvey(portalShortcode: string, stableId: string): Promise<Response> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys/${stableId}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
+  },
+
   async createNewSurveyVersion(portalShortcode: string, survey: Survey): Promise<Survey> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys/${survey.stableId}/newVersion`
 
@@ -498,8 +516,8 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async getSurveyVersions(studyShortname: string, stableId: string) {
-    const response = await fetch(`${API_ROOT}/studies/${studyShortname}/surveys/${stableId}`, this.getGetInit())
+  async getSurveyVersions(portalShortcode: string, stableId: string): Promise<Survey[]> {
+    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/surveys/${stableId}`, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
@@ -514,6 +532,17 @@ export default {
       body: JSON.stringify(configuredSurvey)
     })
     return await this.processJsonResponse(response)
+  },
+
+  async removeConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string,
+    configuredSurveyId: string): Promise<Response> {
+    const url =`${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
+        `/env/${environmentName}/configuredSurveys/${configuredSurveyId}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
   },
 
   async updateConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string,
@@ -575,7 +604,9 @@ export default {
     Promise<Enrollee> {
     const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}`
     const response = await fetch(url, this.getGetInit())
-    return await this.processJsonResponse(response)
+    const enrollee: Enrollee = await this.processJsonResponse(response)
+    enrollee.kitRequests?.forEach(kit => { kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus) })
+    return enrollee
   },
 
   async fetchEnrolleeNotifications(portalShortcode: string, studyShortcode: string, envName: string,
@@ -658,7 +689,39 @@ export default {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit?${params}`
     const response = await fetch(url, { method: 'POST', headers: this.getInitHeaders() })
-    return await this.processJsonResponse(response)
+    const kit = await this.processJsonResponse(response)
+    kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus)
+    return kit
+  },
+
+  async requestKits(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: string,
+    enrolleeShortcodes: string[],
+    kitType: string
+  ): Promise<KitRequest[]> {
+    const params = new URLSearchParams({ kitType })
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/requestKits?${params}`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(enrolleeShortcodes)
+    })
+    const kits: KitRequest[] = await this.processJsonResponse(response)
+    kits.forEach(kit => { kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus) })
+    return kits
+  },
+
+  async refreshKitStatuses(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: string) {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/kits/refreshKitStatuses`
+    return await this.processResponse(await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    }))
   },
 
   async fetchEnrolleeKitRequests(
@@ -803,6 +866,15 @@ export default {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
+  },
+
+  async deleteMailingListContact(portalShortcode: string, envName: string, contactId: string): Promise<Response> {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList/${contactId}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
   },
 
   async fetchAdminUsers(): Promise<AdminUser[]> {

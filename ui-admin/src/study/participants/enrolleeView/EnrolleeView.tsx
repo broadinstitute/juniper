@@ -53,15 +53,20 @@ export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
       .filter(task => task.targetStableId === configSurvey.survey.stableId)
       .map(task => task.surveyResponseId)
     const matchedResponses = enrollee.surveyResponses
-      .filter(response => matchedResponseIds.includes(response.id as string))
+      .filter(response => matchedResponseIds.includes(response.id))
     responseMap[configSurvey.survey.stableId] = { survey: configSurvey, responses: matchedResponses }
   })
 
   const consents = currentEnv.configuredConsents
   const consentMap: ConsentResponseMapT = {}
   consents.forEach(configConsent => {
+    // to match responses to consents, filter using the tasks, since those have the stableIds
+    // this is valid since it's currently enforced that all consents are done as part of a task,
+    const matchedResponseIds = enrollee.participantTasks
+      .filter(task => task.targetStableId === configConsent.consentForm.stableId)
+      .map(task => task.consentResponseId)
     const matchedResponses = enrollee.consentResponses
-      .filter(response => configConsent.consentForm.id === response.consentFormId)
+      .filter(response => matchedResponseIds.includes(response.id))
     consentMap[configConsent.consentForm.stableId] = { consent: configConsent, responses: matchedResponses }
   })
 
@@ -80,7 +85,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
     <div className="row mt-2">
       <div className="col-12">
         <div className="d-flex">
-          <div className="participantTabs" style={{ minWidth: '280', maxWidth: '280px' }}>
+          <div style={{ minWidth: '280', maxWidth: '280px' }}>
             <ul className="list-group">
               <li className="list-group-item">
                 <NavLink to="profile" className={getLinkCssClasses}>Profile &amp; Notes</NavLink>
@@ -103,7 +108,8 @@ export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                       <NavLink to={`consents/${stableId}`} className={getLinkCssClasses}>
                         { consent.consentForm.name }
                         { isConsented(consentMap[stableId].responses) &&
-                          <FontAwesomeIcon className="text-success ms-2 fa-lg" icon={faCheck}/>
+                          <FontAwesomeIcon className="text-success ms-2 fa-lg" icon={faCheck}
+                            title="completed"/>
                         }
                       </NavLink>
                     </li>
@@ -156,19 +162,18 @@ export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                 <Route path="profile" element={<EnrolleeProfile enrollee={enrollee}
                   studyEnvContext={studyEnvContext}
                   onUpdate={onUpdate}/>}/>
-                <Route path="consents" element={<div>consents</div>}/>
-                { currentEnv.preEnrollSurvey && <Route path="preRegistration" element={
+                { currentEnv.preEnrollSurvey && <Route path="preRegistration/*" element={
                   <PreEnrollmentView preEnrollSurvey={currentEnv.preEnrollSurvey}
                     preEnrollResponse={enrollee.preEnrollmentResponse}/>
                 }/> }
                 <Route path="surveys">
-                  <Route path=":surveyStableId" element={<EnrolleeSurveyView enrollee={enrollee}
+                  <Route path=":surveyStableId/*" element={<EnrolleeSurveyView enrollee={enrollee}
                     responseMap={responseMap}/>}/>
                   <Route path="*" element={<div>Unknown participant survey page</div>}/>
                 </Route>
                 <Route path="tasks" element={<ParticipantTaskView enrollee={enrollee}/>}/>
                 <Route path="consents">
-                  <Route path=":consentStableId" element={<EnrolleeConsentView enrollee={enrollee}
+                  <Route path=":consentStableId/*" element={<EnrolleeConsentView enrollee={enrollee}
                     responseMap={consentMap}/>}/>
                   <Route path="*" element={<div>Unknown participant survey page</div>}/>
                 </Route>

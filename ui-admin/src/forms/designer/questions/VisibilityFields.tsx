@@ -18,6 +18,24 @@ export const VisibilityFields = (props: VisibilityFieldsProps) => {
 
   const hasVisibleIfExpression = Object.hasOwnProperty.call(question, 'visibleIf') && question.visibleIf !== undefined
 
+  const infoPopupContent = (
+    <div>
+      <p>
+        Here are a few examples:
+        <li><code>{'{age} >= 21'}</code></li>
+        <li><code>{'{name} notempty'}</code></li>
+        <li><code>{'{languages} contains \'Spanish\''}</code></li>
+      </p>
+      <p>
+        For additional details, please see
+        <a
+          href={'https://surveyjs.io/form-library/documentation/design-survey/conditional-logic#conditional-visibility'}
+          target="_blank"
+        > Conditional Visibility documentation</a>
+      </p>
+    </div>
+  )
+
   return (
     <>
       <div className="mb-3">
@@ -42,10 +60,12 @@ export const VisibilityFields = (props: VisibilityFieldsProps) => {
       {hasVisibleIfExpression && (
         <div className="mb-3">
           <TextInput
+            infoContent={infoPopupContent}
             // eslint-disable-next-line max-len
             description={'Expression for this question\'s visibility. If this expression evaluates to true, the question will be shown.'}
             disabled={disabled}
             label="Visibility expression"
+            required={true}
             value={question.visibleIf}
             onChange={value => {
               onChange({

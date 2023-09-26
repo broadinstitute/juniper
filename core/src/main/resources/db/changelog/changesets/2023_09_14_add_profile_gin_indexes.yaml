@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: profile_gin_indexes
+      author: dbush
+      changes:
+        - sql:
+            sql: CREATE EXTENSION IF NOT EXISTS pg_trgm with schema pg_catalog;
+        - sql:
+            sql: CREATE INDEX profile_given_name_gindx ON profile USING gin (given_name gin_trgm_ops);
+        - sql:
+            sql: CREATE INDEX profile_family_name_gindx ON profile USING gin (family_name gin_trgm_ops);

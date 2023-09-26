@@ -4,13 +4,14 @@ import React, { useId } from 'react'
 export type TextareaProps = Omit<JSX.IntrinsicElements['textarea'], 'onChange'> & {
   description?: string
   label: string
+  required?: boolean
   onChange?: (value: string) => void
 }
 
 /** A textarea with label and description. */
 export const Textarea = (props: TextareaProps) => {
-  const { description, label, ...inputProps } = props
-  const { className, disabled, id, onChange } = inputProps
+  const { description, label, required, ...inputProps } = props
+  const { className, disabled, value, id, onChange } = inputProps
 
   const generatedId = useId()
   const inputId = id || generatedId
@@ -18,12 +19,15 @@ export const Textarea = (props: TextareaProps) => {
 
   return (
     <>
-      <label className="form-label" htmlFor={inputId}>{label}</label>
+      <label className="form-label" htmlFor={inputId}>
+        {label}
+        {required && <span className="text-danger">*</span>}
+      </label>
       <textarea
         {...inputProps}
         aria-describedby={description ? descriptionId : undefined}
         aria-disabled={disabled}
-        className={classNames('form-control', { disabled }, className)}
+        className={classNames('form-control', { disabled }, className, { 'is-invalid': required && value === '' })}
         disabled={undefined}
         id={inputId}
         onChange={

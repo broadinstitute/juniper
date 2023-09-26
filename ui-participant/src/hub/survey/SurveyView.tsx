@@ -12,8 +12,8 @@ import Api, {
 
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import {
+  getDataWithCalculatedValues,
   getResumeData,
-  getSurveyJsAnswerList,
   getUpdatedAnswers,
   PageNumberControl,
   useRoutablePageNumber,
@@ -36,11 +36,15 @@ const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are c
 /**
  * display a single survey form to a participant.
  */
-function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, taskId, activeResponse }:
-                         {
-                           form: Survey, enrollee: Enrollee, taskId: string, activeResponse?: SurveyResponse,
-                           resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string
-                         }) {
+export function RawSurveyView({
+  form, enrollee, resumableData, pager,
+  studyShortcode, taskId, activeResponse, autoSaveInterval=AUTO_SAVE_INTERVAL
+}:
+{
+  form: Survey, enrollee: Enrollee, taskId: string, activeResponse?: SurveyResponse,
+  resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string,
+  autoSaveInterval?: number
+}) {
   const navigate = useNavigate()
   const { updateEnrollee } = useUser()
   const prevSave = useRef(resumableData?.data ?? {})
@@ -51,21 +55,21 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
     if (!surveyModel || !refreshSurvey) {
       return
     }
+    const currentModelValues = getDataWithCalculatedValues(surveyModel)
     const responseDto = {
-      resumeData: getResumeData(surveyModel, enrollee.participantUserId),
+      resumeData: getResumeData(surveyModel, enrollee.participantUserId, true),
       enrolleeId: enrollee.id,
-      // submitting re-saves the entire form.  This is as insurance against any answers getting lost or misrepresented
-      // in the diffing process
-      answers: getSurveyJsAnswerList(surveyModel),
+      answers: getUpdatedAnswers(prevSave.current as Record<string, object>, currentModelValues),
       creatingParticipantId: enrollee.participantUserId,
       surveyId: form.id,
       complete: true
     } as SurveyResponse
 
-    await Api.submitSurveyResponse({
-      studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
-      version: form.version, response: responseDto, taskId, alertErrors: true
-    }).then(response => {
+    try {
+      const response = await Api.updateSurveyResponse({
+        studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
+        version: form.version, response: responseDto, taskId, alertErrors: true
+      })
       response.enrollee.participantTasks = response.tasks
       response.enrollee.profile = response.profile
       const hubUpdate: HubUpdate = {
@@ -74,10 +78,11 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
           type: 'success'
         }
       }
-      updateEnrollee(response.enrollee).then(() => { navigate('/hub', { state: hubUpdate }) })
-    }).catch(() => {
+      await updateEnrollee(response.enrollee)
+      navigate('/hub', { state: hubUpdate })
+    } catch {
       refreshSurvey(surveyModel, null)
-    })
+    }
   }
 
   const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData,
@@ -85,13 +90,14 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
 
   /** if the survey has been updated, save the updated answers. */
   const saveDiff = () => {
-    const updatedAnswers = getUpdatedAnswers(prevSave.current as Record<string, object>, surveyModel.data)
+    const currentModelValues = getDataWithCalculatedValues(surveyModel)
+    const updatedAnswers = getUpdatedAnswers(prevSave.current as Record<string, object>, currentModelValues)
     if (updatedAnswers.length < 1) {
       // don't bother saving if there are no changes
       return
     }
     const prevPrevSave = prevSave.current
-    prevSave.current = surveyModel.data
+    prevSave.current = currentModelValues
 
     const responseDto = {
       resumeData: getResumeData(surveyModel, enrollee.participantUserId),
@@ -103,7 +109,7 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
     } as SurveyResponse
     // only log & alert if this is the first autosave problem to avoid spamming logs & alerts
     const alertErrors =  !lastAutoSaveErrored.current
-    Api.submitSurveyResponse({
+    Api.updateSurveyResponse({
       studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
       version: form.version, response: responseDto, taskId, alertErrors
     }).then(response => {
@@ -130,7 +136,7 @@ function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, t
     })
   }
 
-  useAutosaveEffect(saveDiff, AUTO_SAVE_INTERVAL)
+  useAutosaveEffect(saveDiff, autoSaveInterval)
 
   return (
     <>
@@ -161,18 +167,21 @@ export function SurveyFooter({ survey, surveyModel }: { survey: Survey, surveyMo
 
 
 /** handles paging the form */
-function PagedSurveyView({ form, activeResponse, enrollee, studyShortcode, taskId }:
-                           {
-                             form: StudyEnvironmentSurvey, activeResponse?: SurveyResponse, enrollee: Enrollee,
-                             studyShortcode: string, taskId: string
-                           }) {
+export function PagedSurveyView({
+  form, activeResponse, enrollee, studyShortcode,
+  taskId, autoSaveInterval=AUTO_SAVE_INTERVAL
+}:
+{
+  form: StudyEnvironmentSurvey, activeResponse?: SurveyResponse, enrollee: Enrollee,
+  studyShortcode: string, taskId: string, autoSaveInterval?: number
+}) {
   const resumableData = makeSurveyJsData(activeResponse?.resumeData,
     activeResponse?.answers, enrollee.participantUserId)
 
   const pager = useRoutablePageNumber()
 
   return <RawSurveyView enrollee={enrollee} form={form.survey} taskId={taskId} activeResponse={activeResponse}
-    resumableData={resumableData} pager={pager} studyShortcode={studyShortcode}/>
+    resumableData={resumableData} pager={pager} studyShortcode={studyShortcode} autoSaveInterval={autoSaveInterval}/>
 }
 
 /** handles loading the survey form and responses from the server */

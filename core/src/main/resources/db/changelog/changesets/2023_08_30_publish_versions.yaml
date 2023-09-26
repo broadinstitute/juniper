@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: publish_versions
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: survey
+            columns:
+              - column:
+                  name: published_version
+                  type: integer
+        - addUniqueConstraint:
+            tableName: survey
+            constraintName: survey_stable_id_published_version
+            columnNames: stable_id, published_version
+        - addColumn:
+            tableName: consent_form
+            columns:
+              - column:
+                  name: published_version
+                  type: integer
+        - addUniqueConstraint:
+            tableName: consent_form
+            constraintName: consent_form_id_published_version
+            columnNames: stable_id, published_version
+        - addColumn:
+            tableName: email_template
+            columns:
+              - column:
+                  name: published_version
+                  type: integer
+        - addUniqueConstraint:
+            tableName: email_template
+            constraintName: email_template_id_published_version
+            columnNames: stable_id, published_version
+        - addColumn:
+            tableName: site_content
+            columns:
+              - column:
+                  name: published_version
+                  type: integer
+        - addUniqueConstraint:
+            tableName: site_content
+            constraintName: site_content_id_published_version
+            columnNames: stable_id, published_version
+

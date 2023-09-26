@@ -112,6 +112,8 @@
     "populateFileName": "images/shilpa_bhupathiraju.jpg"
   }, {
     "populateFileName": "images/namrata_sengupta.jpg"
+  }, {
+    "populateFileName": "images/rohan_khera.jpg"
   },{
     "populateFileName": "images/consent_step.png"
   }, {
@@ -153,7 +155,9 @@
   }, {
     "populateFileName": "images/logos/hms_logo.png"
   }, {
-    "populateFileName": "images/logos/stanford_med_logo.png"
+    "populateFileName": "images/logos/stanford_med.png"
+  }, {
+    "populateFileName": "images/logos/yale_med.png"
   },{
     "populateFileName": "images/globe_and_hearts.png"
   }, {

@@ -42,13 +42,13 @@ public class ConsentFormExtService {
       StudyEnvironmentConsent updatedObj,
       AdminUser user) {
     authUtilService.authUserToPortal(user, portalShortcode);
-    if (user.isSuperuser() || EnvironmentName.sandbox.equals(envName)) {
-      StudyEnvironmentConsent existing =
-          studyEnvironmentConsentService.find(updatedObj.getId()).get();
-      BeanUtils.copyProperties(updatedObj, existing);
-      return studyEnvironmentConsentService.update(existing);
+    if (!EnvironmentName.sandbox.equals(envName)) {
+      throw new IllegalArgumentException(
+          "Updates can only be made directly to the sandbox environment".formatted(envName));
     }
-    throw new PermissionDeniedException(
-        "You do not have permission to update the {} environment".formatted(envName));
+    StudyEnvironmentConsent existing =
+        studyEnvironmentConsentService.find(updatedObj.getId()).get();
+    BeanUtils.copyProperties(updatedObj, existing);
+    return studyEnvironmentConsentService.update(existing);
   }
 }

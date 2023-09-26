@@ -129,6 +129,15 @@ databaseChangeLog:
       file: changesets/2023_08_21_add_site_content_constraint.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2023_08_24_data_change_record_portal.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2023_08_30_publish_versions.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2023_09_14_add_profile_gin_indexes.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2023_08_25_admin_task.yaml
       relativeToChangelogFile: true
 

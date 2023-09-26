@@ -40,7 +40,7 @@ export default function KitsRouter({ studyEnvContext }: {studyEnvContext: StudyE
       <Routes>
         <Route index element={<Navigate to='eligible' replace={true}/>}/>
         <Route path="eligible" element={<KitEnrolleeSelection studyEnvContext={studyEnvContext}/>}/>
-        <Route path="requested" element={<KitList studyEnvContext={studyEnvContext}/>}/>
+        <Route path="requested/*" element={<KitList studyEnvContext={studyEnvContext}/>}/>
       </Routes>
     </div>
 

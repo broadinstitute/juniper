@@ -86,7 +86,7 @@ describe('VisibilityFields', () => {
       render(<VisibilityFields disabled={false} question={question} onChange={jest.fn()} />)
 
       // Assert
-      const input = screen.getByLabelText('Visibility expression')
+      const input = screen.getByLabelText('Visibility expression*')
       expect((input as HTMLInputElement).value).toBe('{other_question} = "Yes"')
     })
 
@@ -96,7 +96,7 @@ describe('VisibilityFields', () => {
       render(<VisibilityFields disabled={false} question={question} onChange={onChange} />)
 
       // Act
-      const input = screen.getByLabelText('Visibility expression')
+      const input = screen.getByLabelText('Visibility expression*')
       fireEvent.change(input, { target: { value: 'true' } })
 
       // Assert
@@ -104,6 +104,20 @@ describe('VisibilityFields', () => {
         ...question,
         visibleIf: 'true'
       })
+    })
+
+    it('displays an InfoPopup describing conditional visibility', async () => {
+      // Arrange
+      const user = userEvent.setup()
+
+      render(<VisibilityFields disabled={false} question={question} onChange={jest.fn()} />)
+
+      // Act
+      const popup = screen.getByLabelText('info popup')
+      await user.click(popup)
+
+      // Assert
+      expect(await screen.findByText('Conditional Visibility documentation')).toBeTruthy()
     })
   })
 })

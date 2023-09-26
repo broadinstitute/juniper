@@ -39,50 +39,51 @@ DTOs, and populate services.  the PopulateCliApp can be used to populate specifi
 * IntelliJ
 * Node v16+
 * Docker
+* Homebrew 4+
 
 ### Setup
 
 #### Database setup
-run `./local-dev/run_postgres.sh start`
-This will start a postgres container with a schema and user configured
+Run `./local-dev/run_postgres.sh start`
+This will start a Postgres container with a schema and database user configured. This Postgres container is utilized by both the
+local development environment and the unit/integration tests.
 
 #### IDE Setup
-Open the root folder in IntelliJ.  
+In IntelliJ, File -> New -> Protject from Existing Sources.  When importing the project, make sure it's set as a gradle project  
+![image](https://github.com/broadinstitute/juniper/assets/2800795/dd2cf363-f761-47bc-9620-28e47a20feff)
 
-* **server:**
+
+* **Server:**
 
    * Make sure IntelliJ is set to Java 17 in *two* places
-
       * Project Structure > Project Settings > Project > SDK
       * Preferences > Build, Execution, Deployment > Build Tools > Gradle > Gradle Projects > \[this project\] > Gradle JVM
          * Recommended setting for this is "Project SDK"
    * In Preferences > Build, Execution, Deployment > Compiler > Annotation Processors, make sure annotation processing is enabled (otherwise lombok getters/setters won't work)
-   * Create two Spring Boot Run/Debug Configurations.
+   * Create two Spring Boot Run/Debug Configurations (Run > Edit Configurations > + > Spring Boot)
      * ApiAdminApp (in api-admin module)
-       * set active profiles of "human-readable-logging" and "development"
-       * disable launch optimization
-       * set environment variable: `REDIRECT_ALL_EMAILS_TO=<<your email address>>`
-       * set environment variable: `TDR_SA_CREDS=<<vault read -field=sa-key.json.b64 secret/dsp/ddp/d2p/dev/d2p-tdr-sa>>`
-       * set environment variable: `B2C_TENANT_NAME=ddpdevb2c`
-       * set environment variable: `B2C_CLIENT_ID=<<vault read -field value secret/dsp/ddp/b2c/dev/application_id>>`
-       * set environment variable: `B2C_POLICY_NAME=B2C_1A_ddp_participant_signup_signin_dev`
-       * set environment variable: `DSM_JWT_SIGNING_SECRET=<<vault read -field jwt_signing_secret secret/dsp/ddp/d2p/dev/dsm>>`
-       * set environment variable: `SENDGRID_API_KEY=<<vault read -field=api_key secret/dsp/ddp/d2p/dev/sendgrid>>`
+       * Set the Active profiles field to: `human-readable-logging, development`
+       * Disable launch optimization by clicking `Modify options > Disable launch optimization`
+       * Render environment variables with `bash ./local-dev/render_environment_vars.sh ApiAdminApp <YOUR_EMAIL>`
+         * The output should be a semicolon-separated list of environment variables.
+         * Copy this output into the "Environment variables" field of the run configuration. (Click `Modify options > Environment variables` if this is not visible)
+       * Your final Run Configuration should look similar to this:
+        * <img width="840" alt="Admin API run configuration" src="https://github.com/broadinstitute/juniper/assets/7257391/ae82332c-628f-40e1-8917-b7536af1eb02">
      * ApiParticipantApp (in api-participant module)
-        * set active profiles of "human-readable-logging" and "development"
-        * set environment variable: `SENDGRID_API_KEY=<<vault read -field=api_key secret/dsp/ddp/d2p/dev/sendgrid>>`
-        * set environment variable: `REDIRECT_ALL_EMAILS_TO=<<your email address>>`
-        * set environment variable: `B2C_TENANT_NAME=ddpdevb2c`
-        * set environment variable: `B2C_CLIENT_ID=<<vault read -field value secret/dsp/ddp/b2c/dev/application_id>>`
-        * set environment variable: `B2C_POLICY_NAME=B2C_1A_ddp_participant_signup_signin_dev`
-        * set environment variable: `B2C_CHANGE_PASSWORD_POLICY_NAME=B2C_1A_ddp_participant_change_password_dev`
-        * disable launch optimization
-        
-         
+        * Set the Active profiles field to: `human-readable-logging, development`
+        * Disable launch optimization by clicking `Modify options > Disable launch optimization`
+        * Render environment variables with `bash ./local-dev/render_environment_vars.sh ApiParticipantApp <YOUR_EMAIL>`
+          * The output should be a semicolon-separated list of environment variables.
+          * Copy this output into the "Environment variables" field of the run configuration. (Click `Modify options > Environment variables` if this is not visible)
+        * Your final Run Configuration should look similar to this:
+        * <img width="840" alt="Participant API run configuration" src="https://github.com/broadinstitute/juniper/assets/7257391/b8e006fe-65a7-4731-9ab1-bda8d38b480b">
+
+
+
 ### Running the application
 #### Admin tool (study manager, population)
-* API (api-admin module)
-In intelliJ, you can either run ApiAdminApp (from the api-admin module) directly, or execute the "bootRun" gradle task.
+##### Admin API (api-admin module)
+In IntelliJ, you can either run ApiAdminApp directly (use the Run menu to choose ApiAdminApp), or execute the "bootRun" gradle task.
 In basic development mode, this will only serve the API, not the frontend assets.
 
 To make the application useful, you will want to populate some users and studies.  After the admin API is running, 
@@ -101,8 +102,10 @@ From the command line:
 (note that you can just run `npm -w ui-admin start` if you don't need to test B2C login functionality)
 Then go to `localhost:3000` 
 
+#### Participant tool
+
 ##### Participant API (api-participant module)
-In intelliJ, you can either run ApiParticipantApp (from the api-participant module) directly, or execute the "bootRun" gradle task.
+In IntelliJ, you can either run ApiParticipantApp directly (use the Run menu to choose ApiParticipantApp), or execute the "bootRun" gradle task.
 In basic development mode, this will only serve the API, not the frontend assets.
 
 ##### Participant UI (ui-participant module)
@@ -118,6 +121,15 @@ If on OS X, try running `brew install pkg-config cairo pango libpng jpeg giflib 
 Then go to `sandbox.ourhealth.localhost:3001`
 (Notice how you need the environment name and portal name as subdomains)
 
+### Unit tests
+
+#### Server:
+* To run all backend unit tests, you can run `./gradlew test` from the command line.
+* You can also run individual tests or test suites from IntelliJ by right-clicking on the test or test suite and selecting "Run".
+
+#### UI:
+* You can run all frontend tests by running `npm --workspace=ui-core --workspace=ui-admin --workspace=ui-participant test` from the command line.
+* You can also run individual tests or test suites from IntelliJ by right-clicking on the test or test suite and selecting "Run".
 
 ### Feature Development 
 

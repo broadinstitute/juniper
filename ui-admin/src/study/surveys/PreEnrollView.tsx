@@ -6,10 +6,11 @@ import {  StudyParams } from 'study/StudyRouter'
 import { StudyEnvContextT, studyEnvFormsPath } from 'study/StudyEnvironmentRouter'
 import Api, { Survey } from 'api/api'
 
-import { failureNotification, successNotification } from 'util/notifications'
+import { successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { useLoadedSurvey, useSurveyParams } from './SurveyView'
+import { doApiLoad } from '../../api/api-utils'
 
 
 export type SurveyParamsT = StudyParams & {
@@ -28,21 +29,21 @@ function RawPreEnrollView({ studyEnvContext, survey, readOnly = false }:
   /** saves as a new version and updates the study environment accordingly */
   async function createNewVersion({ content: updatedContent }: { content: string }): Promise<void> {
     survey.content = updatedContent
-    try {
+    doApiLoad(async () => {
       const updatedSurvey = await Api.createNewSurveyVersion(portal.shortcode, currentSurvey)
+      Store.addNotification(successNotification(`Survey saved successfully`))
       setCurrentSurvey(updatedSurvey)
       const updatedEnv = { ...currentEnv, preEnrollSurveyId: updatedSurvey.id }
       const updatedStudyEnv = await Api.updateStudyEnvironment(portal.shortcode, study.shortcode,
         currentEnv.environmentName, updatedEnv)
+      Store.addNotification(successNotification(`Environment updated`))
       currentEnv.preEnrollSurveyId = updatedStudyEnv.preEnrollSurveyId
       currentEnv.preEnrollSurvey = updatedSurvey
-      Store.addNotification(successNotification(`Saved successfully`))
-    } catch (e) {
-      Store.addNotification(failureNotification(`Save failed`))
-    }
+    })
   }
 
   return <SurveyEditorView
+    studyEnvContext={studyEnvContext}
     currentForm={currentSurvey}
     readOnly={readOnly}
     onCancel={() => navigate(studyEnvFormsPath(portal.shortcode, study.shortcode, currentEnv.environmentName))}
@@ -54,6 +55,7 @@ function RawPreEnrollView({ studyEnvContext, survey, readOnly = false }:
 function PreEnrollView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { isReadOnly, version, stableId } = useSurveyParams()
   const { currentEnv, portal } = studyEnvContext
+  const appliedReadOnly = isReadOnly || currentEnv.environmentName !== 'sandbox'
 
   const envSurvey = currentEnv.preEnrollSurvey
   const appliedVersion = version || envSurvey?.version
@@ -68,7 +70,7 @@ function PreEnrollView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT})
 
   return <>
     { isLoading && <LoadingSpinner/> }
-    { !isLoading && <RawPreEnrollView studyEnvContext={studyEnvContext} survey={survey!} readOnly={isReadOnly}/> }
+    { !isLoading && <RawPreEnrollView studyEnvContext={studyEnvContext} survey={survey!} readOnly={appliedReadOnly}/> }
   </>
 }
 

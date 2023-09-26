@@ -6,18 +6,20 @@ import { CheckboxQuestion, DropdownQuestion, RadiogroupQuestion } from '@juniper
 
 import { Button, IconButton } from 'components/forms/Button'
 import { TextInput } from 'components/forms/TextInput'
+import { getValueForChoice } from 'util/pearlSurveyUtils'
 
 type QuestionWithChoices = CheckboxQuestion | DropdownQuestion | RadiogroupQuestion
 
 type ChoicesListProps = {
   question: QuestionWithChoices
+  isNewQuestion: boolean
   readOnly: boolean
   onChange: (newValue: QuestionWithChoices) => void
 }
 
 /** UI for editing the list of choices for a question. */
 export const ChoicesList = (props: ChoicesListProps) => {
-  const { question, readOnly, onChange } = props
+  const { question, isNewQuestion, readOnly, onChange } = props
 
   const labelId = useId()
 
@@ -26,6 +28,8 @@ export const ChoicesList = (props: ChoicesListProps) => {
       <p className="mb-2" id={labelId}>Choices</p>
       <ol aria-labelledby={labelId} className="list-group mb-1">
         {question.choices.map((choice, i) => {
+          const enableAutoFillValue: boolean = isNewQuestion && choice.value == getValueForChoice(choice.text)
+
           return (
             <li
               key={i}
@@ -45,6 +49,7 @@ export const ChoicesList = (props: ChoicesListProps) => {
                 <TextInput
                   className="form-control"
                   disabled={readOnly}
+                  required={true}
                   label="Text"
                   labelClassname="mb-0"
                   value={choice.text}
@@ -52,8 +57,11 @@ export const ChoicesList = (props: ChoicesListProps) => {
                     onChange({
                       ...question,
                       choices: [
-                        ...question.choices.slice(0, i),
-                        { ...question.choices[i], text: value },
+                        ...question.choices.slice(0, i), {
+                          text: value, value: enableAutoFillValue ?
+                            getValueForChoice(value) :
+                            question.choices[i].value
+                        },
                         ...question.choices.slice(i + 1)
                       ]
                     })
@@ -61,6 +69,7 @@ export const ChoicesList = (props: ChoicesListProps) => {
                 />
                 <TextInput
                   disabled={readOnly}
+                  required={true}
                   label="Value"
                   labelClassname="mb-0"
                   value={choice.value}

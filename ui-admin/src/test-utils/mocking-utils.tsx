@@ -1,5 +1,15 @@
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { DatasetDetails, Enrollee, KitRequest, KitType, NotificationConfig, ParticipantNote, Portal } from 'api/api'
+import {
+  ConsentForm,
+  DatasetDetails,
+  Enrollee,
+  KitRequest,
+  KitType,
+  NotificationConfig,
+  ParticipantNote,
+  Portal,
+  StudyEnvironmentConsent
+} from 'api/api'
 import { Survey } from '@juniper/ui-core/build/types/forms'
 import { ParticipantTask } from '@juniper/ui-core/build/types/task'
 
@@ -57,6 +67,22 @@ export const mockSurvey: () => Survey = () => ({
   createdAt: 0
 })
 
+/** returns a list of survey versions */
+export const mockSurveyVersionsList: () => Survey[] = () => ([
+  {
+    ...mockSurvey(),
+    id: 'surveyId1',
+    stableId: 'survey1',
+    version: 1
+  },
+  {
+    ...mockSurvey(),
+    id: 'surveyId2',
+    stableId: 'survey1',
+    version: 2
+  }
+])
+
 /** returns a simple studyEnvContext object for use/extension in tests */
 export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
   study: { name: 'Fake study', studyEnvironments: [], shortcode: 'fakeStudy' },
@@ -64,7 +90,7 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
   currentEnv: {
     environmentName: 'sandbox',
     id: 'studyEnvId',
-    configuredConsents: [],
+    configuredConsents: [mockConfiguredConsent()],
     configuredSurveys: [mockConfiguredSurvey()],
     notificationConfigs: [],
     studyEnvironmentConfig: {
@@ -96,6 +122,33 @@ export const mockConfiguredSurvey: () => StudyEnvironmentSurvey = () => {
   }
 }
 
+/** Mock StudyEnvironmentConsent */
+export const mockConfiguredConsent = (): StudyEnvironmentConsent => {
+  return {
+    id: 'fakeGuid',
+    consentFormId: 'consentId1',
+    consentOrder: 1,
+    consentForm: mockConsentForm(),
+    allowAdminEdit: false,
+    allowParticipantReedit: false,
+    allowParticipantStart: true,
+    prepopulate: false
+  }
+}
+
+/** fake ConsentForm */
+export const mockConsentForm = (): ConsentForm => {
+  return {
+    id: 'fakeGuid2',
+    content: '{"pages": []}',
+    stableId: 'form1',
+    version: 1,
+    name: 'Mock consent',
+    createdAt: 0,
+    lastUpdatedAt: 0
+  }
+}
+
 export const mockDatasetDetails: (datasetName: string, status: string) => DatasetDetails =
   /** returns mock dataset for use/extension in tests */
   (datasetName: string, status: string) => ({
@@ -122,7 +175,7 @@ export const mockKitType: () => KitType = () => ({
 /** returns a mock kit request */
 export const mockKitRequest: (args?: {
   enrollee?: Enrollee,
-  dsmStatus?: string,
+  dsmStatus?: string
 }) => KitRequest = ({ enrollee, dsmStatus } = {}) => ({
   id: 'kitRequestId',
   createdAt: 1,
@@ -140,7 +193,17 @@ export const mockKitRequest: (args?: {
     country: 'US'
   }),
   status: 'CREATED',
-  dsmStatus
+  dsmStatus,
+  pepperStatus: {
+    kitId: '',
+    currentStatus: 'Kit Without Label',
+    labelDate: '',
+    scanDate: '',
+    receiveDate: '',
+    trackingNumber: '',
+    returnTrackingNumber: '',
+    errorMessage: ''
+  }
 })
 
 /** returns a simple mock enrollee loosely based on the jsalk.json synthetic enrollee */
@@ -178,7 +241,8 @@ export const mockEnrollee: () => Enrollee = () => {
 }
 
 /** helper function to generate a ParticipantTask object for a survey and enrollee */
-export const taskForSurvey = (survey: Survey, enrolleeId: string): ParticipantTask => {
+export const taskForForm = (form: Survey | ConsentForm, enrolleeId: string,
+  isConsent: boolean): ParticipantTask => {
   return {
     id: randomString(10),
     blocksHub: false,
@@ -187,10 +251,10 @@ export const taskForSurvey = (survey: Survey, enrolleeId: string): ParticipantTa
     portalParticipantUserId: randomString(10),
     status: 'NEW',
     studyEnvironmentId: randomString(10),
-    taskType: 'SURVEY',
-    targetName: survey.name,
-    targetStableId: survey.stableId,
-    targetAssignedVersion: survey.version,
+    taskType: isConsent ? 'CONSENT' : 'SURVEY',
+    targetName: form.name,
+    targetStableId: form.stableId,
+    targetAssignedVersion: form.version,
     taskOrder: 1
   }
 }

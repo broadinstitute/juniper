@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.survey;
 import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
@@ -12,13 +13,17 @@ import bio.terra.pearl.core.service.VersionedEntityService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Instant;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.stream.IntStream;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> implements VersionedEntityService<Survey> {
+public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
     private AnswerMappingDao answerMappingDao;
     private SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
 
@@ -28,12 +33,8 @@ public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> imp
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
     }
 
-    public Optional<Survey> findByStableId(String stableId, int version) {
-        return dao.findByStableId(stableId, version);
-    }
-
-    public List<Survey> findByStableId(String stableId) {
-        return dao.findByStableId(stableId);
+    public List<Survey> findByStableIdNoContent(String stableId) {
+        return dao.findByStableIdNoContent(stableId);
     }
 
     public Optional<Survey> findByStableIdWithMappings(String stableId, int version) {
@@ -51,6 +52,9 @@ public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> imp
     @Transactional
     @Override
     public Survey create(Survey survey) {
+        Instant now = Instant.now();
+        survey.setCreatedAt(now);
+        survey.setLastUpdatedAt(now);
         Survey savedSurvey = dao.create(survey);
         for (AnswerMapping answerMapping : survey.getAnswerMappings()) {
             answerMapping.setSurveyId(savedSurvey.getId());
@@ -102,10 +106,46 @@ public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> imp
         for (int i = 0; i < questions.size(); i++) {
             JsonNode question = questions.get(i);
             questionDefinitions.add(SurveyParseUtils.unmarshalSurveyQuestion(survey, question,
-                    questionTemplates, i));
+                    questionTemplates, i,false));
         }
 
+        // add any questions from calculatedValues
+        processCalculatedValues(survey, surveyContent, questionDefinitions);
+
         return questionDefinitions;
+    }
+
+    /**
+     * parses calculatedValues from the surveyContent and adds them as SurveyQuestionDefinitions
+     * to the appropriate place in the questionDefinitions array.  they will be attempted to be
+     * inserted following the question they are computed from
+     */
+    protected void processCalculatedValues(Survey survey,
+                                           JsonNode surveyContent,
+                                           List<SurveyQuestionDefinition> questionDefinitions) {
+        List<JsonNode> derivedQuestions = SurveyParseUtils.getCalculatedValues(surveyContent);
+        if (derivedQuestions.isEmpty()) {
+            return;
+        }
+        /**
+         * iterate through each question, inserting it into questionDefinitions following a
+         * question on which it is derived from
+         */
+        for (JsonNode derivedQuestion : derivedQuestions) {
+            String upstreamStableId = SurveyParseUtils.getUpstreamStableId(derivedQuestion);
+            // the upstream index is either the occurrence of the question this calculatedValue depends on,
+            // or the last item in the list if there is no dependency
+            int upstreamIndex = IntStream.range(0, questionDefinitions.size())
+                    .filter(i -> questionDefinitions.get(i).getQuestionStableId().equals(upstreamStableId))
+                    .findFirst().orElse(questionDefinitions.size() - 1);
+            questionDefinitions.add(upstreamIndex + 1,
+                    SurveyParseUtils.unmarshalSurveyQuestion(survey, derivedQuestion,
+                            Map.of(), upstreamIndex + 1,true));
+        }
+        // reassign the export orders
+        IntStream.range(0, questionDefinitions.size()).forEach(i -> {
+            questionDefinitions.get(i).setExportOrder(i);
+        });
     }
 
     @Transactional
@@ -125,7 +165,7 @@ public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> imp
     @Transactional
     public Survey createNewVersion(UUID portalId, Survey survey) {
         Survey newSurvey = new Survey();
-        BeanUtils.copyProperties(survey, newSurvey, "id", "createdAt", "lastUpdatedAt", "answerMappings");
+        BeanUtils.copyProperties(survey, newSurvey, "id", "createdAt", "lastUpdatedAt", "answerMappings", "publishedVersion");
         newSurvey.setPortalId(portalId);
         int nextVersion = dao.getNextVersion(survey.getStableId());
         newSurvey.setVersion(nextVersion);
@@ -143,7 +183,5 @@ public class SurveyService extends ImmutableEntityService<Survey, SurveyDao> imp
         survey.setAnswerMappings(answerMappingDao.findBySurveyId(survey.getId()));
     }
 
-    public int getNextVersion(String stableId) {
-        return dao.getNextVersion(stableId);
-    }
+
 }

@@ -48,12 +48,14 @@
                 "type": "text",
                 "title": "First name",
                 "isRequired": true
-              }, {
+              },
+              {
                 "name": "oh_oh_basic_lastName",
                 "type": "text",
                 "title": "Last name",
                 "isRequired": true
-              }, {
+              },
+              {
                 "name": "oh_oh_basic_middleInitial",
                 "type": "text",
                 "title": "Middle initial",
@@ -61,14 +63,16 @@
                 "size": 1
               }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_dateOfBirth",
             "type": "text",
             "title": "Date of Birth",
             "inputMask": "datetime",
             "inputFormat": "mm/dd/yyyy",
             "isRequired": true
-          }, {
+          },
+          {
             "name": "oh_oh_basic_mghPatient",
             "type": "radiogroup",
             "title": "Are you a patient, current or former, of Mass General Brigham (Massachusetts General Hospital, Brigham & Women’s Hospital, and/or other Mass General Brigham institutions)?",
@@ -77,196 +81,113 @@
               {
                 "text": "Yes",
                 "value": "yes"
-              }, {
+              },
+              {
                 "text": "No",
                 "value": "no"
               }
             ]
-          }, {
-            "name": "oh_oh_basic_height",
-            "type": "dropdown",
-            "title": "Height ",
+          },
+          {
+            "type": "radiogroup",
+            "name": "oh_oh_basic_weightUnit",
+            "title": "I would like to enter my weight in:",
             "isRequired": true,
             "choices": [
-              {"text": "3' 0\" (91cm)", "value": "91"},
-              {"text": "3' 1\" (94cm)", "value": "94"},
-              {"text": "3' 2\" (97cm)", "value": "97"},
-              {"text": "3' 3\" (99cm)", "value": "99"},
-              {"text": "3' 4\" (102cm)", "value": "102"},
-              {"text": "3' 5\" (104cm)", "value": "104"},
-              {"text": "3' 6\" (107cm)", "value": "107"},
-              {"text": "3' 7\" (109cm)", "value": "109"},
-              {"text": "3' 8\" (112cm)", "value": "112"},
-              {"text": "3' 9\" (114cm)", "value": "114"},
-              {"text": "3' 10\" (117cm)", "value": "117"},
-              {"text": "3' 11\" (119cm)", "value": "119"},
-              {"text": "4' 0\" (122cm)", "value": "122"},
-              {"text": "4' 1\" (124cm)", "value": "124"},
-              {"text": "4' 2\" (127cm)", "value": "127"},
-              {"text": "4' 3\" (130cm)", "value": "130"},
-              {"text": "4' 4\" (132cm)", "value": "132"},
-              {"text": "4' 5\" (135cm)", "value": "135"},
-              {"text": "4' 6\" (137cm)", "value": "137"},
-              {"text": "4' 7\" (140cm)", "value": "140"},
-              {"text": "4' 8\" (142cm)", "value": "142"},
-              {"text": "4' 9\" (145cm)", "value": "145"},
-              {"text": "4' 10\" (147cm)", "value": "147"},
-              {"text": "4' 11\" (150cm)", "value": "150"},
-              {"text": "5' 0\" (152cm)", "value": "152"},
-              {"text": "5' 1\" (155cm)", "value": "155"},
-              {"text": "5' 2\" (157cm)", "value": "157"},
-              {"text": "5' 3\" (160cm)", "value": "160"},
-              {"text": "5' 4\" (163cm)", "value": "163"},
-              {"text": "5' 5\" (165cm)", "value": "165"},
-              {"text": "5' 6\" (168cm)", "value": "168"},
-              {"text": "5' 7\" (170cm)", "value": "170"},
-              {"text": "5' 8\" (173cm)", "value": "173"},
-              {"text": "5' 9\" (175cm)", "value": "175"},
-              {"text": "5' 10\" (178cm)", "value": "178"},
-              {"text": "5' 11\" (180cm)", "value": "180"},
-              {"text": "6' 0\" (183cm)", "value": "183"},
-              {"text": "6' 1\" (185cm)", "value": "185"},
-              {"text": "6' 2\" (188cm)", "value": "188"},
-              {"text": "6' 3\" (191cm)", "value": "191"},
-              {"text": "6' 4\" (193cm)", "value": "193"},
-              {"text": "6' 5\" (196cm)", "value": "196"},
-              {"text": "6' 6\" (198cm)", "value": "198"},
-              {"text": "6' 7\" (201cm)", "value": "201"},
-              {"text": "6' 8\" (203cm)", "value": "203"},
-              {"text": "6' 9\" (206cm)", "value": "206"},
-              {"text": "6' 10\" (208cm)", "value": "208"},
-              {"text": "6' 11\" (211cm)", "value": "211"},
-              {"text": "7' 0\" (213cm)", "value": "213"},
-              {"text": "7' 1\" (216cm)", "value": "216"},
-              {"text": "7' 2\" (218cm)", "value": "218"},
-              {"text": "7' 3\" (221cm)", "value": "221"},
-              {"text": "7' 4\" (224cm)", "value": "224"},
-              {"text": "7' 5\" (226cm)", "value": "226"},
-              {"text": "7' 6\" (229cm)", "value": "229"},
-              {"text": "7' 7\" (231cm)", "value": "231"},
-              {"text": "7' 8\" (234cm)", "value": "234"},
-              {"text": "7' 9\" (236cm)", "value": "236"},
-              {"text": "7' 10\" (239cm)", "value": "239"},
-              {"text": "7' 11\" (241cm)", "value": "241"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "value": "lbs",
+                "text": "pounds (lbs)"
+              },
+              {
+                "value": "kg",
+                "text": "kilograms (kg)"
+              }
             ]
-          }, {
-            "name": "oh_oh_basic_weight",
-            "type": "dropdown",
-            "title": "Weight ",
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_basic_rawWeight",
+            "visibleIf": "{oh_oh_basic_weightUnit} notempty",
+            "title": "Weight in {oh_oh_basic_weightUnit}",
+            "isRequired": true,
+            "validators": [
+              {
+                "type": "regex",
+                "text": "Validation 1 fired",
+                "regex": "^[0-9]*$"
+              }
+            ],
+            "inputType": "number",
+            "min": 0,
+            "max": 999
+          },
+          {
+            "type": "radiogroup",
+            "name": "oh_oh_basic_heightUnit",
+            "title": "I would like to enter my height in:",
             "isRequired": true,
             "choices": [
-              {"text": "60lbs (27kg)", "value": "27"},
-              {"text": "65lbs (30kg)", "value": "30"},
-              {"text": "70lbs (32kg)", "value": "32"},
-              {"text": "75lbs (34kg)", "value": "34"},
-              {"text": "80lbs (36kg)", "value": "36"},
-              {"text": "85lbs (39kg)", "value": "39"},
-              {"text": "90lbs (41kg)", "value": "41"},
-              {"text": "95lbs (43kg)", "value": "43"},
-              {"text": "100lbs (45kg)", "value": "45"},
-              {"text": "105lbs (48kg)", "value": "48"},
-              {"text": "110lbs (50kg)", "value": "50"},
-              {"text": "115lbs (52kg)", "value": "52"},
-              {"text": "120lbs (54kg)", "value": "54"},
-              {"text": "125lbs (57kg)", "value": "57"},
-              {"text": "130lbs (59kg)", "value": "59"},
-              {"text": "135lbs (61kg)", "value": "61"},
-              {"text": "140lbs (64kg)", "value": "64"},
-              {"text": "145lbs (66kg)", "value": "66"},
-              {"text": "150lbs (68kg)", "value": "68"},
-              {"text": "155lbs (70kg)", "value": "70"},
-              {"text": "160lbs (73kg)", "value": "73"},
-              {"text": "165lbs (75kg)", "value": "75"},
-              {"text": "170lbs (77kg)", "value": "77"},
-              {"text": "175lbs (79kg)", "value": "79"},
-              {"text": "180lbs (82kg)", "value": "82"},
-              {"text": "185lbs (84kg)", "value": "84"},
-              {"text": "190lbs (86kg)", "value": "86"},
-              {"text": "195lbs (89kg)", "value": "89"},
-              {"text": "200lbs (91kg)", "value": "91"},
-              {"text": "205lbs (93kg)", "value": "93"},
-              {"text": "210lbs (95kg)", "value": "95"},
-              {"text": "215lbs (98kg)", "value": "98"},
-              {"text": "220lbs (100kg)", "value": "100"},
-              {"text": "225lbs (102kg)", "value": "102"},
-              {"text": "230lbs (104kg)", "value": "104"},
-              {"text": "235lbs (107kg)", "value": "107"},
-              {"text": "240lbs (109kg)", "value": "109"},
-              {"text": "245lbs (111kg)", "value": "111"},
-              {"text": "250lbs (113kg)", "value": "113"},
-              {"text": "255lbs (116kg)", "value": "116"},
-              {"text": "260lbs (118kg)", "value": "118"},
-              {"text": "265lbs (120kg)", "value": "120"},
-              {"text": "270lbs (123kg)", "value": "123"},
-              {"text": "275lbs (125kg)", "value": "125"},
-              {"text": "280lbs (127kg)", "value": "127"},
-              {"text": "285lbs (129kg)", "value": "129"},
-              {"text": "290lbs (132kg)", "value": "132"},
-              {"text": "295lbs (134kg)", "value": "134"},
-              {"text": "300lbs (136kg)", "value": "136"},
-              {"text": "305lbs (138kg)", "value": "138"},
-              {"text": "310lbs (141kg)", "value": "141"},
-              {"text": "315lbs (143kg)", "value": "143"},
-              {"text": "320lbs (145kg)", "value": "145"},
-              {"text": "325lbs (148kg)", "value": "148"},
-              {"text": "330lbs (150kg)", "value": "150"},
-              {"text": "335lbs (152kg)", "value": "152"},
-              {"text": "340lbs (154kg)", "value": "154"},
-              {"text": "345lbs (157kg)", "value": "157"},
-              {"text": "350lbs (159kg)", "value": "159"},
-              {"text": "355lbs (161kg)", "value": "161"},
-              {"text": "360lbs (163kg)", "value": "163"},
-              {"text": "365lbs (166kg)", "value": "166"},
-              {"text": "370lbs (168kg)", "value": "168"},
-              {"text": "375lbs (170kg)", "value": "170"},
-              {"text": "380lbs (172kg)", "value": "172"},
-              {"text": "385lbs (175kg)", "value": "175"},
-              {"text": "390lbs (177kg)", "value": "177"},
-              {"text": "395lbs (179kg)", "value": "179"},
-              {"text": "400lbs (182kg)", "value": "182"},
-              {"text": "405lbs (184kg)", "value": "184"},
-              {"text": "410lbs (186kg)", "value": "186"},
-              {"text": "415lbs (188kg)", "value": "188"},
-              {"text": "420lbs (191kg)", "value": "191"},
-              {"text": "425lbs (193kg)", "value": "193"},
-              {"text": "430lbs (195kg)", "value": "195"},
-              {"text": "435lbs (197kg)", "value": "197"},
-              {"text": "440lbs (200kg)", "value": "200"},
-              {"text": "445lbs (202kg)", "value": "202"},
-              {"text": "450lbs (204kg)", "value": "204"},
-              {"text": "455lbs (207kg)", "value": "207"},
-              {"text": "460lbs (209kg)", "value": "209"},
-              {"text": "465lbs (211kg)", "value": "211"},
-              {"text": "470lbs (213kg)", "value": "213"},
-              {"text": "475lbs (216kg)", "value": "216"},
-              {"text": "480lbs (218kg)", "value": "218"},
-              {"text": "485lbs (220kg)", "value": "220"},
-              {"text": "490lbs (222kg)", "value": "222"},
-              {"text": "495lbs (225kg)", "value": "225"},
-              {"text": "500lbs (227kg)", "value": "227"},
-              {"text": "505lbs (229kg)", "value": "229"},
-              {"text": "510lbs (231kg)", "value": "231"},
-              {"text": "515lbs (234kg)", "value": "234"},
-              {"text": "520lbs (236kg)", "value": "236"},
-              {"text": "525lbs (238kg)", "value": "238"},
-              {"text": "530lbs (241kg)", "value": "241"},
-              {"text": "535lbs (243kg)", "value": "243"},
-              {"text": "540lbs (245kg)", "value": "245"},
-              {"text": "545lbs (247kg)", "value": "247"},
-              {"text": "550lbs (250kg)", "value": "250"},
-              {"text": "555lbs (252kg)", "value": "252"},
-              {"text": "560lbs (254kg)", "value": "254"},
-              {"text": "565lbs (256kg)", "value": "256"},
-              {"text": "570lbs (259kg)", "value": "259"},
-              {"text": "575lbs (261kg)", "value": "261"},
-              {"text": "580lbs (263kg)", "value": "263"},
-              {"text": "585lbs (266kg)", "value": "266"},
-              {"text": "590lbs (268kg)", "value": "268"},
-              {"text": "595lbs (270kg)", "value": "270"},
-              {"text": "600lbs (272kg)", "value": "272"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "value": "in",
+                "text": "feet and inches"
+              },
+              {
+                "value": "cm",
+                "text": "centimeters (cm)"
+              }
             ]
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_basic_rawHeightCm",
+            "visibleIf": "{oh_oh_basic_heightUnit} = 'cm'",
+            "title": "Height in {oh_oh_basic_heightUnit}",
+            "isRequired": true,
+            "validators": [
+              {
+                "type": "regex",
+                "text": "Validation 1 fired",
+                "regex": "^[0-9]*$"
+              }
+            ],
+            "inputType": "number",
+            "min": 0,
+            "max": 500
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_basic_rawHeightFeet",
+            "visibleIf": "{oh_oh_basic_heightUnit} = 'in'",
+            "title": "Height - feet",
+            "isRequired": true,
+            "validators": [
+              {
+                "type": "regex",
+                "text": "Validation 1 fired",
+                "regex": "^[0-9]*$"
+              }
+            ],
+            "inputType": "number",
+            "min": 0,
+            "max": 9
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_basic_rawHeightInches",
+            "visibleIf": "{oh_oh_basic_heightUnit} = 'in'",
+            "startWithNewLine": false,
+            "title": "inches",
+            "isRequired": true,
+            "validators": [
+              {
+                "type": "regex",
+                "text": "Validation 1 fired",
+                "regex": "^[0-9]*$"
+              }
+            ],
+            "inputType": "number",
+            "min": 0,
+            "max": 11
           },
           {
             "name": "oh_oh_basic_birthSex",
@@ -278,28 +199,61 @@
             "otherText": "None of these describe me",
             "otherPlaceholder": "Please describe",
             "choices": [
-              {"text": "Female", "value": "female"},
-              {"text": "Male", "value": "male"},
-              {"text": "Intersex", "value": "intersex"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": "Female",
+                "value": "female"
+              },
+              {
+                "text": "Male",
+                "value": "male"
+              },
+              {
+                "text": "Intersex",
+                "value": "intersex"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
+              }
             ]
-          }, {
+          },
+          {
             "name": "oh_oh_basic_gender",
             "type": "radiogroup",
-            "title": "Which term best describes your gender identity? (Check all that apply) ",
+            "title": "Which term best describes your gender identity? ",
             "isRequired": true,
             "showOtherItem": true,
             "otherErrorText": "A description is required",
             "otherText": "None of these describe me, and I’d like to write my own description",
             "otherPlaceholder": "Please describe",
             "choices": [
-              {"text": "Man", "value": "man"},
-              {"text": "Woman", "value": "woman"},
-              {"text": "Non-binary", "value": "nonBinary"},
-              {"text": "Transgender", "value": "transgender"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": "Man",
+                "value": "man"
+              },
+              {
+                "text": "Woman",
+                "value": "woman"
+              },
+              {
+                "text": "Non-binary",
+                "value": "nonBinary"
+              },
+              {
+                "text": "Transgender Man",
+                "value": "transgenderMan"
+              },
+              {
+                "text": "Transgender Woman",
+                "value": "transgenderWoman"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
+              }
             ]
-          }, {
+          },
+          {
             "name": "oh_oh_basic_sexualOrientation",
             "type": "checkbox",
             "title": "Which of the following best represents how you think of yourself? (Check all that apply)",
@@ -308,13 +262,29 @@
             "noneText": "Prefer not to answer",
             "noneValue": "preferNoAnswer",
             "choices": [
-              {"text": "Bisexual", "value": "bisexual"},
-              {"text": "Gay", "value": "gay"},
-              {"text": "Lesbian", "value": "lesbian"},
-              {"text": "Straight/Heterosexual", "value": "straightHeterosexual"},
-              {"text": "None of these describe me, and I’d like to see additional options", "value": "noneOfThese"}
+              {
+                "text": "Bisexual",
+                "value": "bisexual"
+              },
+              {
+                "text": "Gay",
+                "value": "gay"
+              },
+              {
+                "text": "Lesbian",
+                "value": "lesbian"
+              },
+              {
+                "text": "Straight/Heterosexual",
+                "value": "straightHeterosexual"
+              },
+              {
+                "text": "None of these describe me, and I’d like to see additional options",
+                "value": "noneOfThese"
+              }
             ]
-          }, {
+          },
+          {
             "name": "oh_oh_basic_sexualOrientationFollowUp",
             "type": "checkbox",
             "title": "Are any of these a closer description of how you think of yourself? (Check all that apply)",
@@ -324,29 +294,62 @@
             "otherText": "No, I mean something else",
             "otherPlaceholder": "Please specify",
             "choices": [
-              {"text": "Queer", "value": "queer"},
-              {"text": "Polysexual, omnisexual, sapiosexual, or pansexual", "value": "polysexualOmnisexualSapiosexualOrPansexual"},
-              {"text": "Asexual", "value": "asexual"},
-              {"text": "Have not figured out or are in the process of figuring out your sexuality", "value": "haveNotFiguredOut"},
-              {"text": "Mostly straight, but sometimes attracted to people of your own sex", "value": "mostlyStraight"},
-              {"text": "Do not think of yourself as having sexuality", "value": "doNotThinkOfSexuality"},
-              {"text": "Do not use labels to identify yourself", "value": "doNotUseLabels"},
-              {"text": "Don’t know the answer", "value": "dontKnow"}
+              {
+                "text": "Queer",
+                "value": "queer"
+              },
+              {
+                "text": "Polysexual, omnisexual, sapiosexual, or pansexual",
+                "value": "polysexualOmnisexualSapiosexualOrPansexual"
+              },
+              {
+                "text": "Asexual",
+                "value": "asexual"
+              },
+              {
+                "text": "Have not figured out or are in the process of figuring out your sexuality",
+                "value": "haveNotFiguredOut"
+              },
+              {
+                "text": "Mostly straight, but sometimes attracted to people of your own sex",
+                "value": "mostlyStraight"
+              },
+              {
+                "text": "Do not think of yourself as having sexuality",
+                "value": "doNotThinkOfSexuality"
+              },
+              {
+                "text": "Do not use labels to identify yourself",
+                "value": "doNotUseLabels"
+              },
+              {
+                "text": "Don’t know the answer",
+                "value": "dontKnow"
+              }
             ]
-          },{
+          },
+          {
             "name": "ethnicityNote",
             "type": "html",
             "html": "<b>Note, you are eligible for this study because you identify as South Asian, defined as ancestry from Bangladesh, Bhutan, India, Maldives, Nepal, Pakistan, and/or Sri Lanka.</b>"
-          }, {
+          },
+          {
             "name": "oh_oh_basic_otherEthnicity",
             "type": "radiogroup",
             "isRequired": true,
             "title": "Outside of South Asian ethnicity, do you identify with other racial/ethnic categories?",
             "choices": [
-              {"text": "No, I only identify with South Asian ethnicity.", "value": "no"},
-              {"text": "Yes", "value": "yes"}
+              {
+                "text": "No, I only identify with South Asian ethnicity.",
+                "value": "no"
+              },
+              {
+                "text": "Yes",
+                "value": "yes"
+              }
             ]
-          }, {
+          },
+          {
             "name": "oh_oh_basic_otherEthnicityDetail",
             "type": "checkbox",
             "title": "Check all that apply.",
@@ -357,14 +360,33 @@
             "noneText": "Not listed",
             "hideNumber": true,
             "choices": [
-              {"text": "African American/Black", "value": "black"},
-              {"text": "Caucasian/White", "value": "white"},
-              {"text": "East or Southeast Asian", "value": "eastOrSoutheastAsian"},
-              {"text": "Hispanic or Latino/a", "value": "hispanic"},
-              {"text": "Native American (American Indian or Alaska Native)", "value": "nativeAmerican"},
-              {"text": "Native Hawaiian or Other Pacific Islander", "value": "pacificIslander"}
+              {
+                "text": "African American/Black",
+                "value": "black"
+              },
+              {
+                "text": "Caucasian/White",
+                "value": "white"
+              },
+              {
+                "text": "East or Southeast Asian",
+                "value": "eastOrSoutheastAsian"
+              },
+              {
+                "text": "Hispanic or Latino/a",
+                "value": "hispanic"
+              },
+              {
+                "text": "Native American (American Indian or Alaska Native)",
+                "value": "nativeAmerican"
+              },
+              {
+                "text": "Native Hawaiian or Other Pacific Islander",
+                "value": "pacificIslander"
+              }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_nationalIdentity",
             "type": "checkbox",
             "title": "With which of the following South Asian nations do you or your family identify? Check all that apply.",
@@ -377,15 +399,37 @@
             "noneValue": "preferNoAnswer",
             "noneText": "Prefer not to answer",
             "choices": [
-              {"text": "Bangladesh", "value": "bangladesh"},
-              {"text": "Bhutan", "value": "bhutan"},
-              {"text": "India", "value": "india"},
-              {"text": "Maldives", "value": "maldives"},
-              {"text": "Nepal", "value": "nepal"},
-              {"text": "Pakistan", "value": "pakistan"},
-              {"text": "Sri Lanka", "value": "sriLanka"}
+              {
+                "text": "Bangladesh",
+                "value": "bangladesh"
+              },
+              {
+                "text": "Bhutan",
+                "value": "bhutan"
+              },
+              {
+                "text": "India",
+                "value": "india"
+              },
+              {
+                "text": "Maldives",
+                "value": "maldives"
+              },
+              {
+                "text": "Nepal",
+                "value": "nepal"
+              },
+              {
+                "text": "Pakistan",
+                "value": "pakistan"
+              },
+              {
+                "text": "Sri Lanka",
+                "value": "sriLanka"
+              }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_bangladeshRegion",
             "type": "checkbox",
             "title": "From BANGLADESH: Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
@@ -399,15 +443,37 @@
             "noneValue": "preferNoAnswer",
             "noneText": "Prefer not to answer",
             "choices": [
-              {"text": "Barisal", "value": "barisal"},
-              {"text": "Chittagong", "value": "chittagong"},
-              {"text": "Dhaka", "value": "dhaka"},
-              {"text": "Khulna", "value": "khulna"},
-              {"text": "Mymensingh", "value": "mymensingh"},
-              {"text": "Rajshahi", "value": "rajshahi"},
-              {"text": "Sylhet", "value": "sylhet"}
+              {
+                "text": "Barisal",
+                "value": "barisal"
+              },
+              {
+                "text": "Chittagong",
+                "value": "chittagong"
+              },
+              {
+                "text": "Dhaka",
+                "value": "dhaka"
+              },
+              {
+                "text": "Khulna",
+                "value": "khulna"
+              },
+              {
+                "text": "Mymensingh",
+                "value": "mymensingh"
+              },
+              {
+                "text": "Rajshahi",
+                "value": "rajshahi"
+              },
+              {
+                "text": "Sylhet",
+                "value": "sylhet"
+              }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_indiaRegion",
             "type": "checkbox",
             "title": "From INDIA: Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
@@ -421,44 +487,153 @@
             "noneValue": "preferNoAnswer",
             "noneText": "Prefer not to answer",
             "choices": [
-              {"text": "Andhra Pradesh", "value": "andhraPradesh"},
-              {"text": "Arunachal Pradesh", "value": "arunachalPradesh"},
-              {"text": "Assam", "value": "assam"},
-              {"text": "Bihar", "value": "bihar"},
-              {"text": "Chhattisgarh", "value": "chhattisgarh"},
-              {"text": "Goa", "value": "goa"},
-              {"text": "Gujarat", "value": "gujarat"},
-              {"text": "Haryana", "value": "haryana"},
-              {"text": "Himachal Pradesh", "value": "himachalPradesh"},
-              {"text": "Jharkhand", "value": "jharkhand"},
-              {"text": "Karnataka", "value": "karnataka"},
-              {"text": "Kerala", "value": "kerala"},
-              {"text": "Madhya Pradesh", "value": "madhyaPradesh"},
-              {"text": "Maharashtra", "value": "maharashtra"},
-              {"text": "Manipur", "value": "manipur"},
-              {"text": "Meghalaya", "value": "meghalaya"},
-              {"text": "Mizoram", "value": "mizoram"},
-              {"text": "Nagaland", "value": "nagaland"},
-              {"text": "Odisha", "value": "odisha"},
-              {"text": "Punjab", "value": "punjab"},
-              {"text": "Rajasthan", "value": "rajasthan"},
-              {"text": "Sikkim", "value": "sikkim"},
-              {"text": "Tamil Nadu", "value": "tamilNadu"},
-              {"text": "Telangana", "value": "telangana"},
-              {"text": "Tripura", "value": "tripura"},
-              {"text": "Uttar Pradesh", "value": "uttarPradesh"},
-              {"text": "Uttarakhand", "value": "uttarakhand"},
-              {"text": "West Bengal", "value": "westBengal"},
-              {"text": "Andaman and Nicobar Islands", "value": "andamanAndNicobarIslands"},
-              {"text": "Chandigarh", "value": "chandigarh"},
-              {"text": "Dadra Nagar Haveli and Daman Diu", "value": "dadraNagarHaveliAndDamanDiu"},
-              {"text": "Delhi", "value": "delhi"},
-              {"text": "Jammu & Kashmir", "value": "jammuKashmir"},
-              {"text": "Ladakh", "value": "ladakh"},
-              {"text": "Lakshadweep", "value": "lakshadweep"},
-              {"text": "Puducherry", "value": "puducherry"}
+              {
+                "text": "Andhra Pradesh",
+                "value": "andhraPradesh"
+              },
+              {
+                "text": "Arunachal Pradesh",
+                "value": "arunachalPradesh"
+              },
+              {
+                "text": "Assam",
+                "value": "assam"
+              },
+              {
+                "text": "Bihar",
+                "value": "bihar"
+              },
+              {
+                "text": "Chhattisgarh",
+                "value": "chhattisgarh"
+              },
+              {
+                "text": "Goa",
+                "value": "goa"
+              },
+              {
+                "text": "Gujarat",
+                "value": "gujarat"
+              },
+              {
+                "text": "Haryana",
+                "value": "haryana"
+              },
+              {
+                "text": "Himachal Pradesh",
+                "value": "himachalPradesh"
+              },
+              {
+                "text": "Jharkhand",
+                "value": "jharkhand"
+              },
+              {
+                "text": "Karnataka",
+                "value": "karnataka"
+              },
+              {
+                "text": "Kerala",
+                "value": "kerala"
+              },
+              {
+                "text": "Madhya Pradesh",
+                "value": "madhyaPradesh"
+              },
+              {
+                "text": "Maharashtra",
+                "value": "maharashtra"
+              },
+              {
+                "text": "Manipur",
+                "value": "manipur"
+              },
+              {
+                "text": "Meghalaya",
+                "value": "meghalaya"
+              },
+              {
+                "text": "Mizoram",
+                "value": "mizoram"
+              },
+              {
+                "text": "Nagaland",
+                "value": "nagaland"
+              },
+              {
+                "text": "Odisha",
+                "value": "odisha"
+              },
+              {
+                "text": "Punjab",
+                "value": "punjab"
+              },
+              {
+                "text": "Rajasthan",
+                "value": "rajasthan"
+              },
+              {
+                "text": "Sikkim",
+                "value": "sikkim"
+              },
+              {
+                "text": "Tamil Nadu",
+                "value": "tamilNadu"
+              },
+              {
+                "text": "Telangana",
+                "value": "telangana"
+              },
+              {
+                "text": "Tripura",
+                "value": "tripura"
+              },
+              {
+                "text": "Uttar Pradesh",
+                "value": "uttarPradesh"
+              },
+              {
+                "text": "Uttarakhand",
+                "value": "uttarakhand"
+              },
+              {
+                "text": "West Bengal",
+                "value": "westBengal"
+              },
+              {
+                "text": "Andaman and Nicobar Islands",
+                "value": "andamanAndNicobarIslands"
+              },
+              {
+                "text": "Chandigarh",
+                "value": "chandigarh"
+              },
+              {
+                "text": "Dadra Nagar Haveli and Daman Diu",
+                "value": "dadraNagarHaveliAndDamanDiu"
+              },
+              {
+                "text": "Delhi",
+                "value": "delhi"
+              },
+              {
+                "text": "Jammu & Kashmir",
+                "value": "jammuKashmir"
+              },
+              {
+                "text": "Ladakh",
+                "value": "ladakh"
+              },
+              {
+                "text": "Lakshadweep",
+                "value": "lakshadweep"
+              },
+              {
+                "text": "Puducherry",
+                "value": "puducherry"
+              }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_pakistanRegion",
             "type": "checkbox",
             "isRequired": true,
@@ -472,15 +647,37 @@
             "noneValue": "preferNoAnswer",
             "noneText": "Prefer not to answer",
             "choices": [
-              {"text": "Azad Jammu and Kashmir", "value": "azadJammuAndKashmir"},
-              {"text": "Balochistan", "value": "balochistan"},
-              {"text": "Gilgit-Baltistan", "value": "gilgitBaltistan"},
-              {"text": "The Islamabad Capital Territory", "value": "theIslamabadCapitalTerritory"},
-              {"text": "Khyber Pakhtunkhwa", "value": "khyberPakhtunkhwa"},
-              {"text": "Punjab", "value": "punjab"},
-              {"text": "Sindh", "value": "sindh"}
+              {
+                "text": "Azad Jammu and Kashmir",
+                "value": "azadJammuAndKashmir"
+              },
+              {
+                "text": "Balochistan",
+                "value": "balochistan"
+              },
+              {
+                "text": "Gilgit-Baltistan",
+                "value": "gilgitBaltistan"
+              },
+              {
+                "text": "The Islamabad Capital Territory",
+                "value": "theIslamabadCapitalTerritory"
+              },
+              {
+                "text": "Khyber Pakhtunkhwa",
+                "value": "khyberPakhtunkhwa"
+              },
+              {
+                "text": "Punjab",
+                "value": "punjab"
+              },
+              {
+                "text": "Sindh",
+                "value": "sindh"
+              }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_asianLanguage",
             "type": "checkbox",
             "title": "Which of the national language(s) in South Asia would you consider to be your “mother tongue”, or most identified with your family? Check all that apply. ",
@@ -493,38 +690,123 @@
             "noneValue": "preferNoAnswer",
             "noneText": "Prefer not to answer",
             "choices": [
-              {"text": "Assamese", "value": "assamese"},
-              {"text": "Balochi", "value": "balochi"},
-              {"text": "Bengali", "value": "bengali"},
-              {"text": "Bodo", "value": "bodo"},
-              {"text": "Dhivehi", "value": "dhivehi"},
-              {"text": "Dogri", "value": "dogri"},
-              {"text": "Dzongkha", "value": "dzongkha"},
-              {"text": "English", "value": "english"},
-              {"text": "Gujarati", "value": "gujarati"},
-              {"text": "Hindi", "value": "hindi"},
-              {"text": "Kannada", "value": "kannada"},
-              {"text": "Kashmiri", "value": "kashmiri"},
-              {"text": "Konkani", "value": "konkani"},
-              {"text": "Maithili", "value": "maithili"},
-              {"text": "Malayalam", "value": "malayalam"},
-              {"text": "Manipur (Meitei)", "value": "manipurMeitei"},
-              {"text": "Marathi", "value": "marathi"},
-              {"text": "Nepali", "value": "nepali"},
-              {"text": "Odia (Oriya)", "value": "odiaOriya"},
-              {"text": "Pashto", "value": "pashto"},
-              {"text": "Punjabi", "value": "punjabi"},
-              {"text": "Sanskrit", "value": "sanskrit"},
-              {"text": "Santali", "value": "santali"},
-              {"text": "Sindhi", "value": "sindhi"},
-              {"text": "Sinhala", "value": "sinhala"},
-              {"text": "Tamil", "value": "tamil"},
-              {"text": "Telugu", "value": "telugu"},
-              {"text": "Urdu", "value": "urdu"}
+              {
+                "text": "Assamese",
+                "value": "assamese"
+              },
+              {
+                "text": "Balochi",
+                "value": "balochi"
+              },
+              {
+                "text": "Bengali",
+                "value": "bengali"
+              },
+              {
+                "text": "Bodo",
+                "value": "bodo"
+              },
+              {
+                "text": "Dhivehi",
+                "value": "dhivehi"
+              },
+              {
+                "text": "Dogri",
+                "value": "dogri"
+              },
+              {
+                "text": "Dzongkha",
+                "value": "dzongkha"
+              },
+              {
+                "text": "English",
+                "value": "english"
+              },
+              {
+                "text": "Gujarati",
+                "value": "gujarati"
+              },
+              {
+                "text": "Hindi",
+                "value": "hindi"
+              },
+              {
+                "text": "Kannada",
+                "value": "kannada"
+              },
+              {
+                "text": "Kashmiri",
+                "value": "kashmiri"
+              },
+              {
+                "text": "Konkani",
+                "value": "konkani"
+              },
+              {
+                "text": "Maithili",
+                "value": "maithili"
+              },
+              {
+                "text": "Malayalam",
+                "value": "malayalam"
+              },
+              {
+                "text": "Manipur (Meitei)",
+                "value": "manipurMeitei"
+              },
+              {
+                "text": "Marathi",
+                "value": "marathi"
+              },
+              {
+                "text": "Nepali",
+                "value": "nepali"
+              },
+              {
+                "text": "Odia (Oriya)",
+                "value": "odiaOriya"
+              },
+              {
+                "text": "Pashto",
+                "value": "pashto"
+              },
+              {
+                "text": "Punjabi",
+                "value": "punjabi"
+              },
+              {
+                "text": "Sanskrit",
+                "value": "sanskrit"
+              },
+              {
+                "text": "Santali",
+                "value": "santali"
+              },
+              {
+                "text": "Sindhi",
+                "value": "sindhi"
+              },
+              {
+                "text": "Sinhala",
+                "value": "sinhala"
+              },
+              {
+                "text": "Tamil",
+                "value": "tamil"
+              },
+              {
+                "text": "Telugu",
+                "value": "telugu"
+              },
+              {
+                "text": "Urdu",
+                "value": "urdu"
+              }
             ]
           }
         ]
-      },{
+      },
+      {
         "elements": [
           {
             "type": "panel",
@@ -541,75 +823,246 @@
             "type": "text",
             "title": "Address",
             "isRequired": true
-          }, {
+          },
+          {
             "name": "oh_oh_basic_city",
             "type": "text",
             "title": "City",
             "isRequired": true
-          }, {
+          },
+          {
             "name": "oh_oh_basic_state",
             "type": "dropdown",
             "title": "State",
             "isRequired": true,
             "choices": [
-              {"text": "Alaska", "value": "AK"},
-              {"text": "American Samoa", "value": "AS"},
-              {"text": "Arizona", "value": "AZ"},
-              {"text": "Arkansas", "value": "AR"},
-              {"text": "California", "value": "CA"},
-              {"text": "Colorado", "value": "CO"},
-              {"text": "Connecticut", "value": "CT"},
-              {"text": "Delaware", "value": "DE"},
-              {"text": "District of Columbia", "value": "DC"},
-              {"text": "Florida", "value": "FL"},
-              {"text": "Georgia", "value": "GA"},
-              {"text": "Guam", "value": "GU"},
-              {"text": "Hawaii", "value": "HI"},
-              {"text": "Idaho", "value": "ID"},
-              {"text": "Illinois", "value": "IL"},
-              {"text": "Indiana", "value": "IN"},
-              {"text": "Iowa", "value": "IA"},
-              {"text": "Kansas", "value": "KS"},
-              {"text": "Kentucky", "value": "KY"},
-              {"text": "Louisiana", "value": "LA"},
-              {"text": "Maine", "value": "ME"},
-              {"text": "Maryland", "value": "MD"},
-              {"text": "Massachusetts", "value": "MA"},
-              {"text": "Michigan", "value": "MI"},
-              {"text": "Minnesota", "value": "MN"},
-              {"text": "Mississippi", "value": "MS"},
-              {"text": "Missouri", "value": "MO"},
-              {"text": "Montana", "value": "MT"},
-              {"text": "Nebraska", "value": "NE"},
-              {"text": "Nevada", "value": "NV"},
-              {"text": "New Hampshire", "value": "NH"},
-              {"text": "New Jersey", "value": "NJ"},
-              {"text": "New Mexico", "value": "NM"},
-              {"text": "New York", "value": "NY"},
-              {"text": "North Carolina", "value": "NC"},
-              {"text": "North Dakota", "value": "ND"},
-              {"text": "Northern Mariana Islands", "value": "MP"},
-              {"text": "Ohio", "value": "OH"},
-              {"text": "Oklahoma", "value": "OK"},
-              {"text": "Oregon", "value": "OR"},
-              {"text": "Pennsylvania", "value": "PA"},
-              {"text": "Puerto Rico", "value": "PR"},
-              {"text": "Rhode Island", "value": "RI"},
-              {"text": "South Carolina", "value": "SC"},
-              {"text": "South Dakota", "value": "SD"},
-              {"text": "Tennessee", "value": "TN"},
-              {"text": "Texas", "value": "TX"},
-              {"text": "US Minor Outlying Islands", "value": "UM"},
-              {"text": "US Virgin Islands", "value": "VI"},
-              {"text": "Utah", "value": "UT"},
-              {"text": "Vermont", "value": "VT"},
-              {"text": "Virginia", "value": "VA"},
-              {"text": "Washington", "value": "WA"},
-              {"text": "West Virginia", "value": "WV"},
-              {"text": "Wisconsin", "value": "WI"},
-              {"text": "Wyoming", "value": "WY"}
+              {
+                "text": "Alaska",
+                "value": "AK"
+              },
+              {
+                "text": "American Samoa",
+                "value": "AS"
+              },
+              {
+                "text": "Arizona",
+                "value": "AZ"
+              },
+              {
+                "text": "Arkansas",
+                "value": "AR"
+              },
+              {
+                "text": "California",
+                "value": "CA"
+              },
+              {
+                "text": "Colorado",
+                "value": "CO"
+              },
+              {
+                "text": "Connecticut",
+                "value": "CT"
+              },
+              {
+                "text": "Delaware",
+                "value": "DE"
+              },
+              {
+                "text": "District of Columbia",
+                "value": "DC"
+              },
+              {
+                "text": "Florida",
+                "value": "FL"
+              },
+              {
+                "text": "Georgia",
+                "value": "GA"
+              },
+              {
+                "text": "Guam",
+                "value": "GU"
+              },
+              {
+                "text": "Hawaii",
+                "value": "HI"
+              },
+              {
+                "text": "Idaho",
+                "value": "ID"
+              },
+              {
+                "text": "Illinois",
+                "value": "IL"
+              },
+              {
+                "text": "Indiana",
+                "value": "IN"
+              },
+              {
+                "text": "Iowa",
+                "value": "IA"
+              },
+              {
+                "text": "Kansas",
+                "value": "KS"
+              },
+              {
+                "text": "Kentucky",
+                "value": "KY"
+              },
+              {
+                "text": "Louisiana",
+                "value": "LA"
+              },
+              {
+                "text": "Maine",
+                "value": "ME"
+              },
+              {
+                "text": "Maryland",
+                "value": "MD"
+              },
+              {
+                "text": "Massachusetts",
+                "value": "MA"
+              },
+              {
+                "text": "Michigan",
+                "value": "MI"
+              },
+              {
+                "text": "Minnesota",
+                "value": "MN"
+              },
+              {
+                "text": "Mississippi",
+                "value": "MS"
+              },
+              {
+                "text": "Missouri",
+                "value": "MO"
+              },
+              {
+                "text": "Montana",
+                "value": "MT"
+              },
+              {
+                "text": "Nebraska",
+                "value": "NE"
+              },
+              {
+                "text": "Nevada",
+                "value": "NV"
+              },
+              {
+                "text": "New Hampshire",
+                "value": "NH"
+              },
+              {
+                "text": "New Jersey",
+                "value": "NJ"
+              },
+              {
+                "text": "New Mexico",
+                "value": "NM"
+              },
+              {
+                "text": "New York",
+                "value": "NY"
+              },
+              {
+                "text": "North Carolina",
+                "value": "NC"
+              },
+              {
+                "text": "North Dakota",
+                "value": "ND"
+              },
+              {
+                "text": "Northern Mariana Islands",
+                "value": "MP"
+              },
+              {
+                "text": "Ohio",
+                "value": "OH"
+              },
+              {
+                "text": "Oklahoma",
+                "value": "OK"
+              },
+              {
+                "text": "Oregon",
+                "value": "OR"
+              },
+              {
+                "text": "Pennsylvania",
+                "value": "PA"
+              },
+              {
+                "text": "Puerto Rico",
+                "value": "PR"
+              },
+              {
+                "text": "Rhode Island",
+                "value": "RI"
+              },
+              {
+                "text": "South Carolina",
+                "value": "SC"
+              },
+              {
+                "text": "South Dakota",
+                "value": "SD"
+              },
+              {
+                "text": "Tennessee",
+                "value": "TN"
+              },
+              {
+                "text": "Texas",
+                "value": "TX"
+              },
+              {
+                "text": "US Minor Outlying Islands",
+                "value": "UM"
+              },
+              {
+                "text": "US Virgin Islands",
+                "value": "VI"
+              },
+              {
+                "text": "Utah",
+                "value": "UT"
+              },
+              {
+                "text": "Vermont",
+                "value": "VT"
+              },
+              {
+                "text": "Virginia",
+                "value": "VA"
+              },
+              {
+                "text": "Washington",
+                "value": "WA"
+              },
+              {
+                "text": "West Virginia",
+                "value": "WV"
+              },
+              {
+                "text": "Wisconsin",
+                "value": "WI"
+              },
+              {
+                "text": "Wyoming",
+                "value": "WY"
+              }
             ]
-          }, {
+          },
+          {
             "name": "oh_oh_basic_zip",
             "type": "text",
             "title": "ZIP Code (5 digits)",
@@ -617,7 +1070,8 @@
             "size": "5",
             "inputType": "text",
             "isRequired": true
-          }, {
+          },
+          {
             "name": "oh_oh_basic_phoneNumber",
             "type": "text",
             "title": "Preferred Phone Number",
@@ -626,7 +1080,8 @@
             "isRequired": true
           }
         ]
-      },{
+      },
+      {
         "elements": [
           {
             "type": "panel",
@@ -637,7 +1092,8 @@
                 "html": "<h2>Living in the United States, Citizenship, Parents, and Relationship Status</h2>"
               }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_settledOtherRegions",
             "type": "checkbox",
             "title": "Have any generations of your family settled in any of the following regions? Check all that apply.",
@@ -646,236 +1102,723 @@
             "noneValue": "none",
             "noneText": "None of the above",
             "choices": [
-              {"text": "Africa (Nigeria, South Africa, Uganda)", "value": "africa"},
-              {"text": "Asia/Pacific Islands (Fiji, Indonesia, Malaysia, and/or Singapore)", "value":  "asiaPacific"},
-              {"text": "Canada", "value": "canada"},
-              {"text": "Caribbean (Guyana, Jamaica, Suriname, and Trinidad & Tobago)", "value": "carribean"},
-              {"text": "Europe", "value": "europe"},
-              {"text": "Middle East", "value": "middleEast"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": "Africa (Nigeria, South Africa, Uganda)",
+                "value": "africa"
+              },
+              {
+                "text": "Asia/Pacific Islands (Fiji, Indonesia, Malaysia, and/or Singapore)",
+                "value": "asiaPacific"
+              },
+              {
+                "text": "Canada",
+                "value": "canada"
+              },
+              {
+                "text": "Caribbean (Guyana, Jamaica, Suriname, and Trinidad & Tobago)",
+                "value": "carribean"
+              },
+              {
+                "text": "Europe",
+                "value": "europe"
+              },
+              {
+                "text": "Middle East",
+                "value": "middleEast"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
+              }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_continuousGenerations",
             "type": "radiogroup",
             "isRequired": true,
             "title": "We are interested in learning more about the South Asian Diaspora. Which of the following best applies to you?",
             "choices": [
-              {"text": "My great-grandparents or an older generation were the first to leave South Asia.", "value": "greatGrandparentsOrOlderLeft"},
-              {"text": "My grandparents were the first to leave South Asia.", "value": "grandparentsLeft"},
-              {"text": "My parents were the first to leave South Asia.", "value": "parentsLeft"},
-              {"text": "I was the first to leave South Asia.", "value": "firstToLeave"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": "My great-grandparents or an older generation were the first to leave South Asia.",
+                "value": "greatGrandparentsOrOlderLeft"
+              },
+              {
+                "text": "My grandparents were the first to leave South Asia.",
+                "value": "grandparentsLeft"
+              },
+              {
+                "text": "My parents were the first to leave South Asia.",
+                "value": "parentsLeft"
+              },
+              {
+                "text": "I was the first to leave South Asia.",
+                "value": "firstToLeave"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
+              }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_citizenship",
             "type": "checkbox",
             "isRequired": true,
             "title": "What is your citizenship status?",
             "description": "This type of question helps us to ensure we are surveying a diverse group of South Asians in the US",
             "choices": [
-              {"text": "US citizen", "value": "usCitizen"},
-              {"text": "Non-US citizenship", "value": "nonUSCitizenship"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": "US citizen",
+                "value": "usCitizen"
+              },
+              {
+                "text": "Non-US citizenship",
+                "value": "nonUSCitizenship"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
+              }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_citizenship_us",
             "type": "radiogroup",
             "isRequired": true,
             "title": "Which of the following best describes your US citizenship status?",
             "visibleIf": "{oh_oh_basic_citizenship} contains 'usCitizen'",
             "choices": [
-              {"text": "I am a US citizen by birth", "value": "usBornCitizen"},
-              {"text": "I am a naturalized US citizen", "value": "naturalizedUSCitizen"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": "I am a US citizen by birth",
+                "value": "usBornCitizen"
+              },
+              {
+                "text": "I am a naturalized US citizen",
+                "value": "naturalizedUSCitizen"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
+              }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_residencyInUS",
             "type": "radiogroup",
             "isRequired": true,
             "title": "When did you arrive the in the US?",
             "choices": [
-              {"text": "I was born in the US", "value": "bornInTheUs"},
-              {"text": "I came to the US after I was born", "value": "cameToTheUs"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": "I was born in the US",
+                "value": "bornInTheUs"
+              },
+              {
+                "text": "I came to the US after I was born",
+                "value": "cameToTheUs"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
+              }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_yearCameToUS",
             "type": "dropdown",
             "isRequired": true,
             "visibleIf": "{oh_oh_basic_residencyInUS} = 'cameToTheUs'",
             "title": "In what year did you come to live in the United States?",
             "choices": [
-              {"text": "1920", "value": "1920"},
-              {"text": "1921", "value": "1921"},
-              {"text": "1922", "value": "1922"},
-              {"text": "1923", "value": "1923"},
-              {"text": "1924", "value": "1924"},
-              {"text": "1925", "value": "1925"},
-              {"text": "1926", "value": "1926"},
-              {"text": "1927", "value": "1927"},
-              {"text": "1928", "value": "1928"},
-              {"text": "1929", "value": "1929"},
-              {"text": "1930", "value": "1930"},
-              {"text": "1931", "value": "1931"},
-              {"text": "1932", "value": "1932"},
-              {"text": "1933", "value": "1933"},
-              {"text": "1934", "value": "1934"},
-              {"text": "1935", "value": "1935"},
-              {"text": "1936", "value": "1936"},
-              {"text": "1937", "value": "1937"},
-              {"text": "1938", "value": "1938"},
-              {"text": "1939", "value": "1939"},
-              {"text": "1940", "value": "1940"},
-              {"text": "1941", "value": "1941"},
-              {"text": "1942", "value": "1942"},
-              {"text": "1943", "value": "1943"},
-              {"text": "1944", "value": "1944"},
-              {"text": "1945", "value": "1945"},
-              {"text": "1946", "value": "1946"},
-              {"text": "1947", "value": "1947"},
-              {"text": "1948", "value": "1948"},
-              {"text": "1949", "value": "1949"},
-              {"text": "1950", "value": "1950"},
-              {"text": "1951", "value": "1951"},
-              {"text": "1952", "value": "1952"},
-              {"text": "1953", "value": "1953"},
-              {"text": "1954", "value": "1954"},
-              {"text": "1955", "value": "1955"},
-              {"text": "1956", "value": "1956"},
-              {"text": "1957", "value": "1957"},
-              {"text": "1958", "value": "1958"},
-              {"text": "1959", "value": "1959"},
-              {"text": "1960", "value": "1960"},
-              {"text": "1961", "value": "1961"},
-              {"text": "1962", "value": "1962"},
-              {"text": "1963", "value": "1963"},
-              {"text": "1964", "value": "1964"},
-              {"text": "1965", "value": "1965"},
-              {"text": "1966", "value": "1966"},
-              {"text": "1967", "value": "1967"},
-              {"text": "1968", "value": "1968"},
-              {"text": "1969", "value": "1969"},
-              {"text": "1970", "value": "1970"},
-              {"text": "1971", "value": "1971"},
-              {"text": "1972", "value": "1972"},
-              {"text": "1973", "value": "1973"},
-              {"text": "1974", "value": "1974"},
-              {"text": "1975", "value": "1975"},
-              {"text": "1976", "value": "1976"},
-              {"text": "1977", "value": "1977"},
-              {"text": "1978", "value": "1978"},
-              {"text": "1979", "value": "1979"},
-              {"text": "1980", "value": "1980"},
-              {"text": "1981", "value": "1981"},
-              {"text": "1982", "value": "1982"},
-              {"text": "1983", "value": "1983"},
-              {"text": "1984", "value": "1984"},
-              {"text": "1985", "value": "1985"},
-              {"text": "1986", "value": "1986"},
-              {"text": "1987", "value": "1987"},
-              {"text": "1988", "value": "1988"},
-              {"text": "1989", "value": "1989"},
-              {"text": "1990", "value": "1990"},
-              {"text": "1991", "value": "1991"},
-              {"text": "1992", "value": "1992"},
-              {"text": "1993", "value": "1993"},
-              {"text": "1994", "value": "1994"},
-              {"text": "1995", "value": "1995"},
-              {"text": "1996", "value": "1996"},
-              {"text": "1997", "value": "1997"},
-              {"text": "1998", "value": "1998"},
-              {"text": "1999", "value": "1999"},
-              {"text": "2000", "value": "2000"},
-              {"text": "2001", "value": "2001"},
-              {"text": "2002", "value": "2002"},
-              {"text": "2003", "value": "2003"},
-              {"text": "2004", "value": "2004"},
-              {"text": "2005", "value": "2005"},
-              {"text": "2006", "value": "2006"},
-              {"text": "2007", "value": "2007"},
-              {"text": "2008", "value": "2008"},
-              {"text": "2009", "value": "2009"},
-              {"text": "2010", "value": "2010"},
-              {"text": "2011", "value": "2011"},
-              {"text": "2012", "value": "2012"},
-              {"text": "2013", "value": "2013"},
-              {"text": "2014", "value": "2014"},
-              {"text": "2015", "value": "2015"},
-              {"text": "2016", "value": "2016"},
-              {"text": "2017", "value": "2017"},
-              {"text": "2018", "value": "2018"},
-              {"text": "2019", "value": "2019"},
-              {"text": "2020", "value": "2020"},
-              {"text": "2021", "value": "2021"},
-              {"text": "2022", "value": "2022"},
-              {"text": "2023", "value": "2023"},
-              {"text": "2024", "value": "2024"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": "1920",
+                "value": "1920"
+              },
+              {
+                "text": "1921",
+                "value": "1921"
+              },
+              {
+                "text": "1922",
+                "value": "1922"
+              },
+              {
+                "text": "1923",
+                "value": "1923"
+              },
+              {
+                "text": "1924",
+                "value": "1924"
+              },
+              {
+                "text": "1925",
+                "value": "1925"
+              },
+              {
+                "text": "1926",
+                "value": "1926"
+              },
+              {
+                "text": "1927",
+                "value": "1927"
+              },
+              {
+                "text": "1928",
+                "value": "1928"
+              },
+              {
+                "text": "1929",
+                "value": "1929"
+              },
+              {
+                "text": "1930",
+                "value": "1930"
+              },
+              {
+                "text": "1931",
+                "value": "1931"
+              },
+              {
+                "text": "1932",
+                "value": "1932"
+              },
+              {
+                "text": "1933",
+                "value": "1933"
+              },
+              {
+                "text": "1934",
+                "value": "1934"
+              },
+              {
+                "text": "1935",
+                "value": "1935"
+              },
+              {
+                "text": "1936",
+                "value": "1936"
+              },
+              {
+                "text": "1937",
+                "value": "1937"
+              },
+              {
+                "text": "1938",
+                "value": "1938"
+              },
+              {
+                "text": "1939",
+                "value": "1939"
+              },
+              {
+                "text": "1940",
+                "value": "1940"
+              },
+              {
+                "text": "1941",
+                "value": "1941"
+              },
+              {
+                "text": "1942",
+                "value": "1942"
+              },
+              {
+                "text": "1943",
+                "value": "1943"
+              },
+              {
+                "text": "1944",
+                "value": "1944"
+              },
+              {
+                "text": "1945",
+                "value": "1945"
+              },
+              {
+                "text": "1946",
+                "value": "1946"
+              },
+              {
+                "text": "1947",
+                "value": "1947"
+              },
+              {
+                "text": "1948",
+                "value": "1948"
+              },
+              {
+                "text": "1949",
+                "value": "1949"
+              },
+              {
+                "text": "1950",
+                "value": "1950"
+              },
+              {
+                "text": "1951",
+                "value": "1951"
+              },
+              {
+                "text": "1952",
+                "value": "1952"
+              },
+              {
+                "text": "1953",
+                "value": "1953"
+              },
+              {
+                "text": "1954",
+                "value": "1954"
+              },
+              {
+                "text": "1955",
+                "value": "1955"
+              },
+              {
+                "text": "1956",
+                "value": "1956"
+              },
+              {
+                "text": "1957",
+                "value": "1957"
+              },
+              {
+                "text": "1958",
+                "value": "1958"
+              },
+              {
+                "text": "1959",
+                "value": "1959"
+              },
+              {
+                "text": "1960",
+                "value": "1960"
+              },
+              {
+                "text": "1961",
+                "value": "1961"
+              },
+              {
+                "text": "1962",
+                "value": "1962"
+              },
+              {
+                "text": "1963",
+                "value": "1963"
+              },
+              {
+                "text": "1964",
+                "value": "1964"
+              },
+              {
+                "text": "1965",
+                "value": "1965"
+              },
+              {
+                "text": "1966",
+                "value": "1966"
+              },
+              {
+                "text": "1967",
+                "value": "1967"
+              },
+              {
+                "text": "1968",
+                "value": "1968"
+              },
+              {
+                "text": "1969",
+                "value": "1969"
+              },
+              {
+                "text": "1970",
+                "value": "1970"
+              },
+              {
+                "text": "1971",
+                "value": "1971"
+              },
+              {
+                "text": "1972",
+                "value": "1972"
+              },
+              {
+                "text": "1973",
+                "value": "1973"
+              },
+              {
+                "text": "1974",
+                "value": "1974"
+              },
+              {
+                "text": "1975",
+                "value": "1975"
+              },
+              {
+                "text": "1976",
+                "value": "1976"
+              },
+              {
+                "text": "1977",
+                "value": "1977"
+              },
+              {
+                "text": "1978",
+                "value": "1978"
+              },
+              {
+                "text": "1979",
+                "value": "1979"
+              },
+              {
+                "text": "1980",
+                "value": "1980"
+              },
+              {
+                "text": "1981",
+                "value": "1981"
+              },
+              {
+                "text": "1982",
+                "value": "1982"
+              },
+              {
+                "text": "1983",
+                "value": "1983"
+              },
+              {
+                "text": "1984",
+                "value": "1984"
+              },
+              {
+                "text": "1985",
+                "value": "1985"
+              },
+              {
+                "text": "1986",
+                "value": "1986"
+              },
+              {
+                "text": "1987",
+                "value": "1987"
+              },
+              {
+                "text": "1988",
+                "value": "1988"
+              },
+              {
+                "text": "1989",
+                "value": "1989"
+              },
+              {
+                "text": "1990",
+                "value": "1990"
+              },
+              {
+                "text": "1991",
+                "value": "1991"
+              },
+              {
+                "text": "1992",
+                "value": "1992"
+              },
+              {
+                "text": "1993",
+                "value": "1993"
+              },
+              {
+                "text": "1994",
+                "value": "1994"
+              },
+              {
+                "text": "1995",
+                "value": "1995"
+              },
+              {
+                "text": "1996",
+                "value": "1996"
+              },
+              {
+                "text": "1997",
+                "value": "1997"
+              },
+              {
+                "text": "1998",
+                "value": "1998"
+              },
+              {
+                "text": "1999",
+                "value": "1999"
+              },
+              {
+                "text": "2000",
+                "value": "2000"
+              },
+              {
+                "text": "2001",
+                "value": "2001"
+              },
+              {
+                "text": "2002",
+                "value": "2002"
+              },
+              {
+                "text": "2003",
+                "value": "2003"
+              },
+              {
+                "text": "2004",
+                "value": "2004"
+              },
+              {
+                "text": "2005",
+                "value": "2005"
+              },
+              {
+                "text": "2006",
+                "value": "2006"
+              },
+              {
+                "text": "2007",
+                "value": "2007"
+              },
+              {
+                "text": "2008",
+                "value": "2008"
+              },
+              {
+                "text": "2009",
+                "value": "2009"
+              },
+              {
+                "text": "2010",
+                "value": "2010"
+              },
+              {
+                "text": "2011",
+                "value": "2011"
+              },
+              {
+                "text": "2012",
+                "value": "2012"
+              },
+              {
+                "text": "2013",
+                "value": "2013"
+              },
+              {
+                "text": "2014",
+                "value": "2014"
+              },
+              {
+                "text": "2015",
+                "value": "2015"
+              },
+              {
+                "text": "2016",
+                "value": "2016"
+              },
+              {
+                "text": "2017",
+                "value": "2017"
+              },
+              {
+                "text": "2018",
+                "value": "2018"
+              },
+              {
+                "text": "2019",
+                "value": "2019"
+              },
+              {
+                "text": "2020",
+                "value": "2020"
+              },
+              {
+                "text": "2021",
+                "value": "2021"
+              },
+              {
+                "text": "2022",
+                "value": "2022"
+              },
+              {
+                "text": "2023",
+                "value": "2023"
+              },
+              {
+                "text": "2024",
+                "value": "2024"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
+              }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_parentsRelated",
             "type": "radiogroup",
             "isRequired": true,
-            "title": "Are your parents related by blood? ",
+            "title": "Are your parents related to each other by blood? ",
             "choices": [
-              {"text": "Yes", "value": "yes"},
-              {"text": "No", "value": "no"},
-              {"text": "Not sure", "value": "unsure"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": "Yes",
+                "value": "yes"
+              },
+              {
+                "text": "No",
+                "value": "no"
+              },
+              {
+                "text": "Not sure",
+                "value": "unsure"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
+              }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_parentsRelatedHow",
             "type": "radiogroup",
             "isRequired": true,
             "title": "How were your parents related? ",
             "visibleIf": "{oh_oh_basic_parentsRelated} = 'yes'",
             "choices": [
-              {"text": "First cousins", "value": "firstCousins"},
-              {"text": "Other relationship", "value": "otherRelationship"},
-              {"text": "Not sure", "value": "unsure"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": "First cousins",
+                "value": "firstCousins"
+              },
+              {
+                "text": "Other relationship",
+                "value": "otherRelationship"
+              },
+              {
+                "text": "Not sure",
+                "value": "unsure"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
+              }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_maritalStatus",
             "type": "radiogroup",
             "isRequired": true,
             "title": "What is your marital status? ",
             "choices": [
-              {"text": "Single", "value": "single"},
-              {"text": "Married", "value": "married"},
-              {"text": "Long-term partner/domestic partnership", "value": "longTermPartner"},
-              {"text": "Divorced/Separated", "value": "divorcedSeparated"},
-              {"text": "Widowed", "value": "widowed"},
-              {"text": "Other", "value": "other"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": "Single",
+                "value": "single"
+              },
+              {
+                "text": "Married",
+                "value": "married"
+              },
+              {
+                "text": "Long-term partner/domestic partnership",
+                "value": "longTermPartner"
+              },
+              {
+                "text": "Divorced/Separated",
+                "value": "divorcedSeparated"
+              },
+              {
+                "text": "Widowed",
+                "value": "widowed"
+              },
+              {
+                "text": "Other",
+                "value": "other"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
+              }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_otherPeopleAtHome",
             "type": "dropdown",
             "isRequired": true,
             "title": "Not including yourself, how many other people live at home with you?",
             "choices": [
-              {"text": "0", "value": "0"},
-              {"text": "1", "value": "1"},
-              {"text": "2", "value": "2"},
-              {"text": "3", "value": "3"},
-              {"text": "4", "value": "4"},
-              {"text": "5", "value": "5"},
-              {"text": "6", "value": "6"},
-              {"text": "7", "value": "7"},
-              {"text": "8", "value": "8"},
-              {"text": "9", "value": "9"},
-              {"text": "10", "value": "10"},
-              {"text": "11", "value": "11"},
-              {"text": "12", "value": "12"},
-              {"text": "13", "value": "13"},
-              {"text": "14", "value": "14"},
-              {"text": "15", "value": "15"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": "0",
+                "value": "0"
+              },
+              {
+                "text": "1",
+                "value": "1"
+              },
+              {
+                "text": "2",
+                "value": "2"
+              },
+              {
+                "text": "3",
+                "value": "3"
+              },
+              {
+                "text": "4",
+                "value": "4"
+              },
+              {
+                "text": "5",
+                "value": "5"
+              },
+              {
+                "text": "6",
+                "value": "6"
+              },
+              {
+                "text": "7",
+                "value": "7"
+              },
+              {
+                "text": "8",
+                "value": "8"
+              },
+              {
+                "text": "9",
+                "value": "9"
+              },
+              {
+                "text": "10",
+                "value": "10"
+              },
+              {
+                "text": "11",
+                "value": "11"
+              },
+              {
+                "text": "12",
+                "value": "12"
+              },
+              {
+                "text": "13",
+                "value": "13"
+              },
+              {
+                "text": "14",
+                "value": "14"
+              },
+              {
+                "text": "15",
+                "value": "15"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
+              }
             ]
           }
         ]
-      }, {
+      },
+      {
         "elements": [
           {
             "type": "panel",
@@ -900,31 +1843,75 @@
             "noneText": "Prefer not to answer",
             "noneValue": "preferNoAnswer",
             "choices": [
-              {"text": "Buddhist", "value": "buddhist"},
-              {"text": "Christian", "value": "christian"},
-              {"text": "Hindu", "value": "hindu"},
-              {"text": "Jain", "value": "jain"},
-              {"text": "Jewish", "value": "jewish"},
-              {"text": "Muslim", "value": "muslim"},
-              {"text": "Sikh", "value": "sikh"},
-              {"text": "Zoroastrian", "value": "zoroastrian"},
-              {"text": "Atheist/Agnostic", "value": "atheistAgnostic"}
+              {
+                "text": "Buddhist",
+                "value": "buddhist"
+              },
+              {
+                "text": "Christian",
+                "value": "christian"
+              },
+              {
+                "text": "Hindu",
+                "value": "hindu"
+              },
+              {
+                "text": "Jain",
+                "value": "jain"
+              },
+              {
+                "text": "Jewish",
+                "value": "jewish"
+              },
+              {
+                "text": "Muslim",
+                "value": "muslim"
+              },
+              {
+                "text": "Sikh",
+                "value": "sikh"
+              },
+              {
+                "text": "Zoroastrian",
+                "value": "zoroastrian"
+              },
+              {
+                "text": "Atheist/Agnostic",
+                "value": "atheistAgnostic"
+              }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_howImportantReligion",
             "type": "radiogroup",
             "title": "How important is religion in your life? ",
             "isRequired": true,
             "choices": [
-              {"text": "Very important", "value": "veryImportant"},
-              {"text": "Somewhat important", "value": "somewhatImportant"},
-              {"text": "A little important", "value": "aLittleImportant"},
-              {"text": "Not at all important", "value": "notAtAllImportant"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": "Very important",
+                "value": "veryImportant"
+              },
+              {
+                "text": "Somewhat important",
+                "value": "somewhatImportant"
+              },
+              {
+                "text": "A little important",
+                "value": "aLittleImportant"
+              },
+              {
+                "text": "Not at all important",
+                "value": "notAtAllImportant"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
+              }
             ]
           }
         ]
-      },{
+      },
+      {
         "elements": [
           {
             "type": "panel",
@@ -942,15 +1929,42 @@
             "isRequired": true,
             "title": "What is the highest grade or year of school you completed? ",
             "choices": [
-              {"text": "Never attended school or only attended kindergarten", "value": "neverAttendedSchool"},
-              {"text": "Grades 1 through 4 (Primary)", "value": "primary"},
-              {"text": "Grades 5 through 8 (Middle school)", "value": "middleSchool"},
-              {"text": "Grades 9 through 11 (Some high school)", "value": "someHighSchool"},
-              {"text": "Grade 12 or GED (High school graduate)", "value": "highSchoolGraduate"},
-              {"text": "1 to 3 years after high school (Some college, Associate’s degree, or technical school)", "value": "someCollege"},
-              {"text": "College 4 years or more (College graduate)", "value": "collegeGraduate"},
-              {"text": "Advanced degree (Master’s, Doctorate, etc.)", "value": "advancedDegree"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": "Never attended school or only attended kindergarten",
+                "value": "neverAttendedSchool"
+              },
+              {
+                "text": "Grades 1 through 4 (Primary)",
+                "value": "primary"
+              },
+              {
+                "text": "Grades 5 through 8 (Middle school)",
+                "value": "middleSchool"
+              },
+              {
+                "text": "Grades 9 through 11 (Some high school)",
+                "value": "someHighSchool"
+              },
+              {
+                "text": "Grade 12 or GED (High school graduate)",
+                "value": "highSchoolGraduate"
+              },
+              {
+                "text": "1 to 3 years after high school (Some college, Associate’s degree, or technical school)",
+                "value": "someCollege"
+              },
+              {
+                "text": "College 4 years or more (College graduate)",
+                "value": "collegeGraduate"
+              },
+              {
+                "text": "Advanced degree (Master’s, Doctorate, etc.)",
+                "value": "advancedDegree"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
+              }
             ]
           },
           {
@@ -962,57 +1976,144 @@
             "noneText": "None of the above",
             "noneValue": "noneOfAbove",
             "choices": [
-              {"text": "Paid employment or self employed", "value": "paidEmploymentOrSelfEmployed"},
-              {"text": "Retired", "value": "retired"},
-              {"text": "Unemployed and looking for work", "value": "unemployedAndLooking"},
-              {"text": "Looking after home or family", "value": "lookingAfterHomeOrFamily"},
-              {"text": "Unable to work due to sickness or disability", "value": "unableToWork"},
-              {"text": "Full or Part Time student", "value": "fullOrPartTimeStudent"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": "Paid employment or self employed",
+                "value": "paidEmploymentOrSelfEmployed"
+              },
+              {
+                "text": "Retired",
+                "value": "retired"
+              },
+              {
+                "text": "Unemployed and looking for work",
+                "value": "unemployedAndLooking"
+              },
+              {
+                "text": "Looking after home or family",
+                "value": "lookingAfterHomeOrFamily"
+              },
+              {
+                "text": "Unable to work due to sickness or disability",
+                "value": "unableToWork"
+              },
+              {
+                "text": "Full or Part Time student",
+                "value": "fullOrPartTimeStudent"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
+              }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_householdIncome",
             "type": "radiogroup",
             "title": "One of the things we're trying to understand is how people's income may affect their use of health services.\n\nWhat is your annual household income from all sources? Household income includes your income plus the income of all family members in your household for the last calendar year. Include all wages and other sources of income.",
             "isRequired": true,
             "choices": [
-              {"text": "Less than $25,000", "value": "lessThan25k"},
-              {"text": "$25,000-$49,999", "value": "25to49k"},
-              {"text": "$50,000-$99,999", "value": "50to99k"},
-              {"text": "$100,000-$199,999", "value": "100kTo199k"},
-              {"text": "$200,000-$999,999", "value": "200kTo1m"},
-              {"text": "More than $1,000,000", "value": "moreThan1m"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": "Less than $25,000",
+                "value": "lessThan25k"
+              },
+              {
+                "text": "$25,000-$49,999",
+                "value": "25to49k"
+              },
+              {
+                "text": "$50,000-$99,999",
+                "value": "50to99k"
+              },
+              {
+                "text": "$100,000-$199,999",
+                "value": "100kTo199k"
+              },
+              {
+                "text": "$200,000-$999,999",
+                "value": "200kTo1m"
+              },
+              {
+                "text": "More than $1,000,000",
+                "value": "moreThan1m"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
+              }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_ownOrRent",
             "type": "radiogroup",
             "title": "Do you own or rent the place where you live? ",
             "isRequired": true,
             "choices": [
-              {"text": "Own", "value": "own"},
-              {"text": "Rent", "value": "rent"},
-              {"text": "Live with family (I am not the homeowner and do not pay rent)", "value": "liveWithFamily"},
-              {"text": "Other arrangement", "value": "other"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": "Own",
+                "value": "own"
+              },
+              {
+                "text": "Rent",
+                "value": "rent"
+              },
+              {
+                "text": "Live with family (I am not the homeowner and do not pay rent)",
+                "value": "liveWithFamily"
+              },
+              {
+                "text": "Other arrangement",
+                "value": "other"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
+              }
             ]
-          },{
+          },
+          {
             "name": "oh_oh_basic_currentLivingLocation",
             "type": "radiogroup",
             "title": "Where are you currently living? ",
             "isRequired": true,
             "visibleIf": "{oh_oh_basic_ownOrRent} = 'other'",
             "choices": [
-              {"text": "With a friend/roommate", "value": "friendRoommate"},
-              {"text": "In a group home, nursing home, or other residential facility", "value": "residentialFacility"},
-              {"text": "Emergency shelter/homeless shelter", "value": "shelter"},
-              {"text": "Anywhere outside (e.g., street, vehicle, abandoned building)", "value": "anywhereOutside"},
-              {"text": "Other", "value": "other"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": "With a friend/roommate",
+                "value": "friendRoommate"
+              },
+              {
+                "text": "In a group home, nursing home, or other residential facility",
+                "value": "residentialFacility"
+              },
+              {
+                "text": "Emergency shelter/homeless shelter",
+                "value": "shelter"
+              },
+              {
+                "text": "Anywhere outside (e.g., street, vehicle, abandoned building)",
+                "value": "anywhereOutside"
+              },
+              {
+                "text": "Other",
+                "value": "other"
+              },
+              {
+                "text": "Prefer not to answer",
+                "value": "preferNoAnswer"
+              }
             ]
           }
         ]
       }
-    ]
+    ],
+    "calculatedValues": [{
+      "name": "oh_oh_basic_weight",
+      "includeIntoResult": true,
+      "expression": "iif({oh_oh_basic_weightUnit} = 'lbs', {oh_oh_basic_rawWeight} * 0.453592, {oh_oh_basic_rawWeight} * 1)"
+    },{
+      "name": "oh_oh_basic_height",
+      "includeIntoResult": true,
+      "expression": "iif({oh_oh_basic_heightUnit} = 'in', ({oh_oh_basic_rawHeightFeet} * 12 + {oh_oh_basic_rawHeightInches}) * 2.54, {oh_oh_basic_rawHeightCm} * 1)"
+    }]
   }
 }

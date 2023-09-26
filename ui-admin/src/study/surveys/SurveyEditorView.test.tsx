@@ -1,8 +1,9 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import SurveyEditorView from './SurveyEditorView'
-import { getFormDraftKey } from '../../forms/designer/utils/formDraftUtils'
+import { getFormDraftKey } from 'forms/designer/utils/formDraftUtils'
 import { VersionedForm } from '@juniper/ui-core'
+import { mockStudyEnvContext } from 'test-utils/mocking-utils'
 
 describe('SurveyEditorView', () => {
   const mockForm: VersionedForm = {
@@ -23,6 +24,7 @@ describe('SurveyEditorView', () => {
     jest.spyOn(Storage.prototype, 'getItem')
 
     render(<SurveyEditorView
+      studyEnvContext={mockStudyEnvContext()}
       currentForm={mockForm}
       onCancel={jest.fn()}
       onSave={jest.fn()}
@@ -40,6 +42,7 @@ describe('SurveyEditorView', () => {
     jest.spyOn(Storage.prototype, 'getItem')
 
     render(<SurveyEditorView
+      studyEnvContext={mockStudyEnvContext()}
       currentForm={mockForm}
       onCancel={jest.fn()}
       onSave={jest.fn()}
@@ -48,5 +51,23 @@ describe('SurveyEditorView', () => {
     //Assert
     expect(localStorage.getItem).toHaveBeenCalledWith(FORM_DRAFT_KEY)
     expect(screen.queryByText('Survey Draft Loaded')).not.toBeInTheDocument()
+  })
+
+  test('allows the user to download the JSON file', async () => {
+    //Arrange
+    render(<SurveyEditorView
+      studyEnvContext={mockStudyEnvContext()}
+      currentForm={mockForm}
+      onCancel={jest.fn()}
+      onSave={jest.fn()}
+    />)
+
+    //Act
+    const downloadButton = screen.getByRole('button', { name: 'Download JSON' })
+    downloadButton.click()
+
+    //Assert
+    expect(downloadButton).toBeInTheDocument()
+    expect(downloadButton).toBeEnabled()
   })
 })

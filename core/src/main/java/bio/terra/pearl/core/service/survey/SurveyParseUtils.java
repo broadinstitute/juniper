@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.survey;
 
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
@@ -9,6 +10,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SurveyParseUtils {
     public static final String SURVEY_JS_CHECKBOX_TYPE = "checkbox";
@@ -18,6 +21,7 @@ public class SurveyParseUtils {
     public static final String SURVEY_JS_SHOW_NONE = "showNoneItem";
     public static final String SURVEY_JS_NONE_VALUE_PROP = "noneValue";
     public static final String SURVEY_JS_NONE_TEXT_PROP = "noneText";
+    public static final String DERIVED_QUESTION_TYPE = "derived";
 
 /** recursively gets all questions from the given node */
     public static List<JsonNode> getAllQuestions(JsonNode containerElement) {
@@ -32,7 +36,8 @@ public class SurveyParseUtils {
     }
 
     public static SurveyQuestionDefinition unmarshalSurveyQuestion(Survey survey, JsonNode question,
-                                                                   Map<String, JsonNode> questionTemplates, int globalOrder) {
+                                                                   Map<String, JsonNode> questionTemplates,
+                                                                   int globalOrder, boolean isDerived) {
 
         SurveyQuestionDefinition definition = SurveyQuestionDefinition.builder()
                 .surveyId(survey.getId())
@@ -49,7 +54,7 @@ public class SurveyParseUtils {
                 questionTemplates.get(question.get("questionTemplateName").asText()) :
                 question;
 
-        definition.setQuestionType(templatedQuestion.get("type").asText());
+        definition.setQuestionType(isDerived ? DERIVED_QUESTION_TYPE : templatedQuestion.get("type").asText());
         if (definition.getQuestionType().equals(SURVEY_JS_CHECKBOX_TYPE)) {
             definition.setAllowMultiple(true);
         }
@@ -109,6 +114,34 @@ public class SurveyParseUtils {
         }
 
         return result;
+    }
+
+
+    /** gets any calculated value nodes that should be included in results */
+    public static List<JsonNode> getCalculatedValues(JsonNode surveyJsDef) {
+        List<JsonNode> calculatedValues = new ArrayList<>();
+        if(surveyJsDef.has("calculatedValues")) {
+            for (JsonNode val : surveyJsDef.get("calculatedValues")) {
+                if (Boolean.TRUE.equals(val.get("includeIntoResult").asBoolean())) {
+                    calculatedValues.add(val);
+                }
+            }
+        }
+        return calculatedValues;
+    }
+
+
+    public static final Pattern EXPRESSION_DEPENDENCY = Pattern.compile(".*\\{(.+?)\\}.*");
+
+    /** returns the last stableId that this calculatedValue is dependent on, or null
+     * if it is independent.
+     * e.g. if the expression is "{heightInInches} * 2.54", this will return "heightInInches"
+     */
+    public static String getUpstreamStableId(JsonNode calculatedValue) {
+        String expression = calculatedValue.get("expression").asText();
+        Matcher matcher = EXPRESSION_DEPENDENCY.matcher(expression);
+        matcher.find();
+        return matcher.matches() ? matcher.group(1).trim() : null;
     }
 
 }

@@ -15,6 +15,7 @@ test('renders the help menu', async () => {
   expect(screen.getByTitle('help menu')).toBeInTheDocument()
   userEvent.click(screen.getByTitle('help menu'))
   expect(screen.getByText('Contact support')).toBeInTheDocument()
+  expect(screen.getByText('Help pages')).toHaveAttribute('href', 'https://broad-juniper.zendesk.com')
 })
 
 test('renders the user menu', async () => {

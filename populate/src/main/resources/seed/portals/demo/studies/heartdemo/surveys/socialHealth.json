@@ -2,6 +2,7 @@
   "stableId": "hd_hd_socialHealth",
   "version": 1,
   "name": "Social Determinants of Health",
+  "publishedVersion": 1,
   "jsonContent": {
     "showProgressBar": "bottom",
     "showQuestionNumbers": "off",

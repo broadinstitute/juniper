@@ -316,7 +316,7 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async submitSurveyResponse({
+  async updateSurveyResponse({
     studyShortcode, stableId, version, enrolleeShortcode, response, taskId,
     alertErrors=true
   }: {
@@ -329,7 +329,7 @@ export default {
       url = `${url}?taskId=${taskId}`
     }
     const result = await fetch(url, {
-      method: 'POST',
+      method: 'PATCH',
       headers: this.getInitHeaders(),
       body: JSON.stringify(response)
     })

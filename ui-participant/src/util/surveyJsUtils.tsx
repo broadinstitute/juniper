@@ -158,11 +158,19 @@ export type SurveyJsItem = {
 
 export type SurveyJsValueType = string | boolean | number | object | null
 
-/** get resumeData suitable for including on a form response, current a map of userId -> data */
-export function getResumeData(surveyJSModel: SurveyModel, participantUserId: string | null): string {
+/**
+ * get resumeData suitable for including on a form response, current a map of userId -> data
+ * resetPageNumber can be set to true for cases where the user will expect to go back to the beginning
+ * of the survey next time they visit it (such as after completing a survey)
+ * */
+export function getResumeData(surveyJSModel: SurveyModel,
+  participantUserId: string | null,
+  resetPageNumber = false): string {
   const resumeData: Record<string, UserResumeData> = {}
   if (participantUserId) {
-    resumeData[participantUserId] = { currentPageNo: surveyJSModel.currentPageNo + 1 }
+    // if this is a complete submission, the user will expect to come back to the beginning
+    const currentPageNo = resetPageNumber ? 1 : surveyJSModel.currentPageNo + 1
+    resumeData[participantUserId] = { currentPageNo }
   }
   return JSON.stringify(resumeData)
 }
@@ -212,4 +220,18 @@ export function getUpdatedAnswers(original: Record<string, SurveyJsValueType>,
   const dedupedKeys = Array.from(new Set(updatedKeys).values())
 
   return dedupedKeys.map(key => makeAnswer(updated[key], key, updated))
+}
+
+/** get a merge of both the explicit answer data and the calculated values */
+export function getDataWithCalculatedValues(model: SurveyModel) {
+  const calculatedHash: Record<string, object> = {}
+  model.calculatedValues.forEach(val => {
+    if (val.includeIntoResult) {
+      calculatedHash[val.name] = val.value
+    }
+  })
+  return {
+    ...model.data,
+    ...calculatedHash
+  }
 }

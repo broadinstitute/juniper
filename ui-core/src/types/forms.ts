@@ -2,6 +2,7 @@ export type VersionedForm = {
   id: string
   stableId: string
   version: number
+  publishedVersion?: number
   name: string
   createdAt: number
   lastUpdatedAt: number

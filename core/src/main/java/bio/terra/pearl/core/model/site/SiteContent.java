@@ -16,6 +16,7 @@ import java.util.*;
 public class SiteContent extends BaseEntity implements Versioned {
     private String stableId;
     private int version;
+    private Integer publishedVersion;
     @Builder.Default
     private List<LocalizedSiteContent> localizedSiteContents = new ArrayList<>();
     @Builder.Default

@@ -36,6 +36,8 @@ public class StudyEnvironmentConsent extends BaseEntity implements VersionedEnti
         return consentForm;
     }
     @Override
+    public UUID versionedEntityId() { return consentFormId; }
+    @Override
     public void updateVersionedEntityId(UUID consentId) {
         setConsentFormId(consentId);
     }

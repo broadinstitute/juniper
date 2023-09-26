@@ -8,41 +8,48 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Validator;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class LivePepperDSMClient implements PepperDSMClient {
     private final PepperDSMConfig pepperDSMConfig;
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
+    private final Validator validator;
 
     public LivePepperDSMClient(PepperDSMConfig pepperDSMConfig,
                                WebClient.Builder webClientBuilder,
-                               ObjectMapper objectMapper) {
+                               ObjectMapper objectMapper,
+                               Validator validator) {
         this.pepperDSMConfig = pepperDSMConfig;
         this.webClient = webClientBuilder.build();
         this.objectMapper = objectMapper;
+        this.validator = validator;
     }
 
     @Override
-    public String sendKitRequest(Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
-        var request = buildAuthedPostRequest("shipKit", makeKitRequestBody(enrollee, kitRequest, address));
+    public String sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
+        var request = buildAuthedPostRequest("shipKit", makeKitRequestBody(studyShortcode, enrollee, kitRequest, address));
         return retrieveAndDeserializeResponse(request, String.class);
     }
 
     @Override
     public PepperKitStatus fetchKitStatus(UUID kitRequestId) {
-        var request = buildAuthedGetRequest("kitStatus/kit/%s".formatted(kitRequestId));
+        // TODO: change "juniperKit" to "juniperkit" after DSM updates this path
+        var request = buildAuthedGetRequest("kitstatus/juniperKit/%s".formatted(kitRequestId));
         var response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
         if (response.getKits().length != 1) {
             throw new PepperException("Expected a single result from fetchKitStatus by ID (%s), got %d".formatted(
@@ -53,7 +60,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
 
     @Override
     public Collection<PepperKitStatus> fetchKitStatusByStudy(String studyShortcode) {
-        var request = buildAuthedGetRequest("kitStatus/study/%s".formatted(makePepperStudyName(studyShortcode)));
+        var request = buildAuthedGetRequest("kitstatus/study/%s".formatted(makePepperStudyName(studyShortcode)));
         var response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
         return Arrays.asList(response.getKits());
     }
@@ -62,7 +69,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
         return "juniper-" + studyShortcode;
     }
 
-    private String makeKitRequestBody(Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
+    private String makeKitRequestBody(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
         var juniperKitRequest = PepperDSMKitRequest.JuniperKitRequest.builderWithAddress(address)
                 .juniperKitId(kitRequest.getId().toString())
                 .juniperParticipantId(enrollee.getShortcode())
@@ -70,7 +77,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
         var pepperDSMKitRequest = PepperDSMKitRequest.builder()
                 .juniperKitRequest(juniperKitRequest)
                 .kitType(kitRequest.getKitType().getName())
-                .juniperStudyId("Juniper-mock-guid")
+                .juniperStudyId("juniper-%s".formatted(studyShortcode))
                 .build();
 
         try {
@@ -108,6 +115,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
         var now = System.currentTimeMillis();
         var fifteenMinutes = 15 * 60 * 1000;
         return JWT.create()
+                .withIssuer(pepperDSMConfig.getIssuerClaim())
                 .withExpiresAt(Instant.ofEpochMilli(now + fifteenMinutes))
                 .sign(Algorithm.HMAC256(pepperDSMConfig.getSecret()));
     }
@@ -154,7 +162,9 @@ public class LivePepperDSMClient implements PepperDSMClient {
                 return Mono.just(clazz.cast(body));
             }
             try {
-                return Mono.just(objectMapper.readValue(body, clazz));
+                var object = objectMapper.readValue(body, clazz);
+                validate(object, clazz, body);
+                return Mono.just(object);
             } catch (JsonProcessingException e) {
                 return Mono.error(new PepperException(
                         "Unable to parse response from Pepper as %s: %s".formatted(clazz.getName(), body), e));
@@ -162,15 +172,36 @@ public class LivePepperDSMClient implements PepperDSMClient {
         };
     }
 
+    /** Validate returned object based on javax.validation annotations. */
+    private <T> void validate(Object object, Class<T> clazz, String body) {
+        var violations = validator.validate(object);
+        if (!violations.isEmpty()) {
+            throw new PepperException(
+                    "Unexpected %s from Pepper: %s; %s".formatted(
+                            clazz.getName(),
+                            body,
+                            violations.stream()
+                                    .map(violation -> "%s %s".formatted(
+                                            violation.getPropertyPath(),
+                                            violation.getMessage()))
+                                    .collect(Collectors.joining(", "))));
+        }
+    }
+
     @Component
     @Getter
     @Setter
     public static class PepperDSMConfig {
+        @Accessors(fluent = true)
+        private boolean useLiveDsm = false;
         private String basePath;
+        private String issuerClaim;
         private String secret;
 
         public PepperDSMConfig(Environment environment) {
+            this.useLiveDsm = environment.getProperty("env.dsm.useLiveDsm", Boolean.class, false);
             this.basePath = environment.getProperty("env.dsm.basePath");
+            this.issuerClaim = environment.getProperty("env.dsm.issuerClaim");
             this.secret = environment.getProperty("env.dsm.secret");
         }
     }

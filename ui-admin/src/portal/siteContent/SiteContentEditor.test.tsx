@@ -5,13 +5,16 @@ import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen, waitFor } from '@testing-library/react'
 import { emptyApi, mockSiteContent } from 'test-utils/mock-site-content'
 import userEvent from '@testing-library/user-event'
+import { mockPortalEnvironment } from '../../test-utils/mocking-utils'
 
 test('enables live-preview text editing', async () => {
   const siteContent = mockSiteContent()
   const createNewVersionFunc = jest.fn()
   const { RoutedComponent } = setupRouterTest(
-    <SiteContentEditor siteContent={siteContent} previewApi={emptyApi}
-      loadSiteContent={jest.fn()} createNewVersion={createNewVersionFunc} portalShortcode="foo"/>)
+    <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
+      loadSiteContent={jest.fn()} createNewVersion={createNewVersionFunc} switchToVersion={jest.fn()}
+      portalEnv={mockPortalEnvironment('sandbox')}
+      portalShortcode="foo"/>)
   render(RoutedComponent)
 
   expect(screen.getByText('Landing page')).toBeInTheDocument()
@@ -35,4 +38,17 @@ test('enables live-preview text editing', async () => {
     title: 'about us!!', blurb: 'we are the best'
   }, null, 2)
   expect(createNewVersionFunc).toHaveBeenCalledWith(expectedSaveObj)
+})
+
+test('readOnly hides save button', async () => {
+  const siteContent = mockSiteContent()
+  const createNewVersionFunc = jest.fn()
+  const { RoutedComponent } = setupRouterTest(
+    <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={true}
+      loadSiteContent={jest.fn()} createNewVersion={createNewVersionFunc} portalShortcode="foo"
+      switchToVersion={jest.fn()}
+      portalEnv={mockPortalEnvironment('sandbox')}/>)
+  render(RoutedComponent)
+  expect(screen.getByText('Landing page')).toBeInTheDocument()
+  expect(screen.queryByText('Save')).not.toBeInTheDocument()
 })

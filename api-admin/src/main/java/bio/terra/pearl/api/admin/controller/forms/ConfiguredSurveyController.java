@@ -61,4 +61,15 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
             portalShortcode, studyShortcode, environmentName, configuredSurvey, adminUser);
     return ResponseEntity.ok(savedSes);
   }
+
+  @Override
+  public ResponseEntity<Void> remove(
+      String portalShortcode, String studyShortcode, String envName, UUID configuredSurveyId) {
+    AdminUser adminUser = requestService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+
+    surveyExtService.removeConfiguredSurvey(
+        portalShortcode, studyShortcode, environmentName, configuredSurveyId, adminUser);
+    return ResponseEntity.noContent().build();
+  }
 }

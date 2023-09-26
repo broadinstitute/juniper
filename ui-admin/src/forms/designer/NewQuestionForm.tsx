@@ -137,6 +137,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
 
         { (selectedQuestionType || selectedQuestionTemplateName) && <QuestionDesigner
           question={question}
+          isNewQuestion={true}
           showName={false}
           readOnly={readOnly}
           onChange={updatedElement => {

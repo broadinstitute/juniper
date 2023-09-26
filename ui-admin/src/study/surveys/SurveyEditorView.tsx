@@ -8,8 +8,15 @@ import LoadedLocalDraftModal from 'forms/designer/modals/LoadedLocalDraftModal'
 import DiscardLocalDraftModal from 'forms/designer/modals/DiscardLocalDraftModal'
 import { deleteDraft, FormDraft, getDraft, getFormDraftKey, saveDraft } from 'forms/designer/utils/formDraftUtils'
 import { useAutosaveEffect } from '@juniper/ui-core/build/autoSaveUtils'
+import { faClockRotateLeft, faDownload, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import VersionSelector from './VersionSelector'
+import { StudyEnvContextT } from '../StudyEnvironmentRouter'
+import { isEmpty } from 'lodash'
+import { saveBlobAsDownload } from 'util/downloadUtils'
 
 type SurveyEditorViewProps = {
+  studyEnvContext: StudyEnvContextT
   currentForm: VersionedForm
   readOnly?: boolean
   onCancel: () => void
@@ -19,6 +26,7 @@ type SurveyEditorViewProps = {
 /** renders a survey for editing/viewing */
 const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const {
+    studyEnvContext,
     currentForm,
     readOnly = false,
     onCancel,
@@ -28,7 +36,6 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const FORM_DRAFT_KEY = getFormDraftKey({ form: currentForm })
   const FORM_DRAFT_SAVE_INTERVAL = 10000
 
-  const [isEditorValid, setIsEditorValid] = useState(true)
   const [saving, setSaving] = useState(false)
   const [savingDraft, setSavingDraft] = useState(false)
 
@@ -36,11 +43,15 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   //for them to know if the version of the survey they're seeing are from a draft or are actually published.
   const [showLoadedDraftModal, setShowLoadedDraftModal] = useState(!!getDraft({ formDraftKey: FORM_DRAFT_KEY }))
   const [showDiscardDraftModal, setShowDiscardDraftModal] = useState(false)
+  const [showVersionSelector, setShowVersionSelector] = useState(false)
+  const [visibleVersionPreviews, setVisibleVersionPreviews] = useState<VersionedForm[]>([])
+  const [showErrors, setShowErrors] = useState(false)
 
   const [draft, setDraft] = useState<FormDraft | undefined>(
     !readOnly ? getDraft({ formDraftKey: FORM_DRAFT_KEY }) : undefined)
 
-  const isSaveEnabled = !!draft && isEditorValid && !saving
+  const [validationErrors, setValidationErrors] = useState<string[]>([])
+  const isSaveEnabled = !!draft && isEmpty(validationErrors) && !saving
 
   const saveDraftToLocalStorage = () => {
     setDraft(currentDraft => {
@@ -86,10 +97,60 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
       <div className="d-flex p-2 align-items-center">
         <div className="d-flex flex-grow-1">
           <h5>{currentForm.name}
-            <span className="detail me-2 ms-2">version {currentForm.version}</span>
+            <span className="fs-6 text-muted fst-italic me-2 ms-2">
+              (v{currentForm.version}
+              { currentForm.publishedVersion && <span className="ms-1">
+                - published v{currentForm.publishedVersion}
+              </span> }
+              )
+            </span>
+            <button className="btn btn-secondary" onClick={() => setShowVersionSelector(true)}>
+              <FontAwesomeIcon icon={faClockRotateLeft}/> History
+            </button>
+            <Button variant="secondary"
+              disabled={!isEmpty(validationErrors)}
+              tooltip={isEmpty(validationErrors) ?
+                'Download the current contents of the JSON Editor as a JSON file.' :
+                'The form contains invalid JSON. Please correct the errors before downloading.'
+              }
+              onClick={() => {
+                const content = draft?.content || currentForm.content
+                // To get this formatted nicely and not as one giant line, need to parse
+                // this as an object and then stringify the result.
+                const blob = new Blob(
+                  [JSON.stringify(JSON.parse(content), null, 2)],
+                  { type: 'application/json' })
+                const filename = !draft ? `${currentForm.stableId}_v${currentForm.version}.json` :
+                  `${currentForm.stableId}_v${currentForm.version}_draft_${Date.now()}.json`
+                saveBlobAsDownload(blob, filename)
+              }}>
+              <FontAwesomeIcon icon={faDownload}/> Download JSON
+            </Button>
           </h5>
         </div>
         { savingDraft && <span className="detail me-2 ms-2">Saving draft...</span> }
+        { !isEmpty(validationErrors) &&
+            <div className="position-relative ms-auto me-2 ms-2">
+              <button className="btn btn-outline-danger"
+                onClick={() => setShowErrors(!showErrors)} aria-label="view errors">
+                    View errors <FontAwesomeIcon icon={faExclamationCircle} className="fa-lg"/>
+              </button>
+              { showErrors && <div className="position-absolute border border-gray rounded bg-white p-3"
+                style={{ width: '750px', right: 0 }}>
+                <div className="border-b border-black">
+                  <label>
+                    <span>The following error(s) were found in your survey:</span>
+                  </label>
+                </div>
+                <hr/>
+                { !isEmpty(validationErrors) && validationErrors.map((error, index) => {
+                  return (
+                    <li key={`error-${index}`}>{error}</li>
+                  )
+                })}
+              </div> }
+            </div>
+        }
         {!readOnly && (
           <Button
             disabled={!isSaveEnabled}
@@ -98,12 +159,13 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
               if (!draft) {
                 return 'Form is unchanged. Make changes to save.'
               }
-              if (!isEditorValid) {
+              if (!isEmpty(validationErrors)) {
                 return 'Form is invalid. Correct to save.'
               }
               return 'Save changes'
             })()}
-            variant="primary"
+            tooltipPlacement={'bottom'}
+            variant={isEmpty(validationErrors) ? 'primary' : 'danger'}
             onClick={onClickSave}
           >
             Save
@@ -127,15 +189,25 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
                 })}
               onDismiss={() => setShowDiscardDraftModal(false)}
             />}
+        { showVersionSelector && <VersionSelector
+          studyEnvContext={studyEnvContext}
+          visibleVersionPreviews={visibleVersionPreviews}
+          setVisibleVersionPreviews={setVisibleVersionPreviews}
+          stableId={currentForm.stableId}
+          setShow={setShowVersionSelector}
+          show={showVersionSelector}/>
+        }
       </div>
       <FormContentEditor
         initialContent={draft?.content || currentForm.content} //favor loading the draft, if we find one
+        visibleVersionPreviews={visibleVersionPreviews}
         readOnly={readOnly}
-        onChange={(isValid, newContent) => {
-          if (isValid) {
+        onChange={(newValidationErrors, newContent) => {
+          if (isEmpty(newValidationErrors)) {
+            setShowErrors(false)
             setDraft({ content: JSON.stringify(newContent), date: Date.now() })
           }
-          setIsEditorValid(isValid)
+          setValidationErrors(newValidationErrors)
         }}
       />
     </div>

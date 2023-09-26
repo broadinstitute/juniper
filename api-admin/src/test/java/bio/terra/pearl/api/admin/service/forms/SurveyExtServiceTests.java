@@ -2,7 +2,6 @@ package bio.terra.pearl.api.admin.service.forms;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import bio.terra.pearl.api.admin.service.AuthUtilService;
@@ -52,17 +51,12 @@ public class SurveyExtServiceTests {
   @Test
   public void createConfiguredOnlyInSandbox() {
     AdminUser user = AdminUser.builder().superuser(false).build();
-    PermissionDeniedException thrownException =
+    IllegalArgumentException thrownException =
         Assertions.assertThrows(
-            PermissionDeniedException.class,
+            IllegalArgumentException.class,
             () ->
                 surveyExtService.createConfiguredSurvey(
                     "foo", "bar", EnvironmentName.irb, null, user));
-
-    assertTrue(
-        thrownException
-            .getMessage()
-            .contentEquals("You do not have permission to update the irb environment"));
   }
 
   @Test
@@ -72,6 +66,47 @@ public class SurveyExtServiceTests {
         .thenThrow(new PermissionDeniedException("test1"));
     Assertions.assertThrows(
         PermissionDeniedException.class, () -> surveyExtService.get("foo", "blah", 1, user));
+  }
+
+  @Test
+  public void deleteRequiresPortalAuth() {
+    AdminUser user = AdminUser.builder().superuser(false).build();
+    when(mockAuthUtilService.authUserToPortal(user, "foo"))
+        .thenThrow(new PermissionDeniedException("test1"));
+    Assertions.assertThrows(
+        PermissionDeniedException.class, () -> surveyExtService.delete("foo", "blah", user));
+  }
+
+  @Test
+  public void removeRequiresPortalAuth() {
+    AdminUser user = AdminUser.builder().superuser(false).build();
+    when(mockAuthUtilService.authUserToPortal(user, "foo"))
+        .thenThrow(new PermissionDeniedException("test1"));
+    Assertions.assertThrows(
+        PermissionDeniedException.class,
+        () ->
+            surveyExtService.removeConfiguredSurvey(
+                "foo", "blah", EnvironmentName.sandbox, null, user));
+  }
+
+  @Test
+  public void removeOnlyInSandbox() {
+    AdminUser user = AdminUser.builder().superuser(false).build();
+    IllegalArgumentException thrownException =
+        Assertions.assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                surveyExtService.removeConfiguredSurvey(
+                    "foo", "bar", EnvironmentName.irb, null, user));
+  }
+
+  @Test
+  public void listVersionsRequiresPortalAuth() {
+    AdminUser user = AdminUser.builder().superuser(false).build();
+    when(mockAuthUtilService.authUserToPortal(user, "foo"))
+        .thenThrow(new PermissionDeniedException("test1"));
+    Assertions.assertThrows(
+        PermissionDeniedException.class, () -> surveyExtService.listVersions("foo", "blah", user));
   }
 
   @Test

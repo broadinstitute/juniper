@@ -20,16 +20,16 @@ describe('ChoicesList', () => {
 
   it('renders list of choices with inputs for text and value', () => {
     // Act
-    render(<ChoicesList question={question} readOnly={false} onChange={jest.fn()} />)
+    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={jest.fn()} />)
 
     // Assert
     const choiceListItems = screen.getAllByRole('listitem')
 
     ;['Foo', 'Bar', 'Baz'].forEach((label, index) => {
-      const labelInput = getByLabelText(choiceListItems[index], 'Text')
+      const labelInput = getByLabelText(choiceListItems[index], 'Text*')
       expect((labelInput as HTMLInputElement).value).toBe(label)
 
-      const valueInput = getByLabelText(choiceListItems[index], 'Value')
+      const valueInput = getByLabelText(choiceListItems[index], 'Value*')
       expect((valueInput as HTMLInputElement).value).toBe(label.toLowerCase())
     })
   })
@@ -37,12 +37,12 @@ describe('ChoicesList', () => {
   it('allows changing choice labels', () => {
     // Arrange
     const onChange = jest.fn()
-    render(<ChoicesList question={question} readOnly={false} onChange={onChange} />)
+    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={onChange} />)
 
     const barChoice = screen.getAllByRole('listitem')[1]
 
     // Act
-    const barLabelInput = getByLabelText(barChoice, 'Text')
+    const barLabelInput = getByLabelText(barChoice, 'Text*')
     fireEvent.change(barLabelInput, { target: { value: 'BAR' } })
 
     // Assert
@@ -59,12 +59,12 @@ describe('ChoicesList', () => {
   it('allows changing choice values', () => {
     // Arrange
     const onChange = jest.fn()
-    render(<ChoicesList question={question} readOnly={false} onChange={onChange} />)
+    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={onChange} />)
 
     const barChoice = screen.getAllByRole('listitem')[1]
 
     // Act
-    const barLabelInput = getByLabelText(barChoice, 'Value')
+    const barLabelInput = getByLabelText(barChoice, 'Value*')
     fireEvent.change(barLabelInput, { target: { value: 'BAR' } })
 
     // Assert
@@ -78,12 +78,34 @@ describe('ChoicesList', () => {
     })
   })
 
+  it('automatically generates values based on text if question is new', () => {
+    // Arrange
+    const onChange = jest.fn()
+    render(<ChoicesList question={question} isNewQuestion={true} readOnly={false} onChange={onChange} />)
+
+    const barChoice = screen.getAllByRole('listitem')[1]
+
+    // Act
+    const barLabelInput = getByLabelText(barChoice, 'Text*')
+    fireEvent.change(barLabelInput, { target: { value: 'This is a test question' } })
+
+    // Assert
+    expect(onChange).toHaveBeenCalledWith({
+      ...question,
+      choices: [
+        { value: 'foo', text: 'Foo' },
+        { value: 'thisIsATestQuestion', text: 'This is a test question' },
+        { value: 'baz', text: 'Baz' }
+      ]
+    })
+  })
+
   it('allows reordering choices', async () => {
     // Arrange
     const user = userEvent.setup()
 
     const onChange = jest.fn()
-    render(<ChoicesList question={question} readOnly={false} onChange={onChange} />)
+    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={onChange} />)
 
     const barChoice = screen.getAllByRole('listitem')[1]
     const moveUpButton = getByLabelText(barChoice, 'Move this choice before the previous one')
@@ -121,7 +143,7 @@ describe('ChoicesList', () => {
     const user = userEvent.setup()
 
     const onChange = jest.fn()
-    render(<ChoicesList question={question} readOnly={false} onChange={onChange} />)
+    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={onChange} />)
 
     const barChoice = screen.getAllByRole('listitem')[1]
     const deleteButton = getByLabelText(barChoice, 'Delete this choice')

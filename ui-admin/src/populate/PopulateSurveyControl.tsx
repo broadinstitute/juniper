@@ -41,7 +41,6 @@ export default function PopulateSurveyControl({ initialPortalShortcode }: {initi
                   Overwrite should almost never be used in production.
         </span>}/>
       <PopulateButton onClick={populate} isLoading={isLoading}/>
-      <PopulateButton onClick={populate} isLoading={isLoading}/>
     </div>
   </form>
 }

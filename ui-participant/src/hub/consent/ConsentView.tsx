@@ -48,7 +48,7 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
       return
     }
     const responseDto = {
-      resumeData: getResumeData(surveyModel, enrollee.participantUserId),
+      resumeData: getResumeData(surveyModel, enrollee.participantUserId, true),
       enrolleeId: enrollee.id,
       fullData: JSON.stringify(getSurveyJsAnswerList(surveyModel)),
       creatingParticipantId: enrollee.participantUserId,

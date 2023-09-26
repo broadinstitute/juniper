@@ -49,6 +49,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
 import org.springframework.stereotype.Service;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -452,9 +453,11 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             case "SCANNED":
                 recent = recent.minus(PopulateUtils.randomInteger(10, 30), DAYS);
                 pepperStatus.setScanDate(formatter.format(recent));
+                pepperStatus.setReturnTrackingNumber("1Z%s".formatted(PopulateUtils.randomString(12)));
             case "LABELED":
                 recent = recent.minus(PopulateUtils.randomInteger(5, 7), DAYS);
                 pepperStatus.setLabelDate(formatter.format(recent));
+                pepperStatus.setTrackingNumber("1Z%s".formatted(PopulateUtils.randomString(12)));
             case "CREATED":
                 kitDto.setCreatedAt(recent.minus(PopulateUtils.randomInteger(12, 48), HOURS));
         }

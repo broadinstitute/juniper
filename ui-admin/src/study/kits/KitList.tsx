@@ -1,57 +1,188 @@
-import React, { useEffect, useState } from 'react'
-import _countBy from 'lodash/countBy'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import _capitalize from 'lodash/capitalize'
+import _fromPairs from 'lodash/fromPairs'
+import _groupBy from 'lodash/groupBy'
+import { Link, Navigate, NavLink, Route, Routes } from 'react-router-dom'
 import {
   ColumnDef,
-  getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable
+  getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState
 } from '@tanstack/react-table'
 
 import Api, { KitRequest } from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { basicTableLayout, FilterType } from 'util/tableUtils'
+import { basicTableLayout, ColumnVisibilityControl } from 'util/tableUtils'
 import { instantToDateString, isoToInstant } from 'util/timeUtils'
+import { doApiLoad, useLoadingEffect } from 'api/api-utils'
+import { enrolleeKitRequestPath } from '../participants/enrolleeView/EnrolleeView'
+import KitStatusCell from '../participants/KitStatusCell'
+import { Button } from 'components/forms/Button'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faRefresh } from '@fortawesome/free-solid-svg-icons'
+import { successNotification } from 'util/notifications'
+import { Store } from 'react-notifications-component'
+import { useUser } from '../../user/UserProvider'
 
-const pepperStatusToHumanStatus = (dsmStatus?: string): string => {
-  const statusMap: Record<string, string> = {
-    'CREATED': 'Created',
-    'LABELED': 'Prepared',
-    'SCANNED': 'Sent',
-    'RECEIVED': 'Returned'
+type KitStatusTabConfig = {
+  status: string,
+  key: string,
+  additionalColumns?: string[]
+}
+
+/**
+ * Default column visibility, showing only columns relevant for any status. All columns should be listed here since
+ * columns to hide must be explicitly configured.
+ */
+const defaultColumns: VisibilityState = {
+  'enrollee_shortcode': true,
+  'kitType_displayName': true,
+  'createdAt': true,
+  'pepperStatus_labelDate': false,
+  'pepperStatus_trackingNumber': false,
+  'pepperStatus_scanDate': false,
+  'pepperStatus_returnTrackingNumber': false,
+  'pepperStatus_receiveDate': false,
+  'pepperStatus': false
+}
+
+/**
+ * List of status tab properties in the order that they should apper on screen.
+ */
+const statusTabs: KitStatusTabConfig[] = [
+  {
+    status: 'kit without label',
+    key: 'created',
+    additionalColumns: []
+  },
+  {
+    status: 'queue',
+    key: 'labeled',
+    additionalColumns: [
+      'pepperStatus_labelDate', 'pepperStatus_trackingNumber'
+    ]
+  },
+  {
+    status: 'sent',
+    key: 'sent',
+    additionalColumns: [
+      'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
+      'pepperStatus_scanDate', 'pepperStatus_returnTrackingNumber'
+    ]
+  },
+  {
+    status: 'received',
+    key: 'returned',
+    additionalColumns: [
+      'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
+      'pepperStatus_scanDate', 'pepperStatus_returnTrackingNumber',
+      'pepperStatus_receiveDate'
+    ]
+  },
+  {
+    status: 'error',
+    key: 'issues',
+    additionalColumns: [
+      'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
+      'pepperStatus_scanDate', 'pepperStatus_returnTrackingNumber',
+      'pepperStatus_receiveDate',
+      'pepperStatus'
+    ]
   }
-  return dsmStatus
-    ? (statusMap[dsmStatus] || (`(${  dsmStatus  })`))
-    : '(unknown)'
+]
+
+/**
+ * Determines a relevant set of columns to display based on the tab being rendered.
+ * Some columns are always relevant, i.e. enrollee shortcode, kit type, and created date, and are represented in
+ * `defaultColumns`. Additional columns to display are listed in KitStatusTabConfig.additionalColumns.
+ */
+const initialColumnVisibility = (tab: KitStatusTabConfig): VisibilityState => {
+  return {
+    ...defaultColumns,
+    ..._fromPairs(tab.additionalColumns?.map(c => { return [c, true] }))
+  }
 }
 
 /** Loads sample kits for a study and shows them as a list. */
 export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) {
   const { portal, study, currentEnv } = studyEnvContext
-  const [isLoading, setIsLoading] = useState(true)
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const [kits, setKits] = useState<KitRequest[]>([])
-
-  const loadKits = async () => {
-    setIsLoading(true)
-    const kits = await Api.fetchKitsByStudyEnvironment(
-      portal.shortcode, study.shortcode, currentEnv.environmentName)
+  const { user } = useUser()
+  const { isLoading, reload } = useLoadingEffect(async () => {
+    const kits= await Api.fetchKitsByStudyEnvironment(portal.shortcode, study.shortcode, currentEnv.environmentName)
     setKits(kits)
-    setIsLoading(false)
-  }
-
-  useEffect(() => {
-    loadKits()
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
+  const kitsByStatus = _groupBy(kits, kit => {
+    return statusTabs.find(tab => tab.status === kit.pepperStatus?.currentStatus.toLowerCase())?.status || 'error'
+  })
+
+  const tabLinkStyle = ({ isActive }: {isActive: boolean}) => ({
+    borderBottom: isActive ? '2px solid #666': '',
+    background: isActive ? '#ddd' : ''
+  })
+
+  const refreshStatuses = async () => {
+    doApiLoad(async () => {
+      await Api.refreshKitStatuses(portal.shortcode, study.shortcode, currentEnv.environmentName)
+      await reload()
+      Store.addNotification(successNotification('kit statuses refreshed'))
+    }, {
+      setIsLoading: setIsRefreshing,
+      customErrorMsg: 'kit statuses could not be refreshed'
+    })
+  }
+
   return <LoadingSpinner isLoading={isLoading}>
-    <KitListView kits={kits} studyEnvContext={studyEnvContext}/>
+    <div className="container p-0 mt-2">
+      <div className="d-flex w-100 align-items-center" style={{ backgroundColor: '#ccc' }}>
+        { statusTabs.map(tab => {
+          const kits = kitsByStatus[tab.status] || []
+          return <NavLink key={tab.key} to={tab.key} style={tabLinkStyle}>
+            <div className="py-2 px-4">
+              {kits?.length} {_capitalize(tab.key)}
+            </div>
+          </NavLink>
+        })}
+        <div className="ms-auto">
+          {user.superuser && <Button variant="secondary" onClick={refreshStatuses}>
+            {!isRefreshing && <span>Refresh <FontAwesomeIcon icon={faRefresh}/></span>}
+            {isRefreshing && <LoadingSpinner/>}
+          </Button> }
+        </div>
+      </div>
+      <Routes>
+        <Route index element={<Navigate to={statusTabs[0].key} replace={true}/>}/>
+        { statusTabs.map(tab => {
+          return <Route key={tab.key} path={tab.key} element={
+            <KitListView
+              studyEnvContext={studyEnvContext}
+              tab={tab.key}
+              kits={kitsByStatus[tab.status] || []}
+              initialColumnVisibility={initialColumnVisibility(tab)}/>
+          }/>
+        })}
+      </Routes>
+    </div>
   </LoadingSpinner>
 }
 
 /** Renders a table with a list of kits. */
-export function KitListView({ studyEnvContext, kits }: { studyEnvContext: StudyEnvContextT, kits: KitRequest[] }) {
+function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
+  studyEnvContext: StudyEnvContextT,
+  tab: string
+  kits: KitRequest[],
+  initialColumnVisibility: VisibilityState
+}) {
   const { currentEnvPath } = studyEnvContext
+  const [currentTab, setCurrentTab] = useState(tab)
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialColumnVisibility)
+  const [sorting, setSorting] = useState<SortingState>([])
 
-  const countsByStatus = _countBy(kits, kit => kit.pepperStatus?.currentStatus || '')
+  if (tab !== currentTab) {
+    setColumnVisibility(initialColumnVisibility)
+    setCurrentTab(tab)
+  }
 
   const columns: ColumnDef<KitRequest, string>[] = [{
     header: 'Enrollee shortcode',
@@ -59,7 +190,9 @@ export function KitListView({ studyEnvContext, kits }: { studyEnvContext: StudyE
     meta: {
       columnType: 'string'
     },
-    cell: data => <Link to={`${currentEnvPath}/participants/${data.getValue()}`}>{data.getValue()}</Link>,
+    cell: data => <Link to={enrolleeKitRequestPath(currentEnvPath, data.getValue().toString())}>
+      {data.getValue()}
+    </Link>,
     enableColumnFilter: false
   }, {
     header: 'Kit type',
@@ -71,14 +204,22 @@ export function KitListView({ studyEnvContext, kits }: { studyEnvContext: StudyE
     cell: data => instantToDateString(Number(data.getValue())),
     enableColumnFilter: false
   }, {
-    header: 'Prepared',
+    header: 'Labeled',
     accessorKey: 'pepperStatus.labelDate',
     cell: data => instantToDateString(isoToInstant(data.getValue())),
+    enableColumnFilter: false
+  }, {
+    header: 'Tracking Number',
+    accessorKey: 'pepperStatus.trackingNumber',
     enableColumnFilter: false
   }, {
     header: 'Sent',
     accessorKey: 'pepperStatus.scanDate',
     cell: data => instantToDateString(isoToInstant(data.getValue())),
+    enableColumnFilter: false
+  }, {
+    header: 'Return Tracking Number',
+    accessorKey: 'pepperStatus.returnTrackingNumber',
     enableColumnFilter: false
   }, {
     header: 'Returned',
@@ -87,36 +228,25 @@ export function KitListView({ studyEnvContext, kits }: { studyEnvContext: StudyE
     enableColumnFilter: false
   }, {
     header: 'Status',
-    accessorKey: 'pepperStatus.currentStatus',
-    accessorFn: data => pepperStatusToHumanStatus(data?.pepperStatus?.currentStatus),
-    meta: {
-      columnType: 'string',
-      filterType: FilterType.Select,
-      filterOptions: [
-        { value: 'created', label: 'Created' },
-        { value: 'prepared', label: 'Prepared' },
-        { value: 'sent', label: 'Sent' },
-        { value: 'returned', label: 'Returned' }
-      ]
-    },
-    filterFn: 'equalsString'
+    accessorKey: 'pepperStatus',
+    cell: data => <KitStatusCell kitRequest={data.row.original} infoPlacement='left'/>,
+    enableColumnFilter: false
   }]
 
   const table = useReactTable({
-    data: kits || [],
+    data: kits,
     columns,
+    state: { columnVisibility, sorting },
+    onColumnVisibilityChange: setColumnVisibility,
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel()
   })
 
   return <>
-    <div>
-      <span>Total Kits: {kits.length}</span>
-      <span className='ms-3'><>{pepperStatusToHumanStatus('CREATED')}: {countsByStatus['CREATED'] || 0}</></span>
-      <span className='ms-3'><>{pepperStatusToHumanStatus('LABELED')}: {countsByStatus['LABELED'] || 0}</></span>
-      <span className='ms-3'><>{pepperStatusToHumanStatus('SCANNED')}: {countsByStatus['SCANNED'] || 0}</></span>
-      <span className='ms-3'><>{pepperStatusToHumanStatus('RECEIVED')}: {countsByStatus['RECEIVED'] || 0}</></span>
+    <div className="d-flex align-items-center justify-content-between">
+      <ColumnVisibilityControl table={table}/>
     </div>
     {basicTableLayout(table, { filterable: true })}
   </>

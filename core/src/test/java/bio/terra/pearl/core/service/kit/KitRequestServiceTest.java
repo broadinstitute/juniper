@@ -37,6 +37,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     @Transactional
     @Test
     public void testRequestKit() throws Exception {
+        // Arrange
         var adminUser = adminUserFactory.buildPersisted("testRequestKit");
         var kitType = kitTypeFactory.buildPersisted("testRequestKit");
         var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testRequestKit");
@@ -53,11 +54,16 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .street1("123 Fake Street")
                 .phoneNumber("111-222-3333")
                 .build();
+        var studyName = "testStudy";
+        when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any()))
+                .thenReturn("{ \"kits\": [{}] }");
 
-        var sampleKit = kitRequestService.requestKit(adminUser, enrollee, "testRequestKit");
+        // Act
+        var sampleKit = kitRequestService.requestKit(adminUser, studyName, enrollee, "testRequestKit");
 
+        // Assert
         Mockito.verify(mockPepperDSMClient)
-                .sendKitRequest(eq(enrollee), any(KitRequest.class), any(PepperKitAddress.class));
+                .sendKitRequest(eq(studyName), eq(enrollee), any(KitRequest.class), any(PepperKitAddress.class));
         assertThat(sampleKit.getCreatingAdminUserId(), equalTo(adminUser.getId()));
         assertThat(sampleKit.getEnrolleeId(), equalTo(enrollee.getId()));
         assertThat(objectMapper.readValue(sampleKit.getSentToAddress(), PepperKitAddress.class),
@@ -80,8 +86,8 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         profile.getMailingAddress().setStreet1("123 Fake Street");
         profileService.updateWithMailingAddress(profile);
 
-        when(mockPepperDSMClient.sendKitRequest(any(), any(), any())).thenAnswer(invocation -> {
-            var kitRequest = (KitRequest) invocation.getArguments()[1];
+        when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any())).thenAnswer(invocation -> {
+            var kitRequest = (KitRequest) invocation.getArguments()[2];
             throw new PepperException("boom",
                     PepperErrorResponse.builder()
                             .juniperKitId(kitRequest.getId().toString())
@@ -89,7 +95,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         });
 
         // "Act"
-        Executable act = () -> kitRequestService.requestKit(adminUser, enrollee, kitType.getName());
+        Executable act = () -> kitRequestService.requestKit(adminUser, "testStudy" , enrollee, kitType.getName());
 
         // Assert
         PepperException pepperException = assertThrows(PepperException.class, act);
@@ -98,6 +104,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     @Transactional
     @Test
     public void testUpdateKitStatus() throws Exception {
+        // Arrange
         var adminUser = adminUserFactory.buildPersisted("testUpdateKitStatus");
         var enrollee = enrolleeFactory.buildPersisted("testUpdateKitStatus");
         var kitType = kitTypeFactory.buildPersisted("testUpdateKitStatus");
@@ -105,13 +112,15 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
             enrollee.getId(), kitType.getId(), adminUser.getId());
 
         var response = PepperKitStatus.builder()
-                .kitId(kitRequest.getId().toString())
+                .juniperKitId(kitRequest.getId().toString())
                 .currentStatus("SENT")
                 .build();
         when(mockPepperDSMClient.fetchKitStatus(kitRequest.getId())).thenReturn(response);
 
+        // Act
         var sampleKitStatus = kitRequestService.syncKitStatusFromPepper(kitRequest.getId());
 
+        // Assert
         assertThat(sampleKitStatus.getCurrentStatus(), equalTo("SENT"));
     }
 
@@ -173,15 +182,15 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
          *  - the second study has one kit with an error
          */
         var kitStatus1a = PepperKitStatus.builder()
-                .kitId(kitRequest1a.getId().toString())
+                .juniperKitId(kitRequest1a.getId().toString())
                 .currentStatus("SENT")
                 .build();
         var kitStatus1b = PepperKitStatus.builder()
-                .kitId(kitRequest1b.getId().toString())
+                .juniperKitId(kitRequest1b.getId().toString())
                 .currentStatus("PROCESSED")
                 .build();
         var kitStatus2 = PepperKitStatus.builder()
-                .kitId(kitRequest2.getId().toString())
+                .juniperKitId(kitRequest2.getId().toString())
                 .currentStatus("CONTAMINATED")
                 .errorMessage("Something went wrong")
                 .errorDate(DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault()).format(Instant.now()))

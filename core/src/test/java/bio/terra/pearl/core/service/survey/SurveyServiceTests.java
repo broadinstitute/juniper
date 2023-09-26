@@ -28,6 +28,8 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testCreateSurvey() {
         Survey survey = surveyFactory.builder("testPublishSurvey").build();
+        survey.setCreatedAt(null);
+        survey.setLastUpdatedAt(null);
         Survey savedSurvey = surveyService.create(survey);
         DaoTestUtils.assertGeneratedProperties(savedSurvey);
         Assertions.assertEquals(savedSurvey.getName(), survey.getName());
@@ -58,8 +60,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testCreateNewVersion() {
-        Survey survey = surveyFactory.buildPersisted("testPublishSurvey");
-        AdminUser user = adminUserFactory.buildPersisted("testPublishSurvey");
+        Survey survey = surveyFactory.buildPersisted("testCreateNewVersion");
         String oldContent = survey.getContent();
         String newContent = String.format("{\"pages\":[],\"title\":\"%s\"}", RandomStringUtils.randomAlphabetic(6));
         survey.setContent(newContent);
@@ -74,6 +75,28 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         Survey fetchedOriginal = surveyService.find(survey.getId()).get();
         Assertions.assertEquals(oldContent, fetchedOriginal.getContent());
     }
+
+    @Test
+    @Transactional
+    public void testAssignPublishedVersion() {
+        Survey survey = surveyFactory.buildPersisted("testAssignPublishedVersion");
+        surveyService.assignPublishedVersion(survey.getId());
+        survey = surveyService.find(survey.getId()).get();
+        assertThat(survey.getPublishedVersion(), equalTo(1));
+
+        String newContent = String.format("{\"pages\":[],\"title\":\"%s\"}", RandomStringUtils.randomAlphabetic(6));
+        survey.setContent(newContent);
+        Survey newSurvey = surveyService.createNewVersion(survey.getPortalId(), survey);
+
+        Assertions.assertNotEquals(newSurvey.getId(), survey.getId());
+        // check published version was NOT copied
+        assertThat(newSurvey.getPublishedVersion(), equalTo(null));
+
+        surveyService.assignPublishedVersion(newSurvey.getId());
+        newSurvey = surveyService.find(newSurvey.getId()).get();
+        assertThat(newSurvey.getPublishedVersion(), equalTo(2));
+    }
+
 
     @Test
     @Transactional
@@ -157,6 +180,47 @@ public class SurveyServiceTests extends BaseSpringBootTest {
 
         List<SurveyQuestionDefinition> actual = surveyService.getSurveyQuestionDefinitions(survey);
         Assertions.assertEquals(4, actual.size());
+    }
+
+    @Test
+    public void testProcessDerivedQuestions() {
+        Survey survey = new Survey();
+        String surveyContent = """
+                {
+                  "title": "The Basics",
+                  "pages": [{
+                    "name": "page1",
+                    "elements": [{
+                      "type": "text",
+                      "name": "oh_oh_basic_heightUnit",
+                      "title": "Height unit (cm or in)"
+                     },{
+                      "type": "text",
+                      "name": "oh_oh_basic_rawHeight",
+                      "title": "Height"
+                     },{
+                      "type": "text",
+                      "name": "oh_oh_basic_weightUnit",
+                      "title": "Weight unit (lbs or kg)"
+                     },{
+                      "type": "text",
+                      "name": "oh_oh_basic_rawWeight",
+                      "title": "Weight"
+                     }]
+                   }],
+                  "calculatedValues": [{
+                    "name": "computedHeight",
+                    "includeIntoResult": true,
+                    "expression": "iif({oh_oh_basic_heightUnit} = 'in', {oh_oh_basic_rawHeight} * 2.54, {oh_oh_basic_rawHeight}"
+                   }]
+                 }""";
+
+        survey.setContent(surveyContent);
+        List<SurveyQuestionDefinition> defs = surveyService.getSurveyQuestionDefinitions(survey);
+        assertThat(defs, hasSize(5));
+        // check that the question got inserted after the first one it is derived from
+        assertThat(defs.get(2).getQuestionStableId(), equalTo("computedHeight"));
+        assertThat(defs.get(2).getQuestionType(), equalTo(SurveyParseUtils.DERIVED_QUESTION_TYPE));
     }
 
 }

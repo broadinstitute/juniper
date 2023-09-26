@@ -3,6 +3,7 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import classNames from 'classnames'
 import React, { useRef, useState } from 'react'
 import { Overlay, Tooltip } from 'react-bootstrap'
+import { Placement } from 'react-bootstrap/types'
 
 type ButtonVariant =
   | 'primary'
@@ -28,13 +29,14 @@ export const supportsFocusVisible = (() => {
 export type ButtonProps = JSX.IntrinsicElements['button'] & {
   outline?: boolean
   tooltip?: string
+  tooltipPlacement?: Placement
   variant?: ButtonVariant
 }
 
 /** A button.  Among other improvements, this handles the 'disabled' prop in a much more robust way
  * than <button>, enabling tooltips to be shown for disabled buttons. */
 export const Button = (props: ButtonProps) => {
-  const { outline = false, tooltip, variant = 'secondary', ...buttonProps } = props
+  const { outline = false, tooltip, tooltipPlacement, variant = 'secondary', ...buttonProps } = props
   const { className, disabled, onBlur, onClick, onFocus, onMouseEnter, onMouseLeave } = buttonProps
 
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -77,7 +79,7 @@ export const Button = (props: ButtonProps) => {
         }}
       />
       <Overlay
-        placement="top"
+        placement={tooltipPlacement ? tooltipPlacement : 'top'}
         // Show the tooltip if the button is hovered or if the button is focused via the keyboard.
         show={
           !!tooltip && (

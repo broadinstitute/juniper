@@ -1,27 +1,25 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Api, { ExportData } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import {
-  ColumnDef, flexRender,
+  ColumnDef,
   getCoreRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
-import { tableHeader } from 'util/tableUtils'
-import { Store } from 'react-notifications-component'
-import { failureNotification } from 'util/notifications'
+import { basicTableLayout } from 'util/tableUtils'
 import ExportDataControl from './ExportDataControl'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
+import { useLoadingEffect } from 'api/api-utils'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
 const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
   const [data, setData] = useState<ExportData | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
   const [showExportModal, setShowExportModal] = useState(false)
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
@@ -65,23 +63,15 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
     onRowSelectionChange: setRowSelection
   })
 
-  const loadData = async () => {
-    try {
-      const response = await Api.exportEnrollees(
-        studyEnvContext.portal.shortcode,
-        studyEnvContext.study.shortcode,
-        studyEnvContext.currentEnv.environmentName, { fileFormat: 'JSON', limit: 10 })
-      const result = await response.json()
-      setData(result)
-      setIsLoading(false)
-    } catch (e) {
-      Store.addNotification(failureNotification(`Error loading participant export data`))
-    }
-  }
-
-  useEffect(() => {
-    loadData()
+  const { isLoading } = useLoadingEffect(async () => {
+    const response = await Api.exportEnrollees(
+      studyEnvContext.portal.shortcode,
+      studyEnvContext.study.shortcode,
+      studyEnvContext.currentEnv.environmentName, { fileFormat: 'JSON', limit: 10 })
+    const result = await response.json()
+    setData(result)
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
+
   return <div className="container-fluid py-3">
     <h1 className="h3">Data export preview</h1>
     <span className="text-muted fst-italic">
@@ -93,28 +83,7 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
     </button>
     <ExportDataControl studyEnvContext={studyEnvContext} show={showExportModal} setShow={setShowExportModal}/>
     <LoadingSpinner isLoading={isLoading}/>
-    {!isLoading && <table className="table table-striped">
-      <thead>
-        <tr>
-          {table.getFlatHeaders().map(header => tableHeader(header, { sortable: true, filterable: false }))}
-        </tr>
-      </thead>
-      <tbody>
-        {table.getRowModel().rows.map(row => {
-          return (
-            <tr key={row.id}>
-              {row.getVisibleCells().map(cell => {
-                return (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                )
-              })}
-            </tr>
-          )
-        })}
-      </tbody>
-    </table>}
+    {!isLoading && basicTableLayout(table)}
   </div>
 }
 

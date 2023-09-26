@@ -12,6 +12,7 @@ import { VisibilityFields } from './questions/VisibilityFields'
 
 export type QuestionDesignerProps = {
   question: Question
+  isNewQuestion: boolean
   readOnly: boolean
   showName: boolean
   onChange: (newValue: Question) => void
@@ -19,7 +20,7 @@ export type QuestionDesignerProps = {
 
 /** UI for editing a question in a form. */
 export const QuestionDesigner = (props: QuestionDesignerProps) => {
-  const { question, readOnly, showName, onChange } = props
+  const { question, isNewQuestion, readOnly, showName, onChange } = props
 
   const isTemplated = 'questionTemplateName' in question
 
@@ -57,6 +58,7 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
               <>
                 <ChoicesList
                   question={question}
+                  isNewQuestion={isNewQuestion}
                   readOnly={readOnly}
                   onChange={onChange}
                 />

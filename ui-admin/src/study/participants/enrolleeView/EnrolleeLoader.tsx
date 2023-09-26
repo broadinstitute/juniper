@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { StudyParams } from '../../StudyRouter'
 import Api, { Enrollee } from 'api/api'
-import { Store } from 'react-notifications-component'
-import { failureNotification } from 'util/notifications'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
 import EnrolleeView from './EnrolleeView'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
+import { useLoadingEffect } from 'api/api-utils'
 
 export type EnrolleeParams = StudyParams & {
   enrolleeShortcode: string,
@@ -21,19 +20,12 @@ export default function EnrolleeLoader({ studyEnvContext }: {studyEnvContext: St
   const params = useParams<EnrolleeParams>()
   const enrolleeShortcode = params.enrolleeShortcode as string
   const [enrollee, setEnrollee] = useState<Enrollee | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
 
-  const loadEnrollee = () => {
-    Api.getEnrollee(portal.shortcode, study.shortcode, currentEnv.environmentName, enrolleeShortcode).then(result => {
-      setEnrollee(result)
-      setIsLoading(false)
-    }).catch(() => {
-      Store.addNotification(failureNotification(`Error loading participants`))
-    })
-  }
-
-  useEffect(() => {
-    loadEnrollee()
+  const { isLoading, reload } = useLoadingEffect(async () => {
+    const result = await Api.getEnrollee(
+      portal.shortcode, study.shortcode, currentEnv.environmentName, enrolleeShortcode
+    )
+    setEnrollee(result)
   }, [enrolleeShortcode])
 
   return <LoadingSpinner isLoading={isLoading}>
@@ -41,6 +33,6 @@ export default function EnrolleeLoader({ studyEnvContext }: {studyEnvContext: St
       <Link to={`${currentEnvPath}/participants/${enrolleeShortcode}`}>
         {enrollee?.shortcode}</Link>
     </NavBreadcrumb>
-    <EnrolleeView enrollee={enrollee as Enrollee} studyEnvContext={studyEnvContext} onUpdate={loadEnrollee}/>
+    <EnrolleeView enrollee={enrollee as Enrollee} studyEnvContext={studyEnvContext} onUpdate={reload}/>
   </LoadingSpinner>
 }

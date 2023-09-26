@@ -47,7 +47,7 @@ public class SurveyResponseExtService {
         studyEnv.getId(), stableId, version, enrollee, taskId);
   }
 
-  public HubResponse submitResponse(
+  public HubResponse updateResponse(
       ParticipantUser user,
       String portalShortcode,
       EnvironmentName envName,

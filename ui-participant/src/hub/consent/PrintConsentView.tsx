@@ -3,7 +3,10 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Model } from 'survey-core'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 
-import { surveyJSModelFromForm, makeSurveyJsData } from '@juniper/ui-core'
+import {
+  surveyJSModelFromForm, makeSurveyJsData,
+  waitForImages, configureModelForPrint
+} from '@juniper/ui-core'
 
 import Api, { Answer, Enrollee } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
@@ -11,35 +14,6 @@ import { useUser } from 'providers/UserProvider'
 import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { enrolleeForStudy } from './ConsentView'
-
-/**
- * If window.print is called immediately, some images might not have been loaded
- * and won't be included in the printed output. This returns a promise that
- * resolves after all images on the page have loaded.
- */
-const waitForImages = () => new Promise(resolve => {
-  const images = Array.from(document.querySelectorAll('img'))
-  if (images.length === 0) {
-    resolve(undefined)
-    return
-  }
-
-  let nComplete = 0
-
-  const cb = () => {
-    nComplete += 1
-    if (nComplete === images.length) {
-      resolve(undefined)
-    }
-  }
-
-  for (const image of images) {
-    const clone = new Image()
-    clone.onload = cb
-    clone.onerror = cb
-    clone.src = image.src
-  }
-})
 
 type UsePrintableConsentArgs = {
   studyShortcode: string
@@ -76,10 +50,7 @@ const usePrintableConsent = (args: UsePrintableConsentArgs) => {
       const surveyModel = surveyJSModelFromForm(form)
       surveyModel.title = form.name
       surveyModel.data = resumableData?.data
-
-      surveyModel.mode = 'display'
-      surveyModel.questionsOnPageMode = 'singlePage'
-      surveyModel.showProgressBar = 'off'
+      configureModelForPrint(surveyModel)
       surveyModel.setVariable('portalEnvironmentName', portalEnv.environmentName)
 
       return surveyModel

@@ -18,5 +18,6 @@ public class EmailTemplate extends BaseEntity implements Versioned {
     private String name;
     private String stableId;
     private int version;
+    private Integer publishedVersion;
     private UUID portalId;
 }

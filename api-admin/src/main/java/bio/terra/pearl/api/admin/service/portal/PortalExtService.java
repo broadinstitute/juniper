@@ -72,6 +72,9 @@ public class PortalExtService {
       AdminUser user) {
 
     authUtilService.authUserToPortal(user, portalShortcode);
+    if (!EnvironmentName.sandbox.equals(envName)) {
+      throw new IllegalArgumentException("You cannot directly update non-sandbox environments");
+    }
     PortalEnvironment portalEnv = portalEnvironmentService.findOne(portalShortcode, envName).get();
     portalEnv.setSiteContentId(updatedEnv.getSiteContentId());
     return portalEnvironmentService.update(portalEnv);

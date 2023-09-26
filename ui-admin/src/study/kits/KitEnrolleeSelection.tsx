@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import _keyBy from 'lodash/keyBy'
 import _mapValues from 'lodash/mapValues'
 import { Link } from 'react-router-dom'
@@ -18,6 +18,8 @@ import { basicTableLayout, checkboxColumnCell, ColumnVisibilityControl, Indeterm
 import LoadingSpinner from 'util/LoadingSpinner'
 import { instantToDateString } from 'util/timeUtils'
 import RequestKitModal from '../participants/RequestKitModal'
+import { useLoadingEffect } from 'api/api-utils'
+import { enrolleeKitRequestPath } from '../participants/enrolleeView/EnrolleeView'
 
 type EnrolleeRow = Enrollee & {
   taskCompletionStatus: Record<string, boolean>
@@ -28,7 +30,6 @@ type EnrolleeRow = Enrollee & {
  */
 export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
-  const [isLoading, setIsLoading] = useState(true)
   const [enrollees, setEnrollees] = useState<EnrolleeRow[]>([])
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: 'createdAt', desc: true },
@@ -44,8 +45,8 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   ])
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
 
-  const loadEnrollees = async () => {
-    setIsLoading(true)
+
+  const { isLoading, reload } = useLoadingEffect(async () => {
     const enrollees = await Api.fetchEnrolleesWithKits(
       portal.shortcode, study.shortcode, currentEnv.environmentName)
     const enrolleeRows = enrollees.map(enrollee => {
@@ -57,11 +58,6 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
       return { ...enrollee, taskCompletionStatus }
     })
     setEnrollees(enrolleeRows)
-    setIsLoading(false)
-  }
-
-  useEffect(() => {
-    loadEnrollees()
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
   const onSubmit = async (kitType: string) => {
@@ -70,13 +66,11 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
       .map(key => enrollees[parseInt(key)].shortcode)
 
     // This iteration should be happening server-side: JN-460
-    for (const shortcode of enrolleesSelected) {
-      await Api.createKitRequest(
-        portal.shortcode, study.shortcode, currentEnv.environmentName, shortcode, kitType)
-    }
+    await Api.requestKits(
+      portal.shortcode, study.shortcode, currentEnv.environmentName, enrolleesSelected, kitType)
 
     setShowRequestKitModal(false)
-    loadEnrollees()
+    reload()
   }
 
   const numSelected = Object.keys(rowSelection).length
@@ -113,7 +107,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
     meta: {
       columnType: 'string'
     },
-    cell: data => <Link to={`${currentEnvPath}/participants/${data.getValue()}`}>{data.getValue()}</Link>
+    cell: data => <Link to={enrolleeKitRequestPath(currentEnvPath, data.getValue().toString())}>{data.getValue()}</Link>
   }, {
     header: 'Join date',
     accessorKey: 'createdAt',

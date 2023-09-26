@@ -14,14 +14,19 @@ public class AdminUserFactory {
 
     public AdminUser.AdminUserBuilder builder(String testName) {
         return AdminUser.builder()
-                .username(RandomStringUtils.randomAlphabetic(10) + "@admin.test.com");
+                .username(testName + "_" + RandomStringUtils.randomAlphabetic(5) + "@test.com");
     }
 
     public AdminUser buildPersisted(String testName) {
-        return adminUserService.create(builder(testName).build());
+        return buildPersisted(testName, false);
+    }
+
+    public AdminUser buildPersisted(String testName, boolean superuser) {
+        return adminUserService.create(builder(testName).superuser(superuser).build());
     }
 
     public AdminUser buildPersisted(AdminUser.AdminUserBuilder builder) {
         return adminUserService.create(builder.build());
     }
+
 }
