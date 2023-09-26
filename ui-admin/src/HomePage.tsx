@@ -13,8 +13,8 @@ function HomePage() {
     <div className="ms-5 mt-4">
       <h2 className="h4">My Studies</h2>
       <ul className="list-group list-group-flush fs-5">
-        { portalList.flatMap(portal =>
-          portal.portalStudies.map(portalStudy => {
+        { portalList.sort((a, b) => a.name.localeCompare(b.name)).flatMap(portal =>
+          portal.portalStudies.sort((a, b) => a.study.name.localeCompare(b.study.name)).map(portalStudy => {
             const study = portalStudy.study
             return <li key={`${portal.shortcode}-${study.shortcode}`}
               className="list-group-item my-1 border border-secondary-subtle rounded ">
