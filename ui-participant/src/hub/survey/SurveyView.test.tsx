@@ -184,7 +184,7 @@ describe('Renders a survey', () => {
     await userEvent.click(screen.getByText('Blue'))
     await new Promise(r => setTimeout(r, 200))
     await userEvent.click(screen.getByText('Complete'))
-    
+
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
       response: expect.objectContaining({
         answers: [{ questionStableId: 'radio1', stringValue: 'green' },
