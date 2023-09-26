@@ -55,6 +55,8 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .phoneNumber("111-222-3333")
                 .build();
         var studyName = "testStudy";
+        when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any()))
+                .thenReturn("{ \"kits\": [{}] }");
 
         // Act
         var sampleKit = kitRequestService.requestKit(adminUser, studyName, enrollee, "testRequestKit");

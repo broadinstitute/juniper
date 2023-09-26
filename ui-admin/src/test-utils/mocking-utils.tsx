@@ -196,12 +196,13 @@ export const mockKitRequest: (args?: {
   dsmStatus,
   pepperStatus: {
     kitId: '',
-    currentStatus: '(unknown)',
+    currentStatus: 'Kit Without Label',
     labelDate: '',
     scanDate: '',
     receiveDate: '',
     trackingNumber: '',
-    returnTrackingNumber: ''
+    returnTrackingNumber: '',
+    errorMessage: ''
   }
 })
 

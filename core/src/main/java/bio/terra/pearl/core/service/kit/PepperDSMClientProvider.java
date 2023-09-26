@@ -6,10 +6,14 @@ import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class PepperDSMClientProvider {
+    private final LivePepperDSMClient.PepperDSMConfig pepperDSMConfig;
     private final LivePepperDSMClient livePepperDSMClient;
     private final StubPepperDSMClient stubPepperDSMClient;
 
-    public PepperDSMClientProvider(LivePepperDSMClient livePepperDSMClient, StubPepperDSMClient stubPepperDSMClient) {
+    public PepperDSMClientProvider(LivePepperDSMClient.PepperDSMConfig pepperDSMConfig,
+                                   LivePepperDSMClient livePepperDSMClient,
+                                   StubPepperDSMClient stubPepperDSMClient) {
+        this.pepperDSMConfig = pepperDSMConfig;
         this.livePepperDSMClient = livePepperDSMClient;
         this.stubPepperDSMClient = stubPepperDSMClient;
     }
@@ -20,7 +24,9 @@ public class PepperDSMClientProvider {
     @Primary
     @Bean
     public PepperDSMClient getPepperDSMClient() {
-        return getStubPepperDSMClient();
+        return pepperDSMConfig.useLiveDsm() ?
+                getLivePepperDSMClient() :
+                getStubPepperDSMClient();
     }
 
     @Bean

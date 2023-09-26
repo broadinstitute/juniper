@@ -1094,6 +1094,19 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/kits/refreshKitStatuses:
+    post:
+      summary: Fetch kit statuses from Pepper and cache in the Juniper database
+      tags: [ kit ]
+      operationId: refreshKitStatuses
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '204':
+          description: Success
+        '500':
+          $ref: '#/components/responses/ServerError'
 
 components:
   responses:
