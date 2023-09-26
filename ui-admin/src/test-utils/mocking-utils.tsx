@@ -1,5 +1,15 @@
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { DatasetDetails, Enrollee, KitRequest, KitType, NotificationConfig, ParticipantNote, Portal } from 'api/api'
+import {
+  ConsentForm,
+  DatasetDetails,
+  Enrollee,
+  KitRequest,
+  KitType,
+  NotificationConfig,
+  ParticipantNote,
+  Portal,
+  StudyEnvironmentConsent
+} from 'api/api'
 import { Survey } from '@juniper/ui-core/build/types/forms'
 import { ParticipantTask } from '@juniper/ui-core/build/types/task'
 
@@ -80,7 +90,7 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
   currentEnv: {
     environmentName: 'sandbox',
     id: 'studyEnvId',
-    configuredConsents: [],
+    configuredConsents: [mockConfiguredConsent()],
     configuredSurveys: [mockConfiguredSurvey()],
     notificationConfigs: [],
     studyEnvironmentConfig: {
@@ -109,6 +119,33 @@ export const mockConfiguredSurvey: () => StudyEnvironmentSurvey = () => {
     allowParticipantReedit: true,
     prepopulate: true,
     survey: mockSurvey()
+  }
+}
+
+/** Mock StudyEnvironmentConsent */
+export const mockConfiguredConsent = (): StudyEnvironmentConsent => {
+  return {
+    id: 'fakeGuid',
+    consentFormId: 'consentId1',
+    consentOrder: 1,
+    consentForm: mockConsentForm(),
+    allowAdminEdit: false,
+    allowParticipantReedit: false,
+    allowParticipantStart: true,
+    prepopulate: false
+  }
+}
+
+/** fake ConsentForm */
+export const mockConsentForm = (): ConsentForm => {
+  return {
+    id: 'fakeGuid2',
+    content: '{"pages": []}',
+    stableId: 'form1',
+    version: 1,
+    name: 'Mock consent',
+    createdAt: 0,
+    lastUpdatedAt: 0
   }
 }
 
@@ -203,7 +240,8 @@ export const mockEnrollee: () => Enrollee = () => {
 }
 
 /** helper function to generate a ParticipantTask object for a survey and enrollee */
-export const taskForSurvey = (survey: Survey, enrolleeId: string): ParticipantTask => {
+export const taskForForm = (form: Survey | ConsentForm, enrolleeId: string,
+  isConsent: boolean): ParticipantTask => {
   return {
     id: randomString(10),
     blocksHub: false,
@@ -212,10 +250,10 @@ export const taskForSurvey = (survey: Survey, enrolleeId: string): ParticipantTa
     portalParticipantUserId: randomString(10),
     status: 'NEW',
     studyEnvironmentId: randomString(10),
-    taskType: 'SURVEY',
-    targetName: survey.name,
-    targetStableId: survey.stableId,
-    targetAssignedVersion: survey.version,
+    taskType: isConsent ? 'CONSENT' : 'SURVEY',
+    targetName: form.name,
+    targetStableId: form.stableId,
+    targetAssignedVersion: form.version,
     taskOrder: 1
   }
 }
