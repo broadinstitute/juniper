@@ -14,8 +14,7 @@ public class PepperKitStatus {
     private String juniperKitId;
     private String currentStatus;
     private String dsmShippingLabel;
-    @JsonProperty("participantId")
-    private String dsmParticipantId;
+    private String participantId; // Juniper enrollee shortcode
     private String labelDate;
     private String labelByEmail;
     private String scanDate;

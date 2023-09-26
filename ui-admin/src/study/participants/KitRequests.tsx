@@ -22,6 +22,26 @@ function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string })
   </div>
 }
 
+const columns: ColumnDef<KitRequest, string>[] = [{
+  header: 'Kit type',
+  accessorKey: 'kitType.displayName'
+}, {
+  header: 'Status',
+  accessorKey: 'status',
+  cell: ({ row }) => <KitStatusCell kitRequest={row.original} infoPlacement='right'/>
+}, {
+  header: 'Created',
+  accessorKey: 'createdAt',
+  accessorFn: data => instantToDefaultString(data.createdAt)
+}, {
+  header: 'Address',
+  cell: ({ row }) => <KitRequestAddress sentToAddressJson={row.original.sentToAddress}/>
+}, {
+  header: 'DSM Status',
+  accessorKey: 'dsmStatus',
+  cell: ({ row }) => <InfoPopup content={row.original.dsmStatus} placement='left'/>
+}]
+
 /** Shows a list of all kit requests for an enrollee. */
 export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
                                       {
@@ -39,26 +59,6 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
     setShowRequestKitModal(false)
     onUpdate()
   }
-
-  const columns: ColumnDef<KitRequest, string>[] = [{
-    header: 'Kit type',
-    accessorKey: 'kitType.displayName'
-  }, {
-    header: 'Status',
-    accessorKey: 'status',
-    cell: ({ row }) => <KitStatusCell kitRequest={row.original} infoPlacement='right'/>
-  }, {
-    header: 'Created',
-    accessorKey: 'createdAt',
-    accessorFn: data => instantToDefaultString(data.createdAt)
-  }, {
-    header: 'Address',
-    cell: ({ row }) => <KitRequestAddress sentToAddressJson={row.original.sentToAddress}/>
-  }, {
-    header: 'DSM Status',
-    accessorKey: 'dsmStatus',
-    cell: ({ row }) => <InfoPopup content={row.original.dsmStatus} placement='left'/>
-  }]
 
   const table = useReactTable({
     data: enrollee.kitRequests || [],

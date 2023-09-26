@@ -21,7 +21,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faRefresh } from '@fortawesome/free-solid-svg-icons'
 import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
-import {useUser} from "../../user/UserProvider";
+import { useUser } from '../../user/UserProvider'
 
 type KitStatusTabConfig = {
   status: string,
