@@ -1,5 +1,14 @@
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { DatasetDetails, Enrollee, KitRequest, KitType, NotificationConfig, ParticipantNote, Portal } from 'api/api'
+import {
+  DatasetDetails,
+  Enrollee,
+  KitRequest,
+  KitType,
+  NotificationConfig,
+  ParticipantNote,
+  Portal,
+  PortalStudy
+} from 'api/api'
 import { Survey } from '@juniper/ui-core/build/types/forms'
 import { ParticipantTask } from '@juniper/ui-core/build/types/task'
 
@@ -56,6 +65,26 @@ export const mockSurvey: () => Survey = () => ({
   lastUpdatedAt: 0,
   createdAt: 0
 })
+
+/** returns a mock portal study */
+export const makeMockPortalStudy = (name: string, shortcode: string): PortalStudy => {
+  return {
+    study: {
+      name,
+      shortcode,
+      studyEnvironments: []
+    }
+  }
+}
+
+/** returns a mock portal with the specified studies */
+export const makeMockPortal = (name: string, portalStudies: PortalStudy[]) => {
+  return {
+    ...mockPortal(),
+    name,
+    portalStudies
+  }
+}
 
 /** returns a list of survey versions */
 export const mockSurveyVersionsList: () => Survey[] = () => ([

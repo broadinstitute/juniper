@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 import HomePage from './HomePage'
-import { mockPortal } from './test-utils/mocking-utils'
+import { makeMockPortal, makeMockPortalStudy } from './test-utils/mocking-utils'
 import { useNavContext } from './navbar/NavContextProvider'
 import { setupRouterTest } from './test-utils/router-testing-utils'
 
@@ -10,42 +10,14 @@ jest.mock('./navbar/NavContextProvider')
 describe('HomePage', () => {
   it('renders the study list in alphabetical order', () => {
     const portalList = [
-      {
-        ...mockPortal(),
-        name: 'Z Portal',
-        portalStudies: [
-          {
-            study: {
-              name: 'Z Study',
-              shortcode: 'studyZ'
-            }
-          },
-          {
-            study: {
-              name: 'A Study',
-              shortcode: 'studyA'
-            }
-          },
-          {
-            study: {
-              name: 'M Study 1',
-              shortcode: 'studyM1'
-            }
-          }
-        ]
-      },
-      {
-        ...mockPortal(),
-        name: 'A Portal',
-        portalStudies: [
-          {
-            study: {
-              name: 'M Study 2',
-              shortcode: 'studyM2'
-            }
-          }
-        ]
-      }
+      makeMockPortal('Z Portal', [
+        makeMockPortalStudy('Z Study', 'studyZ'),
+        makeMockPortalStudy('A Study', 'studyA'),
+        makeMockPortalStudy('M Study 1', 'studyM1')
+      ]),
+      makeMockPortal('A Portal', [
+        makeMockPortalStudy('M Study 2', 'studyM2')
+      ])
     ]
 
     const mockContextValue = {
@@ -64,8 +36,8 @@ describe('HomePage', () => {
 
     const studies = screen.queryAllByText(/Study/)
 
-    expect(studies[0]).toHaveTextContent('M Study 2')
-    expect(studies[1]).toHaveTextContent('A Study')
+    expect(studies[0]).toHaveTextContent('M Study 2') // the study from "A Portal"
+    expect(studies[1]).toHaveTextContent('A Study') // the remaining three studies from "Z Portal"
     expect(studies[2]).toHaveTextContent('M Study 1')
     expect(studies[3]).toHaveTextContent('Z Study')
   })
