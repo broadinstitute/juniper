@@ -13,7 +13,7 @@ export default function StudySelector({ portalList, selectedShortcode, setSelect
       ({ label: ps.study.name, value: ps.study.shortcode, portalCode: portal.shortcode })))
   const selectedOpt = options
     .find(opt => opt.value === selectedShortcode)
-  return <Select options={options}
+  return <Select options={options} className="mb-3"
     value={selectedOpt}
     onChange={opt => {
       if (opt) {
