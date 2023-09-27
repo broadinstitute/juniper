@@ -8,6 +8,7 @@ import {
   NotificationConfig,
   ParticipantNote,
   Portal,
+  PortalStudy,
   StudyEnvironmentConsent
 } from 'api/api'
 import { Survey } from '@juniper/ui-core/build/types/forms'
@@ -66,6 +67,26 @@ export const mockSurvey: () => Survey = () => ({
   lastUpdatedAt: 0,
   createdAt: 0
 })
+
+/** returns a mock portal study */
+export const makeMockPortalStudy = (name: string, shortcode: string): PortalStudy => {
+  return {
+    study: {
+      name,
+      shortcode,
+      studyEnvironments: []
+    }
+  }
+}
+
+/** returns a mock portal with the specified studies */
+export const makeMockPortal = (name: string, portalStudies: PortalStudy[]) => {
+  return {
+    ...mockPortal(),
+    name,
+    portalStudies
+  }
+}
 
 /** returns a list of survey versions */
 export const mockSurveyVersionsList: () => Survey[] = () => ([
