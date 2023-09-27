@@ -65,7 +65,7 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
   @Override
   public ResponseEntity<Void> remove(
       String portalShortcode, String studyShortcode, String envName, UUID configuredSurveyId) {
-    AdminUser adminUser = requestService.requireAdminUser(request);
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
     surveyExtService.removeConfiguredSurvey(

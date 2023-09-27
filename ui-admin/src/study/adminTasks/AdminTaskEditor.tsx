@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {AdminTask, AdminUser} from "api/api";
+import {AdminTask, AdminTaskStatus, AdminUser} from "api/api";
 import {Modal} from "react-bootstrap";
 import Select from "react-select";
 import LoadingSpinner from "util/LoadingSpinner";
@@ -15,8 +15,23 @@ export default function AdminTaskEditor({task, workingTask, setWorkingTask, user
             assignedAdminUserId: user?.id
         })
     })
+    const statusOpts: {label: string, value: AdminTaskStatus}[] = ['NEW', 'COMPLETE']
+        .map(status => ({label: status, value: status as AdminTaskStatus}))
+    const statusValue = statusOpts.find(opt => opt.value === task.status)
     return <div>
-        <AdminUserSelect selectedUser={selectedUser} setSelectedUser={setSelectedUser} users={users}/>
+        <label>
+            Status:
+            <Select options={statusOpts} value={statusValue}
+                    styles={{ control: baseStyles => ({ ...baseStyles, width: '400px' }) }}
+                    onChange={opt => setWorkingTask({
+                ...workingTask, status: opt?.value ?? 'NEW'
+            })}/>
+        </label>
+        <label className="mt-3">
+            Assigned to:
+            <AdminUserSelect selectedUser={selectedUser} setSelectedUser={setSelectedUser} users={users}/>
+        </label>
+
     </div>
 }
 
@@ -31,7 +46,7 @@ export const AdminTaskEditModal = ({task, users, onDismiss}:
 
     return <Modal show={true} onHide={onDismiss}>
         <Modal.Header closeButton>
-            <Modal.Title>Edit admin task</Modal.Title>
+            <Modal.Title>Update admin task</Modal.Title>
         </Modal.Header>
         <Modal.Body>
             <AdminTaskEditor task={task} workingTask={workingTask} setWorkingTask={setWorkingTask} users={users}/>

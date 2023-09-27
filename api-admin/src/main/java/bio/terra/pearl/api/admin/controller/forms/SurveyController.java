@@ -37,7 +37,7 @@ public class SurveyController implements SurveyApi {
 
   @Override
   public ResponseEntity<Object> getAllVersions(String portalShortcode, String stableId) {
-    AdminUser adminUser = requestService.requireAdminUser(request);
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
     return ResponseEntity.ok(surveyExtService.listVersions(portalShortcode, stableId, adminUser));
   }
 
@@ -63,7 +63,7 @@ public class SurveyController implements SurveyApi {
 
   @Override
   public ResponseEntity<Void> delete(String portalShortcode, String stableId) {
-    AdminUser adminUser = requestService.requireAdminUser(request);
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
     surveyExtService.delete(portalShortcode, stableId, adminUser);
     return ResponseEntity.noContent().build();
   }

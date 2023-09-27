@@ -15,6 +15,9 @@ import {useAdminUserContext} from "providers/AdminUserProvider";
 import _truncate from 'lodash/truncate'
 import {studyEnvParticipantPath} from "../participants/ParticipantsRouter";
 import {Link} from "react-router-dom";
+import {useLoadingEffect} from "api/api-utils";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faCheck} from "@fortawesome/free-solid-svg-icons";
 
 
 
@@ -23,7 +26,6 @@ export default function AdminTaskList({ studyEnvContext }: {studyEnvContext: Stu
     const [taskData, setTaskData] = useState<AdminTaskListDto>({
         tasks: [], enrollees: [], participantNotes: []
     })
-    const [isLoading, setIsLoading] = useState(true)
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
     const { users } = useAdminUserContext()
@@ -52,6 +54,10 @@ export default function AdminTaskList({ studyEnvContext }: {studyEnvContext: Stu
         header: 'Type',
         accessorKey: 'taskType'
     }, {
+        header: 'Status',
+        accessorKey: 'status',
+        cell: info => info.getValue() === 'COMPLETE' ? <FontAwesomeIcon icon={faCheck}/> : info.getValue()
+    }, {
         header: 'Task',
         id: 'taskDescription',
         cell: info => taskDescription(info.row.original, paramsFromContext(studyEnvContext), taskData)
@@ -73,16 +79,14 @@ export default function AdminTaskList({ studyEnvContext }: {studyEnvContext: Stu
         debugTable: true
     })
 
-    useEffect(() => {
-        setIsLoading(true)
-        Api.fetchAdminTasksByStudyEnv(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
-            studyEnvContext.currentEnv.environmentName, ['enrollee', 'participantNote']).then(result => {
-            setTaskData(result)
-            setIsLoading(false)
-        }).catch((e: Error) => {
-            alert(`error loading mailing list ${  e}`)
-            setIsLoading(false)
-        })
+    const { isLoading} = useLoadingEffect(async () => {
+        const result = await Api.fetchAdminTasksByStudyEnv(
+            studyEnvContext.portal.shortcode,
+            studyEnvContext.study.shortcode,
+            studyEnvContext.currentEnv.environmentName,
+            ['enrollee', 'participantNote'])
+
+        setTaskData(result)
     }, [studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
         studyEnvContext.currentEnv.environmentName])
     return <div className="container p-3">

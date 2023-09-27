@@ -163,17 +163,20 @@ export type AdminTaskListDto = {
   participantNotes: ParticipantNote[]
 }
 
+export type AdminTaskStatus = 'NEW' | 'COMPLETE' | 'REJECTED'
+
 export type AdminTask = {
   id: string
   createdAt: number
   completedAt: number
-  status: 'NEW' | 'COMPLETE' | 'IN_PROGRESS' | 'REJECTED'
+  status: AdminTaskStatus
   taskType: 'REVIEW' | 'FOLLOW_UP'
   studyEnvironmentId: string
   enrolleeId?: string
   participantNoteId?: string
   creatingAdminUserId?: string
   assignedAdminUserId?: string
+  description: string
   dispositionNote: string
 }
 

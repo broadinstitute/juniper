@@ -29,5 +29,6 @@ public class AdminTask extends BaseEntity {
     private UUID participantNoteId;
     private UUID creatingAdminUserId;
     private UUID assignedAdminUserId;
+    private String description;
     private String dispositionNote;
 }
