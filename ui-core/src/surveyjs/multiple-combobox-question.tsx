@@ -52,7 +52,7 @@ Serializer.addClass(
   'question'
 )
 
-export type ItemValue = {
+type ItemValue = {
   value: string
   text: string
 }
