@@ -8,7 +8,7 @@ import {
   NotificationConfig,
   ParticipantNote,
   Portal,
-  PortalStudy
+  PortalStudy,
   StudyEnvironmentConsent
 } from 'api/api'
 import { Survey } from '@juniper/ui-core/build/types/forms'
