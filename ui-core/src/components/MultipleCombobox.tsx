@@ -4,6 +4,7 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import classNames from 'classnames'
 import { useCombobox, useMultipleSelection } from 'downshift'
 import React, { useCallback, useMemo, useRef, useState } from 'react'
+import { trimStart } from 'lodash'
 
 type MultipleComboboxProps<ComboboxItem> = {
   id?: string
@@ -31,7 +32,7 @@ export const MultipleComboBox = <ComboboxItem, >(props: MultipleComboboxProps<Co
 
   // Filter options to those that match input value.
   const items = useMemo(
-    () => options.filter(item => itemToString(item).includes(inputValue)),
+    () => options.filter(item => itemToString(item).toLowerCase().includes(inputValue.toLowerCase())),
     [options, inputValue, itemToString]
   )
 
@@ -143,7 +144,7 @@ export const MultipleComboBox = <ComboboxItem, >(props: MultipleComboboxProps<Co
           }
           break
         case useCombobox.stateChangeTypes.InputChange:
-          setInputValue(newInputValue || '')
+          setInputValue(trimStart(newInputValue) || '')
           break
         case useCombobox.stateChangeTypes.InputBlur:
           // Clear input so full list of options is shown when refocused.
