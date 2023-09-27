@@ -89,8 +89,13 @@ export const useSurveyParams = () => {
 
 /** routable component for survey editing */
 function SurveyView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
-  const { isReadOnly, version, stableId } = useSurveyParams()
   const { currentEnv, portal } = studyEnvContext
+
+  if (!currentEnv.studyEnvironmentConfig.initialized) {
+    return <span>Study environment not initialized</span>
+  }
+
+  const { isReadOnly, version, stableId } = useSurveyParams()
   const applyReadOnly = isReadOnly || currentEnv.environmentName !== 'sandbox'
   const envSurvey = currentEnv.configuredSurveys
     .find(s => s.survey.stableId === stableId)?.survey
