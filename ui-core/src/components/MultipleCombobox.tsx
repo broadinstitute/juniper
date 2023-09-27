@@ -32,7 +32,7 @@ export const MultipleComboBox = <ComboboxItem, >(props: MultipleComboboxProps<Co
 
   // Filter options to those that match input value.
   const items = useMemo(
-    () => options.filter(item => itemToString(item).toLowerCase().includes(inputValue.toLowerCase())),
+    () => options.filter(item => itemToString(item).toLowerCase().includes(trimStart(inputValue.toLowerCase()))),
     [options, inputValue, itemToString]
   )
 
@@ -144,7 +144,7 @@ export const MultipleComboBox = <ComboboxItem, >(props: MultipleComboboxProps<Co
           }
           break
         case useCombobox.stateChangeTypes.InputChange:
-          setInputValue(trimStart(newInputValue) || '')
+          setInputValue(newInputValue || '')
           break
         case useCombobox.stateChangeTypes.InputBlur:
           // Clear input so full list of options is shown when refocused.
