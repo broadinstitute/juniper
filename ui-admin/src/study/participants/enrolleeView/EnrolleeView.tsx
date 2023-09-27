@@ -53,15 +53,20 @@ export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
       .filter(task => task.targetStableId === configSurvey.survey.stableId)
       .map(task => task.surveyResponseId)
     const matchedResponses = enrollee.surveyResponses
-      .filter(response => matchedResponseIds.includes(response.id as string))
+      .filter(response => matchedResponseIds.includes(response.id))
     responseMap[configSurvey.survey.stableId] = { survey: configSurvey, responses: matchedResponses }
   })
 
   const consents = currentEnv.configuredConsents
   const consentMap: ConsentResponseMapT = {}
   consents.forEach(configConsent => {
+    // to match responses to consents, filter using the tasks, since those have the stableIds
+    // this is valid since it's currently enforced that all consents are done as part of a task,
+    const matchedResponseIds = enrollee.participantTasks
+      .filter(task => task.targetStableId === configConsent.consentForm.stableId)
+      .map(task => task.consentResponseId)
     const matchedResponses = enrollee.consentResponses
-      .filter(response => configConsent.consentForm.id === response.consentFormId)
+      .filter(response => matchedResponseIds.includes(response.id))
     consentMap[configConsent.consentForm.stableId] = { consent: configConsent, responses: matchedResponses }
   })
 
@@ -103,7 +108,8 @@ export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                       <NavLink to={`consents/${stableId}`} className={getLinkCssClasses}>
                         { consent.consentForm.name }
                         { isConsented(consentMap[stableId].responses) &&
-                          <FontAwesomeIcon className="text-success ms-2 fa-lg" icon={faCheck}/>
+                          <FontAwesomeIcon className="text-success ms-2 fa-lg" icon={faCheck}
+                            title="completed"/>
                         }
                       </NavLink>
                     </li>

@@ -153,7 +153,8 @@ export type PepperKitStatus = {
   scanDate: string,
   receiveDate: string,
   trackingNumber: string,
-  returnTrackingNumber: string
+  returnTrackingNumber: string,
+  errorMessage: string
 }
 
 const emptyPepperKitStatus: PepperKitStatus = {
@@ -163,7 +164,8 @@ const emptyPepperKitStatus: PepperKitStatus = {
   scanDate: '',
   receiveDate: '',
   trackingNumber: '',
-  returnTrackingNumber: ''
+  returnTrackingNumber: '',
+  errorMessage: ''
 }
 
 /**
@@ -177,12 +179,11 @@ function parsePepperKitStatus(json: string | undefined): PepperKitStatus {
   if (json) {
     try {
       const pepperStatus = JSON.parse(json)
-      if (pepperStatus.kitId && pepperStatus.currentStatus) {
-        return {
-          ...emptyPepperKitStatus,
-          ..._pick(pepperStatus,
-            'kitId', 'currentStatus', 'labelDate', 'scanDate', 'receiveDate', 'trackingNumber', 'returnTrackingNumber')
-        }
+      return {
+        ...emptyPepperKitStatus,
+        ..._pick(pepperStatus,
+          'juniperKitId', 'currentStatus', 'labelDate', 'scanDate', 'receiveDate', 'trackingNumber',
+          'returnTrackingNumber', 'errorMessage')
       }
     } catch {
       // ignore; fall-through to result for unexpected value
@@ -452,6 +453,15 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async deleteSurvey(portalShortcode: string, stableId: string): Promise<Response> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys/${stableId}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
+  },
+
   async createNewSurveyVersion(portalShortcode: string, survey: Survey): Promise<Survey> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys/${survey.stableId}/newVersion`
 
@@ -502,6 +512,17 @@ export default {
       body: JSON.stringify(configuredSurvey)
     })
     return await this.processJsonResponse(response)
+  },
+
+  async removeConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string,
+    configuredSurveyId: string): Promise<Response> {
+    const url =`${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
+        `/env/${environmentName}/configuredSurveys/${configuredSurveyId}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
   },
 
   async updateConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string,
@@ -563,7 +584,9 @@ export default {
     Promise<Enrollee> {
     const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}`
     const response = await fetch(url, this.getGetInit())
-    return await this.processJsonResponse(response)
+    const enrollee: Enrollee = await this.processJsonResponse(response)
+    enrollee.kitRequests?.forEach(kit => { kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus) })
+    return enrollee
   },
 
   async fetchEnrolleeNotifications(portalShortcode: string, studyShortcode: string, envName: string,
@@ -660,6 +683,17 @@ export default {
     const kits: KitRequest[] = await this.processJsonResponse(response)
     kits.forEach(kit => { kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus) })
     return kits
+  },
+
+  async refreshKitStatuses(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: string) {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/kits/refreshKitStatuses`
+    return await this.processResponse(await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    }))
   },
 
   async fetchEnrolleeKitRequests(

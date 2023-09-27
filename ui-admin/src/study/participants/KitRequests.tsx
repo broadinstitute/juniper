@@ -8,6 +8,8 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { instantToDefaultString } from 'util/timeUtils'
 import { useUser } from 'user/UserProvider'
+import InfoPopup from 'components/forms/InfoPopup'
+import KitStatusCell from './KitStatusCell'
 
 /** Component for rendering the address a kit was sent to based on JSON captured at the time of the kit request. */
 function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string }) {
@@ -25,7 +27,8 @@ const columns: ColumnDef<KitRequest, string>[] = [{
   accessorKey: 'kitType.displayName'
 }, {
   header: 'Status',
-  accessorKey: 'status'
+  accessorKey: 'status',
+  cell: ({ row }) => <KitStatusCell kitRequest={row.original} infoPlacement='right'/>
 }, {
   header: 'Created',
   accessorKey: 'createdAt',
@@ -35,7 +38,8 @@ const columns: ColumnDef<KitRequest, string>[] = [{
   cell: ({ row }) => <KitRequestAddress sentToAddressJson={row.original.sentToAddress}/>
 }, {
   header: 'DSM Status',
-  accessorKey: 'dsmStatus'
+  accessorKey: 'dsmStatus',
+  cell: ({ row }) => <InfoPopup content={row.original.dsmStatus} placement='left'/>
 }]
 
 /** Shows a list of all kit requests for an enrollee. */

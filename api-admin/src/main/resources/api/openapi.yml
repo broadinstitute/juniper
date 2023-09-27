@@ -143,6 +143,18 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+    delete:
+      summary: deletes the specified survey, will fail if the survey has any responses or is in use by a non-sandbox environment
+      tags: [ survey ]
+      operationId: delete
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: true, schema: { type: string } }
+      responses:
+        '204':
+          description: No Content
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/surveys:
     post:
       summary: creates the requested survey, will fail if the given stableId already exists
@@ -195,6 +207,20 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys/{configSurveyId}:
+    delete:
+      summary: Removes a configured survey from a study environment
+      tags: [ configuredSurvey ]
+      operationId: remove
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: configSurveyId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '204':
+          description: No Content
+        '500':
+          $ref: '#/components/responses/ServerError'
     patch:
       summary: Updates a configured survey, such as by updating to a new version of the survey
       tags: [ configuredSurvey ]
@@ -1066,6 +1092,19 @@ paths:
         '200':
           description: kit list
           content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/kits/refreshKitStatuses:
+    post:
+      summary: Fetch kit statuses from Pepper and cache in the Juniper database
+      tags: [ kit ]
+      operationId: refreshKitStatuses
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '204':
+          description: Success
         '500':
           $ref: '#/components/responses/ServerError'
 

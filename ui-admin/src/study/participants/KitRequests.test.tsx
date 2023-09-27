@@ -9,13 +9,12 @@ test('renders kit requsets', async () => {
   const enrollee = mockEnrollee()
   const studyEnvContext = mockStudyEnvContext()
   const { RoutedComponent } = setupRouterTest(
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <KitRequests enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {}}/>)
+    <KitRequests enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={jest.fn()}/>)
   render(RoutedComponent)
   await waitFor(() => {
     expect(screen.getByText('Kit requests')).toBeInTheDocument()
   })
   expect(screen.getByText('Test kit')).toBeInTheDocument()
-  expect(screen.getByText('CREATED')).toBeInTheDocument()
+  expect(screen.getByText('Kit Without Label')).toBeInTheDocument()
   expect(screen.getByText('1234 Fake Street')).toBeInTheDocument()
 })

@@ -19,6 +19,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { instantToDateString } from 'util/timeUtils'
 import RequestKitModal from '../participants/RequestKitModal'
 import { useLoadingEffect } from 'api/api-utils'
+import { enrolleeKitRequestPath } from '../participants/enrolleeView/EnrolleeView'
 
 type EnrolleeRow = Enrollee & {
   taskCompletionStatus: Record<string, boolean>
@@ -106,7 +107,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
     meta: {
       columnType: 'string'
     },
-    cell: data => <Link to={`${currentEnvPath}/participants/${data.getValue()}`}>{data.getValue()}</Link>
+    cell: data => <Link to={enrolleeKitRequestPath(currentEnvPath, data.getValue().toString())}>{data.getValue()}</Link>
   }, {
     header: 'Join date',
     accessorKey: 'createdAt',

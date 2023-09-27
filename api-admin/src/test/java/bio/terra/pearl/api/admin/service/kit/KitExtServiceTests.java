@@ -1,5 +1,6 @@
 package bio.terra.pearl.api.admin.service.kit;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -9,7 +10,6 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import java.util.Arrays;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -24,7 +24,7 @@ public class KitExtServiceTests extends BaseSpringBootTest {
     when(mockAuthUtilService.authUserToStudy(any(), any(), any()))
         .thenThrow(new PermissionDeniedException(""));
     AdminUser adminUser = new AdminUser();
-    Assertions.assertThrows(
+    assertThrows(
         PermissionDeniedException.class,
         () ->
             kitExtService.requestKits(
@@ -42,11 +42,22 @@ public class KitExtServiceTests extends BaseSpringBootTest {
     when(mockAuthUtilService.authUserToStudy(any(), any(), any()))
         .thenThrow(new PermissionDeniedException(""));
     AdminUser adminUser = new AdminUser();
-    Assertions.assertThrows(
+    assertThrows(
         PermissionDeniedException.class,
         () ->
             kitExtService.getKitRequestsByStudyEnvironment(
                 adminUser, "someportal", "somestudy", EnvironmentName.sandbox));
+  }
+
+  @Transactional
+  @Test
+  public void testRefreshKitStatusesAuthsStudy() {
+    when(mockAuthUtilService.authUserToStudy(any(), any(), any()))
+        .thenThrow(new PermissionDeniedException(""));
+    AdminUser adminUser = new AdminUser();
+    assertThrows(
+        PermissionDeniedException.class,
+        () -> kitExtService.refreshKitStatuses(adminUser, "someportal", "somestudy"));
   }
 
   @MockBean private AuthUtilService mockAuthUtilService;
