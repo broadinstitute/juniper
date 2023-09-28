@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import 'react-notifications-component/dist/theme.css'
 import 'styles/notifications.css'
 import 'survey-core/defaultV2.min.css'
 import './App.css'
 import './print.css'
 
-import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { ReactNotifications } from 'react-notifications-component'
 
 import { RedirectFromOAuth } from 'login/RedirectFromOAuth'
@@ -26,6 +26,16 @@ import AdminSidebar from './navbar/AdminSidebar'
 import NavContextProvider from 'navbar/NavContextProvider'
 import PopulateRouteSelect from './populate/PopulateRouteSelect'
 
+/** auto-scroll-to-top on any navigation */
+const ScrollToTop = () => {
+  const location = useLocation()
+  useEffect(() => {
+    // @ts-expect-error TS thinks "instant" isn't a valid scroll behavior.
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [location.pathname])
+  return null
+}
+
 
 /** container for the app including the router  */
 function App() {
@@ -39,6 +49,7 @@ function App() {
                 <IdleStatusMonitor maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={5 * 60 * 1000}/>
                 <ReactNotifications />
                 <BrowserRouter>
+                  <ScrollToTop/>
                   <Routes>
                     <Route path="/">
                       <Route element={<ProtectedRoute>
@@ -70,7 +81,7 @@ function PageFrame() {
   return (
     <div className="d-flex">
       <AdminSidebar/>
-      <div className="flex-grow-1 d-flex flex-column" style={{ backgroundColor: '#ededed' }}>
+      <div className="flex-grow-1 d-flex flex-column" style={{ backgroundColor: '#fff' }}>
         <AdminNavbar/>
         <Outlet/>
       </div>
