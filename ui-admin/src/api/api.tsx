@@ -170,7 +170,7 @@ export type AdminTask = {
   createdAt: number
   completedAt: number
   status: AdminTaskStatus
-  taskType: 'REVIEW' | 'FOLLOW_UP'
+  taskType: 'GENERAL'
   studyEnvironmentId: string
   enrolleeId?: string
   participantNoteId?: string

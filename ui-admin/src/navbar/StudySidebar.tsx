@@ -42,7 +42,7 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
         </li>
         <li className="mb-3">
           <NavLink to={adminTasksPath(portalShortcode, study.shortcode, 'live')}
-                   className="text-white p-1 rounded" style={navStyleFunc}>Admin tasks</NavLink>
+                   className="text-white p-1 rounded" style={navStyleFunc}>Tasks</NavLink>
         </li>
         <li>
           <NavLink to={studyEnvMailingListPath(portalShortcode, study.shortcode, 'live')}

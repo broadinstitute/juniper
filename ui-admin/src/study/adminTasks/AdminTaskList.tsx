@@ -51,9 +51,6 @@ export default function AdminTaskList({ studyEnvContext }: {studyEnvContext: Stu
         accessorKey: 'assignedAdminUserId',
         cell: info => users.find(user => user.id === info.getValue())?.username
     }, {
-        header: 'Type',
-        accessorKey: 'taskType'
-    }, {
         header: 'Status',
         accessorKey: 'status',
         cell: info => info.getValue() === 'COMPLETE' ? <FontAwesomeIcon icon={faCheck}/> : info.getValue()

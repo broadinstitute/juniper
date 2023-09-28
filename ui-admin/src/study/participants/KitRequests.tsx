@@ -67,7 +67,7 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
   })
 
   return <div>
-    <h5>Kit requests</h5>
+    <h2 className="h4">Kit requests</h2>
     { user.superuser &&
       <button className='btn btn-secondary' onClick={() => setShowRequestKitModal(true)}>
         <FontAwesomeIcon icon={faPlus}/> Create a kit request

@@ -55,11 +55,10 @@ const ParticipantNotesView = ({ enrollee, notes, studyEnvContext, onUpdate }: Pa
   }, [enrollee.shortcode])
 
   return <div>
-    <h3 className="h6">Notes
-      <button className="btn btn-secondary" onClick={() => setShowAdd(!showAdd)}>
-        <FontAwesomeIcon icon={faPlus}/> Add
-      </button>
-    </h3>
+    <h3 className="h4">Notes</h3>
+    <button className="btn btn-secondary" onClick={() => setShowAdd(!showAdd)}>
+      <FontAwesomeIcon icon={faPlus}/> Add
+    </button>
     {showAdd && <div className="pb-3">
       <textarea rows={5} cols={80} value={newNoteText} onChange={e => setNewNoteText(e.target.value)}/>
       <label>

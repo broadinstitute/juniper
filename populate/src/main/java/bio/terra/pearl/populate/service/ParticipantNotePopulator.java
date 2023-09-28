@@ -10,6 +10,7 @@ import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.participant.ParticipantNoteService;
 import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import bio.terra.pearl.populate.dao.TimeShiftPopulateDao;
+import bio.terra.pearl.populate.dto.AdminTaskPopDto;
 import bio.terra.pearl.populate.dto.participant.ParticipantNotePopDto;
 import org.springframework.stereotype.Service;
 
@@ -49,20 +50,28 @@ public class ParticipantNotePopulator {
             timeShiftPopulateDao.changeParticipantNoteTime(participantNote.getId(), notePopDto.shiftedInstant());
         }
 
-        if (notePopDto.getAssignedToUsername() != null) {
-            AdminUser assignedUser = adminUserDao.findByUsername(notePopDto.getAssignedToUsername()).get();
+        if (notePopDto.getTask() != null) {
+            AdminTaskPopDto taskDto = notePopDto.getTask();
+            AdminUser assignedUser = adminUserDao.findByUsername(taskDto.getAssignedToUsername()).get();
+            UUID taskCreatingUserId = creatingUser.getId();
+            if (taskDto.getCreatingAdminUsername() != null) {
+                taskCreatingUserId = adminUserDao.findByUsername(taskDto.getCreatingAdminUsername()).get().getId();
+            }
             AdminTask adminTask = AdminTask.builder()
                     .studyEnvironmentId(enrollee.getStudyEnvironmentId())
-                    .creatingAdminUserId(creatingUser.getId())
+                    .creatingAdminUserId(taskCreatingUserId)
                     .assignedAdminUserId(assignedUser.getId())
                     .participantNoteId(participantNote.getId())
                     .enrolleeId(enrollee.getId())
-                    .taskType(notePopDto.getTaskType())
-                    .status(TaskStatus.NEW)
+                    .taskType(taskDto.getTaskType())
+                    .status(taskDto.getStatus())
                     .build();
             adminTask = adminTaskService.create(adminTask);
-            if (notePopDto.isTimeShifted()) {
-                timeShiftPopulateDao.changeAdminTaskCreationTime(adminTask.getId(), notePopDto.shiftedInstant());
+            if (notePopDto.isTimeShifted() && !taskDto.isTimeShifted()) {
+                timeShiftPopulateDao.changeAdminTaskCreationTime(participantNote.getId(), notePopDto.shiftedInstant());
+            }
+            if (taskDto.isTimeShifted()) {
+                timeShiftPopulateDao.changeAdminTaskCreationTime(adminTask.getId(), taskDto.shiftedInstant());
             }
         }
         return participantNote;

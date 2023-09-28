@@ -26,6 +26,7 @@ import CollapsableMenu from 'navbar/CollapsableMenu'
 import { faCircleCheck, faCircleHalfStroke } from '@fortawesome/free-solid-svg-icons'
 import { faCircle as faEmptyCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 import { ParticipantTaskStatus } from '@juniper/ui-core'
+import EnrolleeOverview from "./EnrolleeOverview";
 
 export type SurveyWithResponsesT = {
   survey: StudyEnvironmentSurvey,
@@ -111,7 +112,10 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
           <div style={{ minWidth: '290', maxWidth: '290px' }}>
             <ul className="list-unstyled">
               <li style={navListItemStyle} className="ps-3">
-                <NavLink to="profile" className={getLinkCssClasses}>Profile &amp; Notes</NavLink>
+                <NavLink to="." className={getLinkCssClasses}>Overview</NavLink>
+              </li>
+              <li style={navListItemStyle} className="ps-3">
+                <NavLink to="profile" className={getLinkCssClasses}>Profile</NavLink>
               </li>
               <li style={navListItemStyle}>
                 <CollapsableMenu header={'Forms'} headerClass="text-black" content={
@@ -214,7 +218,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                 <Route path="withdrawal" element={
                   <AdvancedOptions enrollee={enrollee} studyEnvContext={studyEnvContext}/>
                 }/>
-                <Route index element={<EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext}
+                <Route index element={<EnrolleeOverview enrollee={enrollee} studyEnvContext={studyEnvContext}
                   onUpdate={onUpdate}/>}/>
                 <Route path="*" element={<div>unknown enrollee route</div>}/>
               </Routes>

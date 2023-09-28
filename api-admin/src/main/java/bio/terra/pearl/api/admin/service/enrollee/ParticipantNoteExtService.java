@@ -54,7 +54,7 @@ public class ParticipantNoteExtService {
               .studyEnvironmentId(enrollee.getStudyEnvironmentId())
               .participantNoteId(savedNote.getId())
               .enrolleeId(enrollee.getId())
-              .taskType(AdminTaskType.FOLLOW_UP)
+              .taskType(AdminTaskType.GENERAL)
               .creatingAdminUserId(user.getId())
               .assignedAdminUserId(assignedAdminUserId)
               .status(TaskStatus.NEW)

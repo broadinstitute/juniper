@@ -3,6 +3,7 @@ package bio.terra.pearl.core.model.workflow;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantNote;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,8 +23,10 @@ import java.util.UUID;
 @NoArgsConstructor
 public class AdminTask extends BaseEntity {
     private Instant completedAt;
-    private TaskStatus status;
-    private AdminTaskType taskType;
+    @Builder.Default
+    private TaskStatus status = TaskStatus.NEW;
+    @Builder.Default
+    private AdminTaskType taskType = AdminTaskType.GENERAL;
     private UUID studyEnvironmentId;
     private UUID enrolleeId;
     private UUID participantNoteId;
