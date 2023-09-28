@@ -73,7 +73,7 @@ test('renders consent taken badges', async () => {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     <LoadedEnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {}}/>)
   render(RoutedComponent)
-  const consentLink = screen.getByText('Mock consent')
+  const consentLinkContainer = screen.getByText('Mock consent').parentElement as HTMLElement
   // should show a completed checkmark
-  expect(consentLink.querySelector('title')?.textContent).toEqual('completed')
+  expect(within(consentLinkContainer).getByTitle('Complete')).toBeInTheDocument()
 })
