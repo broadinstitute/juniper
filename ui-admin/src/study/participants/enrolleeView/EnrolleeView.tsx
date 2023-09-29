@@ -108,7 +108,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
     <div className="row mt-2">
       <div className="col-12">
         <div className="d-flex">
-          <div style={{ minWidth: '290', maxWidth: '290px' }}>
+          <div style={{ minWidth: '290px', maxWidth: '290px' }}>
             <ul className="list-unstyled">
               <li style={navListItemStyle} className="ps-3">
                 <NavLink to="profile" className={getLinkCssClasses}>Profile &amp; Notes</NavLink>
