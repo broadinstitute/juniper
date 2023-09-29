@@ -82,7 +82,7 @@ export const AdminTaskEditModal = ({ task, users, onDismiss, studyEnvContext }:
     <Modal.Footer>
       <LoadingSpinner isLoading={isLoading}>
         <button className="btn btn-primary" onClick={saveTask}>Save</button>
-        <button className="btn btn-secondary" onClick={() => onDismiss}>Cancel</button>
+        <button className="btn btn-secondary" onClick={() => onDismiss()}>Cancel</button>
       </LoadingSpinner>
     </Modal.Footer>
   </Modal>
