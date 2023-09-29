@@ -29,4 +29,10 @@ public class DataChangeRecord extends BaseEntity {
     private String fieldName; // either a property of a class (like givenName) or a survey question stableId
     private String oldValue;
     private String newValue;
+    public static DataChangeRecord.DataChangeRecordBuilder fromAuditInfo(DataAuditInfo auditInfo) {
+        return DataChangeRecord.builder()
+                .responsibleAdminUserId(auditInfo.getResponsibleAdminUserId())
+                .responsibleUserId(auditInfo.getResponsibleUserId())
+                .operationId(auditInfo.getOperationId());
+    }
 }

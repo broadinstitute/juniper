@@ -110,7 +110,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         dataRepoJobService.deleteByStudyEnvironmentId(studyEnvironmentId);
         datasetService.deleteByStudyEnvironmentId(studyEnvironmentId);
         withdrawnEnrolleeService.deleteByStudyEnvironmentId(studyEnvironmentId);
-        adminTaskService.deleteByStudyEnvironmentId(studyEnvironmentId);
+        adminTaskService.deleteByStudyEnvironmentId(studyEnvironmentId, null);
         dao.delete(studyEnvironmentId);
         if (studyEnv.getStudyEnvironmentConfigId() != null) {
             studyEnvironmentConfigService.delete(studyEnv.getStudyEnvironmentConfigId());

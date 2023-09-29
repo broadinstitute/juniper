@@ -4,15 +4,19 @@ import bio.terra.pearl.core.dao.workflow.AdminTaskDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantNote;
 import bio.terra.pearl.core.model.workflow.AdminTask;
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import bio.terra.pearl.core.service.DataAuditedService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantNoteService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -20,13 +24,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class AdminTaskService extends CrudService<AdminTask, AdminTaskDao> {
+public class AdminTaskService extends DataAuditedService<AdminTask, AdminTaskDao> {
     private static final Logger logger = LoggerFactory.getLogger(AdminTaskService.class);
     private EnrolleeService enrolleeService;
     private ParticipantNoteService participantNoteService;
 
-    public AdminTaskService(AdminTaskDao dao, @Lazy EnrolleeService enrolleeService, ParticipantNoteService participantNoteService) {
-        super(dao);
+    public AdminTaskService(AdminTaskDao dao, @Lazy EnrolleeService enrolleeService, ParticipantNoteService participantNoteService,
+                            DataChangeRecordService dataChangeRecordService, ObjectMapper objectMapper) {
+        super(dao, dataChangeRecordService, objectMapper);
         this.enrolleeService = enrolleeService;
         this.participantNoteService = participantNoteService;
     }
@@ -36,12 +41,14 @@ public class AdminTaskService extends CrudService<AdminTask, AdminTaskDao> {
     }
 
     @Transactional
-    public void deleteByEnrolleId(UUID enrolleeId) { dao.deleteByEnrolleeId(enrolleeId); }
+    public void deleteByEnrolleId(UUID enrolleeId, DataAuditInfo auditInfo) {
+        List<AdminTask> tasks = findByEnrolleeId(enrolleeId);
+        bulkDelete(tasks, auditInfo);
+    }
     @Transactional
-    public void deleteByStudyEnvironmentId(UUID studyEnvId) { dao.deleteByStudyEnvironmentId(studyEnvId);}
-
-    public List<AdminTask> findByAssignee(UUID adminUserId) {
-        return dao.findByAssignee(adminUserId);
+    public void deleteByStudyEnvironmentId(UUID studyEnvId, DataAuditInfo auditInfo) {
+        List<AdminTask> tasks = dao.findByStudyEnvironmentId(studyEnvId);
+        bulkDelete(tasks, auditInfo);
     }
 
     public AdminTaskListDto findByStudyEnvironmentId(UUID studyEnvId) {
@@ -65,11 +72,11 @@ public class AdminTaskService extends CrudService<AdminTask, AdminTaskDao> {
 
     @Transactional
     @Override
-    public AdminTask update(AdminTask task) {
+    public AdminTask update(AdminTask task, DataAuditInfo auditInfo) {
         if (task.getStatus().isTerminalStatus() && task.getCompletedAt() == null) {
             task.setCompletedAt(Instant.now());
         }
-        return dao.update(task);
+        return super.update(task, auditInfo);
     }
 
     public record AdminTaskListDto(List<AdminTask> tasks, List<Enrollee> enrollees, List<ParticipantNote> participantNotes) {}

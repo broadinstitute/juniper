@@ -637,7 +637,7 @@ export default {
   },
 
   async fetchEnrolleeAdminTasks(portalShortcode: string, studyShortcode: string, envName: string,
-                                   enrolleeShortcode: string): Promise<AdminTask[]> {
+    enrolleeShortcode: string): Promise<AdminTask[]> {
     const url =
         `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/adminTasks`
     const response = await fetch(url, this.getGetInit())
@@ -887,12 +887,23 @@ export default {
   },
 
   async fetchAdminTasksByStudyEnv(portalShortcode: string, studyShortcode: string,
-                                  envName: string, include: string[]): Promise<AdminTaskListDto> {
+    envName: string, include: string[]): Promise<AdminTaskListDto> {
     let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/adminTasks`
     if (include.length) {
-      url = url + `?include=${include.join(',')}`
+      url = `${url  }?include=${include.join(',')}`
     }
     const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async updateAdminTask(portalShortcode: string, studyShortcode: string,
+    envName: string, task: AdminTask): Promise<AdminTask> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/adminTasks/${task.id}`
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(task)
+    })
     return await this.processJsonResponse(response)
   },
 

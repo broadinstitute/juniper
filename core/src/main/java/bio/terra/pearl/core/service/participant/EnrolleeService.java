@@ -137,7 +137,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         for (ConsentResponse consentResponse : consentResponseService.findByEnrolleeId(enrolleeId)) {
             consentResponseService.delete(consentResponse.getId(), cascades);
         }
-        adminTaskService.deleteByEnrolleId(enrolleeId);
+        adminTaskService.deleteByEnrolleId(enrolleeId, null);
         participantNoteService.deleteByEnrollee(enrolleeId);
         kitRequestService.deleteByEnrolleeId(enrolleeId, cascades);
 

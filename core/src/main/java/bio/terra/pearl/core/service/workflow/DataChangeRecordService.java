@@ -6,6 +6,8 @@ import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +16,7 @@ public class DataChangeRecordService extends ImmutableEntityService<DataChangeRe
     private EnrolleeService enrolleeService;
 
 
-    public DataChangeRecordService(DataChangeRecordDao dao, EnrolleeService enrolleeService) {
+    public DataChangeRecordService(DataChangeRecordDao dao, @Lazy EnrolleeService enrolleeService) {
         super(dao);
         this.enrolleeService = enrolleeService;
     }

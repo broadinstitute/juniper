@@ -2,7 +2,7 @@ import React from 'react'
 import { Link, Route, Routes } from 'react-router-dom'
 import ParticipantList from './participantList/ParticipantList'
 
-import {StudyEnvContextT, StudyEnvParams} from '../StudyEnvironmentRouter'
+import { StudyEnvContextT, StudyEnvParams } from '../StudyEnvironmentRouter'
 import EnrolleeView from './enrolleeView/EnrolleeView'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
 
@@ -10,7 +10,7 @@ import { NavBreadcrumb } from 'navbar/AdminNavbar'
 export default function ParticipantsRouter({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   return <>
     <NavBreadcrumb value={studyEnvContext.currentEnvPath}>
-      <Link to={`${studyEnvContext.currentEnvPath}/participants`}>
+      <Link to={`${studyEnvContext.currentEnvPath}/participants`} className="me-1">
           participants</Link>
     </NavBreadcrumb>
     <Routes>
@@ -21,7 +21,8 @@ export default function ParticipantsRouter({ studyEnvContext }: {studyEnvContext
   </>
 }
 
+/** helper to get participant list page path */
 export const studyEnvParticipantPath = (studyEnvParams: StudyEnvParams, enrolleeShortcode: string) => {
-  const {portalShortcode, studyShortcode, envName} = studyEnvParams
+  const { portalShortcode, studyShortcode, envName } = studyEnvParams
   return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/participants/${enrolleeShortcode}`
 }

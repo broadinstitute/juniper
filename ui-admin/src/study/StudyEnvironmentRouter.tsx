@@ -22,7 +22,7 @@ import StudySettings from './StudySettings'
 import { ENVIRONMENT_ICON_MAP } from './publishing/StudyPublishingView'
 import NotificationContent from './notifications/NotificationContent'
 import SiteContentLoader from '../portal/siteContent/SiteContentLoader'
-import AdminTaskList from "./adminTasks/AdminTaskList";
+import AdminTaskList from './adminTasks/AdminTaskList'
 
 export type StudyEnvParams = {
   studyShortcode: string
@@ -128,6 +128,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
 
 export default StudyEnvironmentRouter
 
+/** helper function to get params to pass to API functions */
 export const paramsFromContext = (studyEnvContext: StudyEnvContextT): StudyEnvParams => {
   return {
     studyShortcode: studyEnvContext.study.shortcode,
@@ -202,6 +203,7 @@ export const datasetDashboardPath = (datasetName: string, currentEnvPath: string
   return `${currentEnvPath}/export/dataRepo/datasets/${datasetName}`
 }
 
+/** helper for path to admin task list page */
 export const adminTasksPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/adminTasks`
 }

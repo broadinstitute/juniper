@@ -66,7 +66,7 @@ public class ParticipantNotePopulator {
                     .taskType(taskDto.getTaskType())
                     .status(taskDto.getStatus())
                     .build();
-            adminTask = adminTaskService.create(adminTask);
+            adminTask = adminTaskService.create(adminTask, null);
             if (notePopDto.isTimeShifted() && !taskDto.isTimeShifted()) {
                 timeShiftPopulateDao.changeAdminTaskCreationTime(participantNote.getId(), notePopDto.shiftedInstant());
             }

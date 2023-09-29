@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantNote;
 import bio.terra.pearl.core.model.workflow.AdminTask;
 import bio.terra.pearl.core.model.workflow.AdminTaskType;
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.participant.ParticipantNoteService;
@@ -59,7 +60,7 @@ public class ParticipantNoteExtService {
               .assignedAdminUserId(assignedAdminUserId)
               .status(TaskStatus.NEW)
               .build();
-      adminTaskService.create(task);
+      adminTaskService.create(task, DataAuditInfo.fromAdminUserId(user.getId()));
     }
     return savedNote;
   }

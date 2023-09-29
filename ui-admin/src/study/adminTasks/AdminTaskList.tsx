@@ -1,113 +1,172 @@
-import React, { useEffect, useState } from 'react'
-import Api, {AdminTask, AdminTaskListDto} from 'api/api'
+import React, { useMemo, useState } from 'react'
+import Api, { AdminTask, AdminTaskListDto } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import {
-    ColumnDef,
-    getCoreRowModel,
-    getSortedRowModel,
-    SortingState,
-    useReactTable
+  ColumnDef,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout, IndeterminateCheckbox } from 'util/tableUtils'
-import { instantToDefaultString } from 'util/timeUtils'
-import {paramsFromContext, StudyEnvContextT, StudyEnvParams} from "../StudyEnvironmentRouter";
-import {useAdminUserContext} from "providers/AdminUserProvider";
+import { basicTableLayout } from 'util/tableUtils'
+import { instantToDateString, instantToDefaultString } from 'util/timeUtils'
+import { paramsFromContext, StudyEnvContextT, StudyEnvParams } from '../StudyEnvironmentRouter'
+import { useAdminUserContext } from 'providers/AdminUserProvider'
 import _truncate from 'lodash/truncate'
-import {studyEnvParticipantPath} from "../participants/ParticipantsRouter";
-import {Link} from "react-router-dom";
-import {useLoadingEffect} from "api/api-utils";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCheck} from "@fortawesome/free-solid-svg-icons";
+import { studyEnvParticipantPath } from '../participants/ParticipantsRouter'
+import { Link } from 'react-router-dom'
+import { useLoadingEffect } from 'api/api-utils'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCheck, faEdit } from '@fortawesome/free-solid-svg-icons'
+import { useUser } from 'user/UserProvider'
+import { IconButton } from '../../components/forms/Button'
+import { AdminTaskEditModal } from './AdminTaskEditor'
 
 
-
-/** show the mailing list in table */
+/** show the lists of the user's tasks and all tasks */
 export default function AdminTaskList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
-    const [taskData, setTaskData] = useState<AdminTaskListDto>({
-        tasks: [], enrollees: [], participantNotes: []
-    })
-    const [sorting, setSorting] = React.useState<SortingState>([])
-    const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
-    const { users } = useAdminUserContext()
-
-    const columns: ColumnDef<AdminTask>[] = [{
-        id: 'select',
-        header: ({ table }) => <IndeterminateCheckbox
-            checked={table.getIsAllRowsSelected()} indeterminate={table.getIsSomeRowsSelected()}
-            onChange={table.getToggleAllRowsSelectedHandler()}/>,
-        cell: ({ row }) => (
-            <div className="px-1">
-                <IndeterminateCheckbox
-                    checked={row.getIsSelected()} indeterminate={row.getIsSomeSelected()}
-                    onChange={row.getToggleSelectedHandler()} disabled={!row.getCanSelect()}/>
-            </div>
-        )
-    }, {
-        header: 'Created',
-        accessorKey: 'createdAt',
-        cell: info => instantToDefaultString(info.getValue() as number)
-    }, {
-        header: 'Assignee',
-        accessorKey: 'assignedAdminUserId',
-        cell: info => users.find(user => user.id === info.getValue())?.username
-    }, {
-        header: 'Status',
-        accessorKey: 'status',
-        cell: info => info.getValue() === 'COMPLETE' ? <FontAwesomeIcon icon={faCheck}/> : info.getValue()
-    }, {
-        header: 'Task',
-        id: 'taskDescription',
-        cell: info => taskDescription(info.row.original, paramsFromContext(studyEnvContext), taskData)
-    }]
+  const [taskData, setTaskData] = useState<AdminTaskListDto>({
+    tasks: [], enrollees: [], participantNotes: []
+  })
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'status', desc: true },
+    { id: 'createdAt', desc: true }
+  ])
+  const { users } = useAdminUserContext()
+  const [selectedTask, setSelectedTask] = useState<AdminTask>()
+  const [showEditModal, setShowEditModal] = useState(false)
 
 
-    const table = useReactTable({
-        data: taskData.tasks,
-        columns,
-        state: {
-            sorting,
-            rowSelection
-        },
-        enableRowSelection: true,
-        onSortingChange: setSorting,
-        getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        onRowSelectionChange: setRowSelection,
-        debugTable: true
-    })
+  const columns: ColumnDef<AdminTask>[] = [{
+    header: 'Task',
+    id: 'taskDescription',
+    cell: info => taskDescription(info.row.original, paramsFromContext(studyEnvContext), taskData)
+  }, {
+    header: 'Status',
+    accessorKey: 'status',
+    cell: info => renderStatusColumn(info.row.original)
+  }, {
+    header: 'Created',
+    accessorKey: 'createdAt',
+    cell: info => instantToDefaultString(info.getValue() as number)
+  }, {
+    header: 'Assignee',
+    accessorKey: 'assignedAdminUserId',
+    cell: info => users.find(user => user.id === info.getValue())?.username
+  }, {
+    header: '',
+    id: 'actions',
+    cell: info => <IconButton icon={faEdit} onClick={() => editTask(info.row.original)} aria-label="edit"/>
+  }]
 
-    const { isLoading} = useLoadingEffect(async () => {
-        const result = await Api.fetchAdminTasksByStudyEnv(
-            studyEnvContext.portal.shortcode,
-            studyEnvContext.study.shortcode,
-            studyEnvContext.currentEnv.environmentName,
-            ['enrollee', 'participantNote'])
+  const allTasksTable = useReactTable({
+    data: taskData.tasks,
+    columns,
+    state: { sorting },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel()
+  })
 
-        setTaskData(result)
-    }, [studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
-        studyEnvContext.currentEnv.environmentName])
-    return <div className="container p-3">
-        <h1 className="h4">Admin tasks</h1>
-        <LoadingSpinner isLoading={isLoading}>
-            {basicTableLayout(table)}
-        </LoadingSpinner>
-    </div>
+  const { isLoading, reload } = useLoadingEffect(async () => {
+    const result = await Api.fetchAdminTasksByStudyEnv(
+      studyEnvContext.portal.shortcode,
+      studyEnvContext.study.shortcode,
+      studyEnvContext.currentEnv.environmentName,
+      ['enrollee', 'participantNote'])
+
+    setTaskData(result)
+  }, [studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
+    studyEnvContext.currentEnv.environmentName])
+
+  const editTask = (task: AdminTask) => {
+    setSelectedTask(task)
+    setShowEditModal(true)
+  }
+  const onDoneEditing = (updatedTask?: AdminTask) => {
+    setSelectedTask(undefined)
+    setShowEditModal(false)
+    if (updatedTask) {
+      // for now, just reload the whole list if a task is updated
+      reload()
+    }
+  }
+
+  return <div className="container p-3">
+    <LoadingSpinner isLoading={isLoading}>
+      <MyTaskList studyEnvContext={studyEnvContext} taskData={taskData}/>
+      <h2 className="h4 mt-5">All tasks</h2>
+      {basicTableLayout(allTasksTable)}
+    </LoadingSpinner>
+    { (showEditModal && selectedTask) && <AdminTaskEditModal task={selectedTask} users={users}
+      onDismiss={onDoneEditing} studyEnvContext={studyEnvContext}/> }
+  </div>
+}
+
+const MyTaskList = ({ studyEnvContext, taskData }: {studyEnvContext: StudyEnvContextT,
+taskData: AdminTaskListDto}) => {
+  const { user } = useUser()
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'status', desc: true },
+    { id: 'createdAt', desc: true }
+  ])
+  const myTasks = useMemo(() => taskData.tasks.filter(task =>
+    task.assignedAdminUserId === user.id), [taskData.tasks.length])
+
+  const columns: ColumnDef<AdminTask>[] = [{
+    header: 'Task',
+    id: 'taskDescription',
+    cell: info => taskDescription(info.row.original, paramsFromContext(studyEnvContext), taskData)
+  }, {
+    header: 'Status',
+    accessorKey: 'status',
+    cell: info => renderStatusColumn(info.row.original)
+  }, {
+    header: 'Created',
+    accessorKey: 'createdAt',
+    cell: info => instantToDefaultString(info.getValue() as number)
+  }]
+
+  const table = useReactTable({
+    data: myTasks,
+    state: { sorting },
+    columns,
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel()
+  })
+  return <>
+    <h2 className="h4">My tasks</h2>
+    { !!myTasks.length && basicTableLayout(table)}
+    { !myTasks.length && <div className="text-muted fst-italic mb-3">None</div> }
+  </>
 }
 
 
 const taskDescription = (task: AdminTask, studyEnvParams: StudyEnvParams, taskData: AdminTaskListDto) => {
-    const matchedNote = task.participantNoteId ?
-        taskData.participantNotes.find(note => note.id === task.participantNoteId) : undefined
-    const matchedEnrollee = task.enrolleeId ?
-        taskData.enrollees.find(enrollee => enrollee.id === task.enrolleeId) : undefined
-    return <>
-        {matchedNote && <span>
-            {_truncate(matchedNote.text, {length: 50})}<br/>
-            <span className="text-muted">Participant&nbsp;
-                <Link to={studyEnvParticipantPath(studyEnvParams, matchedEnrollee?.shortcode as string)}>
-                    {matchedEnrollee?.shortcode}
-                </Link>
-            </span>
-        </span> }
-    </>
+  const matchedNote = task.participantNoteId ?
+    taskData.participantNotes.find(note => note.id === task.participantNoteId) : undefined
+  const matchedEnrollee = task.enrolleeId ?
+    taskData.enrollees.find(enrollee => enrollee.id === task.enrolleeId) : undefined
+  return <>
+    {matchedNote && <span>
+      {_truncate(matchedNote.text, { length: 50 })}<br/>
+      <span className="text-muted">Participant&nbsp;
+        <Link to={studyEnvParticipantPath(studyEnvParams, matchedEnrollee?.shortcode as string)}>
+          {matchedEnrollee?.shortcode}
+        </Link>
+      </span>
+    </span> }
+  </>
+}
+
+const renderStatusColumn = (task: AdminTask) => {
+  if (task.status === 'COMPLETE') {
+    return <div>
+      <div><FontAwesomeIcon icon={faCheck}/> {instantToDateString(task.completedAt)} </div>
+      <span>{task.dispositionNote}</span>
+    </div>
+  } else {
+    return <span>{task.status}</span>
+  }
 }
