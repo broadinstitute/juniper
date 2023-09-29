@@ -249,7 +249,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         // Set Juniper kit status if we can parse the Pepper status
         try {
             var kitStatus = objectMapper.readValue(statusJson, PepperKitStatus.class);
-            kit.setStatus(statusFromDSMStatus(kitStatus.getCurrentStatus()));
+            kit.setStatus(statusFromPepperCurrentStatus(kitStatus.getCurrentStatus()));
         } catch (JsonProcessingException e) {
             logger.warn(
                     "Unable to deserialize status JSON for kit %s: %s".formatted(kit.getId(), statusJson.toString()),
@@ -267,7 +267,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         try {
             kit.setDsmStatus(objectMapper.writeValueAsString(pepperKitStatus));
             kit.setDsmStatusFetchedAt(pepperStatusFetchedAt);
-            kit.setStatus(statusFromDSMStatus(pepperKitStatus.getCurrentStatus()));
+            kit.setStatus(statusFromPepperCurrentStatus(pepperKitStatus.getCurrentStatus()));
             dao.update(kit);
         } catch (JsonProcessingException e) {
             logger.warn(
@@ -276,15 +276,18 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         }
     }
 
-    private KitRequestStatus statusFromDSMStatus(String currentStatus) {
+    private KitRequestStatus statusFromPepperCurrentStatus(String currentStatus) {
         if (currentStatus == null) {
             return KitRequestStatus.CREATED;
-        } else if (PEPPER_COMPLETED_STATUSES.contains(currentStatus)) {
-            return KitRequestStatus.COMPLETE;
-        } else if (PEPPER_FAILED_STATUSES.contains(currentStatus)) {
-            return KitRequestStatus.FAILED;
         } else {
-            return KitRequestStatus.IN_PROGRESS;
+            var status = PepperKitStatus.Status.fromCurrentStatus(currentStatus);
+            if (PepperKitStatus.Status.isCompleted(status)) {
+                return KitRequestStatus.COMPLETE;
+            } else if (PepperKitStatus.Status.isFailed(status)) {
+                return KitRequestStatus.FAILED;
+            } else {
+                return KitRequestStatus.IN_PROGRESS;
+            }
         }
     }
 

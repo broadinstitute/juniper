@@ -183,15 +183,15 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
          */
         var kitStatus1a = PepperKitStatus.builder()
                 .juniperKitId(kitRequest1a.getId().toString())
-                .currentStatus("SENT")
+                .currentStatus(PepperKitStatus.Status.SENT.currentStatus)
                 .build();
         var kitStatus1b = PepperKitStatus.builder()
                 .juniperKitId(kitRequest1b.getId().toString())
-                .currentStatus("PROCESSED")
+                .currentStatus(PepperKitStatus.Status.RECEIVED.currentStatus)
                 .build();
         var kitStatus2 = PepperKitStatus.builder()
                 .juniperKitId(kitRequest2.getId().toString())
-                .currentStatus("CONTAMINATED")
+                .currentStatus(PepperKitStatus.Status.ERRORED.currentStatus)
                 .errorMessage("Something went wrong")
                 .errorDate(DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault()).format(Instant.now()))
                 .build();
