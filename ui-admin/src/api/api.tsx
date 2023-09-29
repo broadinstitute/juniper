@@ -168,16 +168,15 @@ export type AdminTaskStatus = 'NEW' | 'COMPLETE' | 'REJECTED'
 export type AdminTask = {
   id: string
   createdAt: number
-  completedAt: number
+  completedAt?: number
   status: AdminTaskStatus
-  taskType: 'GENERAL'
   studyEnvironmentId: string
   enrolleeId?: string
   participantNoteId?: string
   creatingAdminUserId?: string
   assignedAdminUserId?: string
-  description: string
-  dispositionNote: string
+  description?: string
+  dispositionNote?: string
 }
 
 const emptyPepperKitStatus: PepperKitStatus = {

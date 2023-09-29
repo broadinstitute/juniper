@@ -63,7 +63,6 @@ public class ParticipantNotePopulator {
                     .assignedAdminUserId(assignedUser.getId())
                     .participantNoteId(participantNote.getId())
                     .enrolleeId(enrollee.getId())
-                    .taskType(taskDto.getTaskType())
                     .status(taskDto.getStatus())
                     .build();
             adminTask = adminTaskService.create(adminTask, null);

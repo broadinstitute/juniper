@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useId, useState } from 'react'
 import Api, { AdminTask, AdminUser, Enrollee, ParticipantNote } from 'api/api'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -25,7 +25,7 @@ const ParticipantNotesView = ({ enrollee, notes, studyEnvContext, onUpdate }: Pa
   const [newNoteAssignee, setNewNoteAssignee] = useState<AdminUser>()
   const { users } = useAdminUserContext()
   const sortedNotes = [...notes].sort((a, b) => b.createdAt - a.createdAt)
-
+  const userSelectId = useId()
 
   const { reload: reloadTasks } = useLoadingEffect(async () => {
     const tasks = await Api.fetchEnrolleeAdminTasks(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
@@ -55,11 +55,11 @@ const ParticipantNotesView = ({ enrollee, notes, studyEnvContext, onUpdate }: Pa
     </button>
     {showAdd && <div className="pb-3">
       <textarea rows={5} cols={80} value={newNoteText} onChange={e => setNewNoteText(e.target.value)}/>
-      <label>
-        Assign to:
+      <div>
+        <label htmlFor={userSelectId}>Assign to:</label>
         <AdminUserSelect selectedUser={newNoteAssignee} setSelectedUser={setNewNoteAssignee} users={users}
-          readOnly={false}/>
-      </label>
+          readOnly={false} id={userSelectId}/>
+      </div>
       <div className="mt-2">
         <button className="btn btn-primary" onClick={createNote}>Save</button>
       </div>

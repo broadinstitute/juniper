@@ -1,7 +1,6 @@
 package bio.terra.pearl.populate.dto.participant;
 
 import bio.terra.pearl.core.model.participant.ParticipantNote;
-import bio.terra.pearl.core.model.workflow.AdminTaskType;
 import bio.terra.pearl.populate.dto.AdminTaskPopDto;
 import bio.terra.pearl.populate.dto.TimeShiftable;
 import lombok.Getter;
@@ -15,6 +14,5 @@ public class ParticipantNotePopDto extends ParticipantNote implements TimeShifta
   private Integer submittedHoursAgo;
   private String creatingAdminUsername;
   private AdminTaskPopDto task;
-  private AdminTaskType taskType;
   private Integer kitRequestIndex; // index in the populate file of the kit this note corresponds to -- null if it doesn't correspond to a kit
 }

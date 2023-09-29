@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useId, useState } from 'react'
 import Api, { AdminTask, AdminTaskStatus, AdminUser } from 'api/api'
 import { Modal } from 'react-bootstrap'
 import Select from 'react-select'
@@ -13,6 +13,9 @@ import { instantToDefaultString } from '../../util/timeUtils'
 export default function AdminTaskEditor({ task, workingTask, setWorkingTask, users }:
 { task: AdminTask, workingTask: AdminTask, setWorkingTask: (task: AdminTask) => void, users: AdminUser[]}) {
   const selectedUser = users.find(user => user.id === workingTask.assignedAdminUserId)
+  const statusSelectId = useId()
+  const userSelectId = useId()
+  const noteTextAreaId = useId()
   const setSelectedUser = ((user: AdminUser | undefined) => {
     setWorkingTask({
       ...workingTask,
@@ -23,30 +26,30 @@ export default function AdminTaskEditor({ task, workingTask, setWorkingTask, use
     .map(status => ({ label: status, value: status as AdminTaskStatus }))
   const statusValue = statusOpts.find(opt => opt.value === workingTask.status)
   return <div>
-    <label className="mt-3">
-      Assigned to:
-      <AdminUserSelect selectedUser={selectedUser} setSelectedUser={setSelectedUser}
-        users={users} readOnly={task.status === 'COMPLETE'}/>
-    </label>
-    { task.status !== 'COMPLETE' && <label className="mt-3">
-            Status:
-      <Select options={statusOpts} value={statusValue}
+    <label className="mt-3" htmlFor={userSelectId}>Assigned to</label>
+    <AdminUserSelect selectedUser={selectedUser} setSelectedUser={setSelectedUser} id={userSelectId}
+      users={users} readOnly={task.status === 'COMPLETE'}/>
+
+    { task.status !== 'COMPLETE' && <div className="mt-3">
+      <label htmlFor={statusSelectId}>Status</label>
+      <Select options={statusOpts} value={statusValue} inputId={statusSelectId}
         styles={{ control: baseStyles => ({ ...baseStyles, width: '400px' }) }}
         onChange={opt => setWorkingTask({
           ...workingTask, status: opt?.value ?? 'NEW'
         })}/>
-    </label> }
+    </div> }
     { task.status === 'COMPLETE' && <div className="mt-3">
             Completed {instantToDefaultString(task.completedAt)}
     </div> }
 
-    <label className="mt-3">
-      <div>Note:</div>
-      <textarea rows={2} cols={45} value={workingTask.dispositionNote} onChange={e => setWorkingTask({
-        ...workingTask,
-        dispositionNote: e.target.value
-      })}/>
-    </label>
+    <div className="mt-3">
+      <label htmlFor={noteTextAreaId} className="d-block">Note</label>
+      <textarea rows={2} cols={45} value={workingTask.dispositionNote} id={noteTextAreaId}
+        onChange={e => setWorkingTask({
+          ...workingTask,
+          dispositionNote: e.target.value
+        })}/>
+    </div>
 
   </div>
 }

@@ -25,8 +25,6 @@ public class AdminTask extends BaseEntity {
     private Instant completedAt;
     @Builder.Default
     private TaskStatus status = TaskStatus.NEW;
-    @Builder.Default
-    private AdminTaskType taskType = AdminTaskType.GENERAL;
     private UUID studyEnvironmentId;
     private UUID enrolleeId;
     private UUID participantNoteId;

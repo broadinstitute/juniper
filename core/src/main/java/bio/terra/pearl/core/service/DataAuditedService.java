@@ -65,6 +65,7 @@ public abstract class DataAuditedService<M extends BaseEntity, D extends BaseMut
             M oldRecord = find(obj.getId()).get();
             DataChangeRecord changeRecord = DataChangeRecord.fromAuditInfo(auditInfo)
                     .modelName(oldRecord.getClass().getSimpleName())
+                    .modelId(obj.getId())
                     .newValue(objectMapper.writeValueAsString(obj))
                     .oldValue(objectMapper.writeValueAsString(oldRecord))
                     .build();
@@ -131,10 +132,12 @@ public abstract class DataAuditedService<M extends BaseEntity, D extends BaseMut
         return obj;
     }
 
+    /** note this should be called AFTER the model has been saved, so the generated ID can be included */
     protected DataChangeRecord makeCreationChangeRecord(M newModel, DataAuditInfo auditInfo) {
         try {
             DataChangeRecord changeRecord = DataChangeRecord.fromAuditInfo(auditInfo)
                     .modelName(newModel.getClass().getSimpleName())
+                    .modelId(newModel.getId())
                     .newValue(objectMapper.writeValueAsString(newModel))
                     .oldValue(null)
                     .build();
@@ -148,6 +151,7 @@ public abstract class DataAuditedService<M extends BaseEntity, D extends BaseMut
         try {
             DataChangeRecord changeRecord = DataChangeRecord.fromAuditInfo(auditInfo)
                     .modelName(oldModel.getClass().getSimpleName())
+                    .modelId(oldModel.getId())
                     .newValue(null)
                     .oldValue(objectMapper.writeValueAsString(oldModel))
                     .build();
