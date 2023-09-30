@@ -10,6 +10,7 @@ import bio.terra.pearl.core.model.workflow.AdminTask;
 import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.DataChangeRecord;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
+import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -70,7 +71,7 @@ public class AdminTaskServiceTests extends BaseSpringBootTest {
                 .assignedAdminUserId(user.getId())
                 .description("some task")
                 .build();
-        Assertions.assertThrows(PSQLException.class, () -> {
+        Assertions.assertThrows(UnableToExecuteStatementException.class, () -> {
             adminTaskService.create(task, DataAuditInfo.fromAdminUserId(user.getId()));
         });
     }
