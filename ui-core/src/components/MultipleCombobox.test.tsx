@@ -3,8 +3,6 @@ import React from 'react'
 
 import { MultipleComboBox } from './MultipleCombobox'
 import { ItemValue } from 'src/surveyjs/multiple-combobox-question'
-import medications from 'src/surveyjs/medications.json'
-import { useVirtualizer } from '@tanstack/react-virtual'
 
 jest.mock('@tanstack/react-virtual', () => ({
   ...jest.requireActual('@tanstack/react-virtual'),
