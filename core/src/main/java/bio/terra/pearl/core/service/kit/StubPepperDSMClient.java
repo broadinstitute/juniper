@@ -5,11 +5,13 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -27,34 +29,42 @@ public class StubPepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public String sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
-        var statusBuilder = PepperKitStatus.builder()
+    public JsonNode sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
+        PepperKitStatus kitStatus = PepperKitStatus.builder()
                 .juniperKitId(kitRequest.getId().toString())
-                .currentStatus("CREATED");
-        try {
-            return objectMapper.writeValueAsString(statusBuilder.build());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+                .currentStatus("CREATED").build();
+        var response = PepperKitStatusResponse.builder()
+                .kits(new PepperKitStatus[] {kitStatus})
+                .isError(false).build();
+        return objectMapper.valueToTree(response);
     }
 
     @Override
-    public PepperKitStatus fetchKitStatus(UUID kitRequestId) {
-        return PepperKitStatus.builder()
+    public JsonNode fetchKitStatus(UUID kitRequestId) {
+        PepperKitStatus kitStatus = PepperKitStatus.builder()
                 .juniperKitId(kitRequestId.toString())
                 .currentStatus("SHIPPED")
                 .build();
+        var response = PepperKitStatusResponse.builder()
+                .kits(new PepperKitStatus[] { kitStatus })
+                .isError(false)
+                .build();
+        return objectMapper.valueToTree(response);
     }
 
     @Override
-    public Collection<PepperKitStatus> fetchKitStatusByStudy(String studyShortcode) {
+    public JsonNode fetchKitStatusByStudy(String studyShortcode) {
         var studyEnvironment = studyEnvironmentDao.findByStudy(studyShortcode, EnvironmentName.sandbox).get();
-        return kitRequestService.findIncompleteKits(studyEnvironment.getId()).stream().map(kit -> {
-            PepperKitStatus status = PepperKitStatus.builder()
+        var kits = kitRequestService.findIncompleteKits(studyEnvironment.getId()).stream().map(kit -> {
+            return PepperKitStatus.builder()
                     .juniperKitId(kit.getId().toString())
                     .currentStatus("SHIPPED")
                     .build();
-            return status;
         }).toList();
+        var response = PepperKitStatusResponse.builder()
+                .kits(kits.toArray(new PepperKitStatus[0]))
+                .isError(false)
+                .build();
+        return objectMapper.valueToTree(response);
     }
 }

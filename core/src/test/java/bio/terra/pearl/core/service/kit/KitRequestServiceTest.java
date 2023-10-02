@@ -12,7 +12,9 @@ import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mockito;
@@ -23,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -55,11 +56,11 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .phoneNumber("111-222-3333")
                 .build();
         var studyName = "testStudy";
-        when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any()))
-                .thenReturn("{ \"kits\": [{}] }");
+        when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any())).thenReturn(objectMapper.readTree("""
+                { "kits": [{}] }"""));
 
         // Act
-        var sampleKit = kitRequestService.requestKit(adminUser, studyName, enrollee, "testRequestKit");
+        var sampleKit = kitRequestService.requestKit(adminUser, studyName, enrollee, kitType.getName());
 
         // Assert
         Mockito.verify(mockPepperDSMClient)
@@ -68,6 +69,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         assertThat(sampleKit.getEnrolleeId(), equalTo(enrollee.getId()));
         assertThat(objectMapper.readValue(sampleKit.getSentToAddress(), PepperKitAddress.class),
                 equalTo(expectedSentToAddress));
+        // only CREATED because the mock response used in this test does not have a currentStatus
         assertThat(sampleKit.getStatus(), equalTo(KitRequestStatus.CREATED));
     }
 
@@ -75,16 +77,10 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     @Test
     public void testRequestKitError() throws Exception {
         // Arrange
-        var adminUser = adminUserFactory.buildPersisted("testRequestKit");
-        var kitType = kitTypeFactory.buildPersisted("testRequestKit");
-        var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testRequestKit");
+        var adminUser = adminUserFactory.buildPersisted("testRequestKitError");
+        var kitType = kitTypeFactory.buildPersisted("testRequestKitError");
+        var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testRequestKitError");
         var enrollee = enrolleeBundle.enrollee();
-        var profile = enrollee.getProfile();
-        profile.setGivenName("Alex");
-        profile.setFamilyName("Tester");
-        profile.setPhoneNumber("111-222-3333");
-        profile.getMailingAddress().setStreet1("123 Fake Street");
-        profileService.updateWithMailingAddress(profile);
 
         when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any())).thenAnswer(invocation -> {
             var kitRequest = (KitRequest) invocation.getArguments()[2];
@@ -103,6 +99,32 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
+    public void testRequestKitSavesAllJsonAttributes() throws Exception {
+        // Arrange
+        var adminUser = adminUserFactory.buildPersisted("testRequestKitSavesAllJsonAttributes");
+        var kitType = kitTypeFactory.buildPersisted("testRequestKitSavesAllJsonAttributes");
+        var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testRequestKitSavesAllJsonAttributes");
+        var enrollee = enrolleeBundle.enrollee();
+
+        when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any())).thenReturn(objectMapper.readTree("""
+                {
+                  "kits": [
+                    {
+                      "juniperKitId": "1111-2222-3333",
+                      "unknownField": "surprise!"
+                    }
+                  ]
+                }"""));
+
+        // Act
+        var sampleKit = kitRequestService.requestKit(adminUser, "testRequestKitSavesUnknownStatusProperties", enrollee, kitType.getName());
+
+        assertThat(sampleKit.getEnrolleeId(), equalTo(enrollee.getId()));
+        assertThat(sampleKit.getDsmStatus(), containsString("surprise!"));
+    }
+
+    @Transactional
+    @Test
     public void testUpdateKitStatus() throws Exception {
         // Arrange
         var adminUser = adminUserFactory.buildPersisted("testUpdateKitStatus");
@@ -111,11 +133,11 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         var kitRequest = kitRequestFactory.buildPersisted("testUpdateKitStatus",
             enrollee.getId(), kitType.getId(), adminUser.getId());
 
-        var response = PepperKitStatus.builder()
+        var mockKitStatus = PepperKitStatus.builder()
                 .juniperKitId(kitRequest.getId().toString())
                 .currentStatus("SENT")
                 .build();
-        when(mockPepperDSMClient.fetchKitStatus(kitRequest.getId())).thenReturn(response);
+        when(mockPepperDSMClient.fetchKitStatus(kitRequest.getId())).thenReturn(buildResponse(mockKitStatus));
 
         // Act
         var sampleKitStatus = kitRequestService.syncKitStatusFromPepper(kitRequest.getId());
@@ -193,12 +215,12 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .juniperKitId(kitRequest2.getId().toString())
                 .currentStatus(PepperKitStatus.Status.ERRORED.currentStatus)
                 .errorMessage("Something went wrong")
-                .errorDate(DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault()).format(Instant.now()))
+                .errorDate(formattedDate(Instant.now()))
                 .build();
         when(mockPepperDSMClient.fetchKitStatusByStudy(study.getShortcode()))
-                .thenReturn(List.of(kitStatus1a, kitStatus1b));
+                .thenReturn(buildResponse(kitStatus1a, kitStatus1b));
         when(mockPepperDSMClient.fetchKitStatusByStudy(study2.getShortcode()))
-                .thenReturn(List.of(kitStatus2));
+                .thenReturn(buildResponse(kitStatus2));
 
         /* Finally, exercise the unit under test! */
         kitRequestService.syncAllKitStatusesFromPepper();
@@ -209,6 +231,26 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         verifyKit(kitRequest2, kitStatus2, KitRequestStatus.FAILED);
     }
 
+//    @Transactional
+//    @Test
+//    public void testSyncAllKitStatusesFromPepperSavesAllJsonAttributes() throws Exception {
+//        // Arrange
+//        var adminUser = adminUserFactory.buildPersisted("testSyncAllKitStatusesFromPepperSavesAllJsonAttributes");
+//        var kitType = kitTypeFactory.buildPersisted("testSyncAllKitStatusesFromPepperSavesAllJsonAttributes");
+//        var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testSyncAllKitStatusesFromPepperSavesAllJsonAttributes");
+//        var enrollee = enrolleeBundle.enrollee();
+//
+//        when(mockPepperDSMClient.fetchKitStatusByStudy("testSyncAllKitStatusesFromPepperSavesAllJsonAttributes")).thenReturn("""
+//                {
+//                  "kits": [
+//                    {
+//                      "juniperKitId": "1111-2222-3333",
+//                      "unknownField": "surprise!"
+//                    }
+//                  ]
+//                }""");
+//    }
+
     private void verifyKit(KitRequest kit, PepperKitStatus expectedDSMStatus, KitRequestStatus expectedStatus)
             throws JsonProcessingException {
         var savedKit = kitRequestDao.find(kit.getId()).get();
@@ -217,6 +259,18 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 equalTo(expectedDSMStatus));
     }
 
+    @NotNull
+    private static String formattedDate(Instant instant) {
+        return DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault()).format(instant);
+    }
+
+    private JsonNode buildResponse(PepperKitStatus... kitStatuses) {
+        var response = PepperKitStatusResponse.builder()
+                .kits(kitStatuses)
+                .isError(false)
+                .build();
+        return objectMapper.valueToTree(response);
+    }
 
     @MockBean
     private PepperDSMClient mockPepperDSMClient;

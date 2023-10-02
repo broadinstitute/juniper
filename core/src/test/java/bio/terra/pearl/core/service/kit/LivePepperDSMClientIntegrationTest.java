@@ -5,6 +5,7 @@ import bio.terra.pearl.core.IntegrationTest;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.function.Executable;
@@ -13,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static com.github.seregamorph.hamcrest.MoreMatchers.where;
@@ -56,12 +59,27 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
 
         // Act
         var sendKitResponse = livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, enrollee, kitRequest, address);
-        log.info(sendKitResponse);
+        log.info(objectMapper.writeValueAsString(objectMapper.treeToValue(sendKitResponse, objectMapper.constructType(new TypeReference<Map<String, Object>>() {}))));
 
         // Assert
-        var status = objectMapper.readValue(sendKitResponse, PepperKitStatusResponse.class);
+        var status = objectMapper.treeToValue(sendKitResponse, PepperKitStatusResponse.class);
         assertThat(status.getKits().length, equalTo(1));
         assertThat(status.getKits()[0].getError(), equalTo(false));
+    }
+
+    @Transactional
+    @IntegrationTest
+    public void temp() throws Exception {
+        /*
+        X {"kits":[{"error":false,"juniperKitId":"13ee49ba-712c-45d8-afb6-0382f9b039d7","dsmShippingLabel":"T7C4D54IXX4YX05","participantId":"BVESCI","labelByEmail":"","scanByEmail":"","deactivationByEmail":"","trackingScanBy":"","errorMessage":"","discardBy":""}],"isError":false}
+        X {"kits":[{"error":false,"juniperKitId":"2f563554-3037-433c-9705-a80f9c10312f","dsmShippingLabel":"KKD0D2UZ1ZVGF3Q","participantId":"LTPIAY","labelByEmail":"","scanByEmail":"","deactivationByEmail":"","trackingScanBy":"","errorMessage":"","discardBy":""}],"isError":false}
+        X {"kits":[{"error":false,"juniperKitId":"588e8020-effe-4ee8-867d-065433047d87","dsmShippingLabel":"AXURD0BP3A4DWYL","participantId":"BOQGHC","labelByEmail":"","scanByEmail":"","deactivationByEmail":"","trackingScanBy":"","errorMessage":"","discardBy":""}],"isError":false}
+         */
+        var status = livePepperDSMClient.fetchKitStatus(UUID.fromString("549f64d7-8f82-45ac-ae4e-0f7619e95199"));
+        log.info("********");
+        log.info(status.toString());
+//        log.info(status.inferStatus().toString());
+        log.info("********");
     }
 
     @Transactional
@@ -83,7 +101,7 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
         // "Act"
         Executable act = () -> {
             var newKitStatus = livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, enrollee, kitRequest, address);
-            log.info(newKitStatus);
+            log.info(newKitStatus.toString());
         };
 
         // Assert
@@ -119,9 +137,11 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
         var kitId = "09f5651b-f6e3-4489-a5e7-ffd10700a724";
 
         // Act
-        var status = livePepperDSMClient.fetchKitStatus(UUID.fromString(kitId));
+        var jsonNode = livePepperDSMClient.fetchKitStatus(UUID.fromString(kitId));
 
         // Assert
+        var statusResponse = objectMapper.treeToValue(jsonNode, PepperKitStatusResponse.class);
+        var status = statusResponse.getKits()[0];
         assertThat(status.getJuniperKitId(), equalTo(kitId));
     }
 
@@ -131,9 +151,11 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
         // No arrange; assumes that DSM contains some kits to find
 
         // Act
-        var statuses = livePepperDSMClient.fetchKitStatusByStudy(STUDY_SHORTCODE);
+        var jsonNode = livePepperDSMClient.fetchKitStatusByStudy(STUDY_SHORTCODE);
 
         // Assert
+        var response = objectMapper.treeToValue(jsonNode, PepperKitStatusResponse.class);
+        var statuses = List.of(response.getKits());
         assertThat(statuses, not(statuses.isEmpty()));
         assertThat(statuses, everyItem(where(PepperKitStatus::getJuniperKitId, notNullValue())));
     }

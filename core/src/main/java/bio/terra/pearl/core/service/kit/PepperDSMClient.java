@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.kit;
 
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -17,7 +18,7 @@ public interface PepperDSMClient {
      * @return status result from Pepper
      * @throws PepperException on error from Pepper or failure to process the Pepper response
      */
-    String sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address);
-    PepperKitStatus fetchKitStatus(UUID kitRequestId);
-    Collection<PepperKitStatus> fetchKitStatusByStudy(String studyShortcode);
+    JsonNode sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address);
+    JsonNode fetchKitStatus(UUID kitRequestId);
+    JsonNode fetchKitStatusByStudy(String studyShortcode);
 }

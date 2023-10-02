@@ -5,6 +5,8 @@ import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -18,6 +20,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -115,6 +119,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
                 HttpStatus.BAD_REQUEST,
                 objectMapper.writeValueAsString(PepperErrorResponse.builder()
                         .juniperKitId(kitId)
+                        .isError(true)
                         .errorMessage(errorMessage)
                         .build()
         ));
@@ -126,6 +131,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         var pepperException = assertThrows(PepperException.class, act);
         assertThat(pepperException.getMessage(), containsString(kitId));
         assertThat(pepperException.getMessage(), containsString(errorMessage));
+        assertThat(pepperException.getErrorResponse().getErrorMessage(), equalTo(errorMessage));
     }
 
     @Transactional
@@ -151,14 +157,20 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
                 .juniperKitId(kitRequest.getId().toString())
                 .currentStatus("New")
                 .build();
-        mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(kitStatus));
+        PepperKitStatusResponse mockedResponse = PepperKitStatusResponse.builder()
+                .kits(new PepperKitStatus[]{kitStatus})
+                .isError(false)
+                .build();
+        mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(mockedResponse));
 
         // Act
-        var response = client.sendKitRequest("testStudy", enrollee, kitRequest, address);
+        var jsonResponse = client.sendKitRequest("testStudy", enrollee, kitRequest, address);
 
         // Assert
-        assertThat(response, containsString(kitStatus.getJuniperKitId()));
-        assertThat(response, containsString("New"));
+        var response = objectMapper.treeToValue(jsonResponse, PepperKitStatusResponse.class);
+        var status = response.getKits()[0];
+        assertThat(status.getJuniperKitId(), equalTo(kitStatus.getJuniperKitId()));
+        assertThat(status.getCurrentStatus(), equalTo("New"));
         verifyRequestForPath("/shipKit");
     }
 
@@ -178,9 +190,10 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
         // Act
         var kitId = UUID.randomUUID();
-        var fetchedKitStatus = client.fetchKitStatus(kitId);
+        var jsonNode = client.fetchKitStatus(kitId);
 
         // Assert
+        var fetchedKitStatus = objectMapper.treeToValue(jsonNode, PepperKitStatusResponse.class).getKits()[0];
         assertThat(fetchedKitStatus, equalTo(kitStatus));
         // TODO: change "juniperKit" to "juniperkit" after DSM updates this path
         verifyRequestForPath("/kitstatus/juniperKit/%s".formatted(kitId));
@@ -205,9 +218,10 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
         // Act
         var studyShortcode = "test_study";
-        var fetchedKitStatuses = client.fetchKitStatusByStudy(studyShortcode);
+        var jsonNode = client.fetchKitStatusByStudy(studyShortcode);
 
         // Assert
+        var fetchedKitStatuses = List.of(objectMapper.treeToValue(jsonNode, PepperKitStatusResponse.class).getKits());
         assertThat(fetchedKitStatuses.size(), equalTo(2));
         assertThat(fetchedKitStatuses, contains(kitStatus1, kitStatus2));
         verifyRequestForPath("/kitstatus/study/juniper-%s".formatted(studyShortcode));
@@ -224,6 +238,42 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         var recordedRequest = mockWebServer.takeRequest(5, TimeUnit.SECONDS);
         assertThat(recordedRequest.getPath(), equalTo(path));
         assertThat(recordedRequest.getHeader("Authorization"), matchesRegex("Bearer .+"));
+    }
+
+    public static class Item {
+        public String prop1;
+        public String prop2;
+        public Object sub;
+    }
+
+    public static class Container {
+        public List<Item> kits;
+    }
+
+    @Transactional
+    @Test
+    public void testJson() throws Exception {
+        var json = """
+                {
+                  "kits": [
+                    {
+                      "prop1": "foo",
+                      "prop2": "bar",
+                      "sub": {
+                        "prop3": "baz"
+                      }
+                    }
+                  ]
+                }
+                """;
+
+        var jsonNode = objectMapper.readTree(json);
+        Map<String, Object> result = objectMapper.treeToValue(jsonNode, objectMapper.constructType(new TypeReference<Map<String, Object>>() {}));
+//        Map<String, Object> result = objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {});
+        String output = objectMapper.writeValueAsString(result);
+        System.out.println("*****" + output);
+        var container = objectMapper.treeToValue(jsonNode, Container.class);
+        System.out.println("*****" + container);
     }
 
     @Autowired

@@ -9,9 +9,13 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,9 +41,11 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
         var kit = kitRequestFactory.buildPersisted("testFetchKitStatus", enrollee.getId());
 
         // Act
-        var kitStatus = stubPepperDSMClient.fetchKitStatus(kit.getId());
+        var jsonNode = stubPepperDSMClient.fetchKitStatus(kit.getId());
 
         // Assert
+        var kitStatusResponse = objectMapper.treeToValue(jsonNode, PepperKitStatusResponse.class);
+        var kitStatus = kitStatusResponse.getKits()[0];
         assertThat(kitStatus, hasProperty("currentStatus", equalTo("SHIPPED")));
     }
 
@@ -59,9 +65,11 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
         var kit = kitRequestFactory.buildPersisted("testFetchKitStatusByStudy", enrollee.getId());
 
         // Act
-        var kitStatuses = stubPepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
+        var jsonNode = stubPepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
 
         // Assert
+        var kitStatusResponse = objectMapper.treeToValue(jsonNode, PepperKitStatusResponse.class);
+        var kitStatuses = List.of(kitStatusResponse.getKits());
         assertThat(kitStatuses.size(), equalTo(1));
         var kitStatus = kitStatuses.stream().findFirst().get();
         assertThat(kitStatus.getJuniperKitId(), equalTo(kit.getId().toString()));
@@ -74,6 +82,8 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
     private EnvironmentFactory environmentFactory;
     @Autowired
     private KitRequestFactory kitRequestFactory;
+    @Autowired
+    private ObjectMapper objectMapper;
     @Autowired
     private StudyEnvironmentFactory studyEnvironmentFactory;
     @Autowired

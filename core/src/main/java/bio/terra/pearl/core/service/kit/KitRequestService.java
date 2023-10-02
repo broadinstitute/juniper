@@ -19,6 +19,7 @@ import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
@@ -37,8 +39,8 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
 
     // NOTE: These are completely made up for now, until we get further with the Pepper integration and know what the real
     // possible statuses are.
-    private static final Set<String> PEPPER_COMPLETED_STATUSES = Set.of("PROCESSED", "CANCELLED");
-    private static final Set<String> PEPPER_FAILED_STATUSES = Set.of("CONTAMINATED");
+    private static final Set<String> PEPPER_COMPLETED_STATUSES = Set.of("RECEIVED", "PROCESSED", "CANCELLED");
+    private static final Set<String> PEPPER_FAILED_STATUSES = Set.of("ERRORED");
 
     public KitRequestService(KitRequestDao dao,
                              @Lazy EnrolleeService enrolleeService,
@@ -144,21 +146,23 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     @Transactional
     public PepperKitStatus syncKitStatusFromPepper(UUID kitId) {
         var kitRequest = dao.find(kitId).orElseThrow(() -> new NotFoundException("Kit request not found"));
-        var pepperKitStatus = pepperDSMClient.fetchKitStatus(kitId);
-        try {
-            kitRequest.setDsmStatus(objectMapper.writeValueAsString(pepperKitStatus));
-            kitRequest.setDsmStatusFetchedAt(Instant.now());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Could not parse JSON response from DSM", e);
-        }
+        var jsonNode = pepperDSMClient.fetchKitStatus(kitId);
+        kitRequest.setDsmStatus(jsonNode.toString());
+        kitRequest.setDsmStatusFetchedAt(Instant.now());
         dao.update(kitRequest);
-        return pepperKitStatus;
+        try {
+            var response = objectMapper.treeToValue(jsonNode, PepperKitStatusResponse.class);
+            var pepperKitStatus = response.getKits()[0];
+            return pepperKitStatus;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error parsing kit status from Pepper", e);
+        }
     }
 
     /**
      * Query Pepper for all in-progress kits and update the cached status in Juniper. This is intended to be called as a
      * scheduled job during expected non-busy times for DSM. If on-demand updates are needed outside the scheduled job,
-     * use {@link KitRequestService#updateKitStatus(AdminUser, UUID)} for a single kit or a batch operation that queries
+     * use {@link KitRequestService#syncKitStatusFromPepper(UUID)} for a single kit or a batch operation that queries
      * Pepper for less than all open kits.
      */
     @Transactional
@@ -173,9 +177,27 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     public void syncKitStatusesForStudy(Study study) {
         // This assumes that DSM is configured with a single study backing all environments of the Juniper study
         // TODO: delay deserializing to a PepperKitStatus until after it's been recorded on the kit request
-        var pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
+        // The returned JSON node is shaped like { "kits": [ <status1>, <status2>, ... ] }
         var pepperStatusFetchedAt = Instant.now();
-        var pepperKitStatusByKitId = pepperKitStatuses.stream().collect(
+        var jsonNode = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
+
+        // Extract JsonNodes by kit ID
+        var kitNodesByKitId = StreamSupport.stream(jsonNode.get("kits").spliterator(), false)
+                .collect(Collectors.toMap(kitNode -> kitNode.get("juniperKitId").asText(), Function.identity()));
+
+        // For all incomplete kits in a study (across all environments), render the JsonNode to cache in the database
+        // and update the Juniper kit status according to the Pepper kit status
+
+
+
+        PepperKitStatusResponse pepperKitStatuses = null;
+        try {
+            pepperKitStatuses = objectMapper.treeToValue(jsonNode, PepperKitStatusResponse.class);
+        } catch (JsonProcessingException e) {
+            // TODO
+            throw new RuntimeException(e);
+        }
+        var pepperKitStatusByKitId = Arrays.stream(pepperKitStatuses.getKits()).collect(
                 Collectors.toMap(PepperKitStatus::getJuniperKitId, Function.identity(),
                         (kit1, kit2) -> !kit1.getCurrentStatus().equals("Deactivated") ? kit1 : kit2));
 
@@ -187,8 +209,12 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             // we want to update the records in Juniper so those are the ones we want to iterate here.
             for (KitRequest kit : incompleteKits) {
                 var pepperKitStatus = pepperKitStatusByKitId.get(kit.getId().toString());
+                var kitNode = kitNodesByKitId.get(kit.getId().toString());
                 if (pepperKitStatus != null) {
                     saveKitStatus(kit, pepperKitStatus, pepperStatusFetchedAt);
+                }
+                if (kitNode != null) {
+                    updateKitStatus(kit, kitNode, pepperStatusFetchedAt);
                 }
             }
         }
@@ -255,6 +281,28 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                     "Unable to deserialize status JSON for kit %s: %s".formatted(kit.getId(), statusJson.toString()),
                     e);
         }
+
+        dao.update(kit);
+    }
+
+    private void updateKitStatus(KitRequest kit, JsonNode kitNode, Instant pepperStatusFetchedAt) {
+        // save raw status
+        try {
+            kit.setDsmStatus(objectMapper.writeValueAsString(kitNode));
+        } catch (JsonProcessingException e) {
+            // TODO: Log a warning that we couldn't save the status from Pepper
+        }
+        kit.setDsmStatusFetchedAt(pepperStatusFetchedAt);
+
+        // update juniper status
+        PepperKitStatus pepperKitStatus = null;
+        try {
+            pepperKitStatus = objectMapper.treeToValue(kitNode, PepperKitStatus.class);
+        } catch (JsonProcessingException e) {
+            // TODO: Log a warning that we couldn't parse the status from Pepper
+            // Also set Juniper kit status to UNKNOWN
+        }
+        kit.setStatus(statusFromPepperCurrentStatus(pepperKitStatus.getCurrentStatus()));
 
         dao.update(kit);
     }

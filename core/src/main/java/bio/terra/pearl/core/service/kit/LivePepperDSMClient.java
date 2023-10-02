@@ -5,10 +5,13 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -25,6 +28,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class LivePepperDSMClient implements PepperDSMClient {
+    private static final Logger log = LoggerFactory.getLogger(LivePepperDSMClient.class);
+
     private final PepperDSMConfig pepperDSMConfig;
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
@@ -41,28 +46,32 @@ public class LivePepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public String sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
+    public JsonNode sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
         var request = buildAuthedPostRequest("shipKit", makeKitRequestBody(studyShortcode, enrollee, kitRequest, address));
-        return retrieveAndDeserializeResponse(request, String.class);
+//        objectMapper.treeToValue()
+//        return retrieveResponse(request);
+        return retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
     }
 
     @Override
-    public PepperKitStatus fetchKitStatus(UUID kitRequestId) {
+    public JsonNode fetchKitStatus(UUID kitRequestId) {
         // TODO: change "juniperKit" to "juniperkit" after DSM updates this path
         var request = buildAuthedGetRequest("kitstatus/juniperKit/%s".formatted(kitRequestId));
         var response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
-        if (response.getKits().length != 1) {
-            throw new PepperException("Expected a single result from fetchKitStatus by ID (%s), got %d".formatted(
-                    kitRequestId, response.getKits().length));
-        }
-        return response.getKits()[0];
+        // TODO: move this
+//        if (response.getKits().length != 1) {
+//            throw new PepperException("Expected a single result from fetchKitStatus by ID (%s), got %d".formatted(
+//                    kitRequestId, response.getKits().length));
+//        }
+        return response;
     }
 
     @Override
-    public Collection<PepperKitStatus> fetchKitStatusByStudy(String studyShortcode) {
+    public JsonNode fetchKitStatusByStudy(String studyShortcode) {
         var request = buildAuthedGetRequest("kitstatus/study/%s".formatted(makePepperStudyName(studyShortcode)));
         var response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
-        return Arrays.asList(response.getKits());
+//        log.info(response.toString());
+        return response;
     }
 
     private String makePepperStudyName(String studyShortcode) {
@@ -128,15 +137,28 @@ public class LivePepperDSMClient implements PepperDSMClient {
      * and JSON parsing and deserialization exceptions. This method centralizes the behavior of robustly handling any of
      * these possibilities and, when possible, converting them into a useful PepperException.
      */
-    private <T> T retrieveAndDeserializeResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec, Class<T> clazz) {
+    private <T extends PepperResponse> JsonNode retrieveAndDeserializeResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec, Class<T> clazz) {
+        return retrieveBody(requestHeadersSpec)
+                .flatMap(deserializeTo(clazz))
+                .block();
+    }
+
+    private String retrieveResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec) {
+        return retrieveBody(requestHeadersSpec)
+                .block();
+    }
+
+    private Mono<String> retrieveBody(WebClient.RequestHeadersSpec<?> requestHeadersSpec) {
         return requestHeadersSpec
                 .retrieve()
                 .onStatus(
                         status -> status.is4xxClientError() || status.is5xxServerError(),
                         this::deserializePepperError)
                 .bodyToMono(String.class)
-                .flatMap(deserializeTo(clazz))
-                .block();
+                .map(body -> {
+                    log.info(body);
+                    return body;
+                });
     }
 
     /**
@@ -145,8 +167,16 @@ public class LivePepperDSMClient implements PepperDSMClient {
     private Mono<PepperException> deserializePepperError(ClientResponse clientResponse) {
         // Read the body as a String and manually deserialize so we can capture and log the body if deserialization fails
         return clientResponse.bodyToMono(String.class)
-                .flatMap(deserializeTo(PepperErrorResponse.class))
-                .map(pepperErrorResponse -> new PepperException("Error from Pepper", pepperErrorResponse));
+                .flatMap(body -> {
+                    try {
+                        var pepperErrorResponse = objectMapper.readValue(body, PepperErrorResponse.class);
+                        validate(pepperErrorResponse, PepperErrorResponse.class, body);
+                        return Mono.error(new PepperException("Error from Pepper", pepperErrorResponse));
+                    } catch (JsonProcessingException e) {
+                        return Mono.error(new PepperException(
+                                "Unable to parse error response from Pepper: %s".formatted(body), e));
+                    }
+                });
     }
 
     /**
@@ -155,16 +185,19 @@ public class LivePepperDSMClient implements PepperDSMClient {
      * response body. Therefore, we do the deserialization manually so that we can capture the body for logging and
      * troubleshooting.
      */
-    private <T> Function<String, Mono<T>> deserializeTo(Class<T> clazz) {
+    private <T extends PepperResponse> Function<String, Mono<JsonNode>> deserializeTo(Class<T> clazz) {
         return body -> {
-            // No deserialization needed if the requested response type is String
-            if (clazz.equals(String.class)) {
-                return Mono.just(clazz.cast(body));
-            }
             try {
-                var object = objectMapper.readValue(body, clazz);
-                validate(object, clazz, body);
-                return Mono.just(object);
+                var jsonNode = objectMapper.readTree(body);
+                if (!jsonNode.get("isError").asBoolean()) {
+                    // TODO: move this? but will probably lose access to body
+//                    validate(response, clazz, body);
+                    return Mono.just(jsonNode);
+                } else {
+                    var error = objectMapper.treeToValue(jsonNode, PepperErrorResponse.class);
+                    return Mono.error(new PepperException(
+                            "Error response from Pepper: %s".formatted(body), error));
+                }
             } catch (JsonProcessingException e) {
                 return Mono.error(new PepperException(
                         "Unable to parse response from Pepper as %s: %s".formatted(clazz.getName(), body), e));
