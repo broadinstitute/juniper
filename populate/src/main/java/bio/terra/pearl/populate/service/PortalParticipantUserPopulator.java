@@ -8,9 +8,12 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
+import bio.terra.pearl.populate.dto.participant.ParticipantUserPopDto;
+import bio.terra.pearl.populate.dto.participant.PortalParticipantUserPopDto;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -20,7 +23,7 @@ import bio.terra.pearl.populate.util.PopulateUtils;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PortalParticipantUserPopulator extends BasePopulator<PortalParticipantUser, PortalParticipantUser, PortalPopulateContext> {
+public class PortalParticipantUserPopulator extends BasePopulator<PortalParticipantUser, PortalParticipantUserPopDto, PortalPopulateContext> {
     private ParticipantUserService participantUserService;
     private PortalParticipantUserService portalParticipantUserService;
     private PortalEnvironmentService portalEnvironmentService;
@@ -34,13 +37,16 @@ public class PortalParticipantUserPopulator extends BasePopulator<PortalParticip
     }
 
     @Override
-    protected void preProcessDto(PortalParticipantUser popDto, PortalPopulateContext context) {
-        ParticipantUser userDto = popDto.getParticipantUser();
+    protected void preProcessDto(PortalParticipantUserPopDto popDto, PortalPopulateContext context) {
+        ParticipantUserPopDto userDto = popDto.getParticipantUser();
         userDto.setEnvironmentName(context.getEnvironmentName());
         Optional<ParticipantUser> existingUserOpt = participantUserService
                 .findOne(userDto.getUsername(), context.getEnvironmentName());
         ParticipantUser user = existingUserOpt.orElseGet(() -> participantUserService.create(userDto));
-
+        if (userDto.getLastLoginHoursAgo() != null) {
+            user.setLastLogin(Instant.now().minusSeconds(userDto.getLastLoginHoursAgo() * 60 * 60));
+            participantUserService.update(user);
+        }
         PortalEnvironment portalEnvironment = portalEnvironmentService
                 .findOne(context.getPortalShortcode(), context.getEnvironmentName()).get();
         popDto.setPortalEnvironmentId(portalEnvironment.getId());
@@ -48,31 +54,31 @@ public class PortalParticipantUserPopulator extends BasePopulator<PortalParticip
     }
 
     @Override
-    protected Class<PortalParticipantUser> getDtoClazz() {
-        return PortalParticipantUser.class;
+    protected Class<PortalParticipantUserPopDto> getDtoClazz() {
+        return PortalParticipantUserPopDto.class;
     }
 
     @Override
-    public Optional<PortalParticipantUser> findFromDto(PortalParticipantUser popDto, PortalPopulateContext context) {
+    public Optional<PortalParticipantUser> findFromDto(PortalParticipantUserPopDto popDto, PortalPopulateContext context) {
         PortalEnvironment portalEnvironment = portalEnvironmentService
                 .findOne(context.getPortalShortcode(), context.getEnvironmentName()).get();
         return portalParticipantUserService.findOne(popDto.getParticipantUserId(), portalEnvironment.getId());
     }
 
     @Override
-    public PortalParticipantUser overwriteExisting(PortalParticipantUser existingObj, PortalParticipantUser popDto, PortalPopulateContext context) {
+    public PortalParticipantUser overwriteExisting(PortalParticipantUser existingObj, PortalParticipantUserPopDto popDto, PortalPopulateContext context) {
         portalParticipantUserService.delete(existingObj.getId(), new HashSet<>());
         return createNew(popDto, context, false);
     }
 
     @Override
-    public PortalParticipantUser createPreserveExisting(PortalParticipantUser existingObj, PortalParticipantUser popDto, PortalPopulateContext context) {
+    public PortalParticipantUser createPreserveExisting(PortalParticipantUser existingObj, PortalParticipantUserPopDto popDto, PortalPopulateContext context) {
         // we don't support updating participant users in-place yet
         return existingObj;
     }
 
     @Override
-    public PortalParticipantUser createNew(PortalParticipantUser popDto, PortalPopulateContext context, boolean overwrite) {
+    public PortalParticipantUser createNew(PortalParticipantUserPopDto popDto, PortalPopulateContext context, boolean overwrite) {
         return portalParticipantUserService.create(popDto);
     }
 
@@ -83,7 +89,7 @@ public class PortalParticipantUserPopulator extends BasePopulator<PortalParticip
             try {
                 String fileString = filePopulateService.readFile(context.getRootFileName(), context);
 
-                PortalParticipantUser popDto = objectMapper.readValue(fileString, getDtoClazz());
+                PortalParticipantUserPopDto popDto = objectMapper.readValue(fileString, getDtoClazz());
                 popDto.setParticipantUserId(UUID.randomUUID());
 
                 String username = PopulateUtils.generateEmail();
