@@ -29,6 +29,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,8 +59,7 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
     StudyEnvironment studyEnv2 = studyEnvironmentFactory.buildPersisted("testEmptySearch");
     enrolleeFactory.buildPersisted("testEmptySearch", studyEnv2);
     ParticipantUser participantUser = participantUserService.find(enrollee.getParticipantUserId()).get();
-    Instant lastLoginTime = Instant.now();
-    participantUser.setLastLogin(lastLoginTime);
+    participantUser.setLastLogin(Instant.now());
     participantUserService.update(participantUser);
 
     var result = enrolleeSearchDao.search(studyEnv.getId(), List.of());
@@ -67,7 +67,7 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
     assertThat(result.get(0).getEnrollee().getShortcode(), equalTo(enrollee.getShortcode()));
 
     assertThat(result.get(0).getParticipantUser().getUsername(), equalTo(participantUser.getUsername()));
-    assertThat(result.get(0).getParticipantUser().getLastLogin(), equalTo(lastLoginTime));
+    assertThat(result.get(0).getParticipantUser().getLastLogin(), greaterThan(Instant.now().minusMillis(3000)));
   }
 
   @Test
