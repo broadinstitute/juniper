@@ -41,14 +41,9 @@ function StudyEnvPublishView({ portal, portalEnv, studyShortcode }:
   const envIcon = ENVIRONMENT_ICON_MAP[portalEnv.environmentName]
   const zoneConfig = useConfig()
   const isInitialized = portalEnv.portalEnvironmentConfig.initialized
-  return <div className="bg-white p-3 mb-2">
+  return <div className="p-3 mb-2" style={{ backgroundColor: '#ededed' }}>
     <div className="d-flex justify-content-between mb-3">
       <h3 className="h5 text-capitalize me-4">{envIcon} {portalEnv.environmentName}</h3>
-      <a href={Api.getParticipantLink(portalEnv.portalEnvironmentConfig, zoneConfig.participantUiHostname,
-        portal.shortcode, portalEnv.environmentName)}
-      target="_blank">
-        Participant view <FontAwesomeIcon icon={faExternalLink}/>
-      </a>
     </div>
 
     { isSuperuser() && <PortalEnvPublishControl portal={portal} studyShortcode={studyShortcode}
@@ -56,12 +51,20 @@ function StudyEnvPublishView({ portal, portalEnv, studyShortcode }:
     <div className="ms-4 mt-3">
       { !isInitialized && <div className="fst-italic text-muted">Not initialized</div> }
       { isInitialized && <div>
-                Website
-        {portalEnv.siteContent && <Link to={studyEnvSiteContentPath(portal.shortcode, studyShortcode,
-          portalEnv.environmentName)}
-        className="ms-2 fw-normal">
-          {portalEnv.siteContent.stableId} v{portalEnv.siteContent.version}
-        </Link> }
+                Website:
+        {portalEnv.siteContent && <span>
+          <Link to={studyEnvSiteContentPath(portal.shortcode, studyShortcode,
+            portalEnv.environmentName)}
+          className="ms-2 fw-normal">
+            {portalEnv.siteContent.stableId} v{portalEnv.siteContent.version}
+          </Link>
+          <a href={Api.getParticipantLink(portalEnv.portalEnvironmentConfig, zoneConfig.participantUiHostname,
+            portal.shortcode, portalEnv.environmentName)}
+          target="_blank" className="ms-5">
+            Participant view <FontAwesomeIcon icon={faExternalLink}/>
+          </a>
+        </span>
+        }
       </div>}
     </div>
   </div>

@@ -1,9 +1,10 @@
 package bio.terra.pearl.core.service.kit;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+
+import java.util.Set;
 
 @Getter @Setter
 @SuperBuilder @NoArgsConstructor
@@ -11,6 +12,40 @@ import lombok.experimental.SuperBuilder;
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PepperKitStatus {
+
+    public enum Status {
+        CREATED("kit without label"),
+        QUEUED("queue"),
+        SENT("sent"),
+        RECEIVED("received"),
+        ERRORED("error"),
+        DEACTIVATED("deactivated");
+
+        Status(String currentStatus) {
+            this.currentStatus = currentStatus;
+        }
+
+        final String currentStatus;
+
+        public static Status fromCurrentStatus(String currentStatus) {
+            for (Status status : Status.values()) {
+                if (status.currentStatus.equals(currentStatus.toLowerCase())) {
+                    return status;
+                }
+            }
+            throw new IllegalArgumentException("Unexpected Pepper currentStatus: " + currentStatus);
+        }
+
+        public static boolean isCompleted(Status status) {
+            return Set.of(Status.RECEIVED, Status.DEACTIVATED).contains(status);
+        }
+
+        public static boolean isFailed(Status status) {
+            return status == Status.ERRORED;
+        }
+
+    }
+
     private String juniperKitId;
     private String currentStatus;
     private String dsmShippingLabel;
