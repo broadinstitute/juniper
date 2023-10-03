@@ -96,6 +96,7 @@ public class PortalParticipantUserPopulator extends BasePopulator<PortalParticip
 
                 ParticipantUser user = popDto.getParticipantUser();
                 user.setUsername(username);
+                user.setLastLogin(Instant.now().minusSeconds(Math.round(Math.random() * 60 * 60 * 24 * 30)));
                 popDto.setParticipantUser(user);
 
                 Profile profile = popDto.getProfile();
