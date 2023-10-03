@@ -81,7 +81,7 @@ function PageFrame() {
   return (
     <div className="d-flex">
       <AdminSidebar/>
-      <div className="flex-grow-1 d-flex flex-column" style={{ backgroundColor: '#ededed' }}>
+      <div className="flex-grow-1 d-flex flex-column" style={{ backgroundColor: '#fff' }}>
         <AdminNavbar/>
         <Outlet/>
       </div>

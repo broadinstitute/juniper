@@ -1,9 +1,9 @@
 import React from 'react'
 
-import EnrolleeView from './EnrolleeView'
+import { LoadedEnrolleeView } from './EnrolleeView'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockEnrollee, mockStudyEnvContext, taskForForm } from 'test-utils/mocking-utils'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 
 
 test('renders survey links for configured surveys', async () => {
@@ -12,7 +12,7 @@ test('renders survey links for configured surveys', async () => {
 
   const { RoutedComponent } = setupRouterTest(
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <EnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {}}/>)
+    <LoadedEnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {}}/>)
   render(RoutedComponent)
   const surveyLink = screen.getByText('Survey number one')
   // should have no badge since the enrollee hasn't take the survey
@@ -34,11 +34,11 @@ test('renders survey taken badges', async () => {
 
   const { RoutedComponent } = setupRouterTest(
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <EnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {}}/>)
+    <LoadedEnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {}}/>)
   render(RoutedComponent)
-  const surveyLink = screen.getByText('Survey number one')
+  const surveyLinkContainer = screen.getByText('Survey number one').parentElement as HTMLElement
   // should show a badge
-  expect(surveyLink.querySelector('span')).toHaveTextContent('1')
+  expect(within(surveyLinkContainer).getByTitle('In Progress')).toBeInTheDocument()
 })
 
 
@@ -48,11 +48,11 @@ test('renders consent links for configured consents', async () => {
 
   const { RoutedComponent } = setupRouterTest(
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <EnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {}}/>)
+    <LoadedEnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {}}/>)
   render(RoutedComponent)
-  const surveyLink = screen.getByText('Mock consent')
+  const consentLinkContainer = screen.getByText('Mock consent').parentElement as HTMLElement
   // should have no badge since the enrollee hasn't completed the consent
-  expect(surveyLink.querySelector('span')).toBeNull()
+  expect(consentLinkContainer.querySelector('svg')).toBeNull()
 })
 
 test('renders consent taken badges', async () => {
@@ -71,9 +71,9 @@ test('renders consent taken badges', async () => {
 
   const { RoutedComponent } = setupRouterTest(
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <EnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {}}/>)
+    <LoadedEnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {}}/>)
   render(RoutedComponent)
-  const consentLink = screen.getByText('Mock consent')
+  const consentLinkContainer = screen.getByText('Mock consent').parentElement as HTMLElement
   // should show a completed checkmark
-  expect(consentLink.querySelector('title')?.textContent).toEqual('completed')
+  expect(within(consentLinkContainer).getByTitle('Complete')).toBeInTheDocument()
 })

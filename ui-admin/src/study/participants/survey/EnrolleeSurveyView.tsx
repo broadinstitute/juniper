@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 import SurveyFullDataView from './SurveyFullDataView'
 import SurveyEditView from './SurveyEditView'
 import { ResponseMapT } from '../enrolleeView/EnrolleeView'
-import { EnrolleeParams } from '../enrolleeView/EnrolleeLoader'
+import { EnrolleeParams } from '../enrolleeView/useRoutedEnrollee'
 import { instantToDefaultString } from 'util/timeUtils'
 import DocumentTitle from 'util/DocumentTitle'
 

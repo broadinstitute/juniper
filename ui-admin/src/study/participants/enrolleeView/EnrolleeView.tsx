@@ -1,15 +1,14 @@
 import React from 'react'
 import {
   ConsentResponse,
-  Enrollee, ParticipantTask,
+  Enrollee,
   StudyEnvironmentConsent,
   StudyEnvironmentSurvey,
   SurveyResponse
 } from 'api/api'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
-import { NavLink, Route, Routes } from 'react-router-dom'
+import { Link, NavLink, Route, Routes } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck'
 import EnrolleeSurveyView from '../survey/EnrolleeSurveyView'
 import EnrolleeConsentView from '../consent/EnrolleeConsentView'
 import PreEnrollmentView from '../survey/PreEnrollmentView'
@@ -20,6 +19,13 @@ import ParticipantTaskView from './ParticipantTaskView'
 import ErrorBoundary from 'util/ErrorBoundary'
 import AdvancedOptions from './AdvancedOptions'
 import KitRequests from '../KitRequests'
+import { NavBreadcrumb } from 'navbar/AdminNavbar'
+import useRoutedEnrollee from './useRoutedEnrollee'
+import LoadingSpinner from 'util/LoadingSpinner'
+import CollapsableMenu from 'navbar/CollapsableMenu'
+import { faCircleCheck, faCircleHalfStroke } from '@fortawesome/free-solid-svg-icons'
+import { faCircle as faEmptyCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
+import { ParticipantTaskStatus } from '@juniper/ui-core'
 
 export type SurveyWithResponsesT = {
   survey: StudyEnvironmentSurvey,
@@ -34,11 +40,20 @@ export type ConsentWithResponsesT = {
 }
 export type ConsentResponseMapT = {[stableId: string] : ConsentWithResponsesT}
 
-/** shows a master-detail view for an enrollee with sub views on surveys, tasks, etc... */
-export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
-{enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void}) {
-  const { currentEnv } = studyEnvContext
+/** loads an enrollee and renders the view for it */
+export default function EnrolleeView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
+  const { isLoading, enrollee, reload } = useRoutedEnrollee(studyEnvContext)
+  return <>
+    {isLoading && <LoadingSpinner/>}
+    {!isLoading && enrollee && <LoadedEnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext}
+      onUpdate={reload}/>}
+  </>
+}
 
+/** shows a master-detail view for an enrollee with sub views on surveys, tasks, etc... */
+export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
+{ enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void}) {
+  const { currentEnv, currentEnvPath } = studyEnvContext
   /** gets classes to apply to nav links */
   function getLinkCssClasses({ isActive }: {isActive: boolean}) {
     return `${isActive ? 'fw-bold' : ''} d-flex align-items-center`
@@ -70,89 +85,99 @@ export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
     consentMap[configConsent.consentForm.stableId] = { consent: configConsent, responses: matchedResponses }
   })
 
-  return <div className="ParticipantView container mt-4">
+  const navListItemStyle = {
+    backgroundColor: '#ededed',
+    marginBottom: '0.25em',
+    padding: '0.5em'
+  }
+
+
+  return <div className="ParticipantView mt-3 ps-4">
+    <NavBreadcrumb value={enrollee?.shortcode || ''}>
+      <Link to={`${currentEnvPath}/participants/${enrollee.shortcode}`}>
+        {enrollee?.shortcode}</Link>
+    </NavBreadcrumb>
     <div className="row">
       <div className="col-12">
         <h4>
           {enrollee.profile.givenName} {enrollee.profile.familyName} &nbsp;
           <span className="detail" title="Participant shortcode"> ({enrollee.shortcode})</span>
         </h4>
-        <div>
-
-        </div>
       </div>
     </div>
     <div className="row mt-2">
       <div className="col-12">
         <div className="d-flex">
-          <div style={{ minWidth: '280', maxWidth: '280px' }}>
-            <ul className="list-group">
-              <li className="list-group-item">
+          <div style={{ minWidth: '290px', maxWidth: '290px' }}>
+            <ul className="list-unstyled">
+              <li style={navListItemStyle} className="ps-3">
                 <NavLink to="profile" className={getLinkCssClasses}>Profile &amp; Notes</NavLink>
               </li>
-              <li className="list-group-item subgroup">
-                <NavLink to="tasks" className={getLinkCssClasses}>Tasks</NavLink>
-                <TaskSummary tasks={enrollee.participantTasks}/>
-              </li>
-              <li className="list-group-item">
-                { currentEnv.preEnrollSurvey && <NavLink to="preRegistration" className={getLinkCssClasses}>
-                  PreEnrollment
-                </NavLink> }
-              </li>
-              <li className="list-group-item subgroup">
-                Consents
-                <ul className="list-group">
-                  { consents.map(consent => {
-                    const stableId = consent.consentForm.stableId
-                    return <li className="list-group-item border-0" key={stableId}>
-                      <NavLink to={`consents/${stableId}`} className={getLinkCssClasses}>
-                        { consent.consentForm.name }
+              <li style={navListItemStyle}>
+                <CollapsableMenu header={'Forms'} headerClass="text-black" content={
+                  <ul className="list-unstyled">
+                    { currentEnv.preEnrollSurvey && <li className="mb-2">
+                      <NavLink to="preRegistration" className={getLinkCssClasses}>
+                        PreEnrollment
+                      </NavLink>
+                    </li> }
+                    { consents.map(consent => {
+                      const stableId = consent.consentForm.stableId
+                      return <li className="mb-2 d-flex justify-content-between align-items-center" key={stableId}>
+                        <NavLink to={`consents/${stableId}`} className={getLinkCssClasses}>
+                          { consent.consentForm.name }
+                        </NavLink>
                         { isConsented(consentMap[stableId].responses) &&
-                          <FontAwesomeIcon className="text-success ms-2 fa-lg" icon={faCheck}
-                            title="completed"/>
+                            statusDisplayMap['COMPLETE']
                         }
-                      </NavLink>
-                    </li>
-                  }) }
-                </ul>
+                      </li>
+                    }) }
+                  </ul>}/>
               </li>
-              <li className="list-group-item subgroup">
-                Surveys
-                <ul className="list-group">
-                  { surveys.map(survey => {
-                    const stableId = survey.survey.stableId
-                    return <li className="list-group-item border-0" key={stableId}>
-                      <NavLink to={`surveys/${stableId}`} className={getLinkCssClasses}>
-                        { survey.survey.name }
-                        {responseMap[stableId].responses.length > 0 &&
-                          <span className="badge align-middle bg-secondary ms-1 mb-1">
-                            {responseMap[stableId].responses.length}
-                          </span>
-                        }
-                      </NavLink>
-                    </li>
-                  }) }
-                </ul>
+              <li style={navListItemStyle}>
+                <CollapsableMenu header={'Surveys'} headerClass="text-black" content={
+                  <ul className="list-unstyled">
+                    {surveys.map(survey => {
+                      const stableId = survey.survey.stableId
+                      return <li className="mb-2 d-flex justify-content-between
+                        align-items-center" key={stableId}>
+                        <NavLink to={`surveys/${stableId}`} className={getLinkCssClasses}>
+                          { survey.survey.name }
+                        </NavLink>
+                        {badgeForResponses(responseMap[stableId].responses)}
+                      </li>
+                    })}
+                  </ul>}
+                />
               </li>
-              <li className="list-group-item subgroup">
-                <NavLink to="notifications" className={getLinkCssClasses}>Notifications</NavLink>
-              </li>
-              <li className="list-group-item subgroup">
-                <NavLink to="changeRecords" className={getLinkCssClasses}>Audit history</NavLink>
-              </li>
-              <li className="list-group-item subgroup">
+              <li style={navListItemStyle} className="ps-3 d-flex justify-content-between align-items-center">
                 <NavLink to="kitRequests" className={getLinkCssClasses}>
                   Kit requests
-                  {
-                    enrollee.kitRequests.length > 0 &&
-                      <span className="badge align-middle bg-secondary ms-1 mb-1">
-                        {enrollee.kitRequests.length}
-                      </span>
-                  }
                 </NavLink>
+                {
+                  enrollee.kitRequests.length > 0 &&
+                    <span className="badge align-middle bg-secondary ms-1 mb-1">
+                      {enrollee.kitRequests.length}
+                    </span>
+                }
               </li>
-              <li className="list-group-item subgroup">
-                <NavLink to="advanced" className={getLinkCssClasses}>Advanced options</NavLink>
+              <li style={navListItemStyle}>
+                <CollapsableMenu header={'History & Advanced'} headerClass="text-black" content={
+                  <ul className="list-unstyled">
+                    <li className="mb-2">
+                      <NavLink to="notifications" className={getLinkCssClasses}>Notifications</NavLink>
+                    </li>
+                    <li className="mb-2">
+                      <NavLink to="tasks" className={getLinkCssClasses}>Task list</NavLink>
+                    </li>
+                    <li className="mb-2">
+                      <NavLink to="changeRecords" className={getLinkCssClasses}>Audit history</NavLink>
+                    </li>
+                    <li className="mb-2">
+                      <NavLink to="withdrawal" className={getLinkCssClasses}>Withdrawal</NavLink>
+                    </li>
+                  </ul>
+                }/>
               </li>
             </ul>
           </div>
@@ -186,7 +211,7 @@ export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                 <Route path="kitRequests" element={
                   <KitRequests enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>
                 }/>
-                <Route path="advanced" element={
+                <Route path="withdrawal" element={
                   <AdvancedOptions enrollee={enrollee} studyEnvContext={studyEnvContext}/>
                 }/>
                 <Route index element={<EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext}
@@ -201,20 +226,17 @@ export default function EnrolleeView({ enrollee, studyEnvContext, onUpdate }:
   </div>
 }
 
-const TaskSummary = ({ tasks }: {tasks: ParticipantTask[]}) => {
-  const countsWithLabels: {label: string, count :number}[] = [
-    { label: 'New', count: tasks.filter(task => task.status === 'NEW').length },
-    { label: 'In progress', count: tasks.filter(task => task.status === 'IN_PROGRESS').length },
-    { label: 'Complete', count: tasks.filter(task => task.status === 'COMPLETE').length }
-
-  ]
-  return <ul className="list-unstyled">
-    {countsWithLabels.map(countWithLabel => <li key={countWithLabel.label} className="ms-3 d-flex align-items-center">
-      {countWithLabel.label}: <span className="badge align-middle bg-secondary ms-1">
-        {countWithLabel.count}
-      </span>
-    </li>)}
-  </ul>
+/** returns an icon based on the enrollee's responses.  Note this does not handle multi-responses yet */
+const badgeForResponses = (responses: SurveyResponse[]) => {
+  if (responses.length === 0) {
+    return statusDisplayMap['NEW']
+  } else {
+    if (responses[0].complete) {
+      return statusDisplayMap['COMPLETE']
+    } else {
+      return statusDisplayMap['IN_PROGRESS']
+    }
+  }
 }
 
 /** path to kit request list for enrollee */
@@ -227,3 +249,11 @@ function isConsented(responses: ConsentResponse[]) {
   // for now, just check the most recent for consent
   return responses.length > 0 && responses[responses.length - 1].consented
 }
+
+const statusDisplayMap: Record<ParticipantTaskStatus, React.ReactNode> = {
+  'COMPLETE': <FontAwesomeIcon icon={faCircleCheck} style={{ color: '#888' }} title="Complete"/>,
+  'IN_PROGRESS': <FontAwesomeIcon icon={faCircleHalfStroke} style={{ color: '#888' }} title="In Progress"/>,
+  'NEW': <FontAwesomeIcon icon={faEmptyCircle} style={{ color: '#888' }} title="Not Started"/>,
+  'REJECTED': <FontAwesomeIcon icon={faCircleXmark} style={{ color: '#888' }} title="Rejected"/>
+}
+

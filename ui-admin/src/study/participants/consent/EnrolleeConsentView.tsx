@@ -8,7 +8,7 @@ import {
 import { useParams } from 'react-router-dom'
 import SurveyFullDataView from 'study/participants/survey/SurveyFullDataView'
 import { ConsentResponseMapT } from '../enrolleeView/EnrolleeView'
-import { EnrolleeParams } from '../enrolleeView/EnrolleeLoader'
+import { EnrolleeParams } from '../enrolleeView/useRoutedEnrollee'
 import { instantToDefaultString } from 'util/timeUtils'
 import DocumentTitle from 'util/DocumentTitle'
 
