@@ -7,7 +7,7 @@ import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import userEvent from '@testing-library/user-event'
 import { act } from 'react-dom/test-utils'
-import { KEYWORD_FACET } from '../../../api/enrolleeSearch'
+import { KEYWORD_FACET } from 'api/enrolleeSearch'
 
 const mockSearchApi = () => {
   return jest.spyOn(Api, 'searchEnrollees')
@@ -16,7 +16,11 @@ const mockSearchApi = () => {
       const enrolleeSearchResults: EnrolleeSearchResult[] = [{
         enrollee: fakeEnrollee,
         profile: fakeEnrollee.profile,
-        mostRecentKitStatus: null
+        mostRecentKitStatus: null,
+        participantUser: {
+          lastLogin: 50405345,
+          username: 'testUser1@test.com'
+        }
       }]
       return Promise.resolve(enrolleeSearchResults)
     })
@@ -33,6 +37,7 @@ test('renders a participant with link', async () => {
   const participantLink = screen.getByText('JOSALK')
   expect(participantLink).toHaveAttribute('href', `/${studyEnvContext.currentEnvPath}/participants/JOSALK`)
   expect(screen.getByText('Created')).toBeInTheDocument()
+  expect(screen.getByText('Last login')).toBeInTheDocument()
 })
 
 test('renders filters for participant columns', async () => {

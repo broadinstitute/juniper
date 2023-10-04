@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
@@ -27,18 +28,22 @@ public class EnrolleeSearchDao {
   private String baseSelectString;
   private RowMapper<Enrollee> enrolleeRowMapper;
   private RowMapper<Profile> profileRowMapper;
+  private RowMapper<ParticipantUser> participantUserRowMapper;
 
   public EnrolleeSearchDao(StudyEnvironmentDao studyEnvironmentDao, Jdbi jdbi,
-                           EnrolleeDao enrolleeDao, ProfileDao profileDao) {
+                           EnrolleeDao enrolleeDao, ProfileDao profileDao,
+                           ParticipantUserDao participantUserDao) {
     this.studyEnvironmentDao = studyEnvironmentDao;
     this.jdbi = jdbi;
     this.enrolleeDao = enrolleeDao;
     this.profileDao = profileDao;
     baseSelectString = "select distinct on (enrollee.id) " +
         generateSelectString(enrolleeDao) + ", " + generateSelectString(profileDao) +
+            ", participant_user.last_login, participant_user.username " +
         ", kit_request.status as kit_request__status";
     enrolleeRowMapper = BeanMapper.of(Enrollee.class, enrolleeDao.getTableName() + "__");
     profileRowMapper = BeanMapper.of(Profile.class, profileDao.getTableName() + "__");
+    participantUserRowMapper = BeanMapper.of(ParticipantUser.class, participantUserDao.getTableName() + "__");
   }
 
   public List<EnrolleeSearchResult> search(String studyShortcode, EnvironmentName envName,
@@ -46,7 +51,6 @@ public class EnrolleeSearchDao {
     StudyEnvironment studyEnv = studyEnvironmentDao.findByStudy(studyShortcode, envName).get();
     return search(studyEnv.getId(), facets);
   }
-
 
   protected List<EnrolleeSearchResult> search(UUID studyEnvId, List<SqlSearchableFacet> facets) {
     var result =  jdbi.withHandle(handle -> {
@@ -69,6 +73,7 @@ public class EnrolleeSearchDao {
                     id -> new EnrolleeSearchResult());
                 esr.setEnrollee(rowView.getRow(Enrollee.class));
                 esr.setProfile(rowView.getRow(Profile.class));
+                esr.setParticipantUser(rowView.getRow(ParticipantUser.class));
                 esr.setMostRecentKitStatus(rowView.getColumn("kit_request__status", KitRequestStatus.class));
                 return map;
               })
@@ -96,7 +101,12 @@ public class EnrolleeSearchDao {
     selects.add(0, baseSelectString);
     String selectQuery = selects.stream().collect(Collectors.joining(","));
 
-    String baseFromQuery = " from enrollee left join profile on profile.id = enrollee.profile_id left join kit_request on enrollee.id = kit_request.enrollee_id";
+    String baseFromQuery = """
+             from enrollee 
+             left join participant_user on participant_user.id = enrollee.participant_user_id
+             left join profile on profile.id = enrollee.profile_id 
+             left join kit_request on enrollee.id = kit_request.enrollee_id
+    """;
     List<String> froms = facetsGroupByTable.values().stream().map(facetList -> facetList.get(0).getJoinQuery())
         .collect(Collectors.toList());
     froms.add(0, baseFromQuery);
