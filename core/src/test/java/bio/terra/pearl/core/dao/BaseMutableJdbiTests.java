@@ -22,6 +22,17 @@ public class BaseMutableJdbiTests {
                 testDao.updateFieldString);
     }
 
+    @Test
+    public void testUpsertSql() {
+        BaseMutableJdbiTests.SimpleModelDao testDao = new BaseMutableJdbiTests.SimpleModelDao(null);
+        Assertions.assertEquals("insert into simple_model (bool_field, created_at, instant_field, int_field, last_updated_at, string_field, uuid_field) " +
+                        "values (:boolField, :createdAt, :instantField, :intField, :lastUpdatedAt, :stringField, :uuidField) " +
+                        "on conflict (uuid_field) do update set " +
+                        "bool_field = excluded.bool_field, instant_field = excluded.instant_field, int_field = excluded.int_field, " +
+                        "last_updated_at = excluded.last_updated_at, string_field = excluded.string_field, uuid_field = excluded.uuid_field",
+                testDao.getUpsertQuerySql("uuid_field"));
+    }
+
     @Getter
     @Setter
     private class SimpleModel extends BaseEntity {

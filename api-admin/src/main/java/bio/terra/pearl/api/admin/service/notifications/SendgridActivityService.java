@@ -24,7 +24,7 @@ public class SendgridActivityService {
     this.sendgridClient = sendgridClient;
   }
 
-  public void saveSendgridActivity() throws Exception {
+  public void saveSendgridActivity() {
     // Find the most recently recorded event, and get all events since then
     Optional<SendgridEvent> mostRecentEvent = sendgridEventDao.findMostRecentEvent();
 
@@ -43,15 +43,19 @@ public class SendgridActivityService {
     sendgridEventDao.bulkUpsert(events);
   }
 
-  public List<SendgridEvent> getAllRecentSendgridEvents(Instant startDate, Instant endDate)
-      throws Exception {
+  public List<SendgridEvent> getAllRecentSendgridEvents(Instant startDate, Instant endDate) {
     final int PAGE_SIZE = 1000;
     String queryStartDate = instantToPreferredSendgridDateFormat(startDate);
     String queryEndDate = instantToPreferredSendgridDateFormat(endDate);
 
     logger.info("Querying for SendGrid activity between {} and {}", queryStartDate, queryEndDate);
 
-    List<SendgridEvent> events = sendgridClient.getEvents(queryStartDate, queryEndDate, PAGE_SIZE);
+    List<SendgridEvent> events;
+    try {
+      events = sendgridClient.getEvents(queryStartDate, queryEndDate, PAGE_SIZE);
+    } catch (Exception e) {
+      throw new RuntimeException("Unable to query SendGrid for activity: " + e.getMessage());
+    }
 
     if (events.size() == PAGE_SIZE) {
       endDate = events.get(events.size() - 1).getLastEventTime();
