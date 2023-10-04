@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -45,16 +46,16 @@ public class SendgridClient {
     sg.api(request);
   }
 
-  public List<SendgridEvent> getEvents(String queryStartDate, String queryEndDate, int queryLimit) throws Exception {
+  public List<SendgridEvent> getEvents(Instant startDate, Instant endDate, int queryLimit) throws Exception {
     SendGrid sg = new SendGrid(sendGridApiKey);
     Request request = new Request();
     request.setMethod(Method.GET);
 
     String query = "(last_event_time " +
             "BETWEEN " +
-              "TIMESTAMP \"" + queryStartDate + "\" " +
+              "TIMESTAMP \"" + startDate + "\" " +
             "AND " +
-              "TIMESTAMP \"" + queryEndDate + "\") ";
+              "TIMESTAMP \"" + endDate + "\") ";
 
     request.setEndpoint("messages");
     request.addQueryParam("limit", Integer.toString(queryLimit));

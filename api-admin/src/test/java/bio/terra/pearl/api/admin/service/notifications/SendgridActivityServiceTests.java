@@ -23,7 +23,7 @@ public class SendgridActivityServiceTests extends BaseSpringBootTest {
 
   @Test
   public void testPagination() throws Exception {
-    when(sendgridClient.getEvents(anyString(), anyString(), anyInt()))
+    when(sendgridClient.getEvents(any(Instant.class), any(Instant.class), anyInt()))
         .thenReturn(mockEventPage(1000))
         .thenReturn(mockEventPage(527));
 
@@ -31,7 +31,7 @@ public class SendgridActivityServiceTests extends BaseSpringBootTest {
         sendgridActivityService.getAllRecentSendgridEvents(
             Instant.now().minus(30, ChronoUnit.DAYS), Instant.now());
 
-    verify(sendgridClient, times(2)).getEvents(anyString(), anyString(), anyInt());
+    verify(sendgridClient, times(2)).getEvents(any(Instant.class), any(Instant.class), anyInt());
     assertThat(events, hasSize(1527));
   }
 

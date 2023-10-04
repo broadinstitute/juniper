@@ -4,8 +4,6 @@ import bio.terra.pearl.core.dao.notification.SendgridEventDao;
 import bio.terra.pearl.core.model.notification.SendgridEvent;
 import bio.terra.pearl.core.service.notification.email.SendgridClient;
 import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -44,15 +42,13 @@ public class SendgridActivityService {
   }
 
   public List<SendgridEvent> getAllRecentSendgridEvents(Instant startDate, Instant endDate) {
-    final int PAGE_SIZE = 1000;
-    String queryStartDate = instantToPreferredSendgridDateFormat(startDate);
-    String queryEndDate = instantToPreferredSendgridDateFormat(endDate);
+    final int PAGE_SIZE = 1000; // This is the maximum page size allowed by SendGrid
 
-    logger.info("Querying for SendGrid activity between {} and {}", queryStartDate, queryEndDate);
+    logger.info("Querying for SendGrid activity between {} and {}", startDate, endDate);
 
     List<SendgridEvent> events;
     try {
-      events = sendgridClient.getEvents(queryStartDate, queryEndDate, PAGE_SIZE);
+      events = sendgridClient.getEvents(startDate, endDate, PAGE_SIZE);
     } catch (Exception e) {
       throw new RuntimeException("Unable to query SendGrid for activity: " + e.getMessage());
     }
@@ -62,17 +58,11 @@ public class SendgridActivityService {
       logger.info(
           "Sendgrid activity query returned the limit of {} events. Querying for additional events between {} and {}",
           PAGE_SIZE,
-          queryStartDate,
-          queryEndDate);
+          startDate,
+          endDate);
       events.addAll(getAllRecentSendgridEvents(startDate, endDate));
     }
 
     return events;
-  }
-
-  public String instantToPreferredSendgridDateFormat(Instant instant) {
-    return instant
-        .atOffset(ZoneOffset.UTC)
-        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
   }
 }
