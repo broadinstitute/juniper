@@ -6,7 +6,7 @@ import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
   ColumnDef,
   getCoreRowModel,
-  getFilteredRowModel,
+  getFilteredRowModel, getPaginationRowModel,
   getSortedRowModel, PaginationState,
   SortingState, Updater,
   useReactTable, VisibilityState
@@ -50,16 +50,16 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   const keywordFacetIndex = facetValues.findIndex(facet => facet.facet.category === 'keyword')
   const keywordFacetValue = facetValues[keywordFacetIndex]
 
-  const pageIndex = parseInt(searchParams.get('pageIndex') ?? '1')
-  const pageSize = parseInt(searchParams.get('pageSize') ?? DEFAULT_PAGE_SIZE)
-  const pagination = useMemo(() => ({pageSize, pageIndex}),
-      [pageSize, pageIndex])
-  const setPagination = (pagination: PaginationState | (Updater<PaginationState>)) => {
-    //searchParams.set('pageIndex', pagination.pageIndex.toString())
-    //searchParams.set('pageSize', pagination.pageSize.toString())
-    setSearchParams(searchParams)
-    return pagination
-  }
+  // const pageIndex = parseInt(searchParams.get('pageIndex') ?? '1')
+  // const pageSize = parseInt(searchParams.get('pageSize') ?? DEFAULT_PAGE_SIZE)
+  // const pagination = useMemo(() => ({pageSize, pageIndex}),
+  //     [pageSize, pageIndex])
+  // const setPagination = (pagination: PaginationState | (Updater<PaginationState>)) => {
+  //   //searchParams.set('pageIndex', pagination.pageIndex.toString())
+  //   //searchParams.set('pageSize', pagination.pageSize.toString())
+  //   setSearchParams(searchParams)
+  //   return pagination
+  // }
 
   const columns = useMemo<ColumnDef<EnrolleeSearchResult, string>[]>(() => [{
     id: 'select',
@@ -141,17 +141,18 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     state: {
       sorting,
       rowSelection,
-      pagination,
+      // pagination,
       columnVisibility
     },
     onColumnVisibilityChange: setColumnVisibility,
     enableRowSelection: true,
-    onPaginationChange: setPagination,
-    manualPagination: true,
+    // onPaginationChange: setPagination,
+    // manualPagination: true,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     onRowSelectionChange: setRowSelection
   })
 
