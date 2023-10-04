@@ -5,7 +5,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 /** renders a client-side pagination control (as in, the data is all loaded from the server at once, but
  * paged on the UI for readability */
-export default function TableClientPagination<R>({ table }: {table: Table<R>}) {
+export default function TableClientPagination<R>({ table, preferredNumRowsKey }: {
+  table: Table<R>,
+  preferredNumRowsKey: string | undefined
+}) {
   return <div style={{
     padding: '0 1rem 1rem 1rem',
     display: 'flex', justifyContent: 'space-between'
@@ -17,6 +20,8 @@ export default function TableClientPagination<R>({ table }: {table: Table<R>}) {
         value={table.getState().pagination.pageSize}
         onChange={e => {
           table.setPageSize(Number(e.target.value))
+          // save the preferred number of rows to local storage so the user doesn't have to keep changing it
+          if (preferredNumRowsKey) { localStorage.setItem(preferredNumRowsKey, e.target.value) }
         }}
       >
         {[10, 25, 50, 100].map(pageSize => (

@@ -49,6 +49,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   const facetValues = facetValuesFromString(searchParams.get('facets') ?? '{}', ALL_FACETS)
   const keywordFacetIndex = facetValues.findIndex(facet => facet.facet.category === 'keyword')
   const keywordFacetValue = facetValues[keywordFacetIndex]
+  const preferredNumRowsKey = `participantList.${portal.shortcode}.${study.shortcode}.preferredNumRows`
 
   const columns = useMemo<ColumnDef<EnrolleeSearchResult, string>[]>(() => [{
     id: 'select',
@@ -132,6 +133,11 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
       rowSelection,
       columnVisibility
     },
+    initialState: {
+      pagination: {
+        pageSize: Number(localStorage.getItem(preferredNumRowsKey) || '10')
+      }
+    },
     onColumnVisibilityChange: setColumnVisibility,
     enableRowSelection: true,
     onSortingChange: setSorting,
@@ -193,7 +199,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
             </div>
           </div>
           { basicTableLayout(table, { filterable: true })}
-          <TableClientPagination table={table}/>
+          <TableClientPagination table={table} preferredNumRowsKey={preferredNumRowsKey}/>
         </LoadingSpinner>
       </div>
     </div>
