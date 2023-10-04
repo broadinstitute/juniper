@@ -1,7 +1,7 @@
 package bio.terra.pearl.api.admin.service.notifications;
 
-import bio.terra.pearl.core.dao.notification.SendgridEvent;
 import bio.terra.pearl.core.dao.notification.SendgridEventDao;
+import bio.terra.pearl.core.model.notification.SendgridEvent;
 import bio.terra.pearl.core.service.notification.email.SendgridClient;
 import java.time.Instant;
 import java.time.ZoneOffset;

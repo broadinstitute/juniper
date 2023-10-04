@@ -1,8 +1,9 @@
 package bio.terra.pearl.core.service.notification.email;
 
-import bio.terra.pearl.core.dao.notification.SendgridEvent;
+import bio.terra.pearl.core.model.notification.SendgridEvent;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
-import bio.terra.pearl.core.service.notification.SendGridEventResponse;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sendgrid.*;
@@ -62,9 +63,11 @@ public class SendgridClient {
 
     ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.registerModule(new JavaTimeModule());
-    SendGridEventResponse emailMessagesWrapper = objectMapper.readValue(response.getBody(), SendGridEventResponse.class);
+    JsonNode jsonNode = objectMapper.readTree(response.getBody());
 
-    return emailMessagesWrapper.messages();
+    List<SendgridEvent> events = objectMapper.convertValue(jsonNode.get("messages"), new TypeReference<List<SendgridEvent>>() {});
+
+    return events;
   }
 
   public Mail buildEmail(NotificationContextInfo contextInfo, String toAddress, String fromAddress,

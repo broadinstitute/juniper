@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.notification;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
+import bio.terra.pearl.core.model.notification.SendgridEvent;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
