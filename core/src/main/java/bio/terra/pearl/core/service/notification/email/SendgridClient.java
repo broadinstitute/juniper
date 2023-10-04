@@ -1,6 +1,10 @@
 package bio.terra.pearl.core.service.notification.email;
 
+import bio.terra.pearl.core.dao.notification.SendgridEvent;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
+import bio.terra.pearl.core.service.notification.SendGridEventResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sendgrid.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
@@ -8,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class SendgridClient {
@@ -36,6 +42,29 @@ public class SendgridClient {
     request.setEndpoint("mail/send");
     request.setBody(mail.build());
     sg.api(request);
+  }
+
+  public List<SendgridEvent> getEvents(String queryStartDate, String queryEndDate, int queryLimit) throws Exception {
+    SendGrid sg = new SendGrid(sendGridApiKey);
+    Request request = new Request();
+    request.setMethod(Method.GET);
+
+    String query = "(last_event_time " +
+            "BETWEEN " +
+              "TIMESTAMP \"" + queryStartDate + "\" " +
+            "AND " +
+              "TIMESTAMP \"" + queryEndDate + "\") ";
+
+    request.setEndpoint("messages");
+    request.addQueryParam("limit", Integer.toString(queryLimit));
+    request.addQueryParam("query", query);
+    Response response = sg.api(request);
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.registerModule(new JavaTimeModule());
+    SendGridEventResponse emailMessagesWrapper = objectMapper.readValue(response.getBody(), SendGridEventResponse.class);
+
+    return emailMessagesWrapper.messages();
   }
 
   public Mail buildEmail(NotificationContextInfo contextInfo, String toAddress, String fromAddress,

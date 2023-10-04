@@ -137,6 +137,9 @@ databaseChangeLog:
   - include:
       file: changesets/2023_09_14_add_profile_gin_indexes.yaml
       relativeToChangelogFile: true
+  - include:
+     file: changesets/2023_10_03_sendgrid_event.yaml
+     relativeToChangelogFile: true
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements
 # are atomic. When they are grouped in a changeset and one fails the changeset cannot be
