@@ -26,8 +26,8 @@ public class SendgridActivityService {
     // Find the most recently recorded event, and get all events since then
     Optional<SendgridEvent> mostRecentEvent = sendgridEventDao.findMostRecentEvent();
 
-    //If we've never recorded an event, default to 30 days ago. Sendgrid only keeps
-    //30 days of activity history, so this will backfill as much history as possible.
+    // If we've never recorded an event, default to 30 days ago. Sendgrid only keeps
+    // 30 days of activity history, so this will backfill as much history as possible.
     Instant mostRecentEventDate =
         mostRecentEvent
             .map(SendgridEvent::getLastEventTime)
