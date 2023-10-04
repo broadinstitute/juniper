@@ -7,8 +7,8 @@ import {
   ColumnDef,
   getCoreRowModel,
   getFilteredRowModel,
-  getSortedRowModel,
-  SortingState,
+  getSortedRowModel, PaginationState,
+  SortingState, Updater,
   useReactTable, VisibilityState
 } from '@tanstack/react-table'
 import { basicTableLayout, ColumnVisibilityControl, IndeterminateCheckbox } from 'util/tableUtils'
@@ -26,7 +26,9 @@ import { Button } from 'components/forms/Button'
 import { instantToDefaultString } from 'util/timeUtils'
 import { useLoadingEffect } from 'api/api-utils'
 import { FacetView, getUpdatedFacetValues } from './facets/EnrolleeSearchFacets'
+import TableClientPagination from "util/TablePagination";
 
+const DEFAULT_PAGE_SIZE = '20'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -48,6 +50,16 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   const keywordFacetIndex = facetValues.findIndex(facet => facet.facet.category === 'keyword')
   const keywordFacetValue = facetValues[keywordFacetIndex]
 
+  const pageIndex = parseInt(searchParams.get('pageIndex') ?? '1')
+  const pageSize = parseInt(searchParams.get('pageSize') ?? DEFAULT_PAGE_SIZE)
+  const pagination = useMemo(() => ({pageSize, pageIndex}),
+      [pageSize, pageIndex])
+  const setPagination = (pagination: PaginationState | (Updater<PaginationState>)) => {
+    //searchParams.set('pageIndex', pagination.pageIndex.toString())
+    //searchParams.set('pageSize', pagination.pageSize.toString())
+    setSearchParams(searchParams)
+    return pagination
+  }
 
   const columns = useMemo<ColumnDef<EnrolleeSearchResult, string>[]>(() => [{
     id: 'select',
@@ -129,10 +141,13 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     state: {
       sorting,
       rowSelection,
+      pagination,
       columnVisibility
     },
     onColumnVisibilityChange: setColumnVisibility,
     enableRowSelection: true,
+    onPaginationChange: setPagination,
+    manualPagination: true,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -191,7 +206,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
             </div>
           </div>
           { basicTableLayout(table, { filterable: true })}
-          { participantList.length === 0 && <span className="text-muted fst-italic">No participants</span>}
+          <TableClientPagination table={table}/>
         </LoadingSpinner>
       </div>
     </div>
