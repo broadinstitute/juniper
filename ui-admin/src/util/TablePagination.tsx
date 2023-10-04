@@ -33,6 +33,7 @@ export default function TableClientPagination<R>({ table, preferredNumRowsKey }:
     </div>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <button
+        aria-label={'Previous page'}
         className="btn btn-light border m-1"
         onClick={() => table.previousPage()}
         disabled={!table.getCanPreviousPage()}
@@ -43,6 +44,7 @@ export default function TableClientPagination<R>({ table, preferredNumRowsKey }:
         Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
       </span>
       <button
+        aria-label={'Next page'}
         className="btn btn-light border m-1"
         onClick={() => table.nextPage()}
         disabled={!table.getCanNextPage()}
