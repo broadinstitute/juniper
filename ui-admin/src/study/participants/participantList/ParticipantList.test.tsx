@@ -62,6 +62,35 @@ test('filters participants based on shortcode', async () => {
   })
 })
 
+test('send email is toggled depending on participants selected', async () => {
+  mockSearchApi(1)
+  const studyEnvContext = mockStudyEnvContext()
+  const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
+  render(RoutedComponent)
+  await waitFor(() => {
+    expect(screen.getByText('JOSALK')).toBeInTheDocument()
+  })
+  const participantLink = screen.getByText('Send email')
+  expect(participantLink).toHaveAttribute('aria-disabled', 'true')
+})
+
+
+test('keyword search sends search api request', async () => {
+  const searchSpy = mockSearchApi(1)
+  const studyEnvContext = mockStudyEnvContext()
+  const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
+  render(RoutedComponent)
+  await waitFor(() => {
+    expect(screen.getByText('JOSALK')).toBeInTheDocument()
+  })
+  await userEvent.type(screen.getByTitle('search name, email and shortcode'), 'foo')
+  await userEvent.click(screen.getByTitle('submit search'))
+  expect(searchSpy).toHaveBeenCalledTimes(2)
+  expect(searchSpy).toHaveBeenNthCalledWith(2, 'portalCode', 'fakeStudy', 'sandbox', [
+    { facet: KEYWORD_FACET, values: ['foo'] }
+  ])
+})
+
 test('allows the user to cycle pages', async () => {
   mockSearchApi(100)
   const studyEnvContext = mockStudyEnvContext()
@@ -100,33 +129,4 @@ test('allows the user to change the page size', async () => {
 
   //Also assert that the preferred number of rows is saved to local storage
   expect(localStorage.setItem).toHaveBeenCalledWith('participantList.portalCode.fakeStudy.preferredNumRows', '25')
-})
-
-test('send email is toggled depending on participants selected', async () => {
-  mockSearchApi(1)
-  const studyEnvContext = mockStudyEnvContext()
-  const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
-  render(RoutedComponent)
-  await waitFor(() => {
-    expect(screen.getByText('JOSALK')).toBeInTheDocument()
-  })
-  const participantLink = screen.getByText('Send email')
-  expect(participantLink).toHaveAttribute('aria-disabled', 'true')
-})
-
-
-test('keyword search sends search api request', async () => {
-  const searchSpy = mockSearchApi(1)
-  const studyEnvContext = mockStudyEnvContext()
-  const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
-  render(RoutedComponent)
-  await waitFor(() => {
-    expect(screen.getByText('JOSALK')).toBeInTheDocument()
-  })
-  await userEvent.type(screen.getByTitle('search name, email and shortcode'), 'foo')
-  await userEvent.click(screen.getByTitle('submit search'))
-  expect(searchSpy).toHaveBeenCalledTimes(2)
-  expect(searchSpy).toHaveBeenNthCalledWith(2, 'portalCode', 'fakeStudy', 'sandbox', [
-    { facet: KEYWORD_FACET, values: ['foo'] }
-  ])
 })

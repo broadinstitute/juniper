@@ -262,6 +262,7 @@ export const mockEnrollee: () => Enrollee = () => {
   }
 }
 
+/** returns a mock enrollee search result */
 export const mockEnrolleeSearchResult: () => EnrolleeSearchResult = () => {
   return {
     enrollee: mockEnrollee(),
