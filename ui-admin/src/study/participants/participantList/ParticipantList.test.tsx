@@ -101,13 +101,13 @@ test('allows the user to cycle pages', async () => {
   await screen.findAllByText('JOSALK')
 
   expect(screen.getByText('Showing 10 of 100 rows')).toBeInTheDocument()
-  expect(screen.queryByText('Page 1 of 10')).toBeInTheDocument()
+  expect(screen.getByText('Page 1 of 10')).toBeInTheDocument()
 
   await act(() => userEvent.click(screen.getByLabelText('Next page')))
-  expect(screen.queryByText('Page 2 of 10')).toBeInTheDocument()
+  expect(screen.getByText('Page 2 of 10')).toBeInTheDocument()
 
   await act(() => userEvent.click(screen.getByLabelText('Previous page')))
-  expect(screen.queryByText('Page 1 of 10')).toBeInTheDocument()
+  expect(screen.getByText('Page 1 of 10')).toBeInTheDocument()
 })
 
 test('allows the user to change the page size', async () => {
@@ -120,12 +120,12 @@ test('allows the user to change the page size', async () => {
   await screen.findAllByText('JOSALK')
 
   expect(screen.getByText('Showing 10 of 100 rows')).toBeInTheDocument()
-  expect(screen.queryByText('Page 1 of 10')).toBeInTheDocument()
+  expect(screen.getByText('Page 1 of 10')).toBeInTheDocument()
 
   jest.spyOn(Storage.prototype, 'setItem')
   await act(() => userEvent.selectOptions(screen.getByLabelText('Number of rows per page'), '25'))
   expect(screen.getByText('Showing 25 of 100 rows')).toBeInTheDocument()
-  expect(screen.queryByText('Page 1 of 4')).toBeInTheDocument()
+  expect(screen.getByText('Page 1 of 4')).toBeInTheDocument()
 
   //Also assert that the preferred number of rows is saved to local storage
   expect(localStorage.setItem).toHaveBeenCalledWith('participantList.portalCode.fakeStudy.preferredNumRows', '25')
