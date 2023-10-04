@@ -6,8 +6,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 /** renders a client-side pagination control (as in, the data is all loaded from the server at once, but
  * paged on the UI for readability */
 export default function TableClientPagination<R>({ table }: {table: Table<R>}) {
-  return <div style={{ padding: "0 1rem 1rem 1rem",
-    display: 'flex', justifyContent: 'space-between' }}>
+  return <div style={{
+    padding: '0 1rem 1rem 1rem',
+    display: 'flex', justifyContent: 'space-between'
+  }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <div>Showing {table.getRowModel().rows.length} of {table.getFilteredRowModel().rows.length} rows</div>
       <select

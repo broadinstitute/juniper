@@ -6,10 +6,12 @@ import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
   ColumnDef,
   getCoreRowModel,
-  getFilteredRowModel, getPaginationRowModel,
-  getSortedRowModel, PaginationState,
-  SortingState, Updater,
-  useReactTable, VisibilityState
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+  VisibilityState
 } from '@tanstack/react-table'
 import { basicTableLayout, ColumnVisibilityControl, IndeterminateCheckbox } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -26,9 +28,7 @@ import { Button } from 'components/forms/Button'
 import { instantToDefaultString } from 'util/timeUtils'
 import { useLoadingEffect } from 'api/api-utils'
 import { FacetView, getUpdatedFacetValues } from './facets/EnrolleeSearchFacets'
-import TableClientPagination from "util/TablePagination";
-
-const DEFAULT_PAGE_SIZE = '20'
+import TableClientPagination from 'util/TablePagination'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -49,17 +49,6 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   const facetValues = facetValuesFromString(searchParams.get('facets') ?? '{}', ALL_FACETS)
   const keywordFacetIndex = facetValues.findIndex(facet => facet.facet.category === 'keyword')
   const keywordFacetValue = facetValues[keywordFacetIndex]
-
-  // const pageIndex = parseInt(searchParams.get('pageIndex') ?? '1')
-  // const pageSize = parseInt(searchParams.get('pageSize') ?? DEFAULT_PAGE_SIZE)
-  // const pagination = useMemo(() => ({pageSize, pageIndex}),
-  //     [pageSize, pageIndex])
-  // const setPagination = (pagination: PaginationState | (Updater<PaginationState>)) => {
-  //   //searchParams.set('pageIndex', pagination.pageIndex.toString())
-  //   //searchParams.set('pageSize', pagination.pageSize.toString())
-  //   setSearchParams(searchParams)
-  //   return pagination
-  // }
 
   const columns = useMemo<ColumnDef<EnrolleeSearchResult, string>[]>(() => [{
     id: 'select',
@@ -141,13 +130,10 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     state: {
       sorting,
       rowSelection,
-      // pagination,
       columnVisibility
     },
     onColumnVisibilityChange: setColumnVisibility,
     enableRowSelection: true,
-    // onPaginationChange: setPagination,
-    // manualPagination: true,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
