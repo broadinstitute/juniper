@@ -25,6 +25,7 @@ import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
 import AdminSidebar from './navbar/AdminSidebar'
 import NavContextProvider from 'navbar/NavContextProvider'
 import PopulateRouteSelect from './populate/PopulateRouteSelect'
+import IntegrationDashboard from './integration/IntegrationDashboard'
 
 /** auto-scroll-to-top on any navigation */
 const ScrollToTop = () => {
@@ -57,6 +58,7 @@ function App() {
                       </ProtectedRoute>}>
                         <Route path="populate/*" element={<PopulateRouteSelect/>}/>
                         <Route path="users" element={<UserList/>}/>
+                        <Route path="integrations/*" element={<IntegrationDashboard/>}/>
                         <Route path=":portalShortcode/*" element={<PortalProvider><PortalRouter/></PortalProvider>}/>
                         <Route index element={<HomePage/>}/>
                       </Route>

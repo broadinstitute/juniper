@@ -57,7 +57,9 @@ public class KitExtServiceTests extends BaseSpringBootTest {
     AdminUser adminUser = new AdminUser();
     assertThrows(
         PermissionDeniedException.class,
-        () -> kitExtService.refreshKitStatuses(adminUser, "someportal", "somestudy"));
+        () ->
+            kitExtService.refreshKitStatuses(
+                adminUser, "someportal", "somestudy", EnvironmentName.irb));
   }
 
   @MockBean private AuthUtilService mockAuthUtilService;
