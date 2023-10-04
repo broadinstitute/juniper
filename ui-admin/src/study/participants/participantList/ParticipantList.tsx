@@ -135,7 +135,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     },
     initialState: {
       pagination: {
-        pageSize: Number(localStorage.getItem(preferredNumRowsKey) || '10')
+        pageSize: parseInt(localStorage.getItem(preferredNumRowsKey) || '10')
       }
     },
     onColumnVisibilityChange: setColumnVisibility,
