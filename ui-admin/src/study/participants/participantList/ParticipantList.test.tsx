@@ -3,31 +3,22 @@ import { render, screen, waitFor } from '@testing-library/react'
 
 import ParticipantList from './ParticipantList'
 import Api, { EnrolleeSearchResult } from 'api/api'
-import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
+import { mockEnrolleeSearchResult, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import userEvent from '@testing-library/user-event'
 import { act } from 'react-dom/test-utils'
 import { KEYWORD_FACET } from 'api/enrolleeSearch'
 
-const mockSearchApi = () => {
+const mockSearchApi = (numSearchResults: number) => {
   return jest.spyOn(Api, 'searchEnrollees')
     .mockImplementation(() => {
-      const fakeEnrollee = mockEnrollee()
-      const enrolleeSearchResults: EnrolleeSearchResult[] = [{
-        enrollee: fakeEnrollee,
-        profile: fakeEnrollee.profile,
-        mostRecentKitStatus: null,
-        participantUser: {
-          lastLogin: 50405345,
-          username: 'testUser1@test.com'
-        }
-      }]
+      const enrolleeSearchResults: EnrolleeSearchResult[] = new Array(numSearchResults).fill(mockEnrolleeSearchResult())
       return Promise.resolve(enrolleeSearchResults)
     })
 }
 
 test('renders a participant with link', async () => {
-  mockSearchApi()
+  mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
   const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
   render(RoutedComponent)
@@ -41,7 +32,7 @@ test('renders a participant with link', async () => {
 })
 
 test('renders filters for participant columns', async () => {
-  mockSearchApi()
+  mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
   const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
   render(RoutedComponent)
@@ -52,7 +43,7 @@ test('renders filters for participant columns', async () => {
 })
 
 test('filters participants based on shortcode', async () => {
-  mockSearchApi()
+  mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
   const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
   render(RoutedComponent)
@@ -71,8 +62,48 @@ test('filters participants based on shortcode', async () => {
   })
 })
 
+test('allows the user to cycle pages', async () => {
+  mockSearchApi(100)
+  const studyEnvContext = mockStudyEnvContext()
+  const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
+  render(RoutedComponent)
+
+  //Wait for results to be rendered
+  await screen.findAllByText('JOSALK')
+
+  expect(screen.getByText('Showing 10 of 100 rows')).toBeInTheDocument()
+  expect(screen.queryByText('Page 1 of 10')).toBeInTheDocument()
+
+  await act(() => userEvent.click(screen.getByLabelText('Next page')))
+  expect(screen.queryByText('Page 2 of 10')).toBeInTheDocument()
+
+  await act(() => userEvent.click(screen.getByLabelText('Previous page')))
+  expect(screen.queryByText('Page 1 of 10')).toBeInTheDocument()
+})
+
+test('allows the user to change the page size', async () => {
+  mockSearchApi(100)
+  const studyEnvContext = mockStudyEnvContext()
+  const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
+  render(RoutedComponent)
+
+  //Wait for results to be rendered
+  await screen.findAllByText('JOSALK')
+
+  expect(screen.getByText('Showing 10 of 100 rows')).toBeInTheDocument()
+  expect(screen.queryByText('Page 1 of 10')).toBeInTheDocument()
+
+  jest.spyOn(Storage.prototype, 'setItem')
+  await act(() => userEvent.selectOptions(screen.getByLabelText('Number of rows per page'), '25'))
+  expect(screen.getByText('Showing 25 of 100 rows')).toBeInTheDocument()
+  expect(screen.queryByText('Page 1 of 4')).toBeInTheDocument()
+
+  //Also assert that the preferred number of rows is saved to local storage
+  expect(localStorage.setItem).toHaveBeenCalledWith('participantList.portalCode.fakeStudy.preferredNumRows', '25')
+})
+
 test('send email is toggled depending on participants selected', async () => {
-  mockSearchApi()
+  mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
   const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
   render(RoutedComponent)
@@ -85,7 +116,7 @@ test('send email is toggled depending on participants selected', async () => {
 
 
 test('keyword search sends search api request', async () => {
-  const searchSpy = mockSearchApi()
+  const searchSpy = mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
   const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
   render(RoutedComponent)

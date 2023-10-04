@@ -16,6 +16,7 @@ export default function TableClientPagination<R>({ table, preferredNumRowsKey }:
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <div>Showing {table.getRowModel().rows.length} of {table.getFilteredRowModel().rows.length} rows</div>
       <select
+        aria-label={'Number of rows per page'}
         className="form-select m-1 w-auto"
         value={table.getState().pagination.pageSize}
         onChange={e => {
