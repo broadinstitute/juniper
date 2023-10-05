@@ -62,17 +62,21 @@ public class ConfigExtService {
                 "useLiveDsm",
                 pepperDSMConfig.useLiveDsm(),
                 "secret",
-                pepperDSMConfig.getSecret().substring(0, 4)
-                    + "..."
-                    + pepperDSMConfig
-                        .getSecret()
-                        .substring(
-                            pepperDSMConfig.getSecret().length() - 3,
-                            pepperDSMConfig.getSecret().length()),
+                maskSecret(pepperDSMConfig.getSecret()),
                 "issuerClaim",
                 pepperDSMConfig.getIssuerClaim(),
                 "basePath",
                 pepperDSMConfig.getBasePath()));
     return configMap;
+  }
+
+  public String maskSecret(String secret) {
+    if (StringUtils.isBlank(secret)) {
+      return "";
+    }
+    if (secret.length() < 15) {
+      return secret.substring(0, 2) + "...";
+    }
+    return secret.substring(0, 3) + "..." + secret.substring(secret.length() - 3, secret.length());
   }
 }
