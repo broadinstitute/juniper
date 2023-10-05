@@ -70,7 +70,7 @@ public class ConfigExtService {
     return configMap;
   }
 
-  public String maskSecret(String secret) {
+  public static String maskSecret(String secret) {
     if (StringUtils.isBlank(secret)) {
       return "";
     }
