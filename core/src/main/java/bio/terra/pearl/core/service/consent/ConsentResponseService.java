@@ -8,7 +8,7 @@ import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.ImmutableEntityService;
-import bio.terra.pearl.core.service.participant.ParticipantTaskService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.workflow.EventService;
 import com.fasterxml.jackson.core.JsonProcessingException;

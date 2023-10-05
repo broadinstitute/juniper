@@ -10,6 +10,7 @@ import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import bio.terra.pearl.populate.service.BaseSeedPopulator;
 import bio.terra.pearl.populate.service.EnvironmentPopulator;
 import bio.terra.pearl.populate.service.KitTypePopulator;
@@ -50,6 +51,8 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     protected KitTypePopulator kitTypePopulator;
     @Autowired
     protected ParticipantNoteService participantNoteService;
+    @Autowired
+    protected AdminTaskService adminTaskService;
 
     protected void setUpEnvironments() throws IOException {
         for (String fileName : BaseSeedPopulator.ENVIRONMENTS_TO_POPULATE) {

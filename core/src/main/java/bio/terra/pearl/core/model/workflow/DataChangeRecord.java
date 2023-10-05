@@ -25,8 +25,15 @@ public class DataChangeRecord extends BaseEntity {
     private UUID portalParticipantUserId; // id of the impacted portal participant user
     private UUID operationId; // unique id to group operations
     private UUID surveyId; // survey id of the form source of the change
+    private UUID modelId; // id of the object corresponding to the audit record
     private String modelName; // either a class (like Profile) or a stableId of a survey
     private String fieldName; // either a property of a class (like givenName) or a survey question stableId
     private String oldValue;
     private String newValue;
+    public static DataChangeRecord.DataChangeRecordBuilder fromAuditInfo(DataAuditInfo auditInfo) {
+        return DataChangeRecord.builder()
+                .responsibleAdminUserId(auditInfo.getResponsibleAdminUserId())
+                .responsibleUserId(auditInfo.getResponsibleUserId())
+                .operationId(auditInfo.getOperationId());
+    }
 }

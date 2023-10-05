@@ -1,6 +1,6 @@
 import React from 'react'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
-import { mockEnrollee, mockParticipantNote } from 'test-utils/mocking-utils'
+import { mockEnrollee, mockParticipantNote, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { mockAdminUser } from 'test-utils/user-mocking-utils'
 import { render, screen } from '@testing-library/react'
 import { ParticipantNoteView } from './ParticipantNoteView'
@@ -24,7 +24,8 @@ test('renders a note with the admin user name', async () => {
     enrolleeId: enrollee.id
   }
   const { RoutedComponent } = setupRouterTest(
-    <ParticipantNoteView enrollee={enrollee} currentEnvPath="path1" note={note} users={users}/>)
+    <ParticipantNoteView enrollee={enrollee} studyEnvContext={mockStudyEnvContext()}
+      note={note} users={users} linkedTasks={[]} reloadTasks={jest.fn()}/>)
   render(RoutedComponent)
   expect(screen.getByText('user3 username')).toBeInTheDocument()
   expect(screen.getByText('some note text')).toBeInTheDocument()

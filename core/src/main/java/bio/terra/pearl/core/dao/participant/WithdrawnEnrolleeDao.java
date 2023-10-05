@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.BaseJdbiDao;
 import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
+import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
 import java.util.UUID;

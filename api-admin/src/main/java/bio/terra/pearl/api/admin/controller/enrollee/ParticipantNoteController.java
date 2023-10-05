@@ -6,6 +6,7 @@ import bio.terra.pearl.api.admin.service.enrollee.ParticipantNoteExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.ParticipantNote;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -36,9 +37,14 @@ public class ParticipantNoteController implements ParticipantNoteApi {
       String enrolleeShortcode,
       Object body) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
-    ParticipantNote note = objectMapper.convertValue(body, ParticipantNote.class);
+    ParticipantNoteDto note = objectMapper.convertValue(body, ParticipantNoteDto.class);
     ParticipantNote savedNote =
-        participantNoteExtService.create(adminUser, enrolleeShortcode, note);
+        participantNoteExtService.create(
+            adminUser, enrolleeShortcode, note, note.assignedAdminUserId);
     return ResponseEntity.ok(savedNote);
+  }
+
+  public static class ParticipantNoteDto extends ParticipantNote {
+    public UUID assignedAdminUserId;
   }
 }

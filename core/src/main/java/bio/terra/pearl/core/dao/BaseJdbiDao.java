@@ -311,6 +311,15 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
+    public void deleteAll(List<UUID> ids) {
+        if (ids.isEmpty()) { return; } // bindList does not allow empty lists
+        jdbi.withHandle(handle ->
+                handle.createUpdate("delete from " + tableName + " where id IN (<ids>);")
+                        .bindList("ids", ids)
+                        .execute()
+        );
+    }
+
     protected void deleteByProperty(String columnName, Object columnValue) {
         jdbi.withHandle(handle ->
                 handle.createUpdate("delete from " + tableName + " where " + columnName + " = :propertyValue;")

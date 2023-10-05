@@ -1,5 +1,6 @@
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import {
+  AdminTask,
   ConsentForm,
   DatasetDetails,
   Enrollee,
@@ -322,5 +323,17 @@ export const mockEmailTemplate = (): EmailTemplate => {
     stableId: 'mock1',
     version: 1,
     body: 'Mock email message'
+  }
+}
+
+/** mock admin task */
+export const mockAdminTask = (): AdminTask => {
+  return {
+    id: 'taskId1',
+    assignedAdminUserId: 'userId1',
+    createdAt: 0,
+    status: 'NEW',
+    creatingAdminUserId: 'userId2',
+    studyEnvironmentId: 'studyEnvId1'
   }
 }
