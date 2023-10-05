@@ -327,6 +327,10 @@ export type ParticipantNote = {
   creatingAdminUserId: string
 }
 
+export type InternalConfig = {
+  pepperDsmConfig: Record<string, string>
+}
+
 let bearerToken: string | null = null
 export const API_ROOT = '/api'
 
@@ -910,6 +914,12 @@ export default {
       headers: this.getInitHeaders(),
       body: JSON.stringify(config)
     })
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchInternalConfig(): Promise<InternalConfig> {
+    const url = `${API_ROOT}/internal/v1/config`
+    const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 

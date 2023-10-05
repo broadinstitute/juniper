@@ -26,6 +26,7 @@ import CollapsableMenu from 'navbar/CollapsableMenu'
 import { faCircleCheck, faCircleHalfStroke } from '@fortawesome/free-solid-svg-icons'
 import { faCircle as faEmptyCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 import { ParticipantTaskStatus } from '@juniper/ui-core'
+import { navDivStyle, navListItemStyle } from 'util/subNavStyles'
 
 export type SurveyWithResponsesT = {
   survey: StudyEnvironmentSurvey,
@@ -85,13 +86,6 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
     consentMap[configConsent.consentForm.stableId] = { consent: configConsent, responses: matchedResponses }
   })
 
-  const navListItemStyle = {
-    backgroundColor: '#ededed',
-    marginBottom: '0.25em',
-    padding: '0.5em'
-  }
-
-
   return <div className="ParticipantView mt-3 ps-4">
     <NavBreadcrumb value={enrollee?.shortcode || ''}>
       <Link to={`${currentEnvPath}/participants/${enrollee.shortcode}`}>
@@ -108,7 +102,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
     <div className="row mt-2">
       <div className="col-12">
         <div className="d-flex">
-          <div style={{ minWidth: '290px', maxWidth: '290px' }}>
+          <div style={navDivStyle}>
             <ul className="list-unstyled">
               <li style={navListItemStyle} className="ps-3">
                 <NavLink to="profile" className={getLinkCssClasses}>Profile &amp; Notes</NavLink>
