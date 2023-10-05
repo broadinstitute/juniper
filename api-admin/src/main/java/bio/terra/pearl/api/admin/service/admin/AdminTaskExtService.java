@@ -35,8 +35,7 @@ public class AdminTaskExtService {
       EnvironmentName environmentName,
       List<String> includedRelations,
       AdminUser user) {
-    PortalStudy portalStudy =
-        authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
     StudyEnvironment studyEnvironment =
         studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
     return adminTaskService.findByStudyEnvironmentId(studyEnvironment.getId(), includedRelations);
