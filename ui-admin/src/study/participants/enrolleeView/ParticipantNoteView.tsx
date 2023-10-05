@@ -30,7 +30,7 @@ export function ParticipantNoteView({
   const usernameString = matchedUser?.username ?? `superuser (${note.creatingAdminUserId.slice(-4)})`
   const matchedTask = linkedTasks.find(task => task.participantNoteId === note.id)
   const [showTaskEdit, setShowTaskEdit] = useState(false)
-
+  const matchedAssignedUser = users.find(user => user.id === matchedTask?.assignedAdminUserId)
   return <div className="mb-3">
     <div className="d-flex align-items-center">
       <div className="fw-bold text-muted">
@@ -42,7 +42,8 @@ export function ParticipantNoteView({
         style={{ backgroundColor: '#eee' }}
         onClick={() => setShowTaskEdit(!showTaskEdit)}>
         { matchedTask.status === 'NEW' && <span>
-            Assigned: {users.find(user => user.id === matchedTask.assignedAdminUserId)?.username}
+          { matchedAssignedUser ?
+              `Assigned: ${matchedAssignedUser.username}` : 'Unassigned' }
           <FontAwesomeIcon icon={faCaretDown} className="fa-sm ms-2"/>
         </span> }
         { matchedTask.status === 'COMPLETE' && <span>

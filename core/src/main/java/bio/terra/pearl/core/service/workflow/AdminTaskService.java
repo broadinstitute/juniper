@@ -5,9 +5,6 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantNote;
 import bio.terra.pearl.core.model.workflow.AdminTask;
 import bio.terra.pearl.core.model.workflow.DataAuditInfo;
-import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.CrudService;
 
 import java.time.Instant;
 import java.util.List;
