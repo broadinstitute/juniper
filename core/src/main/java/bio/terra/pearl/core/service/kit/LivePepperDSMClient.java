@@ -9,7 +9,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class LivePepperDSMClient implements PepperDSMClient {
+    private final Logger logger = LoggerFactory.getLogger(PepperDSMClient.class);
     private final PepperDSMConfig pepperDSMConfig;
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
@@ -129,6 +133,8 @@ public class LivePepperDSMClient implements PepperDSMClient {
      * these possibilities and, when possible, converting them into a useful PepperException.
      */
     private <T> T retrieveAndDeserializeResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec, Class<T> clazz) {
+        requestHeadersSpec.httpRequest(req -> logger.info("Sending DSM request: {}", req.getURI()));
+
         return requestHeadersSpec
                 .retrieve()
                 .onStatus(

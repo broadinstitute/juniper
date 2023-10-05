@@ -3,6 +3,9 @@ package bio.terra.pearl.api.admin.service;
 import static org.mockito.Mockito.when;
 
 import bio.terra.pearl.api.admin.config.B2CConfiguration;
+import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.service.exception.PermissionDeniedException;
+import bio.terra.pearl.core.service.kit.LivePepperDSMClient;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;
@@ -17,6 +20,7 @@ public class ConfigExtServiceTests {
   @MockBean private ApplicationRoutingPaths applicationRoutingPaths;
 
   @MockBean private B2CConfiguration b2CConfiguration;
+  @MockBean private LivePepperDSMClient.PepperDSMConfig pepperDSMConfig;
 
   @Test
   public void testConfigMap() {
@@ -28,8 +32,20 @@ public class ConfigExtServiceTests {
     when(b2CConfiguration.clientId()).thenReturn("client123");
     when(b2CConfiguration.policyName()).thenReturn("policy123");
     ConfigExtService configExtService =
-        new ConfigExtService(b2CConfiguration, applicationRoutingPaths);
+        new ConfigExtService(b2CConfiguration, applicationRoutingPaths, pepperDSMConfig);
     Map<String, String> configMap = configExtService.getConfigMap();
     Assertions.assertEquals("something.org", configMap.get("participantUiHostname"));
+  }
+
+  @Test
+  public void testInternalConfigRequiresSuperuser() {
+    AdminUser user = AdminUser.builder().superuser(false).build();
+    ConfigExtService configExtService =
+        new ConfigExtService(b2CConfiguration, applicationRoutingPaths, pepperDSMConfig);
+    Assertions.assertThrows(
+        PermissionDeniedException.class,
+        () -> {
+          configExtService.getInternalConfigMap(user);
+        });
   }
 }
