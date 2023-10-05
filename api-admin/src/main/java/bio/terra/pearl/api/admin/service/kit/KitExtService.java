@@ -70,9 +70,12 @@ public class KitExtService {
   }
 
   public void refreshKitStatuses(
-      AdminUser adminUser, String portalShortcode, String studyShortcode) {
+      AdminUser adminUser,
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName environmentName) {
     var portalStudy = authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
     var study = studyService.find(portalStudy.getStudyId()).get();
-    kitRequestService.syncKitStatusesForStudy(study);
+    kitRequestService.syncKitStatusesForStudy(study, environmentName);
   }
 }

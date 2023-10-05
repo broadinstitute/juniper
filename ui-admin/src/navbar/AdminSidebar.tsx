@@ -50,8 +50,11 @@ const AdminSidebar = () => {
           <li className="mb-2">
             <NavLink to="/users" className="text-white">All users</NavLink>
           </li>
-          <li>
+          <li className="mb-2">
             <NavLink to="/populate" className="text-white">Populate</NavLink>
+          </li>
+          <li>
+            <NavLink to="/integrations" className="text-white">Integrations</NavLink>
           </li>
         </ul>}/>}
     </>}
