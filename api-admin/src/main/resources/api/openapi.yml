@@ -915,6 +915,20 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/internal/v1/config:
+    get:
+      summary: Lists non-sensitive config values
+      tags: [ config ]
+      operationId: get
+      responses:
+        '200':
+          description: config object
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/internal/v1/populate/baseSeed:
     post:
       summary: Populates
@@ -1153,6 +1167,7 @@ paths:
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
       responses:
         '204':
           description: Success

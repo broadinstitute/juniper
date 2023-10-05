@@ -1,6 +1,7 @@
 {
   "participantUser": {
-    "username": "kitEligible@test.com"
+    "username": "kitEligible@test.com",
+    "lastLoginHoursAgo": 56
   },
   "profile": {
     "givenName": "Kitt",

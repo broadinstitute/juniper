@@ -75,6 +75,12 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     enableColumnFilter: false,
     cell: info => instantToDefaultString(info.getValue() as unknown as number)
   }, {
+    id: 'lastLogin',
+    header: 'Last login',
+    accessorKey: 'participantUser.lastLogin',
+    enableColumnFilter: false,
+    cell: info => instantToDefaultString(info.getValue() as unknown as number)
+  }, {
     id: 'familyName',
     header: 'Family name',
     accessorKey: 'profile.familyName',
