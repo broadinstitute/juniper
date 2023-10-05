@@ -10,6 +10,7 @@ import lombok.experimental.SuperBuilder;
 public class EnrolleeSearchResult {
     public EnrolleeSearchResult() {}
     private Enrollee enrollee;
+    private ParticipantUser participantUser;
     private Profile profile;
     private KitRequestStatus mostRecentKitStatus;
 }

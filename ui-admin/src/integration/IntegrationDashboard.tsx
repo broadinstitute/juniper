@@ -5,9 +5,6 @@ import { navDivStyle, navListItemStyle, navLinkStyleFunc } from 'util/subNavStyl
 
 /** shows links to the populate control panels, and handles the routing for them */
 export default function IntegrationDashboard() {
-  /** styles links as bold if they are the current path */
-
-
   return <div className="container-fluid">
     <h2 className="h4 px-3">Integrations</h2>
     <div className="d-flex">

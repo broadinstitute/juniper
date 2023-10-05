@@ -77,6 +77,10 @@ export type StudyEnvironmentUpdate = {
 export type EnrolleeSearchResult = {
   enrollee: Enrollee,
   profile: Profile,
+  participantUser: {
+    lastLogin: number,
+    username: string
+  }
   mostRecentKitStatus: string | null
 }
 
