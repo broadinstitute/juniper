@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -15,8 +16,8 @@ import java.util.Collection;
 import java.util.UUID;
 
 @Component
+@Slf4j
 public class StubPepperDSMClient implements PepperDSMClient {
-    private static final Logger logger = LoggerFactory.getLogger(PepperDSMClient.class);
     private final KitRequestService kitRequestService;
     private final StudyEnvironmentDao studyEnvironmentDao;
     private final ObjectMapper objectMapper;
@@ -31,7 +32,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
 
     @Override
     public String sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
-        logger.info("STUB sending kit request");
+        log.info("STUB sending kit request");
         var statusBuilder = PepperKitStatus.builder()
                 .juniperKitId(kitRequest.getId().toString())
                 .currentStatus("CREATED");
@@ -44,7 +45,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
 
     @Override
     public PepperKitStatus fetchKitStatus(UUID kitRequestId) {
-        logger.info("STUB fethcing kit status");
+        log.info("STUB fethcing kit status");
         return PepperKitStatus.builder()
                 .juniperKitId(kitRequestId.toString())
                 .currentStatus("SENT")
@@ -53,7 +54,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
 
     @Override
     public Collection<PepperKitStatus> fetchKitStatusByStudy(String studyShortcode) {
-        logger.info("STUB fetching status by study");
+        log.info("STUB fetching status by study");
         var studyEnvironment = studyEnvironmentDao.findByStudy(studyShortcode, EnvironmentName.sandbox).get();
         return kitRequestService.findIncompleteKits(studyEnvironment.getId()).stream().map(kit -> {
             PepperKitStatus status = PepperKitStatus.builder()
