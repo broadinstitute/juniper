@@ -97,9 +97,12 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.findAllByShortcodes(shortcodes);
     }
 
-    /** note that this returns sorted by created_at */
     public List<Enrollee> findByStudyEnvironment(UUID studyEnvironmentId) {
         return dao.findByStudyEnvironmentId(studyEnvironmentId);
+    }
+
+    public List<Enrollee> findByStudyEnvironment(UUID studyEnvironmentId, String sortProperty, String sortDir) {
+        return dao.findByStudyEnvironmentId(studyEnvironmentId, sortProperty, sortDir);
     }
 
     public List<Enrollee> findForKitManagement(String studyShortcode, EnvironmentName envName) {

@@ -57,7 +57,7 @@ public class EnrolleeExportService {
      * exports the specified number of enrollees from the given environment
      * The enrollees will be returned most-recent first
      * */
-    public void export(ExportOptions exportOptions, UUID portalId, UUID studyEnvironmentId, OutputStream os) throws Exception {
+    public void export(ExportOptions exportOptions, UUID studyEnvironmentId, OutputStream os) throws Exception {
         List<ModuleExportInfo> moduleExportInfos = generateModuleInfos(exportOptions, studyEnvironmentId);
         var enrolleeMaps = generateExportMaps(studyEnvironmentId,
                 moduleExportInfos, exportOptions.limit());
@@ -67,7 +67,7 @@ public class EnrolleeExportService {
 
     public List<Map<String, String>> generateExportMaps(UUID studyEnvironmentId,
                                                    List<ModuleExportInfo> moduleExportInfos, Integer limit) throws Exception {
-        List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(studyEnvironmentId);
+        List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(studyEnvironmentId, "created_at", "DESC");
         if (limit != null && enrollees.size() > 0) {
             enrollees = enrollees.subList(0, Math.min(enrollees.size(), limit));
         }

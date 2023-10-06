@@ -172,7 +172,7 @@ public class DataRepoExportService {
 
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            enrolleeExportService.export(exportOptions, portalStudy.getPortalId(), studyEnvironmentId, outputStream);
+            enrolleeExportService.export(exportOptions, studyEnvironmentId, outputStream);
             outputStream.close();
 
             String exportData = outputStream.toString();
