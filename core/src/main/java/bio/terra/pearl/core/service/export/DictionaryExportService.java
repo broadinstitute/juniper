@@ -20,8 +20,7 @@ public class DictionaryExportService {
     public void exportDictionary(ExportOptions exportOptions, UUID portalId,
                                  UUID studyEnvironmentId,
                                  OutputStream os) throws Exception {
-        List<ModuleExportInfo> moduleInfos = enrolleeExportService.generateModuleInfos(exportOptions, portalId,
-                studyEnvironmentId);
+        List<ModuleExportInfo> moduleInfos = enrolleeExportService.generateModuleInfos(exportOptions, studyEnvironmentId);
         // for now, we only support Excel
         DataDictionaryExcelExporter exporter = new DataDictionaryExcelExporter(moduleInfos, objectMapper);
         exporter.export(os);

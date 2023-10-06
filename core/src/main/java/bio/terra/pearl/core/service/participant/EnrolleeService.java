@@ -97,6 +97,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.findAllByShortcodes(shortcodes);
     }
 
+    /** note that this returns sorted by created_at */
     public List<Enrollee> findByStudyEnvironment(UUID studyEnvironmentId) {
         return dao.findByStudyEnvironmentId(studyEnvironmentId);
     }

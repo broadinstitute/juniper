@@ -18,13 +18,13 @@ import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.OutputStream;
 import java.util.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class EnrolleeExportService {
-    private static final Logger logger = LoggerFactory.getLogger(EnrolleeExportService.class);
     private final ProfileService profileService;
     private final AnswerDao answerDao;
     private final SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
@@ -53,15 +53,19 @@ public class EnrolleeExportService {
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * exports the specified number of enrollees from the given environment
+     * The enrollees will be returned most-recent first
+     * */
     public void export(ExportOptions exportOptions, UUID portalId, UUID studyEnvironmentId, OutputStream os) throws Exception {
-        List<ModuleExportInfo> moduleExportInfos = generateModuleInfos(exportOptions, portalId, studyEnvironmentId);
-        var enrolleeMaps = generateExportMaps(portalId, studyEnvironmentId,
+        List<ModuleExportInfo> moduleExportInfos = generateModuleInfos(exportOptions, studyEnvironmentId);
+        var enrolleeMaps = generateExportMaps(studyEnvironmentId,
                 moduleExportInfos, exportOptions.limit());
         BaseExporter exporter = getExporter(exportOptions.fileFormat(), moduleExportInfos, enrolleeMaps);
         exporter.export(os);
     }
 
-    public List<Map<String, String>> generateExportMaps(UUID portalId, UUID studyEnvironmentId,
+    public List<Map<String, String>> generateExportMaps(UUID studyEnvironmentId,
                                                    List<ModuleExportInfo> moduleExportInfos, Integer limit) throws Exception {
         List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(studyEnvironmentId);
         if (limit != null && enrollees.size() > 0) {
@@ -90,16 +94,20 @@ public class EnrolleeExportService {
         return valueMap;
     }
 
+    /**
+     * gets information about the modules, which will determine the columns needed for the export
+     * e.g. the columns needed to represent the survey questions.
+     */
 
-    public List<ModuleExportInfo> generateModuleInfos(ExportOptions exportOptions, UUID portalId, UUID studyEnvironmentId) throws Exception {
+    public List<ModuleExportInfo> generateModuleInfos(ExportOptions exportOptions, UUID studyEnvironmentId) throws Exception {
         List<ModuleExportInfo> moduleInfo = new ArrayList<>();
         moduleInfo.add(new EnrolleeFormatter().getModuleExportInfo(exportOptions));
         moduleInfo.add(new ProfileFormatter().getModuleExportInfo(exportOptions));
-        moduleInfo.addAll(generateSurveyModules(exportOptions, portalId, studyEnvironmentId));
+        moduleInfo.addAll(generateSurveyModules(exportOptions, studyEnvironmentId));
         return moduleInfo;
     }
 
-    protected List<ModuleExportInfo> generateSurveyModules(ExportOptions exportOptions, UUID portalId, UUID studyEnvironmentId) throws Exception {
+    protected List<ModuleExportInfo> generateSurveyModules(ExportOptions exportOptions, UUID studyEnvironmentId) throws Exception {
         // for now, only worry about the surveys currently configured for the environment
         List<StudyEnvironmentSurvey> latestConfiguredSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(studyEnvironmentId);
         latestConfiguredSurveys.sort(Comparator.comparing(StudyEnvironmentSurvey::getSurveyOrder));

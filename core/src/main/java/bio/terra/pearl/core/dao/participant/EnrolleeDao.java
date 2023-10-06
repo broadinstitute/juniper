@@ -59,8 +59,10 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
         return findByProperty("shortcode", shortcode);
     }
 
+    /** note this returns enrollees sorted by created_at */
     public List<Enrollee> findByStudyEnvironmentId(UUID studyEnvironmentId) {
-        return findAllByProperty("study_environment_id", studyEnvironmentId);
+        return findAllByPropertySorted("study_environment_id", studyEnvironmentId,
+                "created_at", "DESC");
     }
 
     @Transactional
