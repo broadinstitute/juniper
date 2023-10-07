@@ -8,6 +8,7 @@ import { ResponseMapT } from '../enrolleeView/EnrolleeView'
 import { EnrolleeParams } from '../enrolleeView/useRoutedEnrollee'
 import { instantToDefaultString } from 'util/timeUtils'
 import DocumentTitle from 'util/DocumentTitle'
+import _uniq from 'lodash/uniq'
 
 /** Show responses for a survey based on url param */
 export default function EnrolleeSurveyView({ enrollee, responseMap }:
@@ -41,13 +42,17 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, responses }:
     return <div>Most recent response has no data yet </div>
   }
 
+  const answerVersions = _uniq(lastResponse.answers.map(ans => ans.surveyVersion))
+  const versionString = `version${answerVersions.length > 1 ? 's' : ''} ${answerVersions.join(', ')}`
   return <div>
     <DocumentTitle title={`${enrollee.shortcode} - ${configSurvey.survey.name}`}/>
     <h6>{configSurvey.survey.name}</h6>
     <div>
       <span className="fst-italic">
-        {lastResponse.complete ? 'Completed' : 'Last updated'} {instantToDefaultString(lastResponse.createdAt)}
+        <span>{lastResponse.complete ? 'Completed' : 'Last updated'} {instantToDefaultString(lastResponse.createdAt)}</span>
+        &nbsp; <span>({versionString})</span>
       </span>
+
       <button className="ms-5 btn btn-secondary" onClick={() => setIsEditing(!isEditing)}>
         {isEditing ? 'cancel' : 'update / edit'}
       </button>
