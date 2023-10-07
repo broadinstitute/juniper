@@ -161,6 +161,28 @@ export type PepperKitStatus = {
   errorMessage: string
 }
 
+export type AdminTaskListDto = {
+  tasks: AdminTask[]
+  enrollees: Enrollee[]
+  participantNotes: ParticipantNote[]
+}
+
+export type AdminTaskStatus = 'NEW' | 'COMPLETE' | 'REJECTED'
+
+export type AdminTask = {
+  id: string
+  createdAt: number
+  completedAt?: number
+  status: AdminTaskStatus
+  studyEnvironmentId: string
+  enrolleeId?: string
+  participantNoteId?: string
+  creatingAdminUserId?: string
+  assignedAdminUserId?: string
+  description?: string
+  dispositionNote?: string
+}
+
 const emptyPepperKitStatus: PepperKitStatus = {
   kitId: '',
   currentStatus: '(unknown)',
@@ -621,16 +643,24 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async fetchEnrolleeAdminTasks(portalShortcode: string, studyShortcode: string, envName: string,
+    enrolleeShortcode: string): Promise<AdminTask[]> {
+    const url =
+        `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/adminTasks`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   async createParticipantNote(portalShortcode: string,
     studyShortcode: string,
     envName: string,
     enrolleeShortcode: string,
-    noteText: string): Promise<ParticipantNote> {
+    note: { text: string, assignedAdminUserId?: string }): Promise<ParticipantNote> {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/participantNote`
     const response = await fetch(url, {
       method: 'POST',
-      body: JSON.stringify({ text: noteText }),
+      body: JSON.stringify(note),
       headers: this.getInitHeaders()
     })
     return await this.processJsonResponse(response)
@@ -860,6 +890,27 @@ export default {
   async fetchAdminUsers(): Promise<AdminUser[]> {
     const url = `${API_ROOT}/adminUsers/v1`
     const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchAdminTasksByStudyEnv(portalShortcode: string, studyShortcode: string,
+    envName: string, include: string[]): Promise<AdminTaskListDto> {
+    let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/adminTasks`
+    if (include.length) {
+      url = `${url  }?include=${include.join(',')}`
+    }
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async updateAdminTask(portalShortcode: string, studyShortcode: string,
+    envName: string, task: AdminTask): Promise<AdminTask> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/adminTasks/${task.id}`
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(task)
+    })
     return await this.processJsonResponse(response)
   },
 

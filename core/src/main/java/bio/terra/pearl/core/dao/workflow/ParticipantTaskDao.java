@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.dao.participant;
+package bio.terra.pearl.core.dao.workflow;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
@@ -33,7 +33,6 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
         return findAllByProperty("enrollee_id", enrolleeId);
     }
 
-    @Transactional
     public Map<UUID, Set<ParticipantTask>> findByEnrolleeIds(Collection<UUID> enrolleeIds) {
         return streamAllByPropertyCollection("enrollee_id", enrolleeIds)
                 .collect(Collectors.groupingBy(ParticipantTask::getEnrolleeId, Collectors.toSet()));

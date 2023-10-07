@@ -13,9 +13,11 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.workflow.AdminTask;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
 import bio.terra.pearl.core.service.export.instance.ExportOptions;
 import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
+import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -54,6 +56,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
         Assertions.assertEquals(5, enrollees.size());
         checkOurhealthSurveys(enrollees);
         checkParticipantNotes(enrollees);
+        checkAdminTasks(sandboxEnvironmentId);
         checkOurhealthSiteContent(portal.getId());
         checkExportContent(portal.getId(), sandboxEnvironmentId);
         checkDataDictionary(portal.getId(), sandboxEnvironmentId);
@@ -93,10 +96,19 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
     private void checkParticipantNotes(List<Enrollee> enrollees) {
         Enrollee jonas = getJonasSalk(enrollees);
         List<ParticipantNote> notes = participantNoteService.findByEnrollee(jonas.getId());
-        assertThat(notes, hasSize(2));
+        assertThat(notes, hasSize(3));
         List<ParticipantNote> kitNotes = notes.stream().filter(note -> note.getKitRequestId() != null).toList();
         assertThat(kitNotes, hasSize(1));
         assertThat(kitNotes.get(0).getText(), equalTo("Phone call: asked to delay kit shipment as they are travelling for next two months"));
+    }
+
+    private void checkAdminTasks(UUID sandboxStudyEnvId) {
+        AdminTaskService.AdminTaskListDto taskInfo = adminTaskService.findByStudyEnvironmentId(sandboxStudyEnvId,
+                List.of("participantNote", "enrollee"));
+        // check that 3 tasks from 2 enrollees, related to 3 notes
+        assertThat(taskInfo.tasks(), hasSize(3));
+        assertThat(taskInfo.enrollees(), hasSize(2));
+        assertThat(taskInfo.participantNotes(), hasSize(3));
     }
 
     private void checkExportContent(UUID portalId, UUID sandboxEnvironmentId) throws Exception {
