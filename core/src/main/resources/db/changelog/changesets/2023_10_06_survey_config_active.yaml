@@ -6,4 +6,4 @@ databaseChangeLog:
         - addColumn:
             tableName: study_environment_survey
             columns:
-              - column: { name: active, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: active, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
