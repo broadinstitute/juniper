@@ -1,12 +1,14 @@
 package bio.terra.pearl.core.service.study;
 
 import bio.terra.pearl.core.dao.study.StudyEnvironmentSurveyDao;
+import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.service.CrudService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentSurvey, StudyEnvironmentSurveyDao> {
@@ -20,6 +22,13 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
 
     public Optional<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, UUID surveyId) {
         return dao.findBySurvey(studyEnvId, surveyId);
+    }
+
+    @Transactional
+    public StudyEnvironmentSurvey deactivate(UUID id) {
+        StudyEnvironmentSurvey ses = dao.find(id).get();
+        ses.setActive(false);
+        return dao.update(ses);
     }
 
     public Optional<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, String stableId) {

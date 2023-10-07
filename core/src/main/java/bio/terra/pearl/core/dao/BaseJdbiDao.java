@@ -295,6 +295,23 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
+    protected List<T> findAllByTwoPropertiesSorted(String column1Name, Object column1Value,
+                                                   String column2Name, Object column2Value,
+                                                   String sortProperty, String sortDir) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                                select * from %s 
+                                where %s = :column1Value
+                                and %s = :column2Value
+                                order by %s %s
+                                """.formatted(tableName, column1Name, column2Name, sortProperty, sortDir))
+                        .bind("column1Value", column1Value)
+                        .bind("column2Value", column2Value)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
     /** defaults to matching on id if provided. */
     public Optional<T> findOneMatch(T matchObj) {
         if (matchObj.getId() != null) {

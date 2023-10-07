@@ -143,7 +143,7 @@ public class SurveyExtService {
       throw new IllegalArgumentException(
           "Updates can only be made directly to the sandbox environment".formatted(envName));
     }
-    studyEnvironmentSurveyService.delete(configuredSurveyId, CascadeProperty.EMPTY_SET);
+    studyEnvironmentSurveyService.deactivate(configuredSurveyId);
   }
 
   public StudyEnvironmentSurvey updateConfiguredSurvey(
