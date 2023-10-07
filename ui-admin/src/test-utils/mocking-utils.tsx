@@ -326,6 +326,7 @@ export const mockEmailTemplate = (): EmailTemplate => {
   }
 }
 
+/** mock response */
 export const mockSurveyResponse = (): SurveyResponse => {
   return {
     id: 'responseId1',
@@ -337,10 +338,11 @@ export const mockSurveyResponse = (): SurveyResponse => {
   }
 }
 
+/** mock survey answer */
 export const mockAnswer = (): Answer => {
   return {
     surveyVersion: 1,
     stringValue: 'foo',
-    questionStableId: 'question1',
+    questionStableId: 'question1'
   }
 }
