@@ -7,6 +7,9 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Answer;
+import bio.terra.pearl.core.service.export.ExportFileFormat;
+import bio.terra.pearl.core.service.export.instance.ExportOptions;
+import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
@@ -15,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,7 +29,7 @@ import static org.hamcrest.Matchers.*;
 public class PopulateDemoTest extends BasePopulatePortalsTest {
     @Test
     @Transactional
-    public void testPopulateDemo() throws IOException {
+    public void testPopulateDemo() throws Exception {
         setUpEnvironments();
         Portal portal = portalPopulator.populate(new FilePopulateContext("portals/demo/portal.json"), true);
         Assertions.assertEquals("demo", portal.getShortcode());
@@ -42,6 +46,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         Assertions.assertEquals(5, enrollees.size());
 
         checkOldVersionEnrollee(enrollees);
+        checkExportContent(sandboxEnvironmentId);
     }
 
     /** confirm the enrollee wtih answers to two different survey versions was populated correctly */
@@ -50,14 +55,28 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
                 .findFirst().get();
 
         List<Answer> socialHealthAnswers = answerService.findAll(enrollee.getId(), "hd_hd_socialHealth");
-        assertThat(socialHealthAnswers, hasSize(3));
+        assertThat(socialHealthAnswers, hasSize(4));
         assertThat(socialHealthAnswers, hasItem(
-                Matchers.both(hasProperty("questionStableId", equalTo("hd_hd_socialHealth_neighborhoodGetsAlong")))
+                Matchers.both(hasProperty("questionStableId", equalTo("hd_hd_socialHealth_neighborhoodIsWalkable")))
                         .and(hasProperty("surveyVersion", equalTo(1))))
         );
         assertThat(socialHealthAnswers, hasItem(
                 Matchers.both(hasProperty("questionStableId", equalTo("hd_hd_socialHealth_neighborhoodIsNoisy")))
                         .and(hasProperty("surveyVersion", equalTo(2))))
         );
+    }
+
+    private void checkExportContent(UUID sandboxEnvironmentId) throws Exception {
+        ExportOptions options = new ExportOptions(false, false, true, ExportFileFormat.TSV, null);
+        List<ModuleExportInfo> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
+        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, options.limit());
+
+        assertThat(exportData, hasSize(5));
+        Map<String, String> oldVersionMap = exportData.stream().filter(map -> "HDVERS".equals(map.get("enrollee.shortcode")))
+                .findFirst().get();
+        // confirm text (including typo) from prior version is carried through
+        assertThat(oldVersionMap.get("hd_hd_socialHealth.hd_hd_socialHealth_neighborhoodSharesValues"), equalTo("Disagre"));
+        // confirm answer from question that was removed in current version is still exported
+        assertThat(oldVersionMap.get("hd_hd_socialHealth.hd_hd_socialHealth_neighborhoodIsWalkable"), equalTo("Disagree"));
     }
 }

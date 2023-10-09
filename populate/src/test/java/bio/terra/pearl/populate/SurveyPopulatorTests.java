@@ -42,7 +42,7 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    private List<String> tablesToTruncate = Arrays.asList("survey", "survey_question_definition");
+    private List<String> tablesToTruncate = Arrays.asList("survey", "survey_question_definition", "answer_mapping");
 
     @BeforeAll
     public void cleanTables() {
