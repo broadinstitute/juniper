@@ -17,6 +17,7 @@
             "name": "hd_hd_socialHealth_neighborhoodGetsAlong",
             "type": "radiogroup",
             "title": "People in my neighborhood generally get along with each other.",
+            "__comment": "This question was added in this version",
             "choices": [
               {"text": "Strongly agree", "value": "stronglyAgree"},
               {"text": "Agree", "value": "agree"},

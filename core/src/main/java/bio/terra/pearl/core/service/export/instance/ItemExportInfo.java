@@ -2,7 +2,11 @@ package bio.terra.pearl.core.service.export.instance;
 
 import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.service.export.formatters.DataValueExportType;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -29,4 +33,10 @@ public class ItemExportInfo {
     private String questionText;
     @Builder.Default
     private List<QuestionChoice> choices = null;
+    /**
+     * for survey questions, we need to have a map of past versions so we can look up values of stableIds that may
+     * no longer be supported, and also to produce a full data dictionary
+     */
+    @Builder.Default
+    private Map<Integer, ItemExportInfo> versionMap = new HashMap<>();
 }

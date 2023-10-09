@@ -29,11 +29,13 @@
     },
     {
       "surveyStableId": "hd_hd_socialHealth",
+      "__comment": "responded to a prior version of this survey",
       "surveyVersion": 1,
       "answerPopDtos": [
-        { "questionStableId": "hd_hd_socialHealth_neighborhoodGetsAlong", "stringValue": "agree"},
         { "questionStableId": "hd_hd_socialHealth_neighborhoodIsWalkable", "stringValue": "disagree"},
-        { "questionStableId": "hd_hd_socialHealth_neighborhoodIsNoisy", "stringValue": "stronglyAgree"}
+        { "questionStableId": "hd_hd_socialHealth_neighborhoodIsNoisy", "stringValue": "neutral"},
+        { "questionStableId": "hd_hd_socialHealth_neighborhoodSharesValues", "stringValue":  "disagree"},
+        { "questionStableId": "hd_hd_socialHealth_vandalismIsCommonInNeighborhood", "stringValue": "agree"}
       ],
       "currentPageNo": 1,
       "complete": true,

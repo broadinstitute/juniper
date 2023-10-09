@@ -22,7 +22,7 @@
               {"text": "Strongly agree", "value": "stronglyAgree"},
               {"text": "Agree", "value": "agree"},
               {"text": "Neutral (neither agree nor disagree)", "value": "neutralNeitherAgreeNorDisagree"},
-              {"text": "Disagree", "value": "disagree"},
+              {"text": "Disagre", "value": "disagree", "__comment":  "deliberate typo in text"},
               {"text": "Strongly disagree", "value": "stronglyDisagree"}
             ]
           },
@@ -30,6 +30,7 @@
             "name": "hd_hd_socialHealth_neighborhoodIsWalkable",
             "type": "radiogroup",
             "title": "My neighborhood is walkable.",
+            "__comment": "question will be removed in later versions",
             "choices": [
               {"text": "Strongly disagree", "value": "stronglyDisagree"},
               {"text": "Disagree", "value": "disagree"},
@@ -44,6 +45,7 @@
             "choices": [
               {"text": "Strongly disagree", "value": "stronglyDisagree"},
               {"text": "Disagree", "value": "disagree"},
+              {"text": "Neutral (neither agree nor disagree)", "value": "neutral", "__comment":  "choice will be removed in later versions"},
               {"text": "Agree", "value": "agree"},
               {"text": "Strongly agree", "value": "stronglyAgree"}
             ]

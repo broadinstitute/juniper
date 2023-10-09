@@ -17,12 +17,18 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
     }
 
     public List<StudyEnvironmentSurvey> findAllByStudyEnvIdWithSurvey(UUID studyEnvId) {
-        return dao.findAllByStudyEnvIdWithSurvey(studyEnvId);
+        return dao.findAllByStudyEnvIdWithSurvey(studyEnvId, true);
+    }
+
+    public List<StudyEnvironmentSurvey> findAllByStudyEnvIdWithSurvey(UUID studyEnvId, Boolean active) {
+        return dao.findAllByStudyEnvIdWithSurvey(studyEnvId, active);
     }
 
     public Optional<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, UUID surveyId) {
         return dao.findBySurvey(studyEnvId, surveyId);
     }
+
+
 
     @Transactional
     public StudyEnvironmentSurvey deactivate(UUID id) {
