@@ -63,6 +63,11 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
         return findAllByProperty("study_environment_id", studyEnvironmentId);
     }
 
+    public List<Enrollee> findByStudyEnvironmentId(UUID studyEnvironmentId, String sortProperty, String sortDir) {
+        return findAllByPropertySorted("study_environment_id", studyEnvironmentId,
+                sortProperty, sortDir);
+    }
+
     @Transactional
     public Stream<Enrollee> streamByStudyEnvironmentId(UUID studyEnvironmentId) {
         return streamAllByProperty("study_environment_id", studyEnvironmentId);

@@ -101,6 +101,10 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.findByStudyEnvironmentId(studyEnvironmentId);
     }
 
+    public List<Enrollee> findByStudyEnvironment(UUID studyEnvironmentId, String sortProperty, String sortDir) {
+        return dao.findByStudyEnvironmentId(studyEnvironmentId, sortProperty, sortDir);
+    }
+
     public List<Enrollee> findForKitManagement(String studyShortcode, EnvironmentName envName) {
         StudyEnvironment studyEnvironment = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
         return dao.findForKitManagement(studyEnvironment.getId());
