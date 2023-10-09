@@ -55,6 +55,8 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         return dao.findOneWithAnswers(responseId);
     }
 
+
+
     @Override
     public SurveyResponse create(SurveyResponse response) {
         SurveyResponse savedResponse = super.create(response);
@@ -221,7 +223,12 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                 .oldValue(existing.valueAsString())
                 .newValue(updated.valueAsString()).build();
         changeRecords.add(change);
-        existing.setSurveyVersion(survey.getVersion());
+        existing.setSurveyVersion(updated.getSurveyVersion());
+        if (existing.getSurveyVersion() == 0)  {
+            // if the frontend didn't specify a specific version,
+            // default to the assigned version
+            existing.setSurveyVersion(survey.getVersion());
+        }
         existing.copyValuesFrom(updated);
         return answerService.update(existing);
     }
@@ -231,7 +238,11 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         answer.setCreatingParticipantUserId(ppUser.getParticipantUserId());
         answer.setSurveyResponseId(response.getId());
         answer.setSurveyStableId(survey.getStableId());
-        answer.setSurveyVersion(survey.getVersion());
+        if (answer.getSurveyVersion() == 0) {
+            // if the frontend didn't specify a specific version,
+            // default to the assigned version
+            answer.setSurveyVersion(survey.getVersion());
+        }
         answer.setEnrolleeId(response.getEnrolleeId());
         return answerService.create(answer);
     }

@@ -1,6 +1,7 @@
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import {
   AdminTask,
+  Answer,
   ConsentForm,
   DatasetDetails,
   Enrollee,
@@ -10,7 +11,7 @@ import {
   ParticipantNote,
   Portal,
   PortalStudy,
-  StudyEnvironmentConsent
+  StudyEnvironmentConsent, SurveyResponse
 } from 'api/api'
 import { Survey } from '@juniper/ui-core/build/types/forms'
 import { ParticipantTask } from '@juniper/ui-core/build/types/task'
@@ -335,5 +336,26 @@ export const mockAdminTask = (): AdminTask => {
     status: 'NEW',
     creatingAdminUserId: 'userId2',
     studyEnvironmentId: 'studyEnvId1'
+  }
+}
+
+/** mock response */
+export const mockSurveyResponse = (): SurveyResponse => {
+  return {
+    id: 'responseId1',
+    surveyId: 'survey1',
+    resumeData: '{}',
+    enrolleeId: 'enrollee1',
+    complete: false,
+    answers: []
+  }
+}
+
+/** mock survey answer */
+export const mockAnswer = (): Answer => {
+  return {
+    surveyVersion: 1,
+    stringValue: 'foo',
+    questionStableId: 'question1'
   }
 }
