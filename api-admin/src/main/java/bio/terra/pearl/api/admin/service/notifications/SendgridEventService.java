@@ -10,14 +10,23 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SendgridActivityService {
-  private static final Logger logger = LoggerFactory.getLogger(SendgridActivityService.class);
+public class SendgridEventService {
+
+  /*
+   * This class is responsible for fetching Sendgrid events from the Sendgrid API and storing them. Sendgrid
+   * only stores 30 days of email activity history, and we don't want to lose any of that information. This is
+   * important both for auditability and for debugging purposes. This fetcher is scheduled to run every 30 minutes,
+   * and it will fetch all events since the last recorded event.
+   */
+
+  private static final Logger logger = LoggerFactory.getLogger(SendgridEventService.class);
   private SendgridClient sendgridClient;
   private SendgridEventDao sendgridEventDao;
 
-  public SendgridActivityService(SendgridClient sendgridClient, SendgridEventDao sendgridEventDao) {
+  public SendgridEventService(SendgridClient sendgridClient, SendgridEventDao sendgridEventDao) {
     this.sendgridEventDao = sendgridEventDao;
     this.sendgridClient = sendgridClient;
   }
@@ -40,6 +49,11 @@ public class SendgridActivityService {
     // more events than we actually have.
     logger.info("Sendgrid activity query returned {} events", events.size());
 
+    bulkUpsert(events);
+  }
+
+  @Transactional
+  public void bulkUpsert(List<SendgridEvent> events) {
     sendgridEventDao.bulkUpsert(events);
   }
 

@@ -6,19 +6,19 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ScheduledSendgridActivityService {
-  SendgridActivityService sendgridActivityService;
+public class ScheduledSendgridEventFetcher {
+  SendgridEventService sendgridEventService;
 
-  public ScheduledSendgridActivityService(SendgridActivityService sendgridActivityService) {
-    this.sendgridActivityService = sendgridActivityService;
+  public ScheduledSendgridEventFetcher(SendgridEventService sendgridEventService) {
+    this.sendgridEventService = sendgridEventService;
   }
 
   @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 30, initialDelay = 1)
   @SchedulerLock(
-      name = "SendgridActivityService.saveSendgridActivity",
+      name = "SendgridEventService.saveSendgridActivity",
       lockAtLeastFor = "1m",
       lockAtMostFor = "15m")
-  public void saveSendgridActivity() throws Exception {
-    sendgridActivityService.saveSendgridActivity();
+  public void saveSendgridActivity() {
+    sendgridEventService.saveSendgridActivity();
   }
 }

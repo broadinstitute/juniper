@@ -15,9 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-public class SendgridActivityServiceTests extends BaseSpringBootTest {
+public class SendgridEventServiceTests extends BaseSpringBootTest {
 
-  @Autowired private SendgridActivityService sendgridActivityService;
+  @Autowired private SendgridEventService sendgridActivityService;
 
   @MockBean private SendgridClient sendgridClient;
 
