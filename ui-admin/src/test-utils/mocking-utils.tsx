@@ -4,6 +4,7 @@ import {
   ConsentForm,
   DatasetDetails,
   Enrollee,
+  EnrolleeSearchResult,
   KitRequest,
   KitType,
   NotificationConfig,
@@ -259,6 +260,19 @@ export const mockEnrollee: () => Enrollee = () => {
     },
     participantTasks: [],
     kitRequests: [mockKitRequest()]
+  }
+}
+
+/** returns a mock enrollee search result */
+export const mockEnrolleeSearchResult: () => EnrolleeSearchResult = () => {
+  return {
+    enrollee: mockEnrollee(),
+    profile: mockEnrollee().profile,
+    mostRecentKitStatus: null,
+    participantUser: {
+      lastLogin: 50405345,
+      username: `${randomString(10)}@test.com`
+    }
   }
 }
 
