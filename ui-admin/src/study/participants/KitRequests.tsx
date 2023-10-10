@@ -10,6 +10,7 @@ import { instantToDefaultString } from 'util/timeUtils'
 import { useUser } from 'user/UserProvider'
 import InfoPopup from 'components/forms/InfoPopup'
 import KitStatusCell from './KitStatusCell'
+import { doApiLoad } from '../../api/api-utils'
 
 /** Component for rendering the address a kit was sent to based on JSON captured at the time of the kit request. */
 function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string }) {
@@ -54,10 +55,12 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
 
   const onSubmit = async (kitType: string) => {
-    await Api.createKitRequest(
-      portal.shortcode, study.shortcode, currentEnv.environmentName, enrollee.shortcode, kitType)
-    setShowRequestKitModal(false)
-    onUpdate()
+    await doApiLoad(async () => {
+      await Api.createKitRequest(portal.shortcode, study.shortcode,
+        currentEnv.environmentName, enrollee.shortcode, kitType)
+      setShowRequestKitModal(false)
+      onUpdate()
+    })
   }
 
   const table = useReactTable({
@@ -67,7 +70,7 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
   })
 
   return <div>
-    <h5>Kit requests</h5>
+    <h2 className="h4">Kit requests</h2>
     { user.superuser &&
       <button className='btn btn-secondary' onClick={() => setShowRequestKitModal(true)}>
         <FontAwesomeIcon icon={faPlus}/> Create a kit request

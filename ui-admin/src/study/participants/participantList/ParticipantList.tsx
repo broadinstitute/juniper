@@ -7,9 +7,12 @@ import {
   ColumnDef,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
+  PaginationState,
   SortingState,
-  useReactTable, VisibilityState
+  useReactTable,
+  VisibilityState
 } from '@tanstack/react-table'
 import { basicTableLayout, ColumnVisibilityControl, IndeterminateCheckbox } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -26,7 +29,7 @@ import { Button } from 'components/forms/Button'
 import { instantToDefaultString } from 'util/timeUtils'
 import { useLoadingEffect } from 'api/api-utils'
 import { FacetView, getUpdatedFacetValues } from './facets/EnrolleeSearchFacets'
-
+import TableClientPagination from 'util/TablePagination'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -47,7 +50,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   const facetValues = facetValuesFromString(searchParams.get('facets') ?? '{}', ALL_FACETS)
   const keywordFacetIndex = facetValues.findIndex(facet => facet.facet.category === 'keyword')
   const keywordFacetValue = facetValues[keywordFacetIndex]
-
+  const preferredNumRowsKey = `participantList.${portal.shortcode}.${study.shortcode}.preferredNumRows`
 
   const columns = useMemo<ColumnDef<EnrolleeSearchResult, string>[]>(() => [{
     id: 'select',
@@ -72,6 +75,12 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     header: 'Created',
     id: 'createdAt',
     accessorKey: 'enrollee.createdAt',
+    enableColumnFilter: false,
+    cell: info => instantToDefaultString(info.getValue() as unknown as number)
+  }, {
+    id: 'lastLogin',
+    header: 'Last login',
+    accessorKey: 'participantUser.lastLogin',
     enableColumnFilter: false,
     cell: info => instantToDefaultString(info.getValue() as unknown as number)
   }, {
@@ -116,6 +125,11 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     }
   }], [study.shortcode, currentEnv.environmentName])
 
+  const [{ pageIndex, pageSize }] =
+    useState<PaginationState>({
+      pageIndex: parseInt(searchParams.get('pageIndex') || '0'),
+      pageSize: parseInt(searchParams.get('pageSize') || localStorage.getItem(preferredNumRowsKey) || '10')
+    })
 
   const table = useReactTable({
     data: participantList,
@@ -125,12 +139,19 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
       rowSelection,
       columnVisibility
     },
+    initialState: {
+      pagination: {
+        pageIndex,
+        pageSize
+      }
+    },
     onColumnVisibilityChange: setColumnVisibility,
     enableRowSelection: true,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     onRowSelectionChange: setRowSelection
   })
 
@@ -185,7 +206,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
             </div>
           </div>
           { basicTableLayout(table, { filterable: true })}
-          { participantList.length === 0 && <span className="text-muted fst-italic">No participants</span>}
+          <TableClientPagination table={table} preferredNumRowsKey={preferredNumRowsKey}/>
         </LoadingSpinner>
       </div>
     </div>

@@ -12,17 +12,17 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class ConsentFormController implements ConsentFormApi {
-  private AuthUtilService requestService;
+  private AuthUtilService authUtilService;
   private HttpServletRequest request;
   private ConsentFormExtService consentFormExtService;
   private ObjectMapper objectMapper;
 
   public ConsentFormController(
-      AuthUtilService requestService,
+      AuthUtilService authUtilService,
       HttpServletRequest request,
       ConsentFormExtService consentFormExtService,
       ObjectMapper objectMapper) {
-    this.requestService = requestService;
+    this.authUtilService = authUtilService;
     this.request = request;
     this.consentFormExtService = consentFormExtService;
     this.objectMapper = objectMapper;
@@ -30,7 +30,7 @@ public class ConsentFormController implements ConsentFormApi {
 
   @Override
   public ResponseEntity<Object> newVersion(String portalShortcode, String stableId, Object body) {
-    AdminUser adminUser = requestService.requireAdminUser(request);
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
     ConsentForm consentForm = objectMapper.convertValue(body, ConsentForm.class);
     if (!stableId.equals(consentForm.getStableId())) {
       throw new IllegalArgumentException("form parameters don't match");

@@ -6,9 +6,9 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.participant.ParticipantTaskService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import com.auth0.jwt.JWT;
 import java.time.Instant;
 import java.util.List;
@@ -37,6 +37,11 @@ public class CurrentUserService {
     this.profileService = profileService;
   }
 
+  /**
+   * B2C handles all login logistics -- all this method does is confirm the user is in the DB, and
+   * update their last login time
+   */
+  @Transactional
   public Optional<UserWithEnrollees> tokenLogin(
       String token, String portalShortcode, EnvironmentName environmentName) {
     Optional<UserWithEnrollees> userOpt = loadByToken(token, portalShortcode, environmentName);

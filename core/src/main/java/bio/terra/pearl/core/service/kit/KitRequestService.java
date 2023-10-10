@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.kit;
 
 import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
@@ -165,12 +166,14 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     public void syncAllKitStatusesFromPepper() {
         var studies = studyService.findAll();
         for (Study study : studies) {
-            syncKitStatusesForStudy(study);
+            for (EnvironmentName environmentName : EnvironmentName.values()) {
+                syncKitStatusesForStudy(study, environmentName);
+            }
         }
     }
 
     @Transactional
-    public void syncKitStatusesForStudy(Study study) {
+    public void syncKitStatusesForStudy(Study study, EnvironmentName environmentName) {
         // This assumes that DSM is configured with a single study backing all environments of the Juniper study
         // TODO: delay deserializing to a PepperKitStatus until after it's been recorded on the kit request
         var pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
@@ -179,19 +182,22 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 Collectors.toMap(PepperKitStatus::getJuniperKitId, Function.identity(),
                         (kit1, kit2) -> !kit1.getCurrentStatus().equals("Deactivated") ? kit1 : kit2));
 
-        var studyEnvironments = studyEnvironmentService.findByStudy(study.getId());
-        for (StudyEnvironment studyEnvironment : studyEnvironments) {
-            var incompleteKits = findIncompleteKits(studyEnvironment.getId());
+        studyEnvironmentService.findByStudy(study.getShortcode(), environmentName).ifPresent(
+                studyEnvironment -> {
+                    var incompleteKits = findIncompleteKits(studyEnvironment.getId());
 
-            // The set of kits returned from DSM may be different from the set of incomplete kits in Juniper, but
-            // we want to update the records in Juniper so those are the ones we want to iterate here.
-            for (KitRequest kit : incompleteKits) {
-                var pepperKitStatus = pepperKitStatusByKitId.get(kit.getId().toString());
-                if (pepperKitStatus != null) {
-                    saveKitStatus(kit, pepperKitStatus, pepperStatusFetchedAt);
+                    // The set of kits returned from DSM may be different from the set of incomplete kits in Juniper, but
+                    // we want to update the records in Juniper so those are the ones we want to iterate here.
+                    for (KitRequest kit : incompleteKits) {
+                        var pepperKitStatus = pepperKitStatusByKitId.get(kit.getId().toString());
+                        if (pepperKitStatus != null) {
+                            saveKitStatus(kit, pepperKitStatus, pepperStatusFetchedAt);
+                        }
+                    }
                 }
-            }
-        }
+        );
+
+
     }
 
     public List<KitRequest> findIncompleteKits(UUID studyEnvironmentId) {

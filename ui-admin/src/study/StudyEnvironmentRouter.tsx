@@ -22,8 +22,13 @@ import StudySettings from './StudySettings'
 import { ENVIRONMENT_ICON_MAP } from './publishing/StudyPublishingView'
 import NotificationContent from './notifications/NotificationContent'
 import SiteContentLoader from '../portal/siteContent/SiteContentLoader'
+import AdminTaskList from './adminTasks/AdminTaskList'
 
-
+export type StudyEnvParams = {
+  studyShortcode: string
+  envName: string
+  portalShortcode: string
+}
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
 
 /** Base page for configuring the content and integrations for a study environment */
@@ -113,12 +118,24 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
         </Route>
         <Route index element={<StudyContent studyEnvContext={studyEnvContext}/>}/>
       </Route>
+      <Route path="adminTasks">
+        <Route index element={<AdminTaskList studyEnvContext={studyEnvContext}/>}/>
+      </Route>
       <Route path="*" element={<div>Unknown study environment page</div>}/>
     </Routes>
   </div>
 }
 
 export default StudyEnvironmentRouter
+
+/** helper function to get params to pass to API functions */
+export const paramsFromContext = (studyEnvContext: StudyEnvContextT): StudyEnvParams => {
+  return {
+    studyShortcode: studyEnvContext.study.shortcode,
+    portalShortcode: studyEnvContext.portal.shortcode,
+    envName: studyEnvContext.currentEnv.environmentName
+  }
+}
 
 /** helper for participant list path */
 export const participantListPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
@@ -184,4 +201,9 @@ export const studyEnvDatasetListViewPath = (portalShortcode: string, studyShortc
 /** helper for path for particular dataset route */
 export const datasetDashboardPath = (datasetName: string, currentEnvPath: string) => {
   return `${currentEnvPath}/export/dataRepo/datasets/${datasetName}`
+}
+
+/** helper for path to admin task list page */
+export const adminTasksPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
+  return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/adminTasks`
 }

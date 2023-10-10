@@ -18,6 +18,8 @@ import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import java.util.*;
+
+import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     private DatasetService datasetService;
     private DataRepoJobService dataRepoJobService;
     private WithdrawnEnrolleeService withdrawnEnrolleeService;
+    private AdminTaskService adminTaskService;
 
 
     public StudyEnvironmentService(StudyEnvironmentDao studyEnvironmentDao,
@@ -43,7 +46,8 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
                                    NotificationConfigService notificationConfigService,
                                    DatasetService datasetService,
                                    DataRepoJobService dataRepoJobService,
-                                   WithdrawnEnrolleeService withdrawnEnrolleeService) {
+                                   WithdrawnEnrolleeService withdrawnEnrolleeService,
+                                   AdminTaskService adminTaskService) {
         super(studyEnvironmentDao);
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
         this.studyEnvironmentConfigService =  studyEnvironmentConfigService;
@@ -54,6 +58,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         this.datasetService = datasetService;
         this.dataRepoJobService = dataRepoJobService;
         this.withdrawnEnrolleeService = withdrawnEnrolleeService;
+        this.adminTaskService = adminTaskService;
     }
 
     public Set<StudyEnvironment> findByStudy(UUID studyId) {
@@ -105,6 +110,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         dataRepoJobService.deleteByStudyEnvironmentId(studyEnvironmentId);
         datasetService.deleteByStudyEnvironmentId(studyEnvironmentId);
         withdrawnEnrolleeService.deleteByStudyEnvironmentId(studyEnvironmentId);
+        adminTaskService.deleteByStudyEnvironmentId(studyEnvironmentId, null);
         dao.delete(studyEnvironmentId);
         if (studyEnv.getStudyEnvironmentConfigId() != null) {
             studyEnvironmentConfigService.delete(studyEnv.getStudyEnvironmentConfigId());

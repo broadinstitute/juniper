@@ -10,22 +10,26 @@ import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
+import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.search.facets.CombinedStableIdFacetValue;
 import bio.terra.pearl.core.service.participant.search.facets.IntRangeFacetValue;
 import bio.terra.pearl.core.service.participant.search.facets.StableIdStringFacetValue;
 import bio.terra.pearl.core.service.participant.search.facets.StringFacetValue;
 import bio.terra.pearl.core.service.participant.search.facets.sql.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +48,8 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
   private EnrolleeSearchDao enrolleeSearchDao;
   @Autowired
   private KitRequestFactory kitRequestFactory;
+  @Autowired
+  private ParticipantUserService participantUserService;
 
   @Test
   @Transactional
@@ -52,10 +58,16 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
     var enrollee = enrolleeFactory.buildPersisted("testEmptySearch", studyEnv);
     StudyEnvironment studyEnv2 = studyEnvironmentFactory.buildPersisted("testEmptySearch");
     enrolleeFactory.buildPersisted("testEmptySearch", studyEnv2);
+    ParticipantUser participantUser = participantUserService.find(enrollee.getParticipantUserId()).get();
+    participantUser.setLastLogin(Instant.now());
+    participantUserService.update(participantUser);
 
     var result = enrolleeSearchDao.search(studyEnv.getId(), List.of());
     assertThat(result, hasSize(1));
     assertThat(result.get(0).getEnrollee().getShortcode(), equalTo(enrollee.getShortcode()));
+
+    assertThat(result.get(0).getParticipantUser().getUsername(), equalTo(participantUser.getUsername()));
+    assertThat(result.get(0).getParticipantUser().getLastLogin(), greaterThan(Instant.now().minusMillis(3000)));
   }
 
   @Test

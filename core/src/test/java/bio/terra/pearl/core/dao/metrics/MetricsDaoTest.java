@@ -14,7 +14,7 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
-import bio.terra.pearl.core.service.participant.ParticipantTaskService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyTaskDispatcher;
 import java.time.Duration;

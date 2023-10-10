@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -24,6 +25,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class LivePepperDSMClient implements PepperDSMClient {
     private final PepperDSMConfig pepperDSMConfig;
     private final WebClient webClient;
@@ -129,6 +131,8 @@ public class LivePepperDSMClient implements PepperDSMClient {
      * these possibilities and, when possible, converting them into a useful PepperException.
      */
     private <T> T retrieveAndDeserializeResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec, Class<T> clazz) {
+        requestHeadersSpec.httpRequest(req -> log.info("Sending DSM request: {}", req.getURI()));
+
         return requestHeadersSpec
                 .retrieve()
                 .onStatus(

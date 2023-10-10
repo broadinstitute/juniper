@@ -14,8 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import bio.terra.pearl.api.admin.controller.admin.AdminUserController;
 import bio.terra.pearl.api.admin.model.AdminUserDto;
 import bio.terra.pearl.api.admin.model.RoleList;
-import bio.terra.pearl.api.admin.service.AdminUserExtService;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.admin.AdminUserExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.admin.PortalAdminUserRoleService;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;

@@ -1,4 +1,4 @@
-package bio.terra.pearl.api.admin.service;
+package bio.terra.pearl.api.admin.service.admin;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.core.model.admin.AdminUser;

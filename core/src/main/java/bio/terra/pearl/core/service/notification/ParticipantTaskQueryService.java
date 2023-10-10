@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service.notification;
 
 import bio.terra.pearl.core.dao.notification.NotificationDao;
-import bio.terra.pearl.core.dao.participant.ParticipantTaskDao;
+import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import java.time.Duration;
