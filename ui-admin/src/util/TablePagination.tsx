@@ -12,25 +12,11 @@ export default function TableClientPagination<R>({ table, preferredNumRowsKey }:
 }) {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const updateSearchParams = () => {
+  useEffect(() => {
     searchParams.set('pageIndex', table.getState().pagination.pageIndex.toString())
     searchParams.set('pageSize', table.getState().pagination.pageSize.toString())
     setSearchParams(searchParams)
-  }
-
-  useEffect(() => {
-    updateSearchParams()
   }, [table.getState().pagination.pageIndex, table.getState().pagination.pageSize])
-
-  useEffect(() => {
-    const preferredPageSize = preferredNumRowsKey ? localStorage.getItem(preferredNumRowsKey) : undefined
-    const pageSizeParam = searchParams.get('pageSize')
-    const pageSize = parseInt(pageSizeParam || preferredPageSize || '10')
-    const pageIndex = parseInt(searchParams.get('pageIndex') || '0')
-
-    table.setPageIndex(pageIndex)
-    table.setPageSize(pageSize)
-  }, [table])
 
   return <div style={{
     padding: '0 1rem 1rem 1rem',
