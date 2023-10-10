@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Table } from '@tanstack/react-table'
 import { faCaretLeft, faCaretRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useSearchParams } from 'react-router-dom'
 
 /** renders a client-side pagination control (as in, the data is all loaded from the server at once, but
  * paged on the UI for readability */
@@ -9,6 +10,28 @@ export default function TableClientPagination<R>({ table, preferredNumRowsKey }:
   table: Table<R>,
   preferredNumRowsKey: string | undefined
 }) {
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const updateSearchParams = () => {
+    searchParams.set('pageIndex', table.getState().pagination.pageIndex.toString())
+    searchParams.set('pageSize', table.getState().pagination.pageSize.toString())
+    setSearchParams(searchParams)
+  }
+
+  useEffect(() => {
+    updateSearchParams()
+  }, [table.getState().pagination.pageIndex, table.getState().pagination.pageSize])
+
+  useEffect(() => {
+    const preferredPageSize = preferredNumRowsKey ? localStorage.getItem(preferredNumRowsKey) : undefined
+    const pageSizeParam = searchParams.get('pageSize')
+    const pageSize = parseInt(pageSizeParam || preferredPageSize || '10')
+    const pageIndex = parseInt(searchParams.get('pageIndex') || '0')
+
+    table.setPageIndex(pageIndex)
+    table.setPageSize(pageSize)
+  }, [table])
+
   return <div style={{
     padding: '0 1rem 1rem 1rem',
     display: 'flex', justifyContent: 'space-between'

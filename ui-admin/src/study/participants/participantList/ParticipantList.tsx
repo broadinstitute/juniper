@@ -9,6 +9,7 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  PaginationState,
   SortingState,
   useReactTable,
   VisibilityState
@@ -124,6 +125,11 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     }
   }], [study.shortcode, currentEnv.environmentName])
 
+  const [{ pageIndex, pageSize }] =
+    React.useState<PaginationState>({
+      pageIndex: parseInt(searchParams.get('pageIndex') || '0'),
+      pageSize: parseInt(searchParams.get('pageSize') || localStorage.getItem(preferredNumRowsKey) || '10')
+    })
 
   const table = useReactTable({
     data: participantList,
@@ -135,7 +141,8 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     },
     initialState: {
       pagination: {
-        pageSize: parseInt(localStorage.getItem(preferredNumRowsKey) || '10')
+        pageIndex,
+        pageSize
       }
     },
     onColumnVisibilityChange: setColumnVisibility,
