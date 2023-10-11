@@ -1,5 +1,5 @@
 import React, { HTMLProps, useEffect, useState } from 'react'
-import { Cell, CellContext, Column, flexRender, Header, RowData, Table } from '@tanstack/react-table'
+import { CellContext, Column, flexRender, Header, RowData, Table } from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretDown, faCaretUp, faCheck, faColumns, faDownload } from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
@@ -269,7 +269,7 @@ export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
   </div>
 }
 
-function cellToString(cellType: string, cellValue: unknown): string {
+function cellToCsvString(cellType: string, cellValue: unknown): string {
   switch (cellType) {
     case 'instant':
       return escapeCsvValue(instantToDefaultString(cellValue as number))
@@ -283,9 +283,9 @@ function cellToString(cellType: string, cellValue: unknown): string {
 }
 
 /**
- *
+ * Adds a control to download the table data as a csv file
  */
-export function DownloadControl<T>({ table }: {table: Table<T>}) {
+export function DownloadControl<T>({ table, fileName }: {table: Table<T>, fileName: string}) {
   const [show, setShow] = useState(false)
 
   const download = () => {
@@ -296,12 +296,12 @@ export function DownloadControl<T>({ table }: {table: Table<T>}) {
     const rows = table.getFilteredRowModel().rows.map(row => {
       return row.getVisibleCells().map(cell => {
         const cellType = cell.column.columnDef.meta?.columnType || 'string'
-        return cellToString(cellType, cell.getValue())
+        return cellToCsvString(cellType, cell.getValue())
       }).join(',')
     }).join('\n')
 
     const blob = new Blob([headers, '\n', rows], { type: 'text/plain' })
-    saveBlobAsDownload(blob, `table-data.csv`) //todo rename file
+    saveBlobAsDownload(blob, `${fileName}.csv`)
   }
 
   return <div className="ms-auto">
@@ -318,7 +318,8 @@ export function DownloadControl<T>({ table }: {table: Table<T>}) {
       <Modal.Body>
         <div className="border-b border-black">
                 This will download <strong>{table.getFilteredRowModel().rows.length}</strong> rows
-                as a <code>.csv</code> file. Your current filters will be applied to the downloaded data.
+                to <code>{fileName}.csv</code>. Your current row and column filters will be applied to the
+                downloaded data.
         </div>
       </Modal.Body>
       <Modal.Footer>

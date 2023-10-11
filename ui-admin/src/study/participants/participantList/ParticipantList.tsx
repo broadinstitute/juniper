@@ -25,7 +25,7 @@ import {
   facetValuesToString,
   KEYWORD_FACET
 } from 'api/enrolleeSearch'
-import { instantToDefaultString } from 'util/timeUtils'
+import { currentIsoDate, instantToDefaultString } from 'util/timeUtils'
 import { useLoadingEffect } from 'api/api-utils'
 import { FacetView, getUpdatedFacetValues } from './facets/EnrolleeSearchFacets'
 import TableClientPagination from 'util/TablePagination'
@@ -211,7 +211,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
                   aria-label="download data">
                   <FontAwesomeIcon icon={faEnvelope} className="fa-lg"/> Send email
                 </button>
-                <DownloadControl table={table}/>
+                <DownloadControl table={table} fileName={`${portal.shortcode}-ParticipantList-${currentIsoDate()}`}/>
                 <ColumnVisibilityControl table={table}/>
               </div>
             </div>
