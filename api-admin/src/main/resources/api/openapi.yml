@@ -114,6 +114,23 @@ paths:
           content: { application/json: { schema: {type: object} } }
         '500':
           $ref: '#/components/responses/ServerError'
+
+  /api/portals/v1/{portalShortcode}/adminUser/{userId}:
+    delete:
+      summary: Remove an admin user for portal
+      tags: [ portal ]
+      operationId: removePortalUser
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: userId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '204':
+          description: admin user removed
+        '404':
+          description: admin user not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/adminTasks:
     get:
       summary: Gets all the admin tasks for this study environment

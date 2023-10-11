@@ -6,11 +6,13 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
+import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -19,16 +21,19 @@ public class PortalExtService {
   private PortalService portalService;
   private PortalEnvironmentService portalEnvironmentService;
   private PortalEnvironmentConfigService portalEnvironmentConfigService;
+  private PortalAdminUserService portalAdminUserService;
   private AuthUtilService authUtilService;
 
   public PortalExtService(
       PortalService portalService,
       PortalEnvironmentService portalEnvironmentService,
       PortalEnvironmentConfigService portalEnvironmentConfigService,
+      PortalAdminUserService portalAdminUserService,
       AuthUtilService authUtilService) {
     this.portalService = portalService;
     this.portalEnvironmentService = portalEnvironmentService;
     this.portalEnvironmentConfigService = portalEnvironmentConfigService;
+    this.portalAdminUserService = portalAdminUserService;
     this.authUtilService = authUtilService;
   }
 
@@ -78,5 +83,10 @@ public class PortalExtService {
     PortalEnvironment portalEnv = portalEnvironmentService.findOne(portalShortcode, envName).get();
     portalEnv.setSiteContentId(updatedEnv.getSiteContentId());
     return portalEnvironmentService.update(portalEnv);
+  }
+
+  public void removeUserFromPortal(UUID userId, String portalShortcode, AdminUser operator) {
+    Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
+    portalAdminUserService.removeUserFromPortal(userId, portal);
   }
 }

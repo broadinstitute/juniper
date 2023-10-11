@@ -1,12 +1,16 @@
 package bio.terra.pearl.api.admin.service.portal;
 
+import static org.mockito.Mockito.when;
+
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
+import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +28,7 @@ public class PortalExtServiceTest {
   @MockBean private PortalService mockPortalService;
   @MockBean private PortalEnvironmentService portalEnvironmentService;
   @MockBean private PortalEnvironmentConfigService portalEnvironmentConfigService;
+  @MockBean private PortalAdminUserService portalAdminUserService;
 
   @Test
   public void updateConfigRequiresSuperuser() {
@@ -39,5 +44,15 @@ public class PortalExtServiceTest {
     Assertions.assertThrows(
         IllegalArgumentException.class,
         () -> portalExtService.updateEnvironment("foo", EnvironmentName.irb, null, user));
+  }
+
+  @Test
+  public void removePortalUserRequiresPortalAuth() {
+    AdminUser operator = AdminUser.builder().superuser(false).build();
+    when(mockAuthUtilService.authUserToPortal(operator, "testPortal"))
+        .thenThrow(new PermissionDeniedException("test"));
+    Assertions.assertThrows(
+        PermissionDeniedException.class,
+        () -> portalExtService.removeUserFromPortal(UUID.randomUUID(), "testPortal", operator));
   }
 }

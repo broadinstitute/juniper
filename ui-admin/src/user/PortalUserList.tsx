@@ -15,6 +15,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import CreateUserModal from './CreateUserModal'
 import { failureNotification } from '../util/notifications'
 import { Store } from 'react-notifications-component'
+import UserAction from './UserAction'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -35,6 +36,10 @@ const PortalUserList = ({ portal }: {portal: Portal}) => {
     header: 'Last login',
     accessorKey: 'lastLogin',
     cell: info => instantToDefaultString(info.getValue() as number)
+  }, {
+    header: 'Actions',
+    accessorKey: 'actions',
+    cell: info => <UserAction row={info.row} portal={portal} onUserListChanged={handleUserListChanged}/>
   }]), [users])
 
   const table = useReactTable({
@@ -60,7 +65,7 @@ const PortalUserList = ({ portal }: {portal: Portal}) => {
     setIsLoading(false)
   }
 
-  const handleUserCreated = () => {
+  const handleUserListChanged = () => {
     // just reload everything
     loadUsers()
   }
@@ -74,7 +79,7 @@ const PortalUserList = ({ portal }: {portal: Portal}) => {
       <FontAwesomeIcon icon={faPlus}/> Create user
     </button>
     {showCreateModal && <CreateUserModal onDismiss={() => setShowCreateModal(false)} portals={[portal]}
-      userCreated={handleUserCreated}/>}
+      userCreated={handleUserListChanged}/>}
     <LoadingSpinner isLoading={isLoading}>
       {basicTableLayout(table)}
     </LoadingSpinner>
