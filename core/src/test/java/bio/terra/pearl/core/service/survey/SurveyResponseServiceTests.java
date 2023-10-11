@@ -107,7 +107,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
             Answer savedAnswer = answerService.findForQuestion(savedResponse.getId(), updatedAnswer.getQuestionStableId()).get();
             assertThat(savedAnswer.getStringValue(), equalTo(updatedAnswer.getStringValue()));
         }
-        assertThat(answerService.findAll(savedResponse.getId(), List.of("foo", "q3", "test1")), hasSize(3));
+        assertThat(answerService.findByResponseAndQuestions(savedResponse.getId(), List.of("foo", "q3", "test1")), hasSize(3));
 
         List<DataChangeRecord> changeRecords = dataChangeRecordService.findByEnrollee(savedResponse.getEnrolleeId());
         assertThat(changeRecords.size(), equalTo(1));

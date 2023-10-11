@@ -49,7 +49,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         Enrollee enrollee = sandboxEnrollees.stream().filter(sandboxEnrollee -> "HDVERS".equals(sandboxEnrollee.getShortcode()))
                 .findFirst().get();
 
-        List<Answer> socialHealthAnswers = answerService.findAll(enrollee.getId(), "hd_hd_socialHealth");
+        List<Answer> socialHealthAnswers = answerService.findByEnrolleeAndSurvey(enrollee.getId(), "hd_hd_socialHealth");
         assertThat(socialHealthAnswers, hasSize(3));
         assertThat(socialHealthAnswers, hasItem(
                 Matchers.both(hasProperty("questionStableId", equalTo("hd_hd_socialHealth_neighborhoodGetsAlong")))

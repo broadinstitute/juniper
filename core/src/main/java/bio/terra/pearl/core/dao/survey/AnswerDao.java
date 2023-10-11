@@ -28,12 +28,12 @@ public class AnswerDao extends BaseMutableJdbiDao<Answer> {
         deleteByProperty("survey_response_id", responseId);
     }
 
-    public Optional<Answer> findForQuestion(UUID surveyResponseId, String questionStableId) {
+    public Optional<Answer> findByResponseQuestion(UUID surveyResponseId, String questionStableId) {
         return findByTwoProperties("survey_response_id", surveyResponseId,
                 "question_stable_id", questionStableId);
     }
 
-    public List<Answer> findAll(UUID surveyResponseId, List<String> questionStableIds) {
+    public List<Answer> findByResponseAndQuestions(UUID surveyResponseId, List<String> questionStableIds) {
         if (questionStableIds.isEmpty()) {
             // short circuit this case because bindList errors if list is empty
             return new ArrayList<>();
@@ -49,7 +49,7 @@ public class AnswerDao extends BaseMutableJdbiDao<Answer> {
 
     }
 
-    public List<Answer> findAll(UUID enrolleeId, String surveyStableId) {
+    public List<Answer> findByEnrolleeAndSurvey(UUID enrolleeId, String surveyStableId) {
         return findAllByTwoProperties("enrollee_id", enrolleeId, "survey_stable_id", surveyStableId);
     }
 
