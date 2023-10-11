@@ -59,7 +59,7 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
     }
 
     /** finds by a surveyId and studyEnvironment, limited to active surveys */
-    public Optional<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, UUID surveyId) {
+    public Optional<StudyEnvironmentSurvey> findActiveBySurvey(UUID studyEnvId, UUID surveyId) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("""
                                 select * from %s
@@ -74,7 +74,7 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
         );
     }
 
-    public List<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, String surveyStableId) {
+    public List<StudyEnvironmentSurvey> findActiveBySurvey(UUID studyEnvId, String surveyStableId) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("""
                                 select %s from %s a

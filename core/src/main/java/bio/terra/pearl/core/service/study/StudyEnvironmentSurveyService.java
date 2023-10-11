@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.service.study;
 
 import bio.terra.pearl.core.dao.study.StudyEnvironmentSurveyDao;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.service.CrudService;
 import java.util.List;
@@ -21,7 +20,7 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
     }
 
     public Optional<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, UUID surveyId) {
-        return dao.findBySurvey(studyEnvId, surveyId);
+        return dao.findActiveBySurvey(studyEnvId, surveyId);
     }
 
     @Transactional
@@ -32,7 +31,7 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
     }
 
     public Optional<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, String stableId) {
-        var configs = dao.findBySurvey(studyEnvId, stableId);
+        var configs = dao.findActiveBySurvey(studyEnvId, stableId);
         // we don't yet have robust support for having multiple surveys with the same stableId configured for an
         // environment.  For now, just pick one
         return configs.stream().findFirst();
