@@ -1,10 +1,13 @@
 import React, { HTMLProps, useEffect, useState } from 'react'
-import { CellContext, Column, flexRender, Header, RowData, Table } from '@tanstack/react-table'
+import { Cell, CellContext, Column, flexRender, Header, RowData, Table } from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCaretDown, faCaretUp, faCheck, faColumns } from '@fortawesome/free-solid-svg-icons'
+import { faCaretDown, faCaretUp, faCheck, faColumns, faDownload } from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
 import Modal from 'react-bootstrap/Modal'
 import { Button } from '../components/forms/Button'
+import { escapeCsvValue, saveBlobAsDownload } from './downloadUtils'
+import { instantToDefaultString } from './timeUtils'
+import { isEmpty } from 'lodash'
 
 /**
  * Returns a debounced input react component
@@ -219,8 +222,8 @@ export function IndeterminateCheckbox({
 export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
   const [show, setShow] = useState(false)
   return <div className="ms-auto">
-    <button className="btn btn-secondary" onClick={() => setShow(!show)} aria-label="show or hide columns">
-      Show/hide columns <FontAwesomeIcon icon={faColumns} className="fa-lg"/>
+    <button className="btn btn-light border m-1" onClick={() => setShow(!show)} aria-label="show or hide columns">
+      <FontAwesomeIcon icon={faColumns} className="fa-lg"/> Columns
     </button>
     { show && <Modal show={show} onHide={() => setShow(false)}>
       <Modal.Header closeButton>
@@ -261,6 +264,69 @@ export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={() => setShow(false)}>Ok</Button>
+      </Modal.Footer>
+    </Modal> }
+  </div>
+}
+
+function cellToString(cellType: string, cellValue: unknown): string {
+  switch (cellType) {
+    case 'instant':
+      return escapeCsvValue(instantToDefaultString(cellValue as number))
+    case 'boolean':
+      return cellValue as boolean ? 'true' : 'false'
+    case 'string':
+      return cellValue ? escapeCsvValue(cellValue as string) : ''
+    default:
+      return ''
+  }
+}
+
+/**
+ *
+ */
+export function DownloadControl<T>({ table }: {table: Table<T>}) {
+  const [show, setShow] = useState(false)
+
+  const download = () => {
+    const headers = table.getLeafHeaders().map(header => {
+      return header.id
+    }).join(',')
+
+    const rows = table.getFilteredRowModel().rows.map(row => {
+      return row.getVisibleCells().map(cell => {
+        const cellType = cell.column.columnDef.meta?.columnType || 'string'
+        return cellToString(cellType, cell.getValue())
+      }).join(',')
+    }).join('\n')
+
+    const blob = new Blob([headers, '\n', rows], { type: 'text/plain' })
+    saveBlobAsDownload(blob, `table-data.csv`) //todo rename file
+  }
+
+  return <div className="ms-auto">
+    <button className="btn btn-light border m-1" disabled={isEmpty(table.getFilteredRowModel().rows)}
+      onClick={() => setShow(!show)} aria-label="download table data">
+      <FontAwesomeIcon icon={faDownload} className="fa-lg"/> Download
+    </button>
+    { show && <Modal show={show} onHide={() => setShow(false)}>
+      <Modal.Header closeButton>
+        <Modal.Title>
+                Download
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <div className="border-b border-black">
+                This will download <strong>{table.getFilteredRowModel().rows.length}</strong> rows
+                as a <code>.csv</code> file. Your current filters will be applied to the downloaded data.
+        </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="primary" onClick={() => {
+          download()
+          setShow(false)
+        }}>Download</Button>
+        <button className="btn btn-secondary" onClick={() => setShow(false)}>Cancel</button>
       </Modal.Footer>
     </Modal> }
   </div>

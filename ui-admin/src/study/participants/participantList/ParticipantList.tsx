@@ -14,9 +14,9 @@ import {
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
-import { basicTableLayout, ColumnVisibilityControl, IndeterminateCheckbox } from 'util/tableUtils'
+import { basicTableLayout, ColumnVisibilityControl, DownloadControl, IndeterminateCheckbox } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import AdHocEmailModal from '../AdHocEmailModal'
 import {
   ALL_FACETS,
@@ -25,7 +25,6 @@ import {
   facetValuesToString,
   KEYWORD_FACET
 } from 'api/enrolleeSearch'
-import { Button } from 'components/forms/Button'
 import { instantToDefaultString } from 'util/timeUtils'
 import { useLoadingEffect } from 'api/api-utils'
 import { FacetView, getUpdatedFacetValues } from './facets/EnrolleeSearchFacets'
@@ -76,12 +75,18 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     id: 'createdAt',
     accessorKey: 'enrollee.createdAt',
     enableColumnFilter: false,
+    meta: {
+      columnType: 'instant'
+    },
     cell: info => instantToDefaultString(info.getValue() as unknown as number)
   }, {
     id: 'lastLogin',
     header: 'Last login',
     accessorKey: 'participantUser.lastLogin',
     enableColumnFilter: false,
+    meta: {
+      columnType: 'instant'
+    },
     cell: info => instantToDefaultString(info.getValue() as unknown as number)
   }, {
     id: 'familyName',
@@ -187,22 +192,28 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
       <div className="col-12">
         <LoadingSpinner isLoading={isLoading}>
           <div>
-            <div className="d-flex align-items-center">
-              <span className="me-2">
-                {numSelected} of{' '}
-                {table.getPreFilteredRowModel().rows.length} selected ({table.getFilteredRowModel().rows.length} shown)
-              </span>
-              <span className="me-2">
-                <Button onClick={() => setShowEmailModal(allowSendEmail)}
-                  variant="link" disabled={!allowSendEmail}
-                  tooltip={allowSendEmail ? 'Send email' : 'Select at least one participant'}>
-                  Send email
-                </Button>
-              </span>
-              { showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
-                studyEnvContext={studyEnvContext}
-                onDismiss={() => setShowEmailModal(false)}/> }
-              <ColumnVisibilityControl table={table}/>
+            <div className="d-flex align-items-center justify-content-between mx-3">
+              <div className="d-flex">
+                <span className="me-2">
+                  {numSelected} of{' '}
+                  {/* eslint-disable-next-line max-len */}
+                  {table.getPreFilteredRowModel().rows.length} selected ({table.getFilteredRowModel().rows.length} shown)
+                </span>
+                { showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
+                  studyEnvContext={studyEnvContext}
+                  onDismiss={() => setShowEmailModal(false)}/> }
+              </div>
+              <div className="d-flex">
+                <button
+                  className="btn btn-light border m-1"
+                  disabled={!allowSendEmail}
+                  onClick={() => setShowEmailModal(allowSendEmail)}
+                  aria-label="download data">
+                  <FontAwesomeIcon icon={faEnvelope} className="fa-lg"/> Send email
+                </button>
+                <DownloadControl table={table}/>
+                <ColumnVisibilityControl table={table}/>
+              </div>
             </div>
           </div>
           { basicTableLayout(table, { filterable: true })}
