@@ -8,7 +8,6 @@ import { mockAdminUser } from '../test-utils/user-mocking-utils'
 
 describe('DeleteUserModal', () => {
   test('enables Remove button when user completes matching confirmation string', async () => {
-    //Arrange
     const user = userEvent.setup()
     const portal = mockPortal()
     const subjUser = mockAdminUser(false)
@@ -21,15 +20,13 @@ describe('DeleteUserModal', () => {
       onDismiss={jest.fn()}/>)
     render(RoutedComponent)
 
-    //Assert page content
+    // verify page content and
     const confirmRemoveUserInput = screen.getByText('Confirm by typing "remove user@email" below')
     const removeButton = screen.getByText('Remove user')
     expect(removeButton).toBeDisabled()
 
-    //Act
+    // verify button is enabled when user types matching string
     await user.type(confirmRemoveUserInput, 'remove user@email')
-
-    //Assert action
     expect(removeButton).toBeEnabled()
   })
 })

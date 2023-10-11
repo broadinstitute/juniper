@@ -115,14 +115,14 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /api/portals/v1/{portalShortcode}/adminUser/{userId}:
+  /api/portals/v1/{portalShortcode}/adminUser/{adminUserId}:
     delete:
       summary: Remove an admin user for portal
       tags: [ portal ]
       operationId: removePortalUser
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: userId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { name: adminUserId, in: path, required: true, schema: { type: string, format: uuid } }
       responses:
         '204':
           description: admin user removed

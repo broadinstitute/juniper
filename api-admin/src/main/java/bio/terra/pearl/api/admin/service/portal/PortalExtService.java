@@ -85,8 +85,8 @@ public class PortalExtService {
     return portalEnvironmentService.update(portalEnv);
   }
 
-  public void removeUserFromPortal(UUID userId, String portalShortcode, AdminUser operator) {
+  public void removeUserFromPortal(UUID adminUserId, String portalShortcode, AdminUser operator) {
     Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
-    portalAdminUserService.removeUserFromPortal(userId, portal);
+    portalAdminUserService.removeUserFromPortal(adminUserId, portal);
   }
 }

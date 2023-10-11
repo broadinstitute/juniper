@@ -52,9 +52,9 @@ public class PortalController implements PortalApi {
   }
 
   @Override
-  public ResponseEntity<Void> removePortalUser(String portalShortcode, UUID userId) {
+  public ResponseEntity<Void> removePortalUser(String portalShortcode, UUID adminUserId) {
     AdminUser operator = requestService.requireAdminUser(request);
-    portalExtService.removeUserFromPortal(userId, portalShortcode, operator);
+    portalExtService.removeUserFromPortal(adminUserId, portalShortcode, operator);
     return ResponseEntity.status(204).build();
   }
 }
