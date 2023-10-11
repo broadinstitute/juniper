@@ -11,15 +11,12 @@ const DeleteUserModal = ({ subjUser, portal, userDeleted, onDismiss }:
   const canRemove = usernameConfirm === removeString
 
   const doRemove = async () => {
-    try {
-      await Api.removePortalUser(subjUser, portal.shortcode)
-      Store.addNotification(successNotification(`${subjUser.username} removed`))
-      userDeleted()
-      onDismiss()
-    } catch (e) {
-      console.log('error removing user', e)
-      Store.addNotification(failureNotification('Error removing user'))
-    }
+      await doApiLoad(() => {
+         Api.removePortalUser(subjUser, portal.shortcode)
+         Store.addNotification(successNotification(`${subjUser.username} removed`))
+         userDeleted()
+         onDismiss()
+    }, {customErrorMsg: 'Error removing user'} )
   }
 
   return <div className="p4">
