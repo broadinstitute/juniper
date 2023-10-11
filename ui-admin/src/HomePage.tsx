@@ -1,12 +1,17 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { Link } from 'react-router-dom'
 import { studyParticipantsPath } from './portal/PortalRouter'
 import { useNavContext } from './navbar/NavContextProvider'
 import { getImageUrl } from './api/api'
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faPlus} from "@fortawesome/free-solid-svg-icons";
+import {Button} from "./components/forms/Button";
+import CreateNewStudyModal from "./study/CreateNewStudyModal";
 
 /** Shows a user the list of portals available to them */
 function HomePage() {
   const { portalList } = useNavContext()
+  const [showNewStudyModal, setShowNewStudyModal] = useState(false)
 
   return <div className="container">
     <h1 className="h2">Juniper Home</h1>
@@ -28,7 +33,11 @@ function HomePage() {
           })
         )}
       </ul>
+      <Button variant='secondary' onClick={() => setShowNewStudyModal(true)}>
+        <FontAwesomeIcon icon={faPlus}/> Add a study
+      </Button>
     </div>
+    { showNewStudyModal && <CreateNewStudyModal onDismiss={() => setShowNewStudyModal(false)}/> }
   </div>
 }
 
