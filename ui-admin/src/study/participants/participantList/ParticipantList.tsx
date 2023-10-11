@@ -208,7 +208,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
                   className="btn btn-light border m-1"
                   disabled={!allowSendEmail}
                   onClick={() => setShowEmailModal(allowSendEmail)}
-                  aria-label="download data">
+                  aria-label="send email">
                   <FontAwesomeIcon icon={faEnvelope} className="fa-lg"/> Send email
                 </button>
                 <DownloadControl table={table} fileName={`${portal.shortcode}-ParticipantList-${currentIsoDate()}`}/>

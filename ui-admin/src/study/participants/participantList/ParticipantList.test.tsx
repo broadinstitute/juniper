@@ -70,8 +70,34 @@ test('send email is toggled depending on participants selected', async () => {
   await waitFor(() => {
     expect(screen.getByText('JOSALK')).toBeInTheDocument()
   })
-  const participantLink = screen.getByText('Send email')
-  expect(participantLink).toHaveAttribute('aria-disabled', 'true')
+  const sendEmailButton = screen.getByText('Send email')
+  expect(sendEmailButton).toBeDisabled()
+})
+
+test('download button is toggled depending on if there are participants or not', async () => {
+  mockSearchApi(1)
+  const studyEnvContext = mockStudyEnvContext()
+  const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
+  render(RoutedComponent)
+  await waitFor(() => {
+    expect(screen.getByText('Showing 0 of 0 rows')).toBeInTheDocument()
+  })
+  const downloadButton = screen.getByLabelText('Download table data')
+  expect(downloadButton).toBeDisabled()
+})
+
+test('clicking the download button prompts the user', async () => {
+  mockSearchApi(43)
+  const studyEnvContext = mockStudyEnvContext()
+  const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
+  render(RoutedComponent)
+  await waitFor(() => {
+    expect(screen.getByText('JOSALK')).toBeInTheDocument()
+  })
+  const sendEmailButton = screen.getByText('Download')
+  expect(sendEmailButton).toBeEnabled()
+  await act(() => userEvent.click(sendEmailButton))
+  expect(screen.getByText('This will download 43 rows')).toBeInTheDocument()
 })
 
 
