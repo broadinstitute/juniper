@@ -9,6 +9,7 @@ import { EnrolleeParams } from '../enrolleeView/useRoutedEnrollee'
 import { instantToDefaultString } from 'util/timeUtils'
 import DocumentTitle from 'util/DocumentTitle'
 import _uniq from 'lodash/uniq'
+import pluralize from 'pluralize'
 
 /** Show responses for a survey based on url param */
 export default function EnrolleeSurveyView({ enrollee, responseMap }:
@@ -43,7 +44,7 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, responses }:
   }
 
   const answerVersions = _uniq(lastResponse.answers.map(ans => ans.surveyVersion))
-  const versionString = `version${answerVersions.length > 1 ? 's' : ''} ${answerVersions.join(', ')}`
+  const versionString = `${pluralize('version', answerVersions.length)} ${answerVersions.join(', ')}`
   return <div>
     <DocumentTitle title={`${enrollee.shortcode} - ${configSurvey.survey.name}`}/>
     <h6>{configSurvey.survey.name}</h6>
