@@ -55,6 +55,6 @@ public class PortalController implements PortalApi {
   public ResponseEntity<Void> removePortalUser(String portalShortcode, UUID adminUserId) {
     AdminUser operator = requestService.requireAdminUser(request);
     portalExtService.removeUserFromPortal(adminUserId, portalShortcode, operator);
-    return ResponseEntity.status(204).build();
+    return ResponseEntity.noContent().build();
   }
 }
