@@ -86,17 +86,18 @@ test('download button is toggled depending on if there are participants or not',
   expect(downloadButton).toBeDisabled()
 })
 
-test('clicking the download button prompts the user', async () => {
+test('clicking the download button prompts the user with the correct number of rows', async () => {
   mockSearchApi(43)
   const studyEnvContext = mockStudyEnvContext()
   const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
   render(RoutedComponent)
-  await waitFor(() => {
-    expect(screen.getByText('JOSALK')).toBeInTheDocument()
-  })
-  const sendEmailButton = screen.getByText('Download')
-  expect(sendEmailButton).toBeEnabled()
-  await act(() => userEvent.click(sendEmailButton))
+
+  //Wait for results to be rendered
+  await screen.findAllByText('JOSALK')
+
+  const downloadButton = screen.getByText('Download')
+  expect(downloadButton).toBeEnabled()
+  await userEvent.click(downloadButton)
   expect(screen.getByText('This will download 43 rows')).toBeInTheDocument()
 })
 
