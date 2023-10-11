@@ -58,7 +58,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
         checkParticipantNotes(enrollees);
         checkAdminTasks(sandboxEnvironmentId);
         checkOurhealthSiteContent(portal.getId());
-        checkExportContent(portal.getId(), sandboxEnvironmentId);
+        checkExportContent(sandboxEnvironmentId);
         checkDataDictionary(portal.getId(), sandboxEnvironmentId);
         checkWithdrawn();
 
@@ -111,10 +111,10 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
         assertThat(taskInfo.participantNotes(), hasSize(3));
     }
 
-    private void checkExportContent(UUID portalId, UUID sandboxEnvironmentId) throws Exception {
+    private void checkExportContent(UUID sandboxEnvironmentId) throws Exception {
         ExportOptions options = new ExportOptions(false, false, true, ExportFileFormat.TSV, null);
-        List<ModuleExportInfo> moduleInfos = enrolleeExportService.generateModuleInfos(options, portalId, sandboxEnvironmentId);
-        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(portalId, sandboxEnvironmentId, moduleInfos, options.limit());
+        List<ModuleExportInfo> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
+        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, options.limit());
 
         assertThat(exportData, hasSize(5));
         Map<String, String> jsalkMap = exportData.stream().filter(map -> "OHSALK".equals(map.get("enrollee.shortcode")))

@@ -172,7 +172,7 @@ public class DataRepoExportService {
 
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            enrolleeExportService.export(exportOptions, portalStudy.getPortalId(), studyEnvironmentId, outputStream);
+            enrolleeExportService.export(exportOptions, studyEnvironmentId, outputStream);
             outputStream.close();
 
             String exportData = outputStream.toString();
@@ -217,8 +217,8 @@ public class DataRepoExportService {
         Set<TdrColumn> tdrColumns = new LinkedHashSet<>();
 
         try {
-            List<ModuleExportInfo> moduleExportInfos = enrolleeExportService.generateModuleInfos(exportOptions, portalStudy.getPortalId(), studyEnvironmentId);
-            List<Map<String, String>> enrolleeMaps = enrolleeExportService.generateExportMaps(portalStudy.getPortalId(), studyEnvironmentId,
+            List<ModuleExportInfo> moduleExportInfos = enrolleeExportService.generateModuleInfos(exportOptions, studyEnvironmentId);
+            List<Map<String, String>> enrolleeMaps = enrolleeExportService.generateExportMaps(studyEnvironmentId,
                     moduleExportInfos, exportOptions.limit());
 
             TsvExporter tsvExporter = new TsvExporter(moduleExportInfos, enrolleeMaps);

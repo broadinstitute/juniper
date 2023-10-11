@@ -36,12 +36,12 @@ public class EnrolleeExportExtService {
       EnvironmentName environmentName,
       OutputStream os,
       AdminUser user) {
-    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
+    authUtilService.authUserToPortal(user, portalShortcode);
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
     StudyEnvironment studyEnv =
         studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
     try {
-      enrolleeExportService.export(options, portal.getId(), studyEnv.getId(), os);
+      enrolleeExportService.export(options, studyEnv.getId(), os);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
