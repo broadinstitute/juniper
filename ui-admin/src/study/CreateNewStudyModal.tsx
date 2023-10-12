@@ -10,6 +10,7 @@ import {doApiLoad} from "../api/api-utils";
 import {successNotification} from "../util/notifications";
 import {Store} from "react-notifications-component";
 import InfoPopup from "../components/forms/InfoPopup";
+import {Button} from "../components/forms/Button";
 
 export default function CreateNewStudyModal({onDismiss}: {onDismiss: () => void}) {
     const { portalList, reload } = useNavContext()
@@ -47,20 +48,19 @@ export default function CreateNewStudyModal({onDismiss}: {onDismiss: () => void}
                 onChange={e => setStudyName(e.target.value)}/>
                 <label className="form-label mt-3" htmlFor="studyName">
                     Study shortcode
-                    <InfoPopup content={`Unique identifier that will be used in urls and data exports to 
-                    indicate this study.  Must be all lowercase with no spaces`}/>
                 </label>
+                <InfoPopup content={`Unique identifier that will be used in urls and data exports to 
+                    indicate this study.  Must be all lowercase with no spaces`}/>
                 <input type="text" size={20} id="studyShortcode" className="form-control" value={studyShortcode}
                 onChange={e => setStudyShortcode(e.target.value.trim().toLowerCase())}/>
             </form>
         </Modal.Body>
         <Modal.Footer>
             <LoadingSpinner isLoading={isLoading}>
-                <button
-                    className="btn btn-primary"
+                <Button variant="primary"
                     disabled={!studyName || !studyShortcode}
                     onClick={createStudy}
-                >Create</button>
+                >Create</Button>
                 <button className="btn btn-secondary" onClick={onDismiss}>Cancel</button>
             </LoadingSpinner>
         </Modal.Footer>

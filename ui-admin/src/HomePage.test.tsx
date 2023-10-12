@@ -25,9 +25,9 @@ describe('HomePage', () => {
       setBreadCrumbs: jest.fn(),
       portalList,
       setPortalList: jest.fn()
-    }
+    };
 
-    ;(useNavContext as jest.Mock).mockReturnValue(mockContextValue)
+    (useNavContext as jest.Mock).mockReturnValue(mockContextValue)
 
     const { RoutedComponent } = setupRouterTest(<HomePage/>)
     render(RoutedComponent)
