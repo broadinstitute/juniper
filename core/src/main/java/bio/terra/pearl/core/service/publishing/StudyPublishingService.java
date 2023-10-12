@@ -113,7 +113,7 @@ public class StudyPublishingService {
             PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), config, surveyService);
         }
         for(StudyEnvironmentSurvey config : listChange.removedItems()) {
-            studyEnvironmentSurveyService.delete(config.getId(), CascadeProperty.EMPTY_SET);
+            studyEnvironmentSurveyService.deactivate(config.getId());
             destEnv.getConfiguredSurveys().remove(config);
         }
         for(VersionedConfigChange change : listChange.changedItems()) {

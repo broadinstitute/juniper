@@ -141,6 +141,9 @@ databaseChangeLog:
       file: changesets/2023_08_25_admin_task.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2023_10_06_survey_config_active.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2023_10_03_sendgrid_event.yaml
       relativeToChangelogFile: true
 

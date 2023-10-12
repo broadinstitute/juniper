@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "survey_config_active"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: study_environment_survey
+            columns:
+              - column: { name: active, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }

@@ -18,6 +18,8 @@ import java.util.UUID;
 public class StudyEnvironmentSurvey extends BaseEntity implements VersionedEntityConfig {
     private UUID studyEnvironmentId;
     private UUID surveyId;
+    @Builder.Default
+    private boolean active = true; // whether this represents a current configuration
     private Survey survey;
     @Builder.Default
     private boolean recur = false;

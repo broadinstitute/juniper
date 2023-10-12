@@ -27,8 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 public class EnrollmentServiceTests extends BaseSpringBootTest {
-
-
     @Test
     @Transactional
     public void testAnonymousPreEnroll() throws JsonProcessingException {

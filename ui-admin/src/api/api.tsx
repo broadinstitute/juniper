@@ -941,6 +941,15 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async removePortalUser(adminUser: AdminUser, portalShortcode: string): Promise<Response> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/adminUser/${adminUser.id}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
+  },
+
   async updatePortalEnv(portalShortcode: string, envName: string, update: PortalEnvironment) {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}`
     const response = await fetch(url, {
