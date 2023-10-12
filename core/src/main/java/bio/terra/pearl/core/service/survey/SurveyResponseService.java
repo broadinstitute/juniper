@@ -99,7 +99,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
             }
         }
         StudyEnvironmentSurvey configSurvey = studyEnvironmentSurveyService
-                .findBySurvey(studyEnvId, stableId).get();
+                .findActiveBySurvey(studyEnvId, stableId).get();
         configSurvey.setSurvey(form);
         return new SurveyWithResponse(
                 configSurvey, lastResponse

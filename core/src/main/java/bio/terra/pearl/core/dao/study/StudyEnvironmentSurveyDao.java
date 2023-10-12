@@ -29,8 +29,13 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
     }
 
     public List<StudyEnvironmentSurvey> findAllByStudyEnvironmentId(UUID studyEnvId) {
-        return findAllByPropertySorted("study_environment_id", studyEnvId,
-                "survey_order", "ASC");
+        return findAllByStudyEnvironmentId(studyEnvId, true);
+    }
+
+    public List<StudyEnvironmentSurvey> findAllByStudyEnvironmentId(UUID studyEnvId, boolean active) {
+        return findAllByTwoPropertiesSorted("study_environment_id", studyEnvId,
+                            "active", active,
+                             "survey_order", "ASC");
     }
 
     /** gets all the study environment surveys and attaches the relevant survey objects in a batch */
@@ -53,18 +58,31 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
         deleteByProperty("survey_id", surveyId);
     }
 
-    /** finds by a surveyId and studyEnvironment */
-    public Optional<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, UUID surveyId) {
-        return findByTwoProperties("study_environment_id",studyEnvId,
-                "survey_id", surveyId);
+    /** finds by a surveyId and studyEnvironment, limited to active surveys */
+    public Optional<StudyEnvironmentSurvey> findActiveBySurvey(UUID studyEnvId, UUID surveyId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                                select * from %s
+                                    where study_environment_id = :studyEnvId
+                                    and survey_id = :surveyId
+                                    and a.active = true;
+                                """.formatted(prefixedGetQueryColumns("a"), tableName))
+                        .bind("surveyId", surveyId)
+                        .bind("studyEnvId", studyEnvId)
+                        .mapTo(clazz)
+                        .findOne()
+        );
     }
 
-    public List<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, String surveyStableId) {
+    public List<StudyEnvironmentSurvey> findActiveBySurvey(UUID studyEnvId, String surveyStableId) {
         return jdbi.withHandle(handle ->
-                handle.createQuery("select " + prefixedGetQueryColumns("a") + " from " + tableName +
-                                " a join survey on survey.id = a.survey_id" +
-                                " where survey.stable_id = :stableId " +
-                                " and a.study_environment_id = :studyEnvId;")
+                handle.createQuery("""
+                                select %s from %s a
+                                    join survey on survey.id = a.survey_id
+                                    where survey.stable_id = :stableId
+                                    and a.study_environment_id = :studyEnvId
+                                    and a.active = true;
+                                """.formatted(prefixedGetQueryColumns("a"), tableName))
                         .bind("stableId", surveyStableId)
                         .bind("studyEnvId", studyEnvId)
                         .mapTo(clazz)

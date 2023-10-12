@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentSurvey, StudyEnvironmentSurveyDao> {
@@ -18,12 +19,19 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
         return dao.findAllByStudyEnvIdWithSurvey(studyEnvId);
     }
 
-    public Optional<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, UUID surveyId) {
-        return dao.findBySurvey(studyEnvId, surveyId);
+    public Optional<StudyEnvironmentSurvey> findActiveBySurvey(UUID studyEnvId, UUID surveyId) {
+        return dao.findActiveBySurvey(studyEnvId, surveyId);
     }
 
-    public Optional<StudyEnvironmentSurvey> findBySurvey(UUID studyEnvId, String stableId) {
-        var configs = dao.findBySurvey(studyEnvId, stableId);
+    @Transactional
+    public StudyEnvironmentSurvey deactivate(UUID id) {
+        StudyEnvironmentSurvey ses = dao.find(id).get();
+        ses.setActive(false);
+        return dao.update(ses);
+    }
+
+    public Optional<StudyEnvironmentSurvey> findActiveBySurvey(UUID studyEnvId, String stableId) {
+        var configs = dao.findActiveBySurvey(studyEnvId, stableId);
         // we don't yet have robust support for having multiple surveys with the same stableId configured for an
         // environment.  For now, just pick one
         return configs.stream().findFirst();
