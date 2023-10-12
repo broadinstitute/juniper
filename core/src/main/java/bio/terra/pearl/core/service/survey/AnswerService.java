@@ -15,15 +15,19 @@ public class AnswerService extends CrudService<Answer, AnswerDao> {
     }
 
     public Optional<Answer> findForQuestion(UUID surveyResponseId, String questionStableId) {
-        return dao.findForQuestion(surveyResponseId, questionStableId);
+        return dao.findByResponseQuestion(surveyResponseId, questionStableId);
     }
 
     public List<Answer> findByResponse(UUID surveyResponseId) {
         return dao.findByResponse(surveyResponseId);
     }
 
-    public List<Answer> findAll(UUID surveyResponseId, List<String> questionStableIds) {
-        return dao.findAll(surveyResponseId, questionStableIds);
+    public List<Answer> findByResponseAndQuestions(UUID surveyResponseId, List<String> questionStableIds) {
+        return dao.findByResponseAndQuestions(surveyResponseId, questionStableIds);
+    }
+
+    public List<Answer> findByEnrolleeAndSurvey(UUID enrolleeID, String surveyStableId) {
+        return dao.findByEnrolleeAndSurvey(enrolleeID, surveyStableId);
     }
 
     public void deleteByResponseId(UUID responseId) {

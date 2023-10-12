@@ -1,16 +1,18 @@
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import {
+  Answer,
   AdminTask,
   ConsentForm,
   DatasetDetails,
   Enrollee,
+  EnrolleeSearchResult,
   KitRequest,
   KitType,
   NotificationConfig,
   ParticipantNote,
   Portal,
   PortalStudy,
-  StudyEnvironmentConsent
+  StudyEnvironmentConsent, SurveyResponse
 } from 'api/api'
 import { Survey } from '@juniper/ui-core/build/types/forms'
 import { ParticipantTask } from '@juniper/ui-core/build/types/task'
@@ -262,6 +264,19 @@ export const mockEnrollee: () => Enrollee = () => {
   }
 }
 
+/** returns a mock enrollee search result */
+export const mockEnrolleeSearchResult: () => EnrolleeSearchResult = () => {
+  return {
+    enrollee: mockEnrollee(),
+    profile: mockEnrollee().profile,
+    mostRecentKitStatus: null,
+    participantUser: {
+      lastLogin: 50405345,
+      username: `${randomString(10)}@test.com`
+    }
+  }
+}
+
 /** helper function to generate a ParticipantTask object for a survey and enrollee */
 export const taskForForm = (form: Survey | ConsentForm, enrolleeId: string,
   isConsent: boolean): ParticipantTask => {
@@ -323,6 +338,27 @@ export const mockEmailTemplate = (): EmailTemplate => {
     stableId: 'mock1',
     version: 1,
     body: 'Mock email message'
+  }
+}
+
+/** mock response */
+export const mockSurveyResponse = (): SurveyResponse => {
+  return {
+    id: 'responseId1',
+    surveyId: 'survey1',
+    resumeData: '{}',
+    enrolleeId: 'enrollee1',
+    complete: false,
+    answers: []
+  }
+}
+
+/** mock survey answer */
+export const mockAnswer = (): Answer => {
+  return {
+    surveyVersion: 1,
+    stringValue: 'foo',
+    questionStableId: 'question1'
   }
 }
 
