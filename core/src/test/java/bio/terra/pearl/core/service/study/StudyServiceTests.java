@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class StudyServiceTests extends BaseSpringBootTest {
@@ -46,7 +47,7 @@ public class StudyServiceTests extends BaseSpringBootTest {
         StudyEnvironment studyEnv = studyEnvFactory.builderWithDependencies("testCreateStudyCascade")
                 .studyEnvironmentConfig(StudyEnvironmentConfig.builder().password(randPassword).build())
                 .build();
-        Set<StudyEnvironment> studyEnvs = new HashSet<>(Arrays.asList(studyEnv));
+        List<StudyEnvironment> studyEnvs = List.of(studyEnv);
         Study study = studyFactory.builder("testCreateStudy")
                 .studyEnvironments(studyEnvs)
                 .build();
@@ -54,7 +55,7 @@ public class StudyServiceTests extends BaseSpringBootTest {
                 new CascadeTree(StudyEnvironmentService.AllowedCascades.ENVIRONMENT_CONFIG));
         Study savedStudy = studyService.create(study);
         Assertions.assertNotNull(savedStudy.getId());
-        Set<StudyEnvironment> savedEnvs = studyEnvironmentService.findByStudy(savedStudy.getId());
+        List<StudyEnvironment> savedEnvs = studyEnvironmentService.findByStudy(savedStudy.getId());
         Assertions.assertEquals(1, savedEnvs.size());
         Assertions.assertEquals(studyEnvs.stream().findFirst().get().getEnvironmentName(),
                 savedEnvs.stream().findFirst().get().getEnvironmentName());

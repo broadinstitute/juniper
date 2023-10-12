@@ -1,4 +1,4 @@
- import React from 'react'
+import React from 'react'
 import { mockConfiguredSurvey, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import  { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen } from '@testing-library/react'

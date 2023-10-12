@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
+import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.kit.StudyKitTypeService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
@@ -46,6 +47,9 @@ public class StudyExtService {
 
   @Transactional
   public Study create(String portalShortcode, StudyCreationDto study, AdminUser operator) {
+    if (!operator.isSuperuser()) {
+      throw new PermissionDeniedException("You do not have permission to create studies");
+    }
     Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
     List<StudyEnvironment> studyEnvironments =
         Arrays.stream(EnvironmentName.values())

@@ -9,7 +9,7 @@ import {
   PortalEnvironment,
   PortalEnvironmentConfig,
   SiteContent,
-    Study,
+  Study,
   StudyEnvironmentConsent,
   StudyEnvironmentSurvey,
   SurveyResponse,

@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Portal } from '@juniper/ui-core'
 import { emptyContextAlertFunction } from '../util/contextUtils'
 import Api from '../api/api'
 import { studyParticipantsPath } from '../portal/PortalRouter'
 import { useNavigate } from 'react-router-dom'
 import LoadingSpinner from '../util/LoadingSpinner'
-import {doApiLoad, useLoadingEffect} from "../api/api-utils";
+import { useLoadingEffect } from '../api/api-utils'
 
 export type NavContextT = {
   breadCrumbs: React.ReactNode[],

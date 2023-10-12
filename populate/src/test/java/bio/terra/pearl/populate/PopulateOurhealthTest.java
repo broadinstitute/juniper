@@ -46,7 +46,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
         Assertions.assertEquals("ourhealth", portal.getShortcode());
 
         Study mainStudy = portal.getPortalStudies().stream().findFirst().get().getStudy();
-        Set<StudyEnvironment> studyEnvs = studyEnvironmentService.findByStudy(mainStudy.getId());
+        List<StudyEnvironment> studyEnvs = studyEnvironmentService.findByStudy(mainStudy.getId());
         Assertions.assertEquals(3, studyEnvs.size());
         UUID sandboxEnvironmentId = studyEnvs.stream().filter(
                         sEnv -> sEnv.getEnvironmentName().equals(EnvironmentName.sandbox))

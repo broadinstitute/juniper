@@ -13,8 +13,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class PortalEnvironmentChangeRecord extends BaseEntity {
     private UUID adminUserId;
-    private UUID portalId;
-    private UUID portalEnvironmentId;
     // json blob stored as string for convenience
     private String portalEnvironmentChange;
 }
