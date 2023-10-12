@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -37,9 +38,9 @@ public class StubPepperDSMClient implements PepperDSMClient {
                 {
                   "kits":[{
                       "error":false,
-                      "juniperKitId":"%s",
-                      "dsmShippingLabel":"GLMBJIYSQA0XHYV",
-                      "participantId":"%2$s",
+                      "juniperKitId":"%1$s",
+                      "dsmShippingLabel":"%2$s",
+                      "participantId":"%3$s",
                       "labelByEmail":"",
                       "scanByEmail":"",
                       "deactivationByEmail":"",
@@ -51,7 +52,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
                       "collaboratorSampleId":"PN_%2$s_SALIVA_1"
                       }],
                   "isError":false}
-                """.formatted(UUID.randomUUID(), enrollee.getShortcode());
+                """.formatted(UUID.randomUUID(), RandomStringUtils.randomAlphabetic(15).toUpperCase(), enrollee.getShortcode());
         return fakeResponse;
     }
 
