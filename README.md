@@ -97,9 +97,8 @@ From the command line:
   ```
   npm install
   npm -w ui-core run build
-  REACT_APP_B2C_TENANT_NAME=ddpdevb2c REACT_APP_B2C_CLIENT_ID=$(vault read -field value secret/dsp/ddp/b2c/dev/application_id) npm -w ui-admin start
+  HTTPS=true npm -w ui-admin start
   ```
-(note that you can just run `npm -w ui-admin start` if you don't need to test B2C login functionality)
 Then go to `localhost:3000` 
 
 #### Participant tool
