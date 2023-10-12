@@ -296,7 +296,6 @@ export function DownloadControl<T>({ table, fileName }: {table: Table<T>, fileNa
     const rows = table.getFilteredRowModel().rows.map(row => {
       return row.getVisibleCells().map(cell => {
         const cellType = cell.column.columnDef.meta?.columnType || 'string'
-        console.log(cell.getContext().renderValue())
         return cellToCsvString(cellType, cell.getValue())
       }).join(',')
     }).join('\n')

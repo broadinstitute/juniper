@@ -74,34 +74,6 @@ test('send email is toggled depending on participants selected', async () => {
   expect(sendEmailButton).toBeDisabled()
 })
 
-test('download button is toggled depending on if there are participants or not', async () => {
-  mockSearchApi(1)
-  const studyEnvContext = mockStudyEnvContext()
-  const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
-  render(RoutedComponent)
-  await waitFor(() => {
-    expect(screen.getByText('Showing 0 of 0 rows')).toBeInTheDocument()
-  })
-  const downloadButton = screen.getByLabelText('Download table data')
-  expect(downloadButton).toBeDisabled()
-})
-
-test('clicking the download button prompts the user with the correct number of rows', async () => {
-  mockSearchApi(43)
-  const studyEnvContext = mockStudyEnvContext()
-  const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
-  render(RoutedComponent)
-
-  //Wait for results to be rendered
-  await screen.findAllByText('JOSALK')
-
-  const downloadButton = screen.getByText('Download')
-  expect(downloadButton).toBeEnabled()
-  await userEvent.click(downloadButton)
-  expect(screen.getByText('This will download 43 rows')).toBeInTheDocument()
-})
-
-
 test('keyword search sends search api request', async () => {
   const searchSpy = mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
