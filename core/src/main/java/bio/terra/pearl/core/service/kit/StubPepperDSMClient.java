@@ -33,19 +33,31 @@ public class StubPepperDSMClient implements PepperDSMClient {
     @Override
     public String sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
         log.info("STUB sending kit request");
-        var statusBuilder = PepperKitStatus.builder()
-                .juniperKitId(kitRequest.getId().toString())
-                .currentStatus("CREATED");
-        try {
-            return objectMapper.writeValueAsString(statusBuilder.build());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        String fakeResponse = """
+                {
+                  "kits":[{
+                      "error":false,
+                      "juniperKitId":"%s",
+                      "dsmShippingLabel":"GLMBJIYSQA0XHYV",
+                      "participantId":"%2$s",
+                      "labelByEmail":"",
+                      "scanByEmail":"",
+                      "deactivationByEmail":"",
+                      "trackingScanBy":"",
+                      "errorMessage":"",
+                      "discardBy":"",
+                      "currentStatus":"Kit Without Label",
+                      "collaboratorParticipantId":"PN_%2$s",
+                      "collaboratorSampleId":"PN_%2$s_SALIVA_1"
+                      }],
+                  "isError":false}
+                """.formatted(UUID.randomUUID(), enrollee.getShortcode());
+        return fakeResponse;
     }
 
     @Override
     public PepperKitStatus fetchKitStatus(UUID kitRequestId) {
-        log.info("STUB fethcing kit status");
+        log.info("STUB fetching kit status");
         return PepperKitStatus.builder()
                 .juniperKitId(kitRequestId.toString())
                 .currentStatus("SENT")
