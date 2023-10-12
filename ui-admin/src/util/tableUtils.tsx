@@ -320,9 +320,8 @@ export function DownloadControl<T>({ table, fileName }: {table: Table<T>, fileNa
       </Modal.Header>
       <Modal.Body>
         <div className="border-b border-black">
-                This will download <strong>{table.getFilteredRowModel().rows.length}</strong> rows
-                to <code>{fileName}.csv</code>. Your current row and column filters will be applied to the
-                downloaded data.
+                Download <strong>{table.getFilteredRowModel().rows.length}</strong> rows
+                to <code>{fileName}.csv</code>. The current data filters and shown columns will be applied.
         </div>
       </Modal.Body>
       <Modal.Footer>
