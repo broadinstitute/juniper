@@ -4,8 +4,8 @@ import { studyParticipantsPath } from './portal/PortalRouter'
 import { useNavContext } from './navbar/NavContextProvider'
 import { getImageUrl } from './api/api'
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlus} from "@fortawesome/free-solid-svg-icons";
-import {Button} from "./components/forms/Button";
+import {faPlus, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {Button, IconButton} from "./components/forms/Button";
 import CreateNewStudyModal from "./study/CreateNewStudyModal";
 
 /** Shows a user the list of portals available to them */
@@ -22,7 +22,7 @@ function HomePage() {
           portal.portalStudies.sort((a, b) => a.study.name.localeCompare(b.study.name)).map(portalStudy => {
             const study = portalStudy.study
             return <li key={`${portal.shortcode}-${study.shortcode}`}
-              className="list-group-item my-1 border border-secondary-subtle rounded ">
+              className="list-group-item my-1 border border-secondary-subtle rounded d-flex justify-content-around ">
               <Link to={studyParticipantsPath(portal.shortcode, study.shortcode, 'live')}>
                 <img
                   src={getImageUrl(portal.shortcode, 'favicon.ico', 1)}

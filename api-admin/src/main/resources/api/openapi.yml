@@ -356,7 +356,22 @@ paths:
           content: { application/json: { schema: { schema: { type: object } } } }
         '500':
           $ref: '#/components/responses/ServerError'
-
+  /api/portals/v1/{portalShortcode}/studies:
+    post:
+      summary: creates a new study for the given portal
+      tags: [ study ]
+      operationId: create
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { schema: { type: object } } } }
+      responses:
+        '200':
+          description: new study object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/kitTypes:
     get:
       summary: Gets the kit types for a study
