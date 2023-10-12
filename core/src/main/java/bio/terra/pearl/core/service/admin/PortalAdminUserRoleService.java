@@ -83,4 +83,8 @@ public class PortalAdminUserRoleService extends ImmutableEntityService<PortalAdm
         });
         return portalAdminUserRoles;
     }
+
+    public void deleteByPortalAdminUserId(UUID portalAdminUserId) {
+        dao.deleteByPortalAdminUserId(portalAdminUserId);
+    }
 }
