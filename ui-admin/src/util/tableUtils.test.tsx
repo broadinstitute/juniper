@@ -12,7 +12,7 @@ import {
 import { basicTableLayout, checkboxColumnCell, ColumnVisibilityControl, DownloadControl } from './tableUtils'
 import userEvent from '@testing-library/user-event'
 
-const DEFAULT_INITIAL_DATA = [{ consented: true, name: 'Fred' }, { consented: false, name: 'James' }]
+const SAMPLE_INITIAL_DATA = [{ consented: true, name: 'Fred' }, { consented: false, name: 'James' }]
 
 /** simple table with filters, a download control, and a column control */
 const TestTableComponent = ({ initialValue, initialData }: {
@@ -57,20 +57,20 @@ const TestTableComponent = ({ initialValue, initialData }: {
 }
 
 test('renders rows with default filters', async () => {
-  render(<TestTableComponent initialValue={[{ id: 'consented', value: true }]} initialData={DEFAULT_INITIAL_DATA}/>)
+  render(<TestTableComponent initialValue={[{ id: 'consented', value: true }]} initialData={SAMPLE_INITIAL_DATA}/>)
   expect(screen.queryByText('James')).not.toBeInTheDocument()
   expect(screen.getByText('Fred')).toBeInTheDocument()
 })
 
 test('renders with no default filters', async () => {
-  render(<TestTableComponent initialValue={[]} initialData={DEFAULT_INITIAL_DATA}/>)
+  render(<TestTableComponent initialValue={[]} initialData={SAMPLE_INITIAL_DATA}/>)
   expect(screen.getByText('Fred')).toBeInTheDocument()
   expect(screen.getByText('James')).toBeInTheDocument()
 })
 
 
 test('show/hide column controls work', async () => {
-  render(<TestTableComponent initialValue={[]} initialData={DEFAULT_INITIAL_DATA}/>)
+  render(<TestTableComponent initialValue={[]} initialData={SAMPLE_INITIAL_DATA}/>)
   expect(screen.getByText('Columns')).toBeInTheDocument()
   expect(screen.getByText('Consented')).toBeInTheDocument()
   await userEvent.click(screen.getByText('Columns'))
@@ -82,7 +82,7 @@ test('show/hide column controls work', async () => {
 })
 
 test('download button is enabled if there are rows in the table', async () => {
-  render(<TestTableComponent initialValue={[]} initialData={DEFAULT_INITIAL_DATA}/>)
+  render(<TestTableComponent initialValue={[]} initialData={SAMPLE_INITIAL_DATA}/>)
   const downloadButton = screen.getByText('Download')
   expect(downloadButton).toBeEnabled()
 })
@@ -95,7 +95,7 @@ test('download button is disabled if there aren\'t any rows in the table', async
 
 test('download data modal should specify the number of rows to be downloaded', async () => {
   //Arrange
-  render(<TestTableComponent initialValue={[]} initialData={DEFAULT_INITIAL_DATA}/>)
+  render(<TestTableComponent initialValue={[]} initialData={SAMPLE_INITIAL_DATA}/>)
   const downloadButton = screen.getByText('Download')
 
   //Act
