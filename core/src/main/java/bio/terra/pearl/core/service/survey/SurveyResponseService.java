@@ -101,7 +101,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
             }
         }
         StudyEnvironmentSurvey configSurvey = studyEnvironmentSurveyService
-                .findBySurvey(studyEnvId, stableId).get();
+                .findActiveBySurvey(studyEnvId, stableId).get();
         configSurvey.setSurvey(form);
         return new SurveyWithResponse(
                 configSurvey, lastResponse
@@ -186,7 +186,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         // note that we do not use any answer ids returned by the client -- we'd have to run a query on them anyway
         // to confirm they were in fact associated with this user & response.  So it's easier to just ignore user-supplied ids and
         // use the responseId (which we have already validated) and questionStableIds to get existing answers
-        List<Answer> existingAnswers = answerService.findAll(response.getId(), updatedStableIds);
+        List<Answer> existingAnswers = answerService.findByResponseAndQuestions(response.getId(), updatedStableIds);
 
         // put the answers into a map by their questionStableId so we can quickly match them to the submitted answers
         Map<String, Answer> existingAnswerMap = new HashMap<>();

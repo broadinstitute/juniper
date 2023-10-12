@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
 import java.util.Set;
 import java.util.UUID;
 
@@ -54,10 +55,11 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         Enrollee enrollee = sandboxEnrollees.stream().filter(sandboxEnrollee -> "HDVERS".equals(sandboxEnrollee.getShortcode()))
                 .findFirst().get();
 
-        List<Answer> socialHealthAnswers = answerService.findAll(enrollee.getId(), "hd_hd_socialHealth");
+        List<Answer> socialHealthAnswers = answerService.findByEnrolleeAndSurvey(enrollee.getId(), "hd_hd_socialHealth");
         assertThat(socialHealthAnswers, hasSize(4));
         assertThat(socialHealthAnswers, hasItem(
                 Matchers.both(hasProperty("questionStableId", equalTo("hd_hd_socialHealth_neighborhoodIsWalkable")))
+
                         .and(hasProperty("surveyVersion", equalTo(1))))
         );
         assertThat(socialHealthAnswers, hasItem(

@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.export;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
@@ -22,6 +23,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+
 
 public class EnrolleeExportServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -165,5 +167,4 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         assertThat(socialHealthModule.getItems().stream().map(ItemExportInfo::getQuestionStableId).toList(),
                 hasItems(null, "hd_hd_socialHealth_neighborhoodSharesValues", "hd_hd_socialHealth_neighborhoodIsWalkable", "hd_hd_socialHealth_neighborhoodNoisy"));
     }
-
 }

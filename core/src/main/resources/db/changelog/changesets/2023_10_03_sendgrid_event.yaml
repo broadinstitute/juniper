@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: "sendgrid_event"
+      author: mbemis
+      changes:
+        - createTable:
+            tableName: sendgrid_event
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: msg_id, type: text, constraints: { nullable: false, unique: true } }
+              - column: { name: subject, type: text }
+              - column: { name: to_email, type: text }
+              - column: { name: from_email, type: text }
+              - column: { name: status, type: text }
+              - column: { name: opens_count, type: integer }
+              - column: { name: clicks_count, type: integer }
+              - column: { name: last_event_time, type: datetime }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }

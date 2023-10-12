@@ -5,6 +5,7 @@ import {
   ConsentForm,
   DatasetDetails,
   Enrollee,
+  EnrolleeSearchResult,
   KitRequest,
   KitType,
   NotificationConfig,
@@ -263,6 +264,19 @@ export const mockEnrollee: () => Enrollee = () => {
   }
 }
 
+/** returns a mock enrollee search result */
+export const mockEnrolleeSearchResult: () => EnrolleeSearchResult = () => {
+  return {
+    enrollee: mockEnrollee(),
+    profile: mockEnrollee().profile,
+    mostRecentKitStatus: null,
+    participantUser: {
+      lastLogin: 50405345,
+      username: `${randomString(10)}@test.com`
+    }
+  }
+}
+
 /** helper function to generate a ParticipantTask object for a survey and enrollee */
 export const taskForForm = (form: Survey | ConsentForm, enrolleeId: string,
   isConsent: boolean): ParticipantTask => {
@@ -326,6 +340,7 @@ export const mockEmailTemplate = (): EmailTemplate => {
     body: 'Mock email message'
   }
 }
+
 
 /** mock admin task */
 export const mockAdminTask = (): AdminTask => {

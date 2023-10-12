@@ -59,7 +59,7 @@ public class EnrolleeExportService {
 
     /**
      * exports the specified number of enrollees from the given environment
-     * The enrollees will be returned most-recent first
+     * The enrollees will be returned most-recently-created first
      * */
     public void export(ExportOptions exportOptions, UUID studyEnvironmentId, OutputStream os) throws Exception {
         List<ModuleExportInfo> moduleExportInfos = generateModuleInfos(exportOptions, studyEnvironmentId);
@@ -102,7 +102,6 @@ public class EnrolleeExportService {
      * gets information about the modules, which will determine the columns needed for the export
      * e.g. the columns needed to represent the survey questions.
      */
-
     public List<ModuleExportInfo> generateModuleInfos(ExportOptions exportOptions, UUID studyEnvironmentId) throws Exception {
         List<ModuleExportInfo> moduleInfo = new ArrayList<>();
         moduleInfo.add(new EnrolleeFormatter().getModuleExportInfo(exportOptions));
@@ -114,6 +113,7 @@ public class EnrolleeExportService {
     protected List<ModuleExportInfo> generateSurveyModules(ExportOptions exportOptions, UUID studyEnvironmentId) throws Exception {
         // get all surveys that have ever been attached, including inactive
         List<StudyEnvironmentSurvey> configuredSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(studyEnvironmentId, null);
+        configuredSurveys.sort(Comparator.comparing(StudyEnvironmentSurvey::getSurveyOrder));
         SurveyFormatter surveyFormatter = new SurveyFormatter(objectMapper);
         List<ModuleExportInfo> moduleExportInfos = new ArrayList<>();
         Map<String, List<StudyEnvironmentSurvey>> surveysByStableId = configuredSurveys.stream().collect(
