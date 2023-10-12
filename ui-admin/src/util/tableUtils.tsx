@@ -269,16 +269,19 @@ export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
   </div>
 }
 
+/**
+ * Converts a cell value to an escaped string for csv export
+ */
 function cellToCsvString(cellType: string, cellValue: unknown): string {
   switch (cellType) {
+    case 'string':
+      return cellValue ? escapeCsvValue(cellValue as string) : ''
     case 'instant':
       return escapeCsvValue(instantToDefaultString(cellValue as number))
     case 'boolean':
       return cellValue as boolean ? 'true' : 'false'
-    case 'string':
-      return cellValue ? escapeCsvValue(cellValue as string) : ''
     default:
-      return ''
+      return cellValue ? escapeCsvValue(cellValue as string) : ''
   }
 }
 
