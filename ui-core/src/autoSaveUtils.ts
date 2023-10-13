@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 
-/** TODO JSdoc */
+/** Executes the save function at the specified interval, but only starting the interval after the
+ * previous call returns, guaranteed no overlapping saves */
 export function useAutosaveEffect(saveFn: () => void, autoSaveInterval: number) {
   useEffect(() => {
     let timeoutHandle: number
