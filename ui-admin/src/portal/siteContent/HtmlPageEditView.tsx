@@ -1,21 +1,8 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { HtmlPage, HtmlSectionView } from '@juniper/ui-core'
-import Select from 'react-select'
-
-const SECTION_TYPES = [
-  { label: 'FAQ', value: 'FAQ' },
-  { label: 'HERO_CENTERED', value: 'HERO_CENTERED' },
-  { label: 'HERO_WITH_IMAGE', value: 'HERO_WITH_IMAGE' },
-  { label: 'SOCIAL_MEDIA', value: 'SOCIAL_MEDIA' },
-  { label: 'STEP_OVERVIEW', value: 'STEP_OVERVIEW' },
-  { label: 'PHOTO_BLURB_GRID', value: 'PHOTO_BLURB_GRID' },
-  { label: 'PARTICIPATION_DETAIL', value: 'PARTICIPATION_DETAIL' },
-  { label: 'RAW_HTML', value: 'RAW_HTML' },
-  { label: 'LINK_SECTIONS_FOOTER', value: 'LINK_SECTIONS_FOOTER' },
-  { label: 'BANNER_IMAGE', value: 'BANNER_IMAGE' }
-]
+import { HtmlPage, HtmlSection, HtmlSectionView } from '@juniper/ui-core'
+import HtmlSectionEditor from './HtmlSectionEditor'
 
 type HtmlPageViewProps = {
   htmlPage: HtmlPage
@@ -45,25 +32,35 @@ const HtmlPageView = ({ htmlPage, updatePage, readOnly }: HtmlPageViewProps) => 
     updatePage(htmlPage)
   }
 
+  //Inserts a new HtmlSection at the specified index on the page
+  const insertNewSection = (sectionIndex: number, newSection: HtmlSection) => {
+    const newSectionClean = {
+      ...newSection,
+      id: ''
+    }
+    const newSectionArray = [...htmlPage.sections]
+    newSectionArray.splice(sectionIndex, 0, newSectionClean)
+    htmlPage = {
+      ...htmlPage,
+      sections: newSectionArray
+    }
+    updatePage(htmlPage)
+  }
+
   return <div>
     {htmlPage.sections.map((section, index) => {
-      const textValue = JSON.stringify(JSON.parse(section?.sectionConfig ?? '{}'), null, 2)
-      const sectionTypeOpt = SECTION_TYPES.find(sectionType => sectionType.value === section.sectionType)
       return <div key={index} className="row">
 
         <div className="col-md-4 p-2">
-          <div>
-            <Select options={SECTION_TYPES} value={sectionTypeOpt}/>
-          </div>
-          <textarea value={textValue} style={{ height: 'calc(100% - 2em)', width: '100%' }}
-            readOnly={readOnly}
-            onChange={e => updateSectionConfig(index, e.target.value)}/>
+          <HtmlSectionEditor
+            section={section} sectionIndex={index} readOnly={readOnly} updateSectionConfig={updateSectionConfig}/>
         </div>
         <div className="col-md-8">
           <HtmlSectionView section={section}/>
         </div>
         <div className="col-md-12 my-2" style={{ backgroundColor: '#eee' }}>
-          <button className="btn btn-secondary" onClick={() => alert('not yet implemented')}>
+          <button className="btn btn-secondary"
+            onClick={() => insertNewSection(index + 1, htmlPage.sections.at(index)!)}>
             <FontAwesomeIcon icon={faPlus}/> Insert section
           </button>
         </div>
