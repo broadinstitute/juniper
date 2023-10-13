@@ -10,12 +10,13 @@
   "calculatedValues": [
     {
       "name": "oh_oh_consent_signatureDate",
-      "expression": "currentDate()",
+      "expression": "iif({oh_oh_consent_signatureDate}, {oh_oh_consent_signatureDate}, currentDate())",
       "includeIntoResult": true
     },
     {
-      "name": "formattedSignatureDate",
-      "expression": "formatDate({oh_oh_consent_signatureDate})"
+      "name": "oh_oh_consent_formattedSignatureDate",
+      "expression": "formatDate({oh_oh_consent_signatureDate})",
+      "includeIntoResult": true
     }
   ],
   "pages": [
@@ -181,7 +182,7 @@
             {
               "type": "html",
               "name": "signatureDateDisplay",
-              "html": "<p style='padding-top:2rem;margin:0;'><span style='font-weight:600;'>Today's date</span>: {formattedSignatureDate}.</p>"
+              "html": "<p style='padding-top:2rem;margin:0;'><span style='font-weight:600;'>Today's date</span>: {oh_oh_consent_formattedSignatureDate}.</p>"
             }
           ]
         },

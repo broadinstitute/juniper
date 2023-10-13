@@ -1,6 +1,6 @@
 import React  from 'react'
 import {
-  Answer,
+  Answer, ConsentForm,
   ConsentResponse, Enrollee,
   StudyEnvironmentConsent
 } from 'api/api'
@@ -39,8 +39,7 @@ export function RawEnrolleeConsentView({ enrollee, configConsent, responses }:
   }
   // just show the last response for now
   const lastResponse = responses[responses.length - 1]
-  const answers: Answer[] = JSON.parse(lastResponse.fullData)
-
+  const answers = extractAnswers(lastResponse, configConsent.consentForm)
   return <div>
     <DocumentTitle title={`${enrollee.shortcode} - ${configConsent.consentForm.name}`}/>
     <h6>{configConsent.consentForm.name}</h6>
@@ -50,4 +49,17 @@ export function RawEnrolleeConsentView({ enrollee, configConsent, responses }:
       <SurveyFullDataView answers={answers} survey={configConsent.consentForm}/>
     </div>
   </div>
+}
+
+/**
+ * responses to ConsentForms are stored as single documents, rather than Answers, since they are not permitted
+ * to be filled out across multiple versions.
+ * So to use SurveyFullDataView to show the responses, first convert it to a list of answers
+ */
+const extractAnswers = (response: ConsentResponse, consentForm: ConsentForm) => {
+  const answers: Answer[] = JSON.parse(response.fullData)
+  answers.forEach(answer => {
+    answer.surveyVersion = consentForm.version
+  })
+  return answers
 }
