@@ -70,10 +70,9 @@ test('send email is toggled depending on participants selected', async () => {
   await waitFor(() => {
     expect(screen.getByText('JOSALK')).toBeInTheDocument()
   })
-  const participantLink = screen.getByText('Send email')
-  expect(participantLink).toHaveAttribute('aria-disabled', 'true')
+  const sendEmailButton = screen.getByText('Send email')
+  expect(sendEmailButton).toHaveAttribute('aria-disabled', 'true')
 })
-
 
 test('keyword search sends search api request', async () => {
   const searchSpy = mockSearchApi(1)
