@@ -8,6 +8,7 @@ export * from './types/portal'
 export * from './types/study'
 export * from './types/task'
 
+export * from './autoSaveUtils'
 export * from './reactUtils'
 export * from './surveyUtils'
 export * from './waitForImages'
