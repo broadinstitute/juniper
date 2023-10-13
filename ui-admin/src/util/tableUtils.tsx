@@ -222,9 +222,11 @@ export function IndeterminateCheckbox({
 export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
   const [show, setShow] = useState(false)
   return <div className="ms-auto">
-    <button className="btn btn-light border m-1" onClick={() => setShow(!show)} aria-label="show or hide columns">
+    <Button onClick={() => setShow(!show)}
+      variant="light" className="border m-1"
+      tooltip={'Show or hide columns'}>
       <FontAwesomeIcon icon={faColumns} className="fa-lg"/> Columns
-    </button>
+    </Button>
     { show && <Modal show={show} onHide={() => setShow(false)}>
       <Modal.Header closeButton>
         <Modal.Title>
@@ -307,11 +309,14 @@ export function DownloadControl<T>({ table, fileName }: {table: Table<T>, fileNa
     saveBlobAsDownload(blob, `${fileName}.csv`)
   }
 
+  const disableDownload = isEmpty(table.getFilteredRowModel().rows)
+
   return <div className="ms-auto">
-    <button className="btn btn-light border m-1" disabled={isEmpty(table.getFilteredRowModel().rows)}
-      onClick={() => setShow(!show)} aria-label="download table data">
+    <Button onClick={() => setShow(!show)}
+      variant="light" className="border m-1" disabled={disableDownload}
+      tooltip={!disableDownload ? 'Download table' : 'At least one row must be visible in order to download'}>
       <FontAwesomeIcon icon={faDownload} className="fa-lg"/> Download
-    </button>
+    </Button>
     { show && <Modal show={show} onHide={() => setShow(false)}>
       <Modal.Header closeButton>
         <Modal.Title>

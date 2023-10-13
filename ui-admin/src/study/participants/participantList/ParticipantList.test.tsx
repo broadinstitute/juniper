@@ -71,7 +71,7 @@ test('send email is toggled depending on participants selected', async () => {
     expect(screen.getByText('JOSALK')).toBeInTheDocument()
   })
   const sendEmailButton = screen.getByText('Send email')
-  expect(sendEmailButton).toBeDisabled()
+  expect(sendEmailButton).toHaveAttribute('aria-disabled', 'true')
 })
 
 test('keyword search sends search api request', async () => {

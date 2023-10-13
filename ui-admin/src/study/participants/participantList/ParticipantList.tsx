@@ -29,6 +29,7 @@ import { currentIsoDate, instantToDefaultString } from 'util/timeUtils'
 import { useLoadingEffect } from 'api/api-utils'
 import { FacetView, getUpdatedFacetValues } from './facets/EnrolleeSearchFacets'
 import TableClientPagination from 'util/TablePagination'
+import { Button } from 'components/forms/Button'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -204,13 +205,11 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
                   onDismiss={() => setShowEmailModal(false)}/> }
               </div>
               <div className="d-flex">
-                <button
-                  className="btn btn-light border m-1"
-                  disabled={!allowSendEmail}
-                  onClick={() => setShowEmailModal(allowSendEmail)}
-                  aria-label="send email">
+                <Button onClick={() => setShowEmailModal(allowSendEmail)}
+                  variant="light" className="border m-1" disabled={!allowSendEmail}
+                  tooltip={allowSendEmail ? 'Send email' : 'Select at least one participant'}>
                   <FontAwesomeIcon icon={faEnvelope} className="fa-lg"/> Send email
-                </button>
+                </Button>
                 <DownloadControl table={table} fileName={`${portal.shortcode}-ParticipantList-${currentIsoDate()}`}/>
                 <ColumnVisibilityControl table={table}/>
               </div>

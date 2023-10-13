@@ -90,7 +90,7 @@ test('download button is enabled if there are rows in the table', async () => {
 test('download button is disabled if there aren\'t any rows in the table', async () => {
   render(<TestTableComponent initialValue={[]} initialData={[]}/>)
   const downloadButton = screen.getByText('Download')
-  expect(downloadButton).toBeDisabled()
+  expect(downloadButton).toHaveAttribute('aria-disabled', 'true')
 })
 
 test('download data modal should specify the number of rows to be downloaded', async () => {
@@ -102,9 +102,9 @@ test('download data modal should specify the number of rows to be downloaded', a
   await userEvent.click(downloadButton)
 
   //Assert
-  const downloadText = screen.getByText('This will download', { exact: false })
+  const downloadText = screen.getByText('The current data filters', { exact: false })
   const rawTextContent = downloadText.textContent
-  const expectedText = 'This will download 2 rows to test.csv. ' +
-    'Your current row and column filters will be applied to the downloaded data.'
+  const expectedText = 'Download 2 rows to test.csv. ' +
+    'The current data filters and shown columns will be applied.'
   expect(rawTextContent).toEqual(expectedText)
 })
