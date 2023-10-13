@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -33,19 +34,31 @@ public class StubPepperDSMClient implements PepperDSMClient {
     @Override
     public String sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
         log.info("STUB sending kit request");
-        var statusBuilder = PepperKitStatus.builder()
-                .juniperKitId(kitRequest.getId().toString())
-                .currentStatus("CREATED");
-        try {
-            return objectMapper.writeValueAsString(statusBuilder.build());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        String fakeResponse = """
+                {
+                  "kits":[{
+                      "error":false,
+                      "juniperKitId":"%1$s",
+                      "dsmShippingLabel":"%2$s",
+                      "participantId":"%3$s",
+                      "labelByEmail":"",
+                      "scanByEmail":"",
+                      "deactivationByEmail":"",
+                      "trackingScanBy":"",
+                      "errorMessage":"",
+                      "discardBy":"",
+                      "currentStatus":"Kit Without Label",
+                      "collaboratorParticipantId":"PN_%2$s",
+                      "collaboratorSampleId":"PN_%2$s_SALIVA_1"
+                      }],
+                  "isError":false}
+                """.formatted(UUID.randomUUID(), RandomStringUtils.randomAlphabetic(15).toUpperCase(), enrollee.getShortcode());
+        return fakeResponse;
     }
 
     @Override
     public PepperKitStatus fetchKitStatus(UUID kitRequestId) {
-        log.info("STUB fethcing kit status");
+        log.info("STUB fetching kit status");
         return PepperKitStatus.builder()
                 .juniperKitId(kitRequestId.toString())
                 .currentStatus("SENT")
