@@ -290,16 +290,20 @@ function cellToCsvString(cellType: string, cellValue: unknown): string {
 /**
  * Adds a control to download the table data as a csv file
  */
-export function DownloadControl<T>({ table, fileName }: {table: Table<T>, fileName: string}) {
+export function DownloadControl<T>({ table, fileName, excludedColumns = ['select'] }:{
+  table: Table<T>, fileName: string, excludedColumns?: string[]}
+) {
   const [show, setShow] = useState(false)
 
   const download = () => {
-    const headers = table.getFlatHeaders().map(header => {
+    const headers = table.getFlatHeaders().filter(header => !excludedColumns.includes(header.id)).map(header => {
       return header.id
     }).join(',')
 
     const rows = table.getFilteredRowModel().rows.map(row => {
-      return row.getVisibleCells().map(cell => {
+      const visibleCells = row.getVisibleCells().filter(cell => !excludedColumns.includes(cell.column.id))
+
+      return visibleCells.map(cell => {
         const cellType = cell.column.columnDef.meta?.columnType || 'string'
         return cellToCsvString(cellType, cell.getValue())
       }).join(',')
