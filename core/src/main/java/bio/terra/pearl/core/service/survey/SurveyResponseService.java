@@ -55,8 +55,6 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         return dao.findOneWithAnswers(responseId);
     }
 
-
-
     @Override
     public SurveyResponse create(SurveyResponse response) {
         SurveyResponse savedResponse = super.create(response);

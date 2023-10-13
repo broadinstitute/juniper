@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.service.study;
 
 import bio.terra.pearl.core.dao.study.StudyEnvironmentSurveyDao;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.service.CrudService;
 import java.util.List;

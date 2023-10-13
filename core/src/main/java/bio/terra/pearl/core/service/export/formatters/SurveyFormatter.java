@@ -121,17 +121,25 @@ public class SurveyFormatter implements ExportFormatter {
         return stableId.substring(stableId.lastIndexOf('_') + 1);
     }
 
-    public ItemExportInfo getItemExportInfo(ExportOptions exportOptions, String moduleName, List<SurveyQuestionDefinition> questionDefs)
+    /**
+     * takes a list of all versions of a question (all sharing a question stableId) and returns an ItemExportInfo
+     * specifying export column(s) information.  This ItemExportInfo will have child ItemExportInfos for each
+     * version of the question, so that the exporter can map answers to choices from all versions of the question
+     */
+    public ItemExportInfo getItemExportInfo(ExportOptions exportOptions, String moduleName, List<SurveyQuestionDefinition> questionVersions)
             throws JsonProcessingException {
-        SurveyQuestionDefinition latestDef = questionDefs.stream()
+        SurveyQuestionDefinition latestDef = questionVersions.stream()
                 .sorted(Comparator.comparingInt(SurveyQuestionDefinition::getSurveyVersion).reversed()).findFirst().get();
         ItemExportInfo baseInfo = getItemExportInfo(exportOptions, moduleName, latestDef);
-        for (SurveyQuestionDefinition questionDef : questionDefs) {
+        for (SurveyQuestionDefinition questionDef : questionVersions) {
             baseInfo.getVersionMap().put(questionDef.getSurveyVersion(), getItemExportInfo(exportOptions, moduleName, questionDef));
         }
         return baseInfo;
     }
 
+    /**
+     * takes a single version of a question and returns an ItemExportInfo specifying export column(s) info
+     */
     public ItemExportInfo getItemExportInfo(ExportOptions exportOptions, String moduleName, SurveyQuestionDefinition questionDef)
             throws JsonProcessingException {
         List<QuestionChoice> choices = new ArrayList<>();
