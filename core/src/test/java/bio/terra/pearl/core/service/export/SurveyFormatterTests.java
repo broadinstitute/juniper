@@ -31,7 +31,7 @@ public class SurveyFormatterTests {
                 .exportOrder(1)
                 .build();
         var moduleExportInfo = new SurveyFormatter(objectMapper)
-                .getModuleExportInfo(new ExportOptions(), survey, List.of(questionDef));
+                .getModuleExportInfo(new ExportOptions(), "oh_surveyA", List.of(survey), List.of(questionDef));
         SurveyResponse response = SurveyResponse.builder()
                 .id(UUID.randomUUID())
                 .surveyId(survey.getId())
