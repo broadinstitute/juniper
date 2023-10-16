@@ -49,7 +49,6 @@ const HtmlPageView = ({ htmlPage, updatePage, readOnly }: HtmlPageViewProps) => 
   return <div>
     {htmlPage.sections.map((section, index) => {
       return <div key={index} className="row">
-
         <div className="col-md-4 p-2">
           <HtmlSectionEditor
             section={section} sectionIndex={index} readOnly={readOnly} updateSection={updateSection}/>
@@ -60,6 +59,7 @@ const HtmlPageView = ({ htmlPage, updatePage, readOnly }: HtmlPageViewProps) => 
         <div className="col-md-12 my-2" style={{ backgroundColor: '#eee' }}>
           <Button variant="secondary"
             tooltip={'Insert a blank section'}
+            disabled={readOnly}
             onClick={() => insertNewSection(index + 1, { id: '', sectionType: 'HERO_WITH_IMAGE' })}>
             <FontAwesomeIcon icon={faPlus}/> Insert section
           </Button>

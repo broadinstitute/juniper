@@ -36,13 +36,12 @@ const HtmlSectionEditor = ({
 
   return <>
     <div>
-      {/* Dropdown for selecting the section type */}
       <Select options={SECTION_TYPES} value={sectionTypeOpt} isDisabled={readOnly}
         onChange={opt => {
           if (isEmpty(section.id)) {
-            //Right now we do not support changing the type of an existing section. The way to identify
-            //if a section has been previously saved is to look at the id. If it's empty, it's a new section
-            //and we can allow the user to change the type.
+            //Right now we do not support changing the type for an existing section. The way to identify if a
+            //section has been previously saved is to look at the id. If it's empty, it's a new section, and we can
+            //allow the user to change the type.
             if (opt != undefined) {
               setSectionTypeOpt(opt)
               updateSection(sectionIndex, { ...section, sectionType: opt.value as SectionType })
@@ -50,7 +49,6 @@ const HtmlSectionEditor = ({
           }
         }}/>
     </div>
-    {/* Text box for editing the raw JSON section config  */}
     <textarea value={sectionConfig} style={{ height: 'calc(100% - 2em)', width: '100%' }}
       readOnly={readOnly}
       onChange={e => updateSection(sectionIndex, { ...section, sectionConfig: e.target.value })}/>
