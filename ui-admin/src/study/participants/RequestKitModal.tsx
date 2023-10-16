@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import Api, { KitType } from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Select from 'react-select'
-import {useLoadingEffect} from "../../api/api-utils";
+import { useLoadingEffect } from '../../api/api-utils'
 
 /** Renders a modal for an admin to submit a sample collection kit request. */
 export default function RequestKitModal({ studyEnvContext, onDismiss, onSubmit }: {
@@ -13,7 +13,6 @@ export default function RequestKitModal({ studyEnvContext, onDismiss, onSubmit }
   const { portal, study } = studyEnvContext
   const [kitTypes, setKitTypes] = useState<KitType[]>()
   const [kitType, setKitType] = useState('')
-  const [error, setError] = useState<string>()
   const kitTypeOptions = kitTypes?.map(kitType => ({ label: kitType.displayName, value: kitType.name }))
   const selectedKitTypeOption = kitTypeOptions?.find(kitTypeOption => kitTypeOption.value === kitType)
 
@@ -22,9 +21,9 @@ export default function RequestKitModal({ studyEnvContext, onDismiss, onSubmit }
   }
 
   useLoadingEffect(async () => {
-      const fetchedKitTypes = await Api.fetchKitTypes(portal.shortcode, study.shortcode)
-      setKitTypes(fetchedKitTypes)
-      kitType || setKitType(fetchedKitTypes[0].name)
+    const fetchedKitTypes = await Api.fetchKitTypes(portal.shortcode, study.shortcode)
+    setKitTypes(fetchedKitTypes)
+    kitType || setKitType(fetchedKitTypes[0].name)
   })
 
 

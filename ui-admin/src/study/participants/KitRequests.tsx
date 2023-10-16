@@ -10,10 +10,9 @@ import { instantToDefaultString } from 'util/timeUtils'
 import { useUser } from 'user/UserProvider'
 import InfoPopup from 'components/forms/InfoPopup'
 import KitStatusCell from './KitStatusCell'
-import {ApiErrorResponse, defaultApiErrorHandle, doApiLoad} from '../../api/api-utils'
-import {failureNotification} from "../../util/notifications";
-import {Store} from "react-notifications-component";
-import {Exception} from "sass";
+import { ApiErrorResponse, defaultApiErrorHandle } from 'api/api-utils'
+import { failureNotification } from 'util/notifications'
+import { Store } from 'react-notifications-component'
 
 /** Component for rendering the address a kit was sent to based on JSON captured at the time of the kit request. */
 function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string }) {
@@ -63,7 +62,7 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
         currentEnv.environmentName, enrollee.shortcode, kitType)
       setShowRequestKitModal(false)
       onUpdate()
-    } catch (e: any) {
+    } catch (e) {
       if ((e as ApiErrorResponse).message.includes('ADDRESS_VALIDATION_ERROR')) {
         Store.addNotification(failureNotification(`
           Could not create kit request:  Address did not match any mailable address.\n\n  
