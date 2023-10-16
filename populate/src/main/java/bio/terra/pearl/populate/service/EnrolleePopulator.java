@@ -21,7 +21,7 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
 import bio.terra.pearl.core.service.kit.KitRequestService;
-import bio.terra.pearl.core.service.kit.PepperKitStatus;
+import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.participant.*;

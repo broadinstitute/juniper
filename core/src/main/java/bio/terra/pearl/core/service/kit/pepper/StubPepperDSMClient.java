@@ -1,16 +1,18 @@
-package bio.terra.pearl.core.service.kit;
+package bio.terra.pearl.core.service.kit.pepper;
 
 import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import bio.terra.pearl.core.service.kit.KitRequestService;
+import bio.terra.pearl.core.service.kit.pepper.PepperDSMClient;
+import bio.terra.pearl.core.service.kit.pepper.PepperKitAddress;
+import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -23,6 +25,9 @@ public class StubPepperDSMClient implements PepperDSMClient {
     private final StudyEnvironmentDao studyEnvironmentDao;
     private final ObjectMapper objectMapper;
 
+    private final static String BAD_ADDRESS_PREFIX = "BAD";
+    private final static String PEPPER_ADDRESS_VALIDATION_MSG = "ADDRESS_VALIDATION_ERROR";
+
     public StubPepperDSMClient(@Lazy KitRequestService kitRequestService,
                                StudyEnvironmentDao studyEnvironmentDao,
                                ObjectMapper objectMapper) {
@@ -32,28 +37,26 @@ public class StubPepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public String sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
+    public PepperKitStatus sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
         log.info("STUB sending kit request");
-        String fakeResponse = """
-                {
-                  "kits":[{
-                      "error":false,
-                      "juniperKitId":"%1$s",
-                      "dsmShippingLabel":"%2$s",
-                      "participantId":"%3$s",
-                      "labelByEmail":"",
-                      "scanByEmail":"",
-                      "deactivationByEmail":"",
-                      "trackingScanBy":"",
-                      "errorMessage":"",
-                      "discardBy":"",
-                      "currentStatus":"Kit Without Label",
-                      "collaboratorParticipantId":"PN_%2$s",
-                      "collaboratorSampleId":"PN_%2$s_SALIVA_1"
-                      }],
-                  "isError":false}
-                """.formatted(UUID.randomUUID(), RandomStringUtils.randomAlphabetic(15).toUpperCase(), enrollee.getShortcode());
-        return fakeResponse;
+        if (address.getCity().startsWith(BAD_ADDRESS_PREFIX) || address.getStreet1().startsWith(BAD_ADDRESS_PREFIX)) {
+            throw new  PepperApiException(
+                    "Error from Pepper",
+                    PepperErrorResponse.builder()
+                            .isError(true)
+                            .errorMessage(PEPPER_ADDRESS_VALIDATION_MSG)
+                            .juniperKitId(kitRequest.getId().toString())
+                            .value(new PepperErrorResponse.PepperErrorValue("Address is not valid %s".formatted(kitRequest.getId())))
+                            .build(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        PepperKitStatus status = PepperKitStatus.builder()
+                .juniperKitId(kitRequest.getId().toString())
+                .dsmShippingLabel(UUID.randomUUID().toString())
+                .participantId(enrollee.getShortcode())
+                .currentStatus("Kit Without Label")
+                .build();
+        return status;
     }
 
     @Override

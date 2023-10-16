@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.kit;
+package bio.terra.pearl.core.service.kit.pepper;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

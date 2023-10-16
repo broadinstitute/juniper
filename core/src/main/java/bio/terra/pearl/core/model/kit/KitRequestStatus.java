@@ -1,11 +1,13 @@
 package bio.terra.pearl.core.model.kit;
 
+import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
+
 import java.util.Set;
 
 /**
  * High-level, Juniper-centric kit status. Only needs to be specific enough for Juniper to decide how to interact with
  * Pepper. This is not intended to mirror all possible states in Pepper. For that, see
- * {@link bio.terra.pearl.core.service.kit.PepperKitStatus#currentStatus}.
+ * {@link PepperKitStatus#currentStatus}.
  *
  * CREATED --> IN_PROGRESS --> COMPLETE
  *                         \-> ERRORED

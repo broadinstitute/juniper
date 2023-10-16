@@ -1,17 +1,22 @@
 package bio.terra.pearl.api.admin.controller.kit;
 
 import bio.terra.pearl.api.admin.api.KitApi;
+import bio.terra.pearl.api.admin.model.ErrorReport;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.kit.KitExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
-import bio.terra.pearl.core.service.kit.PepperException;
+import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
 public class KitController implements KitApi {
@@ -44,6 +49,13 @@ public class KitController implements KitApi {
     return ResponseEntity.ok(kits);
   }
 
+  @ExceptionHandler(PepperApiException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  public ErrorReport handlePepperApiException(PepperApiException e) {
+    return new ErrorReport().statusCode(e.getHttpStatus().value()).message(e.getMessage());
+  }
+
   @Override
   public ResponseEntity<Object> requestKit(
       String portalShortcode,
@@ -52,16 +64,9 @@ public class KitController implements KitApi {
       String enrolleeShortcode,
       String kitType) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
-    try {
-      KitRequest sampleKit =
-          kitExtService.requestKit(adminUser, studyShortcode, enrolleeShortcode, kitType);
-      return ResponseEntity.ok(sampleKit);
-    } catch (PepperException e) {
-      log.error("Error requesting sample kit from Pepper", e);
-      // In the case of a PepperException, we can do better than this because we'll likely know what
-      // Pepper was unhappy about, such as an address failing to validate.
-      return ResponseEntity.internalServerError().body(e.getMessage());
-    }
+    KitRequest sampleKit =
+        kitExtService.requestKit(adminUser, studyShortcode, enrolleeShortcode, kitType);
+    return ResponseEntity.ok(sampleKit);
   }
 
   @Override

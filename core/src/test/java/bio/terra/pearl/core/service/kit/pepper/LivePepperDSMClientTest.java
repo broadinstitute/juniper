@@ -1,10 +1,11 @@
-package bio.terra.pearl.core.service.kit;
+package bio.terra.pearl.core.service.kit.pepper;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.service.kit.pepper.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -74,14 +76,13 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         Executable act = () -> client.sendKitRequest("testStudy", enrollee, kitRequest, address);
 
         // Assert
-        PepperException pepperException = assertThrows(PepperException.class, act);
-        assertThat(pepperException.getMessage(), containsString(unexpectedJsonBody));
+        PepperApiException pepperApiException = assertThrows(PepperApiException.class, act);
+        assertThat(pepperApiException.getMessage(), containsString(unexpectedJsonBody));
     }
 
     @Transactional
     @Test
     public void testErrorResponseFromPepperWithUnexpectedAttributes() throws Exception {
-        // Arrange
         var unexpectedJsonBody = """
                 {
                   "errorMessage": "unknown kit",
@@ -93,22 +94,19 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
                 """;
         mockPepperResponse(HttpStatus.BAD_REQUEST, unexpectedJsonBody);
 
-        // "Act"
-        Executable act = () -> client.sendKitRequest("testStudy", enrollee, kitRequest, address);
+        PepperApiException pepperApiException = assertThrows(PepperApiException.class,
+                () -> client.sendKitRequest("testStudy", enrollee, kitRequest, address));
 
-        // Assert
-        PepperException pepperException = assertThrows(PepperException.class, act);
-        assertThat(pepperException.getMessage(), pepperException.getErrorResponse(), notNullValue());
-        assertThat(pepperException.getErrorResponse().getErrorMessage(), equalTo("unknown kit"));
-        assertThat(pepperException.getErrorResponse().getValue(), equalTo("12345"));
-        assertThat(pepperException.getErrorResponse().getJuniperKitId(), equalTo("12345"));
-        assertThat(pepperException.getErrorResponse().getIsError(), equalTo(true));
+        assertThat(pepperApiException.getMessage(), pepperApiException.getErrorResponse(), notNullValue());
+        assertThat(pepperApiException.getErrorResponse().getErrorMessage(), equalTo("unknown kit"));
+        assertThat(pepperApiException.getErrorResponse().getValue().getDetailMessage(), equalTo("12345"));
+        assertThat(pepperApiException.getErrorResponse().getJuniperKitId(), equalTo("12345"));
+        assertThat(pepperApiException.getErrorResponse().getIsError(), equalTo(true));
     }
 
     @Transactional
     @Test
     public void test4xxResponseFromPepper() throws Exception {
-        // Arrange
         var kitId = "111-222-333";
         var errorMessage = "UNABLE_TO_VERIFY_ADDRESS";
         mockPepperResponse(
@@ -119,11 +117,10 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
                         .build()
         ));
 
-        // "Act"
-        Executable act = () -> client.sendKitRequest("testStudy", enrollee, kitRequest, address);
-
         // Assert
-        var pepperException = assertThrows(PepperException.class, act);
+        var pepperException = assertThrows(PepperApiException.class,
+                () -> client.sendKitRequest("testStudy", enrollee, kitRequest, address)
+        );
         assertThat(pepperException.getMessage(), containsString(kitId));
         assertThat(pepperException.getMessage(), containsString(errorMessage));
     }
@@ -139,26 +136,27 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         Executable act = () -> client.sendKitRequest("testStudy", enrollee, kitRequest, address);
 
         // Assert
-        var pepperException = assertThrows(PepperException.class, act);
+        var pepperException = assertThrows(PepperApiException.class, act);
         assertThat(pepperException.getMessage(), containsString(errorResponseBody));
     }
 
     @Transactional
     @Test
     public void testSendKitRequest() throws Exception {
-        // Arrange
         PepperKitStatus kitStatus = PepperKitStatus.builder()
                 .juniperKitId(kitRequest.getId().toString())
-                .currentStatus("New")
+                .currentStatus(PepperKitStatus.Status.CREATED.currentStatus)
                 .build();
-        mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(kitStatus));
+        PepperKitStatusResponse mockResponse = PepperKitStatusResponse.builder()
+                        .isError(false)
+                .kits(new PepperKitStatus[]{kitStatus})
+                .build();
 
-        // Act
-        var response = client.sendKitRequest("testStudy", enrollee, kitRequest, address);
+        mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(mockResponse));
 
-        // Assert
-        assertThat(response, containsString(kitStatus.getJuniperKitId()));
-        assertThat(response, containsString("New"));
+        PepperKitStatus parsedResponse = client.sendKitRequest("testStudy", enrollee, kitRequest, address);
+
+        assertThat(parsedResponse.getCurrentStatus(), equalTo(PepperKitStatus.Status.CREATED.currentStatus));
         verifyRequestForPath("/shipKit");
     }
 

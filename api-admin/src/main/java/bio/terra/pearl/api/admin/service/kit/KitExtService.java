@@ -7,6 +7,8 @@ import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.kit.KitRequestService;
+import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
+import bio.terra.pearl.core.service.kit.pepper.PepperParseException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import java.util.Collection;
@@ -73,7 +75,8 @@ public class KitExtService {
       AdminUser adminUser,
       String portalShortcode,
       String studyShortcode,
-      EnvironmentName environmentName) {
+      EnvironmentName environmentName)
+      throws PepperApiException, PepperParseException {
     var portalStudy = authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
     var study = studyService.find(portalStudy.getStudyId()).get();
     kitRequestService.syncKitStatusesForStudy(study, environmentName);
