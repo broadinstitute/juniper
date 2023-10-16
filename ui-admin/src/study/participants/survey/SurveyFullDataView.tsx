@@ -171,20 +171,23 @@ export function getUpstreamStableId(calculatedValue: CalculatedValue): string | 
 
 /**
  * returns an array of the questions for display, which excludes html elements, and includes
- * calculatedValues
+ * calculatedValues that have includeIntoResult
  */
 export function getQuestionsWithComputedValues(model: SurveyModel) {
   const questionsAndVals: (Question | CalculatedValue)[] = model
     .getAllQuestions().filter(q => q.getType() !== 'html')
-  model.calculatedValues.forEach(val => {
-    const upstreamStableId = getUpstreamStableId(val)
-    if (!upstreamStableId) {
-      questionsAndVals.push(val)
-    } else {
-      const spliceIndex = questionsAndVals.findIndex(question => question.name === upstreamStableId)
-      questionsAndVals.splice(spliceIndex, 0, val)
-    }
-  })
+  model.calculatedValues
+    .filter(calculatedValue => calculatedValue.includeIntoResult)
+    .forEach(calculatedValue => {
+      // figure out where in the question list to insert this, based on which questions the computation uses.
+      const upstreamStableId = getUpstreamStableId(calculatedValue)
+      if (!upstreamStableId) {
+        questionsAndVals.push(calculatedValue)
+      } else {
+        const spliceIndex = questionsAndVals.findIndex(question => question.name === upstreamStableId)
+        questionsAndVals.splice(spliceIndex, 0, calculatedValue)
+      }
+    })
   return questionsAndVals
 }
 
