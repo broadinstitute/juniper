@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { HtmlSection } from '@juniper/ui-core'
+import {HtmlSection, SectionType} from '@juniper/ui-core'
 import Select from 'react-select'
 import { isEmpty } from 'lodash'
 
@@ -28,7 +28,7 @@ const HtmlSectionEditor = ({
   section: HtmlSection
   sectionIndex: number
   readOnly: boolean
-  updateSectionConfig: (sectionIndex: number, newConfig: string) => void
+  updateSectionConfig: (sectionIndex: number, updatedSection: HtmlSection) => void
 }) => {
   const textValue = JSON.stringify(JSON.parse(section?.sectionConfig ?? '{}'), null, 2)
   const initial = SECTION_TYPES.find(sectionType => sectionType.value === section.sectionType)
@@ -37,21 +37,21 @@ const HtmlSectionEditor = ({
   return <>
     <div>
       <Select options={SECTION_TYPES} value={sectionTypeOpt}
-        onChange={e => {
-          if (!isEmpty(section.id)) {
-            setSectionTypeOpt(sectionTypeOpt)
-          } else {
-            setSectionTypeOpt(e!)
-            updateSectionConfig(
-              sectionIndex,
-              JSON.stringify({ ...JSON.parse(textValue), sectionType: e?.value }, null, 2)
-            )
+        onChange={opt => {
+          if (isEmpty(section.id)) {
+            //Right now we do not support changing the type of an existing section. The way to identify
+            //if a section has been previously saved is to look at the id. If it's empty, it's a new section
+            //and we can allow the user to change the type.
+            if (opt != undefined) {
+              setSectionTypeOpt(opt)
+              updateSectionConfig(sectionIndex, { ...section, sectionType: opt.value as SectionType })
+            }
           }
         }}/>
     </div>
     <textarea value={textValue} style={{ height: 'calc(100% - 2em)', width: '100%' }}
       readOnly={readOnly}
-      onChange={e => updateSectionConfig(sectionIndex, e.target.value)}/>
+      onChange={e => updateSectionConfig(sectionIndex, { ...section, sectionConfig: e.target.value })}/>
   </>
 }
 
