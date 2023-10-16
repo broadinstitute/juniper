@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { HtmlPage, HtmlSection, HtmlSectionView } from '@juniper/ui-core'
 import HtmlSectionEditor from './HtmlSectionEditor'
-import {Button} from "../../components/forms/Button";
+import { Button } from 'components/forms/Button'
 
 type HtmlPageViewProps = {
   htmlPage: HtmlPage
@@ -13,7 +13,7 @@ type HtmlPageViewProps = {
 
 /** Enables editing of a given page, showing the config and a preview for each section */
 const HtmlPageView = ({ htmlPage, updatePage, readOnly }: HtmlPageViewProps) => {
-  const updateSectionConfig = (sectionIndex: number, updatedSection: HtmlSection) => {
+  const updateSection = (sectionIndex: number, updatedSection: HtmlSection) => {
     try {
       JSON.parse(updatedSection.sectionConfig ?? '{}')
     } catch (e) {
@@ -52,7 +52,7 @@ const HtmlPageView = ({ htmlPage, updatePage, readOnly }: HtmlPageViewProps) => 
 
         <div className="col-md-4 p-2">
           <HtmlSectionEditor
-            section={section} sectionIndex={index} readOnly={readOnly} updateSectionConfig={updateSectionConfig}/>
+            section={section} sectionIndex={index} readOnly={readOnly} updateSection={updateSection}/>
         </div>
         <div className="col-md-8">
           <HtmlSectionView section={section}/>

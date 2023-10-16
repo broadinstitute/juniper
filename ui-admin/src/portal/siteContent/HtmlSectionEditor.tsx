@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import {HtmlSection, SectionType} from '@juniper/ui-core'
+import { HtmlSection, SectionType } from '@juniper/ui-core'
 import Select from 'react-select'
 import { isEmpty } from 'lodash'
 
@@ -23,20 +23,21 @@ const HtmlSectionEditor = ({
   section,
   sectionIndex,
   readOnly,
-  updateSectionConfig
+  updateSection
 }: {
   section: HtmlSection
   sectionIndex: number
   readOnly: boolean
-  updateSectionConfig: (sectionIndex: number, updatedSection: HtmlSection) => void
+  updateSection: (sectionIndex: number, updatedSection: HtmlSection) => void
 }) => {
-  const textValue = JSON.stringify(JSON.parse(section?.sectionConfig ?? '{}'), null, 2)
+  const sectionConfig = JSON.stringify(JSON.parse(section?.sectionConfig ?? '{}'), null, 2)
   const initial = SECTION_TYPES.find(sectionType => sectionType.value === section.sectionType)
   const [sectionTypeOpt, setSectionTypeOpt] = useState(initial)
 
   return <>
     <div>
-      <Select options={SECTION_TYPES} value={sectionTypeOpt}
+      {/* Dropdown for selecting the section type */}
+      <Select options={SECTION_TYPES} value={sectionTypeOpt} isDisabled={readOnly}
         onChange={opt => {
           if (isEmpty(section.id)) {
             //Right now we do not support changing the type of an existing section. The way to identify
@@ -44,14 +45,15 @@ const HtmlSectionEditor = ({
             //and we can allow the user to change the type.
             if (opt != undefined) {
               setSectionTypeOpt(opt)
-              updateSectionConfig(sectionIndex, { ...section, sectionType: opt.value as SectionType })
+              updateSection(sectionIndex, { ...section, sectionType: opt.value as SectionType })
             }
           }
         }}/>
     </div>
-    <textarea value={textValue} style={{ height: 'calc(100% - 2em)', width: '100%' }}
+    {/* Text box for editing the raw JSON section config  */}
+    <textarea value={sectionConfig} style={{ height: 'calc(100% - 2em)', width: '100%' }}
       readOnly={readOnly}
-      onChange={e => updateSectionConfig(sectionIndex, { ...section, sectionConfig: e.target.value })}/>
+      onChange={e => updateSection(sectionIndex, { ...section, sectionConfig: e.target.value })}/>
   </>
 }
 
