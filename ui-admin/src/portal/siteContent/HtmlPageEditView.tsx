@@ -19,16 +19,26 @@ const HtmlPageView = ({ htmlPage, updatePage, readOnly }: HtmlPageViewProps) => 
       // for now, we just don't allow changing the object structure itself -- just plain text edits
       return
     }
+
+    //TODO
+    const newConfigObj = JSON.parse(newConfig) as HtmlSection
+
+    console.log(newConfig)
     const newSection = {
       ...htmlPage.sections[sectionIndex],
-      sectionConfig: newConfig
+      sectionConfig: newConfig,
+      sectionType: newConfigObj.sectionType
     }
+    console.log(newSection)
     const newSectionArray = [...htmlPage.sections]
+    console.log(newSectionArray)
     newSectionArray[sectionIndex] = newSection
+    console.log(newSectionArray)
     htmlPage = {
       ...htmlPage,
       sections: newSectionArray
     }
+    console.log(htmlPage)
     updatePage(htmlPage)
   }
 
