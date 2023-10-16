@@ -68,7 +68,7 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
           Could not create kit request:  Address did not match any mailable address.\n\n  
           The Participant will need to update their address in order to receive a kit`))
       } else {
-        defaultApiErrorHandle(e)
+        defaultApiErrorHandle(e as ApiErrorResponse)
       }
     }
   }
