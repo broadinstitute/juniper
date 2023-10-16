@@ -58,6 +58,7 @@ const HtmlPageView = ({ htmlPage, updatePage, readOnly }: HtmlPageViewProps) => 
         </div>
         <div className="col-md-12 my-2" style={{ backgroundColor: '#eee' }}>
           <Button variant="secondary"
+            aria-label={'Insert a blank section'}
             tooltip={'Insert a blank section'}
             disabled={readOnly}
             onClick={() => insertNewSection(index + 1, { id: '', sectionType: 'HERO_WITH_IMAGE' })}>
