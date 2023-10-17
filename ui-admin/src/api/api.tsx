@@ -349,6 +349,11 @@ export type ParticipantNote = {
   creatingAdminUserId: string
 }
 
+export type KitRequestListResponse = {
+  kitRequests: KitRequest[]
+  exceptions: { message: string }[]
+}
+
 export type InternalConfig = {
   pepperDsmConfig: Record<string, string>
 }
@@ -710,7 +715,7 @@ export default {
     envName: string,
     enrolleeShortcodes: string[],
     kitType: string
-  ): Promise<KitRequest[]> {
+  ): Promise<KitRequestListResponse> {
     const params = new URLSearchParams({ kitType })
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/requestKits?${params}`
     const response = await fetch(url, {
@@ -718,9 +723,9 @@ export default {
       headers: this.getInitHeaders(),
       body: JSON.stringify(enrolleeShortcodes)
     })
-    const kits: KitRequest[] = await this.processJsonResponse(response)
-    kits.forEach(kit => { kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus) })
-    return kits
+    const listResponse: KitRequestListResponse = await this.processJsonResponse(response)
+    listResponse.kitRequests.forEach(kit => { kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus) })
+    return listResponse
   },
 
   async refreshKitStatuses(
