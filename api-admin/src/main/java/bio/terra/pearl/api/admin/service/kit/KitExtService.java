@@ -48,7 +48,12 @@ public class KitExtService {
         KitRequest kitRequest = requestKit(adminUser, studyShortcode, enrolleeShortcode, kitType);
         response.kitRequests.add(kitRequest);
       } catch (PepperApiException pepperApiException) {
-        response.pepperApiExceptions.add(pepperApiException);
+        // add the enrollee shortcode to the message for disambiguation
+        response.pepperApiExceptions.add(
+            new PepperApiException(
+                enrolleeShortcode + ": " + pepperApiException.getMessage(),
+                pepperApiException.getErrorResponse(),
+                pepperApiException.getHttpStatus()));
       }
     }
     return response;

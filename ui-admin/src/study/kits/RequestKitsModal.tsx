@@ -35,7 +35,7 @@ export default function RequestKitsModal({
       }
       if (response.kitRequests.length) {
         Store.addNotification(successNotification(
-                    `${response.pepperApiExceptions.length} kit requests created`
+                    `${response.kitRequests.length} kit requests created`
         ))
       }
       onSubmit()
