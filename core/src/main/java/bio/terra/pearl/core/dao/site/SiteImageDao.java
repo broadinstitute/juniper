@@ -2,14 +2,23 @@ package bio.terra.pearl.core.dao.site;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
 import bio.terra.pearl.core.model.site.SiteImage;
+
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SiteImageDao extends BaseJdbiDao<SiteImage> {
+    private String fieldStringWithoutDataColumn;
     public SiteImageDao(Jdbi jdbi) {
+
         super(jdbi);
+        List<String> colsWithoutDataCol = getGetQueryColumns();
+        colsWithoutDataCol.remove("data");
+        fieldStringWithoutDataColumn = colsWithoutDataCol.stream().collect(Collectors.joining(", "));
     }
 
     @Override
@@ -49,6 +58,18 @@ public class SiteImageDao extends BaseJdbiDao<SiteImage> {
                         .mapTo(int.class)
                         .one()
         ) + 1;
+    }
+
+    public List<SiteImage> findByPortalWithoutDataColumn(String portalShortcode) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                                select %s from %s 
+                                where portal_shortcode = :portalShortcode
+                                """.formatted(fieldStringWithoutDataColumn, tableName))
+                        .bind("portalShortcode", portalShortcode)
+                        .mapTo(clazz)
+                        .list()
+        );
     }
 
     public void deleteByPortalShortcode(String portalShortcode) {
