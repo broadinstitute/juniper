@@ -49,8 +49,8 @@ public class LivePepperDSMClient implements PepperDSMClient {
         var request = buildAuthedPostRequest("shipKit", makeKitRequestBody(studyShortcode, enrollee, kitRequest, address));
         PepperKitStatusResponse response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
         if (response.getKits().length != 1) {
-            throw new PepperApiException("Expected a single result from shipKit by ID (%s), got %d".formatted(
-                    kitRequest.getId(), response.getKits().length));
+            throw new PepperParseException("Expected a single result from shipKit by ID (%s), got %d".formatted(
+                    kitRequest.getId(), response.getKits().length), response.getKits().toString(), response);
         }
         return response.getKits()[0];
     }
@@ -168,7 +168,10 @@ public class LivePepperDSMClient implements PepperDSMClient {
                     return new PepperApiException("Error from Pepper with unexpected format: %s".formatted(e.responseString),
                             (PepperErrorResponse) e.responseObj, clientResponse.statusCode());
                 })
-                .map(responseAndBody -> new PepperApiException("Error from Pepper", responseAndBody.responseObj, clientResponse.statusCode()));
+                .map(responseAndBody -> new PepperApiException(
+                        responseAndBody.responseObj.getErrorMessage(),
+                        responseAndBody.responseObj,
+                        clientResponse.statusCode()));
     }
 
     /**

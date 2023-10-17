@@ -41,7 +41,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
         log.info("STUB sending kit request");
         if (address.getCity().startsWith(BAD_ADDRESS_PREFIX) || address.getStreet1().startsWith(BAD_ADDRESS_PREFIX)) {
             throw new  PepperApiException(
-                    "Error from Pepper",
+                    PEPPER_ADDRESS_VALIDATION_MSG,
                     PepperErrorResponse.builder()
                             .isError(true)
                             .errorMessage(PEPPER_ADDRESS_VALIDATION_MSG)

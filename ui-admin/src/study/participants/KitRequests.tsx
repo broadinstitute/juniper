@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Api, { Enrollee, KitRequest } from 'api/api'
+import { Enrollee, KitRequest } from 'api/api'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { basicTableLayout } from 'util/tableUtils'
@@ -10,9 +10,6 @@ import { instantToDefaultString } from 'util/timeUtils'
 import { useUser } from 'user/UserProvider'
 import InfoPopup from 'components/forms/InfoPopup'
 import KitStatusCell from './KitStatusCell'
-import { ApiErrorResponse, defaultApiErrorHandle } from 'api/api-utils'
-import { failureNotification } from 'util/notifications'
-import { Store } from 'react-notifications-component'
 
 /** Component for rendering the address a kit was sent to based on JSON captured at the time of the kit request. */
 function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string }) {
@@ -52,25 +49,12 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
                                         studyEnvContext: StudyEnvContextT,
                                         onUpdate: () => void
                                       }) {
-  const { currentEnv, portal, study } = studyEnvContext
   const { user } = useUser()
   const [showRequestKitModal, setShowRequestKitModal] = useState(false)
 
-  const onSubmit = async (kitType: string) => {
-    try {
-      await Api.createKitRequest(portal.shortcode, study.shortcode,
-        currentEnv.environmentName, enrollee.shortcode, kitType)
-      setShowRequestKitModal(false)
-      onUpdate()
-    } catch (e) {
-      if ((e as ApiErrorResponse).message.includes('ADDRESS_VALIDATION_ERROR')) {
-        Store.addNotification(failureNotification(`
-          Could not create kit request:  Address did not match any mailable address.\n\n  
-          The Participant will need to update their address in order to receive a kit`))
-      } else {
-        defaultApiErrorHandle(e as ApiErrorResponse)
-      }
-    }
+  const onSubmit = async () => {
+    setShowRequestKitModal(false)
+    onUpdate()
   }
 
   const table = useReactTable({
@@ -88,6 +72,7 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
     }
     {showRequestKitModal && <RequestKitModal
       studyEnvContext={studyEnvContext}
+      enrolleeShortcode={enrollee.shortcode}
       onDismiss={() => setShowRequestKitModal(false)}
       onSubmit={onSubmit}
     />}

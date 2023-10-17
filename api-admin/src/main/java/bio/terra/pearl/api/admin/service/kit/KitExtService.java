@@ -11,6 +11,7 @@ import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
 import bio.terra.pearl.core.service.kit.pepper.PepperParseException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class KitExtService {
     this.studyService = studyService;
   }
 
-  public List<KitRequest> requestKits(
+  public KitRequestListResponse requestKits(
       AdminUser adminUser,
       String portalShortcode,
       String studyShortcode,
@@ -41,10 +42,21 @@ public class KitExtService {
       List<String> enrolleeShortcodes,
       String kitType) {
     authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
+    KitRequestListResponse response = new KitRequestListResponse();
+    for (String enrolleeShortcode : enrolleeShortcodes) {
+      try {
+        KitRequest kitRequest = requestKit(adminUser, studyShortcode, enrolleeShortcode, kitType);
+        response.kitRequests.add(kitRequest);
+      } catch (PepperApiException pepperApiException) {
+        response.pepperApiExceptions.add(pepperApiException);
+      }
+    }
+    return response;
+  }
 
-    return enrolleeShortcodes.stream()
-        .map(enrolleeShortcode -> requestKit(adminUser, studyShortcode, enrolleeShortcode, kitType))
-        .toList();
+  public static class KitRequestListResponse {
+    public List<KitRequest> kitRequests = new ArrayList<>();
+    public List<PepperApiException> pepperApiExceptions = new ArrayList<>();
   }
 
   public Collection<KitRequest> getKitRequestsByStudyEnvironment(

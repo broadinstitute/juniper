@@ -22,11 +22,7 @@ public class PepperApiException extends RuntimeException {
     }
 
     public PepperApiException(String message, PepperErrorResponse errorResponse, HttpStatus httpStatus) {
-        super("%s for kit %s: %s".formatted(
-                message,
-                errorResponse.getJuniperKitId(),
-                errorResponse.getErrorMessage()
-        ));
+        super(message);
         this.httpStatus = httpStatus;
         this.errorResponse = errorResponse;
     }
