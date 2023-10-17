@@ -27,11 +27,11 @@ export default function RequestKitsModal({
     doApiLoad(async () => {
       const response = await Api.requestKits(portal.shortcode, study.shortcode, currentEnv.environmentName,
         enrolleeShortcodes, kitType)
-      if (response.pepperApiExceptions.length) {
-        const errorMessage = response.pepperApiExceptions
+      if (response.exceptions.length) {
+        const errorMessage = response.exceptions
           .map(exception => exception.message).join('; ')
         Store.addNotification(failureNotification(
-                    `${response.pepperApiExceptions.length} kit requests failed. ${errorMessage}`))
+                    `${response.exceptions.length} kit requests failed. ${errorMessage}`))
       }
       if (response.kitRequests.length) {
         Store.addNotification(successNotification(

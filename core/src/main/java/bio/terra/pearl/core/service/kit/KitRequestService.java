@@ -167,10 +167,10 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         var studies = studyService.findAll();
         for (Study study : studies) {
             for (EnvironmentName environmentName : EnvironmentName.values()) {
-                // if one sync fails, keep trying others in case the failure is just isolated unexpected data
                 try {
                     syncKitStatusesForStudy(study, environmentName);
                 } catch (PepperParseException | PepperApiException e) {
+                    // if one sync fails, keep trying others in case the failure is just isolated unexpected data
                     log.error("kit status sync failed for study %s".formatted(study.getShortcode()), e);
                 }
             }

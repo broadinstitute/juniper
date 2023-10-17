@@ -47,13 +47,11 @@ public class KitExtService {
       try {
         KitRequest kitRequest = requestKit(adminUser, studyShortcode, enrolleeShortcode, kitType);
         response.kitRequests.add(kitRequest);
-      } catch (PepperApiException pepperApiException) {
-        // add the enrollee shortcode to the message for disambiguation
-        response.pepperApiExceptions.add(
-            new PepperApiException(
-                enrolleeShortcode + ": " + pepperApiException.getMessage(),
-                pepperApiException.getErrorResponse(),
-                pepperApiException.getHttpStatus()));
+      } catch (Exception e) {
+        // add the enrollee shortcode to the message for disambiguation.  Once we refine the UX for
+        // this,
+        // a structured response might be useful here
+        response.exceptions.add(new Exception(enrolleeShortcode + ": " + e.getMessage(), e));
       }
     }
     return response;
@@ -61,7 +59,7 @@ public class KitExtService {
 
   public static class KitRequestListResponse {
     public List<KitRequest> kitRequests = new ArrayList<>();
-    public List<PepperApiException> pepperApiExceptions = new ArrayList<>();
+    public List<Exception> exceptions = new ArrayList<>();
   }
 
   public Collection<KitRequest> getKitRequestsByStudyEnvironment(

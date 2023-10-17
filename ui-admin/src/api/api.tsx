@@ -351,7 +351,7 @@ export type ParticipantNote = {
 
 export type KitRequestListResponse = {
   kitRequests: KitRequest[]
-  pepperApiExceptions: { message: string }[]
+  exceptions: { message: string }[]
 }
 
 export type InternalConfig = {

@@ -23,7 +23,7 @@ public class PepperErrorResponse extends PepperResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    public static class PepperErrorValue extends PepperResponse {
+    public static class PepperErrorValue {
         @NotNull
         private String detailMessage;
     }
