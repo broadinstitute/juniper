@@ -127,5 +127,5 @@ test('allows the user to change the page size', async () => {
   expect(screen.getByText('Page 1 of 4')).toBeInTheDocument()
 
   //Also assert that the preferred number of rows is saved to local storage
-  expect(localStorage.setItem).toHaveBeenCalledWith('participantList.portalCode.fakeStudy.preferredNumRows', '25')
+  expect(localStorage.setItem).toHaveBeenCalledWith('participantList.preferredNumRows', '25')
 })
