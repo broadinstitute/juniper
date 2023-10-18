@@ -110,12 +110,30 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         jdbi.registerRowMapper(clazz, getRowMapper());
     }
 
+    /**
+     * creates the object.  Will error if the object already has an id, as we generally want those to be auto-generated
+     * and a pre-existing id likely indicates a coding error like inadvertently re-creating an already deleted object
+     */
     public T create(T modelObj) {
         if (modelObj.getId() != null) {
             throw new IllegalArgumentException("object passed to create already has id - " + modelObj.getId());
         }
         return jdbi.withHandle(handle ->
                 handle.createUpdate(createQuerySql)
+                        .bindBean(modelObj)
+                        .executeAndReturnGeneratedKeys()
+                        .mapTo(clazz)
+                        .one()
+        );
+    }
+
+    /**
+     * creation method for cases where the object's id needs to be pre-specified (such as calling out to an external service
+     * prior to creation)
+     */
+    public T createWithIdSpecified(T modelObj) {
+        return jdbi.withHandle(handle ->
+                handle.createUpdate(getCreateQueryWithIdSpecifiedSql())
                         .bindBean(modelObj)
                         .executeAndReturnGeneratedKeys()
                         .mapTo(clazz)
@@ -151,6 +169,15 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     protected String getCreateQuerySql() {
         return "insert into " + tableName + " (" + StringUtils.join(insertColumns, ", ") +") " +
                 "values (" + StringUtils.join(insertFieldSymbols, ", ") + ");";
+    }
+
+    /**
+     * we typically do not include id in create queries as id columns are set to be auto-generated.
+     * but in some cases the id needs to be generated in advance of the creation.
+     */
+    protected String getCreateQueryWithIdSpecifiedSql() {
+        return "insert into " + tableName + " (id, " + StringUtils.join(insertColumns, ", ") +") " +
+                "values (:id, " + StringUtils.join(insertFieldSymbols, ", ") + ");";
     }
 
     /** basic get-by-id */

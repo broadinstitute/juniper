@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.kit;
+package bio.terra.pearl.core.service.kit.pepper;
 
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -6,6 +6,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -43,24 +44,30 @@ public class LivePepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public String sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
+    public PepperKitStatus sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address)
+    throws PepperApiException, PepperParseException {
         var request = buildAuthedPostRequest("shipKit", makeKitRequestBody(studyShortcode, enrollee, kitRequest, address));
-        return retrieveAndDeserializeResponse(request, String.class);
+        PepperKitStatusResponse response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
+        if (response.getKits().length != 1) {
+            throw new PepperParseException("Expected a single result from shipKit by ID (%s), got %d".formatted(
+                    kitRequest.getId(), response.getKits().length), response.getKits().toString(), response);
+        }
+        return response.getKits()[0];
     }
 
     @Override
-    public PepperKitStatus fetchKitStatus(UUID kitRequestId) {
+    public PepperKitStatus fetchKitStatus(UUID kitRequestId) throws PepperApiException, PepperParseException {
         var request = buildAuthedGetRequest("kitstatus/juniperKit/%s".formatted(kitRequestId));
         var response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
         if (response.getKits().length != 1) {
-            throw new PepperException("Expected a single result from fetchKitStatus by ID (%s), got %d".formatted(
+            throw new PepperApiException("Expected a single result from fetchKitStatus by ID (%s), got %d".formatted(
                     kitRequestId, response.getKits().length));
         }
         return response.getKits()[0];
     }
 
     @Override
-    public Collection<PepperKitStatus> fetchKitStatusByStudy(String studyShortcode) {
+    public Collection<PepperKitStatus> fetchKitStatusByStudy(String studyShortcode) throws PepperApiException, PepperParseException {
         var request = buildAuthedGetRequest("kitstatus/study/%s".formatted(makePepperStudyName(studyShortcode)));
         var response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
         return Arrays.asList(response.getKits());
@@ -84,9 +91,8 @@ public class LivePepperDSMClient implements PepperDSMClient {
         try {
             return objectMapper.writeValueAsString(pepperDSMKitRequest);
         } catch (JsonProcessingException e) {
-            // Wrap in a RuntimeException to make it trigger rollback from @Transactional methods. There's no good
-            // reason for PepperDSMKitRequest serialization to fail, so we can't assume that anything in the current
-            // transaction is valid.
+            // There's no normal reason for PepperDSMKitRequest serialization to fail,
+            // so if it fails, something very unexpected is happening
             throw new RuntimeException(e);
         }
     }
@@ -125,9 +131,8 @@ public class LivePepperDSMClient implements PepperDSMClient {
      * Performs the request defined by the given WebClient specification and deserializes the response to the given
      * type.
      *
-     * There are several potential sources of error here, including unchecked exceptions from 4xx/5xx response status
-     * and JSON parsing and deserialization exceptions. This method centralizes the behavior of robustly handling any of
-     * these possibilities and, when possible, converting them into a useful PepperException.
+     * exceptions from 4xx/5xx response status are thrown as PepperApiException
+     * exceptions parsing the response are thrown as PepperParseExceptions
      */
     private <T> T retrieveAndDeserializeResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec, Class<T> clazz) {
         requestHeadersSpec.httpRequest(req -> log.info("Sending DSM request: {}", req.getURI()));
@@ -139,17 +144,33 @@ public class LivePepperDSMClient implements PepperDSMClient {
                         this::deserializePepperError)
                 .bodyToMono(String.class)
                 .flatMap(deserializeTo(clazz))
+                .map(responseAndBody -> validate(responseAndBody, clazz))
+                .map(responseAndBody -> responseAndBody.responseObj)
                 .block();
     }
 
     /**
      * Deserialize a PepperErrorResponse into a PepperException, robustly handling deserialization errors.
      */
-    private Mono<PepperException> deserializePepperError(ClientResponse clientResponse) {
+    private Mono<PepperApiException> deserializePepperError(ClientResponse clientResponse) {
         // Read the body as a String and manually deserialize so we can capture and log the body if deserialization fails
         return clientResponse.bodyToMono(String.class)
                 .flatMap(deserializeTo(PepperErrorResponse.class))
-                .map(pepperErrorResponse -> new PepperException("Error from Pepper", pepperErrorResponse));
+                .onErrorMap(PepperParseException.class, e -> {
+                    // error message that we can't parse at all
+                    return new PepperApiException("Error from Pepper with unexpected format: %s".formatted(e.responseString),
+                            clientResponse.statusCode());
+                })
+                .map(responseAndBody -> validate(responseAndBody, PepperErrorResponse.class))
+                .onErrorMap(PepperParseException.class, e -> {
+                    // error message that parses into a PepperErrorResponse, but with unexpected attributes
+                    return new PepperApiException("Error from Pepper with unexpected format: %s".formatted(e.responseString),
+                            (PepperErrorResponse) e.responseObj, clientResponse.statusCode());
+                })
+                .map(responseAndBody -> new PepperApiException(
+                        responseAndBody.responseObj.getErrorMessage(),
+                        responseAndBody.responseObj,
+                        clientResponse.statusCode()));
     }
 
     /**
@@ -158,37 +179,43 @@ public class LivePepperDSMClient implements PepperDSMClient {
      * response body. Therefore, we do the deserialization manually so that we can capture the body for logging and
      * troubleshooting.
      */
-    private <T> Function<String, Mono<T>> deserializeTo(Class<T> clazz) {
+    private <T> Function<String, Mono<ResponseAndBody<T>>> deserializeTo(Class<T> clazz) throws PepperParseException {
         return body -> {
             // No deserialization needed if the requested response type is String
             if (clazz.equals(String.class)) {
-                return Mono.just(clazz.cast(body));
+                return Mono.just(new ResponseAndBody<T>(clazz.cast(body), body));
             }
             try {
                 var object = objectMapper.readValue(body, clazz);
-                validate(object, clazz, body);
-                return Mono.just(object);
+                return Mono.just(new ResponseAndBody<T>(object, body));
             } catch (JsonProcessingException e) {
-                return Mono.error(new PepperException(
-                        "Unable to parse response from Pepper as %s: %s".formatted(clazz.getName(), body), e));
+                 throw new PepperParseException(
+                        "Unable to parse response from Pepper as %s".formatted(clazz.getName()),
+                         body);
             }
         };
     }
 
     /** Validate returned object based on javax.validation annotations. */
-    private <T> void validate(Object object, Class<T> clazz, String body) {
-        var violations = validator.validate(object);
+    private <T> ResponseAndBody<T> validate(ResponseAndBody<T> responseAndBody, Class<T> clazz) throws PepperParseException {
+        var violations = validator.validate(responseAndBody.responseObj);
         if (!violations.isEmpty()) {
-            throw new PepperException(
-                    "Unexpected %s from Pepper: %s; %s".formatted(
-                            clazz.getName(),
-                            body,
-                            violations.stream()
-                                    .map(violation -> "%s %s".formatted(
-                                            violation.getPropertyPath(),
-                                            violation.getMessage()))
-                                    .collect(Collectors.joining(", "))));
+            String validationMsg = violations.stream()
+                    .map(violation -> "%s %s".formatted(
+                            violation.getPropertyPath(),
+                            violation.getMessage()))
+                    .collect(Collectors.joining(", "));
+            throw new PepperParseException(
+                    "Pepper response failed validation: %s".formatted(clazz.getName(), validationMsg), responseAndBody.body, responseAndBody.responseObj);
+
         }
+        return responseAndBody;
+    }
+
+    @AllArgsConstructor
+    public static class ResponseAndBody<T> {
+        public T responseObj;
+        public String body;
     }
 
     @Component

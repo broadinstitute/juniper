@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.kit;
+package bio.terra.pearl.core.service.kit.pepper;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.IntegrationTest;
@@ -39,7 +39,6 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
     @Transactional
     @IntegrationTest
     public void testSendKitRequest() throws Exception {
-        // Arrange
         var enrollee = enrolleeFactory.buildPersisted("testSendKitRequest");
         var kitType = kitTypeDao.findByName("SALIVA").get();
         var kitRequest = kitRequestFactory.buildPersisted("testSendKitRequest", enrollee.getId(), kitType.getId());
@@ -54,20 +53,13 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
                 .country("USA")
                 .build();
 
-        // Act
         var sendKitResponse = livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, enrollee, kitRequest, address);
-        log.info(sendKitResponse);
-
-        // Assert
-        var status = objectMapper.readValue(sendKitResponse, PepperKitStatusResponse.class);
-        assertThat(status.getKits().length, equalTo(1));
-        assertThat(status.getKits()[0].getError(), equalTo(false));
+        assertThat(sendKitResponse.getCurrentStatus(), equalTo("Kit without label"));
     }
 
     @Transactional
     @IntegrationTest
     public void testSendKitRequestParsesPepperError() throws Exception {
-        // Arrange
         var enrollee = enrolleeFactory.buildPersisted("testSendKitRequestParsesPepperError");
         var kitRequest = kitRequestFactory.buildPersisted("testSendKitRequestParsesPepperError", enrollee.getId());
         var address = PepperKitAddress.builder()
@@ -80,16 +72,11 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
                 .country("USA")
                 .build();
 
-        // "Act"
-        Executable act = () -> {
-            var newKitStatus = livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, enrollee, kitRequest, address);
-            log.info(newKitStatus);
-        };
-
-        // Assert
-        PepperException pepperException = assertThrows(PepperException.class, act);
-        assertThat(pepperException.getMessage(), pepperException.getErrorResponse(), notNullValue());
-        assertThat(pepperException.getErrorResponse().getErrorMessage(), equalTo("UNKNOWN_KIT_TYPE"));
+        PepperApiException pepperApiException = assertThrows(PepperApiException.class, () -> {
+            livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, enrollee, kitRequest, address);
+        });
+        assertThat(pepperApiException.getMessage(), pepperApiException.getErrorResponse(), notNullValue());
+        assertThat(pepperApiException.getMessage(), equalTo("UNKNOWN_KIT_TYPE"));
     }
 
     @Transactional
@@ -104,8 +91,8 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
         };
 
         // Assert
-        PepperException pepperException = assertThrows(PepperException.class, act);
-        assertThat(pepperException.getMessage(), containsString(kitId.toString()));
+        PepperApiException pepperApiException = assertThrows(PepperApiException.class, act);
+        assertThat(pepperApiException.getMessage(), containsString(kitId.toString()));
     }
 
     @Transactional
