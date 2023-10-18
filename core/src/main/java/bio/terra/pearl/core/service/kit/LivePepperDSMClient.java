@@ -50,7 +50,6 @@ public class LivePepperDSMClient implements PepperDSMClient {
 
     @Override
     public PepperKitStatus fetchKitStatus(UUID kitRequestId) {
-        // TODO: change "juniperKit" to "juniperkit" after DSM updates this path
         var request = buildAuthedGetRequest("kitstatus/juniperKit/%s".formatted(kitRequestId));
         var response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
         if (response.getKits().length != 1) {

@@ -1,148 +1,99 @@
 import React, { useState } from 'react'
-import Api, { MailingListContact, PortalEnvironment } from 'api/api'
-import { LoadedPortalContextT } from './PortalProvider'
+import Api, { getImageUrl, PortalEnvironment, SiteImage } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import {
-    ColumnDef,
-    getCoreRowModel,
-    getSortedRowModel,
-    SortingState,
-    useReactTable
+  ColumnDef,
+  getCoreRowModel, getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout, IndeterminateCheckbox } from 'util/tableUtils'
-import { currentIsoDate, instantToDateString, instantToDefaultString } from 'util/timeUtils'
-import { Button } from 'components/forms/Button'
-import { escapeCsvValue, saveBlobAsDownload } from 'util/downloadUtils'
-import { failureNotification, successNotification } from '../util/notifications'
-import { Store } from 'react-notifications-component'
-import Modal from 'react-bootstrap/Modal'
-import { useLoadingEffect } from '../api/api-utils'
-
+import { basicTableLayout, useRoutableTablePaging } from 'util/tableUtils'
+import { instantToDefaultString } from 'util/timeUtils'
+import { LoadedPortalContextT } from '../PortalProvider'
+import { useLoadingEffect } from 'api/api-utils'
+import TableClientPagination from '../../util/TablePagination'
+import { Modal } from 'react-bootstrap'
 
 /** shows a list of images in a table */
-export default function MailingListView({ portalContext, portalEnv }:
+export default function SiteImageList({ portalContext, portalEnv }:
                                             {portalContext: LoadedPortalContextT, portalEnv: PortalEnvironment}) {
-    const [contacts, setContacts] = useState<MailingListContact[]>([])
-    const [sorting, setSorting] = React.useState<SortingState>([])
-    const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-    const columns: ColumnDef<MailingListContact>[] = [{
-        id: 'select',
-        header: ({ table }) => <IndeterminateCheckbox
-            checked={table.getIsAllRowsSelected()} indeterminate={table.getIsSomeRowsSelected()}
-            onChange={table.getToggleAllRowsSelectedHandler()}/>,
-        cell: ({ row }) => (
-            <div className="px-1">
-                <IndeterminateCheckbox
-                    checked={row.getIsSelected()} indeterminate={row.getIsSomeSelected()}
-                    onChange={row.getToggleSelectedHandler()} disabled={!row.getCanSelect()}/>
-            </div>
-        )
-    }, {
-        header: 'Email',
-        accessorKey: 'email'
-    }, {
-        header: 'Name',
-        accessorKey: 'name'
-    }, {
-        header: 'Joined',
-        accessorKey: 'createdAt',
-        cell: info => instantToDefaultString(info.getValue() as number)
-    }]
+  const [images, setImages] = React.useState<SiteImage[]>([])
+  const [sorting, setSorting] = React.useState<SortingState>([{
+    id: 'cleanFileName', desc: false
+  }])
+  const { paginationState, preferredNumRowsKey } = useRoutableTablePaging('siteImageList')
+  const [previewImage, setPreviewImage] = useState<SiteImage>()
+  const columns: ColumnDef<SiteImage>[] = [{
+    header: 'File name',
+    accessorKey: 'cleanFileName'
+  }, {
+    header: 'version',
+    accessorKey: 'version'
+  }, {
+    header: 'created',
+    accessorKey: 'createdAt',
+    cell: info => instantToDefaultString(info.getValue() as number)
+  }, {
+    header: '',
+    id: 'thumbnail',
+    cell: ({ row: { original: image } }) => <button onClick={() => setPreviewImage(image)}
+      style={{
+        minHeight: '44px', minWidth: '90px',
+        maxHeight: '44px', maxWidth: '90px'
+      }}
+      className="border-1 bg-white"
+      title="show full-size preview">
+      <img src={getImageUrl(portalContext.portal.shortcode, image.cleanFileName, image.version)}
+        style={{ maxHeight: '40px', maxWidth: '80px' }}
+      />
+    </button>
+  }]
 
+  const table = useReactTable({
+    data: images,
+    columns,
+    state: {
+      sorting
+    },
+    initialState: {
+      pagination: paginationState
+    },
+    enableRowSelection: true,
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel()
+  })
 
-    const table = useReactTable({
-        data: contacts,
-        columns,
-        state: {
-            sorting,
-            rowSelection
-        },
-        enableRowSelection: true,
-        onSortingChange: setSorting,
-        getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        onRowSelectionChange: setRowSelection,
-        debugTable: true
+  /** Only show the most recent version of a given image in the list */
+  const filterPriorVersions = (imageList: SiteImage[]) => {
+    const latestVersions: Record<string, SiteImage> = {}
+    imageList.forEach(image => {
+      if (image.version > (latestVersions[image.cleanFileName]?.version ?? -1)) {
+        latestVersions[image.cleanFileName] = image
+      }
     })
+    return Object.values(latestVersions)
+  }
 
-    /** download selected contacts as a csv */
-    const download = () => {
-        const contactsSelected = Object.keys(rowSelection)
-            .filter(key => rowSelection[key])
-            .map(key => contacts[parseInt(key)])
-        const csvDataString = contactsSelected.map(contact => {
-            return `${escapeCsvValue(contact.email)}, ${escapeCsvValue(contact.name)}, 
-      ${instantToDateString(contact.createdAt)}`
-        }).join('\n')
-        const csvString = `email, name, date joined\n${  csvDataString}`
-        const blob = new Blob([csvString], {
-            type: 'text/plain'
-        })
-        saveBlobAsDownload(blob, `${portalContext.portal.shortcode}-MailingList-${currentIsoDate()}.csv`)
-    }
-    const numSelected = Object.keys(rowSelection).length
+  const { isLoading } = useLoadingEffect(async () => {
+    const result = await Api.getPortalImages(portalContext.portal.shortcode)
+    setImages(filterPriorVersions(result))
+  }, [portalContext.portal.shortcode, portalEnv.environmentName])
 
-    const { isLoading, reload } = useLoadingEffect(async () => {
-        const result = await Api.fetchMailingList(portalContext.portal.shortcode, portalEnv.environmentName)
-        setContacts(result)
-    }, [portalContext.portal.shortcode, portalEnv.environmentName])
 
-    const performDelete = async () => {
-        const contactsSelected = Object.keys(rowSelection)
-            .filter(key => rowSelection[key])
-            .map(key => contacts[parseInt(key)])
-        try {
-            // this might get gnarly with more than a few entries, but that's okay for now -- this is not expected to be
-            // a heavy-use feature.
-            await Promise.all(
-                contactsSelected.map(contact =>
-                    Api.deleteMailingListContact(portalContext.portal.shortcode, portalEnv.environmentName, contact.id)
-                )
-            )
-            Store.addNotification(successNotification(`${contactsSelected.length} entries removed`))
-        } catch {
-            Store.addNotification(failureNotification('Error: some entries could not be removed'))
-        }
-        reload() // just reload the whole thing to be safe
-        setShowDeleteConfirm(false)
-    }
-
-    return <div className="container p-3">
-        <h1 className="h4">Mailing list </h1>
-        <LoadingSpinner isLoading={isLoading}>
-            <div className="d-flex align-items-center">
-                <div>
-                    {numSelected} of {table.getPreFilteredRowModel().rows.length} selected
-                </div>
-                <Button onClick={download}
-                        variant="secondary" disabled={!numSelected}
-                        tooltip={numSelected ? 'Download selected contacts' : 'you must select contacts to download'}>
-                    Download
-                </Button>
-                <Button onClick={() => setShowDeleteConfirm(!showDeleteConfirm)}
-                        variant="secondary" disabled={!numSelected} className="ms-auto"
-                        tooltip={numSelected ? 'Remove selected contacts' : 'you must select contacts to remove'}>
-                    Remove
-                </Button>
-            </div>
-
-            {basicTableLayout(table)}
-            { showDeleteConfirm && <Modal show={true} onHide={() => setShowDeleteConfirm(false)}>
-                <Modal.Body>
-                    <div>Do you want to delete the <strong>{ numSelected }</strong> selected entries?</div>
-
-                    <div className="pt-3">This operation CANNOT BE UNDONE.</div>
-                </Modal.Body>
-                <Modal.Footer>
-                    <button type="button" className="btn btn-danger" onClick={performDelete}>
-                        Delete
-                    </button>
-                    <button type="button" className="btn btn-secondary" onClick={() => setShowDeleteConfirm(false)}>
-                        Cancel
-                    </button>
-                </Modal.Footer>
-            </Modal> }
-        </LoadingSpinner>
-    </div>
+  return <div className="container p-3">
+    <h1 className="h4">Site images </h1>
+    <LoadingSpinner isLoading={isLoading}>
+      {basicTableLayout(table)}
+      <TableClientPagination table={table} preferredNumRowsKey={preferredNumRowsKey}/>
+    </LoadingSpinner>
+    { !!previewImage && <Modal show={true} onHide={() => setPreviewImage(undefined)} size="xl"
+      animation={false}>
+      <img src={getImageUrl(portalContext.portal.shortcode,
+        previewImage.cleanFileName,
+        previewImage.version)} alt={`full-size preview of ${previewImage.cleanFileName}`}/>
+    </Modal> }
+  </div>
 }

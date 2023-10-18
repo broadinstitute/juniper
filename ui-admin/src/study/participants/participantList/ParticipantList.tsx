@@ -9,12 +9,17 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  PaginationState,
   SortingState,
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
-import { basicTableLayout, ColumnVisibilityControl, DownloadControl, IndeterminateCheckbox } from 'util/tableUtils'
+import {
+  basicTableLayout,
+  ColumnVisibilityControl,
+  DownloadControl,
+  IndeterminateCheckbox,
+  useRoutableTablePaging
+} from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import AdHocEmailModal from '../AdHocEmailModal'
@@ -50,7 +55,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   const facetValues = facetValuesFromString(searchParams.get('facets') ?? '{}', ALL_FACETS)
   const keywordFacetIndex = facetValues.findIndex(facet => facet.facet.category === 'keyword')
   const keywordFacetValue = facetValues[keywordFacetIndex]
-  const preferredNumRowsKey = `participantList.${portal.shortcode}.${study.shortcode}.preferredNumRows`
+  const { paginationState, preferredNumRowsKey } = useRoutableTablePaging('participantList')
 
   const columns = useMemo<ColumnDef<EnrolleeSearchResult, string>[]>(() => [{
     id: 'select',
@@ -131,12 +136,6 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     }
   }], [study.shortcode, currentEnv.environmentName])
 
-  const [{ pageIndex, pageSize }] =
-    useState<PaginationState>({
-      pageIndex: parseInt(searchParams.get('pageIndex') || '0'),
-      pageSize: parseInt(searchParams.get('pageSize') || localStorage.getItem(preferredNumRowsKey) || '10')
-    })
-
   const table = useReactTable({
     data: participantList,
     columns,
@@ -146,10 +145,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
       columnVisibility
     },
     initialState: {
-      pagination: {
-        pageIndex,
-        pageSize
-      }
+      pagination: paginationState
     },
     onColumnVisibilityChange: setColumnVisibility,
     enableRowSelection: true,

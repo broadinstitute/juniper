@@ -187,7 +187,7 @@ export type SiteImage = {
   id: string,
   createdAt: number,
   cleanFileName: string,
-  version: string
+  version: number
 }
 
 const emptyPepperKitStatus: PepperKitStatus = {
@@ -474,7 +474,7 @@ export default {
   },
 
   async getPortalImages(portalShortcode: string): Promise<SiteImage[]> {
-    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}`, this.getGetInit())
+    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/siteImages`, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 

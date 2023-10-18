@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Table } from '@tanstack/react-table'
 import { faCaretLeft, faCaretRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useSearchParams } from 'react-router-dom'
+import useUpdateEffect from './useUpdateEffect'
 
 /** renders a client-side pagination control (as in, the data is all loaded from the server at once, but
  * paged on the UI for readability */
@@ -12,10 +13,11 @@ export default function TableClientPagination<R>({ table, preferredNumRowsKey }:
 }) {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  useEffect(() => {
+  /** use update effect to avoid adding page numbers to the url on initial load */
+  useUpdateEffect(() => {
     searchParams.set('pageIndex', table.getState().pagination.pageIndex.toString())
     searchParams.set('pageSize', table.getState().pagination.pageSize.toString())
-    setSearchParams(searchParams)
+    setSearchParams(searchParams, { replace: true })
   }, [table.getState().pagination.pageIndex, table.getState().pagination.pageSize])
 
   return <div style={{

@@ -1,5 +1,5 @@
 import React, { HTMLProps, useEffect, useState } from 'react'
-import { CellContext, Column, flexRender, Header, RowData, Table } from '@tanstack/react-table'
+import { CellContext, Column, flexRender, Header, PaginationState, RowData, Table } from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretDown, faCaretUp, faCheck, faColumns, faDownload } from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
@@ -8,6 +8,7 @@ import { Button } from '../components/forms/Button'
 import { escapeCsvValue, saveBlobAsDownload } from './downloadUtils'
 import { instantToDefaultString } from './timeUtils'
 import { isEmpty } from 'lodash'
+import { useSearchParams } from 'react-router-dom'
 
 /**
  * Returns a debounced input react component
@@ -387,6 +388,22 @@ export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig = 
 /** renders a boolean value as a checkmark (true)  or a blank (false) */
 export const checkboxColumnCell = <R, T>(props: CellContext<R, T>) =>
   props.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
+
+/**
+ * hook for reading pagination params from the URL.  This should be used in conjunction with <TablePagination> for
+ * url-persistent params, also backed by localstorage for storing preferred pageSie
+ * @param tableIdentifier an identifier to distinguish table page sizes in local storage, the containing component name
+ * is a good default for this
+ */
+export const useRoutableTablePaging = (tableIdentifier: string) => {
+  const [searchParams] = useSearchParams()
+  const preferredNumRowsKey = `${tableIdentifier}.preferredNumRows`
+  const paginationState: PaginationState = {
+    pageIndex: parseInt(searchParams.get('pageIndex') || '0'),
+    pageSize: parseInt(searchParams.get('pageSize') || localStorage.getItem(preferredNumRowsKey) || '10')
+  }
+  return { paginationState, preferredNumRowsKey }
+}
 
 declare module '@tanstack/table-core' {
   //Extra column metadata for extending the built-in filter functionality of react-table
