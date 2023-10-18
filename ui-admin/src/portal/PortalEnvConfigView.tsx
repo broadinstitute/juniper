@@ -7,21 +7,24 @@ import { Store } from 'react-notifications-component'
 import { Portal } from '@juniper/ui-core/build/types/portal'
 import { Button } from 'components/forms/Button'
 import { set } from 'lodash/fp'
+import {LoadedPortalContextT} from "./PortalProvider";
+import {doApiLoad} from "api/api-utils";
+import LoadingSpinner from "../util/LoadingSpinner";
 
 
 type PortalEnvConfigViewProps = {
-  portal: Portal,
-  portalEnv: PortalEnvironment,
-  updatePortal: (portal: Portal) => void
+  portalContext: LoadedPortalContextT
+  portalEnv: PortalEnvironment
 }
 
 /**
  * allows viewing/editing of portal environment configs, e.g. password protection
  */
-const PortalEnvConfigView = ({ portal, portalEnv, updatePortal }: PortalEnvConfigViewProps) => {
+const PortalEnvConfigView = ({ portalContext, portalEnv }: PortalEnvConfigViewProps) => {
   const [config, setConfig] = useState(portalEnv.portalEnvironmentConfig)
   const { user } = useUser()
-
+  const { portal, reloadPortal } = portalContext
+  const [isLoading, setIsLoading] = useState(false)
   /** update a given field in the config */
   const updateConfig = (propName: string, value: string | boolean) => {
     setConfig(set(propName, value))
@@ -29,20 +32,15 @@ const PortalEnvConfigView = ({ portal, portalEnv, updatePortal }: PortalEnvConfi
   /** saves any changes to the server */
   const save = async (e: React.MouseEvent) => {
     e.preventDefault()
-    try {
+    doApiLoad(async () => {
       const updatedConfig = await Api.updatePortalEnvConfig(portal.shortcode, portalEnv.environmentName, config)
-      Store.addNotification(successNotification('Config saved'))
-      const updatedPortal = _cloneDeep(portal)
-      const matchedEnv = updatedPortal.portalEnvironments
-        .find(updatedPortalEnv => updatedPortalEnv.environmentName === portalEnv.environmentName) as PortalEnvironment
-      matchedEnv.portalEnvironmentConfig = updatedConfig
-      updatePortal(updatedPortal)
-      setConfig(updatedConfig)
-    } catch (e) {
-      Store.addNotification(failureNotification(`Save failed ${  e}`))
-    }
+      Store.addNotification(successNotification('Portal config saved'))
+      reloadPortal(portal.shortcode)
+    }, {setIsLoading})
   }
   return <form className="bg-white p-3">
+    <h2 className="h4">Website configuration ({portalContext.portal.name})</h2>
+    <p>Configure the accessibility of the landing page shown to all visitors, and sitewide properties</p>
     <div>
       <label className="form-label">
       password protected <input type="checkbox" checked={config.passwordProtected}
@@ -77,9 +75,10 @@ const PortalEnvConfigView = ({ portal, portalEnv, updatePortal }: PortalEnvConfi
       </label>
     </div>
     <Button onClick={save}
-      variant="primary" disabled={!user.superuser}
+      variant="primary" disabled={!user.superuser || isLoading}
       tooltip={user.superuser ? 'Save' : 'You do not have permission to edit these settings'}>
-      Save
+      {isLoading && <LoadingSpinner/>}
+      {!isLoading && <span>Save</span>}
     </Button>
   </form>
 }

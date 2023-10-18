@@ -12,8 +12,7 @@ test('renders a portal env. config', async () => {
   const envConfig = portalEnv.portalEnvironmentConfig
   render(
     <MockSuperuserProvider>
-      <PortalEnvConfigView portal={portalContext.portal as Portal}
-        portalEnv={portalEnv} updatePortal={portalContext.updatePortal}/>
+      <PortalEnvConfigView portalContext={portalContext} portalEnv={portalEnv}/>
     </MockSuperuserProvider>)
 
   expect(screen.getByLabelText('password')).toHaveValue(envConfig.password)
@@ -26,8 +25,7 @@ test('updates a portal env. config', async () => {
   const portalContext = mockPortalContext()
   const portalEnv = portalContext.portal?.portalEnvironments[0] as PortalEnvironment
   render(<MockSuperuserProvider>
-    <PortalEnvConfigView portal={portalContext.portal as Portal}
-      portalEnv={portalEnv} updatePortal={portalContext.updatePortal}/>
+    <PortalEnvConfigView portalContext={portalContext} portalEnv={portalEnv}/>
   </MockSuperuserProvider>)
   fireEvent.change(screen.getByLabelText('password'), { target: { value: 'newPass' } })
   expect(screen.getByLabelText('password')).toHaveValue('newPass')
@@ -39,8 +37,7 @@ test('save disabled for non-superusers', async () => {
   const portalEnv = portalContext.portal?.portalEnvironments[0] as PortalEnvironment
   render(
     <MockRegularUserProvider>
-      <PortalEnvConfigView portal={portalContext.portal as Portal}
-        portalEnv={portalEnv} updatePortal={portalContext.updatePortal}/>
+      <PortalEnvConfigView portalContext={portalContext} portalEnv={portalEnv}/>
     </MockRegularUserProvider>)
 
   expect(screen.getByText('Save')).toHaveAttribute('aria-disabled', 'true')
