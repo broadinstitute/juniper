@@ -61,13 +61,6 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
           onChange={e => updateConfig('password', e.target.value)}/>
       </label>
     </div>
-    <div>
-      <label className="form-label">
-        accepting registration
-        <input type="checkbox" checked={config.acceptingEnrollment}
-          onChange={e => updateConfig('acceptingEnrollment', e.target.checked)}/>
-      </label>
-    </div>
 
     <Button onClick={save}
       variant="primary" disabled={!user.superuser || isLoading}
