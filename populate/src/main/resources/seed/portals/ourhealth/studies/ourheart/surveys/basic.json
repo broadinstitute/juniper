@@ -190,8 +190,8 @@
             "validators": [
               {
                 "type": "regex",
-                "text": "Enter a number between 1 and 11.  Half inches can be entered as .5 (example: 7.5).",
-                "regex": "^([1-9]|1[0-1])?(\\.5)?$"
+                "text": "Enter a number between 1 and 11. Half inches can be entered as .5 (example: 7.5).",
+                "regex": "^([0-9]|1[0-1])?(\\.5)?$"
               }
             ],
             "inputType": "number"
