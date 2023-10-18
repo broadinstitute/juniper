@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.kit;
+package bio.terra.pearl.core.service.kit.pepper;
 
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -15,9 +15,9 @@ public interface PepperDSMClient {
      * @param kitRequest        sample kit request details
      * @param address           mailing address for the sample kit
      * @return status result from Pepper
-     * @throws PepperException on error from Pepper or failure to process the Pepper response
+     * @throws PepperApiException on error from Pepper or failure to process the Pepper response
      */
-    String sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address);
-    PepperKitStatus fetchKitStatus(UUID kitRequestId);
-    Collection<PepperKitStatus> fetchKitStatusByStudy(String studyShortcode);
+    PepperKitStatus sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) throws PepperApiException, PepperParseException;
+    PepperKitStatus fetchKitStatus(UUID kitRequestId) throws PepperApiException, PepperParseException;
+    Collection<PepperKitStatus> fetchKitStatusByStudy(String studyShortcode) throws PepperApiException, PepperParseException;
 }

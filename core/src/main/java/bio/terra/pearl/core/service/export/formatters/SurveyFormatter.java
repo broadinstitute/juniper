@@ -175,6 +175,11 @@ public class SurveyFormatter implements ExportFormatter {
         Answer matchedAnswer = matchedAnswers.get(0);
         // use the ItemExport Info matching the answer version so choices get translated correctly
         ItemExportInfo matchedItemExportInfo = itemExportInfo.getVersionMap().get(matchedAnswer.getSurveyVersion());
+        if (matchedItemExportInfo == null) {
+            // if we can't find a match (likely because we're in a demo environment and the answer refers to a version that no longer exists)
+            // just use the current version
+            matchedItemExportInfo = itemExportInfo;
+        }
         addAnswerToMap(moduleInfo, matchedItemExportInfo, matchedAnswer, valueMap);
     }
 

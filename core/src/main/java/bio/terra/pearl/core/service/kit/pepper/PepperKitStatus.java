@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.kit;
+package bio.terra.pearl.core.service.kit.pepper;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
@@ -25,7 +25,7 @@ public class PepperKitStatus {
             this.currentStatus = currentStatus;
         }
 
-        final String currentStatus;
+        public final String currentStatus;
 
         public static Status fromCurrentStatus(String currentStatus) {
             for (Status status : Status.values()) {

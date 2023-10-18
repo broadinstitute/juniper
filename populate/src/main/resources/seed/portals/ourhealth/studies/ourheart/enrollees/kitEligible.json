@@ -57,7 +57,8 @@
     "consentVersion": 1,
     "consented": true,
     "answers": [
-      {"questionStableId": "oh_oh_consent_signatureDate", "stringValue": "10/26/22"},
+      {"questionStableId": "oh_oh_consent_signatureDate", "objectValue": "\"2023-10-13T15:59:46.164Z\""},
+      {"questionStableId": "oh_oh_consent_formattedSignatureDate", "stringValue": "10/13/2023"},
       {"questionStableId": "oh_oh_consent_legalName", "stringValue": "Kitt Eligible"},
       {"questionStableId": "oh_oh_consent_agree", "stringValue": "agree"},
       {"questionStableId": "oh_oh_consent_signature",

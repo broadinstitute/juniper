@@ -21,7 +21,8 @@
     "consentVersion": 1,
     "consented": true,
     "answers": [
-      {"questionStableId": "oh_oh_consent_signatureDate", "stringValue": "2/26/23"},
+      {"questionStableId": "oh_oh_consent_signatureDate", "objectValue": "\"2023-08-29T15:59:46.164Z\""},
+      {"questionStableId": "oh_oh_consent_formattedSignatureDate", "stringValue": "8/29/2023"},
       {"questionStableId": "oh_oh_consent_legalName", "stringValue": "Con Senter"},
       {"questionStableId": "oh_oh_consent_agree", "stringValue": "agree"},
       {"questionStableId": "oh_oh_consent_signature",

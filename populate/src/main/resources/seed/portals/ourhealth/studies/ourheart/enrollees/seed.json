@@ -82,7 +82,8 @@
     "consentVersion": 1,
     "consented": true,
     "answers": [
-      {"questionStableId": "oh_oh_consent_signatureDate", "stringValue": "10/26/22"},
+      {"questionStableId": "oh_oh_consent_signatureDate", "objectValue": "\"2023-08-24T15:59:46.164Z\""},
+      {"questionStableId": "oh_oh_consent_formattedSignatureDate", "stringValue": "8/24/2023"},
       {"questionStableId": "oh_oh_consent_legalName", "stringValue": "Random Generated User"},
       {"questionStableId": "oh_oh_consent_agree", "stringValue": "agree"},
       {"questionStableId": "oh_oh_consent_signature",

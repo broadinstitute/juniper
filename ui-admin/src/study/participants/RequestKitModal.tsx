@@ -1,58 +1,86 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import Api, { KitType } from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Select from 'react-select'
+import { ApiErrorResponse, defaultApiErrorHandle, useLoadingEffect } from 'api/api-utils'
+import LoadingSpinner from 'util/LoadingSpinner'
+import { failureNotification, successNotification } from 'util/notifications'
+import { Store } from 'react-notifications-component'
 
 /** Renders a modal for an admin to submit a sample collection kit request. */
-export default function RequestKitModal({ studyEnvContext, onDismiss, onSubmit }: {
+export default function RequestKitModal({
+  studyEnvContext, enrolleeShortcode,
+  onDismiss, onSubmit
+}: {
     studyEnvContext: StudyEnvContextT,
     onDismiss: () => void,
-    onSubmit: (kitType: string) => void }) {
-  const { portal, study } = studyEnvContext
-  const [kitTypes, setKitTypes] = useState<KitType[]>()
-  const [kitType, setKitType] = useState('')
-  const [error, setError] = useState<string>()
-  const kitTypeOptions = kitTypes?.map(kitType => ({ label: kitType.displayName, value: kitType.name }))
-  const selectedKitTypeOption = kitTypeOptions?.find(kitTypeOption => kitTypeOption.value === kitType)
-
+    enrolleeShortcode: string,
+    onSubmit: () => void }) {
+  const { portal, study, currentEnv } = studyEnvContext
+  const [isLoading, setIsLoading] = useState(false)
+  const { kitType, KitSelect } = useKitTypeSelect(portal.shortcode, study.shortcode)
   const handleSubmit = async () => {
+    setIsLoading(true)
     try {
-      onSubmit(kitType)
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : `${e}`)
+      await Api.createKitRequest(portal.shortcode, study.shortcode,
+        currentEnv.environmentName, enrolleeShortcode, kitType)
+      Store.addNotification(successNotification('Kit request created'))
+      onSubmit()
+    } catch (e) {
+      if ((e as ApiErrorResponse).message.includes('ADDRESS_VALIDATION_ERROR')) {
+        Store.addNotification(failureNotification(`
+          Could not create kit request:  Address did not match any mailable address.\n\n  
+          The Participant will need to update their address in order to receive a kit`))
+      } else {
+        defaultApiErrorHandle(e as ApiErrorResponse)
+      }
+      onDismiss()
     }
   }
-
-  useEffect(() => {
-    const loadKitTypes = async () => {
-      const fetchedKitTypes = await Api.fetchKitTypes(portal.shortcode, study.shortcode)
-      setKitTypes(fetchedKitTypes)
-      kitType || setKitType(fetchedKitTypes[0].name)
-    }
-
-    loadKitTypes()
-  }, [])
 
   return <Modal show={true} onHide={onDismiss}>
     <Modal.Header closeButton>
       <Modal.Title>Request a kit</Modal.Title>
     </Modal.Header>
     <Modal.Body>
-      {error && <div>Error: {error}</div>}
       <form onSubmit={e => e.preventDefault()}>
+        <div>
+          Enrollee: {enrolleeShortcode}
+        </div>
         <div>
           <label className='form-label'>
             Kit type
-            <Select options={kitTypeOptions} value={selectedKitTypeOption}
-              onChange={option => setKitType(option?.value ?? '')}/>
+            {KitSelect}
           </label>
         </div>
       </form>
     </Modal.Body>
     <Modal.Footer>
-      <button className='btn btn-secondary' onClick={onDismiss}>Cancel</button>
-      <button className='btn btn-primary' onClick={handleSubmit}>Request Kit</button>
+      <LoadingSpinner isLoading={isLoading}>
+        <button className='btn btn-secondary' onClick={onDismiss}>Cancel</button>
+        <button className='btn btn-primary' onClick={handleSubmit}>Request Kit</button>
+      </LoadingSpinner>
     </Modal.Footer>
   </Modal>
+}
+
+/** hook for a kit type selector that handles loading the kit type options from the server.
+ * returns the selected type and the KitSelect component to render */
+export const useKitTypeSelect = (portalShortcode: string, studyShortcode: string) => {
+  const [kitTypes, setKitTypes] = useState<KitType[]>()
+  const [kitType, setKitType] = useState('')
+  const kitTypeOptions = kitTypes?.map(kitType => ({ label: kitType.displayName, value: kitType.name }))
+  const selectedKitTypeOption = kitTypeOptions?.find(kitTypeOption => kitTypeOption.value === kitType)
+
+  useLoadingEffect(async () => {
+    const fetchedKitTypes = await Api.fetchKitTypes(portalShortcode, studyShortcode)
+    setKitTypes(fetchedKitTypes)
+    kitType || setKitType(fetchedKitTypes[0].name)
+  })
+
+  return {
+    kitType, KitSelect: <Select options={kitTypeOptions} value={selectedKitTypeOption}
+      onChange={option => setKitType(option?.value ?? '')}/>
+  }
 }

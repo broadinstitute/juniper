@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.kit;
 
+import bio.terra.pearl.core.dao.DaoUtils;
 import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -15,14 +16,14 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
+import bio.terra.pearl.core.service.kit.pepper.*;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,13 +34,14 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
-    private static final Logger logger = LoggerFactory.getLogger(KitRequestService.class);
-
     // NOTE: These are completely made up for now, until we get further with the Pepper integration and know what the real
     // possible statuses are.
     private static final Set<String> PEPPER_COMPLETED_STATUSES = Set.of("PROCESSED", "CANCELLED");
     private static final Set<String> PEPPER_FAILED_STATUSES = Set.of("CONTAMINATED");
+
+    private final DaoUtils daoUtils;
 
     public KitRequestService(KitRequestDao dao,
                              @Lazy EnrolleeService enrolleeService,
@@ -48,7 +50,8 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                              ProfileService profileService,
                              @Lazy StudyEnvironmentService studyEnvironmentService,
                              @Lazy StudyService studyService,
-                             ObjectMapper objectMapper) {
+                             ObjectMapper objectMapper,
+                             DaoUtils daoUtils) {
         super(dao);
         this.enrolleeService = enrolleeService;
         this.kitTypeDao = kitTypeDao;
@@ -57,43 +60,40 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         this.studyEnvironmentService = studyEnvironmentService;
         this.studyService = studyService;
         this.objectMapper = objectMapper;
+        this.daoUtils = daoUtils;
     }
 
     /**
      * Send a request for a sample kit to Pepper.
-     *
-     * 1. Create and save the sample kit request in the Juniper database
-     * 2. Send the sample kit request to Pepper
-     * 3. Record the status response from Pepper in the Juniper database
-     *
-     * These steps are all performed in a single transaction. However, each could fail independently. If there's an
-     * error from Pepper, then the sample kit request will not be saved in Juniper, and it's safe to assume that there
-     * is no new request in Pepper. If there's an error saving the status response from Pepper, then it's possible for
-     * there to be a request in Pepper that does not exist in Juniper. We could potentially split that step into its own
-     * transaction to help avoid that potential inconsistency.
+     * Throws PepperApiException if the Pepper API request failed
      */
-    @Transactional
-    public KitRequest requestKit(AdminUser adminUser, String studyShortcode, Enrollee enrollee, String kitTypeName) {
+    public KitRequest requestKit(AdminUser adminUser, String studyShortcode, Enrollee enrollee, String kitTypeName)
+    throws PepperApiException {
         // create and save kit request
-        Profile profile = profileService.loadWithMailingAddress(enrollee.getProfileId())
-                .orElseThrow(() -> new RuntimeException("Missing profile for enrollee: " + enrollee.getShortcode()));
+        if (enrollee.getProfileId() == null) {
+            throw new IllegalArgumentException("No profile for enrollee: " + enrollee.getShortcode());
+        }
+        Profile profile = profileService.loadWithMailingAddress(enrollee.getProfileId()).get();
         PepperKitAddress pepperKitAddress = makePepperKitAddress(profile);
-        var kitRequest = createKitRequest(adminUser, enrollee, pepperKitAddress, kitTypeName);
+        KitRequest kitRequest = assemble(adminUser, enrollee, pepperKitAddress, kitTypeName);
 
         // send kit request to DSM
-        var response = pepperDSMClient.sendKitRequest(studyShortcode, enrollee, kitRequest, pepperKitAddress);
-
-        // save DSM response/status with Juniper KitRequest
         try {
-            var untypedStatuses = PepperKitStatusResponse.extractUntypedKitStatuses(response, objectMapper);
-            // Pepper response from requesting it kit must have one and only one kit status
-            var pepperStatusJson = objectMapper.writeValueAsString(untypedStatuses.get(0));
+            PepperKitStatus dsmKitStatus = pepperDSMClient.sendKitRequest(studyShortcode, enrollee, kitRequest, pepperKitAddress);
+            // write out the PepperKitStatus as a string for storage
+            var pepperStatusJson = objectMapper.writeValueAsString(dsmKitStatus);
             kitRequest.setDsmStatus(pepperStatusJson);
-            saveKitStatus(kitRequest, pepperStatusJson, kitRequest.getCreatedAt());
+        } catch (PepperParseException e) {
+            // response was successful, but we got unexpected format back from pepper
+            // we want to log the error, but still continue on to saving the kit
+            log.error("Unable to parse kit response status from Pepper: kit id %s", kitRequest.getId());
         } catch (JsonProcessingException e) {
-            throw new PepperException("Unable to parse response from Pepper: %s".formatted(response), e);
+            // serialization failures shouldn't ever happen in the objectMapper.writeValueAsString, but don't abort the operation, since the
+            // pepper request was already successful
+            log.error("Unable to write kit response status from Pepper: kit id %s", kitRequest.getId());
         }
-
+        kitRequest = dao.createWithIdSpecified(kitRequest);
+        log.info("Kit request created: enrollee: {}, kit: {}", enrollee.getShortcode(), kitRequest.getId());
         return kitRequest;
     }
 
@@ -143,7 +143,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      * Do _NOT_ call this repeatedly for a collection of kits. Use a bulk operation instead to avoid overwhelming DSM.
      */
     @Transactional
-    public PepperKitStatus syncKitStatusFromPepper(UUID kitId) {
+    public PepperKitStatus syncKitStatusFromPepper(UUID kitId) throws PepperParseException, PepperApiException {
         var kitRequest = dao.find(kitId).orElseThrow(() -> new NotFoundException("Kit request not found"));
         var pepperKitStatus = pepperDSMClient.fetchKitStatus(kitId);
         try {
@@ -159,7 +159,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     /**
      * Query Pepper for all in-progress kits and update the cached status in Juniper. This is intended to be called as a
      * scheduled job during expected non-busy times for DSM. If on-demand updates are needed outside the scheduled job,
-     * use {@link KitRequestService#updateKitStatus(AdminUser, UUID)} for a single kit or a batch operation that queries
+     * use {@link KitRequestService#syncKitStatusFromPepper} for a single kit or a batch operation that queries
      * Pepper for less than all open kits.
      */
     @Transactional
@@ -167,13 +167,18 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         var studies = studyService.findAll();
         for (Study study : studies) {
             for (EnvironmentName environmentName : EnvironmentName.values()) {
-                syncKitStatusesForStudy(study, environmentName);
+                try {
+                    syncKitStatusesForStudy(study, environmentName);
+                } catch (PepperParseException | PepperApiException e) {
+                    // if one sync fails, keep trying others in case the failure is just isolated unexpected data
+                    log.error("kit status sync failed for study %s".formatted(study.getShortcode()), e);
+                }
             }
         }
     }
 
     @Transactional
-    public void syncKitStatusesForStudy(Study study, EnvironmentName environmentName) {
+    public void syncKitStatusesForStudy(Study study, EnvironmentName environmentName) throws PepperParseException, PepperApiException {
         // This assumes that DSM is configured with a single study backing all environments of the Juniper study
         // TODO: delay deserializing to a PepperKitStatus until after it's been recorded on the kit request
         var pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
@@ -215,32 +220,34 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         }
     }
 
-    private KitRequest createKitRequest(
+    /** Just creates the object -- does not communicate with pepper or save to database.  The created
+     * object will have an id so that external requests will be sent on it.  */
+    public KitRequest assemble(
             AdminUser adminUser,
             Enrollee enrollee,
             PepperKitAddress pepperKitAddress,
             String kitTypeName) {
         KitType kitType = kitTypeDao.findByName(kitTypeName).get();
-        String addressJson = null;
-        try {
-            addressJson = objectMapper.writeValueAsString(pepperKitAddress);
-        } catch (JsonProcessingException e) {
-            // Wrap in a RuntimeException to make it trigger rollback from @Transactional methods. There's no good
-            // reason for PepperKitAddress serialization to fail, so we can't assume that anything in the current
-            // transaction is valid.
-            throw new RuntimeException(e);
-        }
         KitRequest kitRequest = KitRequest.builder()
+                .id(daoUtils.generateUUID())
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee.getId())
                 .kitTypeId(kitType.getId())
-                .sentToAddress(addressJson)
+                .sentToAddress(stringifyPepperAddress(pepperKitAddress))
                 .status(KitRequestStatus.CREATED)
+                .kitType(kitType)
                 .build();
-        KitRequest savedKitRequest = dao.create(kitRequest);
-        savedKitRequest.setKitType(kitType);
-        logger.info("SampleKit created. id: {}, enrollee: {}", savedKitRequest.getId(), savedKitRequest.getEnrolleeId());
-        return savedKitRequest;
+        return kitRequest;
+    }
+
+    protected String stringifyPepperAddress(PepperKitAddress kitAddress) {
+        try {
+            return objectMapper.writeValueAsString(kitAddress);
+        } catch (JsonProcessingException e) {
+            // There's no good reason for PepperKitAddress serialization to fail, so if it does, something very
+            // unexpected is happening.  Throw RuntimeException to ensure @Transactional annotations will rollback.
+            throw new RuntimeException(e);
+        }
     }
 
     /**

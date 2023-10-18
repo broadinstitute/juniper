@@ -26,7 +26,8 @@
         "participants/consentedEnrollee.json",
         "participants/basicsDone.json",
         "participants/withdrawn.json",
-        "participants/kitEligible.json"
+        "participants/kitEligible.json",
+        "participants/badAddress.json"
       ],
       "mailingListContacts": [
         {
