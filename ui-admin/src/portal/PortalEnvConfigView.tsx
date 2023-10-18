@@ -78,7 +78,7 @@ const PortalEnvConfigView = ({ portalContext, portalEnv }: PortalEnvConfigViewPr
       variant="primary" disabled={!user.superuser || isLoading}
       tooltip={user.superuser ? 'Save' : 'You do not have permission to edit these settings'}>
       {isLoading && <LoadingSpinner/>}
-      {!isLoading && <span>Save</span>}
+      {!isLoading && 'Save website config'}
     </Button>
   </form>
 }

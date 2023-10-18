@@ -1,10 +1,11 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import PortalEnvConfigView from './PortalEnvConfigView'
 import { mockPortalContext } from 'test-utils/mocking-utils'
 import { MockRegularUserProvider, MockSuperuserProvider } from 'test-utils/user-mocking-utils'
-import { Portal, PortalEnvironment } from '@juniper/ui-core/build/types/portal'
+import { PortalEnvironment } from '@juniper/ui-core'
+import userEvent from "@testing-library/user-event";
 
 test('renders a portal env. config', async () => {
   const portalContext = mockPortalContext()
@@ -27,9 +28,12 @@ test('updates a portal env. config', async () => {
   render(<MockSuperuserProvider>
     <PortalEnvConfigView portalContext={portalContext} portalEnv={portalEnv}/>
   </MockSuperuserProvider>)
-  fireEvent.change(screen.getByLabelText('password'), { target: { value: 'newPass' } })
-  expect(screen.getByLabelText('password')).toHaveValue('newPass')
-  expect(screen.getByText('Save')).toHaveAttribute('aria-disabled', 'false')
+  const input = screen.getByLabelText('password') as HTMLInputElement
+  // select all:
+  input.setSelectionRange(0, input.value.length)
+  await userEvent.type(input, 'newPass')
+  expect(input).toHaveValue('newPass')
+  expect(screen.getByText('Save website config')).toHaveAttribute('aria-disabled', 'false')
 })
 
 test('save disabled for non-superusers', async () => {
@@ -40,5 +44,5 @@ test('save disabled for non-superusers', async () => {
       <PortalEnvConfigView portalContext={portalContext} portalEnv={portalEnv}/>
     </MockRegularUserProvider>)
 
-  expect(screen.getByText('Save')).toHaveAttribute('aria-disabled', 'true')
+  expect(screen.getByText('Save website config')).toHaveAttribute('aria-disabled', 'true')
 })
