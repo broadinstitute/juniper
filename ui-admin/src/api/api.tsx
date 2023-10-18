@@ -533,7 +533,7 @@ export default {
   },
 
   async updateStudyEnvironmentConfig(portalShortcode: string, studyShortcode: string, envName: string,
-                               studyEnvConfigUpdate: StudyEnvironmentConfig): Promise<StudyEnvironmentConfig> {
+    studyEnvConfigUpdate: StudyEnvironmentConfig): Promise<StudyEnvironmentConfig> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}/env/${envName}/config`
     const response = await fetch(url, {
       method: 'PATCH',

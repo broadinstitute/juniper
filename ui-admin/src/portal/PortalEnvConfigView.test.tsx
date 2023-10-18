@@ -5,7 +5,7 @@ import PortalEnvConfigView from './PortalEnvConfigView'
 import { mockPortalContext } from 'test-utils/mocking-utils'
 import { MockRegularUserProvider, MockSuperuserProvider } from 'test-utils/user-mocking-utils'
 import { PortalEnvironment } from '@juniper/ui-core'
-import userEvent from "@testing-library/user-event";
+import userEvent from '@testing-library/user-event'
 
 test('renders a portal env. config', async () => {
   const portalContext = mockPortalContext()
@@ -30,7 +30,7 @@ test('updates a portal env. config', async () => {
   </MockSuperuserProvider>)
   const input = screen.getByLabelText('password') as HTMLInputElement
   // select all:
-  input.setSelectionRange(0, input.value.length)
+  await userEvent.clear(input)
   await userEvent.type(input, 'newPass')
   expect(input).toHaveValue('newPass')
   expect(screen.getByText('Save website config')).toHaveAttribute('aria-disabled', 'false')

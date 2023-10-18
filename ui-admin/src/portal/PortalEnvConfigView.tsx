@@ -1,15 +1,13 @@
 import React, { useState } from 'react'
 import Api, { PortalEnvironment } from 'api/api'
-import { useUser } from '../user/UserProvider'
-import _cloneDeep from 'lodash/cloneDeep'
-import { failureNotification, successNotification } from '../util/notifications'
+import { useUser } from 'user/UserProvider'
+import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
-import { Portal } from '@juniper/ui-core/build/types/portal'
 import { Button } from 'components/forms/Button'
 import { set } from 'lodash/fp'
-import {LoadedPortalContextT} from "./PortalProvider";
-import {doApiLoad} from "api/api-utils";
-import LoadingSpinner from "../util/LoadingSpinner";
+import { LoadedPortalContextT } from './PortalProvider'
+import { doApiLoad } from 'api/api-utils'
+import LoadingSpinner from '../util/LoadingSpinner'
 
 
 type PortalEnvConfigViewProps = {
@@ -33,10 +31,10 @@ const PortalEnvConfigView = ({ portalContext, portalEnv }: PortalEnvConfigViewPr
   const save = async (e: React.MouseEvent) => {
     e.preventDefault()
     doApiLoad(async () => {
-      const updatedConfig = await Api.updatePortalEnvConfig(portal.shortcode, portalEnv.environmentName, config)
+      await Api.updatePortalEnvConfig(portal.shortcode, portalEnv.environmentName, config)
       Store.addNotification(successNotification('Portal config saved'))
       reloadPortal(portal.shortcode)
-    }, {setIsLoading})
+    }, { setIsLoading })
   }
   return <form className="bg-white p-3">
     <h2 className="h4">Website configuration ({portalContext.portal.name})</h2>
