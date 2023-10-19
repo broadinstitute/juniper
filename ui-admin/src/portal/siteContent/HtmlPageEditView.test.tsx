@@ -10,7 +10,7 @@ test('readOnly disables insert new section button', async () => {
   const { RoutedComponent } = setupRouterTest(
     <HtmlPageEditView htmlPage={mockPage} readOnly={true} updatePage={jest.fn()}/>)
   render(RoutedComponent)
-  expect(screen.getByLabelText('Insert a blank section')).toHaveAttribute('aria-disabled', 'true')
+  expect(screen.getAllByLabelText('Insert a blank section')[0]).toHaveAttribute('aria-disabled', 'true')
 })
 
 test('Insert Section button calls updatePage with a new blank HERO_WITH_IMAGE section', async () => {
@@ -22,7 +22,7 @@ test('Insert Section button calls updatePage with a new blank HERO_WITH_IMAGE se
   render(RoutedComponent)
 
   //Act
-  const insertSectionButton = screen.getByLabelText('Insert a blank section')
+  const insertSectionButton = screen.getAllByLabelText('Insert a blank section')[1]
   await userEvent.click(insertSectionButton)
 
   //Assert
