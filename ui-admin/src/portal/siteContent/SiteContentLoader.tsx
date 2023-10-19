@@ -47,7 +47,7 @@ const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvCon
       Store.addNotification(failureNotification('save failed'))
       return
     }
-    await switchToVersion(newVersion.id, newVersion.stableId, newVersion.version, undefined)
+    await switchToVersion(newVersion.id, newVersion.stableId, newVersion.version, newVersion)
     setIsLoading(false)
   }
 
