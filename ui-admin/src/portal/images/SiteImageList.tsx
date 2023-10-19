@@ -11,9 +11,11 @@ import {
 import { basicTableLayout, useRoutableTablePaging } from 'util/tableUtils'
 import { instantToDefaultString } from 'util/timeUtils'
 import { LoadedPortalContextT } from '../PortalProvider'
-import { useLoadingEffect } from 'api/api-utils'
+import {doApiLoad, useLoadingEffect} from 'api/api-utils'
 import TableClientPagination from '../../util/TablePagination'
 import { Modal } from 'react-bootstrap'
+import {successNotification} from "../../util/notifications";
+import {Store} from "react-notifications-component";
 
 /** shows a list of images in a table */
 export default function SiteImageList({ portalContext, portalEnv }:
@@ -24,6 +26,9 @@ export default function SiteImageList({ portalContext, portalEnv }:
   }])
   const { paginationState, preferredNumRowsKey } = useRoutableTablePaging('siteImageList')
   const [previewImage, setPreviewImage] = useState<SiteImageMetadata>()
+  const [file, setFile] = useState<File>()
+
+
   const columns: ColumnDef<SiteImageMetadata>[] = [{
     header: 'File name',
     accessorKey: 'cleanFileName'
@@ -82,9 +87,23 @@ export default function SiteImageList({ portalContext, portalEnv }:
     setImages(filterPriorVersions(result))
   }, [portalContext.portal.shortcode, portalEnv.environmentName])
 
+  const uploadImage = () => {
+    if (!file) { return }
+    doApiLoad(async () => {
+      await Api.uploadPortalImage(portalContext.portal.shortcode, file.name, 1, file)
+      Store.addNotification(successNotification('image saved'))
+    })
+
+  }
+
+  function handleChange(event: any) {
+    setFile(event.target.files[0])
+  }
 
   return <div className="container p-3">
     <h1 className="h4">Site images </h1>
+    <input type="file" onChange={handleChange}/>
+    <button type="button" onClick={uploadImage}>Upload</button>
     <LoadingSpinner isLoading={isLoading}>
       {basicTableLayout(table)}
       <TableClientPagination table={table} preferredNumRowsKey={preferredNumRowsKey}/>

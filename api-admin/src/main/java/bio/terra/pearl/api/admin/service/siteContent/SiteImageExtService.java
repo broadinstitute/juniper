@@ -34,4 +34,22 @@ public class SiteImageExtService {
     authUtilService.authUserToPortal(operator, portalShortcode);
     return siteImageService.findMetadataByPortal(portalShortcode);
   }
+
+  public SiteImage upload(
+      String portalShortcode,
+      String uploadFileName,
+      int version,
+      byte[] imageData,
+      AdminUser operator) {
+    authUtilService.authUserToPortal(operator, portalShortcode);
+    SiteImage image =
+        SiteImage.builder()
+            .portalShortcode(portalShortcode)
+            .version(version)
+            .data(imageData)
+            .uploadFileName(uploadFileName)
+            .build();
+    // the create method handles cleaning and converting the uploadFileName to a cleanFileName
+    return siteImageService.create(image);
+  }
 }
