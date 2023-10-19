@@ -18,10 +18,8 @@ describe('AddPageModal', () => {
 
     render(RoutedComponent)
 
-    //Act
-    const createButton = screen.getByText('Create')
-
     //Assert
+    const createButton = screen.getByText('Create')
     expect(createButton).toBeDisabled()
   })
 
