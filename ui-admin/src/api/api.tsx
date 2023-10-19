@@ -488,8 +488,8 @@ export default {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/siteImages/upload/${uploadFileName}/${version}`
     const headers = this.getInitHeaders()
     delete headers['Content-Type'] // browsers will auto-add the correct type for the multipart file
-    const formData = new FormData();
-    formData.append("file", file)
+    const formData = new FormData()
+    formData.append('file', file)
     const response = await fetch(url, {
       method: 'POST',
       headers,

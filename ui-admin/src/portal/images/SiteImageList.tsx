@@ -11,14 +11,13 @@ import {
 import { basicTableLayout, useRoutableTablePaging } from 'util/tableUtils'
 import { instantToDefaultString } from 'util/timeUtils'
 import { LoadedPortalContextT } from '../PortalProvider'
-import {doApiLoad, useLoadingEffect} from 'api/api-utils'
+import { useLoadingEffect } from 'api/api-utils'
 import TableClientPagination from 'util/TablePagination'
 import { Modal } from 'react-bootstrap'
-import SiteImageUploadModal from "./SiteImageUploadModal";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlus} from "@fortawesome/free-solid-svg-icons";
-import {Button} from "../../components/forms/Button";
-
+import SiteImageUploadModal from './SiteImageUploadModal'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { Button } from '../../components/forms/Button'
 
 /** shows a list of images in a table */
 export default function SiteImageList({ portalContext, portalEnv }:
@@ -66,7 +65,7 @@ export default function SiteImageList({ portalContext, portalEnv }:
     header: '',
     id: 'actions',
     cell: ({ row: { original: image } }) => <button onClick={() => updateImage(image)}
-                                                    className="btn btn-secondary">
+      className="btn btn-secondary">
       update
     </button>
   }]
@@ -126,8 +125,8 @@ export default function SiteImageList({ portalContext, portalEnv }:
         previewImage.version)} alt={`full-size preview of ${previewImage.cleanFileName}`}/>
     </Modal> }
     { showUploadModal && <SiteImageUploadModal portalContext={portalContext}
-                                               onDismiss={() => setShowUploadModal(false)}
-                                               existingImage={updatingImage}
-                                               onSubmit={onSubmitUpload}/> }
+      onDismiss={() => setShowUploadModal(false)}
+      existingImage={updatingImage}
+      onSubmit={onSubmitUpload}/> }
   </div>
 }

@@ -11,7 +11,7 @@ import {
   NotificationConfig,
   ParticipantNote,
   Portal,
-  PortalStudy,
+  PortalStudy, SiteImageMetadata,
   StudyEnvironmentConsent, SurveyResponse
 } from 'api/api'
 import { Survey } from '@juniper/ui-core/build/types/forms'
@@ -372,5 +372,14 @@ export const mockAnswer = (): Answer => {
     surveyVersion: 1,
     stringValue: 'foo',
     questionStableId: 'question1'
+  }
+}
+/** mock siteImageMetadata */
+export const mockSiteImage = (): SiteImageMetadata => {
+  return {
+    id: 'image1',
+    createdAt: Date.now(),
+    cleanFileName: 'fileName.png',
+    version: 1
   }
 }
