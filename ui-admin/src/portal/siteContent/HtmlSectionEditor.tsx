@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import {HtmlPage, HtmlSection, SectionType} from '@juniper/ui-core'
+import { HtmlPage, HtmlSection, SectionType } from '@juniper/ui-core'
 import Select from 'react-select'
 import { isEmpty } from 'lodash'
 import { IconButton } from 'components/forms/Button'
