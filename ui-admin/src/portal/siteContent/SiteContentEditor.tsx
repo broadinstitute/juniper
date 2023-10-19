@@ -74,19 +74,19 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   }
 
   /** updates the global SiteContent object with the given HtmlPage, which may be associated with a navItem */
-  const updatePage = (page: HtmlPage, navItemId?: string) => {
+  const updatePage = (page: HtmlPage, navItemText?: string) => {
     if (!localContent) {
       return
     }
     let updatedLocalContent
-    if (!navItemId) {
+    if (!navItemText) {
       updatedLocalContent = {
         ...localContent,
         landingPage: page
       }
     } else {
       const updatedNavBarItems = [...localContent.navbarItems]
-      const matchedNavItem = navBarInternalItems.find(navItem => navItem.id === navItemId)
+      const matchedNavItem = navBarInternalItems.find(navItem => navItem.text === navItemText)
       if (!matchedNavItem) {
         return
       }
@@ -164,7 +164,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
         {pageToRender &&
           <ApiProvider api={previewApi}>
             <HtmlPageEditView htmlPage={pageToRender} readOnly={readOnly}
-              updatePage={page => updatePage(page, currentNavBarItem?.id)}/>
+              updatePage={page => updatePage(page, currentNavBarItem?.text)}/>
           </ApiProvider>}
       </div>
     </div>
