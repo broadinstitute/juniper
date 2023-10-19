@@ -13,7 +13,6 @@ type HtmlPageViewProps = {
 
 /** Enables editing of a given page, showing the config and a preview for each section */
 const HtmlPageView = ({ htmlPage, updatePage, readOnly }: HtmlPageViewProps) => {
-
   //Inserts a new HtmlSection at the specified index on the page
   const insertNewSection = (sectionIndex: number, newSection: HtmlSection) => {
     const newSectionArray = [...htmlPage.sections]
