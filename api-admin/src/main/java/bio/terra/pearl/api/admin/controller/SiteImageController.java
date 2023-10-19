@@ -62,7 +62,7 @@ public class SiteImageController implements SiteImageApi {
       byte[] imageData = image.getBytes();
       return ResponseEntity.ok(
           siteImageExtService.upload(
-              portalShortcode, uploadFileName, version, imageData, operator));
+              portalShortcode, uploadFileName, imageData, operator));
     } catch (IOException e) {
       throw new IllegalArgumentException("could not read image data");
     }

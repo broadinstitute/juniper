@@ -40,6 +40,7 @@ public class SiteImageService extends ImmutableEntityService<SiteImage, SiteImag
 
     @Override
     public SiteImage create(SiteImage image) {
+
         if (!isAllowedFileName(image.getUploadFileName())) {
             throw new IllegalArgumentException("Allowed extensions are: " +
                     ALLOWED_EXTENSIONS.stream().collect(Collectors.joining(", ")));
