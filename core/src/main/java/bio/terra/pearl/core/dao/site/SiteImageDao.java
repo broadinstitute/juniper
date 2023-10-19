@@ -7,16 +7,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import bio.terra.pearl.core.model.site.SiteImageMetadata;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.mapper.RowMapper;
+import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SiteImageDao extends BaseJdbiDao<SiteImage> {
     private String fieldStringWithoutDataColumn;
+    private RowMapper imageMetadataRowMapper = BeanMapper.of(SiteImageMetadata.class);
     public SiteImageDao(Jdbi jdbi) {
-
         super(jdbi);
         List<String> colsWithoutDataCol = getGetQueryColumns();
+        jdbi.registerRowMapper(SiteImageMetadata.class, imageMetadataRowMapper);
         colsWithoutDataCol.remove("data");
         fieldStringWithoutDataColumn = colsWithoutDataCol.stream().collect(Collectors.joining(", "));
     }
@@ -60,14 +64,14 @@ public class SiteImageDao extends BaseJdbiDao<SiteImage> {
         ) + 1;
     }
 
-    public List<SiteImage> findByPortalWithoutDataColumn(String portalShortcode) {
+    public List<SiteImageMetadata> findMetadataByPortal(String portalShortcode) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("""
                                 select %s from %s 
                                 where portal_shortcode = :portalShortcode
                                 """.formatted(fieldStringWithoutDataColumn, tableName))
                         .bind("portalShortcode", portalShortcode)
-                        .mapTo(clazz)
+                        .mapTo(SiteImageMetadata.class)
                         .list()
         );
     }

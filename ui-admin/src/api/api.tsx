@@ -183,7 +183,7 @@ export type AdminTask = {
   dispositionNote?: string
 }
 
-export type SiteImage = {
+export type SiteImageMetadata = {
   id: string,
   createdAt: number,
   cleanFileName: string,
@@ -478,7 +478,7 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async getPortalImages(portalShortcode: string): Promise<SiteImage[]> {
+  async getPortalImages(portalShortcode: string): Promise<SiteImageMetadata[]> {
     const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/siteImages`, this.getGetInit())
     return await this.processJsonResponse(response)
   },

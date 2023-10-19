@@ -3,6 +3,7 @@ package bio.terra.pearl.api.admin.service.siteContent;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.site.SiteImage;
+import bio.terra.pearl.core.model.site.SiteImageMetadata;
 import bio.terra.pearl.core.service.site.SiteImageService;
 import java.util.List;
 import java.util.Optional;
@@ -29,8 +30,8 @@ public class SiteImageExtService {
     return siteImageService.findOne(portalShortcode, cleanFileName, version);
   }
 
-  public List<SiteImage> list(String portalShortcode, AdminUser operator) {
+  public List<SiteImageMetadata> list(String portalShortcode, AdminUser operator) {
     authUtilService.authUserToPortal(operator, portalShortcode);
-    return siteImageService.findByPortalWithoutDataColumn(portalShortcode);
+    return siteImageService.findMetadataByPortal(portalShortcode);
   }
 }

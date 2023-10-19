@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.site;
 
 import bio.terra.pearl.core.dao.site.SiteImageDao;
 import bio.terra.pearl.core.model.site.SiteImage;
+import bio.terra.pearl.core.model.site.SiteImageMetadata;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import java.util.Arrays;
@@ -33,8 +34,8 @@ public class SiteImageService extends ImmutableEntityService<SiteImage, SiteImag
         return dao.findOneLatestVersion(portalShortcode, cleanFileName);
     }
 
-    public List<SiteImage> findByPortalWithoutDataColumn(String portalShortcode) {
-        return dao.findByPortalWithoutDataColumn(portalShortcode);
+    public List<SiteImageMetadata> findMetadataByPortal(String portalShortcode) {
+        return dao.findMetadataByPortal(portalShortcode);
     }
 
     @Override

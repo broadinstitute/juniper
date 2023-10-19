@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Api, { getImageUrl, PortalEnvironment, SiteImage } from 'api/api'
+import Api, { getImageUrl, PortalEnvironment, SiteImageMetadata } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import {
   ColumnDef,
@@ -18,13 +18,13 @@ import { Modal } from 'react-bootstrap'
 /** shows a list of images in a table */
 export default function SiteImageList({ portalContext, portalEnv }:
                                             {portalContext: LoadedPortalContextT, portalEnv: PortalEnvironment}) {
-  const [images, setImages] = React.useState<SiteImage[]>([])
+  const [images, setImages] = React.useState<SiteImageMetadata[]>([])
   const [sorting, setSorting] = React.useState<SortingState>([{
     id: 'cleanFileName', desc: false
   }])
   const { paginationState, preferredNumRowsKey } = useRoutableTablePaging('siteImageList')
-  const [previewImage, setPreviewImage] = useState<SiteImage>()
-  const columns: ColumnDef<SiteImage>[] = [{
+  const [previewImage, setPreviewImage] = useState<SiteImageMetadata>()
+  const columns: ColumnDef<SiteImageMetadata>[] = [{
     header: 'File name',
     accessorKey: 'cleanFileName'
   }, {
@@ -67,8 +67,8 @@ export default function SiteImageList({ portalContext, portalEnv }:
   })
 
   /** Only show the most recent version of a given image in the list */
-  const filterPriorVersions = (imageList: SiteImage[]) => {
-    const latestVersions: Record<string, SiteImage> = {}
+  const filterPriorVersions = (imageList: SiteImageMetadata[]) => {
+    const latestVersions: Record<string, SiteImageMetadata> = {}
     imageList.forEach(image => {
       if (image.version > (latestVersions[image.cleanFileName]?.version ?? -1)) {
         latestVersions[image.cleanFileName] = image

@@ -5,6 +5,7 @@ import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.factory.site.SiteImageFactory;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.site.SiteImage;
+import bio.terra.pearl.core.model.site.SiteImageMetadata;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -52,18 +53,16 @@ public class SiteImageServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testFindByPortalWithoutDataColumn(TestInfo testInfo) {
-        SiteImage image = siteImageFactory.builderWithDependencies("testFindByPortalWithoutDataColumn")
+    public void testFindMetadataByPortal(TestInfo testInfo) {
+        SiteImage image = siteImageFactory.builderWithDependencies("testFindMetadataByPortal")
                 .data("imageData".getBytes()).build();
         SiteImage savedImage = siteImageService.create(image);
         Portal emptyPortal = portalFactory.buildPersisted(getTestName(testInfo));
-        assertThat(siteImageService.findByPortalWithoutDataColumn(emptyPortal.getShortcode()),
+        assertThat(siteImageService.findMetadataByPortal(emptyPortal.getShortcode()),
                 hasSize(0));
-        List<SiteImage> imageList = siteImageService.findByPortalWithoutDataColumn((image.getPortalShortcode()));
+        List<SiteImageMetadata> imageList = siteImageService.findMetadataByPortal((image.getPortalShortcode()));
         assertThat(imageList, hasSize(1));
         assertThat(imageList.get(0).getCleanFileName(), equalTo(savedImage.getCleanFileName()));
-        // confirm that the data column is excluded
-        assertThat(imageList.get(0).getData(), nullValue());
     }
 
     @Test
