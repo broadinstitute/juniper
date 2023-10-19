@@ -36,10 +36,7 @@ public class SiteImageExtService {
   }
 
   public SiteImage upload(
-      String portalShortcode,
-      String uploadFileName,
-      byte[] imageData,
-      AdminUser operator) {
+      String portalShortcode, String uploadFileName, byte[] imageData, AdminUser operator) {
     authUtilService.authUserToPortal(operator, portalShortcode);
     String cleanFileName = SiteImageService.cleanFileName(uploadFileName);
     int version = siteImageService.getNextVersion(cleanFileName, portalShortcode);
