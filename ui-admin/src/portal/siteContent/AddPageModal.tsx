@@ -49,7 +49,8 @@ const AddPageModal = ({ portalEnv, portalShortcode, insertNewPage, show, setShow
         <label htmlFor="inputPagePath">Page Path</label>
         <div className="input-group">
           <div className="input-group-prepend">
-            <span className="input-group-text" id="pathPrefix">{portalUrl}/</span>
+            <span className="input-group-text" style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+              id="pathPrefix">{portalUrl}/</span>
           </div>
           <input type="text" className="form-control" id="inputPagePath"
             value={pagePath} aria-describedby="pathPrefix"
