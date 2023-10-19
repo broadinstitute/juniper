@@ -43,11 +43,11 @@ public class SiteImageServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testCrud(TestInfo testInfo) {
-        SiteImage image = siteImageFactory.builderWithDependencies("testSiteImageCrud").build();
+        SiteImage image = siteImageFactory.builderWithDependencies(getTestName(testInfo)).build();
         SiteImage savedImage = siteImageService.create(image);
         Assertions.assertNotNull(savedImage.getId());
         SiteImage imageByShortCode = siteImageService.findOne(savedImage.getPortalShortcode(),
-                savedImage.getCleanFileName(), savedImage.getVersion()  ).get();
+                savedImage.getCleanFileName(), savedImage.getVersion()).get();
         Assertions.assertEquals(savedImage.getId(), imageByShortCode.getId());
     }
 

@@ -15,14 +15,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SiteImageDao extends BaseJdbiDao<SiteImage> {
-    private String fieldStringWithoutDataColumn;
+    private String metadataFieldString;
     private RowMapper imageMetadataRowMapper = BeanMapper.of(SiteImageMetadata.class);
     public SiteImageDao(Jdbi jdbi) {
         super(jdbi);
-        List<String> colsWithoutDataCol = getGetQueryColumns();
         jdbi.registerRowMapper(SiteImageMetadata.class, imageMetadataRowMapper);
-        colsWithoutDataCol.remove("data");
-        fieldStringWithoutDataColumn = colsWithoutDataCol.stream().collect(Collectors.joining(", "));
+        List<String> metadataColumns = getGetQueryColumns();
+        metadataColumns.remove("data");
+        metadataFieldString = metadataColumns.stream().collect(Collectors.joining(", "));
     }
 
     @Override
@@ -69,7 +69,7 @@ public class SiteImageDao extends BaseJdbiDao<SiteImage> {
                 handle.createQuery("""
                                 select %s from %s 
                                 where portal_shortcode = :portalShortcode
-                                """.formatted(fieldStringWithoutDataColumn, tableName))
+                                """.formatted(metadataFieldString, tableName))
                         .bind("portalShortcode", portalShortcode)
                         .mapTo(SiteImageMetadata.class)
                         .list()
