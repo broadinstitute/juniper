@@ -123,7 +123,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
               onClick={() => setShowVersionSelector(!showVersionSelector)}>
               <FontAwesomeIcon icon={faClockRotateLeft}/> History
             </button> }
-            <Link to="../images" className="btn btn-secondary m-1 ms-3">
+            <Link to="../images" className="btn btn-secondary">
               <FontAwesomeIcon icon={faImage} className="fa-lg"/> Manage images
             </Link>
           </h5>
