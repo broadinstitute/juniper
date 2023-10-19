@@ -6,7 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-/** Class for storing metadata about a portal image.  Does not contain the serialized image data */
+/**
+ * Class for storing metadata about a portal image.  Does not contain the serialized image data
+ * SiteImages are uniquely identified by the composite key of (cleanFileName, version, portalShortcode)
+ * */
 @Getter
 @Setter
 @SuperBuilder
