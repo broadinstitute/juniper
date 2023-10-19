@@ -6,16 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+/** Full persistent class that includes the actual serialized image */
 @Getter @Setter @SuperBuilder @NoArgsConstructor
-public class SiteImage extends BaseEntity {
-    /**
-     * the cleanFileName essentially serves as a stableId -- we call it cleanFileName here to indicate its origin.
-     * and because it is not required to be globally unique like other stableIds -- it just has to be unique within a portal
-      */
-    private String cleanFileName;
-    private int version;
-    private String uploadFileName;
+public class SiteImage extends SiteImageMetadata {
     private byte[] data;
-    // store these by portal shortcode to prioritize fast fetching based on urls that have the shortcode
-    private String portalShortcode;
 }

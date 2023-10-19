@@ -1,12 +1,19 @@
 package bio.terra.pearl.core.service.site;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.factory.site.SiteImageFactory;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.site.SiteImage;
+import bio.terra.pearl.core.model.site.SiteImageMetadata;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -16,6 +23,8 @@ public class SiteImageServiceTests extends BaseSpringBootTest {
 
     @Autowired
     private SiteImageFactory siteImageFactory;
+    @Autowired
+    private PortalFactory portalFactory;
 
     @Test
     public void testGenerateCleanFileName() {
@@ -33,13 +42,27 @@ public class SiteImageServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testCrud() {
-        SiteImage image = siteImageFactory.builderWithDependencies("testSiteImageCrud").build();
+    public void testCrud(TestInfo testInfo) {
+        SiteImage image = siteImageFactory.builderWithDependencies(getTestName(testInfo)).build();
         SiteImage savedImage = siteImageService.create(image);
         Assertions.assertNotNull(savedImage.getId());
         SiteImage imageByShortCode = siteImageService.findOne(savedImage.getPortalShortcode(),
-                savedImage.getCleanFileName(), savedImage.getVersion()  ).get();
+                savedImage.getCleanFileName(), savedImage.getVersion()).get();
         Assertions.assertEquals(savedImage.getId(), imageByShortCode.getId());
+    }
+
+    @Test
+    @Transactional
+    public void testFindMetadataByPortal(TestInfo testInfo) {
+        SiteImage image = siteImageFactory.builderWithDependencies("testFindMetadataByPortal")
+                .data("imageData".getBytes()).build();
+        SiteImage savedImage = siteImageService.create(image);
+        Portal emptyPortal = portalFactory.buildPersisted(getTestName(testInfo));
+        assertThat(siteImageService.findMetadataByPortal(emptyPortal.getShortcode()),
+                hasSize(0));
+        List<SiteImageMetadata> imageList = siteImageService.findMetadataByPortal((image.getPortalShortcode()));
+        assertThat(imageList, hasSize(1));
+        assertThat(imageList.get(0).getCleanFileName(), equalTo(savedImage.getCleanFileName()));
     }
 
     @Test

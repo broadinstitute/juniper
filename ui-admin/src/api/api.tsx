@@ -183,6 +183,13 @@ export type AdminTask = {
   dispositionNote?: string
 }
 
+export type SiteImageMetadata = {
+  id: string,
+  createdAt: number,
+  cleanFileName: string,
+  version: number
+}
+
 const emptyPepperKitStatus: PepperKitStatus = {
   kitId: '',
   currentStatus: '(unknown)',
@@ -468,6 +475,11 @@ export default {
 
   async getPortal(portalShortcode: string): Promise<Portal> {
     const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}`, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async getPortalImages(portalShortcode: string): Promise<SiteImageMetadata[]> {
+    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/siteImages`, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
