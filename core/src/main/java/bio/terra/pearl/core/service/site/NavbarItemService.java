@@ -26,7 +26,9 @@ public class NavbarItemService extends ImmutableEntityService<NavbarItem, Navbar
             htmlPage = htmlPageService.create(htmlPage);
             item.setHtmlPageId(htmlPage.getId());
         }
-        return dao.create(item);
+        item = dao.create(item);
+        item.setHtmlPage(htmlPage);
+        return item;
     }
 
     public void deleteByLocalSiteId(UUID localSiteId, Set<CascadeProperty> cascades) {

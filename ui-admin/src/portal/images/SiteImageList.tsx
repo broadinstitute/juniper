@@ -12,8 +12,12 @@ import { basicTableLayout, useRoutableTablePaging } from 'util/tableUtils'
 import { instantToDefaultString } from 'util/timeUtils'
 import { LoadedPortalContextT } from '../PortalProvider'
 import { useLoadingEffect } from 'api/api-utils'
-import TableClientPagination from '../../util/TablePagination'
+import TableClientPagination from 'util/TablePagination'
 import { Modal } from 'react-bootstrap'
+import SiteImageUploadModal from './SiteImageUploadModal'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { Button } from '../../components/forms/Button'
 
 /** shows a list of images in a table */
 export default function SiteImageList({ portalContext, portalEnv }:
@@ -24,6 +28,15 @@ export default function SiteImageList({ portalContext, portalEnv }:
   }])
   const { paginationState, preferredNumRowsKey } = useRoutableTablePaging('siteImageList')
   const [previewImage, setPreviewImage] = useState<SiteImageMetadata>()
+  const [updatingImage, setUpdatingImage] = useState<SiteImageMetadata>()
+  const [showUploadModal, setShowUploadModal] = useState(false)
+
+  const updateImage = (image: SiteImageMetadata) => {
+    setUpdatingImage(image)
+    setShowUploadModal(true)
+  }
+
+
   const columns: ColumnDef<SiteImageMetadata>[] = [{
     header: 'File name',
     accessorKey: 'cleanFileName'
@@ -47,6 +60,13 @@ export default function SiteImageList({ portalContext, portalEnv }:
       <img src={getImageUrl(portalContext.portal.shortcode, image.cleanFileName, image.version)}
         style={{ maxHeight: '40px', maxWidth: '80px' }}
       />
+    </button>
+  }, {
+    header: '',
+    id: 'actions',
+    cell: ({ row: { original: image } }) => <button onClick={() => updateImage(image)}
+      className="btn btn-secondary">
+      update
     </button>
   }]
 
@@ -77,7 +97,13 @@ export default function SiteImageList({ portalContext, portalEnv }:
     return Object.values(latestVersions)
   }
 
-  const { isLoading } = useLoadingEffect(async () => {
+  const onSubmitUpload = () => {
+    reload()
+    setShowUploadModal(false)
+  }
+
+
+  const { isLoading, reload } = useLoadingEffect(async () => {
     const result = await Api.getPortalImages(portalContext.portal.shortcode)
     setImages(filterPriorVersions(result))
   }, [portalContext.portal.shortcode, portalEnv.environmentName])
@@ -85,6 +111,9 @@ export default function SiteImageList({ portalContext, portalEnv }:
 
   return <div className="container p-3">
     <h1 className="h4">Site images </h1>
+    <Button variant="secondary" onClick={() => setShowUploadModal(true)} >
+      <FontAwesomeIcon icon={faPlus}/> Add Image
+    </Button>
     <LoadingSpinner isLoading={isLoading}>
       {basicTableLayout(table)}
       <TableClientPagination table={table} preferredNumRowsKey={preferredNumRowsKey}/>
@@ -95,5 +124,9 @@ export default function SiteImageList({ portalContext, portalEnv }:
         previewImage.cleanFileName,
         previewImage.version)} alt={`full-size preview of ${previewImage.cleanFileName}`}/>
     </Modal> }
+    { showUploadModal && <SiteImageUploadModal portalContext={portalContext}
+      onDismiss={() => setShowUploadModal(false)}
+      existingImage={updatingImage}
+      onSubmit={onSubmitUpload}/> }
   </div>
 }
