@@ -2116,7 +2116,7 @@
     "calculatedValues": [{
       "name": "oh_oh_basic_weight",
       "includeIntoResult": true,
-      "expression": "iif({oh_oh_basic_weightUnit} = 'lbs', {oh_oh_basic_rawWeight} * 0.453592, {oh_oh_basic_rawWeight} * 1)"
+      "expression": "iif({oh_oh_basic_weightUnit} = 'lbs', {oh_oh_basic_rawWeightPounds} * 0.453592, {oh_oh_basic_rawWeightKilos} * 1)"
     },{
       "name": "oh_oh_basic_height",
       "includeIntoResult": true,
