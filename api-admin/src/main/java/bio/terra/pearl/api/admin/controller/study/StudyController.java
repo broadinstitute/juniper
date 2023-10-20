@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.admin.controller.study;
 
 import bio.terra.pearl.api.admin.api.StudyApi;
+import bio.terra.pearl.api.admin.model.ErrorReport;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.StudyExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -8,8 +9,10 @@ import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.study.StudyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.servlet.http.HttpServletRequest;
+import org.postgresql.util.PSQLException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @Controller
 public class StudyController implements StudyApi {
@@ -35,6 +38,15 @@ public class StudyController implements StudyApi {
     AdminUser adminUser = requestService.requireAdminUser(request);
     var kitTypes = studyExtService.getKitTypes(adminUser, portalShortcode, studyShortcode);
     return ResponseEntity.ok(kitTypes);
+  }
+
+  @ExceptionHandler({PSQLException.class})
+  public ResponseEntity<ErrorReport> handleDatabaseError(PSQLException e) {
+    if (e.getMessage().contains("study_shortcode_key")) {
+      return ResponseEntity.badRequest()
+          .body(new ErrorReport().message("A study with that shortcode already exists"));
+    } else
+      return ResponseEntity.internalServerError().body(new ErrorReport().message(e.getMessage()));
   }
 
   @Override

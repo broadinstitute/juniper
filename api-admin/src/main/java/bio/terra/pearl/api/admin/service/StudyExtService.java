@@ -51,6 +51,7 @@ public class StudyExtService {
       throw new PermissionDeniedException("You do not have permission to create studies");
     }
     Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
+    /** Create empty environments for each of sandbox, irb, and live */
     List<StudyEnvironment> studyEnvironments =
         Arrays.stream(EnvironmentName.values())
             .map(envName -> makeEmptyEnvironment(envName, envName == EnvironmentName.sandbox))
@@ -67,6 +68,11 @@ public class StudyExtService {
     return newStudy;
   }
 
+  /**
+   * we make empty environments as placeholders for the environment views. This minimizes the amount
+   * of hardcoding we have to do in the UI around sandbox/irb/prod, giving us the flexibility to add
+   * more alternate environments in the future
+   */
   private StudyEnvironment makeEmptyEnvironment(EnvironmentName envName, boolean initialized) {
     StudyEnvironment studyEnv =
         StudyEnvironment.builder()
