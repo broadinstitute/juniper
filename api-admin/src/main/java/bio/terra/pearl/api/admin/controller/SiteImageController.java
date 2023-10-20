@@ -5,7 +5,6 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.siteContent.SiteImageExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.site.SiteImage;
-
 import java.io.IOException;
 import java.net.URLConnection;
 import java.util.Optional;
