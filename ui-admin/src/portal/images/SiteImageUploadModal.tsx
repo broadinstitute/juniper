@@ -8,6 +8,8 @@ import { Store } from 'react-notifications-component'
 import { Button } from 'components/forms/Button'
 import { LoadedPortalContextT } from '../PortalProvider'
 
+
+const FLE_TYPE_REGEX = /image\/(gif|ico|jpeg|jpg|png|svg|webp)/
 /** Renders a modal for an admin to submit a sample collection kit request. */
 export default function SiteImageUploadModal({
   portalContext,
@@ -40,6 +42,15 @@ export default function SiteImageUploadModal({
     }, { setIsLoading })
   }
 
+  const validationMessages = []
+  if (file && !file.type.match(FLE_TYPE_REGEX)) {
+    validationMessages.push('This file extension is not supported.')
+  }
+  if (file && file.size > 10 * 1024 * 1024) {
+    validationMessages.push('File size exceeds the 10MB limit.')
+  }
+  const enableSubmit = file && fileName && !validationMessages.length
+
   return <Modal show={true} onHide={onDismiss}>
     <Modal.Header closeButton>
       <Modal.Title>{existingImage ? 'Update' : 'Upload'} image</Modal.Title>
@@ -54,6 +65,7 @@ export default function SiteImageUploadModal({
             { FileChooser }
             <span className="text-muted fst-italic ms-2">{file?.name}</span>
           </div>
+          { validationMessages.map(msg => <div className='text-danger'>{msg}</div>)}
         </div>
         <label className="mt-3 mb-2 form-label">
                     Name:
@@ -68,7 +80,7 @@ export default function SiteImageUploadModal({
     <Modal.Footer>
       <LoadingSpinner isLoading={isLoading}>
         <button className='btn btn-secondary' onClick={onDismiss}>Cancel</button>
-        <Button variant="primary" disabled={!file || !fileName} onClick={uploadImage}>Upload</Button>
+        <Button variant="primary" disabled={!enableSubmit} onClick={uploadImage}>Upload</Button>
       </LoadingSpinner>
     </Modal.Footer>
   </Modal>

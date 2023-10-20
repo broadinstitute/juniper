@@ -5,7 +5,7 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.siteContent.SiteImageExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.site.SiteImage;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.net.URLConnection;
 import java.util.Optional;
@@ -22,17 +22,14 @@ public class SiteImageController implements SiteImageApi {
   private AuthUtilService authUtilService;
   private HttpServletRequest request;
   private SiteImageExtService siteImageExtService;
-  private ObjectMapper objectMapper;
 
   public SiteImageController(
       AuthUtilService authUtilService,
       HttpServletRequest request,
-      SiteImageExtService siteImageExtService,
-      ObjectMapper objectMapper) {
+      SiteImageExtService siteImageExtService) {
     this.authUtilService = authUtilService;
     this.request = request;
     this.siteImageExtService = siteImageExtService;
-    this.objectMapper = objectMapper;
   }
 
   /**

@@ -46,6 +46,7 @@ public class SiteImageExtService {
             .version(version)
             .data(imageData)
             .uploadFileName(uploadFileName)
+            .cleanFileName(cleanFileName)
             .build();
     // the create method handles cleaning and converting the uploadFileName to a cleanFileName
     return siteImageService.create(image);

@@ -99,6 +99,7 @@ export default function SiteImageList({ portalContext, portalEnv }:
 
   const onSubmitUpload = () => {
     reload()
+    setUpdatingImage(undefined)
     setShowUploadModal(false)
   }
 
@@ -125,7 +126,10 @@ export default function SiteImageList({ portalContext, portalEnv }:
         previewImage.version)} alt={`full-size preview of ${previewImage.cleanFileName}`}/>
     </Modal> }
     { showUploadModal && <SiteImageUploadModal portalContext={portalContext}
-      onDismiss={() => setShowUploadModal(false)}
+      onDismiss={() => {
+        setShowUploadModal(false)
+        setUpdatingImage(undefined)
+      }}
       existingImage={updatingImage}
       onSubmit={onSubmitUpload}/> }
   </div>
