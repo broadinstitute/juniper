@@ -6,6 +6,7 @@ import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.exception.NotFoundException;
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,8 @@ public class SiteImageExtServiceTests extends BaseSpringBootTest {
     Assertions.assertThrows(
         NotFoundException.class,
         () -> {
-          siteImageExtService.upload(portal.getShortcode(), "blah", "blah".getBytes(), operator);
+          siteImageExtService.upload(
+              portal.getShortcode(), "blah", "blah".getBytes(StandardCharsets.UTF_8), operator);
         });
   }
 }
