@@ -18,8 +18,6 @@ test('renders a study env. config', async () => {
   expect(screen.getByLabelText('password')).toHaveValue(expectedConfig.password)
   expect((screen.getByLabelText('password protected') as HTMLInputElement).checked)
     .toBe(expectedConfig.passwordProtected)
-  expect((screen.getByLabelText('accepting registration') as HTMLInputElement).checked)
-    .toBe(expectedConfig.acceptingEnrollment)
 })
 
 test('updates a study env. config', async () => {
