@@ -44,7 +44,7 @@ public class StudyEnvironmentExtServiceTests extends BaseSpringBootTest {
   @Transactional
   public void updateConfigAllowsSuperuser() {
     var studyEnvBundle =
-        studyEnvironmentFactory.buildBundle("updateConfigAuthsToStudy", EnvironmentName.irb);
+        studyEnvironmentFactory.buildBundle("updateConfigAllowsSuperuser", EnvironmentName.irb);
     AdminUser superUser = adminUserFactory.buildPersisted("updateConfigAllowsSuperuser", true);
     studyEnvironmentExtService.updateConfig(
         superUser,
