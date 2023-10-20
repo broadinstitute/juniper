@@ -36,8 +36,7 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
   }
 
   /** saves any changes to the server */
-  const save = async (e: React.MouseEvent) => {
-    e.preventDefault()
+  const save = async () => {
     doApiLoad(async () => {
       await Api.updateStudyEnvironmentConfig(portalContext.portal.shortcode,
         studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName, config)
@@ -46,7 +45,7 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
     }, { setIsLoading })
   }
 
-  return <form className="bg-white p-3 mb-5">
+  return <form className="bg-white p-3 mb-5" onSubmit={e => e.preventDefault()}>
     <h2 className="h4">{studyEnvContext.study.name} study configuration</h2>
     <p>Configure whether participants can access study content, such as surveys and consents.</p>
     <div>
