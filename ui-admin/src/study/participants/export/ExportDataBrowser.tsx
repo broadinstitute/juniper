@@ -15,6 +15,7 @@ import ExportDataControl from './ExportDataControl'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { useLoadingEffect } from 'api/api-utils'
+import {Button} from "../../../components/forms/Button";
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -72,18 +73,31 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
     setData(result)
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
-  return <div className="container-fluid py-3">
-    <h1 className="h3">Data export preview</h1>
-    <span className="text-muted fst-italic">
-      (Transposed for readability, the actual export has participants as rows)
-    </span>
-    <button className="btn btn-secondary" onClick={() => setShowExportModal(!showExportModal)}
-      aria-label="show or hide export modal">
-      Download <FontAwesomeIcon icon={faDownload}/>
-    </button>
-    <ExportDataControl studyEnvContext={studyEnvContext} show={showExportModal} setShow={setShowExportModal}/>
-    <LoadingSpinner isLoading={isLoading}/>
-    {!isLoading && basicTableLayout(table)}
+  return <div className="container-fluid pt-2">
+    <div className="row ps-3">
+      <div className="col-12 align-items-baseline d-flex mb-2">
+        <h2 className="text-center me-4 fw-bold">Data Export</h2>
+      </div>
+      <div className="col-12">
+        <div className="d-flex align-items-center justify-content-between mx-3">
+          <div className="d-flex">
+            <span className="text-muted fst-italic">
+              (Transposed for readability, the actual export has participants as rows)
+            </span>
+          </div>
+          <div className="d-flex">
+            <Button onClick={() => setShowExportModal(!showExportModal)}
+              variant="light" className="border m-1"
+              aria-label="show or hide export modal">
+              <FontAwesomeIcon icon={faDownload} className="fa-lg"/> Download
+            </Button>
+          </div>
+        </div>
+        <ExportDataControl studyEnvContext={studyEnvContext} show={showExportModal} setShow={setShowExportModal}/>
+        <LoadingSpinner isLoading={isLoading}/>
+        {!isLoading && basicTableLayout(table)}
+      </div>
+    </div>
   </div>
 }
 

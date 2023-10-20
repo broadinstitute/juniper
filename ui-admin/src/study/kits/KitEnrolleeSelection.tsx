@@ -14,12 +14,21 @@ import {
 
 import Api, { Enrollee } from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { basicTableLayout, checkboxColumnCell, ColumnVisibilityControl, IndeterminateCheckbox } from 'util/tableUtils'
+import {
+  basicTableLayout,
+  checkboxColumnCell,
+  ColumnVisibilityControl,
+  IndeterminateCheckbox,
+  RowVisibilityCount
+} from 'util/tableUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { instantToDateString } from 'util/timeUtils'
 import RequestKitsModal from './RequestKitsModal'
 import { useLoadingEffect } from 'api/api-utils'
 import { enrolleeKitRequestPath } from '../participants/enrolleeView/EnrolleeView'
+import { Button } from '../../components/forms/Button'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faDownload, faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 
 type EnrolleeRow = Enrollee & {
   taskCompletionStatus: Record<string, boolean>
@@ -165,30 +174,31 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
     getFilteredRowModel: getFilteredRowModel()
   })
 
-  return <>
-    <LoadingSpinner isLoading={isLoading}>
-      <div className="d-flex align-items-center justify-content-between py-3">
-        <div className="d-flex align-items-center">
-          <span className="me-2">
-            {numSelected} of{' '}
-            {table.getPreFilteredRowModel().rows.length} selected
-          </span>
-          <span className="me-2">
-            <button className="btn btn-secondary"
-              onClick={() => { setShowRequestKitModal(true) }}
-              title={enableActionButtons ? 'Send sample collection kit' : 'Select at least one participant'}
-              aria-disabled={!enableActionButtons}>Send sample collection kit</button>
-          </span>
-          { showRequestKitModal && <RequestKitsModal
-            studyEnvContext={studyEnvContext}
-            onDismiss={() => setShowRequestKitModal(false)}
-            enrolleeShortcodes={enrolleesSelected}
-            onSubmit={onSubmit}/> }
+  return <div className="row">
+    <div className="col-12">
+      <LoadingSpinner isLoading={isLoading}>
+        <div className="d-flex align-items-center justify-content-between py-3">
+          <div className="d-flex align-items-center">
+            <RowVisibilityCount table={table}/>
+          </div>
+          <div className="d-flex">
+            <Button onClick={() => { setShowRequestKitModal(true) }}
+              variant="light" className="border m-1" disabled={!enableActionButtons}
+              tooltip={enableActionButtons ? 'Send sample collection kit' : 'Select at least one participant'}>
+              <FontAwesomeIcon icon={faPaperPlane} className="fa-lg"/> Send sample collection kit
+            </Button>
+            <ColumnVisibilityControl table={table}/>
+            { showRequestKitModal && <RequestKitsModal
+              studyEnvContext={studyEnvContext}
+              onDismiss={() => setShowRequestKitModal(false)}
+              enrolleeShortcodes={enrolleesSelected}
+              onSubmit={onSubmit}/> }
+          </div>
         </div>
-        <ColumnVisibilityControl table={table}/>
-      </div>
-      { basicTableLayout(table, { filterable: true }) }
-      { enrollees.length === 0 && <span className="text-muted fst-italic">No participants</span> }
-    </LoadingSpinner>
-  </>
+        { basicTableLayout(table, { filterable: true }) }
+        { enrollees.length === 0 &&
+          <span className="d-flex justify-content-center text-muted fst-italic">No participants</span> }
+      </LoadingSpinner>
+    </div>
+  </div>
 }

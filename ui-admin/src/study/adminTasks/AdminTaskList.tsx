@@ -92,14 +92,19 @@ export default function AdminTaskList({ studyEnvContext }: {studyEnvContext: Stu
     }
   }
 
-  return <div className="container p-3">
-    <LoadingSpinner isLoading={isLoading}>
-      <MyTaskList studyEnvContext={studyEnvContext} taskData={taskData}/>
-      <h2 className="h4 mt-5">All tasks</h2>
-      {basicTableLayout(allTasksTable)}
-    </LoadingSpinner>
-    { (showEditModal && selectedTask) && <AdminTaskEditModal task={selectedTask} users={users}
-      onDismiss={onDoneEditing} studyEnvContext={studyEnvContext}/> }
+  return <div className="container-fluid pt-2">
+    <div className="row ps-3">
+      <div className="col-12 align-items-baseline d-flex mb-2">
+        <h2 className="text-center me-4 fw-bold">Tasks</h2>
+      </div>
+      <LoadingSpinner isLoading={isLoading}>
+        <MyTaskList studyEnvContext={studyEnvContext} taskData={taskData}/>
+        <h4 className="mt-5">All tasks</h4>
+        {basicTableLayout(allTasksTable)}
+      </LoadingSpinner>
+      { (showEditModal && selectedTask) && <AdminTaskEditModal task={selectedTask} users={users}
+        onDismiss={onDoneEditing} studyEnvContext={studyEnvContext}/> }
+    </div>
   </div>
 }
 
@@ -123,7 +128,7 @@ taskData: AdminTaskListDto}) => {
     cell: info => renderStatusColumn(info.row.original)
   }, {
     header: 'Created',
-    accessorKey: 'createdAt',
+    accessorKey: 'createdAta',
     cell: info => instantToDefaultString(info.getValue() as number)
   }]
 
@@ -136,7 +141,7 @@ taskData: AdminTaskListDto}) => {
     getSortedRowModel: getSortedRowModel()
   })
   return <>
-    <h2 className="h4">My tasks</h2>
+    <h4>My tasks</h4>
     { !!myTasks.length && basicTableLayout(table)}
     { !myTasks.length && <div className="text-muted fst-italic mb-3">None</div> }
   </>

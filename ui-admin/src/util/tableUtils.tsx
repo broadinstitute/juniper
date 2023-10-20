@@ -273,6 +273,25 @@ export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
 }
 
 /**
+ *
+ */
+export function RowVisibilityCount<T>({ table }: {table: Table<T>}) {
+  const numSelected = Object.keys(table.getState().rowSelection).length
+  const numPrefilteredRows = table.getPreFilteredRowModel().rows.length
+  const numFilteredRows = table.getFilteredRowModel().rows.length
+
+  if (numPrefilteredRows === numFilteredRows) {
+    return <span className="me-2">
+      {numSelected} of {numPrefilteredRows} selected
+    </span>
+  } else {
+    return <span className="me-2">
+      {numSelected} of {numPrefilteredRows} selected ({numFilteredRows} shown)
+    </span>
+  }
+}
+
+/**
  * Converts a cell value to an escaped string for csv export
  */
 function cellToCsvString(cellType: string, cellValue: unknown): string {

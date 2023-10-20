@@ -23,26 +23,29 @@ export default function KitsRouter({ studyEnvContext }: {studyEnvContext: StudyE
     <NavBreadcrumb value={studyEnvContext.currentEnvPath}>
       <Link to={studyKitsPath(portalShortcode, studyShortcode, environmentName)}>kits</Link>
     </NavBreadcrumb>
-    <div className="container">
-      <div className="d-flex w-100" style={{ backgroundColor: '#ccc' }}>
-
-        <NavLink to="eligible" style={tabLinkStyle}>
-          <div className="py-3 px-5">
-            Eligible for kit
-          </div>
-        </NavLink>
-        <NavLink to="requested" style={tabLinkStyle}>
-          <div className="py-3 px-5">
-            Requested
-          </div>
-        </NavLink>
+    <div className="container-fluid pt-2">
+      <div className="row ps-3">
+        <div className="col-12 align-items-baseline d-flex mb-2">
+          <h2 className="h2 text-center me-4 fw-bold">Kits</h2>
+        </div>
+        <div className="d-flex w-100" style={{ backgroundColor: '#ccc' }}>
+          <NavLink to="eligible" style={tabLinkStyle}>
+            <div className="py-3 px-5">
+              Eligible for kit
+            </div>
+          </NavLink>
+          <NavLink to="requested" style={tabLinkStyle}>
+            <div className="py-3 px-5">
+              Requested
+            </div>
+          </NavLink>
+        </div>
+        <Routes>
+          <Route index element={<Navigate to='eligible' replace={true}/>}/>
+          <Route path="eligible" element={<KitEnrolleeSelection studyEnvContext={studyEnvContext}/>}/>
+          <Route path="requested/*" element={<KitList studyEnvContext={studyEnvContext}/>}/>
+        </Routes>
       </div>
-      <Routes>
-        <Route index element={<Navigate to='eligible' replace={true}/>}/>
-        <Route path="eligible" element={<KitEnrolleeSelection studyEnvContext={studyEnvContext}/>}/>
-        <Route path="requested/*" element={<KitList studyEnvContext={studyEnvContext}/>}/>
-      </Routes>
     </div>
-
   </>
 }

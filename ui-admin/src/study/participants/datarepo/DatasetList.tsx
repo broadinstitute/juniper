@@ -66,11 +66,6 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
     getSortedRowModel: getSortedRowModel()
   })
 
-  const contentHeaderStyle = {
-    padding: '1em 0 0 1em',
-    borderBottom: '1px solid #f6f6f6'
-  }
-
   const loadData = async () => {
     //Fetch datasets
     await Api.listDatasetsForStudyEnvironment(
@@ -87,30 +82,30 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
   useEffect(() => {
     loadData()
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
-  return <div className="container-fluid py-3">
-    <h1 className="h3">Study Environment Datasets</h1>
-    { user.superuser &&
-        <button className="btn btn-secondary" onClick={() => setShowCreateDatasetModal(!showCreateDatasetModal)}
-          aria-label="show or hide export modal">
-          <FontAwesomeIcon icon={faPlus}/> Create new dataset
-        </button>
-    }
-    <CreateDatasetModal studyEnvContext={studyEnvContext}
-      show={showCreateDatasetModal}
-      setShow={setShowCreateDatasetModal}
-      loadDatasets={loadData}/>
-    <LoadingSpinner isLoading={isLoading}>
-      <div className="col-12 p-3">
-        <ul className="list-unstyled">
-          <li className="bg-white my-3">
-            <div style={contentHeaderStyle}>
-              <h6>Datasets</h6>
-            </div>
-            {basicTableLayout(datasetTable)}
-          </li>
-        </ul>
+  return <div className="container-fluid pt-2">
+    <div className="row ps-3">
+      <div className="col-12 align-items-baseline d-flex mb-2">
+        <h2 className="text-center me-4 fw-bold">Terra Data Repo</h2>
       </div>
-    </LoadingSpinner>
+      <h3>Datasets</h3>
+      {/*{ user.superuser &&*/}
+      {/*    <button className="btn btn-secondary" onClick={() => setShowCreateDatasetModal(!showCreateDatasetModal)}*/}
+      {/*      aria-label="show or hide export modal">*/}
+      {/*      <FontAwesomeIcon icon={faPlus}/> Create new dataset*/}
+      {/*    </button>*/}
+      {/*}*/}
+      <CreateDatasetModal studyEnvContext={studyEnvContext}
+        show={showCreateDatasetModal}
+        setShow={setShowCreateDatasetModal}
+        loadDatasets={loadData}/>
+      <div className="col-12">
+        <LoadingSpinner isLoading={isLoading}>
+          {basicTableLayout(datasetTable)}
+          { datasets.length === 0 &&
+            <span className="d-flex justify-content-center text-muted fst-italic">No datasets</span> }
+        </LoadingSpinner>
+      </div>
+    </div>
   </div>
 }
 

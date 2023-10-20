@@ -17,7 +17,7 @@ import {
   basicTableLayout,
   ColumnVisibilityControl,
   DownloadControl,
-  IndeterminateCheckbox,
+  IndeterminateCheckbox, RowVisibilityCount,
   useRoutableTablePaging
 } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -181,7 +181,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   return <div className="ParticipantList container-fluid pt-2">
     <div className="row ps-3">
       <div className="col-12 align-items-baseline d-flex mb-2">
-        <h2 className="h4 text-center me-4 fw-bold">Participant List</h2>
+        <h2 className="text-center me-4 fw-bold">Participant List</h2>
       </div>
       <div className="col-12 align-items-baseline d-flex mb-3">
         <FacetView facet={KEYWORD_FACET} facetValue={keywordFacetValue} updateValue={updateKeywordFacet}/>
@@ -191,14 +191,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
           <div>
             <div className="d-flex align-items-center justify-content-between mx-3">
               <div className="d-flex">
-                <span className="me-2">
-                  {numSelected} of{' '}
-                  {/* eslint-disable-next-line max-len */}
-                  {table.getPreFilteredRowModel().rows.length} selected ({table.getFilteredRowModel().rows.length} shown)
-                </span>
-                { showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
-                  studyEnvContext={studyEnvContext}
-                  onDismiss={() => setShowEmailModal(false)}/> }
+                <RowVisibilityCount table={table}/>
               </div>
               <div className="d-flex">
                 <Button onClick={() => setShowEmailModal(allowSendEmail)}
@@ -208,10 +201,15 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
                 </Button>
                 <DownloadControl table={table} fileName={`${portal.shortcode}-ParticipantList-${currentIsoDate()}`}/>
                 <ColumnVisibilityControl table={table}/>
+                { showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
+                  studyEnvContext={studyEnvContext}
+                  onDismiss={() => setShowEmailModal(false)}/> }
               </div>
             </div>
           </div>
           { basicTableLayout(table, { filterable: true })}
+          { participantList.length === 0 &&
+            <span className="d-flex justify-content-center text-muted fst-italic">No participants</span> }
           <TableClientPagination table={table} preferredNumRowsKey={preferredNumRowsKey}/>
         </LoadingSpinner>
       </div>
