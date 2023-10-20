@@ -24,7 +24,7 @@ export default function KitsRouter({ studyEnvContext }: {studyEnvContext: StudyE
       <Link to={studyKitsPath(portalShortcode, studyShortcode, environmentName)}>kits</Link>
     </NavBreadcrumb>
     <div className="container-fluid pt-2">
-      <div className="row ps-3">
+      <div className="row px-3">
         <div className="col-12 align-items-baseline d-flex mb-2">
           <h2 className="h2 text-center me-4 fw-bold">Kits</h2>
         </div>

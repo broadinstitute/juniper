@@ -179,40 +179,36 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     .map(key => participantList[parseInt(key)].enrollee.shortcode)
 
   return <div className="ParticipantList container-fluid pt-2">
-    <div className="row ps-3">
-      <div className="col-12 align-items-baseline d-flex mb-2">
+    <div className="row px-3">
+      <div className="align-items-baseline d-flex mb-2">
         <h2 className="text-center me-4 fw-bold">Participant List</h2>
       </div>
-      <div className="col-12 align-items-baseline d-flex mb-3">
+      <div className="align-items-baseline d-flex mb-3">
         <FacetView facet={KEYWORD_FACET} facetValue={keywordFacetValue} updateValue={updateKeywordFacet}/>
       </div>
-      <div className="col-12">
-        <LoadingSpinner isLoading={isLoading}>
-          <div>
-            <div className="d-flex align-items-center justify-content-between mx-3">
-              <div className="d-flex">
-                <RowVisibilityCount table={table}/>
-              </div>
-              <div className="d-flex">
-                <Button onClick={() => setShowEmailModal(allowSendEmail)}
-                  variant="light" className="border m-1" disabled={!allowSendEmail}
-                  tooltip={allowSendEmail ? 'Send email' : 'Select at least one participant'}>
-                  <FontAwesomeIcon icon={faEnvelope} className="fa-lg"/> Send email
-                </Button>
-                <DownloadControl table={table} fileName={`${portal.shortcode}-ParticipantList-${currentIsoDate()}`}/>
-                <ColumnVisibilityControl table={table}/>
-                { showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
-                  studyEnvContext={studyEnvContext}
-                  onDismiss={() => setShowEmailModal(false)}/> }
-              </div>
-            </div>
+      <LoadingSpinner isLoading={isLoading}>
+        <div className="d-flex align-items-center justify-content-between px-3">
+          <div className="d-flex">
+            <RowVisibilityCount table={table}/>
           </div>
-          { basicTableLayout(table, { filterable: true })}
-          { participantList.length === 0 &&
-            <span className="d-flex justify-content-center text-muted fst-italic">No participants</span> }
-          <TableClientPagination table={table} preferredNumRowsKey={preferredNumRowsKey}/>
-        </LoadingSpinner>
-      </div>
+          <div className="d-flex">
+            <Button onClick={() => setShowEmailModal(allowSendEmail)}
+              variant="light" className="border m-1" disabled={!allowSendEmail}
+              tooltip={allowSendEmail ? 'Send email' : 'Select at least one participant'}>
+              <FontAwesomeIcon icon={faEnvelope} className="fa-lg"/> Send email
+            </Button>
+            <DownloadControl table={table} fileName={`${portal.shortcode}-ParticipantList-${currentIsoDate()}`}/>
+            <ColumnVisibilityControl table={table}/>
+            { showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
+              studyEnvContext={studyEnvContext}
+              onDismiss={() => setShowEmailModal(false)}/> }
+          </div>
+        </div>
+        { basicTableLayout(table, { filterable: true })}
+        { participantList.length === 0 &&
+          <span className="d-flex justify-content-center text-muted fst-italic">No participants</span> }
+        <TableClientPagination table={table} preferredNumRowsKey={preferredNumRowsKey}/>
+      </LoadingSpinner>
     </div>
   </div>
 }

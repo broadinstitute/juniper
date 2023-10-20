@@ -15,9 +15,10 @@ import {
 } from '@tanstack/react-table'
 import { basicTableLayout } from '../../../util/tableUtils'
 import { Link } from 'react-router-dom'
-import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
-import { useUser } from '../../../user/UserProvider'
+import { useUser } from 'user/UserProvider'
 import CreateDatasetModal from './CreateDatasetModal'
+import { Button } from 'components/forms/Button'
+import { faSquarePlus } from '@fortawesome/free-solid-svg-icons'
 
 const datasetColumns = (currentEnvPath: string): ColumnDef<DatasetDetails>[] => [{
   id: 'datasetName',
@@ -87,13 +88,20 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
       <div className="col-12 align-items-baseline d-flex mb-2">
         <h2 className="text-center me-4 fw-bold">Terra Data Repo</h2>
       </div>
-      <h3>Datasets</h3>
-      {/*{ user.superuser &&*/}
-      {/*    <button className="btn btn-secondary" onClick={() => setShowCreateDatasetModal(!showCreateDatasetModal)}*/}
-      {/*      aria-label="show or hide export modal">*/}
-      {/*      <FontAwesomeIcon icon={faPlus}/> Create new dataset*/}
-      {/*    </button>*/}
-      {/*}*/}
+      <div className="d-flex align-items-center justify-content-between">
+        <div className="d-flex">
+          <h4>Datasets</h4>
+        </div>
+        <div className="d-flex">
+          { user.superuser &&
+            <Button onClick={() => setShowCreateDatasetModal(!showCreateDatasetModal)}
+              variant="light" className="border m-1"
+              aria-label="show or export to tdr modal">
+              <FontAwesomeIcon icon={faSquarePlus} className="fa-lg"/> Create dataset
+            </Button>
+          }
+        </div>
+      </div>
       <CreateDatasetModal studyEnvContext={studyEnvContext}
         show={showCreateDatasetModal}
         setShow={setShowCreateDatasetModal}

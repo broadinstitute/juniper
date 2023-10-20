@@ -15,7 +15,7 @@ import ExportDataControl from './ExportDataControl'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { useLoadingEffect } from 'api/api-utils'
-import {Button} from "../../../components/forms/Button";
+import { Button } from 'components/forms/Button'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -79,7 +79,7 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
         <h2 className="text-center me-4 fw-bold">Data Export</h2>
       </div>
       <div className="col-12">
-        <div className="d-flex align-items-center justify-content-between mx-3">
+        <div className="d-flex align-items-center justify-content-between">
           <div className="d-flex">
             <span className="text-muted fst-italic">
               (Transposed for readability, the actual export has participants as rows)

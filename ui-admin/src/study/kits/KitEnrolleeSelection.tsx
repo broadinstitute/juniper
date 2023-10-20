@@ -28,7 +28,7 @@ import { useLoadingEffect } from 'api/api-utils'
 import { enrolleeKitRequestPath } from '../participants/enrolleeView/EnrolleeView'
 import { Button } from '../../components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDownload, faPaperPlane } from '@fortawesome/free-solid-svg-icons'
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 
 type EnrolleeRow = Enrollee & {
   taskCompletionStatus: Record<string, boolean>
@@ -174,31 +174,27 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
     getFilteredRowModel: getFilteredRowModel()
   })
 
-  return <div className="row">
-    <div className="col-12">
-      <LoadingSpinner isLoading={isLoading}>
-        <div className="d-flex align-items-center justify-content-between py-3">
-          <div className="d-flex align-items-center">
-            <RowVisibilityCount table={table}/>
-          </div>
-          <div className="d-flex">
-            <Button onClick={() => { setShowRequestKitModal(true) }}
-              variant="light" className="border m-1" disabled={!enableActionButtons}
-              tooltip={enableActionButtons ? 'Send sample collection kit' : 'Select at least one participant'}>
-              <FontAwesomeIcon icon={faPaperPlane} className="fa-lg"/> Send sample collection kit
-            </Button>
-            <ColumnVisibilityControl table={table}/>
-            { showRequestKitModal && <RequestKitsModal
-              studyEnvContext={studyEnvContext}
-              onDismiss={() => setShowRequestKitModal(false)}
-              enrolleeShortcodes={enrolleesSelected}
-              onSubmit={onSubmit}/> }
-          </div>
-        </div>
-        { basicTableLayout(table, { filterable: true }) }
-        { enrollees.length === 0 &&
-          <span className="d-flex justify-content-center text-muted fst-italic">No participants</span> }
-      </LoadingSpinner>
+  return <LoadingSpinner isLoading={isLoading}>
+    <div className="d-flex align-items-center justify-content-between px-3">
+      <div className="d-flex align-items-center">
+        <RowVisibilityCount table={table}/>
+      </div>
+      <div className="d-flex">
+        <Button onClick={() => { setShowRequestKitModal(true) }}
+          variant="light" className="border m-1" disabled={!enableActionButtons}
+          tooltip={enableActionButtons ? 'Send sample collection kit' : 'Select at least one participant'}>
+          <FontAwesomeIcon icon={faPaperPlane} className="fa-lg"/> Send sample collection kit
+        </Button>
+        <ColumnVisibilityControl table={table}/>
+        { showRequestKitModal && <RequestKitsModal
+          studyEnvContext={studyEnvContext}
+          onDismiss={() => setShowRequestKitModal(false)}
+          enrolleeShortcodes={enrolleesSelected}
+          onSubmit={onSubmit}/> }
+      </div>
     </div>
-  </div>
+    { basicTableLayout(table, { filterable: true }) }
+    { enrollees.length === 0 &&
+      <span className="d-flex justify-content-center text-muted fst-italic">No participants</span> }
+  </LoadingSpinner>
 }

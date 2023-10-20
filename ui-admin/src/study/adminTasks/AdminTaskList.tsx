@@ -97,11 +97,15 @@ export default function AdminTaskList({ studyEnvContext }: {studyEnvContext: Stu
       <div className="col-12 align-items-baseline d-flex mb-2">
         <h2 className="text-center me-4 fw-bold">Tasks</h2>
       </div>
-      <LoadingSpinner isLoading={isLoading}>
-        <MyTaskList studyEnvContext={studyEnvContext} taskData={taskData}/>
-        <h4 className="mt-5">All tasks</h4>
-        {basicTableLayout(allTasksTable)}
-      </LoadingSpinner>
+      <div className="col-12">
+        <LoadingSpinner isLoading={isLoading}>
+          <MyTaskList studyEnvContext={studyEnvContext} taskData={taskData}/>
+          <h4 className="mt-5">All tasks</h4>
+          {basicTableLayout(allTasksTable)}
+          { !taskData.tasks.length &&
+            <span className="d-flex justify-content-center text-muted fst-italic">No tasks</span> }
+        </LoadingSpinner>
+      </div>
       { (showEditModal && selectedTask) && <AdminTaskEditModal task={selectedTask} users={users}
         onDismiss={onDoneEditing} studyEnvContext={studyEnvContext}/> }
     </div>
@@ -142,8 +146,9 @@ taskData: AdminTaskListDto}) => {
   })
   return <>
     <h4>My tasks</h4>
-    { !!myTasks.length && basicTableLayout(table)}
-    { !myTasks.length && <div className="text-muted fst-italic mb-3">None</div> }
+    { basicTableLayout(table) }
+    { !myTasks.length &&
+      <span className="d-flex justify-content-center text-muted fst-italic">No tasks</span> }
   </>
 }
 

@@ -9,7 +9,7 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import {basicTableLayout, IndeterminateCheckbox, RowVisibilityCount} from 'util/tableUtils'
+import { basicTableLayout, IndeterminateCheckbox, RowVisibilityCount } from 'util/tableUtils'
 import { currentIsoDate, instantToDateString, instantToDefaultString } from 'util/timeUtils'
 import { Button } from 'components/forms/Button'
 import { escapeCsvValue, saveBlobAsDownload } from 'util/downloadUtils'
@@ -17,8 +17,8 @@ import { failureNotification, successNotification } from '../util/notifications'
 import { Store } from 'react-notifications-component'
 import Modal from 'react-bootstrap/Modal'
 import { useLoadingEffect } from '../api/api-utils'
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faDownload, faTrash} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faDownload, faTrash } from '@fortawesome/free-solid-svg-icons'
 
 
 /** show the mailing list in table */
