@@ -70,10 +70,9 @@ test('send email is toggled depending on participants selected', async () => {
   await waitFor(() => {
     expect(screen.getByText('JOSALK')).toBeInTheDocument()
   })
-  const participantLink = screen.getByText('Send email')
-  expect(participantLink).toHaveAttribute('aria-disabled', 'true')
+  const sendEmailButton = screen.getByText('Send email')
+  expect(sendEmailButton).toHaveAttribute('aria-disabled', 'true')
 })
-
 
 test('keyword search sends search api request', async () => {
   const searchSpy = mockSearchApi(1)
@@ -128,5 +127,5 @@ test('allows the user to change the page size', async () => {
   expect(screen.getByText('Page 1 of 4')).toBeInTheDocument()
 
   //Also assert that the preferred number of rows is saved to local storage
-  expect(localStorage.setItem).toHaveBeenCalledWith('participantList.portalCode.fakeStudy.preferredNumRows', '25')
+  expect(localStorage.setItem).toHaveBeenCalledWith('participantList.preferredNumRows', '25')
 })

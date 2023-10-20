@@ -6,7 +6,11 @@ import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.export.formatters.SurveyFormatter;
 import bio.terra.pearl.core.service.export.instance.ExportOptions;
+import bio.terra.pearl.core.service.export.instance.ItemExportInfo;
+import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -31,7 +35,7 @@ public class SurveyFormatterTests {
                 .exportOrder(1)
                 .build();
         var moduleExportInfo = new SurveyFormatter(objectMapper)
-                .getModuleExportInfo(new ExportOptions(), survey, List.of(questionDef));
+                .getModuleExportInfo(new ExportOptions(), "oh_surveyA", List.of(survey), List.of(questionDef));
         SurveyResponse response = SurveyResponse.builder()
                 .id(UUID.randomUUID())
                 .surveyId(survey.getId())
@@ -50,5 +54,32 @@ public class SurveyFormatterTests {
         assertThat(valueMap.get("oh_surveyA.complete"), equalTo("false"));
 
 
+    }
+
+    public void testAddAnswerToMapHandlesMissingVersion() throws Exception {
+        Survey survey = Survey.builder()
+                .id(UUID.randomUUID())
+                .stableId("oh_surveyA")
+                .version(1)
+                .build();
+        SurveyQuestionDefinition questionDef = SurveyQuestionDefinition.builder()
+                .questionStableId("oh_surveyA_q1")
+                .questionType("text")
+                .exportOrder(1)
+                .build();
+        SurveyFormatter surveyFormatter = new SurveyFormatter(objectMapper);
+        var moduleExportInfo = surveyFormatter
+                .getModuleExportInfo(new ExportOptions(), "oh_surveyA", List.of(survey), List.of(questionDef));
+        ItemExportInfo itemExportInfo = moduleExportInfo.getItems().get(0);
+        Map<String, String> valueMap = new HashMap<>();
+        Answer answerToMissingSurvey = Answer.builder()
+                        .questionStableId("oh_surveyA_q1")
+                        .surveyStableId("oh_surveyA")
+                        .surveyVersion(18)
+                        .stringValue("test123").build();
+        Map<String, List<Answer>> answerMap = Map.of("oh_surveyA_q1", List.of(answerToMissingSurvey));
+        surveyFormatter.addAnswersToMap(moduleExportInfo, itemExportInfo, answerMap, valueMap);
+
+        assertThat(valueMap.get("oh_surveyA.oh_surveyA_q1"), equalTo("test123"));
     }
 }

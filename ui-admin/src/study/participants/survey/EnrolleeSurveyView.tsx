@@ -45,6 +45,7 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, responses }:
 
   const answerVersions = _uniq(lastResponse.answers.map(ans => ans.surveyVersion))
   const versionString = `${pluralize('version', answerVersions.length)} ${answerVersions.join(', ')}`
+
   return <div>
     <DocumentTitle title={`${enrollee.shortcode} - ${configSurvey.survey.name}`}/>
     <h6>{configSurvey.survey.name}</h6>

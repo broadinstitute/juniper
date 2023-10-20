@@ -42,7 +42,7 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    private List<String> tablesToTruncate = Arrays.asList("survey", "survey_question_definition");
+    private List<String> tablesToTruncate = Arrays.asList("survey", "survey_question_definition", "answer_mapping");
 
     @BeforeAll
     public void cleanTables() {
@@ -66,7 +66,7 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
         assertThat(fetchedSurvey.getAnswerMappings().size(), greaterThan(0));
 
         var questionDefs = surveyQuestionDefinitionDao.findAllBySurveyId(fetchedSurvey.getId());
-        assertThat(questionDefs, hasSize(52));
+        assertThat(questionDefs, hasSize(53));
     }
 
     @Test

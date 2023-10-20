@@ -17,7 +17,7 @@ import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { basicTableLayout, checkboxColumnCell, ColumnVisibilityControl, IndeterminateCheckbox } from 'util/tableUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { instantToDateString } from 'util/timeUtils'
-import RequestKitModal from '../participants/RequestKitModal'
+import RequestKitsModal from './RequestKitsModal'
 import { useLoadingEffect } from 'api/api-utils'
 import { enrolleeKitRequestPath } from '../participants/enrolleeView/EnrolleeView'
 
@@ -60,20 +60,14 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
     setEnrollees(enrolleeRows)
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
-  const onSubmit = async (kitType: string) => {
-    const enrolleesSelected = Object.keys(rowSelection)
-      .filter(key => rowSelection[key])
-      .map(key => enrollees[parseInt(key)].shortcode)
-
-    // This iteration should be happening server-side: JN-460
-    await Api.requestKits(
-      portal.shortcode, study.shortcode, currentEnv.environmentName, enrolleesSelected, kitType)
-
+  const onSubmit = async () => {
     setShowRequestKitModal(false)
     reload()
   }
-
-  const numSelected = Object.keys(rowSelection).length
+  const enrolleesSelected = Object.keys(rowSelection)
+    .filter(key => rowSelection[key])
+    .map(key => enrollees[parseInt(key)].shortcode)
+  const numSelected = enrolleesSelected.length
   const enableActionButtons = numSelected > 0
 
   const requiredSurveys = currentEnv.configuredSurveys.filter(survey => survey.required)
@@ -185,9 +179,10 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
               title={enableActionButtons ? 'Send sample collection kit' : 'Select at least one participant'}
               aria-disabled={!enableActionButtons}>Send sample collection kit</button>
           </span>
-          { showRequestKitModal && <RequestKitModal
+          { showRequestKitModal && <RequestKitsModal
             studyEnvContext={studyEnvContext}
             onDismiss={() => setShowRequestKitModal(false)}
+            enrolleeShortcodes={enrolleesSelected}
             onSubmit={onSubmit}/> }
         </div>
         <ColumnVisibilityControl table={table}/>

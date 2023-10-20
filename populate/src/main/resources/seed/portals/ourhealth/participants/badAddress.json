@@ -1,0 +1,19 @@
+{
+  "participantUser": {
+    "username": "badAddress@test.com",
+    "lastLoginHoursAgo": 56
+  },
+  "profile": {
+    "givenName": "Mal",
+    "familyName": "Addressed",
+    "contactEmail": "badAddress@test.com",
+    "sexAtBirth": "male",
+    "mailingAddress": {
+      "street1": "BAD address 342342",
+      "city": "BAD",
+      "state": "MA",
+      "country": "US",
+      "postalCode": "01111"
+    }
+  }
+}

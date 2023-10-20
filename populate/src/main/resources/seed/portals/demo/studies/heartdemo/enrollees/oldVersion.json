@@ -31,9 +31,10 @@
       "surveyStableId": "hd_hd_socialHealth",
       "surveyVersion": 1,
       "answerPopDtos": [
-        { "questionStableId": "hd_hd_socialHealth_neighborhoodGetsAlong", "stringValue": "agree"},
         { "questionStableId": "hd_hd_socialHealth_neighborhoodIsWalkable", "stringValue": "disagree"},
-        { "questionStableId": "hd_hd_socialHealth_neighborhoodIsNoisy", "stringValue": "stronglyAgree", "surveyVersion": 2}
+        { "questionStableId": "hd_hd_socialHealth_neighborhoodIsNoisy", "stringValue": "neutral", "surveyVersion": 2},
+        { "questionStableId": "hd_hd_socialHealth_neighborhoodSharesValues", "stringValue":  "disagree"},
+        { "questionStableId": "hd_hd_socialHealth_vandalismIsCommonInNeighborhood", "stringValue": "agree"}
       ],
       "currentPageNo": 1,
       "complete": true,
@@ -58,7 +59,8 @@
     "consentVersion": 1,
     "consented": true,
     "answers": [
-      {"questionStableId": "hd_hd_consent_signatureDate", "stringValue": "10/28/22"},
+      {"questionStableId": "hd_hd_consent_signatureDate", "objectValue": "\"2023-06-21T15:59:46.164Z\""},
+      {"questionStableId": "hd_hd_consent_formattedSignatureDate", "stringValue": "06/21/23"},
       {"questionStableId": "hd_hd_consent_legalName", "stringValue": "Old Version Tester"},
       {"questionStableId": "hd_hd_consent_agree", "stringValue": "agree"},
       {"questionStableId": "hd_hd_consent_signature",

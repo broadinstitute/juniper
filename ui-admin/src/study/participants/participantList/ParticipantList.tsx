@@ -9,14 +9,19 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  PaginationState,
   SortingState,
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
-import { basicTableLayout, ColumnVisibilityControl, IndeterminateCheckbox } from 'util/tableUtils'
+import {
+  basicTableLayout,
+  ColumnVisibilityControl,
+  DownloadControl,
+  IndeterminateCheckbox,
+  useRoutableTablePaging
+} from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import AdHocEmailModal from '../AdHocEmailModal'
 import {
   ALL_FACETS,
@@ -25,11 +30,11 @@ import {
   facetValuesToString,
   KEYWORD_FACET
 } from 'api/enrolleeSearch'
-import { Button } from 'components/forms/Button'
-import { instantToDefaultString } from 'util/timeUtils'
+import { currentIsoDate, instantToDefaultString } from 'util/timeUtils'
 import { useLoadingEffect } from 'api/api-utils'
 import { FacetView, getUpdatedFacetValues } from './facets/EnrolleeSearchFacets'
 import TableClientPagination from 'util/TablePagination'
+import { Button } from 'components/forms/Button'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -50,7 +55,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   const facetValues = facetValuesFromString(searchParams.get('facets') ?? '{}', ALL_FACETS)
   const keywordFacetIndex = facetValues.findIndex(facet => facet.facet.category === 'keyword')
   const keywordFacetValue = facetValues[keywordFacetIndex]
-  const preferredNumRowsKey = `participantList.${portal.shortcode}.${study.shortcode}.preferredNumRows`
+  const { paginationState, preferredNumRowsKey } = useRoutableTablePaging('participantList')
 
   const columns = useMemo<ColumnDef<EnrolleeSearchResult, string>[]>(() => [{
     id: 'select',
@@ -76,12 +81,18 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     id: 'createdAt',
     accessorKey: 'enrollee.createdAt',
     enableColumnFilter: false,
+    meta: {
+      columnType: 'instant'
+    },
     cell: info => instantToDefaultString(info.getValue() as unknown as number)
   }, {
     id: 'lastLogin',
     header: 'Last login',
     accessorKey: 'participantUser.lastLogin',
     enableColumnFilter: false,
+    meta: {
+      columnType: 'instant'
+    },
     cell: info => instantToDefaultString(info.getValue() as unknown as number)
   }, {
     id: 'familyName',
@@ -125,12 +136,6 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     }
   }], [study.shortcode, currentEnv.environmentName])
 
-  const [{ pageIndex, pageSize }] =
-    useState<PaginationState>({
-      pageIndex: parseInt(searchParams.get('pageIndex') || '0'),
-      pageSize: parseInt(searchParams.get('pageSize') || localStorage.getItem(preferredNumRowsKey) || '10')
-    })
-
   const table = useReactTable({
     data: participantList,
     columns,
@@ -140,10 +145,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
       columnVisibility
     },
     initialState: {
-      pagination: {
-        pageIndex,
-        pageSize
-      }
+      pagination: paginationState
     },
     onColumnVisibilityChange: setColumnVisibility,
     enableRowSelection: true,
@@ -187,22 +189,26 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
       <div className="col-12">
         <LoadingSpinner isLoading={isLoading}>
           <div>
-            <div className="d-flex align-items-center">
-              <span className="me-2">
-                {numSelected} of{' '}
-                {table.getPreFilteredRowModel().rows.length} selected ({table.getFilteredRowModel().rows.length} shown)
-              </span>
-              <span className="me-2">
+            <div className="d-flex align-items-center justify-content-between mx-3">
+              <div className="d-flex">
+                <span className="me-2">
+                  {numSelected} of{' '}
+                  {/* eslint-disable-next-line max-len */}
+                  {table.getPreFilteredRowModel().rows.length} selected ({table.getFilteredRowModel().rows.length} shown)
+                </span>
+                { showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
+                  studyEnvContext={studyEnvContext}
+                  onDismiss={() => setShowEmailModal(false)}/> }
+              </div>
+              <div className="d-flex">
                 <Button onClick={() => setShowEmailModal(allowSendEmail)}
-                  variant="link" disabled={!allowSendEmail}
+                  variant="light" className="border m-1" disabled={!allowSendEmail}
                   tooltip={allowSendEmail ? 'Send email' : 'Select at least one participant'}>
-                  Send email
+                  <FontAwesomeIcon icon={faEnvelope} className="fa-lg"/> Send email
                 </Button>
-              </span>
-              { showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
-                studyEnvContext={studyEnvContext}
-                onDismiss={() => setShowEmailModal(false)}/> }
-              <ColumnVisibilityControl table={table}/>
+                <DownloadControl table={table} fileName={`${portal.shortcode}-ParticipantList-${currentIsoDate()}`}/>
+                <ColumnVisibilityControl table={table}/>
+              </div>
             </div>
           </div>
           { basicTableLayout(table, { filterable: true })}

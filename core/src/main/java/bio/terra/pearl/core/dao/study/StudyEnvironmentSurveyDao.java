@@ -32,6 +32,20 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
         return findAllByStudyEnvironmentId(studyEnvId, true);
     }
 
+    public List<StudyEnvironmentSurvey> findAllByStudyEnvironmentId(UUID studyEnvId, Boolean active) {
+        if (active != null) {
+            return findAllByTwoPropertiesSorted("study_environment_id", studyEnvId,
+                    "active", active,
+                    "survey_order", "ASC");
+        } else {
+            return findAllByPropertySorted("study_environment_id", studyEnvId, "survey_order", "ASC");
+        }
+    }
+
+    public List<StudyEnvironmentSurvey> findAllByStudyEnvIdWithSurvey(UUID studyEnvId) {
+        return findAllByStudyEnvIdWithSurvey(studyEnvId, true);
+    }
+
     public List<StudyEnvironmentSurvey> findAllByStudyEnvironmentId(UUID studyEnvId, boolean active) {
         return findAllByTwoPropertiesSorted("study_environment_id", studyEnvId,
                             "active", active,
@@ -39,8 +53,8 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
     }
 
     /** gets all the study environment surveys and attaches the relevant survey objects in a batch */
-    public List<StudyEnvironmentSurvey> findAllByStudyEnvIdWithSurvey(UUID studyEnvId) {
-        List<StudyEnvironmentSurvey> studyEnvSurvs = findAllByStudyEnvironmentId(studyEnvId);
+    public List<StudyEnvironmentSurvey> findAllByStudyEnvIdWithSurvey(UUID studyEnvId, Boolean active) {
+        List<StudyEnvironmentSurvey> studyEnvSurvs = findAllByStudyEnvironmentId(studyEnvId, active);
         List<UUID> surveyIds = studyEnvSurvs.stream().map(ses -> ses.getSurveyId()).collect(Collectors.toList());
         List<Survey> surveys = surveyDao.findAll(surveyIds);
         for (StudyEnvironmentSurvey ses : studyEnvSurvs) {

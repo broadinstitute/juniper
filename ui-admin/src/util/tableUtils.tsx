@@ -1,10 +1,14 @@
 import React, { HTMLProps, useEffect, useState } from 'react'
-import { CellContext, Column, flexRender, Header, RowData, Table } from '@tanstack/react-table'
+import { CellContext, Column, flexRender, Header, PaginationState, RowData, Table } from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCaretDown, faCaretUp, faCheck, faColumns } from '@fortawesome/free-solid-svg-icons'
+import { faCaretDown, faCaretUp, faCheck, faColumns, faDownload } from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
 import Modal from 'react-bootstrap/Modal'
 import { Button } from '../components/forms/Button'
+import { escapeCsvValue, saveBlobAsDownload } from './downloadUtils'
+import { instantToDefaultString } from './timeUtils'
+import { isEmpty } from 'lodash'
+import { useSearchParams } from 'react-router-dom'
 
 /**
  * Returns a debounced input react component
@@ -219,9 +223,11 @@ export function IndeterminateCheckbox({
 export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
   const [show, setShow] = useState(false)
   return <div className="ms-auto">
-    <button className="btn btn-secondary" onClick={() => setShow(!show)} aria-label="show or hide columns">
-      Show/hide columns <FontAwesomeIcon icon={faColumns} className="fa-lg"/>
-    </button>
+    <Button onClick={() => setShow(!show)}
+      variant="light" className="border m-1"
+      tooltip={'Show or hide columns'}>
+      <FontAwesomeIcon icon={faColumns} className="fa-lg"/> Columns
+    </Button>
     { show && <Modal show={show} onHide={() => setShow(false)}>
       <Modal.Header closeButton>
         <Modal.Title>
@@ -261,6 +267,79 @@ export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={() => setShow(false)}>Ok</Button>
+      </Modal.Footer>
+    </Modal> }
+  </div>
+}
+
+/**
+ * Converts a cell value to an escaped string for csv export
+ */
+function cellToCsvString(cellType: string, cellValue: unknown): string {
+  switch (cellType) {
+    case 'string':
+      return cellValue ? escapeCsvValue(cellValue as string) : ''
+    case 'instant':
+      return escapeCsvValue(instantToDefaultString(cellValue as number))
+    case 'boolean':
+      return cellValue as boolean ? 'true' : 'false'
+    default:
+      return cellValue ? escapeCsvValue(cellValue as string) : ''
+  }
+}
+
+/**
+ * Adds a control to download the table data as a csv file
+ */
+export function DownloadControl<T>({ table, fileName, excludedColumns = ['select'] }:{
+  table: Table<T>, fileName: string, excludedColumns?: string[]}
+) {
+  const [show, setShow] = useState(false)
+
+  const download = () => {
+    const headers = table.getFlatHeaders().filter(header => !excludedColumns.includes(header.id)).map(header => {
+      return header.id
+    }).join(',')
+
+    const rows = table.getFilteredRowModel().rows.map(row => {
+      const visibleCells = row.getVisibleCells().filter(cell => !excludedColumns.includes(cell.column.id))
+
+      return visibleCells.map(cell => {
+        const cellType = cell.column.columnDef.meta?.columnType || 'string'
+        return cellToCsvString(cellType, cell.getValue())
+      }).join(',')
+    }).join('\n')
+
+    const blob = new Blob([headers, '\n', rows], { type: 'text/plain' })
+    saveBlobAsDownload(blob, `${fileName}.csv`)
+  }
+
+  const disableDownload = isEmpty(table.getFilteredRowModel().rows)
+
+  return <div className="ms-auto">
+    <Button onClick={() => setShow(!show)}
+      variant="light" className="border m-1" disabled={disableDownload}
+      tooltip={!disableDownload ? 'Download table' : 'At least one row must be visible in order to download'}>
+      <FontAwesomeIcon icon={faDownload} className="fa-lg"/> Download
+    </Button>
+    { show && <Modal show={show} onHide={() => setShow(false)}>
+      <Modal.Header closeButton>
+        <Modal.Title>
+                Download
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <div className="border-b border-black">
+                Download <strong>{table.getFilteredRowModel().rows.length}</strong> rows
+                to <code>{fileName}.csv</code>. The current data filters and shown columns will be applied.
+        </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="primary" onClick={() => {
+          download()
+          setShow(false)
+        }}>Download</Button>
+        <button className="btn btn-secondary" onClick={() => setShow(false)}>Cancel</button>
       </Modal.Footer>
     </Modal> }
   </div>
@@ -309,6 +388,22 @@ export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig = 
 /** renders a boolean value as a checkmark (true)  or a blank (false) */
 export const checkboxColumnCell = <R, T>(props: CellContext<R, T>) =>
   props.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
+
+/**
+ * hook for reading pagination params from the URL.  This should be used in conjunction with <TablePagination> for
+ * url-persistent params, also backed by localstorage for storing preferred pageSie
+ * @param tableIdentifier an identifier to distinguish table page sizes in local storage, the containing component name
+ * is a good default for this
+ */
+export const useRoutableTablePaging = (tableIdentifier: string) => {
+  const [searchParams] = useSearchParams()
+  const preferredNumRowsKey = `${tableIdentifier}.preferredNumRows`
+  const paginationState: PaginationState = {
+    pageIndex: parseInt(searchParams.get('pageIndex') || '0'),
+    pageSize: parseInt(searchParams.get('pageSize') || localStorage.getItem(preferredNumRowsKey) || '10')
+  }
+  return { paginationState, preferredNumRowsKey }
+}
 
 declare module '@tanstack/table-core' {
   //Extra column metadata for extending the built-in filter functionality of react-table

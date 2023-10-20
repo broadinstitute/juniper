@@ -184,6 +184,13 @@ export type AdminTask = {
   dispositionNote?: string
 }
 
+export type SiteImageMetadata = {
+  id: string,
+  createdAt: number,
+  cleanFileName: string,
+  version: number
+}
+
 const emptyPepperKitStatus: PepperKitStatus = {
   kitId: '',
   currentStatus: '(unknown)',
@@ -350,6 +357,11 @@ export type ParticipantNote = {
   creatingAdminUserId: string
 }
 
+export type KitRequestListResponse = {
+  kitRequests: KitRequest[]
+  exceptions: { message: string }[]
+}
+
 export type InternalConfig = {
   pepperDsmConfig: Record<string, string>
 }
@@ -474,6 +486,11 @@ export default {
       headers: this.getInitHeaders(),
       body: JSON.stringify(study)
     })
+    return await this.processJsonResponse(response)
+  },
+
+  async getPortalImages(portalShortcode: string): Promise<SiteImageMetadata[]> {
+    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/siteImages`, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
@@ -721,7 +738,7 @@ export default {
     envName: string,
     enrolleeShortcodes: string[],
     kitType: string
-  ): Promise<KitRequest[]> {
+  ): Promise<KitRequestListResponse> {
     const params = new URLSearchParams({ kitType })
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/requestKits?${params}`
     const response = await fetch(url, {
@@ -729,9 +746,9 @@ export default {
       headers: this.getInitHeaders(),
       body: JSON.stringify(enrolleeShortcodes)
     })
-    const kits: KitRequest[] = await this.processJsonResponse(response)
-    kits.forEach(kit => { kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus) })
-    return kits
+    const listResponse: KitRequestListResponse = await this.processJsonResponse(response)
+    listResponse.kitRequests.forEach(kit => { kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus) })
+    return listResponse
   },
 
   async refreshKitStatuses(

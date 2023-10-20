@@ -1141,6 +1141,19 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/siteImages:
+    get:
+      summary: Returns a list of the metadata for the images in the portal -- does not return the image files themselves
+      tags: [ siteImage ]
+      operationId: list
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: image data
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}/siteImages/{version}/{cleanFileName}:
     get:
       summary: Returns the binary image data for the image of the given shortcode

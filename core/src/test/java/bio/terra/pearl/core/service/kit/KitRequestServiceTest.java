@@ -10,6 +10,7 @@ import bio.terra.pearl.core.factory.kit.KitTypeFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
+import bio.terra.pearl.core.service.kit.pepper.*;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -36,8 +38,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testRequestKit() throws Exception {
-        // Arrange
+    public void testRequestKitAssemble() throws Exception {
         var adminUser = adminUserFactory.buildPersisted("testRequestKit");
         var kitType = kitTypeFactory.buildPersisted("testRequestKit");
         var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testRequestKit");
@@ -54,16 +55,9 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .street1("123 Fake Street")
                 .phoneNumber("111-222-3333")
                 .build();
-        var studyName = "testStudy";
-        when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any()))
-                .thenReturn("{ \"kits\": [{}] }");
 
-        // Act
-        var sampleKit = kitRequestService.requestKit(adminUser, studyName, enrollee, "testRequestKit");
+        var sampleKit = kitRequestService.assemble(adminUser, enrollee, expectedSentToAddress, "SALIVA");
 
-        // Assert
-        Mockito.verify(mockPepperDSMClient)
-                .sendKitRequest(eq(studyName), eq(enrollee), any(KitRequest.class), any(PepperKitAddress.class));
         assertThat(sampleKit.getCreatingAdminUserId(), equalTo(adminUser.getId()));
         assertThat(sampleKit.getEnrolleeId(), equalTo(enrollee.getId()));
         assertThat(objectMapper.readValue(sampleKit.getSentToAddress(), PepperKitAddress.class),
@@ -73,8 +67,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testRequestKitError() throws Exception {
-        // Arrange
+    public void testRequestKitError() {
         var adminUser = adminUserFactory.buildPersisted("testRequestKit");
         var kitType = kitTypeFactory.buildPersisted("testRequestKit");
         var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testRequestKit");
@@ -88,17 +81,16 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
         when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any())).thenAnswer(invocation -> {
             var kitRequest = (KitRequest) invocation.getArguments()[2];
-            throw new PepperException("boom",
+            throw new PepperApiException("Error from Pepper with unexpected format: boom",
                     PepperErrorResponse.builder()
                             .juniperKitId(kitRequest.getId().toString())
-                            .build());
+                            .build(), HttpStatus.BAD_REQUEST);
         });
 
-        // "Act"
-        Executable act = () -> kitRequestService.requestKit(adminUser, "testStudy" , enrollee, kitType.getName());
 
-        // Assert
-        PepperException pepperException = assertThrows(PepperException.class, act);
+        assertThrows(PepperApiException.class, () ->
+                kitRequestService.requestKit(adminUser, "testStudy" , enrollee, kitType.getName())
+        );
     }
 
     @Transactional
@@ -200,7 +192,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         when(mockPepperDSMClient.fetchKitStatusByStudy(study2.getShortcode()))
                 .thenReturn(List.of(kitStatus2));
 
-        /* Finally, exercise the unit under test! */
+        /* Finally, sync the kit statuses  */
         kitRequestService.syncAllKitStatusesFromPepper();
 
         /* Load and verify each kit */
@@ -220,6 +212,8 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @MockBean
     private PepperDSMClient mockPepperDSMClient;
+    @Autowired
+    private StubPepperDSMClient stubPepperDSMClient;
 
     @Autowired
     private AdminUserFactory adminUserFactory;

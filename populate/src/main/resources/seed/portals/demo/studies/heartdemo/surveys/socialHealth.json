@@ -22,7 +22,7 @@
               {"text": "Strongly agree", "value": "stronglyAgree"},
               {"text": "Agree", "value": "agree"},
               {"text": "Neutral (neither agree nor disagree)", "value": "neutralNeitherAgreeNorDisagree"},
-              {"text": "Disagree", "value": "disagree"},
+              {"text": "Disagre", "value": "disagree"},
               {"text": "Strongly disagree", "value": "stronglyDisagree"}
             ]
           },
@@ -44,6 +44,7 @@
             "choices": [
               {"text": "Strongly disagree", "value": "stronglyDisagree"},
               {"text": "Disagree", "value": "disagree"},
+              {"text": "Neutral (neither agree nor disagree)", "value": "neutral"},
               {"text": "Agree", "value": "agree"},
               {"text": "Strongly agree", "value": "stronglyAgree"}
             ]

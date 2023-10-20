@@ -23,6 +23,7 @@ import { ENVIRONMENT_ICON_MAP } from './publishing/StudyPublishingView'
 import NotificationContent from './notifications/NotificationContent'
 import SiteContentLoader from '../portal/siteContent/SiteContentLoader'
 import AdminTaskList from './adminTasks/AdminTaskList'
+import SiteImageList from '../portal/images/SiteImageList'
 
 export type StudyEnvParams = {
   studyShortcode: string
@@ -88,6 +89,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
       <Route path="kits/*" element={<KitsRouter studyEnvContext={studyEnvContext}/>}/>
       <Route path="siteContent" element={<SiteContentLoader portalEnvContext={portalEnvContext}/>}/>
+      <Route path="images" element={<SiteImageList portalContext={portalContext} portalEnv={portalEnv}/>}/>
       <Route path="metrics" element={<StudyEnvMetricsView studyEnvContext={studyEnvContext}/>}/>
       <Route path="mailingList" element={<MailingListView portalContext={portalContext}
         portalEnv={portalEnv}/>}/>
@@ -185,6 +187,14 @@ export const studyEnvMailingListPath = (portalShortcode: string, studyShortcode:
  * but the route is set to maintain study context
  */
 export const studyEnvSiteContentPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
+  return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/siteContent`
+}
+
+/**
+ * helper function for image manager route -- note the simages are portal-scoped, rather than study-scoped,
+ * but the route is set to maintain study context
+ */
+export const studyEnvSiteImagesPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/siteContent`
 }
 

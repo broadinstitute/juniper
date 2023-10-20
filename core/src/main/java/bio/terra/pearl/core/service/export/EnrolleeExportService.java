@@ -5,6 +5,8 @@ import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
+import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.service.export.formatters.EnrolleeFormatter;
 import bio.terra.pearl.core.service.export.formatters.ProfileFormatter;
 import bio.terra.pearl.core.service.export.formatters.SurveyFormatter;
@@ -21,6 +23,8 @@ import java.util.*;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import static java.util.stream.Collectors.groupingBy;
 
 @Service
 @Slf4j
@@ -106,20 +110,33 @@ public class EnrolleeExportService {
         return moduleInfo;
     }
 
+    /**
+     * returns a ModuleExportInfo for each unique survey stableId that has ever been attached to the studyEnvironment
+     * If multiple versions of a survey have been attached, those will be consolidated into a single ModuleExportInfo
+     */
     protected List<ModuleExportInfo> generateSurveyModules(ExportOptions exportOptions, UUID studyEnvironmentId) throws Exception {
-        // for now, only worry about the surveys currently configured for the environment
-        List<StudyEnvironmentSurvey> latestConfiguredSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(studyEnvironmentId);
-        latestConfiguredSurveys.sort(Comparator.comparing(StudyEnvironmentSurvey::getSurveyOrder));
         SurveyFormatter surveyFormatter = new SurveyFormatter(objectMapper);
+
+        // get all surveys that have ever been attached to the StudyEnvironment, including inactive ones
+        List<StudyEnvironmentSurvey> configuredSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(studyEnvironmentId, null);
+        Map<String, List<StudyEnvironmentSurvey>> configuredSurveysByStableId = configuredSurveys.stream().collect(
+                groupingBy(cfgSurvey -> cfgSurvey.getSurvey().getStableId())
+        );
+
+        // sort by surveyOrder so the resulting moduleExportInfo list is in the same order that participants take them
+        List<Map.Entry<String, List<StudyEnvironmentSurvey>>> sortedCfgSurveysByStableId = configuredSurveysByStableId.entrySet()
+                .stream().sorted(Comparator.comparingInt(entry -> entry.getValue().get(0).getSurveyOrder())).toList();
+
+        // create one moduleExportInfo for each survey stableId.
         List<ModuleExportInfo> moduleExportInfos = new ArrayList<>();
-        for (StudyEnvironmentSurvey configuredSurvey : latestConfiguredSurveys) {
-            var surveyQuestionDefinitions = surveyQuestionDefinitionDao
-                    .findAllBySurveyId(configuredSurvey.getSurvey().getId());
-            moduleExportInfos.add(surveyFormatter.getModuleExportInfo(exportOptions, configuredSurvey.getSurvey(), surveyQuestionDefinitions));
+        for (Map.Entry<String, List<StudyEnvironmentSurvey>> surveysOfStableId : sortedCfgSurveysByStableId) {
+            List<Survey> surveys = surveysOfStableId.getValue().stream().map(StudyEnvironmentSurvey::getSurvey).toList();
+            var surveyQuestionDefinitions = surveyQuestionDefinitionDao.findAllBySurveyIds(surveys.stream().map(Survey::getId).toList());
+            moduleExportInfos.add(surveyFormatter.getModuleExportInfo(exportOptions, surveysOfStableId.getKey(), surveys, surveyQuestionDefinitions));
         }
+
         return moduleExportInfos;
     }
-
 
     protected List<EnrolleeExportData> loadAllEnrolleesForExport(List<Enrollee> enrollees) {
         // for now, load each enrollee individually.  Later we'll want more sophisticated batching strategies

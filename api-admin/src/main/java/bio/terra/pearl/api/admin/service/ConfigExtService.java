@@ -3,7 +3,7 @@ package bio.terra.pearl.api.admin.service;
 import bio.terra.pearl.api.admin.config.B2CConfiguration;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
-import bio.terra.pearl.core.service.kit.LivePepperDSMClient;
+import bio.terra.pearl.core.service.kit.pepper.LivePepperDSMClient;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;

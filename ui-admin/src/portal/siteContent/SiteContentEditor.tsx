@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { NavbarItemInternal, PortalEnvironment } from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faImage, faPlus } from '@fortawesome/free-solid-svg-icons'
 import HtmlPageEditView from './HtmlPageEditView'
 import { HtmlPage, LocalSiteContent, ApiProvider, SiteContent, ApiContextT } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
@@ -106,21 +106,23 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           <Select options={pageOpts} value={selectedNavOpt}
             onChange={e => setSelectedNavOpt(e ?? landingPageOption)}/>
         </div>
-        {
-          isEditable && <>
-            <button className="btn btn-secondary" onClick={() => alert('not yet implemented')}>
-              <FontAwesomeIcon icon={faPlus}/> Add page
-            </button>
-            <Button className="ms-auto" variant="primary"
-              onClick={() => createNewVersion(workingContent)}>
+        { isEditable && <button className="btn btn-secondary" onClick={() => alert('not yet implemented')}>
+          <FontAwesomeIcon icon={faPlus}/> Add page
+        </button> }
+        <Link to="../images" className="btn btn-secondary m-1 ms-3">
+          <FontAwesomeIcon icon={faImage} className="fa-lg"/> Manage images
+        </Link>
+        { isEditable && <>
+          <Button variant="primary" className="ms-auto"
+            onClick={() => createNewVersion(workingContent)}>
               Save
-            </Button>
-            {
-              // eslint-disable-next-line
+          </Button>
+          {
+            // eslint-disable-next-line
                 // @ts-ignore  Link to type also supports numbers for back operations
-              <Link className="btn btn-cancel" to={-1}>Cancel</Link>
-            }
-          </>
+            <Link className="btn btn-cancel" to={-1}>Cancel</Link>
+          }
+        </>
         }
 
       </div>

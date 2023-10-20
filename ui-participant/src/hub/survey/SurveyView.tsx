@@ -19,7 +19,7 @@ import {
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
-import { makeSurveyJsData, SurveyJsResumeData, Markdown } from '@juniper/ui-core'
+import { makeSurveyJsData, SurveyJsResumeData, Markdown, useAutosaveEffect } from '@juniper/ui-core'
 import { HubUpdate } from 'hub/hubUpdates'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
@@ -28,7 +28,6 @@ import { withErrorBoundary } from 'util/ErrorBoundary'
 import SurveyReviewModeButton from './ReviewModeButton'
 import { SurveyModel } from 'survey-core'
 import { DocumentTitle } from 'util/DocumentTitle'
-import { useAutosaveEffect } from '@juniper/ui-core/build/autoSaveUtils'
 
 const TASK_ID_PARAM = 'taskId'
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
@@ -36,14 +35,10 @@ const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are c
 /**
  * display a single survey form to a participant.
  */
-export function RawSurveyView({
-  form, enrollee, resumableData, pager,
-  studyShortcode, taskId, activeResponse, autoSaveInterval=AUTO_SAVE_INTERVAL
-}:
+export function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, taskId, activeResponse }:
 {
   form: Survey, enrollee: Enrollee, taskId: string, activeResponse?: SurveyResponse,
-  resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string,
-  autoSaveInterval?: number
+  resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string
 }) {
   const navigate = useNavigate()
   const { updateEnrollee } = useUser()
@@ -136,7 +131,7 @@ export function RawSurveyView({
     })
   }
 
-  useAutosaveEffect(saveDiff, autoSaveInterval)
+  useAutosaveEffect(saveDiff, AUTO_SAVE_INTERVAL)
 
   return (
     <>
@@ -168,8 +163,7 @@ export function SurveyFooter({ survey, surveyModel }: { survey: Survey, surveyMo
 
 /** handles paging the form */
 export function PagedSurveyView({
-  form, activeResponse, enrollee, studyShortcode,
-  taskId, autoSaveInterval=AUTO_SAVE_INTERVAL
+  form, activeResponse, enrollee, studyShortcode, taskId
 }:
 {
   form: StudyEnvironmentSurvey, activeResponse?: SurveyResponse, enrollee: Enrollee,
@@ -181,7 +175,7 @@ export function PagedSurveyView({
   const pager = useRoutablePageNumber()
 
   return <RawSurveyView enrollee={enrollee} form={form.survey} taskId={taskId} activeResponse={activeResponse}
-    resumableData={resumableData} pager={pager} studyShortcode={studyShortcode} autoSaveInterval={autoSaveInterval}/>
+    resumableData={resumableData} pager={pager} studyShortcode={studyShortcode}/>
 }
 
 /** handles loading the survey form and responses from the server */

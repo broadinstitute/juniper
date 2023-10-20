@@ -2,14 +2,27 @@ package bio.terra.pearl.core.dao.site;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
 import bio.terra.pearl.core.model.site.SiteImage;
+
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import bio.terra.pearl.core.model.site.SiteImageMetadata;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.mapper.RowMapper;
+import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SiteImageDao extends BaseJdbiDao<SiteImage> {
+    private String metadataFieldString;
+    private RowMapper imageMetadataRowMapper = BeanMapper.of(SiteImageMetadata.class);
     public SiteImageDao(Jdbi jdbi) {
         super(jdbi);
+        jdbi.registerRowMapper(SiteImageMetadata.class, imageMetadataRowMapper);
+        List<String> metadataColumns = getGetQueryColumns();
+        metadataColumns.remove("data");
+        metadataFieldString = metadataColumns.stream().collect(Collectors.joining(", "));
     }
 
     @Override
@@ -49,6 +62,18 @@ public class SiteImageDao extends BaseJdbiDao<SiteImage> {
                         .mapTo(int.class)
                         .one()
         ) + 1;
+    }
+
+    public List<SiteImageMetadata> findMetadataByPortal(String portalShortcode) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                                select %s from %s 
+                                where portal_shortcode = :portalShortcode
+                                """.formatted(metadataFieldString, tableName))
+                        .bind("portalShortcode", portalShortcode)
+                        .mapTo(SiteImageMetadata.class)
+                        .list()
+        );
     }
 
     public void deleteByPortalShortcode(String portalShortcode) {

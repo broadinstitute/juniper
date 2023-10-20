@@ -106,20 +106,33 @@
           },
           {
             "type": "text",
-            "name": "oh_oh_basic_rawWeight",
-            "visibleIf": "{oh_oh_basic_weightUnit} notempty",
+            "name": "oh_oh_basic_rawWeightPounds",
+            "visibleIf": "{oh_oh_basic_weightUnit} = 'lbs'",
             "title": "Weight in {oh_oh_basic_weightUnit}",
             "isRequired": true,
             "validators": [
               {
                 "type": "regex",
-                "text": "Validation 1 fired",
-                "regex": "^[0-9]*$"
+                "text": "Enter a number between 1 and 1000. (Enter 1000 if you weigh more than that.)",
+                "regex": "^([1-9][0-9]{0,2}|1000)$"
               }
             ],
-            "inputType": "number",
-            "min": 0,
-            "max": 999
+            "inputType": "number"
+          },
+          {
+            "type": "text",
+            "name": "oh_oh_basic_rawWeightKilos",
+            "visibleIf": "{oh_oh_basic_weightUnit} = 'kg'",
+            "title": "Weight in {oh_oh_basic_weightUnit}",
+            "isRequired": true,
+            "validators": [
+              {
+                "type": "regex",
+                "text": "Enter a number between 1 and 500. (Enter 500 if you weigh more than that.)",
+                "regex": "^([1-9][0-9]?|[1-4]\\d\\d|500)$"
+              }
+            ],
+            "inputType": "number"
           },
           {
             "type": "radiogroup",
@@ -146,13 +159,11 @@
             "validators": [
               {
                 "type": "regex",
-                "text": "Validation 1 fired",
-                "regex": "^[0-9]*$"
+                "text": "Enter a number between 1 and 300.",
+                "regex": "^([1-9][0-9]?|[1-2]\\d\\d|300)$"
               }
             ],
-            "inputType": "number",
-            "min": 0,
-            "max": 500
+            "inputType": "number"
           },
           {
             "type": "text",
@@ -163,13 +174,11 @@
             "validators": [
               {
                 "type": "regex",
-                "text": "Validation 1 fired",
-                "regex": "^[0-9]*$"
+                "text": "Enter a number between 1 and 9.",
+                "regex": "^[1-9]$"
               }
             ],
-            "inputType": "number",
-            "min": 0,
-            "max": 9
+            "inputType": "number"
           },
           {
             "type": "text",
@@ -181,13 +190,11 @@
             "validators": [
               {
                 "type": "regex",
-                "text": "Validation 1 fired",
-                "regex": "^[0-9]*$"
+                "text": "Enter a number between 1 and 11. Half inches can be entered as .5 (example: 7.5).",
+                "regex": "^([0-9]|1[0-1])?(\\.5)?$"
               }
             ],
-            "inputType": "number",
-            "min": 0,
-            "max": 11
+            "inputType": "number"
           },
           {
             "name": "oh_oh_basic_birthSex",
@@ -2109,7 +2116,7 @@
     "calculatedValues": [{
       "name": "oh_oh_basic_weight",
       "includeIntoResult": true,
-      "expression": "iif({oh_oh_basic_weightUnit} = 'lbs', {oh_oh_basic_rawWeight} * 0.453592, {oh_oh_basic_rawWeight} * 1)"
+      "expression": "iif({oh_oh_basic_weightUnit} = 'lbs', {oh_oh_basic_rawWeightPounds} * 0.453592, {oh_oh_basic_rawWeightKilos} * 1)"
     },{
       "name": "oh_oh_basic_height",
       "includeIntoResult": true,
