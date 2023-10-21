@@ -16,6 +16,7 @@ import CreateUserModal from './CreateUserModal'
 import { failureNotification } from '../util/notifications'
 import { Store } from 'react-notifications-component'
 import UserAction from './UserAction'
+import { Button } from 'components/forms/Button'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -73,16 +74,27 @@ const PortalUserList = ({ portal }: {portal: Portal}) => {
   useEffect(() => {
     loadUsers()
   }, [])
-  return <div className="container p-3">
-    <h1 className="h4">All users </h1>
-    <button className="btn-secondary btn" onClick={() => setShowCreateModal(true)}>
-      <FontAwesomeIcon icon={faPlus}/> Create user
-    </button>
-    {showCreateModal && <CreateUserModal onDismiss={() => setShowCreateModal(false)} portals={[portal]}
-      userCreated={handleUserListChanged}/>}
-    <LoadingSpinner isLoading={isLoading}>
-      {basicTableLayout(table)}
-    </LoadingSpinner>
+  return <div className="container-fluid pt-2">
+    <div className="row px-3">
+      <div className="col-12 align-items-baseline d-flex mb-2">
+        <h2 className="text-center me-4 fw-bold">Manage Team</h2>
+      </div>
+      <div className="d-flex align-items-center justify-content-between px-3">
+        <div className="d-flex">
+          <h4>All users</h4>
+        </div>
+        <div className="d-flex">
+          <Button variant="light" className="border m-1" onClick={() => setShowCreateModal(true)}>
+            <FontAwesomeIcon icon={faPlus}/> Create user
+          </Button>
+        </div>
+      </div>
+      {showCreateModal && <CreateUserModal onDismiss={() => setShowCreateModal(false)} portals={[portal]}
+        userCreated={handleUserListChanged}/>}
+      <LoadingSpinner isLoading={isLoading}>
+        {basicTableLayout(table)}
+      </LoadingSpinner>
+    </div>
   </div>
 }
 
