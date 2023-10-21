@@ -86,22 +86,20 @@ const UserList = () => {
   useEffect(() => {
     loadAdminUsersAndPortals()
   }, [])
-  return <div className="container-fluid pt-2">
-    <div className="px-1">
-      <div className="align-items-baseline d-flex mb-2">
-        <h2 className="text-center me-4 fw-bold">All Users</h2>
-      </div>
-      <div className="d-flex align-items-center justify-content-end px-3">
-        <Button variant="light" className="border m-1" onClick={() => setShowCreateModal(true)}>
-          <FontAwesomeIcon icon={faPlus}/> Create user
-        </Button>
-      </div>
-      {showCreateModal && <CreateUserModal onDismiss={() => setShowCreateModal(false)} portals={portals}
-        userCreated={handleUserCreated}/>}
-      <LoadingSpinner isLoading={isLoading}>
-        {basicTableLayout(table)}
-      </LoadingSpinner>
+  return <div className="container-fluid px-4 py-2">
+    <div className="align-items-baseline d-flex mb-2">
+      <h2 className="text-center me-4 fw-bold">All Users</h2>
     </div>
+    <div className="d-flex align-items-center justify-content-end">
+      <Button variant="light" className="border m-1" onClick={() => setShowCreateModal(true)}>
+        <FontAwesomeIcon icon={faPlus}/> Create user
+      </Button>
+    </div>
+    {showCreateModal && <CreateUserModal onDismiss={() => setShowCreateModal(false)} portals={portals}
+      userCreated={handleUserCreated}/>}
+    <LoadingSpinner isLoading={isLoading}>
+      {basicTableLayout(table)}
+    </LoadingSpinner>
   </div>
 }
 

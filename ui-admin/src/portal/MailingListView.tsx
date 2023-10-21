@@ -110,49 +110,47 @@ export default function MailingListView({ portalContext, portalEnv }:
     setShowDeleteConfirm(false)
   }
 
-  return <div className="container-fluid pt-2">
-    <div className="row px-3">
-      <div className="col-12 align-items-baseline d-flex mb-2">
-        <h2 className="text-center me-4 fw-bold">Mailing List</h2>
-      </div>
-      <LoadingSpinner isLoading={isLoading}>
-        <div className="d-flex align-items-center justify-content-between px-3">
-          <div className="d-flex">
-            <RowVisibilityCount table={table}/>
-          </div>
-          <div className="d-flex">
-            <Button onClick={download}
-              variant="light" className="border m-1" disabled={!numSelected}
-              tooltip={numSelected ? 'Download selected contacts' : 'you must select contacts to download'}>
-              <FontAwesomeIcon icon={faDownload} className="fa-lg"/> Download
-            </Button>
-            <Button onClick={() => setShowDeleteConfirm(!showDeleteConfirm)}
-              variant="light" className="border m-1" disabled={!numSelected}
-              tooltip={numSelected ? 'Remove selected contacts' : 'you must select contacts to remove'}>
-              <FontAwesomeIcon icon={faTrash} className="fa-lg"/> Remove
-            </Button>
-          </div>
-        </div>
-
-        {basicTableLayout(table)}
-        { contacts.length === 0 &&
-          <span className="d-flex justify-content-center text-muted fst-italic">No contacts</span> }
-        { showDeleteConfirm && <Modal show={true} onHide={() => setShowDeleteConfirm(false)}>
-          <Modal.Body>
-            <div>Do you want to delete the <strong>{ numSelected }</strong> selected entries?</div>
-
-            <div className="pt-3">This operation CANNOT BE UNDONE.</div>
-          </Modal.Body>
-          <Modal.Footer>
-            <button type="button" className="btn btn-danger" onClick={performDelete}>
-              Delete
-            </button>
-            <button type="button" className="btn btn-secondary" onClick={() => setShowDeleteConfirm(false)}>
-              Cancel
-            </button>
-          </Modal.Footer>
-        </Modal> }
-      </LoadingSpinner>
+  return <div className="container-fluid px-4 py-2">
+    <div className="align-items-baseline d-flex mb-2">
+      <h2 className="text-center me-4 fw-bold">Mailing List</h2>
     </div>
+    <LoadingSpinner isLoading={isLoading}>
+      <div className="d-flex align-items-center justify-content-between">
+        <div className="d-flex">
+          <RowVisibilityCount table={table}/>
+        </div>
+        <div className="d-flex">
+          <Button onClick={download}
+            variant="light" className="border m-1" disabled={!numSelected}
+            tooltip={numSelected ? 'Download selected contacts' : 'you must select contacts to download'}>
+            <FontAwesomeIcon icon={faDownload} className="fa-lg"/> Download
+          </Button>
+          <Button onClick={() => setShowDeleteConfirm(!showDeleteConfirm)}
+            variant="light" className="border m-1" disabled={!numSelected}
+            tooltip={numSelected ? 'Remove selected contacts' : 'you must select contacts to remove'}>
+            <FontAwesomeIcon icon={faTrash} className="fa-lg"/> Remove
+          </Button>
+        </div>
+      </div>
+
+      {basicTableLayout(table)}
+      { contacts.length === 0 &&
+        <span className="d-flex justify-content-center text-muted fst-italic">No contacts</span> }
+      { showDeleteConfirm && <Modal show={true} onHide={() => setShowDeleteConfirm(false)}>
+        <Modal.Body>
+          <div>Do you want to delete the <strong>{ numSelected }</strong> selected entries?</div>
+
+          <div className="pt-3">This operation CANNOT BE UNDONE.</div>
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="button" className="btn btn-danger" onClick={performDelete}>
+            Delete
+          </button>
+          <button type="button" className="btn btn-secondary" onClick={() => setShowDeleteConfirm(false)}>
+            Cancel
+          </button>
+        </Modal.Footer>
+      </Modal> }
+    </LoadingSpinner>
   </div>
 }

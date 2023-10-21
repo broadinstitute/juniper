@@ -134,8 +134,8 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
   }
 
   return <LoadingSpinner isLoading={isLoading}>
-    <div className="container p-0 mt-2">
-      <div className="d-flex w-100 align-items-center" style={{ backgroundColor: '#ccc' }}>
+    <div className="container-fluid p-0 mt-2">
+      <div className="d-flex w-100 align-items-center mb-2" style={{ backgroundColor: '#ccc' }}>
         { statusTabs.map(tab => {
           const kits = kitsByStatus[tab.status] || []
           return <NavLink key={tab.key} to={tab.key} style={tabLinkStyle}>
@@ -249,5 +249,7 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
       <ColumnVisibilityControl table={table}/>
     </div>
     {basicTableLayout(table, { filterable: true })}
+    { kits.length === 0 &&
+      <span className="d-flex justify-content-center text-muted fst-italic">No kits with status {tab}</span> }
   </>
 }

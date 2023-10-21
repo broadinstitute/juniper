@@ -74,27 +74,25 @@ const PortalUserList = ({ portal }: {portal: Portal}) => {
   useEffect(() => {
     loadUsers()
   }, [])
-  return <div className="container-fluid pt-2">
-    <div className="row px-3">
-      <div className="align-items-baseline d-flex mb-2">
-        <h2 className="text-center me-4 fw-bold">Manage Team</h2>
-      </div>
-      <div className="d-flex align-items-center justify-content-between px-3">
-        <div className="d-flex">
-          <h4>All users</h4>
-        </div>
-        <div className="d-flex">
-          <Button variant="light" className="border m-1" onClick={() => setShowCreateModal(true)}>
-            <FontAwesomeIcon icon={faPlus}/> Create user
-          </Button>
-        </div>
-      </div>
-      {showCreateModal && <CreateUserModal onDismiss={() => setShowCreateModal(false)} portals={[portal]}
-        userCreated={handleUserListChanged}/>}
-      <LoadingSpinner isLoading={isLoading}>
-        {basicTableLayout(table)}
-      </LoadingSpinner>
+  return <div className="container-fluid px-4 py-2">
+    <div className="align-items-baseline d-flex mb-2">
+      <h2 className="text-center me-4 fw-bold">Manage Team</h2>
     </div>
+    <div className="d-flex align-items-center justify-content-between">
+      <div className="d-flex">
+        <h4>All users</h4>
+      </div>
+      <div className="d-flex">
+        <Button variant="light" className="border m-1" onClick={() => setShowCreateModal(true)}>
+          <FontAwesomeIcon icon={faPlus}/> Create user
+        </Button>
+      </div>
+    </div>
+    {showCreateModal && <CreateUserModal onDismiss={() => setShowCreateModal(false)} portals={[portal]}
+      userCreated={handleUserListChanged}/>}
+    <LoadingSpinner isLoading={isLoading}>
+      {basicTableLayout(table)}
+    </LoadingSpinner>
   </div>
 }
 

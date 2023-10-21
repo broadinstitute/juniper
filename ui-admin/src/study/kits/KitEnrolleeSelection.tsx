@@ -175,7 +175,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   })
 
   return <LoadingSpinner isLoading={isLoading}>
-    <div className="d-flex align-items-center justify-content-between px-3">
+    <div className="d-flex align-items-center justify-content-between">
       <div className="d-flex align-items-center">
         <RowVisibilityCount table={table}/>
       </div>
