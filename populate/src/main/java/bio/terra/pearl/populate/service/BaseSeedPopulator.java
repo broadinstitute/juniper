@@ -26,8 +26,7 @@ public class BaseSeedPopulator {
     private KitTypePopulator kitTypePopulator;
 
     public static final List<String> ADMIN_USERS_TO_POPULATE =
-            Arrays.asList("adminUsers/dbush.json", "adminUsers/breilly.json",
-                    "adminUsers/myanaman.json", "adminUsers/kkaratza.json",
+            Arrays.asList("adminUsers/dbush.json", "adminUsers/myanaman.json",
                     "adminUsers/jkorte.json", "adminUsers/egwozdz.json",
                     "adminUsers/mflinn.json", "adminUsers/nwatts.json",
                     "adminUsers/mbemis.json", "adminUsers/cunningh.json",
