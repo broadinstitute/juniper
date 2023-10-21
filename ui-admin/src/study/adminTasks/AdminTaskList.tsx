@@ -93,19 +93,17 @@ export default function AdminTaskList({ studyEnvContext }: {studyEnvContext: Stu
   }
 
   return <div className="container-fluid pt-2">
-    <div className="row ps-3">
+    <div className="row px-3">
       <div className="col-12 align-items-baseline d-flex mb-2">
         <h2 className="text-center me-4 fw-bold">Tasks</h2>
       </div>
-      <div className="col-12">
-        <LoadingSpinner isLoading={isLoading}>
-          <MyTaskList studyEnvContext={studyEnvContext} taskData={taskData}/>
-          <h4 className="mt-5">All tasks</h4>
-          {basicTableLayout(allTasksTable)}
-          { !taskData.tasks.length &&
-            <span className="d-flex justify-content-center text-muted fst-italic">No tasks</span> }
-        </LoadingSpinner>
-      </div>
+      <LoadingSpinner isLoading={isLoading}>
+        <MyTaskList studyEnvContext={studyEnvContext} taskData={taskData}/>
+        <h4 className="mt-5">All tasks</h4>
+        {basicTableLayout(allTasksTable)}
+        { !taskData.tasks.length &&
+          <span className="d-flex justify-content-center text-muted fst-italic">No tasks</span> }
+      </LoadingSpinner>
       { (showEditModal && selectedTask) && <AdminTaskEditModal task={selectedTask} users={users}
         onDismiss={onDoneEditing} studyEnvContext={studyEnvContext}/> }
     </div>

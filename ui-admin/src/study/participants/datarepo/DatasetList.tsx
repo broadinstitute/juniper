@@ -84,35 +84,29 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
     loadData()
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
   return <div className="container-fluid pt-2">
-    <div className="row ps-3">
-      <div className="col-12 align-items-baseline d-flex mb-2">
+    <div className="row px-3">
+      <div className="align-items-baseline d-flex mb-2">
         <h2 className="text-center me-4 fw-bold">Terra Data Repo</h2>
       </div>
-      <div className="d-flex align-items-center justify-content-between">
-        <div className="d-flex">
+      <LoadingSpinner isLoading={isLoading}>
+        <div className="d-flex align-items-center justify-content-between px-3">
           <h4>Datasets</h4>
-        </div>
-        <div className="d-flex">
           { user.superuser &&
-            <Button onClick={() => setShowCreateDatasetModal(!showCreateDatasetModal)}
-              variant="light" className="border m-1"
-              aria-label="show or export to tdr modal">
-              <FontAwesomeIcon icon={faSquarePlus} className="fa-lg"/> Create dataset
-            </Button>
+              <Button onClick={() => setShowCreateDatasetModal(!showCreateDatasetModal)}
+                variant="light" className="border m-1"
+                aria-label="show or export to tdr modal">
+                <FontAwesomeIcon icon={faSquarePlus} className="fa-lg"/> Create dataset
+              </Button>
           }
         </div>
-      </div>
+        {basicTableLayout(datasetTable)}
+        { datasets.length === 0 &&
+          <span className="d-flex justify-content-center text-muted fst-italic">No datasets</span> }
+      </LoadingSpinner>
       <CreateDatasetModal studyEnvContext={studyEnvContext}
         show={showCreateDatasetModal}
         setShow={setShowCreateDatasetModal}
         loadDatasets={loadData}/>
-      <div className="col-12">
-        <LoadingSpinner isLoading={isLoading}>
-          {basicTableLayout(datasetTable)}
-          { datasets.length === 0 &&
-            <span className="d-flex justify-content-center text-muted fst-italic">No datasets</span> }
-        </LoadingSpinner>
-      </div>
     </div>
   </div>
 }
