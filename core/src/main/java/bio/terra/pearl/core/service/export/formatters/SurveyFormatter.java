@@ -10,14 +10,23 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.groupingBy;
 
+/**
+ * See https://broad-juniper.zendesk.com/hc/en-us/articles/18259824756123-Participant-List-Export-details
+ * for information on the export format of survey questions
+ */
+@Slf4j
 public class SurveyFormatter implements ExportFormatter {
-    private static final Logger logger = LoggerFactory.getLogger(SurveyFormatter.class);
     public static String OTHER_DESCRIPTION_KEY_SUFFIX = "_description";
+    public static String OTHER_DESCRIPTION_HEADER = "other description";
+    public static String SPLIT_OPTION_SELECTED_VALUE = "1";
+    public static String SPLIT_OPTION_UNSELECTED_VALUE = "0";
     private ObjectMapper objectMapper;
 
     public SurveyFormatter(ObjectMapper objectMapper) {
@@ -57,31 +66,43 @@ public class SurveyFormatter implements ExportFormatter {
 
     @Override
     public String getColumnKey(ModuleExportInfo moduleExportInfo, ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice) {
-        if (isOtherDescription) {
+        if (itemExportInfo.isSplitOptionsIntoColumns()) {
+            return itemExportInfo.getBaseColumnKey() + ExportFormatUtils.COLUMN_NAME_DELIMITER + choice.stableId();
+        } else if (isOtherDescription) {
             return itemExportInfo.getBaseColumnKey() + OTHER_DESCRIPTION_KEY_SUFFIX;
         }
         return itemExportInfo.getBaseColumnKey();
     }
 
+    /** this method largely mirrors "getColumnKey", but it strips out the prefixes to make the headers more readable */
     @Override
     public String getColumnHeader(ModuleExportInfo moduleExportInfo, ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice) {
-        String baseKey = itemExportInfo.getBaseColumnKey();
+        String header = itemExportInfo.getBaseColumnKey();
         if (itemExportInfo.getQuestionStableId() != null) {
             // for now, strip the prefixes to aid in readability.  Once we have multi-source surveys, we can revisit this.
             String cleanStableId = stripStudyPrefixes(itemExportInfo.getQuestionStableId());
-            baseKey = ExportFormatUtils.getColumnKey(moduleExportInfo.getModuleName(), cleanStableId);
+            header = ExportFormatUtils.getColumnKey(moduleExportInfo.getModuleName(), cleanStableId);
+            if (itemExportInfo.isSplitOptionsIntoColumns()) {
+                header += ExportFormatUtils.COLUMN_NAME_DELIMITER + choice.stableId();
+            }
         }
         if (isOtherDescription) {
-            return baseKey + OTHER_DESCRIPTION_KEY_SUFFIX;
+            return header + OTHER_DESCRIPTION_KEY_SUFFIX;
         }
-        return baseKey;
+        return header;
     }
 
+    /** returns either the question or the choice as friendly-ish text */
     @Override
     public String getColumnSubHeader(ModuleExportInfo moduleExportInfo, ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice) {
-        String moduleNameHeader = ExportFormatUtils.camelToWordCase(moduleExportInfo.getModuleName());
         if (itemExportInfo.getPropertyAccessor() != null) {
             return ExportFormatUtils.camelToWordCase(itemExportInfo.getPropertyAccessor());
+        }
+        if (itemExportInfo.isSplitOptionsIntoColumns() && choice != null) {
+            return choice.text();
+        }
+        if (isOtherDescription) {
+            return OTHER_DESCRIPTION_HEADER;
         }
         return ExportFormatUtils.camelToWordCase(stripStudyPrefixes(itemExportInfo.getQuestionStableId()));
     }
@@ -185,8 +206,12 @@ public class SurveyFormatter implements ExportFormatter {
 
     public void addAnswerToMap(ModuleExportInfo moduleInfo, ItemExportInfo itemExportInfo,
                                Answer answer, Map<String, String> valueMap) {
-        valueMap.put(itemExportInfo.getBaseColumnKey(), valueAsString(answer, itemExportInfo.getChoices(),
-                itemExportInfo.isStableIdsForOptions()));
+        if (itemExportInfo.isSplitOptionsIntoColumns()) {
+            addSplitOptionSelectionsToMap(itemExportInfo, answer, valueMap);
+        } else {
+            valueMap.put(itemExportInfo.getBaseColumnKey(), valueAsString(answer, itemExportInfo.getChoices(),
+                    itemExportInfo.isStableIdsForOptions()));
+        }
         if (itemExportInfo.isHasOtherDescription() && answer.getOtherDescription() != null) {
             valueMap.put(itemExportInfo.getBaseColumnKey() + OTHER_DESCRIPTION_KEY_SUFFIX, answer.getOtherDescription());
         }
@@ -205,6 +230,34 @@ public class SurveyFormatter implements ExportFormatter {
         return "";
     }
 
+    /** adds an entry to the valueMap for each selected option of a 'splitOptionsIntoColumns' question */
+    public void addSplitOptionSelectionsToMap(ItemExportInfo itemExportInfo,
+                                              Answer answer, Map<String, String> valueMap) {
+        if (answer.getStringValue() != null) {
+            // this was a single-select question, so we only need to add the selected option
+            valueMap.put(getColumnKeyForChoice(itemExportInfo, answer.getStringValue()),SPLIT_OPTION_SELECTED_VALUE);
+        } else if (answer.getObjectValue() != null) {
+            // this was a multi-select question, so we need to add all selected options
+            try {
+                List<String> answerValues = objectMapper.readValue(answer.getObjectValue(), new TypeReference<List<String>>() {});
+                for (String answerValue : answerValues) {
+                    valueMap.put(getColumnKeyForChoice(itemExportInfo, answerValue), SPLIT_OPTION_SELECTED_VALUE);
+                }
+            } catch (JsonProcessingException e) {
+                // don't stop the entire export for one bad value, see JN-650 for aggregating these to user messages
+                log.error("Error parsing answer object value enrollee: {}, question: {}, answer: {}",
+                        answer.getEnrolleeId(), answer.getQuestionStableId(), answer.getId());
+            }
+        }
+    }
+
+    /** Returns the column key for a specific choice of a question for 'splitOptionsIntoColumns' questions */
+    public String getColumnKeyForChoice(ItemExportInfo itemExportInfo, String choiceStableId) {
+        return itemExportInfo.getBaseColumnKey() + ExportFormatUtils.COLUMN_NAME_DELIMITER + choiceStableId;
+    }
+
+
+
     public String formatStringValue(String value, List<QuestionChoice> choices, boolean stableIdForOptions, Answer answer) {
         if (stableIdForOptions || choices == null || choices.isEmpty()) {
             return value;
@@ -212,7 +265,7 @@ public class SurveyFormatter implements ExportFormatter {
         QuestionChoice matchedChoice = choices.stream().filter(choice ->
                 Objects.equals(choice.stableId(), value)).findFirst().orElse(null);
         if (matchedChoice == null) {
-            logger.warn("Unmatched answer option -  enrollee: {}, question: {}, answer: {}",
+            log.warn("Unmatched answer option -  enrollee: {}, question: {}, answer: {}",
                     answer.getEnrolleeId(), answer.getQuestionStableId(), answer.getId());
             return value;
         }
@@ -230,7 +283,7 @@ public class SurveyFormatter implements ExportFormatter {
             return Arrays.stream(answerArray).map(ansValue -> formatStringValue(ansValue, choices, stableIdForOptions, answer))
                     .collect(Collectors.joining(", "));
         } catch (Exception e) {
-            logger.warn("Error parsing answer object value enrollee: {}, question: {}, answer: {}",
+            log.warn("Error parsing answer object value enrollee: {}, question: {}, answer: {}",
                     answer.getEnrolleeId(), answer.getQuestionStableId(), answer.getId());
             return "<PARSE ERROR>";
         }

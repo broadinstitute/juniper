@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.export;
 
+import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.service.export.instance.ItemExportInfo;
 import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import java.io.IOException;
@@ -22,8 +23,8 @@ public abstract class BaseExporter {
 
     protected List<String> getColumnKeys() {
         List<String> columnKeys = new ArrayList<>();
-        applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription) -> {
-            columnKeys.add(moduleExportInfo.getFormatter().getColumnKey(moduleExportInfo, itemExportInfo, isOtherDescription, null));
+        applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription, choice) -> {
+            columnKeys.add(moduleExportInfo.getFormatter().getColumnKey(moduleExportInfo, itemExportInfo, isOtherDescription, choice));
         });
         return columnKeys;
     }
@@ -31,8 +32,8 @@ public abstract class BaseExporter {
     /** gets the header row - uses getColumnHeader from ExportFormatter */
     protected List<String> getHeaderRow() {
         List<String> headers = new ArrayList<>();
-        applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription) -> {
-            headers.add(moduleExportInfo.getFormatter().getColumnHeader(moduleExportInfo, itemExportInfo, isOtherDescription, null));
+        applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription, choice) -> {
+            headers.add(moduleExportInfo.getFormatter().getColumnHeader(moduleExportInfo, itemExportInfo, isOtherDescription, choice));
         });
         return headers;
     }
@@ -40,8 +41,8 @@ public abstract class BaseExporter {
     /** gets the subheader row -- uses getColumnSubHeader from ExportFormatter */
     protected List<String> getSubHeaderRow() {
         List<String> headers = new ArrayList<>();
-        applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription) -> {
-            headers.add(moduleExportInfo.getFormatter().getColumnSubHeader(moduleExportInfo, itemExportInfo, isOtherDescription, null));
+        applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription, choice) -> {
+            headers.add(moduleExportInfo.getFormatter().getColumnSubHeader(moduleExportInfo, itemExportInfo, isOtherDescription, choice));
         });
         return headers;
     }
@@ -65,16 +66,23 @@ public abstract class BaseExporter {
     /** class for operating iteratively over columns (variables) of an export */
     public interface ColumnProcessor {
         void apply(ModuleExportInfo moduleExportInfo,
-                   ItemExportInfo itemExportInfo, boolean isOtherDescription);
+                   ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice);
     }
 
     public void applyToEveryColumn(ColumnProcessor columnProcessor) {
         for (ModuleExportInfo moduleExportInfo : moduleExportInfos) {
             for (ItemExportInfo itemExportInfo : moduleExportInfo.getItems()) {
-                columnProcessor.apply(moduleExportInfo, itemExportInfo, false);
+                if (itemExportInfo.isSplitOptionsIntoColumns()) {
+                    // add a column for each option
+                    for (QuestionChoice choice : itemExportInfo.getChoices()) {
+                        columnProcessor.apply(moduleExportInfo, itemExportInfo, false, choice);
+                    }
+                } else {
+                    columnProcessor.apply(moduleExportInfo, itemExportInfo,false, null);
+                }
                 if (itemExportInfo.isHasOtherDescription()) {
                     // for questions with free-text other, we add an additional column to capture that value
-                    columnProcessor.apply(moduleExportInfo, itemExportInfo, true);
+                    columnProcessor.apply(moduleExportInfo, itemExportInfo, true, null);
                 }
             }
         }
