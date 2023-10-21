@@ -41,7 +41,6 @@ function DebouncedInput({
 
   return (
     <TextInput
-      label=""
       placeholder={props.placeholder}
       value={value}
       onChange={v => {
@@ -274,7 +273,8 @@ export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
 }
 
 /**
- *
+ * Returns a count of the total number of rows in the table, and the number of rows
+ * visible if a filter is applied
  */
 export function RowVisibilityCount<T>({ table }: {table: Table<T>}) {
   const numSelected = Object.keys(table.getState().rowSelection).length
@@ -282,13 +282,9 @@ export function RowVisibilityCount<T>({ table }: {table: Table<T>}) {
   const numFilteredRows = table.getFilteredRowModel().rows.length
 
   if (numPrefilteredRows === numFilteredRows) {
-    return <span className="me-2">
-      {numSelected} of {numPrefilteredRows} selected
-    </span>
+    return <span>{numSelected} of {numPrefilteredRows} selected</span>
   } else {
-    return <span className="me-2">
-      {numSelected} of {numPrefilteredRows} selected ({numFilteredRows} shown)
-    </span>
+    return <span>{numSelected} of {numPrefilteredRows} selected ({numFilteredRows} shown)</span>
   }
 }
 

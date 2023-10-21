@@ -122,12 +122,12 @@ export default function MailingListView({ portalContext, portalEnv }:
         <div className="d-flex">
           <Button onClick={download}
             variant="light" className="border m-1" disabled={!numSelected}
-            tooltip={numSelected ? 'Download selected contacts' : 'you must select contacts to download'}>
+            tooltip={numSelected ? 'Download selected contacts' : 'You must select contacts to download'}>
             <FontAwesomeIcon icon={faDownload} className="fa-lg"/> Download
           </Button>
           <Button onClick={() => setShowDeleteConfirm(!showDeleteConfirm)}
             variant="light" className="border m-1" disabled={!numSelected}
-            tooltip={numSelected ? 'Remove selected contacts' : 'you must select contacts to remove'}>
+            tooltip={numSelected ? 'Remove selected contacts' : 'You must select contacts to remove'}>
             <FontAwesomeIcon icon={faTrash} className="fa-lg"/> Remove
           </Button>
         </div>

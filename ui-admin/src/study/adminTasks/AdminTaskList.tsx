@@ -128,7 +128,7 @@ taskData: AdminTaskListDto}) => {
     cell: info => renderStatusColumn(info.row.original)
   }, {
     header: 'Created',
-    accessorKey: 'createdAta',
+    accessorKey: 'createdAt',
     cell: info => instantToDefaultString(info.getValue() as number)
   }]
 
