@@ -92,6 +92,8 @@ const PortalUserList = ({ portal }: {portal: Portal}) => {
       userCreated={handleUserListChanged}/>}
     <LoadingSpinner isLoading={isLoading}>
       {basicTableLayout(table)}
+      { users.length === 0 &&
+        <span className="d-flex justify-content-center text-muted fst-italic">No users</span> }
     </LoadingSpinner>
   </div>
 }
