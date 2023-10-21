@@ -119,7 +119,7 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
     notificationConfigs: [],
     studyEnvironmentConfig: {
       initialized: true,
-      password: '',
+      password: 'blah',
       passwordProtected: false,
       acceptingEnrollment: true
     }

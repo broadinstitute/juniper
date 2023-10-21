@@ -425,7 +425,7 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}:
     patch:
-      summary: Updates a study environment configuration
+      summary: Updates a study environment object, such as by setting the pre-enroll survey
       tags: [ studyEnvironment ]
       operationId: patch
       parameters:
@@ -439,6 +439,24 @@ paths:
         '200':
           description: saved studyEnvironment object
           content: { application/json: { schema: { $ref: '#/components/schemas/StudyEnvironmentDto' } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/config:
+    patch:
+      summary: Updates a study environment config object, such as setting password
+      tags: [ studyEnvironment ]
+      operationId: patchConfig
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: {type: object} } }
+      responses:
+        '200':
+          description: saved studyEnvironment object
+          content: { application/json: { schema:  {type: object} } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/stats:

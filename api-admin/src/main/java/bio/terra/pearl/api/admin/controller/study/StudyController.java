@@ -3,7 +3,7 @@ package bio.terra.pearl.api.admin.controller.study;
 import bio.terra.pearl.api.admin.api.StudyApi;
 import bio.terra.pearl.api.admin.model.ErrorReport;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
-import bio.terra.pearl.api.admin.service.StudyExtService;
+import bio.terra.pearl.api.admin.service.study.StudyExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.study.StudyService;
