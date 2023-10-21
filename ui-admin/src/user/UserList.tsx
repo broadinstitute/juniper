@@ -13,6 +13,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faPlus } from '@fortawesome/free-solid-svg-icons'
 import CreateUserModal from './CreateUserModal'
+import { Button } from 'components/forms/Button'
 
 /** lists all admin users */
 const UserList = () => {
@@ -85,16 +86,22 @@ const UserList = () => {
   useEffect(() => {
     loadAdminUsersAndPortals()
   }, [])
-  return <div className="container p-3">
-    <h1 className="h4">All users </h1>
-    <button className="btn-secondary btn" onClick={() => setShowCreateModal(true)}>
-      <FontAwesomeIcon icon={faPlus}/> Create user
-    </button>
-    {showCreateModal && <CreateUserModal onDismiss={() => setShowCreateModal(false)} portals={portals}
-      userCreated={handleUserCreated}/>}
-    <LoadingSpinner isLoading={isLoading}>
-      {basicTableLayout(table)}
-    </LoadingSpinner>
+  return <div className="container-fluid pt-2">
+    <div className="px-1">
+      <div className="align-items-baseline d-flex mb-2">
+        <h2 className="text-center me-4 fw-bold">All Users</h2>
+      </div>
+      <div className="d-flex align-items-center justify-content-end px-3">
+        <Button variant="light" className="border m-1" onClick={() => setShowCreateModal(true)}>
+          <FontAwesomeIcon icon={faPlus}/> Create user
+        </Button>
+      </div>
+      {showCreateModal && <CreateUserModal onDismiss={() => setShowCreateModal(false)} portals={portals}
+        userCreated={handleUserCreated}/>}
+      <LoadingSpinner isLoading={isLoading}>
+        {basicTableLayout(table)}
+      </LoadingSpinner>
+    </div>
   </div>
 }
 

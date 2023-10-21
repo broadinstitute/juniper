@@ -76,7 +76,7 @@ const PortalUserList = ({ portal }: {portal: Portal}) => {
   }, [])
   return <div className="container-fluid pt-2">
     <div className="row px-3">
-      <div className="col-12 align-items-baseline d-flex mb-2">
+      <div className="align-items-baseline d-flex mb-2">
         <h2 className="text-center me-4 fw-bold">Manage Team</h2>
       </div>
       <div className="d-flex align-items-center justify-content-between px-3">
