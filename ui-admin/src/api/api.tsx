@@ -9,6 +9,7 @@ import {
   PortalEnvironment,
   PortalEnvironmentConfig,
   SiteContent,
+  StudyEnvironmentConfig,
   StudyEnvironmentConsent,
   StudyEnvironmentSurvey,
   SurveyResponse,
@@ -539,6 +540,17 @@ export default {
       method: 'PATCH',
       headers: this.getInitHeaders(),
       body: JSON.stringify(studyEnvUpdate)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async updateStudyEnvironmentConfig(portalShortcode: string, studyShortcode: string, envName: string,
+    studyEnvConfigUpdate: StudyEnvironmentConfig): Promise<StudyEnvironmentConfig> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}/env/${envName}/config`
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(studyEnvConfigUpdate)
     })
     return await this.processJsonResponse(response)
   },

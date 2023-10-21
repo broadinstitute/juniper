@@ -52,8 +52,7 @@ function PortalEnvRouter({ portalContext }: {portalContext: LoadedPortalContextT
 
   return <>
     <Routes>
-      <Route path="config" element={<PortalEnvConfigView portal={portal} portalEnv={portalEnv}
-        updatePortal={portalContext.updatePortal}/>}/>
+      <Route path="config" element={<PortalEnvConfigView portalContext={portalContext} portalEnv={portalEnv}/>}/>
       <Route path="participants" element={<PortalParticipantsView portalEnv={portalEnv} portal={portal}/>}/>
       <Route path="siteContent" element={<SiteContentLoader portalEnvContext={portalEnvContext}/>}/>
       <Route path="mailingList" element={<MailingListView portalContext={portalContext}
