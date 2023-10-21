@@ -74,29 +74,27 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
   return <div className="container-fluid pt-2">
-    <div className="row ps-3">
+    <div className="row px-3">
       <div className="col-12 align-items-baseline d-flex mb-2">
         <h2 className="text-center me-4 fw-bold">Data Export</h2>
       </div>
-      <div className="col-12">
-        <div className="d-flex align-items-center justify-content-between">
-          <div className="d-flex">
-            <span className="text-muted fst-italic">
-              (Transposed for readability, the actual export has participants as rows)
-            </span>
-          </div>
-          <div className="d-flex">
-            <Button onClick={() => setShowExportModal(!showExportModal)}
-              variant="light" className="border m-1"
-              aria-label="show or hide export modal">
-              <FontAwesomeIcon icon={faDownload} className="fa-lg"/> Download
-            </Button>
-          </div>
+      <div className="d-flex align-items-center justify-content-between px-3">
+        <div className="d-flex">
+          <span className="text-muted fst-italic">
+            (Transposed for readability, the actual export has participants as rows)
+          </span>
         </div>
-        <ExportDataControl studyEnvContext={studyEnvContext} show={showExportModal} setShow={setShowExportModal}/>
-        <LoadingSpinner isLoading={isLoading}/>
-        {!isLoading && basicTableLayout(table)}
+        <div className="d-flex">
+          <Button onClick={() => setShowExportModal(!showExportModal)}
+            variant="light" className="border m-1"
+            aria-label="show or hide export modal">
+            <FontAwesomeIcon icon={faDownload} className="fa-lg"/> Download
+          </Button>
+        </div>
       </div>
+      <ExportDataControl studyEnvContext={studyEnvContext} show={showExportModal} setShow={setShowExportModal}/>
+      <LoadingSpinner isLoading={isLoading}/>
+      {!isLoading && basicTableLayout(table)}
     </div>
   </div>
 }
