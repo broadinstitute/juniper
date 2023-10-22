@@ -1,3 +1,7 @@
 package bio.terra.pearl.core.model.survey;
 
-public record QuestionChoice(String stableId, String text) { }
+import lombok.Builder;
+
+public record QuestionChoice(String stableId, String text) {
+    @Builder public QuestionChoice {}
+}

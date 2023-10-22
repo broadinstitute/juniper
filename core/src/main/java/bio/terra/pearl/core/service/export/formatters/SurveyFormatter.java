@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,10 +67,10 @@ public class SurveyFormatter implements ExportFormatter {
 
     @Override
     public String getColumnKey(ModuleExportInfo moduleExportInfo, ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice) {
-        if (itemExportInfo.isSplitOptionsIntoColumns()) {
-            return itemExportInfo.getBaseColumnKey() + ExportFormatUtils.COLUMN_NAME_DELIMITER + choice.stableId();
-        } else if (isOtherDescription) {
+         if (isOtherDescription) {
             return itemExportInfo.getBaseColumnKey() + OTHER_DESCRIPTION_KEY_SUFFIX;
+        } else if (itemExportInfo.isSplitOptionsIntoColumns()) {
+            return itemExportInfo.getBaseColumnKey() + ExportFormatUtils.COLUMN_NAME_DELIMITER + choice.stableId();
         }
         return itemExportInfo.getBaseColumnKey();
     }
@@ -78,16 +79,15 @@ public class SurveyFormatter implements ExportFormatter {
     @Override
     public String getColumnHeader(ModuleExportInfo moduleExportInfo, ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice) {
         String header = itemExportInfo.getBaseColumnKey();
-        if (itemExportInfo.getQuestionStableId() != null) {
+        if (isOtherDescription) {
+            return header + OTHER_DESCRIPTION_KEY_SUFFIX;
+        } else if (itemExportInfo.getQuestionStableId() != null) {
             // for now, strip the prefixes to aid in readability.  Once we have multi-source surveys, we can revisit this.
             String cleanStableId = stripStudyPrefixes(itemExportInfo.getQuestionStableId());
             header = ExportFormatUtils.getColumnKey(moduleExportInfo.getModuleName(), cleanStableId);
             if (itemExportInfo.isSplitOptionsIntoColumns()) {
                 header += ExportFormatUtils.COLUMN_NAME_DELIMITER + choice.stableId();
             }
-        }
-        if (isOtherDescription) {
-            return header + OTHER_DESCRIPTION_KEY_SUFFIX;
         }
         return header;
     }
@@ -173,6 +173,7 @@ public class SurveyFormatter implements ExportFormatter {
                 .questionStableId(questionDef.getQuestionStableId())
                 .stableIdsForOptions(exportOptions.stableIdsForOptions())
                 .splitOptionsIntoColumns(splitOptions)
+                .allowMultiple(questionDef.isAllowMultiple())
                 .choices(choices)
                 /**
                  * For now, all survey answers are exported as strings.  We will likely revisit this later, but this
@@ -225,7 +226,7 @@ public class SurveyFormatter implements ExportFormatter {
         } else if (answer.getNumberValue() != null) {
             return answer.getNumberValue().toString();
         } else if (answer.getObjectValue() != null) {
-            return formatObjectValue(answer.getStringValue(), choices, stableIdForOptions, answer);
+            return formatObjectValue(answer, choices, stableIdForOptions);
         }
         return "";
     }
@@ -272,14 +273,13 @@ public class SurveyFormatter implements ExportFormatter {
         return matchedChoice.text();
     }
 
-    public String formatObjectValue(String answerValue, List<QuestionChoice> choices, boolean stableIdForOptions, Answer answer) {
-        if (stableIdForOptions) {
-            return answerValue;
-        }
+    public String formatObjectValue(Answer answer, List<QuestionChoice> choices, boolean stableIdForOptions) {
         try {
             // for now, the only object values we support are arrays of strings
             String[] answerArray = objectMapper.readValue(answer.getObjectValue(), String[].class);
-
+            if (stableIdForOptions) {
+                return StringUtils.join(answerArray, ", ");
+            }
             return Arrays.stream(answerArray).map(ansValue -> formatStringValue(ansValue, choices, stableIdForOptions, answer))
                     .collect(Collectors.joining(", "));
         } catch (Exception e) {

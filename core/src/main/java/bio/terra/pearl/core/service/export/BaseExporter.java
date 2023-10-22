@@ -1,11 +1,13 @@
 package bio.terra.pearl.core.service.export;
 
 import bio.terra.pearl.core.model.survey.QuestionChoice;
+import bio.terra.pearl.core.service.export.formatters.SurveyFormatter;
 import bio.terra.pearl.core.service.export.instance.ItemExportInfo;
 import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,10 +15,19 @@ public abstract class BaseExporter {
 
     protected final List<ModuleExportInfo> moduleExportInfos;
     protected final List<Map<String, String>> enrolleeMaps;
+    /**
+     * map of column keys to the value that should be exported if the value for an enrollee is nullish.
+     * This saves us from having to include "0" for every option possibility in multiple choice questions
+     * exported in the analysis-friendly format, which for some Pepper datasets reduced the memory taken by
+     * the enrolleeMaps by >50%
+     */
+    protected final Map<String, String> columnEmptyValueMap;
+    public final String DEFAULT_EMPTY_STRING_VALUE = "";
 
     public BaseExporter(List<ModuleExportInfo> moduleExportInfos, List<Map<String, String>> enrolleeMaps) {
         this.moduleExportInfos = moduleExportInfos;
         this.enrolleeMaps = enrolleeMaps;
+        this.columnEmptyValueMap = makeEmptyValueMap();
     }
 
     public abstract void export(OutputStream os) throws IOException;
@@ -58,7 +69,7 @@ public abstract class BaseExporter {
         List<String> rowValues = new ArrayList(headerRowValues.size());
         for (String header : headerRowValues) {
             String value = enrolleeMap.get(header);
-            rowValues.add(sanitizeValue(value));
+            rowValues.add(sanitizeValue(value, columnEmptyValueMap.getOrDefault(header, DEFAULT_EMPTY_STRING_VALUE)));
         }
         return rowValues;
     }
@@ -88,8 +99,27 @@ public abstract class BaseExporter {
         }
     }
 
-    protected String sanitizeValue(String value) {
-        // default is no-op
+    protected Map<String, String> makeEmptyValueMap() {
+        Map<String, String> emptyValueMap = new HashMap<>();
+        applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription, choice) -> {
+            String columnKey = moduleExportInfo.getFormatter().getColumnKey(moduleExportInfo, itemExportInfo, isOtherDescription, choice);
+            if (itemExportInfo.isSplitOptionsIntoColumns()) {
+                emptyValueMap.put(columnKey, SurveyFormatter.SPLIT_OPTION_UNSELECTED_VALUE);
+            } else {
+                emptyValueMap.put(columnKey, DEFAULT_EMPTY_STRING_VALUE);
+            }
+        });
+        return emptyValueMap;
+    }
+
+    /**
+     * Take a string value and sanitize it for export. E.g. For a TSV exporter, we need to escape double quotes.
+     */
+    protected String sanitizeValue(String value, String nullValueString) {
+        // default is to just replace nulls with the nullValueString
+        if (value == null) {
+            value = nullValueString;
+        }
         return value;
     }
 }
