@@ -32,7 +32,7 @@ public class PopulateHeartHiveTest extends BasePopulatePortalsTest {
         Study myopathyStudy = portal.getPortalStudies().stream()
                 .filter(portalStudy -> portalStudy.getStudy().getShortcode().equals("cmyop"))
                 .findFirst().get().getStudy();
-        Set<StudyEnvironment> studyEnvs = studyEnvironmentService.findByStudy(myopathyStudy.getId());
+        List<StudyEnvironment> studyEnvs = studyEnvironmentService.findByStudy(myopathyStudy.getId());
         Assertions.assertEquals(3, studyEnvs.size());
         UUID sandboxEnvironmentId = studyEnvs.stream().filter(
                         sEnv -> sEnv.getEnvironmentName().equals(EnvironmentName.sandbox))

@@ -7,7 +7,10 @@ import bio.terra.pearl.core.model.survey.Survey;
 
 import java.util.List;
 
-/** for now, you can only include changes to a single study environment */
+/**
+ * Record of a change to a PortalEnvironment.
+ * Currently, we only track changes to non-sandbox environments, which are performed via the diff/publishing workflow
+ * */
 public record PortalEnvironmentChange(VersionedEntityChange<SiteContent> siteContentChange,
                                       List<ConfigChange> configChanges,
                                       VersionedEntityChange<Survey> preRegSurveyChanges,

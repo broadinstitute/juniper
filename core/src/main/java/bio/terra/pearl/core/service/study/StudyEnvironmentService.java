@@ -61,8 +61,8 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         this.adminTaskService = adminTaskService;
     }
 
-    public Set<StudyEnvironment> findByStudy(UUID studyId) {
-        return new HashSet<>(dao.findByStudy(studyId));
+    public List<StudyEnvironment> findByStudy(UUID studyId) {
+        return dao.findByStudy(studyId);
     }
 
     public Optional<StudyEnvironment> findByStudy(String studyShortcode, EnvironmentName environmentName) {

@@ -37,7 +37,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         PortalEnvironment sandbox = portalEnvironmentService.findOne("demo", EnvironmentName.sandbox).get();
         assertThat(portal.getPortalStudies(), hasSize(1));
         Study mainStudy = portal.getPortalStudies().stream().findFirst().get().getStudy();
-        Set<StudyEnvironment> studyEnvs = studyEnvironmentService.findByStudy(mainStudy.getId());
+        List<StudyEnvironment> studyEnvs = studyEnvironmentService.findByStudy(mainStudy.getId());
         Assertions.assertEquals(3, studyEnvs.size());
         UUID sandboxEnvironmentId = studyEnvs.stream().filter(
                         sEnv -> sEnv.getEnvironmentName().equals(EnvironmentName.sandbox))

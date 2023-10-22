@@ -9,6 +9,7 @@ import {
   PortalEnvironment,
   PortalEnvironmentConfig,
   SiteContent,
+  Study,
   StudyEnvironmentConfig,
   StudyEnvironmentConsent,
   StudyEnvironmentSurvey,
@@ -476,6 +477,16 @@ export default {
 
   async getPortal(portalShortcode: string): Promise<Portal> {
     const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}`, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async createStudy(portalShortcode: string, study: { shortcode: string, name: string }): Promise<Study> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(study)
+    })
     return await this.processJsonResponse(response)
   },
 

@@ -23,8 +23,8 @@ public class StudyPopDto extends Study {
      * this allows us to pass a PopulateStudyDto to StudyService.create and have the specified environments
      * in studyEnvironmentDtos used for the creation.
      */
-    public Set<StudyEnvironment> getStudyEnvironments() {
-        return studyEnvironmentDtos.stream().collect(Collectors.toSet());
+    public List<StudyEnvironment> getStudyEnvironments() {
+        return studyEnvironmentDtos.stream().collect(Collectors.toList());
     }
 
 }
