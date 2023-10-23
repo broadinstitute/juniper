@@ -4,6 +4,7 @@ import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockHtmlPage } from 'test-utils/mock-site-content'
 import HtmlPageEditView from './HtmlPageEditView'
 import userEvent from '@testing-library/user-event'
+import { sectionTemplates } from './sectionTemplates'
 
 test('readOnly disables insert new section button', async () => {
   const mockPage = mockHtmlPage()
@@ -31,7 +32,7 @@ test('Insert Section button calls updatePage with a new blank HERO_WITH_IMAGE se
     ...mockPage,
     sections: [
       ...mockPage.sections,
-      { id: '', sectionType: 'HERO_WITH_IMAGE' }
+      { id: '', sectionType: 'HERO_WITH_IMAGE', sectionConfig: JSON.stringify(sectionTemplates['HERO_WITH_IMAGE']) }
     ]
   })
 })

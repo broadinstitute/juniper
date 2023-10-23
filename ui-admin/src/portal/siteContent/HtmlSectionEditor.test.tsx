@@ -4,6 +4,7 @@ import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockHtmlPage, mockHtmlSection } from 'test-utils/mock-site-content'
 import HtmlSectionEditor from './HtmlSectionEditor'
 import userEvent from '@testing-library/user-event'
+import { sectionTemplates } from './sectionTemplates'
 
 test('readOnly disables section type selection', async () => {
   const mockPage = mockHtmlPage()
@@ -24,6 +25,34 @@ test('section type selection is enabled if the section type is unsaved', async (
       htmlPage={mockPage} updatePage={jest.fn}/>)
   render(RoutedComponent)
   expect(screen.getByLabelText('Select section type')).toBeEnabled()
+})
+
+test('switching section types sets the section config to the correct template', async () => {
+  //Arrange
+  const mockPage = mockHtmlPage()
+  const mockSection = mockPage.sections[0]
+  mockSection.id = ''
+  const mockUpdatePageFn = jest.fn()
+  const { RoutedComponent } = setupRouterTest(
+    <HtmlSectionEditor sectionIndex={0} section={mockSection} readOnly={false}
+      htmlPage={mockPage} updatePage={mockUpdatePageFn}/>)
+  render(RoutedComponent)
+
+  //Act
+  const select = screen.getByLabelText('Select section type')
+  await userEvent.click(select)
+  const option = screen.getByText('FAQ')
+  await userEvent.click(option)
+
+  //Assert
+  expect(mockUpdatePageFn).toHaveBeenCalledWith({
+    ...mockPage,
+    sections: [{
+      ...mockSection,
+      sectionType: 'FAQ',
+      sectionConfig: JSON.stringify(sectionTemplates['FAQ'])
+    }]
+  })
 })
 
 test('DeleteSection button removes the section', async () => {
