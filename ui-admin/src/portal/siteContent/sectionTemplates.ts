@@ -3,7 +3,7 @@
  * the raw JSON section editor in the HtmlSectionEditor component. These templates aren't
  * exhaustive; they do not provide every possible field for each section type, but they
  * are a good starting point for creating new sections. Eventually we'll build a UI on
- * top of this the raw JSON editor to make fields more configurable and easier to use.
+ * top of this to make fields more configurable and easier to use.
  */
 
 const templateImageConfig = {
