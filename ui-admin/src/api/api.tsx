@@ -495,6 +495,21 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async uploadPortalImage(portalShortcode: string, uploadFileName: string, version: number, file: File):
+      Promise<SiteImageMetadata> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/siteImages/upload/${uploadFileName}/${version}`
+    const headers = this.getInitHeaders()
+    delete headers['Content-Type'] // browsers will auto-add the correct type for the multipart file
+    const formData = new FormData()
+    formData.append('file', file)
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: formData
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async getSurvey(portalShortcode: string, stableId: string, version: number): Promise<Survey> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys/${stableId}/${version}`
     const response = await fetch(url, this.getGetInit())

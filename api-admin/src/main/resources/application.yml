@@ -94,6 +94,11 @@ spring:
       ddl-auto: update
     open-in-view: true
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 hibernate:
   packages-to-scan: bio.terra.pearl.core.model
 

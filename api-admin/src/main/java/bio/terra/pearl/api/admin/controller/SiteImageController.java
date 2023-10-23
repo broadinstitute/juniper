@@ -5,6 +5,7 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.siteContent.SiteImageExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.site.SiteImage;
+import java.io.IOException;
 import java.net.URLConnection;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class SiteImageController implements SiteImageApi {
@@ -46,6 +48,19 @@ public class SiteImageController implements SiteImageApi {
   public ResponseEntity<Object> list(String portalShortcode) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     return ResponseEntity.ok(siteImageExtService.list(portalShortcode, operator));
+  }
+
+  @Override
+  public ResponseEntity<Object> upload(
+      String portalShortcode, String uploadFileName, Integer version, MultipartFile image) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    try {
+      byte[] imageData = image.getBytes();
+      return ResponseEntity.ok(
+          siteImageExtService.upload(portalShortcode, uploadFileName, imageData, operator));
+    } catch (IOException e) {
+      throw new IllegalArgumentException("could not read image data");
+    }
   }
 
   private ResponseEntity<Resource> convertToResourceResponse(Optional<SiteImage> imageOpt) {

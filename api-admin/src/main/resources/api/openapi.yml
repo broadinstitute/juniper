@@ -1172,6 +1172,30 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/siteImages/upload/{uploadFileName}/{version}:
+    post:
+      summary: upload an image
+      tags: [ siteImage ]
+      operationId: upload
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: uploadFileName, in: path, required: true, schema: { type: string } }
+        - { name: version, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: image data
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}/siteImages/{version}/{cleanFileName}:
     get:
       summary: Returns the binary image data for the image of the given shortcode
