@@ -4,6 +4,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { HtmlPage, HtmlSection, HtmlSectionView } from '@juniper/ui-core'
 import HtmlSectionEditor from './HtmlSectionEditor'
 import { Button } from 'components/forms/Button'
+import { sectionTemplates } from './sectionTemplates'
 
 type HtmlPageViewProps = {
   htmlPage: HtmlPage
@@ -30,7 +31,10 @@ const HtmlPageView = ({ htmlPage, updatePage, readOnly }: HtmlPageViewProps) => 
         aria-label={'Insert a blank section'}
         tooltip={'Insert a blank section'}
         disabled={readOnly}
-        onClick={() => insertNewSection(0, { id: '', sectionType: 'HERO_WITH_IMAGE' })}>
+        onClick={() => insertNewSection(0, {
+          id: '', sectionType: 'HERO_WITH_IMAGE',
+          sectionConfig: JSON.stringify(sectionTemplates['HERO_WITH_IMAGE'])
+        })}>
         <FontAwesomeIcon icon={faPlus}/> Insert section
       </Button>
     </div>
@@ -48,7 +52,10 @@ const HtmlPageView = ({ htmlPage, updatePage, readOnly }: HtmlPageViewProps) => 
             aria-label={'Insert a blank section'}
             tooltip={'Insert a blank section'}
             disabled={readOnly}
-            onClick={() => insertNewSection(index + 1, { id: '', sectionType: 'HERO_WITH_IMAGE' })}>
+            onClick={() => insertNewSection(index + 1, {
+              id: '', sectionType: 'HERO_WITH_IMAGE',
+              sectionConfig: JSON.stringify(sectionTemplates['HERO_WITH_IMAGE'])
+            })}>
             <FontAwesomeIcon icon={faPlus}/> Insert section
           </Button>
         </div>
