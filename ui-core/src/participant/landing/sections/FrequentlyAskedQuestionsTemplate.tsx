@@ -30,7 +30,7 @@ type FaqQuestion = {
   answer: string
 }
 
-export type FrequentlyAskedQuestionsConfig = {
+type FrequentlyAskedQuestionsConfig = {
   blurb?: string, //  text below the title
   questions: FaqQuestion[], // the questions
   showToggleAllButton?: boolean, // whether or not the show the expand/collapse button
