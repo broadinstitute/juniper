@@ -1,7 +1,7 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import {HtmlPage, HtmlSection, HtmlSectionView, SectionType} from '@juniper/ui-core'
+import { HtmlPage, HtmlSection, HtmlSectionView, SectionType } from '@juniper/ui-core'
 import HtmlSectionEditor from './HtmlSectionEditor'
 import { Button } from 'components/forms/Button'
 import { sectionTemplates } from './sectionTemplates'
@@ -31,7 +31,7 @@ const HtmlPageView = ({ htmlPage, updatePage, readOnly }: HtmlPageViewProps) => 
     updatePage(htmlPage)
   }
 
-  const renderAddSectionButton= (sectionIndex: number) => {
+  const renderAddSectionButton = (sectionIndex: number) => {
     return <div className="col-md-12 my-2" style={{ backgroundColor: '#eee' }}>
       <Button variant="secondary"
         aria-label={'Insert a blank section'}
