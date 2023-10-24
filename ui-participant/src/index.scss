@@ -54,7 +54,7 @@ code {
 
 a {
   text-decoration: none;
-  color: var(--brand-color);
+  color: var(--brand-color, blue);
 }
 
 .App .navbar-nav {
