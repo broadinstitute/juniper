@@ -67,7 +67,7 @@ public class SurveyFormatter implements ExportFormatter {
 
     @Override
     public String getColumnKey(ModuleExportInfo moduleExportInfo, ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice) {
-         if (isOtherDescription) {
+        if (isOtherDescription) {
             return itemExportInfo.getBaseColumnKey() + OTHER_DESCRIPTION_KEY_SUFFIX;
         } else if (itemExportInfo.isSplitOptionsIntoColumns()) {
             return itemExportInfo.getBaseColumnKey() + ExportFormatUtils.COLUMN_NAME_DELIMITER + choice.stableId();
@@ -147,7 +147,7 @@ public class SurveyFormatter implements ExportFormatter {
      * specifying export column(s) information.  This ItemExportInfo will have child ItemExportInfos for each
      * version of the question, so that the exporter can map answers to choices from all versions of the question
      */
-    public ItemExportInfo getItemExportInfo(ExportOptions exportOptions, String moduleName, List<SurveyQuestionDefinition> questionVersions)
+    protected ItemExportInfo getItemExportInfo(ExportOptions exportOptions, String moduleName, List<SurveyQuestionDefinition> questionVersions)
             throws JsonProcessingException {
         SurveyQuestionDefinition latestDef = questionVersions.stream()
                 .sorted(Comparator.comparingInt(SurveyQuestionDefinition::getSurveyVersion).reversed()).findFirst().get();
@@ -161,7 +161,7 @@ public class SurveyFormatter implements ExportFormatter {
     /**
      * takes a single version of a question and returns an ItemExportInfo specifying export column(s) info
      */
-    public ItemExportInfo getItemExportInfo(ExportOptions exportOptions, String moduleName, SurveyQuestionDefinition questionDef)
+    protected ItemExportInfo getItemExportInfo(ExportOptions exportOptions, String moduleName, SurveyQuestionDefinition questionDef)
             throws JsonProcessingException {
         List<QuestionChoice> choices = new ArrayList<>();
         if (questionDef.getChoices() != null) {
@@ -202,23 +202,23 @@ public class SurveyFormatter implements ExportFormatter {
             // just use the current version
             matchedItemExportInfo = itemExportInfo;
         }
-        addAnswerToMap(moduleInfo, matchedItemExportInfo, matchedAnswer, valueMap);
+        addAnswerToMap(moduleInfo, matchedItemExportInfo, matchedAnswer, valueMap, objectMapper);
     }
 
-    public void addAnswerToMap(ModuleExportInfo moduleInfo, ItemExportInfo itemExportInfo,
-                               Answer answer, Map<String, String> valueMap) {
+    protected static void addAnswerToMap(ModuleExportInfo moduleInfo, ItemExportInfo itemExportInfo,
+                               Answer answer, Map<String, String> valueMap, ObjectMapper objectMapper) {
         if (itemExportInfo.isSplitOptionsIntoColumns()) {
-            addSplitOptionSelectionsToMap(itemExportInfo, answer, valueMap);
+            addSplitOptionSelectionsToMap(itemExportInfo, answer, valueMap, objectMapper);
         } else {
             valueMap.put(itemExportInfo.getBaseColumnKey(), valueAsString(answer, itemExportInfo.getChoices(),
-                    itemExportInfo.isStableIdsForOptions()));
+                    itemExportInfo.isStableIdsForOptions(), objectMapper));
         }
         if (itemExportInfo.isHasOtherDescription() && answer.getOtherDescription() != null) {
             valueMap.put(itemExportInfo.getBaseColumnKey() + OTHER_DESCRIPTION_KEY_SUFFIX, answer.getOtherDescription());
         }
     }
 
-    public String valueAsString(Answer answer, List<QuestionChoice> choices, boolean stableIdForOptions) {
+    protected static String valueAsString(Answer answer, List<QuestionChoice> choices, boolean stableIdForOptions, ObjectMapper objectMapper) {
         if (answer.getStringValue() != null) {
             return formatStringValue(answer.getStringValue(), choices, stableIdForOptions, answer);
         } else if (answer.getBooleanValue() != null) {
@@ -226,14 +226,14 @@ public class SurveyFormatter implements ExportFormatter {
         } else if (answer.getNumberValue() != null) {
             return answer.getNumberValue().toString();
         } else if (answer.getObjectValue() != null) {
-            return formatObjectValue(answer, choices, stableIdForOptions);
+            return formatObjectValue(answer, choices, stableIdForOptions, objectMapper);
         }
         return "";
     }
 
     /** adds an entry to the valueMap for each selected option of a 'splitOptionsIntoColumns' question */
-    public void addSplitOptionSelectionsToMap(ItemExportInfo itemExportInfo,
-                                              Answer answer, Map<String, String> valueMap) {
+    protected static void addSplitOptionSelectionsToMap(ItemExportInfo itemExportInfo,
+                                              Answer answer, Map<String, String> valueMap, ObjectMapper objectMapper) {
         if (answer.getStringValue() != null) {
             // this was a single-select question, so we only need to add the selected option
             valueMap.put(getColumnKeyForChoice(itemExportInfo, answer.getStringValue()),SPLIT_OPTION_SELECTED_VALUE);
@@ -253,13 +253,13 @@ public class SurveyFormatter implements ExportFormatter {
     }
 
     /** Returns the column key for a specific choice of a question for 'splitOptionsIntoColumns' questions */
-    public String getColumnKeyForChoice(ItemExportInfo itemExportInfo, String choiceStableId) {
+    protected static String getColumnKeyForChoice(ItemExportInfo itemExportInfo, String choiceStableId) {
         return itemExportInfo.getBaseColumnKey() + ExportFormatUtils.COLUMN_NAME_DELIMITER + choiceStableId;
     }
 
 
 
-    public String formatStringValue(String value, List<QuestionChoice> choices, boolean stableIdForOptions, Answer answer) {
+    protected static String formatStringValue(String value, List<QuestionChoice> choices, boolean stableIdForOptions, Answer answer) {
         if (stableIdForOptions || choices == null || choices.isEmpty()) {
             return value;
         }
@@ -273,7 +273,7 @@ public class SurveyFormatter implements ExportFormatter {
         return matchedChoice.text();
     }
 
-    public String formatObjectValue(Answer answer, List<QuestionChoice> choices, boolean stableIdForOptions) {
+    protected static String formatObjectValue(Answer answer, List<QuestionChoice> choices, boolean stableIdForOptions, ObjectMapper objectMapper) {
         try {
             // for now, the only object values we support are arrays of strings
             String[] answerArray = objectMapper.readValue(answer.getObjectValue(), String[].class);
