@@ -179,8 +179,8 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     .map(key => participantList[parseInt(key)].enrollee.shortcode)
 
   return <div className="ParticipantList container-fluid px-4 py-2">
-    <div className="align-items-baseline d-flex mb-2">
-      <h2 className="text-center me-4 fw-bold">Participant List</h2>
+    <div className="d-flex mb-2">
+      <h2 className="fw-bold">Participant List</h2>
     </div>
     <div className="align-items-baseline d-flex mb-2">
       <FacetView facet={KEYWORD_FACET} facetValue={keywordFacetValue} updateValue={updateKeywordFacet}/>

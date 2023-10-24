@@ -18,7 +18,10 @@ const ENV_SORT_ORDER = ['sandbox', 'irb', 'live']
 export default function StudyPublishingView({ portal, studyShortcode }: {portal: Portal, studyShortcode: string}) {
   const sortedEnvs = portal.portalEnvironments.sort((pa, pb) =>
     ENV_SORT_ORDER.indexOf(pa.environmentName) - ENV_SORT_ORDER.indexOf(pb.environmentName))
-  return <div className="p-4 container">
+  return <div className="container-fluid px-4 py-2">
+    <div className="d-flex mb-2">
+      <h2 className="fw-bold">Publish Content</h2>
+    </div>
     <div className="row">
       <ul className="list-unstyled">
         { sortedEnvs.map(portalEnv => <li key={portalEnv.environmentName}>

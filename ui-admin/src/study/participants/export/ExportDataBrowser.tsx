@@ -74,8 +74,8 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
   return <div className="container-fluid px-4 py-2">
-    <div className="align-items-baseline d-flex mb-2">
-      <h2 className="text-center me-4 fw-bold">Data Export</h2>
+    <div className="d-flex mb-2">
+      <h2 className="fw-bold">Data Export</h2>
     </div>
     <div className="d-flex align-items-center justify-content-between">
       <div className="d-flex">

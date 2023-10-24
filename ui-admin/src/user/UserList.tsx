@@ -87,8 +87,8 @@ const UserList = () => {
     loadAdminUsersAndPortals()
   }, [])
   return <div className="container-fluid px-4 py-2">
-    <div className="align-items-baseline d-flex mb-2">
-      <h2 className="text-center me-4 fw-bold">All Users</h2>
+    <div className="d-flex mb-2">
+      <h2 className="fw-bold">All Users</h2>
     </div>
     <div className="d-flex align-items-center justify-content-end">
       <Button variant="light" className="border m-1" onClick={() => setShowCreateModal(true)}>

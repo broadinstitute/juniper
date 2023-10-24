@@ -111,8 +111,8 @@ export default function MailingListView({ portalContext, portalEnv }:
   }
 
   return <div className="container-fluid px-4 py-2">
-    <div className="align-items-baseline d-flex mb-2">
-      <h2 className="text-center me-4 fw-bold">Mailing List</h2>
+    <div className="d-flex mb-2">
+      <h2 className="fw-bold">Mailing List</h2>
     </div>
     <LoadingSpinner isLoading={isLoading}>
       <div className="d-flex align-items-center justify-content-between">
