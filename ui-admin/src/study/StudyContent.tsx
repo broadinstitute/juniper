@@ -14,7 +14,7 @@ import { StudyEnvironmentSurvey } from '@juniper/ui-core'
 function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { currentEnv } = studyEnvContext
   const contentHeaderStyle = {
-    padding: '1em 0 0 0',
+    paddingTop: '1em',
     borderBottom: '1px solid #f6f6f6'
   }
 
