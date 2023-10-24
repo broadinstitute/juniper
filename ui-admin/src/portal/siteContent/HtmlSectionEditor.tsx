@@ -4,6 +4,7 @@ import Select from 'react-select'
 import { isEmpty } from 'lodash'
 import { IconButton } from 'components/forms/Button'
 import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { sectionTemplates } from './sectionTemplates'
 
 const SECTION_TYPES = [
   { label: 'FAQ', value: 'FAQ' },
@@ -96,8 +97,13 @@ const HtmlSectionEditor = ({
         isDisabled={readOnly || !isEmpty(section.id)}
         onChange={opt => {
           if (opt != undefined) {
+            const sectionTemplate = JSON.stringify(sectionTemplates[opt.label])
             setSectionTypeOpt(opt)
-            updateSection(sectionIndex, { ...section, sectionType: opt.value as SectionType })
+            updateSection(sectionIndex, {
+              ...section,
+              sectionType: opt.value as SectionType,
+              sectionConfig: sectionTemplate
+            })
           }
         }}/>
       <IconButton
