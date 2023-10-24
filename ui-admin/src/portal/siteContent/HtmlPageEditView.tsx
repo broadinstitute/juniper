@@ -31,16 +31,20 @@ const HtmlPageView = ({ htmlPage, updatePage, readOnly }: HtmlPageViewProps) => 
     updatePage(htmlPage)
   }
 
-  return <div>
-    <div className="col-md-12 my-2" style={{ backgroundColor: '#eee' }}>
+  const renderAddSectionButton= (sectionIndex: number) => {
+    return <div className="col-md-12 my-2" style={{ backgroundColor: '#eee' }}>
       <Button variant="secondary"
         aria-label={'Insert a blank section'}
         tooltip={'Insert a blank section'}
         disabled={readOnly}
-        onClick={() => insertNewSection(0, DEFAULT_SECTION_TYPE)}>
+        onClick={() => insertNewSection(sectionIndex, DEFAULT_SECTION_TYPE)}>
         <FontAwesomeIcon icon={faPlus}/> Insert section
       </Button>
     </div>
+  }
+
+  return <div>
+    { renderAddSectionButton(0) }
     {htmlPage.sections.map((section, index) => {
       return <div key={`${section.id}-${index}`} className="row g-0">
         <div className="col-md-4 p-2">
@@ -50,15 +54,7 @@ const HtmlPageView = ({ htmlPage, updatePage, readOnly }: HtmlPageViewProps) => 
         <div className="col-md-8">
           <HtmlSectionView section={section}/>
         </div>
-        <div className="col-md-12 my-2" style={{ backgroundColor: '#eee' }}>
-          <Button variant="secondary"
-            aria-label={'Insert a blank section'}
-            tooltip={'Insert a blank section'}
-            disabled={readOnly}
-            onClick={() => insertNewSection(index + 1, DEFAULT_SECTION_TYPE)}>
-            <FontAwesomeIcon icon={faPlus}/> Insert section
-          </Button>
-        </div>
+        { renderAddSectionButton(index + 1) }
       </div>
     })}
   </div>
