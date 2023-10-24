@@ -25,7 +25,7 @@ export default function KitsRouter({ studyEnvContext }: {studyEnvContext: StudyE
     </NavBreadcrumb>
     <div className="container-fluid px-4 py-2">
       <div className="d-flex mb-2">
-        <h2 className="h2 text-center me-4 fw-bold">Kits</h2>
+        <h2 className="fw-bold">Kits</h2>
       </div>
       <div className="d-flex w-100 mb-2" style={{ backgroundColor: '#ccc' }}>
         <NavLink to="eligible" style={tabLinkStyle}>
