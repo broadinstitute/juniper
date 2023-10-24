@@ -18,7 +18,11 @@ export default function StudySettings({ studyEnvContext, portalContext }:
   const portalEnv = portalContext.portal.portalEnvironments
     .find(env =>
       env.environmentName === studyEnvContext.currentEnv.environmentName) as PortalEnvironment
-  return <div className="ps-4">
+
+  return <div className="container-fluid px-4 py-2">
+    <div className="d-flex mb-2">
+      <h2 className="fw-bold">Site Settings</h2>
+    </div>
     <StudyEnvConfigView studyEnvContext={studyEnvContext} portalContext={portalContext}/>
     <PortalEnvConfigView portalEnv={portalEnv} portalContext={portalContext}/>
   </div>
@@ -45,7 +49,7 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
     }, { setIsLoading })
   }
 
-  return <form className="bg-white p-3 mb-5" onSubmit={e => e.preventDefault()}>
+  return <form className="bg-white mb-5" onSubmit={e => e.preventDefault()}>
     <h2 className="h4">{studyEnvContext.study.name} study configuration</h2>
     <p>Configure whether participants can access study content, such as surveys and consents.</p>
     <div>

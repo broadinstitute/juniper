@@ -30,13 +30,16 @@ export default function NotificationContent({ studyEnvContext }: {studyEnvContex
     }
   }, [currentEnv.environmentName])
 
-  return <div className="container-fluid">
-    <div className="bg-white p-3 ps-5 row">
-      <div className="col-md-3 px-0 py-3 mh-100 bg-white border-end">
-        <h2 className="h5">Participant Notifications</h2>
-        <ul className="list-unstyled px-2">
+  return <div className="container-fluid px-4 py-2">
+    <div className="d-flex mb-2">
+      <h2 className="fw-bold">Emails & Notifications</h2>
+    </div>
+    <div className="row">
+      <div className="col-md-3 mh-100 bg-white border-end">
+        <h4>Participant Notifications</h4>
+        <ul className="list-unstyled p-2">
           { CONFIG_GROUPS.map(group => <li key={group.type}>
-            <h3 className="h6">{group.title}</h3>
+            <h6 className="pt-2">{group.title}</h6>
             <ul>
               { currentEnv.notificationConfigs
                 .filter(config => config.notificationType === group.type)

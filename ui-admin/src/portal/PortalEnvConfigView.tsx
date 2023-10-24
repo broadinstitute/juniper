@@ -36,8 +36,9 @@ const PortalEnvConfigView = ({ portalContext, portalEnv }: PortalEnvConfigViewPr
       reloadPortal(portal.shortcode)
     }, { setIsLoading })
   }
-  return <form className="bg-white p-3">
-    <h2 className="h4">Website configuration ({portalContext.portal.name})</h2>
+
+  return <form className="bg-white">
+    <h4>Website configuration ({portalContext.portal.name})</h4>
     <p>Configure the accessibility of the landing page shown to all visitors, and sitewide properties</p>
     <div>
       <label className="form-label">
