@@ -74,6 +74,9 @@ export const sectionTemplates: Record<string, object> = {
     title: 'Enter title here',
     blurb: 'Enter blurb here',
     fullWidth: true,
+    image: {
+      ...templateImageConfig
+    },
     imagePosition: 'right',
     buttons: [
       {
