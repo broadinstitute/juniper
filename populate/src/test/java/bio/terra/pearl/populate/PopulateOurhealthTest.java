@@ -112,7 +112,8 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
     }
 
     private void checkExportContent(UUID sandboxEnvironmentId) throws Exception {
-        ExportOptions options = new ExportOptions(false, false, true, ExportFileFormat.TSV, null);
+        // test the analysis-friendly export as that is the most important for data integrity, and the least visible via admin tool
+        ExportOptions options = new ExportOptions(true, true, true, ExportFileFormat.TSV, null);
         List<ModuleExportInfo> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
         List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, options.limit());
 
@@ -121,7 +122,10 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
                 .findFirst().get();
         assertThat(jsalkMap.get("profile.mailingAddress.street1"), equalTo("415 Main Street"));
         assertThat(jsalkMap.get("oh_oh_cardioHx.oh_oh_cardioHx_worriedHeartHealth"),
-                equalTo("Yes, specifically about my heart"));
+                equalTo("yesSpecificallyAboutMyHeart"));
+        assertThat(jsalkMap.get("oh_oh_cardioHx.oh_oh_cardioHx_diagnosedHeartConditions.bleedingDisorder"), equalTo("1"));
+        assertThat(jsalkMap.get("oh_oh_cardioHx.oh_oh_cardioHx_diagnosedHeartConditions.anemia"), equalTo("1"));
+        assertThat(jsalkMap.get("oh_oh_cardioHx.oh_oh_cardioHx_diagnosedHeartConditions.cardiacArrest"), equalTo(null));
     }
 
     private void checkDataDictionary(UUID portalId, UUID sandboxEnvironmentId) throws Exception {
