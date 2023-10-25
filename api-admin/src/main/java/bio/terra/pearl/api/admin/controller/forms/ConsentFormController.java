@@ -39,4 +39,16 @@ public class ConsentFormController implements ConsentFormApi {
         consentFormExtService.createNewVersion(portalShortcode, consentForm, adminUser);
     return ResponseEntity.ok(savedConsent);
   }
+
+  @Override
+  public ResponseEntity<Object> create(String portalShortcode, String stableId, Object body) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    ConsentForm consentForm = objectMapper.convertValue(body, ConsentForm.class);
+    if (!stableId.equals(consentForm.getStableId())) {
+      throw new IllegalArgumentException("form parameters don't match");
+    }
+    ConsentForm savedConsent =
+        consentFormExtService.create(portalShortcode, consentForm, adminUser);
+    return ResponseEntity.ok(savedConsent);
+  }
 }

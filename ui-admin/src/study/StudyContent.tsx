@@ -9,6 +9,7 @@ import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
 import ArchiveSurveyModal from './surveys/ArchiveSurveyModal'
 import DeleteSurveyModal from './surveys/DeleteSurveyModal'
 import { StudyEnvironmentSurvey } from '@juniper/ui-core'
+import CreateConsentModal from "./consents/CreateConsentModal";
 
 /** renders the main configuration page for a study environment */
 function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -21,6 +22,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
   const preEnrollSurvey = currentEnv.preEnrollSurvey
   const isReadOnlyEnv = !(currentEnv.environmentName === 'sandbox')
   const [showCreateSurveyModal, setShowCreateSurveyModal] = useState(false)
+  const [showCreateConsentModal, setShowCreateConsentModal] = useState(false)
   const [showArchiveSurveyModal, setShowArchiveSurveyModal] = useState(false)
   const [showDeleteSurveyModal, setShowDeleteSurveyModal] = useState(false)
   const [selectedSurveyConfig, setSelectedSurveyConfig] = useState<StudyEnvironmentSurvey>()
@@ -59,6 +61,13 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                   </Link>
                 </li>
               }) }
+              <li>
+                <button className="btn btn-secondary" data-testid={'addConsent'} onClick={() => {
+                  setShowCreateConsentModal(!showCreateConsentModal)
+                }}>
+                  <FontAwesomeIcon icon={faPlus}/> Add
+                </button>
+              </li>
             </ul>
           </div>
         </li>
@@ -78,8 +87,9 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                       </Link>
                     </div>
                     { !isReadOnlyEnv && <div className="nav-item dropdown ms-1">
-                      <a className="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <FontAwesomeIcon icon={faEllipsisH} title="configure survey menu"/>
+                      <a className="btn btn-secondary ms-2" href="#" role="button" data-bs-toggle="dropdown"
+                         aria-expanded="false">
+                        <FontAwesomeIcon icon={faEllipsisH} className="fa-lg" title="configure survey menu"/>
                       </a>
                       <div className="dropdown-menu">
                         <ul className="list-unstyled">
@@ -119,18 +129,17 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
 
         </li>
       </ul> }
-      { <CreateSurveyModal studyEnvContext={studyEnvContext}
+      { showCreateSurveyModal && <CreateSurveyModal studyEnvContext={studyEnvContext}
         isReadOnlyEnv={isReadOnlyEnv}
-        show={showCreateSurveyModal}
-        setShow={setShowCreateSurveyModal}/> }
-      { selectedSurveyConfig && <ArchiveSurveyModal studyEnvContext={studyEnvContext}
+        onDismiss={() => setShowCreateSurveyModal(false)}/> }
+      { (showArchiveSurveyModal && selectedSurveyConfig) && <ArchiveSurveyModal studyEnvContext={studyEnvContext}
         selectedSurveyConfig={selectedSurveyConfig}
-        show={showArchiveSurveyModal}
-        setShow={setShowArchiveSurveyModal}/> }
-      { selectedSurveyConfig && <DeleteSurveyModal studyEnvContext={studyEnvContext}
+        onDismiss={() => setShowArchiveSurveyModal(false)}/> }
+      { (showDeleteSurveyModal && selectedSurveyConfig) && <DeleteSurveyModal studyEnvContext={studyEnvContext}
         selectedSurveyConfig={selectedSurveyConfig}
-        show={showDeleteSurveyModal}
-        setShow={setShowDeleteSurveyModal}/> }
+        onDismiss={() => setShowDeleteSurveyModal(false)}/> }
+      { showCreateConsentModal && <CreateConsentModal studyEnvContext={studyEnvContext}
+                                                      onDismiss={() => setShowCreateConsentModal(false)}/>}
       { !currentEnv.studyEnvironmentConfig.initialized && <div>Not yet initialized</div> }
     </div>
   </div>

@@ -43,6 +43,7 @@ export type StudyEnvironmentConsent = {
   id: string
   consentForm: ConsentForm
   consentFormId: string
+  studyEnvironmentId: string
   consentOrder: number
   allowAdminEdit: boolean
   allowParticipantStart: boolean

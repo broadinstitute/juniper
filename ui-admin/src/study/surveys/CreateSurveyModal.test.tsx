@@ -12,8 +12,7 @@ describe('CreateSurveyModal', () => {
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
       studyEnvContext={studyEnvContext}
       isReadOnlyEnv={false}
-      show={true}
-      setShow={jest.fn()}/>)
+      onDismiss={jest.fn()}/>)
     render(RoutedComponent)
 
     //Assert
@@ -28,8 +27,7 @@ describe('CreateSurveyModal', () => {
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
       studyEnvContext={studyEnvContext}
       isReadOnlyEnv={false}
-      show={true}
-      setShow={jest.fn()}/>)
+      onDismiss={jest.fn()}/>)
     render(RoutedComponent)
 
     //Act
@@ -50,8 +48,7 @@ describe('CreateSurveyModal', () => {
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
       studyEnvContext={studyEnvContext}
       isReadOnlyEnv={false}
-      show={true}
-      setShow={jest.fn()}/>)
+      onDismiss={jest.fn()}/>)
     render(RoutedComponent)
 
     //Act

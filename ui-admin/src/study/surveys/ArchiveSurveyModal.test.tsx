@@ -12,8 +12,7 @@ describe('ArchiveSurveyModal', () => {
     const studyEnvContext = mockStudyEnvContext()
     const { RoutedComponent } = setupRouterTest(<ArchiveSurveyModal
       studyEnvContext={studyEnvContext}
-      show={true}
-      setShow={jest.fn()}
+      onDismiss={jest.fn()}
       selectedSurveyConfig={mockConfiguredSurvey()}/>)
     render(RoutedComponent)
 

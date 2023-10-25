@@ -12,8 +12,7 @@ describe('DeleteSurveyModal', () => {
     const studyEnvContext = mockStudyEnvContext()
     const { RoutedComponent } = setupRouterTest(<DeleteSurveyModal
       studyEnvContext={studyEnvContext}
-      show={true}
-      setShow={jest.fn()}
+      onDismiss={jest.fn()}
       selectedSurveyConfig={mockConfiguredSurvey()}/>)
     render(RoutedComponent)
 

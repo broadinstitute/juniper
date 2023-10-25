@@ -11,8 +11,8 @@ import InfoPopup from 'components/forms/InfoPopup'
 import { generateStableId } from 'util/pearlSurveyUtils'
 
 /** renders a modal that creates a new survey in a portal and configures it to the current study env */
-const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {studyEnvContext: StudyEnvContextT,
-  isReadOnlyEnv: boolean, show: boolean, setShow:  React.Dispatch<React.SetStateAction<boolean>> }) => {
+const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, onDismiss }: {studyEnvContext: StudyEnvContextT,
+  isReadOnlyEnv: boolean, onDismiss: () => void}) => {
   const [isLoading, setIsLoading] = useState(false)
   const [surveyName, setSurveyName] = useState('')
   const [surveyStableId, setSurveyStableId] = useState('')
@@ -57,9 +57,8 @@ const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {s
       Store.addNotification(
         failureNotification(`Error configuring survey: ${err}`))
     }
-
-    setShow(false)
     setIsLoading(false)
+      onDismiss()
   }
   const clearFields = () => {
     setSurveyName('')
@@ -67,11 +66,7 @@ const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {s
     setEnableAutofillStableId(true)
   }
 
-  return <Modal show={show}
-    onHide={() => {
-      setShow(false)
-      clearFields()
-    }}>
+  return <Modal show={true} onHide={onDismiss}>
     <Modal.Header closeButton>
       <Modal.Title>Create New Survey</Modal.Title>
       <div className="ms-4">
@@ -107,7 +102,7 @@ const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, show, setShow }: {s
           onClick={createSurvey}
         >Create</button>
         <button className="btn btn-secondary" onClick={() => {
-          setShow(false)
+          onDismiss()
           clearFields()
         }}>Cancel</button>
       </LoadingSpinner>

@@ -43,7 +43,20 @@ public class ConfiguredConsentController implements ConfiguredConsentApi {
         objectMapper.convertValue(body, StudyEnvironmentConsent.class);
     var savedConfig =
         consentFormExtService.updateConfiguredConsent(
-            portalShortcode, environmentName, configuredForm, adminUser);
+            portalShortcode, environmentName, studyShortcode, configuredForm, adminUser);
+    return ResponseEntity.ok(savedConfig);
+  }
+
+  @Override
+  public ResponseEntity<Object> create(
+      String portalShortcode, String studyShortcode, String envName, Object body) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    StudyEnvironmentConsent configuredForm =
+        objectMapper.convertValue(body, StudyEnvironmentConsent.class);
+    var savedConfig =
+        consentFormExtService.createConfiguredConsent(
+            portalShortcode, environmentName, studyShortcode, configuredForm, adminUser);
     return ResponseEntity.ok(savedConfig);
   }
 }

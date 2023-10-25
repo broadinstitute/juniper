@@ -9,10 +9,9 @@ import { PortalContext, PortalContextT } from 'portal/PortalProvider'
 
 /** renders a modal that allows deleting a survey */
 const DeleteSurveyModal = ({
-  studyEnvContext, selectedSurveyConfig, show, setShow
+  studyEnvContext, selectedSurveyConfig, onDismiss
 }: {
-  studyEnvContext: StudyEnvContextT, selectedSurveyConfig: StudyEnvironmentSurvey,
-  show: boolean, setShow:  React.Dispatch<React.SetStateAction<boolean>> }) => {
+  studyEnvContext: StudyEnvContextT, selectedSurveyConfig: StudyEnvironmentSurvey, onDismiss: () => void}) => {
   const [isLoading, setIsLoading] = useState(false)
 
   const portalContext = useContext(PortalContext) as PortalContextT
@@ -29,16 +28,12 @@ const DeleteSurveyModal = ({
     ).catch(() =>
       Store.addNotification(failureNotification('Error deleting survey'))
     )
-
-    setShow(false)
     await portalContext.reloadPortal(studyEnvContext.portal.shortcode)
     setIsLoading(false)
+    onDismiss()
   }
 
-  return <Modal show={show}
-    onHide={() => {
-      setShow(false)
-    }}>
+  return <Modal show={true} onHide={onDismiss}>
     <Modal.Header closeButton>
       <Modal.Title>Delete Survey</Modal.Title>
       <div className="ms-4">
@@ -64,9 +59,7 @@ const DeleteSurveyModal = ({
           disabled={!canDelete}
           onClick={deleteSurvey}
         >Delete survey</button>
-        <button className="btn btn-secondary" onClick={() => {
-          setShow(false)
-        }}>Cancel</button>
+        <button className="btn btn-secondary" onClick={onDismiss}>Cancel</button>
       </LoadingSpinner>
     </Modal.Footer>
   </Modal>
