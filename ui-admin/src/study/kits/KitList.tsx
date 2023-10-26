@@ -11,7 +11,7 @@ import {
 import Api, { KitRequest } from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { basicTableLayout, ColumnVisibilityControl } from 'util/tableUtils'
+import { basicTableLayout, ColumnVisibilityControl, renderEmptyMessage } from 'util/tableUtils'
 import { instantToDateString, isoToInstant } from 'util/timeUtils'
 import { doApiLoad, useLoadingEffect } from 'api/api-utils'
 import { enrolleeKitRequestPath } from '../participants/enrolleeView/EnrolleeView'
@@ -248,8 +248,7 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
     <div className="d-flex align-items-center justify-content-between">
       <ColumnVisibilityControl table={table}/>
     </div>
-    {basicTableLayout(table, { filterable: true })}
-    { kits.length === 0 &&
-      <span className="d-flex justify-content-center text-muted fst-italic">No kits with status {tab}</span> }
+    { basicTableLayout(table, { filterable: true }) }
+    { renderEmptyMessage(kits, `No kits with status ${tab}`) }
   </>
 }

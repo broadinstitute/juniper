@@ -18,7 +18,7 @@ import {
   basicTableLayout,
   checkboxColumnCell,
   ColumnVisibilityControl,
-  IndeterminateCheckbox,
+  IndeterminateCheckbox, renderEmptyMessage,
   RowVisibilityCount
 } from 'util/tableUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
@@ -194,7 +194,6 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
       </div>
     </div>
     { basicTableLayout(table, { filterable: true }) }
-    { enrollees.length === 0 &&
-      <span className="d-flex justify-content-center text-muted fst-italic">No participants</span> }
+    { renderEmptyMessage(enrollees, 'No participants') }
   </LoadingSpinner>
 }

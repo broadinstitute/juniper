@@ -5,7 +5,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { instantToDefaultString } from '../../../util/timeUtils'
+import { instantToDefaultString } from 'util/timeUtils'
 import {
   ColumnDef,
   getCoreRowModel,
@@ -13,7 +13,7 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout } from '../../../util/tableUtils'
+import { basicTableLayout, renderEmptyMessage } from 'util/tableUtils'
 import { Link } from 'react-router-dom'
 import { useUser } from 'user/UserProvider'
 import CreateDatasetModal from './CreateDatasetModal'
@@ -97,9 +97,8 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
             </Button>
         }
       </div>
-      {basicTableLayout(datasetTable)}
-      { datasets.length === 0 &&
-        <span className="d-flex justify-content-center text-muted fst-italic">No datasets</span> }
+      { basicTableLayout(datasetTable) }
+      { renderEmptyMessage(datasets, 'No datasets') }
     </LoadingSpinner>
     <CreateDatasetModal studyEnvContext={studyEnvContext}
       show={showCreateDatasetModal}

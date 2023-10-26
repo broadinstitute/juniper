@@ -8,7 +8,7 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout } from 'util/tableUtils'
+import { basicTableLayout, renderEmptyMessage } from 'util/tableUtils'
 import { instantToDateString, instantToDefaultString } from 'util/timeUtils'
 import { paramsFromContext, StudyEnvContextT, StudyEnvParams } from '../StudyEnvironmentRouter'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
@@ -98,9 +98,8 @@ export default function AdminTaskList({ studyEnvContext }: {studyEnvContext: Stu
     <LoadingSpinner isLoading={isLoading}>
       <MyTaskList studyEnvContext={studyEnvContext} taskData={taskData}/>
       <h3 className="h4 mt-5">All tasks</h3>
-      {basicTableLayout(allTasksTable)}
-      { !taskData.tasks.length &&
-        <span className="d-flex justify-content-center text-muted fst-italic">No tasks</span> }
+      { basicTableLayout(allTasksTable) }
+      { renderEmptyMessage(taskData.tasks, 'No tasks') }
     </LoadingSpinner>
     { (showEditModal && selectedTask) && <AdminTaskEditModal task={selectedTask} users={users}
       onDismiss={onDoneEditing} studyEnvContext={studyEnvContext}/> }
@@ -142,8 +141,7 @@ taskData: AdminTaskListDto}) => {
   return <>
     <h3 className="h4 mt-3">My tasks</h3>
     { basicTableLayout(table) }
-    { !myTasks.length &&
-      <span className="d-flex justify-content-center text-muted fst-italic">No tasks</span> }
+    { renderEmptyMessage(myTasks, 'No tasks') }
   </>
 }
 

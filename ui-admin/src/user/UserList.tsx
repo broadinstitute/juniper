@@ -7,7 +7,7 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import Api, { AdminUser, Portal, PortalAdminUser } from 'api/api'
-import { basicTableLayout } from 'util/tableUtils'
+import { basicTableLayout, renderEmptyMessage }  from 'util/tableUtils'
 import { instantToDefaultString } from 'util/timeUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -97,9 +97,8 @@ const UserList = () => {
     {showCreateModal && <CreateUserModal onDismiss={() => setShowCreateModal(false)} portals={portals}
       userCreated={handleUserCreated}/>}
     <LoadingSpinner isLoading={isLoading}>
-      {basicTableLayout(table)}
-      { users.length === 0 &&
-        <span className="d-flex justify-content-center text-muted fst-italic">No users</span> }
+      { basicTableLayout(table) }
+      { renderEmptyMessage(users, 'No users') }
     </LoadingSpinner>
   </div>
 }

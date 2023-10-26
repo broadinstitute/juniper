@@ -9,7 +9,7 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout, IndeterminateCheckbox, RowVisibilityCount } from 'util/tableUtils'
+import { basicTableLayout, IndeterminateCheckbox, renderEmptyMessage, RowVisibilityCount } from 'util/tableUtils'
 import { currentIsoDate, instantToDateString, instantToDefaultString } from 'util/timeUtils'
 import { Button } from 'components/forms/Button'
 import { escapeCsvValue, saveBlobAsDownload } from 'util/downloadUtils'
@@ -132,9 +132,8 @@ export default function MailingListView({ portalContext, portalEnv }:
         </div>
       </div>
 
-      {basicTableLayout(table)}
-      { contacts.length === 0 &&
-        <span className="d-flex justify-content-center text-muted fst-italic">No contacts</span> }
+      { basicTableLayout(table) }
+      { renderEmptyMessage(contacts, 'No contacts') }
       { showDeleteConfirm && <Modal show={true} onHide={() => setShowDeleteConfirm(false)}>
         <Modal.Body>
           <div>Do you want to delete the <strong>{ numSelected }</strong> selected entries?</div>

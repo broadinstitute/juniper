@@ -17,7 +17,7 @@ import {
   basicTableLayout,
   ColumnVisibilityControl,
   DownloadControl,
-  IndeterminateCheckbox, RowVisibilityCount,
+  IndeterminateCheckbox, renderEmptyMessage, RowVisibilityCount,
   useRoutableTablePaging
 } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -202,9 +202,8 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
             onDismiss={() => setShowEmailModal(false)}/> }
         </div>
       </div>
-      { basicTableLayout(table, { filterable: true })}
-      { participantList.length === 0 &&
-        <span className="d-flex justify-content-center text-muted fst-italic">No participants</span> }
+      { basicTableLayout(table, { filterable: true }) }
+      { renderEmptyMessage(participantList, 'No participants') }
       <TableClientPagination table={table} preferredNumRowsKey={preferredNumRowsKey}/>
     </LoadingSpinner>
   </div>

@@ -289,6 +289,14 @@ export function RowVisibilityCount<T>({ table }: {table: Table<T>}) {
 }
 
 /**
+ * Renders a message if the table is empty
+ */
+export const renderEmptyMessage = (arr: unknown[], content: React.ReactNode) => {
+  if (arr.length > 0) { return null }
+  return <span className="d-flex justify-content-center text-muted fst-italic">{content}</span>
+}
+
+/**
  * Converts a cell value to an escaped string for csv export
  */
 function cellToCsvString(cellType: string, cellValue: unknown): string {
