@@ -58,7 +58,7 @@ const CreateSurveyModal = ({ studyEnvContext, isReadOnlyEnv, onDismiss }: {study
         failureNotification(`Error configuring survey: ${err}`))
     }
     setIsLoading(false)
-      onDismiss()
+    onDismiss()
   }
   const clearFields = () => {
     setSurveyName('')

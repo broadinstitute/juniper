@@ -571,7 +571,7 @@ export default {
   },
 
   async createConfiguredConsent(portalShortcode: string, studyShortcode: string, environmentName: string,
-                               configuredConsent: StudyEnvironmentConsent): Promise<StudyEnvironmentSurvey> {
+    configuredConsent: StudyEnvironmentConsent): Promise<StudyEnvironmentSurvey> {
     const url =`${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
         `/env/${environmentName}/configuredConsents`
 

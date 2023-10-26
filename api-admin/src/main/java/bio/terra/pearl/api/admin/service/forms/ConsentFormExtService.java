@@ -86,7 +86,7 @@ public class ConsentFormExtService {
     }
     if (!studyEnv.getId().equals(updatedObj.getStudyEnvironmentId())) {
       throw new IllegalArgumentException(
-              "Study environment id in request body does belong to this study");
+          "Study environment id in request body does belong to this study");
     }
     return studyEnv;
   }

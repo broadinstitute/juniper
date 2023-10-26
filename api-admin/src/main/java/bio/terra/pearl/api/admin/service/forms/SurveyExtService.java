@@ -4,7 +4,6 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
@@ -139,7 +138,8 @@ public class SurveyExtService {
       EnvironmentName envName,
       UUID configuredSurveyId,
       AdminUser user) {
-    StudyEnvironmentSurvey configuredSurvey = studyEnvironmentSurveyService.find(configuredSurveyId).get();
+    StudyEnvironmentSurvey configuredSurvey =
+        studyEnvironmentSurveyService.find(configuredSurveyId).get();
     authConfiguredSurveyRequest(portalShortcode, envName, studyShortcode, configuredSurvey, user);
     studyEnvironmentSurveyService.deactivate(configuredSurveyId);
   }
@@ -170,26 +170,26 @@ public class SurveyExtService {
   }
 
   /**
-   * confirms the user has access to the study and that the configured survey belongs to that study, and that
-   * it's in the sandbox environment. Returns the study environment for which the change is being
-   * made in.
+   * confirms the user has access to the study and that the configured survey belongs to that study,
+   * and that it's in the sandbox environment. Returns the study environment for which the change is
+   * being made in.
    */
   protected StudyEnvironment authConfiguredSurveyRequest(
-          String portalShortcode,
-          EnvironmentName envName,
-          String studyShortcode,
-          StudyEnvironmentSurvey updatedObj,
-          AdminUser user) {
+      String portalShortcode,
+      EnvironmentName envName,
+      String studyShortcode,
+      StudyEnvironmentSurvey updatedObj,
+      AdminUser user) {
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
     StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
     if (!EnvironmentName.sandbox.equals(envName)
-            || !EnvironmentName.sandbox.equals(studyEnv.getEnvironmentName())) {
+        || !EnvironmentName.sandbox.equals(studyEnv.getEnvironmentName())) {
       throw new IllegalArgumentException(
-              "Updates can only be made directly to the sandbox environment".formatted(envName));
+          "Updates can only be made directly to the sandbox environment".formatted(envName));
     }
     if (!studyEnv.getId().equals(updatedObj.getStudyEnvironmentId())) {
       throw new IllegalArgumentException(
-              "Study environment id in request body does not belong to this study");
+          "Study environment id in request body does not belong to this study");
     }
     return studyEnv;
   }

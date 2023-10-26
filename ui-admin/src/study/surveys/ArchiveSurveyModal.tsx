@@ -8,7 +8,7 @@ import { failureNotification } from '../../util/notifications'
 import { PortalContext, PortalContextT } from 'portal/PortalProvider'
 
 /** renders a modal that allows archiving a survey from the current study env */
-const ArchiveSurveyModal = ({studyEnvContext, selectedSurveyConfig, onDismiss}: {
+const ArchiveSurveyModal = ({ studyEnvContext, selectedSurveyConfig, onDismiss }: {
   studyEnvContext: StudyEnvContextT, selectedSurveyConfig: StudyEnvironmentSurvey,
   onDismiss: () => void }) => {
   const [isLoading, setIsLoading] = useState(false)

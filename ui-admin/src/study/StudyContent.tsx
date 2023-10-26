@@ -9,7 +9,8 @@ import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
 import ArchiveSurveyModal from './surveys/ArchiveSurveyModal'
 import DeleteSurveyModal from './surveys/DeleteSurveyModal'
 import { StudyEnvironmentSurvey } from '@juniper/ui-core'
-import CreateConsentModal from "./consents/CreateConsentModal";
+import CreateConsentModal from './consents/CreateConsentModal'
+import {Button, IconButton} from "../components/forms/Button";
 
 /** renders the main configuration page for a study environment */
 function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -87,10 +88,8 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                       </Link>
                     </div>
                     { !isReadOnlyEnv && <div className="nav-item dropdown ms-1">
-                      <a className="btn btn-secondary ms-2" href="#" role="button" data-bs-toggle="dropdown"
-                         aria-expanded="false">
-                        <FontAwesomeIcon icon={faEllipsisH} className="fa-lg" title="configure survey menu"/>
-                      </a>
+                      <IconButton icon={faEllipsisH}  data-bs-toggle="dropdown"
+                                  aria-expanded="false" aria-label="configure survey menu"/>
                       <div className="dropdown-menu">
                         <ul className="list-unstyled">
                           <li>
@@ -118,11 +117,11 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                 )
               })}
               <li>
-                <button className="btn btn-secondary" data-testid={'addSurvey'} onClick={() => {
+                <Button variant="secondary" data-testid={'addSurvey'} onClick={() => {
                   setShowCreateSurveyModal(!showCreateSurveyModal)
                 }}>
                   <FontAwesomeIcon icon={faPlus}/> Add
-                </button>
+                </Button>
               </li>
             </ul>
           </div>
@@ -139,7 +138,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
         selectedSurveyConfig={selectedSurveyConfig}
         onDismiss={() => setShowDeleteSurveyModal(false)}/> }
       { showCreateConsentModal && <CreateConsentModal studyEnvContext={studyEnvContext}
-                                                      onDismiss={() => setShowCreateConsentModal(false)}/>}
+        onDismiss={() => setShowCreateConsentModal(false)}/>}
       { !currentEnv.studyEnvironmentConfig.initialized && <div>Not yet initialized</div> }
     </div>
   </div>
