@@ -58,16 +58,6 @@ public class ExcelExporter extends BaseExporter {
         });
     }
 
-    /**
-     * we don't need to worry about escaping any characters, we just need to replace null with empty string
-     */
-    protected String sanitizeValue(String value) {
-        if (value == null) {
-            value = StringUtils.EMPTY;
-        }
-        return value;
-    }
-
     protected String getSheetName() {
         return SHEET_NAME;
     }

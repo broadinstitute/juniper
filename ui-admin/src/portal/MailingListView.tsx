@@ -9,7 +9,7 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout, IndeterminateCheckbox } from 'util/tableUtils'
+import { basicTableLayout, IndeterminateCheckbox, renderEmptyMessage, RowVisibilityCount } from 'util/tableUtils'
 import { currentIsoDate, instantToDateString, instantToDefaultString } from 'util/timeUtils'
 import { Button } from 'components/forms/Button'
 import { escapeCsvValue, saveBlobAsDownload } from 'util/downloadUtils'
@@ -17,6 +17,9 @@ import { failureNotification, successNotification } from '../util/notifications'
 import { Store } from 'react-notifications-component'
 import Modal from 'react-bootstrap/Modal'
 import { useLoadingEffect } from '../api/api-utils'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faDownload, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { renderPageHeader } from 'util/pageUtils'
 
 
 /** show the mailing list in table */
@@ -108,26 +111,29 @@ export default function MailingListView({ portalContext, portalEnv }:
     setShowDeleteConfirm(false)
   }
 
-  return <div className="container p-3">
-    <h1 className="h4">Mailing list </h1>
+  return <div className="container-fluid px-4 py-2">
+    { renderPageHeader('Mailing List') }
     <LoadingSpinner isLoading={isLoading}>
-      <div className="d-flex align-items-center">
-        <div>
-          {numSelected} of {table.getPreFilteredRowModel().rows.length} selected
+      <div className="d-flex align-items-center justify-content-between">
+        <div className="d-flex">
+          <RowVisibilityCount table={table}/>
         </div>
-        <Button onClick={download}
-          variant="secondary" disabled={!numSelected}
-          tooltip={numSelected ? 'Download selected contacts' : 'you must select contacts to download'}>
-          Download
-        </Button>
-        <Button onClick={() => setShowDeleteConfirm(!showDeleteConfirm)}
-          variant="secondary" disabled={!numSelected} className="ms-auto"
-          tooltip={numSelected ? 'Remove selected contacts' : 'you must select contacts to remove'}>
-          Remove
-        </Button>
+        <div className="d-flex">
+          <Button onClick={download}
+            variant="light" className="border m-1" disabled={!numSelected}
+            tooltip={numSelected ? 'Download selected contacts' : 'You must select contacts to download'}>
+            <FontAwesomeIcon icon={faDownload} className="fa-lg"/> Download
+          </Button>
+          <Button onClick={() => setShowDeleteConfirm(!showDeleteConfirm)}
+            variant="light" className="border m-1" disabled={!numSelected}
+            tooltip={numSelected ? 'Remove selected contacts' : 'You must select contacts to remove'}>
+            <FontAwesomeIcon icon={faTrash} className="fa-lg"/> Remove
+          </Button>
+        </div>
       </div>
 
-      {basicTableLayout(table)}
+      { basicTableLayout(table) }
+      { renderEmptyMessage(contacts, 'No contacts') }
       { showDeleteConfirm && <Modal show={true} onHide={() => setShowDeleteConfirm(false)}>
         <Modal.Body>
           <div>Do you want to delete the <strong>{ numSelected }</strong> selected entries?</div>

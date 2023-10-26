@@ -48,10 +48,8 @@ public class TsvExporter extends BaseExporter {
      * @param value the value to sanitize
      * @return the sanitized value, suitable for including in a tsv
      */
-    protected String sanitizeValue(String value) {
-        if (value == null) {
-            value = StringUtils.EMPTY;
-        }
+    protected String sanitizeValue(String value, String nullValueString) {
+        value = super.sanitizeValue(value, nullValueString);
         // first replace double quotes with single '
         String sanitizedValue = value.replace("\"", "'");
         // then quote the whole string if needed

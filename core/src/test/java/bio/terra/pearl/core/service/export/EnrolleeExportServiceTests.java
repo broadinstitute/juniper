@@ -25,6 +25,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 
+/**
+ * Tests for the EnrolleeExportService.  Note that end-to-end tests for the export service are in the
+ * Populate tests, as those provide more realistic testing of the export against simulated submitted data
+ */
 public class EnrolleeExportServiceTests extends BaseSpringBootTest {
     @Autowired
     private StudyEnvironmentFactory studyEnvironmentFactory;

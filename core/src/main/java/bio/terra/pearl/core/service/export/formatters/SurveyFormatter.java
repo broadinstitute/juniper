@@ -10,14 +10,24 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.groupingBy;
 
+/**
+ * See https://broad-juniper.zendesk.com/hc/en-us/articles/18259824756123-Participant-List-Export-details
+ * for information on the export format of survey questions
+ */
+@Slf4j
 public class SurveyFormatter implements ExportFormatter {
-    private static final Logger logger = LoggerFactory.getLogger(SurveyFormatter.class);
     public static String OTHER_DESCRIPTION_KEY_SUFFIX = "_description";
+    public static String OTHER_DESCRIPTION_HEADER = "other description";
+    public static String SPLIT_OPTION_SELECTED_VALUE = "1";
+    public static String SPLIT_OPTION_UNSELECTED_VALUE = "0";
     private ObjectMapper objectMapper;
 
     public SurveyFormatter(ObjectMapper objectMapper) {
@@ -59,29 +69,40 @@ public class SurveyFormatter implements ExportFormatter {
     public String getColumnKey(ModuleExportInfo moduleExportInfo, ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice) {
         if (isOtherDescription) {
             return itemExportInfo.getBaseColumnKey() + OTHER_DESCRIPTION_KEY_SUFFIX;
+        } else if (itemExportInfo.isSplitOptionsIntoColumns()) {
+            return itemExportInfo.getBaseColumnKey() + ExportFormatUtils.COLUMN_NAME_DELIMITER + choice.stableId();
         }
         return itemExportInfo.getBaseColumnKey();
     }
 
+    /** this method largely mirrors "getColumnKey", but it strips out the prefixes to make the headers more readable */
     @Override
     public String getColumnHeader(ModuleExportInfo moduleExportInfo, ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice) {
-        String baseKey = itemExportInfo.getBaseColumnKey();
-        if (itemExportInfo.getQuestionStableId() != null) {
+        String header = itemExportInfo.getBaseColumnKey();
+        if (isOtherDescription) {
+            return header + OTHER_DESCRIPTION_KEY_SUFFIX;
+        } else if (itemExportInfo.getQuestionStableId() != null) {
             // for now, strip the prefixes to aid in readability.  Once we have multi-source surveys, we can revisit this.
             String cleanStableId = stripStudyPrefixes(itemExportInfo.getQuestionStableId());
-            baseKey = ExportFormatUtils.getColumnKey(moduleExportInfo.getModuleName(), cleanStableId);
+            header = ExportFormatUtils.getColumnKey(moduleExportInfo.getModuleName(), cleanStableId);
+            if (itemExportInfo.isSplitOptionsIntoColumns()) {
+                header += ExportFormatUtils.COLUMN_NAME_DELIMITER + choice.stableId();
+            }
         }
-        if (isOtherDescription) {
-            return baseKey + OTHER_DESCRIPTION_KEY_SUFFIX;
-        }
-        return baseKey;
+        return header;
     }
 
+    /** returns either the question or the choice as friendly-ish text */
     @Override
     public String getColumnSubHeader(ModuleExportInfo moduleExportInfo, ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice) {
-        String moduleNameHeader = ExportFormatUtils.camelToWordCase(moduleExportInfo.getModuleName());
         if (itemExportInfo.getPropertyAccessor() != null) {
             return ExportFormatUtils.camelToWordCase(itemExportInfo.getPropertyAccessor());
+        }
+        if (itemExportInfo.isSplitOptionsIntoColumns() && choice != null) {
+            return choice.text();
+        }
+        if (isOtherDescription) {
+            return OTHER_DESCRIPTION_HEADER;
         }
         return ExportFormatUtils.camelToWordCase(stripStudyPrefixes(itemExportInfo.getQuestionStableId()));
     }
@@ -126,7 +147,7 @@ public class SurveyFormatter implements ExportFormatter {
      * specifying export column(s) information.  This ItemExportInfo will have child ItemExportInfos for each
      * version of the question, so that the exporter can map answers to choices from all versions of the question
      */
-    public ItemExportInfo getItemExportInfo(ExportOptions exportOptions, String moduleName, List<SurveyQuestionDefinition> questionVersions)
+    protected ItemExportInfo getItemExportInfo(ExportOptions exportOptions, String moduleName, List<SurveyQuestionDefinition> questionVersions)
             throws JsonProcessingException {
         SurveyQuestionDefinition latestDef = questionVersions.stream()
                 .sorted(Comparator.comparingInt(SurveyQuestionDefinition::getSurveyVersion).reversed()).findFirst().get();
@@ -140,7 +161,7 @@ public class SurveyFormatter implements ExportFormatter {
     /**
      * takes a single version of a question and returns an ItemExportInfo specifying export column(s) info
      */
-    public ItemExportInfo getItemExportInfo(ExportOptions exportOptions, String moduleName, SurveyQuestionDefinition questionDef)
+    protected ItemExportInfo getItemExportInfo(ExportOptions exportOptions, String moduleName, SurveyQuestionDefinition questionDef)
             throws JsonProcessingException {
         List<QuestionChoice> choices = new ArrayList<>();
         if (questionDef.getChoices() != null) {
@@ -152,6 +173,7 @@ public class SurveyFormatter implements ExportFormatter {
                 .questionStableId(questionDef.getQuestionStableId())
                 .stableIdsForOptions(exportOptions.stableIdsForOptions())
                 .splitOptionsIntoColumns(splitOptions)
+                .allowMultiple(questionDef.isAllowMultiple())
                 .choices(choices)
                 /**
                  * For now, all survey answers are exported as strings.  We will likely revisit this later, but this
@@ -180,19 +202,23 @@ public class SurveyFormatter implements ExportFormatter {
             // just use the current version
             matchedItemExportInfo = itemExportInfo;
         }
-        addAnswerToMap(moduleInfo, matchedItemExportInfo, matchedAnswer, valueMap);
+        addAnswerToMap(moduleInfo, matchedItemExportInfo, matchedAnswer, valueMap, objectMapper);
     }
 
-    public void addAnswerToMap(ModuleExportInfo moduleInfo, ItemExportInfo itemExportInfo,
-                               Answer answer, Map<String, String> valueMap) {
-        valueMap.put(itemExportInfo.getBaseColumnKey(), valueAsString(answer, itemExportInfo.getChoices(),
-                itemExportInfo.isStableIdsForOptions()));
+    protected static void addAnswerToMap(ModuleExportInfo moduleInfo, ItemExportInfo itemExportInfo,
+                               Answer answer, Map<String, String> valueMap, ObjectMapper objectMapper) {
+        if (itemExportInfo.isSplitOptionsIntoColumns()) {
+            addSplitOptionSelectionsToMap(itemExportInfo, answer, valueMap, objectMapper);
+        } else {
+            valueMap.put(itemExportInfo.getBaseColumnKey(), valueAsString(answer, itemExportInfo.getChoices(),
+                    itemExportInfo.isStableIdsForOptions(), objectMapper));
+        }
         if (itemExportInfo.isHasOtherDescription() && answer.getOtherDescription() != null) {
             valueMap.put(itemExportInfo.getBaseColumnKey() + OTHER_DESCRIPTION_KEY_SUFFIX, answer.getOtherDescription());
         }
     }
 
-    public String valueAsString(Answer answer, List<QuestionChoice> choices, boolean stableIdForOptions) {
+    protected static String valueAsString(Answer answer, List<QuestionChoice> choices, boolean stableIdForOptions, ObjectMapper objectMapper) {
         if (answer.getStringValue() != null) {
             return formatStringValue(answer.getStringValue(), choices, stableIdForOptions, answer);
         } else if (answer.getBooleanValue() != null) {
@@ -200,37 +226,64 @@ public class SurveyFormatter implements ExportFormatter {
         } else if (answer.getNumberValue() != null) {
             return answer.getNumberValue().toString();
         } else if (answer.getObjectValue() != null) {
-            return formatObjectValue(answer.getStringValue(), choices, stableIdForOptions, answer);
+            return formatObjectValue(answer, choices, stableIdForOptions, objectMapper);
         }
         return "";
     }
 
-    public String formatStringValue(String value, List<QuestionChoice> choices, boolean stableIdForOptions, Answer answer) {
+    /** adds an entry to the valueMap for each selected option of a 'splitOptionsIntoColumns' question */
+    protected static void addSplitOptionSelectionsToMap(ItemExportInfo itemExportInfo,
+                                              Answer answer, Map<String, String> valueMap, ObjectMapper objectMapper) {
+        if (answer.getStringValue() != null) {
+            // this was a single-select question, so we only need to add the selected option
+            valueMap.put(getColumnKeyForChoice(itemExportInfo, answer.getStringValue()),SPLIT_OPTION_SELECTED_VALUE);
+        } else if (answer.getObjectValue() != null) {
+            // this was a multi-select question, so we need to add all selected options
+            try {
+                List<String> answerValues = objectMapper.readValue(answer.getObjectValue(), new TypeReference<List<String>>() {});
+                for (String answerValue : answerValues) {
+                    valueMap.put(getColumnKeyForChoice(itemExportInfo, answerValue), SPLIT_OPTION_SELECTED_VALUE);
+                }
+            } catch (JsonProcessingException e) {
+                // don't stop the entire export for one bad value, see JN-650 for aggregating these to user messages
+                log.error("Error parsing answer object value enrollee: {}, question: {}, answer: {}",
+                        answer.getEnrolleeId(), answer.getQuestionStableId(), answer.getId());
+            }
+        }
+    }
+
+    /** Returns the column key for a specific choice of a question for 'splitOptionsIntoColumns' questions */
+    protected static String getColumnKeyForChoice(ItemExportInfo itemExportInfo, String choiceStableId) {
+        return itemExportInfo.getBaseColumnKey() + ExportFormatUtils.COLUMN_NAME_DELIMITER + choiceStableId;
+    }
+
+
+
+    protected static String formatStringValue(String value, List<QuestionChoice> choices, boolean stableIdForOptions, Answer answer) {
         if (stableIdForOptions || choices == null || choices.isEmpty()) {
             return value;
         }
         QuestionChoice matchedChoice = choices.stream().filter(choice ->
                 Objects.equals(choice.stableId(), value)).findFirst().orElse(null);
         if (matchedChoice == null) {
-            logger.warn("Unmatched answer option -  enrollee: {}, question: {}, answer: {}",
+            log.warn("Unmatched answer option -  enrollee: {}, question: {}, answer: {}",
                     answer.getEnrolleeId(), answer.getQuestionStableId(), answer.getId());
             return value;
         }
         return matchedChoice.text();
     }
 
-    public String formatObjectValue(String answerValue, List<QuestionChoice> choices, boolean stableIdForOptions, Answer answer) {
-        if (stableIdForOptions) {
-            return answerValue;
-        }
+    protected static String formatObjectValue(Answer answer, List<QuestionChoice> choices, boolean stableIdForOptions, ObjectMapper objectMapper) {
         try {
             // for now, the only object values we support are arrays of strings
             String[] answerArray = objectMapper.readValue(answer.getObjectValue(), String[].class);
-
+            if (stableIdForOptions) {
+                return StringUtils.join(answerArray, ", ");
+            }
             return Arrays.stream(answerArray).map(ansValue -> formatStringValue(ansValue, choices, stableIdForOptions, answer))
                     .collect(Collectors.joining(", "));
         } catch (Exception e) {
-            logger.warn("Error parsing answer object value enrollee: {}, question: {}, answer: {}",
+            log.warn("Error parsing answer object value enrollee: {}, question: {}, answer: {}",
                     answer.getEnrolleeId(), answer.getQuestionStableId(), answer.getId());
             return "<PARSE ERROR>";
         }

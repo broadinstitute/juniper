@@ -86,7 +86,7 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
           </label>
           <label>
             <input type="radio" name="humanReadable" value="false" checked={!humanReadable}
-              onChange={humanReadableChanged} className="me-1" disabled={true}/> Analysis-friendly
+              onChange={humanReadableChanged} className="me-1"/> Analysis-friendly
           </label>
         </div>
         <div className="py-2">

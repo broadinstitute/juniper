@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router-dom'
 import { PortalContext, PortalContextT } from 'portal/PortalProvider'
 import InfoPopup from 'components/forms/InfoPopup'
 import { generateStableId } from 'util/pearlSurveyUtils'
-import { ApiErrorResponse, defaultApiErrorHandle, doApiLoad } from '../../api/api-utils'
+import { ApiErrorResponse, defaultApiErrorHandle, doApiLoad } from 'api/api-utils'
+import Api from 'api/api'
 
 /** renders a modal that creates a new survey in a portal and configures it to the current study env */
 const CreateSurveyModal = ({ studyEnvContext, onDismiss }:

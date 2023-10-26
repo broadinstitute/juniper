@@ -11,6 +11,7 @@ import Api from 'api/api'
 import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
 import { useConfig } from 'providers/ConfigProvider'
 import { studyEnvSiteContentPath } from '../StudyEnvironmentRouter'
+import { renderPageHeader } from 'util/pageUtils'
 
 
 const ENV_SORT_ORDER = ['sandbox', 'irb', 'live']
@@ -18,7 +19,8 @@ const ENV_SORT_ORDER = ['sandbox', 'irb', 'live']
 export default function StudyPublishingView({ portal, studyShortcode }: {portal: Portal, studyShortcode: string}) {
   const sortedEnvs = portal.portalEnvironments.sort((pa, pb) =>
     ENV_SORT_ORDER.indexOf(pa.environmentName) - ENV_SORT_ORDER.indexOf(pb.environmentName))
-  return <div className="p-4 container">
+  return <div className="container-fluid px-4 py-2">
+    { renderPageHeader('Publish Content') }
     <div className="row">
       <ul className="list-unstyled">
         { sortedEnvs.map(portalEnv => <li key={portalEnv.environmentName}>

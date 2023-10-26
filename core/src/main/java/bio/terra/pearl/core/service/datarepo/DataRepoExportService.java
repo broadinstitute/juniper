@@ -223,8 +223,8 @@ public class DataRepoExportService {
 
             TsvExporter tsvExporter = new TsvExporter(moduleExportInfos, enrolleeMaps);
 
-            tsvExporter.applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription) -> tdrColumns.add(new TdrColumn(
-                    DataRepoExportUtils.juniperToDataRepoColumnName(moduleExportInfo.getFormatter().getColumnKey(moduleExportInfo, itemExportInfo, isOtherDescription, null)),
+            tsvExporter.applyToEveryColumn((moduleExportInfo, itemExportInfo, choice, isOtherDescription) -> tdrColumns.add(new TdrColumn(
+                    DataRepoExportUtils.juniperToDataRepoColumnName(moduleExportInfo.getFormatter().getColumnKey(moduleExportInfo, itemExportInfo, choice, isOtherDescription)),
                     DataRepoExportUtils.juniperToDataRepoColumnType(itemExportInfo.getDataType())
                 )
             ));
