@@ -17,6 +17,7 @@ import { failureNotification } from '../util/notifications'
 import { Store } from 'react-notifications-component'
 import UserAction from './UserAction'
 import { Button } from 'components/forms/Button'
+import { renderPageHeader } from 'util/pageUtils'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -75,9 +76,7 @@ const PortalUserList = ({ portal }: {portal: Portal}) => {
     loadUsers()
   }, [])
   return <div className="container-fluid px-4 py-2">
-    <div className="d-flex mb-2">
-      <h2 className="fw-bold">Manage Team</h2>
-    </div>
+    { renderPageHeader('Manage Team') }
     <div className="d-flex align-items-center justify-content-between">
       <div className="d-flex">
         <h4>All users</h4>

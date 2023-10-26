@@ -11,6 +11,7 @@ import Api from 'api/api'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import LoadingSpinner from 'util/LoadingSpinner'
+import { renderPageHeader } from 'util/pageUtils'
 
 /** shows settings for both a study and its containing portal */
 export default function StudySettings({ studyEnvContext, portalContext }:
@@ -20,9 +21,7 @@ export default function StudySettings({ studyEnvContext, portalContext }:
       env.environmentName === studyEnvContext.currentEnv.environmentName) as PortalEnvironment
 
   return <div className="container-fluid px-4 py-2">
-    <div className="d-flex mb-2">
-      <h2 className="fw-bold">Site Settings</h2>
-    </div>
+    { renderPageHeader('Site Settings') }
     <StudyEnvConfigView studyEnvContext={studyEnvContext} portalContext={portalContext}/>
     <PortalEnvConfigView portalEnv={portalEnv} portalContext={portalContext}/>
   </div>

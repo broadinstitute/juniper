@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faPlus } from '@fortawesome/free-solid-svg-icons'
 import CreateUserModal from './CreateUserModal'
 import { Button } from 'components/forms/Button'
+import { renderPageHeader } from 'util/pageUtils'
 
 /** lists all admin users */
 const UserList = () => {
@@ -87,9 +88,7 @@ const UserList = () => {
     loadAdminUsersAndPortals()
   }, [])
   return <div className="container-fluid px-4 py-2">
-    <div className="d-flex mb-2">
-      <h2 className="fw-bold">All Users</h2>
-    </div>
+    { renderPageHeader('All Users') }
     <div className="d-flex align-items-center justify-content-end">
       <Button variant="light" className="border m-1" onClick={() => setShowCreateModal(true)}>
         <FontAwesomeIcon icon={faPlus}/> Create user

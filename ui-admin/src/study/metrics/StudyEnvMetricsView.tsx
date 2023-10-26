@@ -1,6 +1,7 @@
 import React from 'react'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import MetricGraph from './MetricGraph'
+import { renderPageHeader } from 'util/pageUtils'
 
 export type MetricInfo = {
   name: string,
@@ -22,9 +23,7 @@ export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContex
     return prev
   }, {})
   return <div className="container-fluid px-4 py-2">
-    <div className="d-flex mb-2">
-      <h2 className="fw-bold">Participant Analytics</h2>
-    </div>
+    { renderPageHeader('Participant Analytics') }
     <div className="row">
       <h4>{studyEnvContext.study.name} Summary
         <span className="fst-italic text-muted ms-3">({studyEnvContext.currentEnv.environmentName})</span>

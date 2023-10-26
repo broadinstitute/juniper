@@ -9,6 +9,7 @@ import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
 import ArchiveSurveyModal from './surveys/ArchiveSurveyModal'
 import DeleteSurveyModal from './surveys/DeleteSurveyModal'
 import { StudyEnvironmentSurvey } from '@juniper/ui-core'
+import { renderPageHeader } from 'util/pageUtils'
 
 /** renders the main configuration page for a study environment */
 function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -31,9 +32,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
     .sort((a, b) => a.consentOrder - b.consentOrder)
 
   return <div className="container-fluid px-4 py-2">
-    <div className="d-flex mb-2">
-      <h2 className="fw-bold">Forms & Surveys</h2>
-    </div>
+    { renderPageHeader('Forms & Surveys') }
     <div className="col-12">
       { currentEnv.studyEnvironmentConfig.initialized && <ul className="list-unstyled">
         <li className="mb-3 bg-white">

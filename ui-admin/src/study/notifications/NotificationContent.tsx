@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import NotificationConfigView from './NotificationConfigView'
+import { renderPageHeader } from 'util/pageUtils'
 
 const CONFIG_GROUPS = [
   { title: 'Event', type: 'EVENT' },
@@ -31,9 +32,7 @@ export default function NotificationContent({ studyEnvContext }: {studyEnvContex
   }, [currentEnv.environmentName])
 
   return <div className="container-fluid px-4 py-2">
-    <div className="d-flex mb-2">
-      <h2 className="fw-bold">Emails & Notifications</h2>
-    </div>
+    { renderPageHeader('Emails & Notifications') }
     <div className="row">
       <div className="col-md-3 mh-100 bg-white border-end">
         <h4>Participant Notifications</h4>

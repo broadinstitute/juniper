@@ -35,6 +35,7 @@ import { useLoadingEffect } from 'api/api-utils'
 import { FacetView, getUpdatedFacetValues } from './facets/EnrolleeSearchFacets'
 import TableClientPagination from 'util/TablePagination'
 import { Button } from 'components/forms/Button'
+import { renderPageHeader } from 'util/pageUtils'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -179,9 +180,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     .map(key => participantList[parseInt(key)].enrollee.shortcode)
 
   return <div className="ParticipantList container-fluid px-4 py-2">
-    <div className="d-flex mb-2">
-      <h2 className="fw-bold">Participant List</h2>
-    </div>
+    { renderPageHeader('Participant List') }
     <div className="align-items-baseline d-flex mb-2">
       <FacetView facet={KEYWORD_FACET} facetValue={keywordFacetValue} updateValue={updateKeywordFacet}/>
     </div>

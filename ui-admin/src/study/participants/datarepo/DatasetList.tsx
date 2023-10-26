@@ -19,6 +19,7 @@ import { useUser } from 'user/UserProvider'
 import CreateDatasetModal from './CreateDatasetModal'
 import { Button } from 'components/forms/Button'
 import { faSquarePlus } from '@fortawesome/free-solid-svg-icons'
+import { renderPageHeader } from 'util/pageUtils'
 
 const datasetColumns = (currentEnvPath: string): ColumnDef<DatasetDetails>[] => [{
   id: 'datasetName',
@@ -84,9 +85,7 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
     loadData()
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
   return <div className="container-fluid px-4 py-2">
-    <div className="d-flex mb-2">
-      <h2 className="fw-bold">Terra Data Repo</h2>
-    </div>
+    { renderPageHeader('Terra Data Repo') }
     <LoadingSpinner isLoading={isLoading}>
       <div className="d-flex align-items-center justify-content-between">
         <h4>Datasets</h4>

@@ -16,6 +16,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { useLoadingEffect } from 'api/api-utils'
 import { Button } from 'components/forms/Button'
+import { renderPageHeader } from 'util/pageUtils'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -74,9 +75,7 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
   return <div className="container-fluid px-4 py-2">
-    <div className="d-flex mb-2">
-      <h2 className="fw-bold">Data Export</h2>
-    </div>
+    { renderPageHeader('Data Export') }
     <div className="d-flex align-items-center justify-content-between">
       <div className="d-flex">
         <span className="text-muted fst-italic">

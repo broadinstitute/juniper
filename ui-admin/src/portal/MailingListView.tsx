@@ -19,6 +19,7 @@ import Modal from 'react-bootstrap/Modal'
 import { useLoadingEffect } from '../api/api-utils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { renderPageHeader } from 'util/pageUtils'
 
 
 /** show the mailing list in table */
@@ -111,9 +112,7 @@ export default function MailingListView({ portalContext, portalEnv }:
   }
 
   return <div className="container-fluid px-4 py-2">
-    <div className="d-flex mb-2">
-      <h2 className="fw-bold">Mailing List</h2>
-    </div>
+    { renderPageHeader('Mailing List') }
     <LoadingSpinner isLoading={isLoading}>
       <div className="d-flex align-items-center justify-content-between">
         <div className="d-flex">

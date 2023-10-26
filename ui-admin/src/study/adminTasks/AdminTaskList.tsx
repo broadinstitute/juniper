@@ -21,6 +21,7 @@ import { faCheck, faEdit } from '@fortawesome/free-solid-svg-icons'
 import { useUser } from 'user/UserProvider'
 import { IconButton } from '../../components/forms/Button'
 import { AdminTaskEditModal } from './AdminTaskEditor'
+import { renderPageHeader } from 'util/pageUtils'
 
 
 /** show the lists of the user's tasks and all tasks */
@@ -93,12 +94,10 @@ export default function AdminTaskList({ studyEnvContext }: {studyEnvContext: Stu
   }
 
   return <div className="container-fluid px-4 py-2">
-    <div className="d-flex mb-2">
-      <h2 className="fw-bold">Tasks</h2>
-    </div>
+    { renderPageHeader('Tasks') }
     <LoadingSpinner isLoading={isLoading}>
       <MyTaskList studyEnvContext={studyEnvContext} taskData={taskData}/>
-      <h4 className="mt-5">All tasks</h4>
+      <h3 className="h4 mt-5">All tasks</h3>
       {basicTableLayout(allTasksTable)}
       { !taskData.tasks.length &&
         <span className="d-flex justify-content-center text-muted fst-italic">No tasks</span> }
@@ -141,7 +140,7 @@ taskData: AdminTaskListDto}) => {
     getSortedRowModel: getSortedRowModel()
   })
   return <>
-    <h4>My tasks</h4>
+    <h3 className="h4 mt-3">My tasks</h3>
     { basicTableLayout(table) }
     { !myTasks.length &&
       <span className="d-flex justify-content-center text-muted fst-italic">No tasks</span> }
