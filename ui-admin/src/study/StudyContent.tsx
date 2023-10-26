@@ -44,7 +44,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
           <div style={contentHeaderStyle}>
             <h6>Pre-enrollment questionnaire</h6>
           </div>
-          <div className="flex-grow-1 p-3">
+          <div className="flex-grow-1 pt-3">
             { preEnrollSurvey && <ul className="list-unstyled">
               <li className="d-flex align-items-center">
                 <Link to={`preEnroll/${preEnrollSurvey.stableId}?readOnly=${isReadOnlyEnv}`}>
