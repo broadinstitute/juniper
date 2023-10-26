@@ -11,6 +11,7 @@ import DeleteSurveyModal from './surveys/DeleteSurveyModal'
 import { StudyEnvironmentSurvey } from '@juniper/ui-core'
 import CreateConsentModal from './consents/CreateConsentModal'
 import { Button, IconButton } from '../components/forms/Button'
+import CreatePreEnrollSurveyModal from './surveys/CreatePreEnrollSurveyModal'
 
 /** renders the main configuration page for a study environment */
 function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -26,6 +27,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
   const [showCreateConsentModal, setShowCreateConsentModal] = useState(false)
   const [showArchiveSurveyModal, setShowArchiveSurveyModal] = useState(false)
   const [showDeleteSurveyModal, setShowDeleteSurveyModal] = useState(false)
+  const [showCreatePreEnrollSurveyModal, setShowCreatePreEnrollModal] = useState(false)
   const [selectedSurveyConfig, setSelectedSurveyConfig] = useState<StudyEnvironmentSurvey>()
 
   currentEnv.configuredSurveys
@@ -41,11 +43,36 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
             <h6>Pre-enrollment questionnaire</h6>
           </div>
           <div className="flex-grow-1 p-3">
-            { preEnrollSurvey && <ul className="list-unstyled"><li>
-              <Link to={`preEnroll/${preEnrollSurvey.stableId}?readOnly=${isReadOnlyEnv}`}>
-                {preEnrollSurvey.name} <span className="detail">v{preEnrollSurvey.version}</span>
-              </Link>
-            </li></ul>}
+            { preEnrollSurvey && <ul className="list-unstyled">
+              <li className="d-flex align-items-center">
+                <Link to={`preEnroll/${preEnrollSurvey.stableId}?readOnly=${isReadOnlyEnv}`}>
+                  {preEnrollSurvey.name} <span className="detail">v{preEnrollSurvey.version}</span>
+                </Link>
+
+                { !isReadOnlyEnv && <div className="nav-item dropdown ms-1">
+                  <IconButton icon={faEllipsisH}  data-bs-toggle="dropdown"
+                    aria-expanded="false" aria-label="configure survey menu"/>
+                  <div className="dropdown-menu">
+                    <ul className="list-unstyled">
+                      <li>
+                        <button className="dropdown-item"
+                          onClick={() => alert('To remove a pre-enroll survey, contact support')}>
+                          Remove
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </div> }
+              </li>
+            </ul>}
+            { (!preEnrollSurvey && !isReadOnlyEnv) && <Button variant="secondary"
+              data-testid={'addPreEnroll'}
+              onClick={() => {
+                setShowCreatePreEnrollModal(!showCreatePreEnrollSurveyModal)
+              }}>
+              <FontAwesomeIcon icon={faPlus}/> Add
+            </Button>
+            }
           </div>
         </li>
         <li className="mb-3 bg-white">
@@ -63,11 +90,11 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                 </li>
               }) }
               <li>
-                <button className="btn btn-secondary" data-testid={'addConsent'} onClick={() => {
+                { !isReadOnlyEnv && <button className="btn btn-secondary" data-testid={'addConsent'} onClick={() => {
                   setShowCreateConsentModal(!showCreateConsentModal)
                 }}>
                   <FontAwesomeIcon icon={faPlus}/> Add
-                </button>
+                </button> }
               </li>
             </ul>
           </div>
@@ -116,20 +143,18 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                   </li>
                 )
               })}
-              <li>
+              {!isReadOnlyEnv && <li>
                 <Button variant="secondary" data-testid={'addSurvey'} onClick={() => {
                   setShowCreateSurveyModal(!showCreateSurveyModal)
                 }}>
                   <FontAwesomeIcon icon={faPlus}/> Add
                 </Button>
-              </li>
+              </li> }
             </ul>
           </div>
-
         </li>
       </ul> }
       { showCreateSurveyModal && <CreateSurveyModal studyEnvContext={studyEnvContext}
-        isReadOnlyEnv={isReadOnlyEnv}
         onDismiss={() => setShowCreateSurveyModal(false)}/> }
       { (showArchiveSurveyModal && selectedSurveyConfig) && <ArchiveSurveyModal studyEnvContext={studyEnvContext}
         selectedSurveyConfig={selectedSurveyConfig}
@@ -139,6 +164,8 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
         onDismiss={() => setShowDeleteSurveyModal(false)}/> }
       { showCreateConsentModal && <CreateConsentModal studyEnvContext={studyEnvContext}
         onDismiss={() => setShowCreateConsentModal(false)}/>}
+      { showCreatePreEnrollSurveyModal && <CreatePreEnrollSurveyModal studyEnvContext={studyEnvContext}
+        onDismiss={() => setShowCreatePreEnrollModal(false)}/> }
       { !currentEnv.studyEnvironmentConfig.initialized && <div>Not yet initialized</div> }
     </div>
   </div>
