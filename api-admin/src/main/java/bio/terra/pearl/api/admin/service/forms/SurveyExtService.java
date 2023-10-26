@@ -125,10 +125,6 @@ public class SurveyExtService {
       StudyEnvironmentSurvey surveyToConfigure,
       AdminUser user) {
     authConfiguredSurveyRequest(portalShortcode, envName, studyShortcode, surveyToConfigure, user);
-    if (!EnvironmentName.sandbox.equals(envName)) {
-      throw new IllegalArgumentException(
-          "Updates can only be made directly to the sandbox environment".formatted(envName));
-    }
     return studyEnvironmentSurveyService.create(surveyToConfigure);
   }
 

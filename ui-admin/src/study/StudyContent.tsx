@@ -10,7 +10,7 @@ import ArchiveSurveyModal from './surveys/ArchiveSurveyModal'
 import DeleteSurveyModal from './surveys/DeleteSurveyModal'
 import { StudyEnvironmentSurvey } from '@juniper/ui-core'
 import CreateConsentModal from './consents/CreateConsentModal'
-import {Button, IconButton} from "../components/forms/Button";
+import { Button, IconButton } from '../components/forms/Button'
 
 /** renders the main configuration page for a study environment */
 function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -89,7 +89,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                     </div>
                     { !isReadOnlyEnv && <div className="nav-item dropdown ms-1">
                       <IconButton icon={faEllipsisH}  data-bs-toggle="dropdown"
-                                  aria-expanded="false" aria-label="configure survey menu"/>
+                        aria-expanded="false" aria-label="configure survey menu"/>
                       <div className="dropdown-menu">
                         <ul className="list-unstyled">
                           <li>

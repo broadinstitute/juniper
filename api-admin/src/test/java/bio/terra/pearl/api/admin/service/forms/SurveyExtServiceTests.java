@@ -8,6 +8,8 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
@@ -34,12 +36,12 @@ public class SurveyExtServiceTests {
   @MockBean private AuthUtilService mockAuthUtilService;
   @MockBean private SurveyService mockSurveyService;
   @MockBean private StudyEnvironmentSurveyService mockStudyEnvironmentSurveyService;
-  @MockBean private StudyEnvironmentService studyEnvironmentService;
+  @MockBean private StudyEnvironmentService mockStudyEnvironmentService;
 
   @Test
   public void createConfiguredRequiresPortalAuth() {
     AdminUser user = AdminUser.builder().superuser(false).build();
-    when(mockAuthUtilService.authUserToPortal(user, "foo"))
+    when(mockAuthUtilService.authUserToStudy(user, "foo", "bar"))
         .thenThrow(new PermissionDeniedException("test1"));
     Assertions.assertThrows(
         PermissionDeniedException.class,
@@ -51,12 +53,13 @@ public class SurveyExtServiceTests {
   @Test
   public void createConfiguredOnlyInSandbox() {
     AdminUser user = AdminUser.builder().superuser(false).build();
-    IllegalArgumentException thrownException =
-        Assertions.assertThrows(
-            IllegalArgumentException.class,
-            () ->
-                surveyExtService.createConfiguredSurvey(
-                    "foo", "bar", EnvironmentName.irb, null, user));
+    when(mockStudyEnvironmentService.findByStudy("bar", EnvironmentName.irb))
+        .thenReturn(
+            Optional.of(StudyEnvironment.builder().environmentName(EnvironmentName.irb).build()));
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            surveyExtService.createConfiguredSurvey("foo", "bar", EnvironmentName.irb, null, user));
   }
 
   @Test
@@ -80,24 +83,37 @@ public class SurveyExtServiceTests {
   @Test
   public void removeRequiresPortalAuth() {
     AdminUser user = AdminUser.builder().superuser(false).build();
-    when(mockAuthUtilService.authUserToPortal(user, "foo"))
+    when(mockAuthUtilService.authUserToStudy(user, "foo", "blah"))
         .thenThrow(new PermissionDeniedException("test1"));
+    StudyEnvironmentSurvey studyEnvironmentSurvey =
+        StudyEnvironmentSurvey.builder().studyEnvironmentId(UUID.randomUUID()).build();
+    when(mockStudyEnvironmentSurveyService.find(studyEnvironmentSurvey.getId()))
+        .thenReturn(Optional.of(studyEnvironmentSurvey));
     Assertions.assertThrows(
         PermissionDeniedException.class,
         () ->
             surveyExtService.removeConfiguredSurvey(
-                "foo", "blah", EnvironmentName.sandbox, null, user));
+                "foo", "blah", EnvironmentName.sandbox, studyEnvironmentSurvey.getId(), user));
   }
 
   @Test
   public void removeOnlyInSandbox() {
-    AdminUser user = AdminUser.builder().superuser(false).build();
-    IllegalArgumentException thrownException =
-        Assertions.assertThrows(
-            IllegalArgumentException.class,
-            () ->
-                surveyExtService.removeConfiguredSurvey(
-                    "foo", "bar", EnvironmentName.irb, null, user));
+    AdminUser user = AdminUser.builder().superuser(true).build();
+    StudyEnvironment studyEnv =
+        StudyEnvironment.builder()
+            .id(UUID.randomUUID())
+            .environmentName(EnvironmentName.irb)
+            .build();
+    when(mockStudyEnvironmentService.findByStudy("bar", EnvironmentName.irb))
+        .thenReturn(Optional.of(studyEnv));
+    StudyEnvironmentSurvey studyEnvironmentSurvey =
+        StudyEnvironmentSurvey.builder().studyEnvironmentId(UUID.randomUUID()).build();
+    when(mockStudyEnvironmentSurveyService.find(studyEnvironmentSurvey.getId()))
+        .thenReturn(Optional.of(studyEnvironmentSurvey));
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            surveyExtService.removeConfiguredSurvey("foo", "bar", EnvironmentName.irb, null, user));
   }
 
   @Test
