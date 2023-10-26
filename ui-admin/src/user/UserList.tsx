@@ -7,12 +7,14 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import Api, { AdminUser, Portal, PortalAdminUser } from 'api/api'
-import { basicTableLayout } from 'util/tableUtils'
+import { basicTableLayout, renderEmptyMessage }  from 'util/tableUtils'
 import { instantToDefaultString } from 'util/timeUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faPlus } from '@fortawesome/free-solid-svg-icons'
 import CreateUserModal from './CreateUserModal'
+import { Button } from 'components/forms/Button'
+import { renderPageHeader } from 'util/pageUtils'
 
 /** lists all admin users */
 const UserList = () => {
@@ -85,15 +87,18 @@ const UserList = () => {
   useEffect(() => {
     loadAdminUsersAndPortals()
   }, [])
-  return <div className="container p-3">
-    <h1 className="h4">All users </h1>
-    <button className="btn-secondary btn" onClick={() => setShowCreateModal(true)}>
-      <FontAwesomeIcon icon={faPlus}/> Create user
-    </button>
+  return <div className="container-fluid px-4 py-2">
+    { renderPageHeader('All Users') }
+    <div className="d-flex align-items-center justify-content-end">
+      <Button variant="light" className="border m-1" onClick={() => setShowCreateModal(true)}>
+        <FontAwesomeIcon icon={faPlus}/> Create user
+      </Button>
+    </div>
     {showCreateModal && <CreateUserModal onDismiss={() => setShowCreateModal(false)} portals={portals}
       userCreated={handleUserCreated}/>}
     <LoadingSpinner isLoading={isLoading}>
-      {basicTableLayout(table)}
+      { basicTableLayout(table) }
+      { renderEmptyMessage(users, 'No users') }
     </LoadingSpinner>
   </div>
 }

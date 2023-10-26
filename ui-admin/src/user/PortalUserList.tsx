@@ -7,7 +7,7 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import Api, { AdminUser, Portal } from 'api/api'
-import { basicTableLayout } from 'util/tableUtils'
+import { basicTableLayout, renderEmptyMessage } from 'util/tableUtils'
 import { instantToDefaultString } from 'util/timeUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -16,6 +16,8 @@ import CreateUserModal from './CreateUserModal'
 import { failureNotification } from '../util/notifications'
 import { Store } from 'react-notifications-component'
 import UserAction from './UserAction'
+import { Button } from 'components/forms/Button'
+import { renderPageHeader } from 'util/pageUtils'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -73,15 +75,23 @@ const PortalUserList = ({ portal }: {portal: Portal}) => {
   useEffect(() => {
     loadUsers()
   }, [])
-  return <div className="container p-3">
-    <h1 className="h4">All users </h1>
-    <button className="btn-secondary btn" onClick={() => setShowCreateModal(true)}>
-      <FontAwesomeIcon icon={faPlus}/> Create user
-    </button>
+  return <div className="container-fluid px-4 py-2">
+    { renderPageHeader('Manage Team') }
+    <div className="d-flex align-items-center justify-content-between">
+      <div className="d-flex">
+        <h4>All users</h4>
+      </div>
+      <div className="d-flex">
+        <Button variant="light" className="border m-1" onClick={() => setShowCreateModal(true)}>
+          <FontAwesomeIcon icon={faPlus}/> Create user
+        </Button>
+      </div>
+    </div>
     {showCreateModal && <CreateUserModal onDismiss={() => setShowCreateModal(false)} portals={[portal]}
       userCreated={handleUserListChanged}/>}
     <LoadingSpinner isLoading={isLoading}>
-      {basicTableLayout(table)}
+      { basicTableLayout(table) }
+      { renderEmptyMessage(users, 'No users') }
     </LoadingSpinner>
   </div>
 }

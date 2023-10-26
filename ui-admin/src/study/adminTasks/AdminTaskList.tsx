@@ -8,7 +8,7 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout } from 'util/tableUtils'
+import { basicTableLayout, renderEmptyMessage } from 'util/tableUtils'
 import { instantToDateString, instantToDefaultString } from 'util/timeUtils'
 import { paramsFromContext, StudyEnvContextT, StudyEnvParams } from '../StudyEnvironmentRouter'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
@@ -21,6 +21,7 @@ import { faCheck, faEdit } from '@fortawesome/free-solid-svg-icons'
 import { useUser } from 'user/UserProvider'
 import { IconButton } from '../../components/forms/Button'
 import { AdminTaskEditModal } from './AdminTaskEditor'
+import { renderPageHeader } from 'util/pageUtils'
 
 
 /** show the lists of the user's tasks and all tasks */
@@ -92,11 +93,13 @@ export default function AdminTaskList({ studyEnvContext }: {studyEnvContext: Stu
     }
   }
 
-  return <div className="container p-3">
+  return <div className="container-fluid px-4 py-2">
+    { renderPageHeader('Tasks') }
     <LoadingSpinner isLoading={isLoading}>
       <MyTaskList studyEnvContext={studyEnvContext} taskData={taskData}/>
-      <h2 className="h4 mt-5">All tasks</h2>
-      {basicTableLayout(allTasksTable)}
+      <h3 className="h4 mt-5">All tasks</h3>
+      { basicTableLayout(allTasksTable) }
+      { renderEmptyMessage(taskData.tasks, 'No tasks') }
     </LoadingSpinner>
     { (showEditModal && selectedTask) && <AdminTaskEditModal task={selectedTask} users={users}
       onDismiss={onDoneEditing} studyEnvContext={studyEnvContext}/> }
@@ -136,9 +139,9 @@ taskData: AdminTaskListDto}) => {
     getSortedRowModel: getSortedRowModel()
   })
   return <>
-    <h2 className="h4">My tasks</h2>
-    { !!myTasks.length && basicTableLayout(table)}
-    { !myTasks.length && <div className="text-muted fst-italic mb-3">None</div> }
+    <h3 className="h4 mt-3">My tasks</h3>
+    { basicTableLayout(table) }
+    { renderEmptyMessage(myTasks, 'No tasks') }
   </>
 }
 

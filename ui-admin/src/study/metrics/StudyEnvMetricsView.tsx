@@ -1,6 +1,7 @@
 import React from 'react'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import MetricGraph from './MetricGraph'
+import { renderPageHeader } from 'util/pageUtils'
 
 export type MetricInfo = {
   name: string,
@@ -21,15 +22,18 @@ export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContex
     prev[current.name] = current
     return prev
   }, {})
-  return <div className="container row justify-content-center">
-    <div className="col-md-8 p-4">
-      <h1 className="h4">{studyEnvContext.study.name} Summary
+  return <div className="container-fluid px-4 py-2">
+    { renderPageHeader('Participant Analytics') }
+    <div className="row">
+      <h4>{studyEnvContext.study.name} Summary
         <span className="fst-italic text-muted ms-3">({studyEnvContext.currentEnv.environmentName})</span>
-      </h1>
-      <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_ENROLLMENT']}/>
-      <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_ENROLLEE_CONSENTED']}/>
-      <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_REQUIRED_SURVEY_COMPLETION']}/>
-      <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_SURVEY_COMPLETION']}/>
+      </h4>
+      <div className="mt-2">
+        <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_ENROLLMENT']}/>
+        <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_ENROLLEE_CONSENTED']}/>
+        <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_REQUIRED_SURVEY_COMPLETION']}/>
+        <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_SURVEY_COMPLETION']}/>
+      </div>
     </div>
   </div>
 }

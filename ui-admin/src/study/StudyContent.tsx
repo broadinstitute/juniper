@@ -9,12 +9,13 @@ import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
 import ArchiveSurveyModal from './surveys/ArchiveSurveyModal'
 import DeleteSurveyModal from './surveys/DeleteSurveyModal'
 import { StudyEnvironmentSurvey } from '@juniper/ui-core'
+import { renderPageHeader } from 'util/pageUtils'
 
 /** renders the main configuration page for a study environment */
 function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { currentEnv } = studyEnvContext
   const contentHeaderStyle = {
-    padding: '1em 0 0 1em',
+    paddingTop: '1em',
     borderBottom: '1px solid #f6f6f6'
   }
 
@@ -30,14 +31,15 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
   currentEnv.configuredConsents
     .sort((a, b) => a.consentOrder - b.consentOrder)
 
-  return <div className="container row">
-    <div className="col-12 p-3">
+  return <div className="container-fluid px-4 py-2">
+    { renderPageHeader('Forms & Surveys') }
+    <div className="col-12">
       { currentEnv.studyEnvironmentConfig.initialized && <ul className="list-unstyled">
         <li className="mb-3 bg-white">
           <div style={contentHeaderStyle}>
             <h6>Pre-enrollment questionnaire</h6>
           </div>
-          <div className="flex-grow-1 p-3">
+          <div className="flex-grow-1 pt-3">
             { preEnrollSurvey && <ul className="list-unstyled"><li>
               <Link to={`preEnroll/${preEnrollSurvey.stableId}?readOnly=${isReadOnlyEnv}`}>
                 {preEnrollSurvey.name} <span className="detail">v{preEnrollSurvey.version}</span>
@@ -49,7 +51,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
           <div style={contentHeaderStyle}>
             <h6>Consent forms</h6>
           </div>
-          <div className="flex-grow-1 p-3">
+          <div className="flex-grow-1 pt-3">
             <ul className="list-unstyled">
               { currentEnv.configuredConsents.map((config, index) => {
                 const consentForm = config.consentForm
@@ -66,7 +68,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
           <div style={contentHeaderStyle}>
             <h6>Surveys</h6>
           </div>
-          <div className="flex-grow-1 p-3">
+          <div className="flex-grow-1 pt-3">
             <ul className="list-unstyled">
               { currentEnv.configuredSurveys.map((surveyConfig, index) => {
                 const survey = surveyConfig.survey

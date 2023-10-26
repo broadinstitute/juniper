@@ -5,7 +5,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { instantToDefaultString } from '../../../util/timeUtils'
+import { instantToDefaultString } from 'util/timeUtils'
 import {
   ColumnDef,
   getCoreRowModel,
@@ -13,11 +13,13 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout } from '../../../util/tableUtils'
+import { basicTableLayout, renderEmptyMessage } from 'util/tableUtils'
 import { Link } from 'react-router-dom'
-import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
-import { useUser } from '../../../user/UserProvider'
+import { useUser } from 'user/UserProvider'
 import CreateDatasetModal from './CreateDatasetModal'
+import { Button } from 'components/forms/Button'
+import { faSquarePlus } from '@fortawesome/free-solid-svg-icons'
+import { renderPageHeader } from 'util/pageUtils'
 
 const datasetColumns = (currentEnvPath: string): ColumnDef<DatasetDetails>[] => [{
   id: 'datasetName',
@@ -66,11 +68,6 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
     getSortedRowModel: getSortedRowModel()
   })
 
-  const contentHeaderStyle = {
-    padding: '1em 0 0 1em',
-    borderBottom: '1px solid #f6f6f6'
-  }
-
   const loadData = async () => {
     //Fetch datasets
     await Api.listDatasetsForStudyEnvironment(
@@ -87,30 +84,26 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
   useEffect(() => {
     loadData()
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
-  return <div className="container-fluid py-3">
-    <h1 className="h3">Study Environment Datasets</h1>
-    { user.superuser &&
-        <button className="btn btn-secondary" onClick={() => setShowCreateDatasetModal(!showCreateDatasetModal)}
-          aria-label="show or hide export modal">
-          <FontAwesomeIcon icon={faPlus}/> Create new dataset
-        </button>
-    }
+  return <div className="container-fluid px-4 py-2">
+    { renderPageHeader('Terra Data Repo') }
+    <LoadingSpinner isLoading={isLoading}>
+      <div className="d-flex align-items-center justify-content-between">
+        <h4>Datasets</h4>
+        { user.superuser &&
+            <Button onClick={() => setShowCreateDatasetModal(!showCreateDatasetModal)}
+              variant="light" className="border m-1"
+              aria-label="show or export to tdr modal">
+              <FontAwesomeIcon icon={faSquarePlus} className="fa-lg"/> Create dataset
+            </Button>
+        }
+      </div>
+      { basicTableLayout(datasetTable) }
+      { renderEmptyMessage(datasets, 'No datasets') }
+    </LoadingSpinner>
     <CreateDatasetModal studyEnvContext={studyEnvContext}
       show={showCreateDatasetModal}
       setShow={setShowCreateDatasetModal}
       loadDatasets={loadData}/>
-    <LoadingSpinner isLoading={isLoading}>
-      <div className="col-12 p-3">
-        <ul className="list-unstyled">
-          <li className="bg-white my-3">
-            <div style={contentHeaderStyle}>
-              <h6>Datasets</h6>
-            </div>
-            {basicTableLayout(datasetTable)}
-          </li>
-        </ul>
-      </div>
-    </LoadingSpinner>
   </div>
 }
 

@@ -11,7 +11,7 @@ import {
 import Api, { KitRequest } from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { basicTableLayout, ColumnVisibilityControl } from 'util/tableUtils'
+import { basicTableLayout, ColumnVisibilityControl, renderEmptyMessage } from 'util/tableUtils'
 import { instantToDateString, isoToInstant } from 'util/timeUtils'
 import { doApiLoad, useLoadingEffect } from 'api/api-utils'
 import { enrolleeKitRequestPath } from '../participants/enrolleeView/EnrolleeView'
@@ -134,8 +134,8 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
   }
 
   return <LoadingSpinner isLoading={isLoading}>
-    <div className="container p-0 mt-2">
-      <div className="d-flex w-100 align-items-center" style={{ backgroundColor: '#ccc' }}>
+    <div className="container-fluid p-0 mt-2">
+      <div className="d-flex w-100 align-items-center mb-2" style={{ backgroundColor: '#ccc' }}>
         { statusTabs.map(tab => {
           const kits = kitsByStatus[tab.status] || []
           return <NavLink key={tab.key} to={tab.key} style={tabLinkStyle}>
@@ -248,6 +248,7 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
     <div className="d-flex align-items-center justify-content-between">
       <ColumnVisibilityControl table={table}/>
     </div>
-    {basicTableLayout(table, { filterable: true })}
+    { basicTableLayout(table, { filterable: true }) }
+    { renderEmptyMessage(kits, `No kits with status ${tab}`) }
   </>
 }

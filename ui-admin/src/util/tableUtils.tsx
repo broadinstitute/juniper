@@ -4,11 +4,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretDown, faCaretUp, faCheck, faColumns, faDownload } from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
 import Modal from 'react-bootstrap/Modal'
-import { Button } from '../components/forms/Button'
+import { Button } from 'components/forms/Button'
 import { escapeCsvValue, saveBlobAsDownload } from './downloadUtils'
 import { instantToDefaultString } from './timeUtils'
 import { isEmpty } from 'lodash'
 import { useSearchParams } from 'react-router-dom'
+import { TextInput } from 'components/forms/TextInput'
 
 /**
  * Returns a debounced input react component
@@ -39,7 +40,13 @@ function DebouncedInput({
   }, [value])
 
   return (
-    <input {...props} value={value} style={{ height: 32 }} onChange={e => setValue(e.target.value)} />
+    <TextInput
+      placeholder={props.placeholder}
+      value={value}
+      onChange={v => {
+        setValue(v)
+      }}
+    />
   )
 }
 
@@ -94,18 +101,11 @@ function SelectFilter<A>({
       styles={{
         control: baseStyles => ({
           ...baseStyles,
-          width: 200,
-          height: 32,
-          minHeight: 32,
           fontWeight: 'normal'
         }),
         menu: baseStyles => ({
           ...baseStyles,
           fontWeight: 'normal'
-        }),
-        valueContainer: baseStyles => ({
-          ...baseStyles,
-          padding: '0 0.25rem'
         })
       }}
       value={selectedValue}
@@ -270,6 +270,30 @@ export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
       </Modal.Footer>
     </Modal> }
   </div>
+}
+
+/**
+ * Returns a count of the total number of rows in the table, and the number of rows
+ * visible if a filter is applied
+ */
+export function RowVisibilityCount<T>({ table }: {table: Table<T>}) {
+  const numSelected = Object.keys(table.getState().rowSelection).length
+  const numPrefilteredRows = table.getPreFilteredRowModel().rows.length
+  const numFilteredRows = table.getFilteredRowModel().rows.length
+
+  if (numPrefilteredRows === numFilteredRows) {
+    return <span>{numSelected} of {numPrefilteredRows} selected</span>
+  } else {
+    return <span>{numSelected} of {numPrefilteredRows} selected ({numFilteredRows} shown)</span>
+  }
+}
+
+/**
+ * Renders a message if the table is empty
+ */
+export const renderEmptyMessage = (arr: unknown[], content: React.ReactNode) => {
+  if (arr.length > 0) { return null }
+  return <span className="d-flex justify-content-center text-muted fst-italic">{content}</span>
 }
 
 /**
