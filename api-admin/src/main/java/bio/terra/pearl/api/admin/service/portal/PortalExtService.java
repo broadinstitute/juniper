@@ -24,9 +24,6 @@ public class PortalExtService {
   private PortalEnvironmentConfigService portalEnvironmentConfigService;
   private PortalAdminUserService portalAdminUserService;
   private AuthUtilService authUtilService;
-  private static final List<String> SUPERUSER_CONFIG_IGNORE_FIELDS = List.of();
-  private static final List<String> USER_CONFIG_IGNORE_FIELDS =
-      List.of("id", "createdAt", "participantHostname", "emailSourceAddress");
 
   public PortalExtService(
       PortalService portalService,
@@ -60,6 +57,10 @@ public class PortalExtService {
       EnvironmentName envName,
       PortalEnvironmentConfig newConfig,
       AdminUser user) {
+    if (!user.isSuperuser()) {
+      throw new PermissionDeniedException(
+              "You do not have permissions to update portal configurations");
+    }
     authUtilService.authUserToPortal(user, portalShortcode);
     PortalEnvironment portalEnv = portalEnvironmentService.findOne(portalShortcode, envName).get();
     PortalEnvironmentConfig config =
