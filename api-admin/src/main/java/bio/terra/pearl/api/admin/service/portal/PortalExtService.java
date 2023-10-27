@@ -7,10 +7,12 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.service.admin.PortalAdminUserService;
+import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,9 @@ public class PortalExtService {
   private PortalEnvironmentConfigService portalEnvironmentConfigService;
   private PortalAdminUserService portalAdminUserService;
   private AuthUtilService authUtilService;
+  private static final List<String> SUPERUSER_CONFIG_IGNORE_FIELDS = List.of();
+  private static final List<String> USER_CONFIG_IGNORE_FIELDS =
+      List.of("id", "createdAt", "participantHostname", "emailSourceAddress");
 
   public PortalExtService(
       PortalService portalService,
@@ -55,10 +60,17 @@ public class PortalExtService {
       EnvironmentName envName,
       PortalEnvironmentConfig newConfig,
       AdminUser user) {
-    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
+    authUtilService.authUserToPortal(user, portalShortcode);
     PortalEnvironment portalEnv = portalEnvironmentService.findOne(portalShortcode, envName).get();
     PortalEnvironmentConfig config =
         portalEnvironmentConfigService.find(portalEnv.getPortalEnvironmentConfigId()).get();
+    if (!user.isSuperuser()) {
+      if (!Objects.equals(config.getParticipantHostname(), newConfig.getParticipantHostname())
+          || !Objects.equals(config.getEmailSourceAddress(), newConfig.getEmailSourceAddress())) {
+        throw new PermissionDeniedException(
+            "ParticipantHostname and emailSourceAddress can only be updated by superusers");
+      }
+    }
     BeanUtils.copyProperties(newConfig, config, "id", "createdAt");
     config = portalEnvironmentConfigService.update(config);
     return config;
@@ -78,7 +90,9 @@ public class PortalExtService {
     if (!EnvironmentName.sandbox.equals(envName)) {
       throw new IllegalArgumentException("You cannot directly update non-sandbox environments");
     }
-    authUtilService.authSurveyToPortal(portal, updatedEnv.getPreRegSurveyId());
+    if (updatedEnv.getPreRegSurveyId() != null) {
+      authUtilService.authSurveyToPortal(portal, updatedEnv.getPreRegSurveyId());
+    }
     PortalEnvironment portalEnv = portalEnvironmentService.findOne(portalShortcode, envName).get();
     portalEnv.setSiteContentId(updatedEnv.getSiteContentId());
     portalEnv.setPreRegSurveyId(updatedEnv.getPreRegSurveyId());

@@ -36,13 +36,15 @@ test('updates a portal env. config', async () => {
   expect(screen.getByText('Save website config')).toHaveAttribute('aria-disabled', 'false')
 })
 
-test('save disabled for non-superusers', async () => {
+test('updating hostname disabled for non-superusers', async () => {
   const portalContext = mockPortalContext()
   const portalEnv = portalContext.portal?.portalEnvironments[0] as PortalEnvironment
   render(
     <MockRegularUserProvider>
       <PortalEnvConfigView portalContext={portalContext} portalEnv={portalEnv}/>
     </MockRegularUserProvider>)
-
-  expect(screen.getByText('Save website config')).toHaveAttribute('aria-disabled', 'true')
+  const input = screen.getByLabelText('participant hostname') as HTMLInputElement
+  userEvent.type(input, 'hostname2')
+  // value should not change since it is readOnly
+  expect(input).toHaveValue(portalEnv.portalEnvironmentConfig.participantHostname)
 })

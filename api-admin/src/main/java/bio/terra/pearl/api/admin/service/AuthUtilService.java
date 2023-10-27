@@ -130,6 +130,6 @@ public class AuthUtilService {
     if (!portal.getId().equals(survey.getPortalId())) {
       throw new NotFoundException("No such survey exists in " + portal.getName());
     }
-    return surveyOpt.get();
+    return survey;
   }
 }

@@ -63,6 +63,7 @@ const PortalEnvConfigView = ({ portalContext, portalEnv }: PortalEnvConfigViewPr
       <label className="form-label">
       participant hostname
         <input type="text" className="form-control" value={config.participantHostname}
+               readOnly={!user.superuser}
           onChange={e => updateConfig('participantHostname', e.target.value)}/>
       </label>
     </div>
@@ -70,12 +71,12 @@ const PortalEnvConfigView = ({ portalContext, portalEnv }: PortalEnvConfigViewPr
       <label className="form-label">
       Email source address
         <input type="text" className="form-control" value={config.emailSourceAddress}
+               readOnly={!user.superuser}
           onChange={e => updateConfig('emailSourceAddress', e.target.value)}/>
       </label>
     </div>
     <Button onClick={save}
-      variant="primary" disabled={!user.superuser || isLoading}
-      tooltip={user.superuser ? 'Save' : 'You do not have permission to edit these settings'}>
+      variant="primary" disabled={isLoading}>
       {isLoading && <LoadingSpinner/>}
       {!isLoading && 'Save website config'}
     </Button>
