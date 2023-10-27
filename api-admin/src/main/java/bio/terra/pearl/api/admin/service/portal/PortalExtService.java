@@ -59,7 +59,7 @@ public class PortalExtService {
       AdminUser user) {
     if (!user.isSuperuser()) {
       throw new PermissionDeniedException(
-              "You do not have permissions to update portal configurations");
+          "You do not have permissions to update portal configurations");
     }
     authUtilService.authUserToPortal(user, portalShortcode);
     PortalEnvironment portalEnv = portalEnvironmentService.findOne(portalShortcode, envName).get();
