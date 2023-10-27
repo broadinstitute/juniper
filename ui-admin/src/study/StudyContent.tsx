@@ -53,7 +53,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
 
                 { !isReadOnlyEnv && <div className="nav-item dropdown ms-1">
                   <IconButton icon={faEllipsisH}  data-bs-toggle="dropdown"
-                    aria-expanded="false" aria-label="configure survey menu"/>
+                    aria-expanded="false" aria-label="configure pre-enroll menu"/>
                   <div className="dropdown-menu">
                     <ul className="list-unstyled">
                       <li>
