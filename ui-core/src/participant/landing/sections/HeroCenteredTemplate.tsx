@@ -8,7 +8,7 @@ import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfi
 import { requireOptionalArray, requireOptionalString } from '../../util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
-import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
+import ConfiguredMedia, { MediaConfig, validateMediaConfig } from '../ConfiguredMedia'
 import { InlineMarkdown, Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
@@ -19,7 +19,7 @@ type HeroCenteredTemplateConfig = {
   blurbAlign?: 'left' | 'right' | 'center' // left|right|center  where to align the blurb text.  default is 'center'
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   title?: string, // large heading text
-  image?: ImageConfig   // image to display under blurb
+  image?: MediaConfig   // image to display under blurb
 }
 
 /** Validate that a section configuration object conforms to HeroCenteredTemplateConfig */
@@ -33,7 +33,7 @@ const validateHeroCenteredTemplateConfig = (config: SectionConfig): HeroCentered
 
   const buttons = requireOptionalArray(config, 'buttons', validateButtonConfig)
   const title = requireOptionalString(config, 'title', message)
-  const image = config.image ? validateImageConfig(config.image) : undefined
+  const image = config.image ? validateMediaConfig(config.image) : undefined
 
   return {
     blurb,
@@ -78,7 +78,7 @@ function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
         </Markdown>
       )}
       {hasImage && (
-        <ConfiguredImage image={image} className={classNames('img-fluid', { 'mb-4': hasContentFollowingImage })} />
+        <ConfiguredMedia media={image} className={classNames('img-fluid', { 'mb-4': hasContentFollowingImage })} />
       )}
       {hasButtons && (
         <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
