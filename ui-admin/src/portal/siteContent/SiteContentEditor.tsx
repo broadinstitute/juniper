@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { NavbarItemInternal, PortalEnvironment } from 'api/api'
+import { NavbarItemInternal } from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faClipboard, faClockRotateLeft, faEnvelope, faImage, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faClipboard, faClockRotateLeft, faImage, faPlus } from '@fortawesome/free-solid-svg-icons'
 import HtmlPageEditView from './HtmlPageEditView'
 import { HtmlPage, LocalSiteContent, ApiProvider, SiteContent, ApiContextT } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
@@ -11,7 +11,6 @@ import { Button } from '../../components/forms/Button'
 import AddPageModal from './AddPageModal'
 import CreatePreRegSurveyModal from '../CreatePreRegSurveyModal'
 import { PortalEnvContext } from '../PortalRouter'
-import { studyEnvFormsPath } from '../../study/StudyEnvironmentRouter'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -170,7 +169,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
                 ' users must complete before being able to sign up for the portal.'}
             onClick={() => setShowAddPreRegModal(true)}
             >
-              <FontAwesomeIcon icon={faClipboard} className="fa-lg"/> Add pre-registration
+              <FontAwesomeIcon icon={faClipboard} className="fa-lg"/> Pre-registration
             </Button> }
         </div>
 

@@ -1,5 +1,4 @@
-import React, { useContext, useState } from 'react'
-import { PortalContext, PortalContextT } from 'portal/PortalProvider'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Api from 'api/api'
 import { Store } from 'react-notifications-component'
@@ -10,9 +9,10 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { ApiErrorResponse, defaultApiErrorHandle, doApiLoad } from 'api/api-utils'
 import { PortalEnvContext } from './PortalRouter'
 import { useFormCreationNameFields } from '../study/surveys/CreateSurveyModal'
-import {StudyEnvParams, studyEnvPreRegPath, useStudyEnvParamsFromPath} from "../study/StudyEnvironmentRouter";
+import { StudyEnvParams, studyEnvPreRegPath, useStudyEnvParamsFromPath } from '../study/StudyEnvironmentRouter'
+import { DocsKey, ZendeskLink } from '../util/zendeskUtils'
 
-const EMPTY_PREREG_TEMPLATE = `
+const EXAMPLE_PREREG_TEMPLATE = `
 {
     "title": "pre-registration",
     "logoPosition": "right",
@@ -82,7 +82,7 @@ export default function CreatePreRegSurveyModal({ portalEnvContext, onDismiss }:
       const createdSurvey = await Api.createNewSurvey(portalEnvContext.portal.shortcode,
         {
           createdAt: 0, id: '', lastUpdatedAt: 0, version: 1,
-          content: EMPTY_PREREG_TEMPLATE, name: formName, stableId: formStableId
+          content: EXAMPLE_PREREG_TEMPLATE, name: formName, stableId: formStableId
         })
       Store.addNotification(successNotification('Survey created'))
       try {
@@ -113,7 +113,9 @@ export default function CreatePreRegSurveyModal({ portalEnvContext, onDismiss }:
     </Modal.Header>
     <Modal.Body>
       <p>This survey will be shown to all participants wishing to create a user account on the portal.
-            This form is associated with the portal as a whole, not any particular study.</p>
+            This form is associated with the portal as a whole, not any particular study.
+      <ZendeskLink doc={DocsKey.PREREG_SURVEYS}>More info.</ZendeskLink>
+      </p>
       <form onSubmit={e => e.preventDefault()}>
         <label className="form-label" htmlFor="inputFormName">Survey Name</label>
         { nameInput }

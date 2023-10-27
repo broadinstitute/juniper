@@ -2,9 +2,8 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
 
-import {  StudyParams } from 'study/StudyRouter'
-import { StudyEnvContextT, studyEnvFormsPath } from 'study/StudyEnvironmentRouter'
-import Api, { PortalEnvironment, Survey } from 'api/api'
+import { StudyEnvContextT, studyEnvSiteContentPath } from 'study/StudyEnvironmentRouter'
+import Api, { Survey } from 'api/api'
 
 import { successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
@@ -12,6 +11,8 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { useLoadedSurvey, useSurveyParams } from './SurveyView'
 import { doApiLoad } from 'api/api-utils'
 import { PortalEnvContext } from 'portal/PortalRouter'
+import { DocsKey, ZendeskLink } from 'util/zendeskUtils'
+import InfoPopup from 'components/forms/InfoPopup'
 
 /** Preregistration editor.  This shares a LOT in common with SurveyView and PreEnrollView,
  * but it's expected they will diverge over
@@ -31,21 +32,32 @@ function RawPreRegView({ studyEnvContext, portalEnvContext, survey, readOnly = f
       Store.addNotification(successNotification(`Survey saved successfully`))
       setCurrentSurvey(updatedSurvey)
       const updatedEnv = { ...portalEnv, preRegSurveyId: updatedSurvey.id }
-      const updatedStudyEnv = await Api.updatePortalEnv(portal.shortcode,
+      await Api.updatePortalEnv(portal.shortcode,
         portalEnv.environmentName, updatedEnv)
       Store.addNotification(successNotification(`Environment updated`))
       portalEnvContext.reloadPortal(portal.shortcode)
     })
   }
 
-  return <SurveyEditorView
-    studyEnvContext={studyEnvContext}
-    currentForm={currentSurvey}
-    readOnly={readOnly}
-    onCancel={() => navigate(studyEnvFormsPath(portal.shortcode,
-      studyEnvContext.study.shortcode, portalEnv.environmentName))}
-    onSave={createNewVersion}
-  />
+  return <div>
+    <div className="d-flex align-items-center">
+      <h2 className="h3 ms-2">Pre-registration survey </h2>
+      <InfoPopup placement="bottom" content={<span>
+        Pre-registration surveys are shown to participants before they create a user account on the portal.
+        <ZendeskLink doc={DocsKey.PREREG_SURVEYS} className="ms-4">More documentation.</ZendeskLink>
+      </span>}/>
+
+    </div>
+
+    <SurveyEditorView
+      studyEnvContext={studyEnvContext}
+      currentForm={currentSurvey}
+      readOnly={readOnly}
+      onCancel={() => navigate(studyEnvSiteContentPath(portal.shortcode,
+        studyEnvContext.study.shortcode, portalEnv.environmentName))}
+      onSave={createNewVersion}
+    />
+  </div>
 }
 
 /** routable component for survey editing */

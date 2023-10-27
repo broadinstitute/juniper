@@ -49,6 +49,7 @@ export const mockPortalContext: () => LoadedPortalContextT = () => ({
   isLoading: false
 })
 
+/** mock with a mock portal and mock portalEnv */
 export const mockPortalEnvContext: (envName: string) => PortalEnvContext = envName => ({
   portal: mockPortal(),
   updatePortal: jest.fn(),

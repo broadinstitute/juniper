@@ -5,8 +5,10 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { Placement } from 'react-bootstrap/types'
 import { OverlayTriggerType } from 'react-bootstrap/OverlayTrigger'
 
-export type InfoPopupProps = JSX.IntrinsicElements['button'] & {
-  content: React.ReactNode  // content of the popup
+
+/** this acts as a button, but replaces the button content prop that can be any react node */
+export type InfoPopupProps = Omit<JSX.IntrinsicElements['button'], 'content'> & {
+  content: React.ReactNode // content of the popup
   target?: React.ReactNode  // the element to attach the popover to
   placement?: Placement
   trigger?: OverlayTriggerType[] // what actions trigger the popup, for hover tips, use ['hover', 'focus']
