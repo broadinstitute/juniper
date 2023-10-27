@@ -22,7 +22,7 @@ import _random from 'lodash/random'
 import { EmailTemplate, StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
 import { LoadedPortalContextT } from '../portal/PortalProvider'
 import { PortalEnvironment } from '@juniper/ui-core/build/types/portal'
-import {PortalEnvContext} from "../portal/PortalRouter";
+import { PortalEnvContext } from '../portal/PortalRouter'
 
 const randomString = (length: number) => {
   return _times(length, () => _random(35).toString(36)).join('')
@@ -49,7 +49,7 @@ export const mockPortalContext: () => LoadedPortalContextT = () => ({
   isLoading: false
 })
 
-export const mockPortalEnvContext: (envName: string) => PortalEnvContext = (envName) => ({
+export const mockPortalEnvContext: (envName: string) => PortalEnvContext = envName => ({
   portal: mockPortal(),
   updatePortal: jest.fn(),
   reloadPortal: () => Promise.resolve(mockPortal()),

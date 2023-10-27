@@ -4,7 +4,7 @@ import { StudyParams } from 'study/StudyRouter'
 
 import { Route, Routes, useNavigate, useParams } from 'react-router-dom'
 import { NavBreadcrumb } from '../navbar/AdminNavbar'
-import { LoadedPortalContextT, PortalContext } from '../portal/PortalProvider'
+import {LoadedPortalContextT, PortalContext, PortalParams} from '../portal/PortalProvider'
 import SurveyView from './surveys/SurveyView'
 import ConsentView from './surveys/ConsentView'
 import PreEnrollView from './surveys/PreEnrollView'
@@ -24,7 +24,7 @@ import NotificationContent from './notifications/NotificationContent'
 import SiteContentLoader from '../portal/siteContent/SiteContentLoader'
 import AdminTaskList from './adminTasks/AdminTaskList'
 import SiteImageList from '../portal/images/SiteImageList'
-import PreRegView from "./surveys/PreRegView";
+import PreRegView from './surveys/PreRegView'
 
 export type StudyEnvParams = {
   studyShortcode: string
@@ -102,7 +102,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
         element={<DatasetDashboard studyEnvContext={studyEnvContext}/>}/>
       <Route path="forms">
         <Route path="preReg" element={<PreRegView studyEnvContext={studyEnvContext}
-                                                  portalEnvContext={portalEnvContext}/>}/>
+          portalEnvContext={portalEnvContext}/>}/>
         <Route path="preEnroll">
           <Route path=":surveyStableId" element={<PreEnrollView studyEnvContext={studyEnvContext}/>}/>
           <Route path="*" element={<div>Unknown preEnroll page</div>}/>
@@ -140,6 +140,17 @@ export const paramsFromContext = (studyEnvContext: StudyEnvContextT): StudyEnvPa
     portalShortcode: studyEnvContext.portal.shortcode,
     envName: studyEnvContext.currentEnv.environmentName
   }
+}
+
+/** gets the current study environment from the url.  It's up to the caller to handle if any of the params are
+ * not present.  If the caller knows the params will be there, the return can be cast to StudyEnvParams */
+export const useStudyEnvParamsFromPath = () => {
+    const params = useParams<StudyParams & PortalParams>()
+    return {
+        studyShortcode: params.studyShortcode,
+        portalShortcode: params.portalShortcode,
+        envName: params.studyEnv
+    }
 }
 
 /** helper for participant list path */
@@ -212,8 +223,10 @@ export const studyEnvDatasetListViewPath = (portalShortcode: string, studyShortc
 }
 
 /** helper for pre registration survey path */
-export const studyEnvPreRegPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
-  return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/forms/preReg`
+export const studyEnvPreRegPath = (studyEnvParams: StudyEnvParams) => {
+  return `${studyEnvPath(studyEnvParams.portalShortcode, 
+      studyEnvParams.studyShortcode, 
+      studyEnvParams.envName)}/forms/preReg`
 }
 
 /** helper for path for particular dataset route */

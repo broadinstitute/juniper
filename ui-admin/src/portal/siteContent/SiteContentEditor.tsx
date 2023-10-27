@@ -2,16 +2,16 @@ import React, { useState } from 'react'
 import { NavbarItemInternal, PortalEnvironment } from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faClipboard, faClockRotateLeft, faEnvelope, faImage, faPlus} from '@fortawesome/free-solid-svg-icons'
+import { faClipboard, faClockRotateLeft, faEnvelope, faImage, faPlus } from '@fortawesome/free-solid-svg-icons'
 import HtmlPageEditView from './HtmlPageEditView'
 import { HtmlPage, LocalSiteContent, ApiProvider, SiteContent, ApiContextT } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
 import SiteContentVersionSelector from './SiteContentVersionSelector'
 import { Button } from '../../components/forms/Button'
 import AddPageModal from './AddPageModal'
-import CreatePreRegSurveyModal from "../CreatePreRegSurveyModal";
-import {PortalEnvContext} from "../PortalRouter";
-import {studyEnvFormsPath} from "../../study/StudyEnvironmentRouter";
+import CreatePreRegSurveyModal from '../CreatePreRegSurveyModal'
+import { PortalEnvContext } from '../PortalRouter'
+import { studyEnvFormsPath } from '../../study/StudyEnvironmentRouter'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -31,7 +31,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const {
     siteContent, previewApi, portalEnvContext, loadSiteContent, switchToVersion, createNewVersion, readOnly
   } = props
-  const {portalEnv} = portalEnvContext
+  const { portalEnv } = portalEnvContext
   const selectedLanguage = 'en'
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
   const [workingContent, setWorkingContent] = useState<SiteContent>(siteContent)
@@ -168,7 +168,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           { !portalEnv.preRegSurveyId &&
             <Button variant="light"  className="border m-1" tooltip={'Add a pre-registration survey that' +
                 ' users must complete before being able to sign up for the portal.'}
-              onClick={() => setShowAddPreRegModal(true)}
+            onClick={() => setShowAddPreRegModal(true)}
             >
               <FontAwesomeIcon icon={faClipboard} className="fa-lg"/> Add pre-registration
             </Button> }
@@ -191,7 +191,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     }
     { showAddPageModal &&
         <AddPageModal portalEnv={portalEnv} portalShortcode={portalEnvContext.portal.shortcode}
-                      insertNewPage={insertNewPage}
+          insertNewPage={insertNewPage}
           show={showAddPageModal} setShow={setShowAddPageModal}/>
     }
     { showAddPreRegModal &&
