@@ -70,7 +70,9 @@ public class ConsentFormExtService {
    * confirms the user has access to the study and that the consent belongs to that study, and that
    * it's in the sandbox environment. Returns the study environment for which the change is being
    * made in.
-   * @param updatedObj -- a StudyEnvironmentConsent object the user is requesting to create or modify
+   *
+   * @param updatedObj -- a StudyEnvironmentConsent object the user is requesting to create or
+   *     modify
    */
   protected StudyEnvironment authConfiguredConsentRequest(
       String portalShortcode,
@@ -81,7 +83,7 @@ public class ConsentFormExtService {
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
     if (!EnvironmentName.sandbox.equals(envName)) {
       throw new IllegalArgumentException(
-              "Updates can only be made directly to the sandbox environment");
+          "Updates can only be made directly to the sandbox environment");
     }
     StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
     if (!studyEnv.getId().equals(updatedObj.getStudyEnvironmentId())) {
