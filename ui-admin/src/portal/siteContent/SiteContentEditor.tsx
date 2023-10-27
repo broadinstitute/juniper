@@ -2,13 +2,16 @@ import React, { useState } from 'react'
 import { NavbarItemInternal, PortalEnvironment } from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faClockRotateLeft, faImage, faPlus } from '@fortawesome/free-solid-svg-icons'
+import {faClipboard, faClockRotateLeft, faEnvelope, faImage, faPlus} from '@fortawesome/free-solid-svg-icons'
 import HtmlPageEditView from './HtmlPageEditView'
 import { HtmlPage, LocalSiteContent, ApiProvider, SiteContent, ApiContextT } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
 import SiteContentVersionSelector from './SiteContentVersionSelector'
 import { Button } from '../../components/forms/Button'
 import AddPageModal from './AddPageModal'
+import CreatePreRegSurveyModal from "../CreatePreRegSurveyModal";
+import {PortalEnvContext} from "../PortalRouter";
+import {studyEnvFormsPath} from "../../study/StudyEnvironmentRouter";
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -19,22 +22,22 @@ type InitializedSiteContentViewProps = {
   loadSiteContent: (stableId: string, version: number) => void
   createNewVersion: (content: SiteContent) => void
   switchToVersion: (id: string, stableId: string, version: number) => void
-  portalShortcode: string
-  portalEnv: PortalEnvironment
+  portalEnvContext: PortalEnvContext
   readOnly: boolean
 }
 
 /** shows a site content in editable form with a live preview.  Defaults to english-only for now */
 const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const {
-    siteContent, previewApi, portalShortcode,
-    portalEnv, loadSiteContent, switchToVersion, createNewVersion, readOnly
+    siteContent, previewApi, portalEnvContext, loadSiteContent, switchToVersion, createNewVersion, readOnly
   } = props
+  const {portalEnv} = portalEnvContext
   const selectedLanguage = 'en'
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
   const [workingContent, setWorkingContent] = useState<SiteContent>(siteContent)
   const [showVersionSelector, setShowVersionSelector] = useState(false)
   const [showAddPageModal, setShowAddPageModal] = useState(false)
+  const [showAddPreRegModal, setShowAddPreRegModal] = useState(false)
   const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage)
   if (!localContent) {
     return <div>no content for language {selectedLanguage}</div>
@@ -123,9 +126,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
               onClick={() => setShowVersionSelector(!showVersionSelector)}>
               <FontAwesomeIcon icon={faClockRotateLeft}/> History
             </button> }
-            <Link to="../images" className="btn btn-secondary">
-              <FontAwesomeIcon icon={faImage} className="fa-lg"/> Manage images
-            </Link>
+
           </h5>
         </div>
         {
@@ -157,6 +158,20 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             onClick={() => setShowAddPageModal(!showAddPageModal)}>
             <FontAwesomeIcon icon={faPlus}/> Add page
           </Button>
+          <Link to="../images" className="btn btn-light ms-auto border m-1">
+            <FontAwesomeIcon icon={faImage} className="fa-lg"/> Manage images
+          </Link>
+          { portalEnv.preRegSurveyId &&
+            <Link to={'../forms/preReg'} className="btn btn-light border m-1">
+              <FontAwesomeIcon icon={faClipboard} className="fa-lg"/> Pre-registration
+            </Link> }
+          { !portalEnv.preRegSurveyId &&
+            <Button variant="light"  className="border m-1" tooltip={'Add a pre-registration survey that' +
+                ' users must complete before being able to sign up for the portal.'}
+              onClick={() => setShowAddPreRegModal(true)}
+            >
+              <FontAwesomeIcon icon={faClipboard} className="fa-lg"/> Add pre-registration
+            </Button> }
         </div>
 
       </div>
@@ -169,14 +184,18 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
       </div>
     </div>
     { showVersionSelector &&
-        <SiteContentVersionSelector portalShortcode={portalShortcode} stableId={siteContent.stableId}
+        <SiteContentVersionSelector portalShortcode={portalEnvContext.portal.shortcode} stableId={siteContent.stableId}
           current={siteContent} loadSiteContent={loadSiteContent} portalEnv={portalEnv}
           switchToVersion={switchToVersion}
           onDismiss={() => setShowVersionSelector(false)}/>
     }
     { showAddPageModal &&
-        <AddPageModal portalEnv={portalEnv} portalShortcode={portalShortcode} insertNewPage={insertNewPage}
+        <AddPageModal portalEnv={portalEnv} portalShortcode={portalEnvContext.portal.shortcode}
+                      insertNewPage={insertNewPage}
           show={showAddPageModal} setShow={setShowAddPageModal}/>
+    }
+    { showAddPreRegModal &&
+        <CreatePreRegSurveyModal portalEnvContext={portalEnvContext} onDismiss={() => setShowAddPreRegModal(false)}/>
     }
   </div>
 }

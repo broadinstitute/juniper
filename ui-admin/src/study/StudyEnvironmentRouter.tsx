@@ -24,6 +24,7 @@ import NotificationContent from './notifications/NotificationContent'
 import SiteContentLoader from '../portal/siteContent/SiteContentLoader'
 import AdminTaskList from './adminTasks/AdminTaskList'
 import SiteImageList from '../portal/images/SiteImageList'
+import PreRegView from "./surveys/PreRegView";
 
 export type StudyEnvParams = {
   studyShortcode: string
@@ -100,6 +101,8 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       <Route path="export/dataRepo/datasets/:datasetName"
         element={<DatasetDashboard studyEnvContext={studyEnvContext}/>}/>
       <Route path="forms">
+        <Route path="preReg" element={<PreRegView studyEnvContext={studyEnvContext}
+                                                  portalEnvContext={portalEnvContext}/>}/>
         <Route path="preEnroll">
           <Route path=":surveyStableId" element={<PreEnrollView studyEnvContext={studyEnvContext}/>}/>
           <Route path="*" element={<div>Unknown preEnroll page</div>}/>
@@ -206,6 +209,11 @@ export const studyEnvSiteSettingsPath = (portalShortcode: string, studyShortcode
 /** helper for dataset list path */
 export const studyEnvDatasetListViewPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/export/dataRepo/datasets`
+}
+
+/** helper for pre registration survey path */
+export const studyEnvPreRegPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
+  return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/forms/preReg`
 }
 
 /** helper for path for particular dataset route */

@@ -38,7 +38,7 @@ public class SurveyExtService {
 
   public Survey get(String portalShortcode, String stableId, int version, AdminUser adminUser) {
     Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
-    Survey survey = authSurveyToPortal(portal, stableId, version);
+    Survey survey = authUtilService.authSurveyToPortal(portal, stableId, version);
     surveyService.attachAnswerMappings(survey);
     return survey;
   }
@@ -150,19 +150,6 @@ public class SurveyExtService {
     StudyEnvironmentSurvey existing = studyEnvironmentSurveyService.find(updatedObj.getId()).get();
     BeanUtils.copyProperties(updatedObj, existing);
     return studyEnvironmentSurveyService.update(existing);
-  }
-
-  /** confirms that the Survey is accessible from the given portal */
-  public Survey authSurveyToPortal(Portal portal, String stableId, int version) {
-    Optional<Survey> surveyOpt = surveyService.findByStableId(stableId, version);
-    if (surveyOpt.isEmpty()) {
-      throw new NotFoundException("No such survey exists in " + portal.getName());
-    }
-    Survey survey = surveyOpt.get();
-    if (!portal.getId().equals(survey.getPortalId())) {
-      throw new NotFoundException("No such survey exists in " + portal.getName());
-    }
-    return survey;
   }
 
   /**
