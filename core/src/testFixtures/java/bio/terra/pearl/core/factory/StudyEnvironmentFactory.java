@@ -70,7 +70,7 @@ public class StudyEnvironmentFactory {
     }
 
     public StudyEnvironmentBundle buildBundle(String testName, EnvironmentName envName) {
-        PortalEnvironment portalEnvironment = portalEnvironmentFactory.buildPersisted(testName);
+        PortalEnvironment portalEnvironment = portalEnvironmentFactory.buildPersisted(testName, envName);
         Study study = studyFactory.buildPersisted(portalEnvironment.getPortalId(), testName);
         StudyEnvironment studyEnvironment = buildPersisted(envName, study.getId(), testName);
         Portal portal = portalService.find(portalEnvironment.getPortalId()).get();

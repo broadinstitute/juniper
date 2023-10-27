@@ -1,60 +1,50 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
-import CreateSurveyModal from './CreateSurveyModal'
+import CreateConsentModal from './CreateConsentModal'
 import { mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import userEvent from '@testing-library/user-event'
 
-describe('CreateSurveyModal', () => {
+describe('CreateConsentModal', () => {
   test('disables Create button when survey name and stable ID are blank', () => {
-    //Arrange
     const studyEnvContext = mockStudyEnvContext()
-    const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
+    const { RoutedComponent } = setupRouterTest(<CreateConsentModal
       studyEnvContext={studyEnvContext}
       onDismiss={jest.fn()}/>)
     render(RoutedComponent)
 
-    //Assert
     const createButton = screen.getByText('Create')
     expect(createButton).toBeDisabled()
   })
 
   test('enables Create button when survey name and stable ID are filled out', async () => {
-    //Arrange
     const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
-    const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
+    const { RoutedComponent } = setupRouterTest(<CreateConsentModal
       studyEnvContext={studyEnvContext}
       onDismiss={jest.fn()}/>)
     render(RoutedComponent)
 
-    //Act
-    const surveyNameInput = screen.getByLabelText('Survey Name')
-    const surveyStableIdInput = screen.getByLabelText('Survey Stable ID')
-    await user.type(surveyNameInput, 'Test Survey')
-    await user.type(surveyStableIdInput, 'test_survey_id')
+    const surveyNameInput = screen.getByLabelText('Consent Name')
+    const surveyStableIdInput = screen.getByLabelText('Consent Stable ID')
+    await user.type(surveyNameInput, 'Test consent 123')
+    await user.type(surveyStableIdInput, 'test_consent_id')
 
-    //Assert
     const createButton = screen.getByText('Create')
     expect(createButton).toBeEnabled()
   })
 
   test('should autofill the stable ID as the user fills in the survey name', async () => {
-    //Arrange
     const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
-    const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
+    const { RoutedComponent } = setupRouterTest(<CreateConsentModal
       studyEnvContext={studyEnvContext}
       onDismiss={jest.fn()}/>)
     render(RoutedComponent)
 
-    //Act
-    const surveyNameInput = screen.getByLabelText('Survey Name')
-    const surveyStableIdInput = screen.getByLabelText('Survey Stable ID')
-    await user.type(surveyNameInput, 'Test Survey')
+    await user.type(screen.getByLabelText('Consent Name'), 'Test Consent 1')
 
-    //Assert
     //Confirm that auto-fill stable ID worked
-    expect(surveyStableIdInput).toHaveValue('testSurvey')
+    expect(screen.getByLabelText('Consent Stable ID')).toHaveValue('testConsent1')
   })
 })

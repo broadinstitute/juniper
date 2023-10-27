@@ -308,6 +308,41 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/consentForms/{stableId}:
+    post:
+      summary: Saves a new consentForm with anew stableId as a new form -- will be assigned version 1
+      tags: [ consentForm ]
+      operationId: create
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: saved survey object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredConsents:
+    post:
+      summary: creates a configured consent for a study environment
+      tags: [ configuredConsent ]
+      operationId: create
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { schema: { type: object } } } }
+      responses:
+        '200':
+          description: saved configuredConsent object
+          content: { application/json: { schema: { schema: { type: object } } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredConsents/{configConsentId}:
     patch:
       summary: Updates a configured consent, such as by updating to a new version of the consent

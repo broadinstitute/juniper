@@ -3,8 +3,9 @@ import { failureNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 
 export type ApiErrorResponse = {
-    message: string,
-    statusCode: number
+  message: string,
+  error?: string
+  statusCode: number
 }
 
 const errorSuffix = 'If this error persists, please contact support@juniper.terra.bio'
@@ -26,7 +27,7 @@ export const defaultApiErrorHandle = (error: ApiErrorResponse,
   } else {
     Store.addNotification(failureNotification(<div>
       <div>{errorHeader}</div>
-      <div>{error.message}</div>
+      <div>{error.message ?? error.error}</div>
       <div>{errorSuffix}</div>
     </div>
     ))

@@ -8,11 +8,9 @@ import { failureNotification } from '../../util/notifications'
 import { PortalContext, PortalContextT } from 'portal/PortalProvider'
 
 /** renders a modal that allows archiving a survey from the current study env */
-const ArchiveSurveyModal = ({
-  studyEnvContext, selectedSurveyConfig, show, setShow
-}: {
+const ArchiveSurveyModal = ({ studyEnvContext, selectedSurveyConfig, onDismiss }: {
   studyEnvContext: StudyEnvContextT, selectedSurveyConfig: StudyEnvironmentSurvey,
-  show: boolean, setShow:  React.Dispatch<React.SetStateAction<boolean>> }) => {
+  onDismiss: () => void }) => {
   const [isLoading, setIsLoading] = useState(false)
 
   const portalContext = useContext(PortalContext) as PortalContextT
@@ -31,16 +29,12 @@ const ArchiveSurveyModal = ({
     ).catch(() =>
       Store.addNotification(failureNotification('Error removing survey'))
     )
-
-    setShow(false)
     await portalContext.reloadPortal(studyEnvContext.portal.shortcode)
     setIsLoading(false)
+    onDismiss()
   }
 
-  return <Modal show={show}
-    onHide={() => {
-      setShow(false)
-    }}>
+  return <Modal show={true} onHide={onDismiss}>
     <Modal.Header closeButton>
       <Modal.Title>Archive Survey</Modal.Title>
       <div className="ms-4">
@@ -68,9 +62,7 @@ const ArchiveSurveyModal = ({
           disabled={!canArchive}
           onClick={archiveSurvey}
         >Archive survey from {studyEnvContext.study.name}: {studyEnvContext.currentEnv.environmentName}</button>
-        <button className="btn btn-secondary" onClick={() => {
-          setShow(false)
-        }}>Cancel</button>
+        <button className="btn btn-secondary" onClick={onDismiss}>Cancel</button>
       </LoadingSpinner>
     </Modal.Footer>
   </Modal>

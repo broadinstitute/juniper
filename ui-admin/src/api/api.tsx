@@ -547,6 +547,17 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async createNewConsentForm(portalShortcode: string, consentForm: ConsentForm): Promise<ConsentForm> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/consentForms/`
+        + `${consentForm.stableId}`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(consentForm)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async createNewConsentVersion(portalShortcode: string, consentForm: ConsentForm): Promise<ConsentForm> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/consentForms/`
       + `${consentForm.stableId}/${consentForm.version}/newVersion`
@@ -555,6 +566,19 @@ export default {
       method: 'POST',
       headers: this.getInitHeaders(),
       body: JSON.stringify(consentForm)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async createConfiguredConsent(portalShortcode: string, studyShortcode: string, environmentName: string,
+    configuredConsent: StudyEnvironmentConsent): Promise<StudyEnvironmentConsent> {
+    const url =`${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
+        `/env/${environmentName}/configuredConsents`
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(configuredConsent)
     })
     return await this.processJsonResponse(response)
   },

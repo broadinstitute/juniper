@@ -151,6 +151,7 @@ export const mockConfiguredConsent = (): StudyEnvironmentConsent => {
   return {
     id: 'fakeGuid',
     consentFormId: 'consentId1',
+    studyEnvironmentId: 'studyEnvId1',
     consentOrder: 1,
     consentForm: mockConsentForm(),
     allowAdminEdit: false,

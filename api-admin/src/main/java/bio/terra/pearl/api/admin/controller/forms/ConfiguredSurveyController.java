@@ -44,7 +44,7 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
 
     StudyEnvironmentSurvey savedSes =
         surveyExtService.updateConfiguredSurvey(
-            portalShortcode, environmentName, configuredSurvey, adminUser);
+            portalShortcode, environmentName, studyShortcode, configuredSurvey, adminUser);
     return ResponseEntity.ok(savedSes);
   }
 

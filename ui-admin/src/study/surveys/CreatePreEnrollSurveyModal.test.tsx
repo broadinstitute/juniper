@@ -1,15 +1,15 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
-import CreateSurveyModal from './CreateSurveyModal'
 import { mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import userEvent from '@testing-library/user-event'
+import CreatePreEnrollSurveyModal from './CreatePreEnrollSurveyModal'
 
-describe('CreateSurveyModal', () => {
+describe('CreatePreEnrollSurveyModal', () => {
   test('disables Create button when survey name and stable ID are blank', () => {
     //Arrange
     const studyEnvContext = mockStudyEnvContext()
-    const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
+    const { RoutedComponent } = setupRouterTest(<CreatePreEnrollSurveyModal
       studyEnvContext={studyEnvContext}
       onDismiss={jest.fn()}/>)
     render(RoutedComponent)
@@ -23,7 +23,7 @@ describe('CreateSurveyModal', () => {
     //Arrange
     const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
-    const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
+    const { RoutedComponent } = setupRouterTest(<CreatePreEnrollSurveyModal
       studyEnvContext={studyEnvContext}
       onDismiss={jest.fn()}/>)
     render(RoutedComponent)
@@ -43,7 +43,7 @@ describe('CreateSurveyModal', () => {
     //Arrange
     const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
-    const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
+    const { RoutedComponent } = setupRouterTest(<CreatePreEnrollSurveyModal
       studyEnvContext={studyEnvContext}
       onDismiss={jest.fn()}/>)
     render(RoutedComponent)
