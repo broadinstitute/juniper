@@ -57,7 +57,7 @@ public class KitRequestFactory {
                 .build();
         var savedKitRequest = kitRequestDao.create(kitRequest);
         var dsmStatus = PepperKitStatus.builder()
-                .currentStatus("CREATED")
+                .currentStatus("kit without label")
                 .juniperKitId(savedKitRequest.getId().toString())
                 .build();
         savedKitRequest.setDsmStatus(objectMapper.writeValueAsString(dsmStatus));

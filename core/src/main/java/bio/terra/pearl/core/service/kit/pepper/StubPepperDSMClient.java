@@ -8,14 +8,19 @@ import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.kit.pepper.PepperDSMClient;
 import bio.terra.pearl.core.service.kit.pepper.PepperKitAddress;
 import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -72,12 +77,26 @@ public class StubPepperDSMClient implements PepperDSMClient {
     public Collection<PepperKitStatus> fetchKitStatusByStudy(String studyShortcode) {
         log.info("STUB fetching status by study");
         var studyEnvironment = studyEnvironmentDao.findByStudy(studyShortcode, EnvironmentName.sandbox).get();
-        return kitRequestService.findIncompleteKits(studyEnvironment.getId()).stream().map(kit -> {
+        return kitRequestService.findByStudyEnvironment(studyEnvironment.getId()).stream().map(kit -> {
             PepperKitStatus status = PepperKitStatus.builder()
                     .juniperKitId(kit.getId().toString())
-                    .currentStatus("SENT")
+                    .currentStatus(getNextStatus(kit))
                     .build();
             return status;
         }).toList();
+    }
+
+    /** helper to get the next status for a kit */
+    private String getNextStatus(KitRequest kit) {
+        List<String> statusVals = Arrays.stream(PepperKitStatus.Status.values()).map(status -> status.currentStatus).toList();
+        try {
+            PepperKitStatus pepperStatus = objectMapper.readValue(kit.getDsmStatus(), PepperKitStatus.class);
+            String currentStatus = pepperStatus.getCurrentStatus();
+            int currentStatusIndex = statusVals.indexOf(currentStatus);
+            int nextStatusIndex = (currentStatusIndex + 1) % statusVals.size();
+            return statusVals.get(nextStatusIndex);
+        } catch (Exception e) {
+            return "error";
+        }
     }
 }

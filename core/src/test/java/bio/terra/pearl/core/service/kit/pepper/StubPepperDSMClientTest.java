@@ -66,7 +66,7 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
         assertThat(kitStatuses.size(), equalTo(1));
         var kitStatus = kitStatuses.stream().findFirst().get();
         assertThat(kitStatus.getJuniperKitId(), equalTo(kit.getId().toString()));
-        assertThat(kitStatus.getCurrentStatus(), equalTo("SENT"));
+        assertThat(kitStatus.getCurrentStatus(), equalTo("queue"));
     }
 
     @Autowired
