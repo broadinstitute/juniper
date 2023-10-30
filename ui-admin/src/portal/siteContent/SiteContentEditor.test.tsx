@@ -56,7 +56,7 @@ test('clicking on the Preview tab shows full page preview', async () => {
   const siteContent = mockSiteContent()
   const { RoutedComponent } = setupRouterTest(
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
-      loadSiteContent={jest.fn()} createNewVersion={jest.fn()} 
+      loadSiteContent={jest.fn()} createNewVersion={jest.fn()}
       switchToVersion={jest.fn()}
       portalEnvContext={mockPortalEnvContext('sandbox')}/>)
   render(RoutedComponent)
