@@ -48,11 +48,6 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   }
   const navBarInternalItems = localContent.navbarItems
     .filter((navItem): navItem is NavbarItemInternal => navItem.itemType === 'INTERNAL')
-  //
-  // useEffect(() => {
-  //   const invalidSections = document.querySelectorAll('.is-invalid')
-  //   setSiteInvalid(invalidSections.length > 0)
-  // }, [workingContent])
 
   /** updates the global SiteContent object with the given LocalSiteContent */
   const updateLocalContent = (localContent: LocalSiteContent) => {
@@ -87,7 +82,6 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
 
   /** updates the global SiteContent object with the given HtmlPage, which may be associated with a navItem */
   const updatePage = (page: HtmlPage, navItemText?: string) => {
-    console.log('updatePage', page, navItemText)
     if (!localContent) {
       return
     }
@@ -167,14 +161,14 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
       <div className="px-2">
         <div className="d-flex flex-grow-1 mb-1">
           <div style={{ width: 250 }}>
-            <Select options={pageOpts} value={selectedNavOpt}
+            <Select options={pageOpts} value={selectedNavOpt} isDisabled={siteInvalid}
               onChange={e => {
                 setSelectedNavOpt(e ?? landingPageOption)
               }}/>
           </div>
           <Button className="btn btn-secondary"
             tooltip={'Add a new page'}
-            disabled={readOnly || !isEditable}
+            disabled={readOnly || !isEditable || siteInvalid}
             onClick={() => setShowAddPageModal(!showAddPageModal)}>
             <FontAwesomeIcon icon={faPlus}/> Add page
           </Button>
@@ -206,12 +200,14 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           <Tab
             eventKey="designer"
             title="Designer"
+            disabled={siteInvalid}
           >
             <ErrorBoundary>
               <div>
                 {pageToRender &&
                     <ApiProvider api={previewApi}>
                       <HtmlPageEditView htmlPage={pageToRender} readOnly={readOnly}
+                        siteInvalid={siteInvalid} setSiteInvalid={setSiteInvalid}
                         updatePage={page => updatePage(page, currentNavBarItem?.text)}/>
                     </ApiProvider>}
               </div>
@@ -220,6 +216,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           <Tab
             eventKey="preview"
             title="Preview"
+            disabled={siteInvalid}
           >
             <ErrorBoundary>
               <ApiProvider api={previewApi}>

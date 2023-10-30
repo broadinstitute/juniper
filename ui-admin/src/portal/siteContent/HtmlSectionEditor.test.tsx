@@ -11,7 +11,7 @@ test('readOnly disables section type selection', async () => {
   const mockSection = mockPage.sections[0]
   const { RoutedComponent } = setupRouterTest(
     <HtmlSectionEditor sectionIndex={0} section={mockSection} readOnly={true}
-      htmlPage={mockPage} updatePage={jest.fn}/>)
+      htmlPage={mockPage} updatePage={jest.fn} setSiteInvalid={jest.fn()} siteInvalid={false}/>)
   render(RoutedComponent)
   expect(screen.getByLabelText('Select section type')).toBeDisabled()
 })
@@ -22,7 +22,7 @@ test('section type selection is enabled if the section type is unsaved', async (
   mockSection.id = ''
   const { RoutedComponent } = setupRouterTest(
     <HtmlSectionEditor sectionIndex={0} section={mockSection} readOnly={false}
-      htmlPage={mockPage} updatePage={jest.fn}/>)
+      htmlPage={mockPage} updatePage={jest.fn} setSiteInvalid={jest.fn()} siteInvalid={false}/>)
   render(RoutedComponent)
   expect(screen.getByLabelText('Select section type')).toBeEnabled()
 })
@@ -35,7 +35,7 @@ test('switching section types sets the section config to the correct template', 
   const mockUpdatePageFn = jest.fn()
   const { RoutedComponent } = setupRouterTest(
     <HtmlSectionEditor sectionIndex={0} section={mockSection} readOnly={false}
-      htmlPage={mockPage} updatePage={mockUpdatePageFn}/>)
+      htmlPage={mockPage} updatePage={mockUpdatePageFn} setSiteInvalid={jest.fn()} siteInvalid={false}/>)
   render(RoutedComponent)
 
   //Act
@@ -62,7 +62,7 @@ test('DeleteSection button removes the section', async () => {
   const mockUpdatePageFn = jest.fn()
   const { RoutedComponent } = setupRouterTest(
     <HtmlSectionEditor sectionIndex={0} section={mockSection} readOnly={false}
-      htmlPage={mockPage} updatePage={mockUpdatePageFn}/>)
+      htmlPage={mockPage} updatePage={mockUpdatePageFn} setSiteInvalid={jest.fn()} siteInvalid={false}/>)
   render(RoutedComponent)
 
   //Act
@@ -89,7 +89,7 @@ test('MoveSectionUp button allows reordering', async () => {
   const mockUpdatePageFn = jest.fn()
   const { RoutedComponent } = setupRouterTest(
     <HtmlSectionEditor sectionIndex={1} section={mockSection} readOnly={false}
-      htmlPage={mockPage} updatePage={mockUpdatePageFn}/>)
+      htmlPage={mockPage} updatePage={mockUpdatePageFn} setSiteInvalid={jest.fn()} siteInvalid={false}/>)
   render(RoutedComponent)
 
   //Act
@@ -116,7 +116,7 @@ test('MoveSectionDown button allows reordering', async () => {
   const mockUpdatePageFn = jest.fn()
   const { RoutedComponent } = setupRouterTest(
     <HtmlSectionEditor sectionIndex={0} section={mockSection} readOnly={false}
-      htmlPage={mockPage} updatePage={mockUpdatePageFn}/>)
+      htmlPage={mockPage} updatePage={mockUpdatePageFn} setSiteInvalid={jest.fn()} siteInvalid={false}/>)
   render(RoutedComponent)
 
   //Act
