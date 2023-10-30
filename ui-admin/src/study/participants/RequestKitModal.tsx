@@ -7,6 +7,7 @@ import { ApiErrorResponse, defaultApiErrorHandle, useLoadingEffect } from 'api/a
 import LoadingSpinner from 'util/LoadingSpinner'
 import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
+import useReactSingleSelect from "../../util/react-select-utils";
 
 /** Renders a modal for an admin to submit a sample collection kit request. */
 export default function RequestKitModal({

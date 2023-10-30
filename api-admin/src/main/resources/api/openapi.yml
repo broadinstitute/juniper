@@ -424,14 +424,15 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/kitTypes:
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/kitTypes:
     get:
       summary: Gets the kit types for a study
-      tags: [ study ]
+      tags: [ studyEnvironment ]
       operationId: getKitTypes
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
       responses:
         '200':
           description: List of kit types

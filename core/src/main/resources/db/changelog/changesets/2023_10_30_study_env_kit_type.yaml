@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: study_env_kit_type
+      author: dbush
+      changes:
+        - createTable:
+            tableName: study_environment_kit_type
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: study_environment_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_study_kit_type_study, references: study_environment(id)
+              } }
+              - column: { name: kit_type_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_study_kit_type_kit_type, references: kit_type(id)
+              } }
+        - sql: |
+            sql: |
+              INSERT INTO study_environment_kit_type (created_at, last_updated_at, study_environment_id, kit_type_id)
+              SELECT now(), now(), study_environment.id, (select id from kit_type where name = 'SALIVA')
+              FROM study_environment
+              JOIN study ON study_environment.study_id = study.id
+              WHERE study.shortcode = 'ourhealth' OR study.shortcode = 'demo';
+        - dropTable:
+            tableName: study_kit_type

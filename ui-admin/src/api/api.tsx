@@ -825,7 +825,7 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async fetchKitTypes(portalShortcode: string, studyShortcode: string): Promise<KitType[]> {
+  async fetchKitTypes(portalShortcode: string, studyShortcode: string, envName: string): Promise<KitType[]> {
     const url = `${baseStudyUrl(portalShortcode, studyShortcode)}/kitTypes`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
