@@ -52,3 +52,17 @@ test('readOnly hides save button', async () => {
   expect(screen.getByText('Landing page')).toBeInTheDocument()
   expect(screen.queryByText('Save')).not.toBeInTheDocument()
 })
+
+test('clicking on the Preview tab shows full page preview', async () => {
+  const siteContent = mockSiteContent()
+  const { RoutedComponent } = setupRouterTest(
+    <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
+      loadSiteContent={jest.fn()} createNewVersion={jest.fn()} portalShortcode="foo"
+      switchToVersion={jest.fn()}
+      portalEnv={mockPortalEnvironment('sandbox')}/>)
+  render(RoutedComponent)
+
+  await userEvent.click(screen.getByText('Preview'))
+  expect(screen.queryByText('Insert section')).not.toBeInTheDocument()
+  expect(screen.queryByText('we are the best')).toBeInTheDocument()
+})
