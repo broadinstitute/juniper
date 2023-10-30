@@ -76,13 +76,13 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
 
   return <div className="container-fluid px-4 py-2">
     { renderPageHeader('Data Export') }
-    <div className="d-flex align-items-center justify-content-between">
-      <div className="d-flex">
-        <span className="text-muted fst-italic">
+    <div className="align-items-center justify-content-between">
+      <div>
+        <span className="text-muted fst-italic px-2">
           (Transposed for readability, the actual export has participants as rows)
         </span>
       </div>
-      <div className="d-flex">
+      <div >
         <Button onClick={() => setShowExportModal(!showExportModal)}
           variant="light" className="border m-1"
           aria-label="show or hide export modal">

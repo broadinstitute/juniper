@@ -82,7 +82,7 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
           <span className="fw-bold">Data format</span><br/>
           <label className="me-3">
             <input type="radio" name="humanReadable" value="true" checked={humanReadable}
-              onChange={humanReadableChanged} className="me-1" disabled={true}/> Human-readable
+              onChange={humanReadableChanged} className="me-1"/> Human-readable
           </label>
           <label>
             <input type="radio" name="humanReadable" value="false" checked={!humanReadable}
