@@ -3,16 +3,16 @@ import React from 'react'
 import { SectionConfig } from '../../../types/landingPageConfig'
 import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
 
-import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
+import ConfiguredMedia, { MediaConfig, validateMediaConfig } from '../ConfiguredMedia'
 
 import { TemplateComponentProps } from './templateUtils'
 
 type BannerImageConfig = {
-  image: ImageConfig
+  image: MediaConfig
 }
 
 const validateBannerImageConfig = (config: SectionConfig): BannerImageConfig => {
-  const image = validateImageConfig(config.image)
+  const image = validateMediaConfig(config.image)
   return { image }
 }
 
@@ -32,7 +32,7 @@ function BannerImage(props: BannerImageProps) {
     <div className="row mx-0">
       {!!image && (
         <div className="col-12 p-0">
-          <ConfiguredImage image={image} style={{ width: '100%', height: 'auto' }} />
+          <ConfiguredMedia media={image} style={{ width: '100%', height: 'auto' }} />
         </div>
       )}
     </div>

@@ -7,7 +7,7 @@ import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfi
 import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString }
   from '../../util/validationUtils'
 
-import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
+import ConfiguredMedia, { MediaConfig, validateMediaConfig } from '../ConfiguredMedia'
 import { Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
@@ -24,7 +24,7 @@ type SubGrid = {
 }
 
 type PhotoBio = {
-  image: ImageConfig,
+  image: MediaConfig,
   name: string,
   title?: string,
   blurb?: string
@@ -33,7 +33,7 @@ type PhotoBio = {
 const validatePhotoBio = (config: unknown): PhotoBio => {
   const message = 'Invalid Invalid PhotoBlurbGridConfig: invalid photoBio'
   const configObj = requirePlainObject(config, message)
-  const image = validateImageConfig(configObj.image)
+  const image = validateMediaConfig(configObj.image)
   const name = requireString(configObj, 'name', message)
   const title = requireOptionalString(configObj, 'title', message)
   const blurb = requireOptionalString(configObj, 'blurb', message)
@@ -114,7 +114,7 @@ function PhotoBioView({ photoBio }: { photoBio: PhotoBio }) {
   // Default alt text to person's name
   photoBio.image.alt ||= photoBio.name
   return <div className="col-sm-6 col-md-4 gx-5 gy-3 text-center text-sm-start">
-    <ConfiguredImage image={photoBio.image} className="img-fluid"/>
+    <ConfiguredMedia media={photoBio.image} className="img-fluid"/>
     <div className="my-2 fw-bold">
       {photoBio.name} {photoBio.title}
     </div>

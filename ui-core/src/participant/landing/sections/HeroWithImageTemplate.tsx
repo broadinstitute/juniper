@@ -9,7 +9,7 @@ import { requireOptionalArray, requireOptionalNumber, requireOptionalString }
   from '../../util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
-import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
+import ConfiguredMedia, { MediaConfig, validateMediaConfig } from '../ConfiguredMedia'
 import { InlineMarkdown, Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
@@ -19,10 +19,10 @@ type HeroWithImageTemplateConfig = {
   blurb?: string, //  text below the title
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   fullWidth?: boolean, // span the full page width or not
-  image?: ImageConfig, // image
+  image?: MediaConfig, // image
   imagePosition?: 'left' | 'right', // left or right.  Default is right
   imageWidthPercentage?: number, // number between 0 and 100. Percentage of row width given to image.
-  logos?: ImageConfig[],
+  logos?: MediaConfig[],
   title?: string // large heading text
 }
 
@@ -32,7 +32,7 @@ const validateHeroWithImageTemplateConfig = (config: SectionConfig): HeroWithIma
   const blurb = requireOptionalString(config, 'blurb', message)
   const buttons = requireOptionalArray(config, 'buttons', validateButtonConfig, message)
   const fullWidth = !!config.fullWidth
-  const image = config.image ? validateImageConfig(config.image) : undefined
+  const image = config.image ? validateMediaConfig(config.image) : undefined
   const imagePosition = requireOptionalString(config, 'imagePosition', message)
   if (!(imagePosition === undefined || imagePosition === 'left' || imagePosition === 'right')) {
     throw new Error(`${message}: if provided, imagePosition must be one of "left", "right"`)
@@ -41,7 +41,7 @@ const validateHeroWithImageTemplateConfig = (config: SectionConfig): HeroWithIma
   if (imageWidthPercentage !== undefined && (imageWidthPercentage < 0 || imageWidthPercentage > 100)) {
     throw new Error(`${message}: imageWidthPercentage must be between 0 and 100`)
   }
-  const logos = requireOptionalArray(config, 'logos', validateImageConfig, message)
+  const logos = requireOptionalArray(config, 'logos', validateMediaConfig, message)
   const title = requireOptionalString(config, 'title', message)
   return {
     blurb,
@@ -108,7 +108,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
               'd-flex justify-content-center align-items-center p-0'
             )}
           >
-            <ConfiguredImage image={image} className="img-fluid"/>
+            <ConfiguredMedia media={image} className="img-fluid"/>
           </div>
         )}
         <div
@@ -152,9 +152,9 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
             >
               {_.map(logos, (logo, i) => {
                 return (
-                  <ConfiguredImage
-                    key={logo.cleanFileName}
-                    image={logo}
+                  <ConfiguredMedia
+                    key={i}
+                    media={logo}
                     className={classNames({ 'mt-4': i !== 0 }, 'mt-sm-0', 'me-sm-4')}
                   />
                 )
