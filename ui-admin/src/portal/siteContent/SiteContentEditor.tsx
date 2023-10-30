@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { HtmlSection, NavbarItemInternal, PortalEnvironment } from 'api/api'
+import { HtmlSection, NavbarItemInternal } from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClipboard, faClockRotateLeft, faImage, faPlus } from '@fortawesome/free-solid-svg-icons'
