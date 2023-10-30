@@ -114,7 +114,7 @@ export default function CreatePreRegSurveyModal({ portalEnvContext, onDismiss }:
     <Modal.Body>
       <p>This survey will be shown to all participants wishing to create a user account on the portal.
             This form is associated with the portal as a whole, not any particular study.
-      <ZendeskLink doc={DocsKey.PREREG_SURVEYS}>More info.</ZendeskLink>
+      <ZendeskLink className="px-1" doc={DocsKey.PREREG_SURVEYS}>More info.</ZendeskLink>
       </p>
       <form onSubmit={e => e.preventDefault()}>
         <label className="form-label" htmlFor="inputFormName">Survey Name</label>

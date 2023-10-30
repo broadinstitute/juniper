@@ -65,13 +65,6 @@ public class PortalExtService {
     PortalEnvironment portalEnv = portalEnvironmentService.findOne(portalShortcode, envName).get();
     PortalEnvironmentConfig config =
         portalEnvironmentConfigService.find(portalEnv.getPortalEnvironmentConfigId()).get();
-    if (!user.isSuperuser()) {
-      if (!Objects.equals(config.getParticipantHostname(), newConfig.getParticipantHostname())
-          || !Objects.equals(config.getEmailSourceAddress(), newConfig.getEmailSourceAddress())) {
-        throw new PermissionDeniedException(
-            "ParticipantHostname and emailSourceAddress can only be updated by superusers");
-      }
-    }
     BeanUtils.copyProperties(newConfig, config, "id", "createdAt");
     config = portalEnvironmentConfigService.update(config);
     return config;
