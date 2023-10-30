@@ -38,3 +38,16 @@ test('Insert Section button calls updatePage with a new blank HERO_WITH_IMAGE se
     ]
   })
 })
+
+test('invalid JSON disables Insert Section button', async () => {
+  const mockPage = mockHtmlPage()
+  const { RoutedComponent } = setupRouterTest(
+    <HtmlPageEditView htmlPage={mockPage} readOnly={false} updatePage={jest.fn()}
+      setSiteInvalid={jest.fn()} siteInvalid={true}/>)
+  render(RoutedComponent)
+  const sectionButtons= await screen.findAllByLabelText('Insert a blank section')
+
+  sectionButtons.forEach(button => {
+    expect(button).toHaveAttribute('aria-disabled', 'true')
+  })
+})
