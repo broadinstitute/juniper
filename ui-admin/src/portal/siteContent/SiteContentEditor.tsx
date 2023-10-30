@@ -34,18 +34,25 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   } = props
   const { portalEnv } = portalEnvContext
   const selectedLanguage = 'en'
+  const initialContent = siteContent
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
-  const [workingContent, setWorkingContent] = useState<SiteContent>(siteContent)
+  const [workingContent, setWorkingContent] = useState<SiteContent>(initialContent)
   const [showVersionSelector, setShowVersionSelector] = useState(false)
   const [showAddPageModal, setShowAddPageModal] = useState(false)
   const [showAddPreRegModal, setShowAddPreRegModal] = useState(false)
   const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage)
+  const [siteInvalid, setSiteInvalid] = useState(false)
   if (!localContent) {
     return <div>no content for language {selectedLanguage}</div>
   }
   const navBarInternalItems = localContent.navbarItems
     .filter((navItem): navItem is NavbarItemInternal => navItem.itemType === 'INTERNAL')
+  //
+  // useEffect(() => {
+  //   const invalidSections = document.querySelectorAll('.is-invalid')
+  //   setSiteInvalid(invalidSections.length > 0)
+  // }, [workingContent])
 
   /** updates the global SiteContent object with the given LocalSiteContent */
   const updateLocalContent = (localContent: LocalSiteContent) => {
@@ -80,6 +87,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
 
   /** updates the global SiteContent object with the given HtmlPage, which may be associated with a navItem */
   const updatePage = (page: HtmlPage, navItemText?: string) => {
+    console.log('updatePage', page, navItemText)
     if (!localContent) {
       return
     }
@@ -134,7 +142,17 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
         {
           isEditable && <div className="d-flex flex-grow-1">
             <Button className="ms-auto me-md-2" variant="primary"
-              disabled={readOnly}
+              disabled={readOnly || siteInvalid || (initialContent === workingContent)}
+              tooltipPlacement={'left'}
+              tooltip={(() => {
+                if (initialContent === workingContent) {
+                  return 'Site is unchanged. Make changes to save.'
+                }
+                if (siteInvalid) {
+                  return 'Site is invalid. Correct to save.'
+                }
+                return 'Save changes'
+              })()}
               onClick={() => createNewVersion(workingContent)}>
                   Save
             </Button>
