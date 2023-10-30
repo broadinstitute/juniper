@@ -9,11 +9,13 @@ import { sectionTemplates } from './sectionTemplates'
 type HtmlPageViewProps = {
   htmlPage: HtmlPage
   readOnly: boolean
+  siteInvalid: boolean
+  setSiteInvalid: (invalid: boolean) => void
   updatePage: (page: HtmlPage) => void
 }
 
 /** Enables editing of a given page, showing the config and a preview for each section */
-const HtmlPageView = ({ htmlPage, updatePage, readOnly }: HtmlPageViewProps) => {
+const HtmlPageView = ({ htmlPage, readOnly, siteInvalid, setSiteInvalid, updatePage }: HtmlPageViewProps) => {
   const DEFAULT_SECTION_TYPE = {
     id: '',
     sectionType: 'HERO_WITH_IMAGE' as SectionType,
@@ -36,7 +38,7 @@ const HtmlPageView = ({ htmlPage, updatePage, readOnly }: HtmlPageViewProps) => 
       <Button variant="secondary"
         aria-label={'Insert a blank section'}
         tooltip={'Insert a blank section'}
-        disabled={readOnly}
+        disabled={readOnly || siteInvalid}
         onClick={() => insertNewSection(sectionIndex, DEFAULT_SECTION_TYPE)}>
         <FontAwesomeIcon icon={faPlus}/> Insert section
       </Button>
@@ -48,8 +50,8 @@ const HtmlPageView = ({ htmlPage, updatePage, readOnly }: HtmlPageViewProps) => 
     {htmlPage.sections.map((section, index) => {
       return <div key={`${section.id}-${index}`} className="row g-0">
         <div className="col-md-4 p-2">
-          <HtmlSectionEditor updatePage={updatePage} htmlPage={htmlPage}
-            section={section} sectionIndex={index} readOnly={readOnly}/>
+          <HtmlSectionEditor updatePage={updatePage} htmlPage={htmlPage} setSiteInvalid={setSiteInvalid}
+            siteInvalid={siteInvalid} section={section} sectionIndex={index} readOnly={readOnly}/>
         </div>
         <div className="col-md-8">
           <HtmlSectionView section={section}/>

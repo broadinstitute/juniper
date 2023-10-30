@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import { HtmlPage, HtmlSection, SectionType } from '@juniper/ui-core'
 import Select from 'react-select'
 import { isEmpty } from 'lodash'
@@ -28,33 +28,28 @@ const HtmlSectionEditor = ({
   updatePage,
   section,
   sectionIndex,
+  siteInvalid,
+  setSiteInvalid,
   readOnly
 }: {
   htmlPage: HtmlPage,
-  updatePage: (page: HtmlPage) => void,
+  updatePage: (page: HtmlPage) => void
   section: HtmlSection
   sectionIndex: number
+  siteInvalid: boolean
+  setSiteInvalid: (invalid: boolean) => void
   readOnly: boolean
 }) => {
   const [sectionContainsErrors, setSectionContainsErrors] = useState(false)
   const initial = SECTION_TYPES.find(sectionType => sectionType.value === section.sectionType)
   const [sectionTypeOpt, setSectionTypeOpt] = useState(initial)
 
-  const [editorValue, _setEditorValue] = useState(() =>
-    JSON.stringify(JSON.parse(section?.sectionConfig || '{}'), null, 2))
-  const setEditorValue = useCallback((newEditorValue: string) => {
-    _setEditorValue(newEditorValue)
-    try {
-      JSON.parse(newEditorValue)
-      setSectionContainsErrors(false)
-      // setContainsErrors(false)
-      updateSection(sectionIndex, { ...section, sectionConfig: newEditorValue })
-    } catch (e) {
-      setSectionContainsErrors(true)
-      // setContainsErrors(true)
-      //note that we do not call updateSection here, as that would result in an invalid preview being shown
-    }
-  }, [])
+  const [editorValue, setEditorValue] = useState(() =>
+    JSON.stringify(JSON.parse(section?.sectionConfig ?? '{}'), null, 2))
+
+  useEffect(() => {
+    setEditorValue(JSON.stringify(JSON.parse(section?.sectionConfig ?? '{}'), null, 2))
+  }, [section.sectionConfig])
 
   const updateSection = (sectionIndex: number, updatedSection: HtmlSection) => {
     const newSection = {
@@ -78,6 +73,9 @@ const HtmlSectionEditor = ({
       ...htmlPage,
       sections: newSectionArray
     }
+    if (sectionContainsErrors) {
+      setSiteInvalid(false)
+    }
     updatePage(htmlPage)
   }
 
@@ -98,6 +96,21 @@ const HtmlSectionEditor = ({
     updatePage(htmlPage)
   }
 
+  const handleEditorChange = (newEditorValue: string) => {
+    setEditorValue(newEditorValue)
+
+    try {
+      JSON.parse(newEditorValue)
+      setSectionContainsErrors(false)
+      setSiteInvalid(false)
+      updateSection(sectionIndex, { ...section, sectionConfig: newEditorValue })
+    } catch (e) {
+      setSiteInvalid(true)
+      setSectionContainsErrors(true)
+      // Note that we do not call updateSection here, as that would result in an invalid preview being shown
+    }
+  }
+
   return <>
     <div className="d-flex flex-grow-1 mb-1">
       {/* Right now we do not support changing the type for an existing section. The way to identify if a
@@ -107,6 +120,7 @@ const HtmlSectionEditor = ({
         isDisabled={readOnly || !isEmpty(section.id)}
         onChange={opt => {
           if (opt != undefined) {
+            setSiteInvalid(false)
             const sectionTemplate = JSON.stringify(sectionTemplates[opt.label])
             setSectionTypeOpt(opt)
             updateSection(sectionIndex, {
@@ -119,7 +133,7 @@ const HtmlSectionEditor = ({
       <IconButton
         aria-label="Move this section before the previous one"
         className="ms-2"
-        disabled={readOnly || sectionIndex === 0}
+        disabled={readOnly || sectionIndex === 0 || siteInvalid}
         icon={faChevronUp}
         variant="light"
         onClick={() => {
@@ -129,7 +143,7 @@ const HtmlSectionEditor = ({
       <IconButton
         aria-label="Move this section after the next one"
         className="ms-2"
-        disabled={readOnly}
+        disabled={readOnly || siteInvalid}
         icon={faChevronDown}
         variant="light"
         onClick={() => {
@@ -146,10 +160,12 @@ const HtmlSectionEditor = ({
       />
     </div>
     <textarea value={editorValue} style={{ height: 'calc(100% - 2em)', width: '100%', minHeight: '300px' }}
-      disabled={readOnly}
+      disabled={readOnly || (siteInvalid && !sectionContainsErrors)}
       className={classNames('w-100 flex-grow-1 form-control font-monospace',
         { 'is-invalid': sectionContainsErrors })}
-      onChange={e => setEditorValue(e.target.value)}/>
+      onChange={e => {
+        handleEditorChange(e.target.value)
+      }}/>
   </>
 }
 
