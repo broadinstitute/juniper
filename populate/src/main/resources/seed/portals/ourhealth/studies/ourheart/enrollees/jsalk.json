@@ -74,8 +74,31 @@
       "statusName": "CREATED",
       "dsmStatusJson": {
         "kitId": "11111111-2222-3333-4444-555555555555",
-        "currentStatus": "CREATED",
+        "currentStatus": "kit without label",
         "labelDate": "2023-05-24",
+        "scanDate": "",
+        "receiveDate": "",
+        "scannedByEmail": "",
+        "receivedByEmail": "",
+        "labeledByEmail": "",
+        "deactivationDate": "",
+        "deactivatedBy": "",
+        "deactivationReason": "",
+        "trackingNumbers": [],
+        "returnTrackingNumber": "",
+        "errors": [],
+        "discardDate": "",
+        "discardReason": ""
+      }
+    },
+    {
+      "creatingAdminUsername": "staff2@ourhealth.org",
+      "kitTypeName": "SALIVA",
+      "statusName": "FAILED",
+      "dsmStatusJson": {
+        "kitId": "11111111-2222-3333-4444-555555555556",
+        "currentStatus": "deactivated",
+        "labelDate": "2023-05-12",
         "scanDate": "",
         "receiveDate": "",
         "scannedByEmail": "",
