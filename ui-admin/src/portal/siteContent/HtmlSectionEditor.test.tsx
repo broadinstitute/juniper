@@ -1,4 +1,4 @@
-import {render, screen, waitFor} from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockHtmlPage, mockHtmlSection } from 'test-utils/mock-site-content'
