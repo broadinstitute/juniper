@@ -86,9 +86,18 @@ public class StubPepperDSMClient implements PepperDSMClient {
         }).toList();
     }
 
+    protected List<PepperKitStatus.Status> MOCK_STATUS_SEQUENCE = List.of(
+            PepperKitStatus.Status.CREATED,
+            PepperKitStatus.Status.QUEUED,
+            PepperKitStatus.Status.SENT,
+            PepperKitStatus.Status.RECEIVED,
+            PepperKitStatus.Status.ERRORED,
+            PepperKitStatus.Status.DEACTIVATED
+    );
+
     /** helper to get the next status for a kit */
     private String getNextStatus(KitRequest kit) {
-        List<String> statusVals = Arrays.stream(PepperKitStatus.Status.values()).map(status -> status.currentStatus).toList();
+        List<String> statusVals = MOCK_STATUS_SEQUENCE.stream().map(status -> status.currentStatus).toList();
         try {
             PepperKitStatus pepperStatus = objectMapper.readValue(kit.getDsmStatus(), PepperKitStatus.class);
             String currentStatus = pepperStatus.getCurrentStatus();
