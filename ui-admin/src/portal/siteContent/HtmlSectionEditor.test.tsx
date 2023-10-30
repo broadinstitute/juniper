@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
 import React from 'react'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockHtmlPage, mockHtmlSection } from 'test-utils/mock-site-content'
@@ -128,4 +128,43 @@ test('MoveSectionDown button allows reordering', async () => {
     ...mockPage,
     sections: [mockPage.sections[1], mockPage.sections[0]]
   })
+})
+
+test('invalid JSON shows an error around the textbox', async () => {
+  //Arrange
+  const mockPage = mockHtmlPage()
+  const mockSection = mockPage.sections[0]
+  const mockUpdatePageFn = jest.fn()
+  const { RoutedComponent } = setupRouterTest(
+    <HtmlSectionEditor sectionIndex={0} section={mockSection} readOnly={false}
+      htmlPage={mockPage} updatePage={mockUpdatePageFn} setSiteInvalid={jest.fn()} siteInvalid={false}/>)
+  render(RoutedComponent)
+
+  //Act
+  const input = screen.getByRole('textbox')
+  await userEvent.type(input, '{\\\\}}') //testing-library requires escaping, this equates to "}"
+
+  //Assert
+  expect(mockUpdatePageFn).not.toHaveBeenCalled()
+  expect(input).toHaveClass('is-invalid')
+})
+
+test('invalid JSON disables moveSection buttons', async () => {
+  //Arrange
+  const mockPage = mockHtmlPage()
+  const mockSection = mockPage.sections[0]
+  const mockUpdatePageFn = jest.fn()
+  const { RoutedComponent } = setupRouterTest(
+    <HtmlSectionEditor sectionIndex={0} section={mockSection} readOnly={false}
+      htmlPage={mockPage} updatePage={mockUpdatePageFn} setSiteInvalid={jest.fn()} siteInvalid={true}/>)
+  render(RoutedComponent)
+
+  //Act
+  const input = screen.getByRole('textbox')
+  await userEvent.type(input, '{\\\\}}') //testing-library requires escaping, this equates to "}"
+
+  //Assert
+  expect(screen.getByLabelText('Delete this section')).toHaveAttribute('aria-disabled', 'false')
+  expect(screen.getByLabelText('Move this section before the previous one')).toHaveAttribute('aria-disabled', 'true')
+  expect(screen.getByLabelText('Move this section after the next one')).toHaveAttribute('aria-disabled', 'true')
 })
