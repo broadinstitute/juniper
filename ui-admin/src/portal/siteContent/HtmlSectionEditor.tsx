@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, {useCallback, useState} from 'react'
 import { HtmlPage, HtmlSection, SectionType } from '@juniper/ui-core'
 import Select from 'react-select'
 import { isEmpty } from 'lodash'
 import { IconButton } from 'components/forms/Button'
 import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { sectionTemplates } from './sectionTemplates'
+import classNames from 'classnames'
 
 const SECTION_TYPES = [
   { label: 'FAQ', value: 'FAQ' },
@@ -35,18 +36,27 @@ const HtmlSectionEditor = ({
   sectionIndex: number
   readOnly: boolean
 }) => {
-  const sectionConfig = JSON.stringify(JSON.parse(section?.sectionConfig ?? '{}'), null, 2)
+  const [sectionContainsErrors, setSectionContainsErrors] = useState(false)
   const initial = SECTION_TYPES.find(sectionType => sectionType.value === section.sectionType)
   const [sectionTypeOpt, setSectionTypeOpt] = useState(initial)
 
-  const updateSection = (sectionIndex: number, updatedSection: HtmlSection) => {
+  const [editorValue, _setEditorValue] = useState(() =>
+    JSON.stringify(JSON.parse(section?.sectionConfig || '{}'), null, 2))
+  const setEditorValue = useCallback((newEditorValue: string) => {
+    _setEditorValue(newEditorValue)
     try {
-      JSON.parse(updatedSection.sectionConfig ?? '{}')
+      JSON.parse(newEditorValue)
+      setSectionContainsErrors(false)
+      // setContainsErrors(false)
+      updateSection(sectionIndex, { ...section, sectionConfig: newEditorValue })
     } catch (e) {
-      // for now, we just don't allow changing the object structure itself -- just plain text edits
-      return
+      setSectionContainsErrors(true)
+      // setContainsErrors(true)
+      //note that we do not call updateSection here, as that would result in an invalid preview being shown
     }
+  }, [])
 
+  const updateSection = (sectionIndex: number, updatedSection: HtmlSection) => {
     const newSection = {
       ...htmlPage.sections[sectionIndex],
       sectionType: updatedSection.sectionType,
@@ -135,9 +145,11 @@ const HtmlSectionEditor = ({
         onClick={() => removeSection(sectionIndex)}
       />
     </div>
-    <textarea value={sectionConfig} style={{ height: 'calc(100% - 2em)', width: '100%' }}
-      readOnly={readOnly}
-      onChange={e => updateSection(sectionIndex, { ...section, sectionConfig: e.target.value })}/>
+    <textarea value={editorValue} style={{ height: 'calc(100% - 2em)', width: '100%', minHeight: '300px' }}
+      disabled={readOnly}
+      className={classNames('w-100 flex-grow-1 form-control font-monospace',
+        { 'is-invalid': sectionContainsErrors })}
+      onChange={e => setEditorValue(e.target.value)}/>
   </>
 }
 
