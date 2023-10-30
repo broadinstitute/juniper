@@ -161,7 +161,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
       <div className="px-2">
         <div className="d-flex flex-grow-1 mb-1">
           <div style={{ width: 250 }}>
-            <Select options={pageOpts} value={selectedNavOpt} isDisabled={siteInvalid}
+            <Select options={pageOpts} value={selectedNavOpt} isDisabled={siteInvalid} aria-label={'Select a page'}
               onChange={e => {
                 setSelectedNavOpt(e ?? landingPageOption)
               }}/>

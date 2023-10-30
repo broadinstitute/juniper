@@ -65,3 +65,58 @@ test('clicking on the Preview tab shows full page preview', async () => {
   expect(screen.queryByText('Insert section')).not.toBeInTheDocument()
   expect(screen.queryByText('we are the best')).toBeInTheDocument()
 })
+
+test('invalid site JSON disables Save button', async () => {
+  //Arrange
+  const siteContent = mockSiteContent()
+  const { RoutedComponent } = setupRouterTest(
+    <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
+      loadSiteContent={jest.fn()} createNewVersion={jest.fn()} portalShortcode="foo"
+      switchToVersion={jest.fn()}
+      portalEnv={mockPortalEnvironment('sandbox')}/>)
+  render(RoutedComponent)
+
+  //Act
+  const sectionInput = screen.getByRole('textbox')
+  await userEvent.type(sectionInput, '{\\\\}}') //testing-library requires escaping, this equates to "}"
+
+  //Assert
+  expect(screen.queryByText('Save')).toHaveAttribute('aria-disabled', 'true')
+})
+
+test('invalid site JSON disables Add Page button', async () => {
+  //Arrange
+  const siteContent = mockSiteContent()
+  const { RoutedComponent } = setupRouterTest(
+    <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
+      loadSiteContent={jest.fn()} createNewVersion={jest.fn()} portalShortcode="foo"
+      switchToVersion={jest.fn()}
+      portalEnv={mockPortalEnvironment('sandbox')}/>)
+  render(RoutedComponent)
+
+  //Act
+  const sectionInput = screen.getByRole('textbox')
+  await userEvent.type(sectionInput, '{\\\\}}') //testing-library requires escaping, this equates to "}"
+
+  //Assert
+  const addPageButton = screen.getByText('Add page')
+  expect(addPageButton).toHaveAttribute('aria-disabled', 'true')
+})
+
+test('invalid site JSON disables page selector', async () => {
+  //Arrange
+  const siteContent = mockSiteContent()
+  const { RoutedComponent } = setupRouterTest(
+    <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
+      loadSiteContent={jest.fn()} createNewVersion={jest.fn()} portalShortcode="foo" switchToVersion={jest.fn()}
+      portalEnv={mockPortalEnvironment('sandbox')}/>)
+  render(RoutedComponent)
+
+  //Act
+  const sectionInput = screen.getByRole('textbox')
+  await userEvent.type(sectionInput, '{\\\\}}') //testing-library requires escaping, this equates to "}"
+
+  //Assert
+  const pageSelector = screen.getByLabelText('Select a page')
+  expect(pageSelector).toBeDisabled()
+})
