@@ -1,16 +1,18 @@
 import React, { useState } from 'react'
-import { NavbarItemInternal } from 'api/api'
+import { HtmlSection, NavbarItemInternal, PortalEnvironment } from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClipboard, faClockRotateLeft, faImage, faPlus } from '@fortawesome/free-solid-svg-icons'
 import HtmlPageEditView from './HtmlPageEditView'
-import { HtmlPage, LocalSiteContent, ApiProvider, SiteContent, ApiContextT } from '@juniper/ui-core'
+import { HtmlPage, LocalSiteContent, ApiProvider, SiteContent, ApiContextT, HtmlSectionView } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
 import SiteContentVersionSelector from './SiteContentVersionSelector'
-import { Button } from '../../components/forms/Button'
+import { Button } from 'components/forms/Button'
 import AddPageModal from './AddPageModal'
 import CreatePreRegSurveyModal from '../CreatePreRegSurveyModal'
 import { PortalEnvContext } from '../PortalRouter'
+import ErrorBoundary from 'util/ErrorBoundary'
+import { Tab, Tabs } from 'react-bootstrap'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -32,6 +34,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   } = props
   const { portalEnv } = portalEnvContext
   const selectedLanguage = 'en'
+  const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
   const [workingContent, setWorkingContent] = useState<SiteContent>(siteContent)
   const [showVersionSelector, setShowVersionSelector] = useState(false)
@@ -174,12 +177,41 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
         </div>
 
       </div>
-      <div>
-        {pageToRender &&
-          <ApiProvider api={previewApi}>
-            <HtmlPageEditView htmlPage={pageToRender} readOnly={readOnly}
-              updatePage={page => updatePage(page, currentNavBarItem?.text)}/>
-          </ApiProvider>}
+      <div className="d-flex flex-column flex-grow-1 mt-2">
+        <Tabs
+          activeKey={activeTab ?? undefined}
+          className="mb-1"
+          mountOnEnter
+          unmountOnExit
+          onSelect={setActiveTab}
+        >
+          <Tab
+            eventKey="designer"
+            title="Designer"
+          >
+            <ErrorBoundary>
+              <div>
+                {pageToRender &&
+                    <ApiProvider api={previewApi}>
+                      <HtmlPageEditView htmlPage={pageToRender} readOnly={readOnly}
+                        updatePage={page => updatePage(page, currentNavBarItem?.text)}/>
+                    </ApiProvider>}
+              </div>
+            </ErrorBoundary>
+          </Tab>
+          <Tab
+            eventKey="preview"
+            title="Preview"
+          >
+            <ErrorBoundary>
+              <ApiProvider api={previewApi}>
+                { pageToRender.sections.map((section: HtmlSection) =>
+                  <HtmlSectionView section={section} key={section.id}/>)
+                }
+              </ApiProvider>
+            </ErrorBoundary>
+          </Tab>
+        </Tabs>
       </div>
     </div>
     { showVersionSelector &&
