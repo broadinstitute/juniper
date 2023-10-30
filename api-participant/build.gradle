@@ -3,7 +3,7 @@ plugins {
     id 'de.undercouch.download'
     id 'com.google.cloud.tools.jib'
     id 'com.srcclr.gradle'
-
+    id "io.freefair.lombok" version "6.5.1"
     id 'com.gorylenko.gradle-git-properties' version '2.3.1'
 }
 
@@ -37,11 +37,13 @@ dependencies {
             'io.jsonwebtoken:jjwt-jackson:0.11.5' // or 'io.jsonwebtoken:jjwt-gson:0.11.5' for gson
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
     testImplementation('org.springframework.boot:spring-boot-starter-test:2.7.10') {
         // Fixes warning about multiple occurrences of JSONObject on the classpath
         exclude group: 'com.vaadin.external.google', module: 'android-json'
     }
     testImplementation 'org.mockito:mockito-inline'
+    testImplementation 'commons-io:commons-io:2.13.0'
     // See https://stackoverflow.com/questions/5644011/multi-project-test-dependencies-with-gradle/60138176#60138176
     testImplementation(testFixtures(project(":core")))
 }

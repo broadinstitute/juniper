@@ -1,0 +1,11 @@
+b2c:
+  ourhealth:
+    tenantName: ddpdevb2c
+    clientId: 705c09dc-5cca-43d3-ae06-07de78bad29a
+    policyName: B2C_1A_ddp_participant_signup_signin_dev
+    changePasswordPolicyName: B2C_1A_ddp_participant_change_password_dev
+  hearthive:
+    tenantName: hearthivedev
+    clientId: 8c778931-b7f6-4503-b30e-e975ab8ea615
+    policyName: B2C_1A_ddp_participant_signup_signin_hearthive-dev
+    changePasswordPolicyName: B2C_1A_ddp_participant_change_password_hearthive-dev

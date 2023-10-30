@@ -4,7 +4,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import bio.terra.pearl.api.participant.config.B2CConfiguration;
+import bio.terra.pearl.api.participant.config.B2CConfigurationService;
 import bio.terra.pearl.api.participant.config.VersionConfiguration;
 import bio.terra.pearl.api.participant.controller.PublicApiController;
 import bio.terra.pearl.api.participant.model.SystemStatus;
@@ -24,8 +24,7 @@ class PublicApiControllerTest {
 
   @Autowired private MockMvc mockMvc;
 
-  @MockBean private B2CConfiguration b2CConfiguration;
-
+  @MockBean private B2CConfigurationService b2CConfigurationService;
   @MockBean private SiteImageService siteImageService;
   @MockBean private PortalService portalService;
 
