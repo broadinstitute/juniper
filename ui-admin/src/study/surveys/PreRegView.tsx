@@ -39,7 +39,7 @@ function RawPreRegView({ studyEnvContext, portalEnvContext, survey, readOnly = f
     })
   }
 
-  return <div>
+  return <>
     <div className="d-flex align-items-center">
       <h2 className="h3 ms-2">Pre-registration survey </h2>
       <InfoPopup placement="bottom" content={<span>
@@ -57,7 +57,7 @@ function RawPreRegView({ studyEnvContext, portalEnvContext, survey, readOnly = f
         studyEnvContext.study.shortcode, portalEnv.environmentName))}
       onSave={createNewVersion}
     />
-  </div>
+  </>
 }
 
 /** routable component for survey editing */
