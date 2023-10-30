@@ -101,13 +101,14 @@ const HtmlSectionEditor = ({
 
     try {
       JSON.parse(newEditorValue)
-      setSectionContainsErrors(false)
       setSiteInvalid(false)
+      setSectionContainsErrors(false)
       updateSection(sectionIndex, { ...section, sectionConfig: newEditorValue })
     } catch (e) {
       setSiteInvalid(true)
       setSectionContainsErrors(true)
-      // Note that we do not call updateSection here, as that would result in an invalid preview being shown
+      // Note that we do not call updateSection here, as that would result in an invalid preview being shown.
+      // Instead, the preview will be based on the last valid config for this section.
     }
   }
 
@@ -120,7 +121,12 @@ const HtmlSectionEditor = ({
         isDisabled={readOnly || !isEmpty(section.id)}
         onChange={opt => {
           if (opt != undefined) {
-            setSiteInvalid(false)
+            if (sectionContainsErrors) {
+              //If the user is changing the section that had errors, then we can clear the siteInvalid flag
+              //because it will now be using a valid default template.
+              setSiteInvalid(false)
+              setSectionContainsErrors(false)
+            }
             const sectionTemplate = JSON.stringify(sectionTemplates[opt.label])
             setSectionTypeOpt(opt)
             updateSection(sectionIndex, {
