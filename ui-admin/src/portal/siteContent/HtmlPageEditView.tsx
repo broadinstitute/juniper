@@ -26,8 +26,6 @@ const HtmlPageView = ({
     sectionConfig: JSON.stringify(sectionTemplates['HERO_WITH_IMAGE'])
   }
 
-  console.log(sectionFooter)
-
   //Inserts a new HtmlSection at the specified index on the page
   const insertNewSection = (sectionIndex: number, newSection: HtmlSection) => {
     const newSectionArray = [...htmlPage.sections]
@@ -113,7 +111,7 @@ const HtmlPageView = ({
     })}
     {/* This allows the user to render and modify the section footer from any page */}
     { sectionFooter && <div key={`${sectionFooter.id}`} className="row g-0">
-      <div className="col-md-4 p-2">
+      <div className="col-md-4 px-2 pb-2 mb-2">
         <HtmlSectionEditor setSiteInvalid={setSiteInvalid}
           moveSection={undefined} removeSection={undefined}
           siteInvalid={siteInvalid} section={sectionFooter} onUpdate={updateFooter}
