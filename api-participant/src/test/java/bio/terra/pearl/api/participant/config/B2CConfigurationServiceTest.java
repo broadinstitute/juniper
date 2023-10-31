@@ -18,12 +18,12 @@ public class B2CConfigurationServiceTest {
 
   @Test
   void testInitB2CConfigRelativePath() {
-    B2CConfigurationService b2CService = new B2CConfigurationService();
-    // ReflectionTestUtils.setField(b2CService, "b2cConfigFile", "b2c-config.yml");
-    b2CService.initB2CConfig("b2c-config.yml");
-    B2CConfiguration b2cConfig = b2CService.getB2cConfiguration();
+    B2CConfigurationService b2CService =
+        new B2CConfigurationService(new B2CConfiguration("b2c-config.yml"));
+    b2CService.initB2CConfig();
+    B2CPortalConfiguration b2cConfig = b2CService.getPortalConfiguration();
     notNull(b2cConfig, "b2cConfig should not be null");
-    B2CConfiguration.B2CProperties b2cProperties = b2cConfig.getPortalB2CProperties("ourhealth");
+    B2CPortalConfiguration.B2CProperties b2cProperties = b2cConfig.getPortalProperties("ourhealth");
     assertThat(b2cProperties.getTenantName(), equalTo("ddpdevb2c"));
   }
 
@@ -40,12 +40,12 @@ public class B2CConfigurationServiceTest {
     }
 
     // ensure initialization
-    B2CConfigurationService b2CService = new B2CConfigurationService();
-    // ReflectionTestUtils.setField(b2CService, "b2cConfigFile", tempFile.getPath());
-    b2CService.initB2CConfig(tempFile.getPath());
-    B2CConfiguration b2cConfig = b2CService.getB2cConfiguration();
+    B2CConfigurationService b2CService =
+        new B2CConfigurationService(new B2CConfiguration(tempFile.getPath()));
+    b2CService.initB2CConfig();
+    B2CPortalConfiguration b2cConfig = b2CService.getPortalConfiguration();
     notNull(b2cConfig, "b2cConfig should not be null");
-    B2CConfiguration.B2CProperties b2cProperties = b2cConfig.getPortalB2CProperties("portal2");
+    B2CPortalConfiguration.B2CProperties b2cProperties = b2cConfig.getPortalProperties("portal2");
     assertThat(b2cProperties.getTenantName(), equalTo("def"));
 
     // ensure config map building

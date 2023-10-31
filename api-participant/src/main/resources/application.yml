@@ -15,7 +15,8 @@ env:
   swagger:
     # if true, the swagger UI page will be made available at swagger-ui.html -- should be false for production
     enabled: ${SWAGGER_ENABLED:false}
-  b2c-config-file: ${B2C_CONFIG_FILE:b2c-config.yml}
+  b2c:
+    config-file: ${B2C_CONFIG_FILE:b2c-config.yml}
   email:
     sendgridApiKey: ${SENDGRID_API_KEY:}
     supportEmailAddress: ${SUPPORT_EMAIL_ADDRESS:support@juniper.terra.bio}
@@ -80,7 +81,8 @@ spring:
 hibernate:
   packages-to-scan: bio.terra.pearl.core.model
 
-b2c-config-file: ${env.b2c-config-file}
+b2c:
+  config-file: ${env.b2c.config-file}
 
 javatemplate:
   ingress:

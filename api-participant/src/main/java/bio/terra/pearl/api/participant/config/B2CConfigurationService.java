@@ -9,6 +9,8 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -17,12 +19,13 @@ import org.yaml.snakeyaml.constructor.Constructor;
 @Slf4j
 @Service
 public class B2CConfigurationService {
-
-  @Getter private B2CConfiguration b2cConfiguration;
+  private final B2CConfiguration b2cConfiguration;
+  @Getter private B2CPortalConfiguration portalConfiguration;
   private final Map<String, Map<String, String>> portalToConfig = new HashMap<>();
 
-  public B2CConfigurationService() {
-    b2cConfiguration = new B2CConfiguration();
+  public B2CConfigurationService(B2CConfiguration b2cConfiguration) {
+    this.b2cConfiguration = b2cConfiguration;
+    portalConfiguration = new B2CPortalConfiguration();
   }
 
   /**
@@ -43,13 +46,16 @@ public class B2CConfigurationService {
    * Initialize B2C configuration from a yaml file. The file can be specified as an absolute path or
    * a relative path. If relative, it is loaded from the classpath.
    */
-  public void initB2CConfig(String b2cConfigFile) {
+  @EventListener(ApplicationReadyEvent.class)
+  public void initB2CConfig() {
+    String b2cConfigFile = b2cConfiguration.configFile();
     if (StringUtils.isBlank(b2cConfigFile)) {
       log.error("b2c-config-file property is not set");
       return;
     }
 
-    Yaml yaml = new Yaml(new Constructor(B2CConfiguration.class, new LoaderOptions()));
+    log.info("b2c-config-file = '{}'", b2cConfigFile);
+    Yaml yaml = new Yaml(new Constructor(B2CPortalConfiguration.class, new LoaderOptions()));
 
     File file = new File(b2cConfigFile);
     if (file.isAbsolute()) {
@@ -62,7 +68,7 @@ public class B2CConfigurationService {
       }
 
       try (InputStream str = new FileInputStream(file)) {
-        b2cConfiguration = yaml.load(str);
+        portalConfiguration = yaml.load(str);
       } catch (Exception e) {
         log.error("Error loading b2c config file: {}", b2cConfigFile, e);
       }
@@ -70,7 +76,7 @@ public class B2CConfigurationService {
       // relative path, load from classpath
       try (InputStream str =
           Thread.currentThread().getContextClassLoader().getResourceAsStream(b2cConfigFile)) {
-        b2cConfiguration = yaml.load(str);
+        portalConfiguration = yaml.load(str);
       } catch (Exception e) {
         log.error("Error loading b2c config file: {}", b2cConfigFile, e);
       }
@@ -78,8 +84,8 @@ public class B2CConfigurationService {
   }
 
   protected Map<String, String> buildConfigMap(String portalShortcode) {
-    B2CConfiguration.B2CProperties b2cConfig =
-        getB2cConfiguration().getPortalB2CProperties(portalShortcode);
+    B2CPortalConfiguration.B2CProperties b2cConfig =
+        getPortalConfiguration().getPortalProperties(portalShortcode);
     if (b2cConfig == null) {
       return Collections.emptyMap();
     }
