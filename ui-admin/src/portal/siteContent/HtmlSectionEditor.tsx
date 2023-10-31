@@ -24,7 +24,7 @@ const SECTION_TYPES = [
  * Returns an editor for an HtmlSection
  */
 const HtmlSectionEditor = ({
-  onUpdate,
+  updateSection,
   removeSection,
   moveSection,
   section,
@@ -33,7 +33,7 @@ const HtmlSectionEditor = ({
   setSiteInvalid,
   readOnly
 }: {
-  onUpdate: (section: HtmlSection) => void
+  updateSection: (section: HtmlSection) => void
   removeSection?: (sectionIndex: number) => void
   moveSection?: (direction: 'up' | 'down') => void
   section: HtmlSection
@@ -53,8 +53,6 @@ const HtmlSectionEditor = ({
     setEditorValue(JSON.stringify(JSON.parse(section?.sectionConfig ?? '{}'), null, 2))
   }, [section.sectionConfig])
 
-  console.log(section)
-
   const handleEditorChange = (newEditorValue: string) => {
     setEditorValue(newEditorValue)
 
@@ -62,7 +60,7 @@ const HtmlSectionEditor = ({
       JSON.parse(newEditorValue)
       setSiteInvalid(false)
       setSectionContainsErrors(false)
-      onUpdate({ ...section, sectionConfig: newEditorValue })
+      updateSection({ ...section, sectionConfig: newEditorValue })
     } catch (e) {
       setSiteInvalid(true)
       setSectionContainsErrors(true)
@@ -88,7 +86,7 @@ const HtmlSectionEditor = ({
             }
             const sectionTemplate = JSON.stringify(sectionTemplates[opt.label])
             setSectionTypeOpt(opt)
-            onUpdate({
+            updateSection({
               ...section,
               sectionType: opt.value as SectionType,
               sectionConfig: sectionTemplate
@@ -98,7 +96,7 @@ const HtmlSectionEditor = ({
       { moveSection && <IconButton
         aria-label="Move this section before the previous one"
         className="ms-2"
-        disabled={readOnly || sectionIndex === 0}
+        disabled={readOnly || sectionIndex === 0 || siteInvalid}
         icon={faChevronUp}
         variant="light"
         onClick={() => {
@@ -118,7 +116,7 @@ const HtmlSectionEditor = ({
       { removeSection && <IconButton
         aria-label="Delete this section"
         className="ms-2"
-        disabled={readOnly}
+        disabled={readOnly || (siteInvalid && !sectionContainsErrors)}
         icon={faTimes}
         variant="light"
         onClick={() => removeSection(sectionIndex)}
