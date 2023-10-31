@@ -37,7 +37,7 @@ const HtmlPageView = ({
     updatePage(htmlPage)
   }
 
-  const removeSection = (sectionIndex: number) => {
+  const removeSection = (sectionIndex: number) => () => {
     const newSectionArray = [...htmlPage.sections]
     newSectionArray.splice(sectionIndex, 1)
     htmlPage = {
@@ -45,9 +45,8 @@ const HtmlPageView = ({
       sections: newSectionArray
     }
     //When the site content is invalid, users can only delete the invalid section. So it's safe to reset this flag
-    if (siteInvalid) {
-      setSiteInvalid(false)
-    }
+    setSiteInvalid(false)
+
     updatePage(htmlPage)
   }
 
@@ -101,8 +100,8 @@ const HtmlPageView = ({
       return <div key={`${section.id}-${index}`} className="row g-0">
         <div className="col-md-4 px-2 pb-2">
           <HtmlSectionEditor updateSection={updateSection(index)} setSiteInvalid={setSiteInvalid}
-            moveSection={moveSection(index)} removeSection={() => removeSection(index)}
-            siteInvalid={siteInvalid} section={section} sectionIndex={index} readOnly={readOnly}/>
+            moveSection={moveSection(index)} removeSection={removeSection(index)}
+            siteInvalid={siteInvalid} section={section} readOnly={readOnly}/>
         </div>
         <div className="col-md-8">
           <HtmlSectionView section={section}/>
@@ -110,14 +109,12 @@ const HtmlPageView = ({
         { renderAddSectionButton(index + 1) }
       </div>
     })}
-    {/* This allows the user to render and modify the section footer from any page */}
     { sectionFooter && <div key={`${sectionFooter.id}`} className="row g-0">
       <div className="col-md-4 px-2 pb-2 mb-2">
         <HtmlSectionEditor setSiteInvalid={setSiteInvalid}
           //These are undefined because we do not allow the user to move or remove the footer section
           moveSection={undefined} removeSection={undefined}
-          siteInvalid={siteInvalid} section={sectionFooter} updateSection={updateFooter}
-          sectionIndex={htmlPage.sections.length + 1} readOnly={readOnly}/>
+          siteInvalid={siteInvalid} section={sectionFooter} updateSection={updateFooter} readOnly={readOnly}/>
       </div>
       <div className="col-md-8">
         <HtmlSectionView section={sectionFooter}/>

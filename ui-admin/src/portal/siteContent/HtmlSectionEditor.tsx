@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { HtmlPage, HtmlSection, SectionType } from '@juniper/ui-core'
+import { HtmlSection, SectionType } from '@juniper/ui-core'
 import Select from 'react-select'
 import { isEmpty } from 'lodash'
 import { IconButton } from 'components/forms/Button'
@@ -28,16 +28,14 @@ const HtmlSectionEditor = ({
   removeSection,
   moveSection,
   section,
-  sectionIndex,
   siteInvalid,
   setSiteInvalid,
   readOnly
 }: {
   updateSection: (section: HtmlSection) => void
-  removeSection?: (sectionIndex: number) => void
+  removeSection?: () => void
   moveSection?: (direction: 'up' | 'down') => void
   section: HtmlSection
-  sectionIndex: number
   siteInvalid: boolean
   setSiteInvalid: (invalid: boolean) => void
   readOnly: boolean
@@ -96,12 +94,10 @@ const HtmlSectionEditor = ({
       { moveSection && <IconButton
         aria-label="Move this section before the previous one"
         className="ms-2"
-        disabled={readOnly || sectionIndex === 0 || siteInvalid}
+        disabled={readOnly || siteInvalid}
         icon={faChevronUp}
         variant="light"
-        onClick={() => {
-          moveSection('up')
-        }}
+        onClick={() => moveSection('up')}
       /> }
       { moveSection && <IconButton
         aria-label="Move this section after the next one"
@@ -109,9 +105,7 @@ const HtmlSectionEditor = ({
         disabled={readOnly || siteInvalid}
         icon={faChevronDown}
         variant="light"
-        onClick={() => {
-          moveSection('down')
-        }}
+        onClick={() => moveSection('down')}
       /> }
       { removeSection && <IconButton
         aria-label="Delete this section"
@@ -119,7 +113,7 @@ const HtmlSectionEditor = ({
         disabled={readOnly || (siteInvalid && !sectionContainsErrors)}
         icon={faTimes}
         variant="light"
-        onClick={() => removeSection(sectionIndex)}
+        onClick={() => removeSection()}
       /> }
     </div>
     <textarea value={editorValue} style={{ height: 'calc(100% - 2em)', width: '100%', minHeight: '300px' }}
