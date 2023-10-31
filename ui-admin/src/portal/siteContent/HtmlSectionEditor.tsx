@@ -24,16 +24,18 @@ const SECTION_TYPES = [
  * Returns an editor for an HtmlSection
  */
 const HtmlSectionEditor = ({
-  htmlPage,
-  updatePage,
+                             onUpdate,
+  removeSection,
+  moveSection,
   section,
   sectionIndex,
   siteInvalid,
   setSiteInvalid,
   readOnly
 }: {
-  htmlPage: HtmlPage,
-  updatePage: (page: HtmlPage) => void
+  onUpdate: (section: HtmlSection) => void
+  removeSection?: (sectionIndex: number) => void
+  moveSection?: (direction: 'up' | 'down') => void
   section: HtmlSection
   sectionIndex: number
   siteInvalid: boolean
@@ -51,51 +53,6 @@ const HtmlSectionEditor = ({
     setEditorValue(JSON.stringify(JSON.parse(section?.sectionConfig ?? '{}'), null, 2))
   }, [section.sectionConfig])
 
-  const updateSection = (sectionIndex: number, updatedSection: HtmlSection) => {
-    const newSection = {
-      ...htmlPage.sections[sectionIndex],
-      sectionType: updatedSection.sectionType,
-      sectionConfig: updatedSection.sectionConfig
-    }
-    const newSectionArray = [...htmlPage.sections]
-    newSectionArray[sectionIndex] = newSection
-    htmlPage = {
-      ...htmlPage,
-      sections: newSectionArray
-    }
-    updatePage(htmlPage)
-  }
-
-  const removeSection = (sectionIndex: number) => {
-    const newSectionArray = [...htmlPage.sections]
-    newSectionArray.splice(sectionIndex, 1)
-    htmlPage = {
-      ...htmlPage,
-      sections: newSectionArray
-    }
-    if (sectionContainsErrors) {
-      setSiteInvalid(false)
-    }
-    updatePage(htmlPage)
-  }
-
-  const moveSection = (sectionIndex: number, direction: 'up' | 'down') => {
-    if (sectionIndex === 0 && direction === 'up') { return }
-    const newSectionArray = [...htmlPage.sections]
-    const sectionToMove = newSectionArray[sectionIndex]
-    newSectionArray.splice(sectionIndex, 1)
-    if (direction === 'up') {
-      newSectionArray.splice(sectionIndex - 1, 0, sectionToMove)
-    } else {
-      newSectionArray.splice(sectionIndex + 1, 0, sectionToMove)
-    }
-    htmlPage = {
-      ...htmlPage,
-      sections: newSectionArray
-    }
-    updatePage(htmlPage)
-  }
-
   const handleEditorChange = (newEditorValue: string) => {
     setEditorValue(newEditorValue)
 
@@ -103,7 +60,7 @@ const HtmlSectionEditor = ({
       JSON.parse(newEditorValue)
       setSiteInvalid(false)
       setSectionContainsErrors(false)
-      updateSection(sectionIndex, { ...section, sectionConfig: newEditorValue })
+      onUpdate({ ...section, sectionConfig: newEditorValue })
     } catch (e) {
       setSiteInvalid(true)
       setSectionContainsErrors(true)
@@ -129,7 +86,7 @@ const HtmlSectionEditor = ({
             }
             const sectionTemplate = JSON.stringify(sectionTemplates[opt.label])
             setSectionTypeOpt(opt)
-            updateSection(sectionIndex, {
+            onUpdate({
               ...section,
               sectionType: opt.value as SectionType,
               sectionConfig: sectionTemplate
@@ -139,30 +96,30 @@ const HtmlSectionEditor = ({
       <IconButton
         aria-label="Move this section before the previous one"
         className="ms-2"
-        disabled={readOnly || sectionIndex === 0 || siteInvalid}
+        disabled={readOnly || sectionIndex === 0 || siteInvalid || moveSection === undefined}
         icon={faChevronUp}
         variant="light"
         onClick={() => {
-          moveSection(sectionIndex, 'up')
+          moveSection && moveSection('up')
         }}
       />
       <IconButton
         aria-label="Move this section after the next one"
         className="ms-2"
-        disabled={readOnly || siteInvalid}
+        disabled={readOnly || siteInvalid || moveSection === undefined}
         icon={faChevronDown}
         variant="light"
         onClick={() => {
-          moveSection(sectionIndex, 'down')
+          moveSection && moveSection('down')
         }}
       />
       <IconButton
         aria-label="Delete this section"
         className="ms-2"
-        disabled={readOnly}
+        disabled={readOnly || moveSection === undefined}
         icon={faTimes}
         variant="light"
-        onClick={() => removeSection(sectionIndex)}
+        onClick={() => removeSection && removeSection(sectionIndex)}
       />
     </div>
     <textarea value={editorValue} style={{ height: 'calc(100% - 2em)', width: '100%', minHeight: '300px' }}

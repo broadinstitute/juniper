@@ -106,6 +106,18 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     }
     updateLocalContent(updatedLocalContent)
   }
+
+  const updateFooter = (footer: HtmlSection) => {
+    if (!localContent) {
+      return
+    }
+    const updatedLocalContent = {
+      ...localContent,
+      footerSection: footer
+    }
+    updateLocalContent(updatedLocalContent)
+  }
+
   const isEditable = !readOnly && portalEnv.environmentName === 'sandbox'
 
   const currentNavBarItem = selectedNavOpt.value ? navBarInternalItems
@@ -194,6 +206,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
                     <ApiProvider api={previewApi}>
                       <HtmlPageEditView htmlPage={pageToRender} readOnly={readOnly}
                         siteInvalid={siteInvalid} setSiteInvalid={setSiteInvalid}
+                        sectionFooter={localContent.footerSection} updateFooter={updateFooter}
                         updatePage={page => updatePage(page, currentNavBarItem?.text)}/>
                     </ApiProvider>}
               </div>
