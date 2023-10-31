@@ -24,7 +24,7 @@ const SECTION_TYPES = [
  * Returns an editor for an HtmlSection
  */
 const HtmlSectionEditor = ({
-                             onUpdate,
+  onUpdate,
   removeSection,
   moveSection,
   section,
@@ -52,6 +52,8 @@ const HtmlSectionEditor = ({
   useEffect(() => {
     setEditorValue(JSON.stringify(JSON.parse(section?.sectionConfig ?? '{}'), null, 2))
   }, [section.sectionConfig])
+
+  console.log(section)
 
   const handleEditorChange = (newEditorValue: string) => {
     setEditorValue(newEditorValue)
@@ -93,34 +95,34 @@ const HtmlSectionEditor = ({
             })
           }
         }}/>
-      <IconButton
+      { moveSection && <IconButton
         aria-label="Move this section before the previous one"
         className="ms-2"
-        disabled={readOnly || sectionIndex === 0 || siteInvalid || moveSection === undefined}
+        disabled={readOnly || sectionIndex === 0}
         icon={faChevronUp}
         variant="light"
         onClick={() => {
-          moveSection && moveSection('up')
+          moveSection('up')
         }}
-      />
-      <IconButton
+      /> }
+      { moveSection && <IconButton
         aria-label="Move this section after the next one"
         className="ms-2"
-        disabled={readOnly || siteInvalid || moveSection === undefined}
+        disabled={readOnly || siteInvalid}
         icon={faChevronDown}
         variant="light"
         onClick={() => {
-          moveSection && moveSection('down')
+          moveSection('down')
         }}
-      />
-      <IconButton
+      /> }
+      { removeSection && <IconButton
         aria-label="Delete this section"
         className="ms-2"
-        disabled={readOnly || moveSection === undefined}
+        disabled={readOnly}
         icon={faTimes}
         variant="light"
-        onClick={() => removeSection && removeSection(sectionIndex)}
-      />
+        onClick={() => removeSection(sectionIndex)}
+      /> }
     </div>
     <textarea value={editorValue} style={{ height: 'calc(100% - 2em)', width: '100%', minHeight: '300px' }}
       disabled={readOnly || (siteInvalid && !sectionContainsErrors)}
