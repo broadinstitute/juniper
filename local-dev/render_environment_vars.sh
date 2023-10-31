@@ -25,10 +25,7 @@ ADMIN_API_ENV_VARS=(
 
 PARTICIPANT_API_ENV_VARS=(
   "REDIRECT_ALL_EMAILS_TO:static:$DEV_EMAIL"
-  "B2C_TENANT_NAME:static:ddpdevb2c"
-  "B2C_CLIENT_ID:vault:vault read -field value secret/dsp/ddp/b2c/dev/application_id"
-  "B2C_POLICY_NAME:static:B2C_1A_ddp_participant_signup_signin_dev"
-  "B2C_CHANGE_PASSWORD_POLICY_NAME:static:B2C_1A_ddp_participant_change_password_dev"
+  "B2C_CONFIG_FILE:static:b2c-config.yml"
   "SENDGRID_API_KEY:vault:vault read -field=api_key secret/dsp/ddp/d2p/dev/sendgrid"
 )
 

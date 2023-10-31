@@ -40,8 +40,8 @@ public class B2CConfigurationService {
   }
 
   /**
-   * Initialize  B2C configuration from a yaml file. The file can be specified as an absolute
-   * path or a relative path. If relative, it is loaded from the classpath.
+   * Initialize B2C configuration from a yaml file. The file can be specified as an absolute path or
+   * a relative path. If relative, it is loaded from the classpath.
    */
   public void initB2CConfig(String b2cConfigFile) {
     if (StringUtils.isBlank(b2cConfigFile)) {
@@ -55,7 +55,8 @@ public class B2CConfigurationService {
     if (file.isAbsolute()) {
       // absolute path, load from file system
       if (!file.exists()) {
-        log.error("b2c-config-file property is set to an absolute path that does not exist: {}",
+        log.error(
+            "b2c-config-file property is set to an absolute path that does not exist: {}",
             b2cConfigFile);
         return;
       }
@@ -82,7 +83,8 @@ public class B2CConfigurationService {
     if (b2cConfig == null) {
       return Collections.emptyMap();
     }
-    Map<String, String> config = Map.of(
+    Map<String, String> config =
+        Map.of(
             "b2cTenantName",
             StringUtils.defaultIfEmpty(b2cConfig.getTenantName(), ""),
             "b2cClientId",
