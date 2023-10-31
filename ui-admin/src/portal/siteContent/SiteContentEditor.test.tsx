@@ -5,7 +5,7 @@ import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen, waitFor } from '@testing-library/react'
 import { emptyApi, mockSiteContent } from 'test-utils/mock-site-content'
 import userEvent from '@testing-library/user-event'
-import { mockPortalEnvironment } from '../../test-utils/mocking-utils'
+import { mockPortalEnvContext } from 'test-utils/mocking-utils'
 
 test('enables live-preview text editing', async () => {
   const siteContent = mockSiteContent()
@@ -13,8 +13,7 @@ test('enables live-preview text editing', async () => {
   const { RoutedComponent } = setupRouterTest(
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
       loadSiteContent={jest.fn()} createNewVersion={createNewVersionFunc} switchToVersion={jest.fn()}
-      portalEnv={mockPortalEnvironment('sandbox')}
-      portalShortcode="foo"/>)
+      portalEnvContext={mockPortalEnvContext('sandbox')}/>)
   render(RoutedComponent)
 
   expect(screen.getByText('Landing page')).toBeInTheDocument()
@@ -45,9 +44,9 @@ test('readOnly hides save button', async () => {
   const createNewVersionFunc = jest.fn()
   const { RoutedComponent } = setupRouterTest(
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={true}
-      loadSiteContent={jest.fn()} createNewVersion={createNewVersionFunc} portalShortcode="foo"
+      loadSiteContent={jest.fn()} createNewVersion={createNewVersionFunc}
       switchToVersion={jest.fn()}
-      portalEnv={mockPortalEnvironment('sandbox')}/>)
+      portalEnvContext={mockPortalEnvContext('sandbox')}/>)
   render(RoutedComponent)
   expect(screen.getByText('Landing page')).toBeInTheDocument()
   expect(screen.queryByText('Save')).not.toBeInTheDocument()
@@ -57,9 +56,9 @@ test('clicking on the Preview tab shows full page preview', async () => {
   const siteContent = mockSiteContent()
   const { RoutedComponent } = setupRouterTest(
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
-      loadSiteContent={jest.fn()} createNewVersion={jest.fn()} portalShortcode="foo"
+      loadSiteContent={jest.fn()} createNewVersion={jest.fn()}
       switchToVersion={jest.fn()}
-      portalEnv={mockPortalEnvironment('sandbox')}/>)
+      portalEnvContext={mockPortalEnvContext('sandbox')}/>)
   render(RoutedComponent)
 
   await userEvent.click(screen.getByText('Preview'))

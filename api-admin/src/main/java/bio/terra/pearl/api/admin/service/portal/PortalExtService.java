@@ -60,7 +60,7 @@ public class PortalExtService {
       throw new PermissionDeniedException(
           "You do not have permissions to update portal configurations");
     }
-    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
+    authUtilService.authUserToPortal(user, portalShortcode);
     PortalEnvironment portalEnv = portalEnvironmentService.findOne(portalShortcode, envName).get();
     PortalEnvironmentConfig config =
         portalEnvironmentConfigService.find(portalEnv.getPortalEnvironmentConfigId()).get();
@@ -69,19 +69,26 @@ public class PortalExtService {
     return config;
   }
 
-  /** updates a portal environment, currently only supports updating the siteContent */
+  /**
+   * updates a portal environment, currently only supports updating the siteContent and preReg
+   * survey
+   */
   public PortalEnvironment updateEnvironment(
       String portalShortcode,
       EnvironmentName envName,
       PortalEnvironment updatedEnv,
       AdminUser user) {
 
-    authUtilService.authUserToPortal(user, portalShortcode);
+    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
     if (!EnvironmentName.sandbox.equals(envName)) {
       throw new IllegalArgumentException("You cannot directly update non-sandbox environments");
     }
+    if (updatedEnv.getPreRegSurveyId() != null) {
+      authUtilService.authSurveyToPortal(portal, updatedEnv.getPreRegSurveyId());
+    }
     PortalEnvironment portalEnv = portalEnvironmentService.findOne(portalShortcode, envName).get();
     portalEnv.setSiteContentId(updatedEnv.getSiteContentId());
+    portalEnv.setPreRegSurveyId(updatedEnv.getPreRegSurveyId());
     return portalEnvironmentService.update(portalEnv);
   }
 
