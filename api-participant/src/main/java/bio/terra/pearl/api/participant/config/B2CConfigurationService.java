@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -28,18 +29,9 @@ public class B2CConfigurationService {
     portalConfiguration = new B2CPortalConfiguration();
   }
 
-  /**
-   * Get the B2C configuration for a portal. Returns an empty map if portal config for portal is not
-   * specified
-   */
+  /** Get the B2C configuration for a portal. Returns null if B2C is not configured for portal */
   public Map<String, String> getB2CForPortal(String portalShortcode) {
-    // see if already constructed
-    Map<String, String> portalConfig = portalToConfig.get(portalShortcode);
-    if (portalConfig == null) {
-      portalConfig = buildConfigMap(portalShortcode);
-    }
-
-    return portalConfig;
+    return portalToConfig.get(portalShortcode);
   }
 
   /**
@@ -57,6 +49,8 @@ public class B2CConfigurationService {
     log.info("b2c-config-file = '{}'", b2cConfigFile);
     Yaml yaml = new Yaml(new Constructor(B2CPortalConfiguration.class, new LoaderOptions()));
 
+    // for deployments into k8s, the config file is mounted into the container as a volume
+    // for local deployments, the config file is on the classpath, at least for now
     File file = new File(b2cConfigFile);
     if (file.isAbsolute()) {
       // absolute path, load from file system
@@ -71,15 +65,25 @@ public class B2CConfigurationService {
         portalConfiguration = yaml.load(str);
       } catch (Exception e) {
         log.error("Error loading b2c config file: {}", b2cConfigFile, e);
+        return;
       }
     } else {
       // relative path, load from classpath
-      try (InputStream str =
-          Thread.currentThread().getContextClassLoader().getResourceAsStream(b2cConfigFile)) {
+      ClassPathResource cpr = new ClassPathResource(b2cConfigFile);
+      try (InputStream str = cpr.getInputStream()) {
         portalConfiguration = yaml.load(str);
       } catch (Exception e) {
         log.error("Error loading b2c config file: {}", b2cConfigFile, e);
+        return;
       }
+    }
+    buildPortalToConfig();
+  }
+
+  protected void buildPortalToConfig() {
+    portalToConfig.clear();
+    for (String portal : portalConfiguration.getB2CProperties().keySet()) {
+      portalToConfig.put(portal, buildConfigMap(portal));
     }
   }
 
