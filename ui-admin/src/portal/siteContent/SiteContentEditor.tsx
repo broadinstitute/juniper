@@ -108,7 +108,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     updateLocalContent(updatedLocalContent)
   }
 
-  const updateFooter = (footer: HtmlSection) => {
+  const updateFooter = (footer: HtmlSection | undefined) => {
     if (!localContent) {
       return
     }
