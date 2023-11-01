@@ -11,8 +11,8 @@ type HtmlPageViewProps = {
   readOnly: boolean
   siteInvalid: boolean
   setSiteInvalid: (invalid: boolean) => void
-  footerSection: HtmlSection | undefined
-  updateFooter: (section: HtmlSection | undefined) => void
+  footerSection?: HtmlSection
+  updateFooter: (section?: HtmlSection) => void
   updatePage: (page: HtmlPage) => void
 }
 
@@ -109,7 +109,7 @@ const HtmlPageView = ({
         { renderAddSectionButton(index + 1) }
       </div>
     })}
-    { footerSection && <div key={`${footerSection.id}`} className="row g-0">
+    { footerSection && <div className="row g-0">
       <div className="col-md-4 px-2 pb-2 mb-2">
         <HtmlSectionEditor setSiteInvalid={setSiteInvalid} allowTypeChange={false}
           //These are undefined because we do not allow the user to move or remove the footer section

@@ -110,7 +110,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     updateLocalContent(updatedLocalContent)
   }
 
-  const updateFooter = (footer: HtmlSection | undefined) => {
+  const updateFooter = (footer?: HtmlSection) => {
     if (!localContent) {
       return
     }
@@ -131,7 +131,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     .map(navItem => ({ label: navItem.text, value: navItem.text }))
   pageOpts.unshift(landingPageOption)
 
-  return <div className="d-flex bg-white">
+  return <div className="d-flex bg-white pb-5">
     <div className="d-flex flex-column flex-grow-1 mx-1 mb-1">
       <div className="d-flex p-2 align-items-center">
         <div className="d-flex flex-grow-1">
