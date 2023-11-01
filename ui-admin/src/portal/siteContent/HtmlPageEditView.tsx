@@ -11,14 +11,14 @@ type HtmlPageViewProps = {
   readOnly: boolean
   siteInvalid: boolean
   setSiteInvalid: (invalid: boolean) => void
-  sectionFooter: HtmlSection | undefined
+  footerSection: HtmlSection | undefined
   updateFooter: (section: HtmlSection) => void
   updatePage: (page: HtmlPage) => void
 }
 
 /** Enables editing of a given page, showing the config and a preview for each section */
 const HtmlPageView = ({
-  htmlPage, readOnly, siteInvalid, setSiteInvalid, sectionFooter, updateFooter, updatePage
+  htmlPage, readOnly, siteInvalid, setSiteInvalid, footerSection, updateFooter, updatePage
 }: HtmlPageViewProps) => {
   const DEFAULT_SECTION_TYPE = {
     id: '',
@@ -109,18 +109,18 @@ const HtmlPageView = ({
         { renderAddSectionButton(index + 1) }
       </div>
     })}
-    { sectionFooter && <div key={`${sectionFooter.id}`} className="row g-0">
+    { footerSection && <div key={`${footerSection.id}`} className="row g-0">
       <div className="col-md-4 px-2 pb-2 mb-2">
         <HtmlSectionEditor setSiteInvalid={setSiteInvalid} allowTypeChange={false}
           //These are undefined because we do not allow the user to move or remove the footer section
           moveSection={undefined} removeSection={undefined}
-          siteInvalid={siteInvalid} section={sectionFooter} updateSection={updateFooter} readOnly={readOnly}/>
+          siteInvalid={siteInvalid} section={footerSection} updateSection={updateFooter} readOnly={readOnly}/>
       </div>
       <div className="col-md-8">
-        <HtmlSectionView section={sectionFooter}/>
+        <HtmlSectionView section={footerSection}/>
       </div>
     </div> }
-    { !sectionFooter && <div className="col-md-12 my-2" style={{ backgroundColor: '#eee' }}>
+    { !footerSection && <div className="col-md-12 my-2" style={{ backgroundColor: '#eee' }}>
       <Button variant="secondary"
         aria-label={'Insert a footer'}
         tooltip={'Insert a footer'}

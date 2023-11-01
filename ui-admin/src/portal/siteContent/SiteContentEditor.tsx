@@ -11,6 +11,7 @@ import { Button } from 'components/forms/Button'
 import AddPageModal from './AddPageModal'
 import ErrorBoundary from 'util/ErrorBoundary'
 import { Tab, Tabs } from 'react-bootstrap'
+import classNames from 'classnames'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -128,6 +129,8 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     .map(navItem => ({ label: navItem.text, value: navItem.text }))
   pageOpts.unshift(landingPageOption)
 
+  const hasFooter = !!localContent.footerSection
+
   return <div className="d-flex bg-white">
     <div className="d-flex flex-column flex-grow-1 mx-1 mb-1">
       <div className="d-flex p-2 align-items-center">
@@ -206,7 +209,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
                     <ApiProvider api={previewApi}>
                       <HtmlPageEditView htmlPage={pageToRender} readOnly={readOnly}
                         siteInvalid={siteInvalid} setSiteInvalid={setSiteInvalid}
-                        sectionFooter={localContent.footerSection} updateFooter={updateFooter}
+                        footerSection={localContent.footerSection} updateFooter={updateFooter}
                         updatePage={page => updatePage(page, currentNavBarItem?.text)}/>
                     </ApiProvider>}
               </div>
@@ -222,6 +225,29 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
                 { pageToRender.sections.map((section: HtmlSection) =>
                   <HtmlSectionView section={section} key={section.id}/>)
                 }
+                {/* this is just lifted from LandingPage.tsx in ui-participant */}
+                <footer>
+                  <div
+                    className={classNames('row mx-0 d-flex justify-content-center', { 'pt-5': hasFooter })}
+                  >
+                    <div className="col-12 col-lg-8 px-0">
+                      { localContent.footerSection &&
+                          <HtmlSectionView section={localContent.footerSection} key={localContent.footerSection.id}/> }
+                      <div className="row mx-0">
+                        <div
+                          className={classNames('col-12', { 'border-top border-secondary': hasFooter })}
+                          style={{
+                            paddingTop: '2rem', paddingBottom: '2rem',
+                            marginTop: hasFooter ? '6rem' : 0
+                          }}
+                        >
+                          <Link to="/privacy">Privacy Policy</Link>
+                          <Link to="/terms/participant" style={{ marginLeft: '2rem' }}>Terms of Use</Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </footer>
               </ApiProvider>
             </ErrorBoundary>
           </Tab>
