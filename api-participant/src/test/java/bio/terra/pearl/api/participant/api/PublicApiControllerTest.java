@@ -85,6 +85,27 @@ class PublicApiControllerTest {
   }
 
   @Test
+  void testHandlesMismatchedJSFingerprint() throws Exception {
+    this.mockMvc
+        .perform(get("/static/js/main.12345678.js"))
+        .andExpect(forwardedUrl("/static/js/main.js"));
+  }
+
+  @Test
+  void testHandlesMismatchedCSSFingerprint() throws Exception {
+    this.mockMvc
+        .perform(get("/static/css/main.12345678.css"))
+        .andExpect(forwardedUrl("/static/css/main.css"));
+  }
+
+  @Test
+  void testHandlesMismatchedJsChunkFingerprint() throws Exception {
+    this.mockMvc
+        .perform(get("/static/js/111.12345678.chunk.js"))
+        .andExpect(forwardedUrl("/static/js/111.chunk.js"));
+  }
+
+  @Test
   void testResourceGets() throws Exception {
     // confirm image paths are not forwarded to index
     this.mockMvc.perform(get("/foo/bar/image.png")).andExpect(status().isNotFound());

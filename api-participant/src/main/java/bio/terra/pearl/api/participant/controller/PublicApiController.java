@@ -12,6 +12,7 @@ import bio.terra.pearl.core.model.portal.PortalEnvironmentDescriptor;
 import bio.terra.pearl.core.model.site.SiteImage;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.site.SiteImageService;
+import java.nio.file.*;
 import java.util.Map;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class PublicApiController implements PublicApi {
@@ -138,6 +140,37 @@ public class PublicApiController implements PublicApi {
       })
   public String getIndex(HttpServletRequest request) {
     return "forward:/";
+  }
+
+  /**
+   * DANGER: The three methods below essentially tell the server to ignore the fingerprint of the
+   * asset requested, and always just return the asset it has. This enables us to do rolling
+   * deployments and not have the case where a request for an asset from an old pod gets served by a
+   * new pod which has a different asset fingerprint, and thus returns 404. This obviously opens the
+   * door for obscure bugs relating to a user having different versions of different frontend assets
+   * on the same page. This is reasonably safe for us now, though, since main.js is typically the
+   * only asset that changes between versions -- the majority of our css is inlined, and our JS chunks
+   * are for things like the privacy policy that are rarely used/updated. And the fingerprints are
+   * still included in index.html, so the fingerprints still do their job of preventing unwanted
+   * browser caching.
+   *
+   * We're willing to temporarily accept the risk of possibly odd behavior in exchange for
+   * the site not appearing as down during deploys. Eventually, we should upgrade our
+   * deployment/hosting infrastructure to solve this problem in a more robust way
+   */
+  @GetMapping(value = "/static/js/main.{hash}.js")
+  public String getFingerprintedJs() {
+    return "forward:/static/js/main.js";
+  }
+
+  @GetMapping(value = "/static/css/main.{hash}.css")
+  public String getFingerprintedCss() {
+    return "forward:/static/css/main.css";
+  }
+
+  @GetMapping(value = "/static/js/{chunkId}.{hash}.chunk.js")
+  public String getFingerprintedJsChunks(@PathVariable("chunkId") String chunkId) {
+    return "forward:/static/js/%s.chunk.js".formatted(chunkId);
   }
 
   private Map<String, String> buildConfigMap() {
