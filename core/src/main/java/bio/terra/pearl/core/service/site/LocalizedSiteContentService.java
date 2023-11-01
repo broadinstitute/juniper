@@ -52,7 +52,6 @@ public class LocalizedSiteContentService extends ImmutableEntityService<Localize
             dao.setLandingPageId(savedSite.getId(), landingPage.getId());
         }
         savedSite.setLandingPage(landingPage);
-        localSite.getFooterSection().setId(savedSite.getFooterSectionId());
         savedSite.setFooterSection(localSite.getFooterSection());
         return savedSite;
     }
