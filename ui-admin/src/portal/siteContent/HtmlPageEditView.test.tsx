@@ -10,7 +10,7 @@ test('readOnly disables insert new section button', async () => {
   const mockPage = mockHtmlPage()
   const { RoutedComponent } = setupRouterTest(
     <HtmlPageEditView htmlPage={mockPage} readOnly={true} updatePage={jest.fn()}
-                      setSiteInvalid={jest.fn()} siteInvalid={false} footerSection={undefined} updateFooter={jest.fn()}/>)
+      setSiteInvalid={jest.fn()} siteInvalid={false} footerSection={undefined} updateFooter={jest.fn()}/>)
   render(RoutedComponent)
   expect(screen.getAllByLabelText('Insert a blank section')[0]).toHaveAttribute('aria-disabled', 'true')
 })
@@ -21,7 +21,7 @@ test('Insert Section button calls updatePage with a new blank HERO_WITH_IMAGE se
   const mockUpdatePageFn = jest.fn()
   const { RoutedComponent } = setupRouterTest(
     <HtmlPageEditView htmlPage={mockPage} readOnly={false} updatePage={mockUpdatePageFn}
-                      setSiteInvalid={jest.fn()} siteInvalid={false} footerSection={undefined} updateFooter={jest.fn()}/>)
+      setSiteInvalid={jest.fn()} siteInvalid={false} footerSection={undefined} updateFooter={jest.fn()}/>)
   render(RoutedComponent)
 
   //Act
@@ -43,7 +43,7 @@ test('invalid JSON disables Insert Section button', async () => {
   const mockPage = mockHtmlPage()
   const { RoutedComponent } = setupRouterTest(
     <HtmlPageEditView htmlPage={mockPage} readOnly={false} updatePage={jest.fn()}
-                      setSiteInvalid={jest.fn()} siteInvalid={true} footerSection={undefined} updateFooter={jest.fn()}/>)
+      setSiteInvalid={jest.fn()} siteInvalid={true} footerSection={undefined} updateFooter={jest.fn()}/>)
   render(RoutedComponent)
   const sectionButtons= await screen.findAllByLabelText('Insert a blank section')
 
