@@ -35,8 +35,6 @@ function LandingPageView({ localContent }: { localContent: LocalSiteContent }) {
     modal.show()
   }, [])
 
-  const hasFooter = !!localContent.footerSection
-
   return <div className="LandingPage">
     <div className="container-fluid bg-white min-vh-100 d-flex flex-column p-0">
       <Navbar />
