@@ -149,14 +149,14 @@ public class PublicApiController implements PublicApi {
    * new pod which has a different asset fingerprint, and thus returns 404. This obviously opens the
    * door for obscure bugs relating to a user having different versions of different frontend assets
    * on the same page. This is reasonably safe for us now, though, since main.js is typically the
-   * only asset that changes between versions -- the majority of our css is inlined, and our JS chunks
-   * are for things like the privacy policy that are rarely used/updated. And the fingerprints are
-   * still included in index.html, so the fingerprints still do their job of preventing unwanted
-   * browser caching.
+   * only asset that changes between versions -- the majority of our css is inlined, and our JS
+   * chunks are for things like the privacy policy that are rarely used/updated. And the
+   * fingerprints are still included in index.html, so the fingerprints still do their job of
+   * preventing unwanted browser caching.
    *
-   * We're willing to temporarily accept the risk of possibly odd behavior in exchange for
-   * the site not appearing as down during deploys. Eventually, we should upgrade our
-   * deployment/hosting infrastructure to solve this problem in a more robust way
+   * <p>We're willing to temporarily accept the risk of possibly odd behavior in exchange for the
+   * site not appearing as down during deploys. Eventually, we should upgrade our deployment/hosting
+   * infrastructure to solve this problem in a more robust way
    */
   @GetMapping(value = "/static/js/main.{hash}.js")
   public String getFingerprintedJs() {
