@@ -1,7 +1,7 @@
 package bio.terra.pearl.api.participant.controller;
 
 import bio.terra.pearl.api.participant.api.PublicApi;
-import bio.terra.pearl.api.participant.config.B2CConfiguration;
+import bio.terra.pearl.api.participant.config.B2CConfigurationService;
 import bio.terra.pearl.api.participant.config.VersionConfiguration;
 import bio.terra.pearl.api.participant.model.SystemStatus;
 import bio.terra.pearl.api.participant.model.VersionProperties;
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class PublicApiController implements PublicApi {
-  private final B2CConfiguration b2CConfiguration;
+  private final B2CConfigurationService b2CConfigurationService;
   private final SiteImageService siteImageService;
   private final PortalService portalService;
   private final StatusService statusService;
@@ -39,13 +39,13 @@ public class PublicApiController implements PublicApi {
 
   @Autowired
   public PublicApiController(
-      B2CConfiguration b2CConfiguration,
+      B2CConfigurationService b2CConfigurationService,
       SiteImageService siteImageService,
       PortalService portalService,
       StatusService statusService,
       VersionConfiguration versionConfiguration,
       Environment env) {
-    this.b2CConfiguration = b2CConfiguration;
+    this.b2CConfigurationService = b2CConfigurationService;
     this.siteImageService = siteImageService;
     this.portalService = portalService;
     this.statusService = statusService;
@@ -71,10 +71,19 @@ public class PublicApiController implements PublicApi {
     return ResponseEntity.ok(currentVersion);
   }
 
-  @Override
-  public ResponseEntity<Object> getConfig() {
-    var config = buildConfigMap();
-    return ResponseEntity.ok(config);
+  @GetMapping(value = "/config")
+  public ResponseEntity<Object> getConfig(HttpServletRequest request) {
+    Optional<PortalEnvironmentDescriptor> portal = getPortalDescriptorForRequest(request);
+    if (portal.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
+    String portalShortcode = portal.get().shortcode();
+
+    Map<String, String> portalConfig = b2CConfigurationService.getB2CForPortal(portalShortcode);
+    if (portalConfig == null || portalConfig.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
+    return ResponseEntity.ok(portalConfig);
   }
 
   /**
@@ -171,14 +180,6 @@ public class PublicApiController implements PublicApi {
   @GetMapping(value = "/static/js/{chunkId}.{hash}.chunk.js")
   public String getFingerprintedJsChunks(@PathVariable("chunkId") String chunkId) {
     return "forward:/static/js/%s.chunk.js".formatted(chunkId);
-  }
-
-  private Map<String, String> buildConfigMap() {
-    return Map.of(
-        "b2cTenantName", b2CConfiguration.tenantName(),
-        "b2cClientId", b2CConfiguration.clientId(),
-        "b2cPolicyName", b2CConfiguration.policyName(),
-        "b2cChangePasswordPolicyName", b2CConfiguration.changePasswordPolicyName());
   }
 
   private Optional<PortalEnvironmentDescriptor> getPortalDescriptorForRequest(
