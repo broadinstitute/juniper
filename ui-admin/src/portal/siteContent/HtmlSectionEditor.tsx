@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { HtmlSection, SectionType } from '@juniper/ui-core'
 import Select from 'react-select'
-import { isEmpty } from 'lodash'
 import { IconButton } from 'components/forms/Button'
 import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { sectionTemplates } from './sectionTemplates'
@@ -30,6 +29,7 @@ const HtmlSectionEditor = ({
   section,
   siteInvalid,
   setSiteInvalid,
+  allowTypeChange,
   readOnly
 }: {
   updateSection: (section: HtmlSection) => void
@@ -38,6 +38,7 @@ const HtmlSectionEditor = ({
   section: HtmlSection
   siteInvalid: boolean
   setSiteInvalid: (invalid: boolean) => void
+  allowTypeChange: boolean
   readOnly: boolean
 }) => {
   const [sectionContainsErrors, setSectionContainsErrors] = useState(false)
@@ -69,11 +70,8 @@ const HtmlSectionEditor = ({
 
   return <>
     <div className="d-flex flex-grow-1 mb-1">
-      {/* Right now we do not support changing the type for an existing section. The way to identify if a
-        section has been previously saved is to look at the id. If it's empty, it's a new section, and we can
-        allow the user to change the type. */ }
       <Select className='w-100' options={SECTION_TYPES} value={sectionTypeOpt} aria-label={'Select section type'}
-        isDisabled={readOnly || !isEmpty(section.id)}
+        isDisabled={readOnly || !allowTypeChange}
         onChange={opt => {
           if (opt != undefined) {
             if (sectionContainsErrors) {

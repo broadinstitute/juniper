@@ -100,7 +100,7 @@ const HtmlPageView = ({
       return <div key={`${section.id}-${index}`} className="row g-0">
         <div className="col-md-4 px-2 pb-2">
           <HtmlSectionEditor updateSection={updateSection(index)} setSiteInvalid={setSiteInvalid}
-            moveSection={moveSection(index)} removeSection={removeSection(index)}
+            moveSection={moveSection(index)} removeSection={removeSection(index)} allowTypeChange={section.id === ''}
             siteInvalid={siteInvalid} section={section} readOnly={readOnly}/>
         </div>
         <div className="col-md-8">
@@ -111,7 +111,7 @@ const HtmlPageView = ({
     })}
     { sectionFooter && <div key={`${sectionFooter.id}`} className="row g-0">
       <div className="col-md-4 px-2 pb-2 mb-2">
-        <HtmlSectionEditor setSiteInvalid={setSiteInvalid}
+        <HtmlSectionEditor setSiteInvalid={setSiteInvalid} allowTypeChange={false}
           //These are undefined because we do not allow the user to move or remove the footer section
           moveSection={undefined} removeSection={undefined}
           siteInvalid={siteInvalid} section={sectionFooter} updateSection={updateFooter} readOnly={readOnly}/>
@@ -120,6 +120,19 @@ const HtmlPageView = ({
         <HtmlSectionView section={sectionFooter}/>
       </div>
     </div> }
+    { !sectionFooter && <div className="col-md-12 my-2" style={{ backgroundColor: '#eee' }}>
+      <Button variant="secondary"
+        aria-label={'Insert a footer'}
+        tooltip={'Insert a footer'}
+        disabled={readOnly || siteInvalid}
+        onClick={() => updateFooter({
+          id: '',
+          sectionType: 'LINK_SECTIONS_FOOTER' as SectionType,
+          sectionConfig: JSON.stringify(sectionTemplates['LINK_SECTIONS_FOOTER'])
+        })}>
+        <FontAwesomeIcon icon={faPlus}/> Insert footer
+      </Button>
+    </div>}
   </div>
 }
 

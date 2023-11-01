@@ -10,7 +10,7 @@ test('readOnly disables section type selection', async () => {
   const mockPage = mockHtmlPage()
   const mockSection = mockPage.sections[0]
   const { RoutedComponent } = setupRouterTest(
-    <HtmlSectionEditor updateSection={jest.fn} section={mockSection} readOnly={true}
+    <HtmlSectionEditor updateSection={jest.fn} section={mockSection} readOnly={true} allowTypeChange={true}
       setSiteInvalid={jest.fn()} siteInvalid={false}/>)
   render(RoutedComponent)
   expect(screen.getByLabelText('Select section type')).toBeDisabled()
@@ -21,7 +21,7 @@ test('section type selection is enabled if the section type is unsaved', async (
   const mockSection = mockPage.sections[0]
   mockSection.id = ''
   const { RoutedComponent } = setupRouterTest(
-    <HtmlSectionEditor section={mockSection} readOnly={false}
+    <HtmlSectionEditor section={mockSection} readOnly={false} allowTypeChange={true}
       updateSection={jest.fn} setSiteInvalid={jest.fn()} siteInvalid={false}/>)
   render(RoutedComponent)
   expect(screen.getByLabelText('Select section type')).toBeEnabled()
@@ -34,7 +34,7 @@ test('switching section types sets the section config to the correct template', 
   mockSection.id = ''
   const mockUpdateSectionFn = jest.fn()
   const { RoutedComponent } = setupRouterTest(
-    <HtmlSectionEditor section={mockSection} readOnly={false}
+    <HtmlSectionEditor section={mockSection} readOnly={false} allowTypeChange={true}
       updateSection={mockUpdateSectionFn} setSiteInvalid={jest.fn()} siteInvalid={false}/>)
   render(RoutedComponent)
 
@@ -58,7 +58,7 @@ test('DeleteSection button removes the section', async () => {
   const mockSection = mockPage.sections[0]
   const mockDeleteFn = jest.fn()
   const { RoutedComponent } = setupRouterTest(
-    <HtmlSectionEditor section={mockSection} readOnly={false}
+    <HtmlSectionEditor section={mockSection} readOnly={false} allowTypeChange={false}
       updateSection={jest.fn()} removeSection={mockDeleteFn} setSiteInvalid={jest.fn()} siteInvalid={false}/>)
   render(RoutedComponent)
 
@@ -82,7 +82,7 @@ test('MoveSectionUp button allows reordering', async () => {
   const mockSection = mockPage.sections[1]
   const mockMoveSectionFn = jest.fn()
   const { RoutedComponent } = setupRouterTest(
-    <HtmlSectionEditor section={mockSection} readOnly={false}
+    <HtmlSectionEditor section={mockSection} readOnly={false} allowTypeChange={false}
       updateSection={jest.fn} moveSection={mockMoveSectionFn} setSiteInvalid={jest.fn()} siteInvalid={false}/>)
   render(RoutedComponent)
 
@@ -107,7 +107,7 @@ test('MoveSectionDown button allows reordering', async () => {
   const mockMoveSectionFn = jest.fn()
   const { RoutedComponent } = setupRouterTest(
     <HtmlSectionEditor section={mockSection} readOnly={false} updateSection={jest.fn}
-      moveSection={mockMoveSectionFn} setSiteInvalid={jest.fn()} siteInvalid={false}/>)
+      allowTypeChange={false} moveSection={mockMoveSectionFn} setSiteInvalid={jest.fn()} siteInvalid={false}/>)
   render(RoutedComponent)
 
   //Act
@@ -124,7 +124,7 @@ test('invalid JSON shows an error around the textbox', async () => {
   const mockSection = mockPage.sections[0]
   const mockUpdateSectionFn = jest.fn()
   const { RoutedComponent } = setupRouterTest(
-    <HtmlSectionEditor section={mockSection} readOnly={false}
+    <HtmlSectionEditor section={mockSection} readOnly={false} allowTypeChange={false}
       updateSection={mockUpdateSectionFn} setSiteInvalid={jest.fn()} siteInvalid={false}/>)
   render(RoutedComponent)
 
@@ -144,7 +144,7 @@ test('invalid JSON disables moveSection buttons', async () => {
   const mockUpdateSectionFn = jest.fn()
   const { RoutedComponent } = setupRouterTest(
     <HtmlSectionEditor section={mockSection} readOnly={false} moveSection={jest.fn()} removeSection={jest.fn()}
-      updateSection={mockUpdateSectionFn} setSiteInvalid={jest.fn()} siteInvalid={true}/>)
+      allowTypeChange={false} updateSection={mockUpdateSectionFn} setSiteInvalid={jest.fn()} siteInvalid={true}/>)
   render(RoutedComponent)
 
   //Act
