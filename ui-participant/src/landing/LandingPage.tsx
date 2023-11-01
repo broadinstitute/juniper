@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import React, { useEffect, useRef } from 'react'
 import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom'
-import { LocalSiteContent, MailingListModal, HtmlSectionView } from '@juniper/ui-core'
+import {LocalSiteContent, MailingListModal, HtmlSectionView, SiteFooter} from '@juniper/ui-core'
 import _uniqueId from 'lodash/uniqueId'
 import Navbar from '../Navbar'
 import * as bootstrap from 'bootstrap'
@@ -44,29 +44,7 @@ function LandingPageView({ localContent }: { localContent: LocalSiteContent }) {
       <main className="flex-grow-1">
         <Outlet/>
       </main>
-      <footer>
-        <div
-          className={classNames('row mx-0 d-flex justify-content-center', { 'pt-5': hasFooter })}
-        >
-          <div className="col-12 col-lg-8 px-0">
-            {localContent.footerSection && (
-              <HtmlSectionView section={localContent.footerSection}/>
-            )}
-            <div className="row mx-0">
-              <div
-                className={classNames('col-12', { 'border-top border-secondary': hasFooter })}
-                style={{
-                  paddingTop: '2rem', paddingBottom: '2rem',
-                  marginTop: hasFooter ? '6rem' : 0
-                }}
-              >
-                <Link to="/privacy">Privacy Policy</Link>
-                <Link to="/terms/participant" style={{ marginLeft: '2rem' }}>Terms of Use</Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter footerSection={localContent.footerSection}/>
       <MailingListModal id={mailingListModalId.current} />
     </div>
   </div>

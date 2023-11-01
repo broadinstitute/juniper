@@ -4,14 +4,13 @@ import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClockRotateLeft, faImage, faPlus } from '@fortawesome/free-solid-svg-icons'
 import HtmlPageEditView from './HtmlPageEditView'
-import { HtmlPage, LocalSiteContent, ApiProvider, SiteContent, ApiContextT, HtmlSectionView } from '@juniper/ui-core'
+import { HtmlPage, LocalSiteContent, ApiProvider, SiteContent, ApiContextT, HtmlSectionView, SiteFooter } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
 import SiteContentVersionSelector from './SiteContentVersionSelector'
 import { Button } from 'components/forms/Button'
 import AddPageModal from './AddPageModal'
 import ErrorBoundary from 'util/ErrorBoundary'
 import { Tab, Tabs } from 'react-bootstrap'
-import classNames from 'classnames'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -225,29 +224,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
                 { pageToRender.sections.map((section: HtmlSection) =>
                   <HtmlSectionView section={section} key={section.id}/>)
                 }
-                {/* this is just lifted from LandingPage.tsx in ui-participant */}
-                <footer>
-                  <div
-                    className={classNames('row mx-0 d-flex justify-content-center', { 'pt-5': hasFooter })}
-                  >
-                    <div className="col-12 col-lg-8 px-0">
-                      { localContent.footerSection &&
-                          <HtmlSectionView section={localContent.footerSection} key={localContent.footerSection.id}/> }
-                      <div className="row mx-0">
-                        <div
-                          className={classNames('col-12', { 'border-top border-secondary': hasFooter })}
-                          style={{
-                            paddingTop: '2rem', paddingBottom: '2rem',
-                            marginTop: hasFooter ? '6rem' : 0
-                          }}
-                        >
-                          <Link to="/privacy">Privacy Policy</Link>
-                          <Link to="/terms/participant" style={{ marginLeft: '2rem' }}>Terms of Use</Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </footer>
+                <SiteFooter footerSection={localContent.footerSection}/>
               </ApiProvider>
             </ErrorBoundary>
           </Tab>
