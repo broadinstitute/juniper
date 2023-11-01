@@ -4,7 +4,10 @@ import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClockRotateLeft, faImage, faPlus } from '@fortawesome/free-solid-svg-icons'
 import HtmlPageEditView from './HtmlPageEditView'
-import { HtmlPage, LocalSiteContent, ApiProvider, SiteContent, ApiContextT, HtmlSectionView, SiteFooter } from '@juniper/ui-core'
+import {
+  HtmlPage, LocalSiteContent, ApiProvider, SiteContent,
+  ApiContextT, HtmlSectionView, SiteFooter
+} from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
 import SiteContentVersionSelector from './SiteContentVersionSelector'
 import { Button } from 'components/forms/Button'
@@ -127,8 +130,6 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const pageOpts: {label: string, value: string}[] = navBarInternalItems
     .map(navItem => ({ label: navItem.text, value: navItem.text }))
   pageOpts.unshift(landingPageOption)
-
-  const hasFooter = !!localContent.footerSection
 
   return <div className="d-flex bg-white">
     <div className="d-flex flex-column flex-grow-1 mx-1 mb-1">
