@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { HtmlPage, HtmlSection, SectionType } from '@juniper/ui-core'
+import { HtmlSection, SectionType } from '@juniper/ui-core'
 import Select from 'react-select'
-import { isEmpty } from 'lodash'
 import { IconButton } from 'components/forms/Button'
 import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { sectionTemplates } from './sectionTemplates'
@@ -24,20 +23,22 @@ const SECTION_TYPES = [
  * Returns an editor for an HtmlSection
  */
 const HtmlSectionEditor = ({
-  htmlPage,
-  updatePage,
+  updateSection,
+  removeSection,
+  moveSection,
   section,
-  sectionIndex,
   siteInvalid,
   setSiteInvalid,
+  allowTypeChange,
   readOnly
 }: {
-  htmlPage: HtmlPage,
-  updatePage: (page: HtmlPage) => void
+  updateSection: (section: HtmlSection) => void
+  removeSection?: () => void
+  moveSection?: (direction: 'up' | 'down') => void
   section: HtmlSection
-  sectionIndex: number
   siteInvalid: boolean
   setSiteInvalid: (invalid: boolean) => void
+  allowTypeChange: boolean
   readOnly: boolean
 }) => {
   const [sectionContainsErrors, setSectionContainsErrors] = useState(false)
@@ -51,51 +52,6 @@ const HtmlSectionEditor = ({
     setEditorValue(JSON.stringify(JSON.parse(section?.sectionConfig ?? '{}'), null, 2))
   }, [section.sectionConfig])
 
-  const updateSection = (sectionIndex: number, updatedSection: HtmlSection) => {
-    const newSection = {
-      ...htmlPage.sections[sectionIndex],
-      sectionType: updatedSection.sectionType,
-      sectionConfig: updatedSection.sectionConfig
-    }
-    const newSectionArray = [...htmlPage.sections]
-    newSectionArray[sectionIndex] = newSection
-    htmlPage = {
-      ...htmlPage,
-      sections: newSectionArray
-    }
-    updatePage(htmlPage)
-  }
-
-  const removeSection = (sectionIndex: number) => {
-    const newSectionArray = [...htmlPage.sections]
-    newSectionArray.splice(sectionIndex, 1)
-    htmlPage = {
-      ...htmlPage,
-      sections: newSectionArray
-    }
-    if (sectionContainsErrors) {
-      setSiteInvalid(false)
-    }
-    updatePage(htmlPage)
-  }
-
-  const moveSection = (sectionIndex: number, direction: 'up' | 'down') => {
-    if (sectionIndex === 0 && direction === 'up') { return }
-    const newSectionArray = [...htmlPage.sections]
-    const sectionToMove = newSectionArray[sectionIndex]
-    newSectionArray.splice(sectionIndex, 1)
-    if (direction === 'up') {
-      newSectionArray.splice(sectionIndex - 1, 0, sectionToMove)
-    } else {
-      newSectionArray.splice(sectionIndex + 1, 0, sectionToMove)
-    }
-    htmlPage = {
-      ...htmlPage,
-      sections: newSectionArray
-    }
-    updatePage(htmlPage)
-  }
-
   const handleEditorChange = (newEditorValue: string) => {
     setEditorValue(newEditorValue)
 
@@ -103,7 +59,7 @@ const HtmlSectionEditor = ({
       JSON.parse(newEditorValue)
       setSiteInvalid(false)
       setSectionContainsErrors(false)
-      updateSection(sectionIndex, { ...section, sectionConfig: newEditorValue })
+      updateSection({ ...section, sectionConfig: newEditorValue })
     } catch (e) {
       setSiteInvalid(true)
       setSectionContainsErrors(true)
@@ -114,11 +70,8 @@ const HtmlSectionEditor = ({
 
   return <>
     <div className="d-flex flex-grow-1 mb-1">
-      {/* Right now we do not support changing the type for an existing section. The way to identify if a
-        section has been previously saved is to look at the id. If it's empty, it's a new section, and we can
-        allow the user to change the type. */ }
       <Select className='w-100' options={SECTION_TYPES} value={sectionTypeOpt} aria-label={'Select section type'}
-        isDisabled={readOnly || !isEmpty(section.id)}
+        isDisabled={readOnly || !allowTypeChange}
         onChange={opt => {
           if (opt != undefined) {
             if (sectionContainsErrors) {
@@ -129,41 +82,37 @@ const HtmlSectionEditor = ({
             }
             const sectionTemplate = JSON.stringify(sectionTemplates[opt.label])
             setSectionTypeOpt(opt)
-            updateSection(sectionIndex, {
+            updateSection({
               ...section,
               sectionType: opt.value as SectionType,
               sectionConfig: sectionTemplate
             })
           }
         }}/>
-      <IconButton
+      { moveSection && <IconButton
         aria-label="Move this section before the previous one"
         className="ms-2"
-        disabled={readOnly || sectionIndex === 0 || siteInvalid}
+        disabled={readOnly || siteInvalid}
         icon={faChevronUp}
         variant="light"
-        onClick={() => {
-          moveSection(sectionIndex, 'up')
-        }}
-      />
-      <IconButton
+        onClick={() => moveSection('up')}
+      /> }
+      { moveSection && <IconButton
         aria-label="Move this section after the next one"
         className="ms-2"
         disabled={readOnly || siteInvalid}
         icon={faChevronDown}
         variant="light"
-        onClick={() => {
-          moveSection(sectionIndex, 'down')
-        }}
-      />
-      <IconButton
+        onClick={() => moveSection('down')}
+      /> }
+      { removeSection && <IconButton
         aria-label="Delete this section"
         className="ms-2"
-        disabled={readOnly}
+        disabled={readOnly || (siteInvalid && !sectionContainsErrors)}
         icon={faTimes}
         variant="light"
-        onClick={() => removeSection(sectionIndex)}
-      />
+        onClick={() => removeSection()}
+      /> }
     </div>
     <textarea value={editorValue} style={{ height: 'calc(100% - 2em)', width: '100%', minHeight: '300px' }}
       disabled={readOnly || (siteInvalid && !sectionContainsErrors)}
