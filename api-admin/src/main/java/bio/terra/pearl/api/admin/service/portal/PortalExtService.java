@@ -11,6 +11,8 @@ import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
+import bio.terra.pearl.core.service.portal.exception.PortalConfigMissing;
+import bio.terra.pearl.core.service.portal.exception.PortalEnvironmentMissing;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.BeanUtils;
@@ -61,9 +63,14 @@ public class PortalExtService {
           "You do not have permissions to update portal configurations");
     }
     authUtilService.authUserToPortal(user, portalShortcode);
-    PortalEnvironment portalEnv = portalEnvironmentService.findOne(portalShortcode, envName).get();
+    PortalEnvironment portalEnv =
+        portalEnvironmentService
+            .findOne(portalShortcode, envName)
+            .orElseThrow(PortalEnvironmentMissing::new);
     PortalEnvironmentConfig config =
-        portalEnvironmentConfigService.find(portalEnv.getPortalEnvironmentConfigId()).get();
+        portalEnvironmentConfigService
+            .find(portalEnv.getPortalEnvironmentConfigId())
+            .orElseThrow(PortalConfigMissing::new);
     BeanUtils.copyProperties(newConfig, config, "id", "createdAt");
     config = portalEnvironmentConfigService.update(config);
     return config;
@@ -86,7 +93,10 @@ public class PortalExtService {
     if (updatedEnv.getPreRegSurveyId() != null) {
       authUtilService.authSurveyToPortal(portal, updatedEnv.getPreRegSurveyId());
     }
-    PortalEnvironment portalEnv = portalEnvironmentService.findOne(portalShortcode, envName).get();
+    PortalEnvironment portalEnv =
+        portalEnvironmentService
+            .findOne(portalShortcode, envName)
+            .orElseThrow(PortalEnvironmentMissing::new);
     portalEnv.setSiteContentId(updatedEnv.getSiteContentId());
     portalEnv.setPreRegSurveyId(updatedEnv.getPreRegSurveyId());
     return portalEnvironmentService.update(portalEnv);
