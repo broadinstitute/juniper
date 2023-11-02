@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
+import bio.terra.pearl.core.model.kit.StudyEnvironmentKitType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.MailingAddress;
 import bio.terra.pearl.core.model.participant.Profile;
@@ -165,20 +166,26 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      */
     @Transactional
     public void syncAllKitStatusesFromPepper() {
-        List<StudyEnvironment> studyEnvs = studyEnvironmentService.findAll();
-        // it doesn't actually matter what order we process the environments in, but it's nice for logging to have them
-        // grouped by study
-        studyEnvs.sort(Comparator.comparing(StudyEnvironment::getStudyId));
-        for (StudyEnvironment studyEnv : studyEnvs) {
-            List<KitType> configuredKitTypes = studyEnvironmentKitTypeService
-                    .findKitTypesByStudyEnvironmentId(studyEnv.getId());
-            if (configuredKitTypes.isEmpty()) {
-                log.info("Skipping kit status sync for study environment {}, {} because it has no configured kit types"
-                        , studyEnv.getId(), studyEnv.getEnvironmentName());
-                continue;
-            }
-            try {
-                syncKitStatusesForStudyEnv(study, environmentName);
+        // first get a list of all studies that have kit types configured
+        List<StudyEnvironmentKitType> envKitTypes = studyEnvironmentKitTypeService.findAll();
+        List<StudyEnvironment> studyEnvs = studyEnvironmentService.findAll(
+                envKitTypes.stream().map(StudyEnvironmentKitType::getStudyEnvironmentId).collect(Collectors.toList())
+        );
+        List<Study> studies = studyService.findAll(
+                studyEnvs.stream().map(StudyEnvironment::getStudyId).distinct().collect(Collectors.toList())
+        );
+        // it doesn't actually matter what order we process the studies in, but it's nice for logging to have them
+        // consistently alphabetical
+        studies.sort(Comparator.comparing(Study::getShortcode));
+        for (Study study : studies) {
+            // for each study, grab all the statuses from Pepper
+            // (Pepper doesn't have a concept of study environments, so all kits from a study are under the same code)
+            // then update the statuses in Juniper for each environment
+           try {
+               Collection<PepperKitStatus> pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
+               for (EnvironmentName environmentName : EnvironmentName.values()) {
+                     syncKitStatusesForStudyEnv(study.getShortcode(), environmentName, pepperKitStatuses);
+               }
             } catch (PepperParseException | PepperApiException e) {
                 // if one sync fails, keep trying others in case the failure is just isolated unexpected data
                 log.error("kit status sync failed for study %s".formatted(study.getShortcode()), e);
@@ -188,15 +195,13 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
 
     @Transactional
     public void syncKitStatusesForStudyEnv(Study study, EnvironmentName environmentName) throws PepperParseException, PepperApiException {
-        // This assumes that DSM is configured with a single study backing all environments of the Juniper study
-        // TODO: delay deserializing to a PepperKitStatus until after it's been recorded on the kit request
         Collection<PepperKitStatus> pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
-        UUID studyEnvId = studyEnvironmentService.findByStudy(study.getShortcode(), environmentName)
-                .orElseThrow(NotFoundException::new).getId();
-        syncKitStatusesForStudyEnv();
+        syncKitStatusesForStudyEnv(study.getShortcode(), environmentName, pepperKitStatuses);
     }
 
-    private void syncKitStatusesForStudyEnv(UUID studyEnvId, Collection<PepperKitStatus> pepperKitStatuses) throws PepperParseException, PepperApiException {
+    private void syncKitStatusesForStudyEnv(String studyShortcode, EnvironmentName envName, Collection<PepperKitStatus> pepperKitStatuses) throws PepperParseException, PepperApiException {
+        UUID studyEnvId = studyEnvironmentService.findByStudy(studyShortcode, envName)
+                .orElseThrow(() -> new NotFoundException("No matching study")).getId();
         var pepperStatusFetchedAt = Instant.now();
         var pepperKitStatusByKitId = pepperKitStatuses.stream().collect(
                 Collectors.toMap(PepperKitStatus::getJuniperKitId, Function.identity(),

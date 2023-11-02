@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.kit.StudyEnvironmentKitType;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,10 +16,12 @@ import java.util.UUID;
 @Service
 public class StudyEnvironmentKitTypeService extends CrudService<StudyEnvironmentKitType, StudyEnvironmentKitTypeDao> {
     private final KitTypeDao kitTypeDao;
+    private final StudyEnvironmentService studyEnvironmentService;
 
-    public StudyEnvironmentKitTypeService(StudyEnvironmentKitTypeDao dao, KitTypeDao kitTypeDao) {
+    public StudyEnvironmentKitTypeService(StudyEnvironmentKitTypeDao dao, KitTypeDao kitTypeDao, StudyEnvironmentService studyEnvironmentService) {
         super(dao);
         this.kitTypeDao = kitTypeDao;
+        this.studyEnvironmentService = studyEnvironmentService;
     }
 
     public List<KitType> findKitTypesByStudyEnvironmentId(UUID studyEnvId) {
