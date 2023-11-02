@@ -189,11 +189,11 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
 
         studyEnvironmentService.findByStudy(study.getShortcode(), environmentName).ifPresent(
                 studyEnvironment -> {
-                    var incompleteKits = findIncompleteKits(studyEnvironment.getId());
+                    var kits = dao.findByStudyEnvironment(studyEnvironment.getId());
 
                     // The set of kits returned from DSM may be different from the set of incomplete kits in Juniper, but
                     // we want to update the records in Juniper so those are the ones we want to iterate here.
-                    for (KitRequest kit : incompleteKits) {
+                    for (KitRequest kit : kits) {
                         var pepperKitStatus = pepperKitStatusByKitId.get(kit.getId().toString());
                         if (pepperKitStatus != null) {
                             saveKitStatus(kit, pepperKitStatus, pepperStatusFetchedAt);
@@ -201,8 +201,10 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                     }
                 }
         );
+    }
 
-
+    public List<KitRequest> findByStudyEnvironment(UUID studyEnvironmentId) {
+        return dao.findByStudyEnvironment(studyEnvironmentId);
     }
 
     public List<KitRequest> findIncompleteKits(UUID studyEnvironmentId) {
@@ -248,28 +250,6 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             // unexpected is happening.  Throw RuntimeException to ensure @Transactional annotations will rollback.
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Saves updated kit status. This is called from a batch job, so exceptions are caught and logged instead of thrown
-     * to allow the rest of the batch to be processed.
-     */
-    private void saveKitStatus(KitRequest kit, String statusJson, Instant pepperStatusFetchedAt) {
-        // Set raw status JSON
-        kit.setDsmStatus(statusJson);
-        kit.setDsmStatusFetchedAt(pepperStatusFetchedAt);
-
-        // Set Juniper kit status if we can parse the Pepper status
-        try {
-            var kitStatus = objectMapper.readValue(statusJson, PepperKitStatus.class);
-            kit.setStatus(statusFromPepperCurrentStatus(kitStatus.getCurrentStatus()));
-        } catch (JsonProcessingException e) {
-            logger.warn(
-                    "Unable to deserialize status JSON for kit %s: %s".formatted(kit.getId(), statusJson.toString()),
-                    e);
-        }
-
-        dao.update(kit);
     }
 
     /**
