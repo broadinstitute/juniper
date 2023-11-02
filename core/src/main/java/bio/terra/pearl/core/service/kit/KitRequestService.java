@@ -44,7 +44,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     private final DaoUtils daoUtils;
 
     public KitRequestService(KitRequestDao dao,
-                             @Lazy EnrolleeService enrolleeService,
+                             StudyEnvironmentKitTypeService studyEnvironmentKitTypeService, @Lazy EnrolleeService enrolleeService,
                              KitTypeDao kitTypeDao,
                              PepperDSMClient pepperDSMClient,
                              ProfileService profileService,
@@ -53,6 +53,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                              ObjectMapper objectMapper,
                              DaoUtils daoUtils) {
         super(dao);
+        this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
         this.enrolleeService = enrolleeService;
         this.kitTypeDao = kitTypeDao;
         this.pepperDSMClient = pepperDSMClient;
@@ -164,30 +165,44 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      */
     @Transactional
     public void syncAllKitStatusesFromPepper() {
-        var studies = studyService.findAll();
-        for (Study study : studies) {
-            for (EnvironmentName environmentName : EnvironmentName.values()) {
-                try {
-                    syncKitStatusesForStudy(study, environmentName);
-                } catch (PepperParseException | PepperApiException e) {
-                    // if one sync fails, keep trying others in case the failure is just isolated unexpected data
-                    log.error("kit status sync failed for study %s".formatted(study.getShortcode()), e);
-                }
+        List<StudyEnvironment> studyEnvs = studyEnvironmentService.findAll();
+        // it doesn't actually matter what order we process the environments in, but it's nice for logging to have them
+        // grouped by study
+        studyEnvs.sort(Comparator.comparing(StudyEnvironment::getStudyId));
+        for (StudyEnvironment studyEnv : studyEnvs) {
+            List<KitType> configuredKitTypes = studyEnvironmentKitTypeService
+                    .findKitTypesByStudyEnvironmentId(studyEnv.getId());
+            if (configuredKitTypes.isEmpty()) {
+                log.info("Skipping kit status sync for study environment {}, {} because it has no configured kit types"
+                        , studyEnv.getId(), studyEnv.getEnvironmentName());
+                continue;
+            }
+            try {
+                syncKitStatusesForStudyEnv(study, environmentName);
+            } catch (PepperParseException | PepperApiException e) {
+                // if one sync fails, keep trying others in case the failure is just isolated unexpected data
+                log.error("kit status sync failed for study %s".formatted(study.getShortcode()), e);
             }
         }
     }
 
     @Transactional
-    public void syncKitStatusesForStudy(Study study, EnvironmentName environmentName) throws PepperParseException, PepperApiException {
+    public void syncKitStatusesForStudyEnv(Study study, EnvironmentName environmentName) throws PepperParseException, PepperApiException {
         // This assumes that DSM is configured with a single study backing all environments of the Juniper study
         // TODO: delay deserializing to a PepperKitStatus until after it's been recorded on the kit request
-        var pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
+        Collection<PepperKitStatus> pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
+        UUID studyEnvId = studyEnvironmentService.findByStudy(study.getShortcode(), environmentName)
+                .orElseThrow(NotFoundException::new).getId();
+        syncKitStatusesForStudyEnv();
+    }
+
+    private void syncKitStatusesForStudyEnv(UUID studyEnvId, Collection<PepperKitStatus> pepperKitStatuses) throws PepperParseException, PepperApiException {
         var pepperStatusFetchedAt = Instant.now();
         var pepperKitStatusByKitId = pepperKitStatuses.stream().collect(
                 Collectors.toMap(PepperKitStatus::getJuniperKitId, Function.identity(),
                         (kit1, kit2) -> !kit1.getCurrentStatus().equals("Deactivated") ? kit1 : kit2));
 
-        studyEnvironmentService.findByStudy(study.getShortcode(), environmentName).ifPresent(
+        studyEnvironmentService.find(studyEnvId).ifPresent(
                 studyEnvironment -> {
                     var incompleteKits = findIncompleteKits(studyEnvironment.getId());
 
@@ -201,8 +216,6 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                     }
                 }
         );
-
-
     }
 
     public List<KitRequest> findIncompleteKits(UUID studyEnvironmentId) {
@@ -311,4 +324,5 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     private final StudyService studyService;
     private final StudyEnvironmentService studyEnvironmentService;
     private final ObjectMapper objectMapper;
+    private StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
 }

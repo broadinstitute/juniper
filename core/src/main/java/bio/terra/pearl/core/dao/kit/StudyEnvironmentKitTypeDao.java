@@ -19,7 +19,7 @@ public class StudyEnvironmentKitTypeDao extends BaseMutableJdbiDao<StudyEnvironm
         return StudyEnvironmentKitType.class;
     }
 
-    public List<StudyEnvironmentKitType> findByStudyEnvironmentId(UUID studyId) {
-        return findAllByProperty("study_environment_id", studyId);
+    public List<StudyEnvironmentKitType> findByStudyEnvironmentId(UUID studyEnvId) {
+        return findAllByProperty("study_environment_id", studyEnvId);
     }
 }

@@ -1,4 +1,4 @@
-import { StudyEnvContextT } from '../StudyEnvironmentRouter'
+import {paramsFromContext, StudyEnvContextT} from '../StudyEnvironmentRouter'
 import React, { useState } from 'react'
 import { useKitTypeSelect } from '../participants/RequestKitModal'
 import { doApiLoad } from 'api/api-utils'
@@ -22,7 +22,7 @@ export default function RequestKitsModal({
   const { portal, study, currentEnv } = studyEnvContext
   const [isLoading, setIsLoading] = useState(false)
 
-  const { kitType, KitSelect } = useKitTypeSelect(portal.shortcode, study.shortcode)
+  const { kitType, KitSelect } = useKitTypeSelect(paramsFromContext(studyEnvContext))
   const handleSubmit = async () => {
     doApiLoad(async () => {
       const response = await Api.requestKits(portal.shortcode, study.shortcode, currentEnv.environmentName,

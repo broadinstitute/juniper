@@ -17,6 +17,7 @@ import {
   PreregistrationResponse
 } from '@juniper/ui-core'
 import { facetValuesToString, FacetValue } from './enrolleeSearch'
+import {StudyEnvParams} from "../study/StudyEnvironmentRouter";
 
 export type {
   Answer,
@@ -825,8 +826,8 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async fetchKitTypes(portalShortcode: string, studyShortcode: string, envName: string): Promise<KitType[]> {
-    const url = `${baseStudyUrl(portalShortcode, studyShortcode)}/kitTypes`
+  async fetchKitTypes(studyEnvParams: StudyEnvParams): Promise<KitType[]> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/kitTypes`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -1139,6 +1140,10 @@ function baseStudyUrl(portalShortcode: string, studyShortcode: string) {
 /** base api path for study-scoped api requests */
 function baseStudyEnvUrl(portalShortcode: string, studyShortcode: string, envName: string) {
   return `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}/env/${envName}`
+}
+
+function baseStudyEnvUrlFromParams(studyEnvParams: StudyEnvParams) {
+  return baseStudyEnvUrl(studyEnvParams.portalShortcode, studyEnvParams.studyShortcode, studyEnvParams.envName)
 }
 
 /** base api path for populate api calls */

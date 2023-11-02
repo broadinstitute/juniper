@@ -70,7 +70,7 @@ public class StudyEnvironmentExtService {
   public List<KitType> getKitTypes(
       AdminUser operator, String portalShortcode, String studyShortcode, EnvironmentName envName) {
     StudyEnvironment studyEnv = authToStudyEnv(operator, portalShortcode, studyShortcode, envName);
-    return studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(studyEnv.getStudyId());
+    return studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(studyEnv.getId());
   }
 
   public StudyEnvStats getStats(
