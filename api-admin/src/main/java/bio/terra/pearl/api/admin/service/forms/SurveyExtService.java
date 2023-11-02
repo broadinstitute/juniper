@@ -38,7 +38,7 @@ public class SurveyExtService {
 
   public Survey get(String portalShortcode, String stableId, int version, AdminUser adminUser) {
     Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
-    Survey survey = authSurveyToPortal(portal, stableId, version);
+    Survey survey = authUtilService.authSurveyToPortal(portal, stableId, version);
     surveyService.attachAnswerMappings(survey);
     return survey;
   }
@@ -152,19 +152,6 @@ public class SurveyExtService {
     return studyEnvironmentSurveyService.update(existing);
   }
 
-  /** confirms that the Survey is accessible from the given portal */
-  public Survey authSurveyToPortal(Portal portal, String stableId, int version) {
-    Optional<Survey> surveyOpt = surveyService.findByStableId(stableId, version);
-    if (surveyOpt.isEmpty()) {
-      throw new NotFoundException("No such survey exists in " + portal.getName());
-    }
-    Survey survey = surveyOpt.get();
-    if (!portal.getId().equals(survey.getPortalId())) {
-      throw new NotFoundException("No such survey exists in " + portal.getName());
-    }
-    return survey;
-  }
-
   /**
    * confirms the user has access to the study and that the configured survey belongs to that study,
    * and that it's in the sandbox environment. Returns the study environment for which the change is
@@ -178,8 +165,7 @@ public class SurveyExtService {
       AdminUser user) {
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
     StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
-    if (!EnvironmentName.sandbox.equals(envName)
-        || !EnvironmentName.sandbox.equals(studyEnv.getEnvironmentName())) {
+    if (!EnvironmentName.sandbox.equals(envName)) {
       throw new IllegalArgumentException(
           "Updates can only be made directly to the sandbox environment".formatted(envName));
     }

@@ -8,14 +8,14 @@ import { requireOptionalArray, requireOptionalString, requirePlainObject, requir
   from '../../util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
-import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
+import ConfiguredMedia, { MediaConfig, validateMediaConfig } from '../ConfiguredMedia'
 import { InlineMarkdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
 
 type StepConfig = {
-  image: ImageConfig,
+  image: MediaConfig,
   duration: string,
   blurb: string
 }
@@ -29,7 +29,7 @@ type StepOverviewTemplateConfig = {
 const validateStepConfig = (config: unknown): StepConfig => {
   const message = 'Invalid StepOverviewTemplateConfig: Invalid step'
   const configObj = requirePlainObject(config, message)
-  const image = validateImageConfig(configObj.image)
+  const image = validateMediaConfig(configObj.image)
   const duration = requireString(configObj, 'duration', message)
   const blurb = requireString(configObj, 'blurb', message)
   return { image, duration, blurb }
@@ -67,7 +67,7 @@ function StepOverviewTemplate(props: StepOverviewTemplateProps) {
         _.map(steps, ({ image, duration, blurb }: StepConfig, i: number) => {
           return <div key={i} className="col-12 col-lg-3 d-flex flex-column align-items-center mt-4">
             <div className="w-75 d-flex flex-column align-items-center align-items-lg-start">
-              <ConfiguredImage image={image} className="img-fluid p-3" style={{ maxWidth: '200px' }}/>
+              <ConfiguredMedia media={image} className="img-fluid p-3" style={{ maxWidth: '200px' }}/>
               <p className="text-uppercase fs-5 fw-semibold mb-0">Step {i + 1}</p>
               <p className="text-uppercase fs-6">{duration}</p>
               <p className="fs-4 mb-0">

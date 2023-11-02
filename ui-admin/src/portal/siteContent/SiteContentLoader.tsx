@@ -95,8 +95,7 @@ const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvCon
       loadSiteContent={loadSiteContent}
       switchToVersion={switchToVersion}
       previewApi={previewApi}
-      portalShortcode={portalShortcode}
-      portalEnv={portalEnv}
+      portalEnvContext={portalEnvContext}
       readOnly={readOnly}
     /> }
     { isLoading && <LoadingSpinner/> }

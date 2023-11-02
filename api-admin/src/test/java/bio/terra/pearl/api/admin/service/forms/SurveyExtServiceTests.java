@@ -129,9 +129,14 @@ public class SurveyExtServiceTests {
   public void getRequiresSurveyMatchedToPortal() {
     AdminUser user = AdminUser.builder().superuser(false).build();
     Portal portal = Portal.builder().shortcode("testSurveyGet").id(UUID.randomUUID()).build();
-    when(mockAuthUtilService.authUserToPortal(user, portal.getShortcode())).thenReturn(portal);
     Survey matchedSurvey = configureMockSurvey("testMatchedToPortal", 1, portal.getId());
     Survey unmatchedSurvey = configureMockSurvey("testUnmatchedToPortal", 1, UUID.randomUUID());
+    when(mockAuthUtilService.authUserToPortal(user, portal.getShortcode())).thenReturn(portal);
+    when(mockAuthUtilService.authSurveyToPortal(portal, "testMatchedToPortal", 1))
+        .thenReturn(matchedSurvey);
+    when(mockAuthUtilService.authSurveyToPortal(portal, "testUnmatchedToPortal", 1))
+        .thenThrow(new NotFoundException("not found"));
+
     assertThat(
         surveyExtService.get(
             portal.getShortcode(), matchedSurvey.getStableId(), matchedSurvey.getVersion(), user),

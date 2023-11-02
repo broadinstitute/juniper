@@ -7,12 +7,14 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
+import bio.terra.pearl.core.service.survey.SurveyService;
 import com.auth0.jwt.JWT;
 import java.util.List;
 import java.util.Optional;
@@ -28,18 +30,21 @@ public class AuthUtilService {
   private PortalService portalService;
   private PortalStudyService portalStudyService;
   private EnrolleeService enrolleeService;
+  private SurveyService surveyService;
 
   public AuthUtilService(
       AdminUserService adminUserService,
       BearerTokenFactory bearerTokenFactory,
       PortalService portalService,
       PortalStudyService portalStudyService,
-      EnrolleeService enrolleeService) {
+      EnrolleeService enrolleeService,
+      SurveyService surveyService) {
     this.adminUserService = adminUserService;
     this.bearerTokenFactory = bearerTokenFactory;
     this.portalService = portalService;
     this.portalStudyService = portalStudyService;
     this.enrolleeService = enrolleeService;
+    this.surveyService = surveyService;
   }
 
   /** gets the user from the request, throwing an exception if not present */
@@ -103,5 +108,28 @@ public class AuthUtilService {
               .formatted(user.getUsername(), enrolleeShortcode));
     }
     return enrolleeService.findOneByShortcode(enrolleeShortcode).get();
+  }
+
+  /** confirms that the Survey is accessible from the given portal */
+  public Survey authSurveyToPortal(Portal portal, String stableId, int version) {
+    Optional<Survey> surveyOpt = surveyService.findByStableId(stableId, version);
+    return authSurveyToPortal(portal, surveyOpt);
+  }
+
+  /** confirms that the Survey is accessible from the given portal */
+  public Survey authSurveyToPortal(Portal portal, UUID surveyId) {
+    Optional<Survey> surveyOpt = surveyService.find(surveyId);
+    return authSurveyToPortal(portal, surveyOpt);
+  }
+
+  protected Survey authSurveyToPortal(Portal portal, Optional<Survey> surveyOpt) {
+    if (surveyOpt.isEmpty()) {
+      throw new NotFoundException("No such survey exists in " + portal.getName());
+    }
+    Survey survey = surveyOpt.get();
+    if (!portal.getId().equals(survey.getPortalId())) {
+      throw new NotFoundException("No such survey exists in " + portal.getName());
+    }
+    return survey;
   }
 }

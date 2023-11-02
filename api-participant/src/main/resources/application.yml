@@ -16,10 +16,7 @@ env:
     # if true, the swagger UI page will be made available at swagger-ui.html -- should be false for production
     enabled: ${SWAGGER_ENABLED:false}
   b2c:
-    tenantName: ${B2C_TENANT_NAME:missing_tenant_name}
-    clientId: ${B2C_CLIENT_ID:missing_client_id}
-    policyName: ${B2C_POLICY_NAME:missing_policy_name}
-    changePasswordPolicyName: ${B2C_CHANGE_PASSWORD_POLICY_NAME:missing_policy_name}
+    config-file: ${B2C_CONFIG_FILE:b2c-config.yml}
   email:
     sendgridApiKey: ${SENDGRID_API_KEY:}
     supportEmailAddress: ${SUPPORT_EMAIL_ADDRESS:support@juniper.terra.bio}
@@ -85,10 +82,7 @@ hibernate:
   packages-to-scan: bio.terra.pearl.core.model
 
 b2c:
-  tenantName: ${env.b2c.tenantName}
-  clientId: ${env.b2c.clientId}
-  policyName: ${env.b2c.policyName}
-  changePasswordPolicyName: ${env.b2c.changePasswordPolicyName}
+  config-file: ${env.b2c.config-file}
 
 javatemplate:
   ingress:

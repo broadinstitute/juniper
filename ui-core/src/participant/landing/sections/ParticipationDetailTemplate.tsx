@@ -9,7 +9,7 @@ import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfi
 import { requireOptionalString } from '../../util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
-import ConfiguredImage, { ImageConfig, validateImageConfig } from '../ConfiguredImage'
+import ConfiguredMedia, { MediaConfig, validateMediaConfig } from '../ConfiguredMedia'
 
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
@@ -17,7 +17,7 @@ import { useApiContext } from '../../../participant/ApiProvider'
 type ParticipationDetailTemplateConfig = {
   actionButton?: ButtonConfig, // button
   blurb?: string, //  text below the title
-  image?: ImageConfig, // image
+  image?: MediaConfig, // image
   imagePosition?: 'left' | 'right' // left or right.  Default is right
   stepNumberText?: string, // e.g. STEP 1
   timeIndication?: string, // e.g. 45+ minutes
@@ -29,7 +29,7 @@ const validateParticipationDetailTemplateConfig = (config: SectionConfig): Parti
   const message = 'Invalid ParticipationDetailTemplateConfig'
   const actionButton = config.actionButton ? validateButtonConfig(config.actionButton) : undefined
   const blurb = requireOptionalString(config, 'blurb', message)
-  const image = config.image ? validateImageConfig(config.image) : undefined
+  const image = config.image ? validateMediaConfig(config.image) : undefined
   const imagePosition = requireOptionalString(config, 'imagePosition', message)
   if (!(imagePosition === undefined || imagePosition === 'left' || imagePosition === 'right')) {
     throw new Error(`${message}: if provided, imagePosition must be one of "left", "right"`)
@@ -80,7 +80,7 @@ function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
     >
       {hasImage && (
         <div className="col-6 col-md-3 mx-auto mx-md-0 text-center">
-          <ConfiguredImage image={image} className="img-fluid mb-4 mb-md-0"/>
+          <ConfiguredMedia media={image} className="img-fluid mb-4 mb-md-0"/>
         </div>
       )}
       <div className={classNames({ 'col-md-8': hasImage })}>

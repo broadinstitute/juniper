@@ -1,0 +1,11 @@
+b2c:
+  portal1:
+    tenantName: "abc"
+    clientId: "705c09dc-a"
+    policyName: "B2C_1A_ddp_participant_signup_signin_test"
+    changePasswordPolicyName: "B2C_1A_ddp_participant_change_password_test"
+  portal2:
+    tenantName: "def"
+    clientId: "705c09dc-b"
+    policyName: "B2C_1B_ddp_participant_signup_signin_test"
+    changePasswordPolicyName: "B2C_1B_ddp_participant_change_password_test"
