@@ -5,7 +5,7 @@ import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen, waitFor } from '@testing-library/react'
 import { emptyApi, mockSiteContent } from 'test-utils/mock-site-content'
 import userEvent from '@testing-library/user-event'
-import { mockPortalEnvContext, mockPortalEnvironment } from 'test-utils/mocking-utils'
+import { mockPortalEnvContext } from 'test-utils/mocking-utils'
 
 test('enables live-preview text editing', async () => {
   const siteContent = mockSiteContent()
