@@ -9,8 +9,8 @@ import { sectionTemplates } from './sectionTemplates'
 type HtmlPageViewProps = {
   htmlPage: HtmlPage
   readOnly: boolean
-  siteInvalid: boolean
-  setSiteInvalid: (invalid: boolean) => void
+  siteHasInvalidSection: boolean
+  setSiteHasInvalidSection: (invalid: boolean) => void
   footerSection?: HtmlSection
   updateFooter: (section?: HtmlSection) => void
   updatePage: (page: HtmlPage) => void
@@ -18,7 +18,7 @@ type HtmlPageViewProps = {
 
 /** Enables editing of a given page, showing the config and a preview for each section */
 const HtmlPageView = ({
-  htmlPage, readOnly, siteInvalid, setSiteInvalid, footerSection, updateFooter, updatePage
+  htmlPage, readOnly, siteHasInvalidSection, setSiteHasInvalidSection, footerSection, updateFooter, updatePage
 }: HtmlPageViewProps) => {
   const DEFAULT_SECTION_TYPE = {
     id: '',
@@ -45,7 +45,7 @@ const HtmlPageView = ({
       sections: newSectionArray
     }
     //When the site content is invalid, users can only delete the invalid section. So it's safe to reset this flag
-    setSiteInvalid(false)
+    setSiteHasInvalidSection(false)
 
     updatePage(htmlPage)
   }
@@ -87,7 +87,7 @@ const HtmlPageView = ({
       <Button variant="secondary"
         aria-label={'Insert a blank section'}
         tooltip={'Insert a blank section'}
-        disabled={readOnly || siteInvalid}
+        disabled={readOnly || siteHasInvalidSection}
         onClick={() => insertNewSection(sectionIndex, DEFAULT_SECTION_TYPE)}>
         <FontAwesomeIcon icon={faPlus}/> Insert section
       </Button>
@@ -99,9 +99,9 @@ const HtmlPageView = ({
     {htmlPage.sections.map((section, index) => {
       return <div key={`${section.id}-${index}`} className="row g-0">
         <div className="col-md-4 px-2 pb-2">
-          <HtmlSectionEditor updateSection={updateSection(index)} setSiteInvalid={setSiteInvalid}
+          <HtmlSectionEditor updateSection={updateSection(index)} setSiteHasInvalidSection={setSiteHasInvalidSection}
             moveSection={moveSection(index)} removeSection={removeSection(index)} allowTypeChange={section.id === ''}
-            siteInvalid={siteInvalid} section={section} readOnly={readOnly}/>
+            siteHasInvalidSection={siteHasInvalidSection} section={section} readOnly={readOnly}/>
         </div>
         <div className="col-md-8">
           <HtmlSectionView section={section}/>
@@ -111,10 +111,11 @@ const HtmlPageView = ({
     })}
     { footerSection && <div className="row g-0">
       <div className="col-md-4 px-2 pb-2 mb-2">
-        <HtmlSectionEditor setSiteInvalid={setSiteInvalid} allowTypeChange={false}
+        <HtmlSectionEditor setSiteHasInvalidSection={setSiteHasInvalidSection} allowTypeChange={false}
           //These are undefined because we do not allow the user to move or remove the footer section
           moveSection={undefined} removeSection={() => updateFooter(undefined)}
-          siteInvalid={siteInvalid} section={footerSection} updateSection={updateFooter} readOnly={readOnly}/>
+          siteHasInvalidSection={siteHasInvalidSection} section={footerSection}
+          updateSection={updateFooter} readOnly={readOnly}/>
       </div>
       <div className="col-md-8">
         <HtmlSectionView section={footerSection}/>
@@ -124,7 +125,7 @@ const HtmlPageView = ({
       <Button variant="secondary"
         aria-label={'Insert a footer'}
         tooltip={'Insert a footer'}
-        disabled={readOnly || siteInvalid}
+        disabled={readOnly || siteHasInvalidSection}
         onClick={() => updateFooter({
           id: '',
           sectionType: 'LINK_SECTIONS_FOOTER' as SectionType,

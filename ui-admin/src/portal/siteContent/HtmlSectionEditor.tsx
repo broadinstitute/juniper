@@ -27,8 +27,8 @@ const HtmlSectionEditor = ({
   removeSection,
   moveSection,
   section,
-  siteInvalid,
-  setSiteInvalid,
+  siteHasInvalidSection,
+  setSiteHasInvalidSection,
   allowTypeChange,
   readOnly
 }: {
@@ -36,8 +36,8 @@ const HtmlSectionEditor = ({
   removeSection?: () => void
   moveSection?: (direction: 'up' | 'down') => void
   section: HtmlSection
-  siteInvalid: boolean
-  setSiteInvalid: (invalid: boolean) => void
+  siteHasInvalidSection: boolean
+  setSiteHasInvalidSection: (invalid: boolean) => void
   allowTypeChange: boolean
   readOnly: boolean
 }) => {
@@ -57,11 +57,11 @@ const HtmlSectionEditor = ({
 
     try {
       JSON.parse(newEditorValue)
-      setSiteInvalid(false)
+      setSiteHasInvalidSection(false)
       setSectionContainsErrors(false)
       updateSection({ ...section, sectionConfig: newEditorValue })
     } catch (e) {
-      setSiteInvalid(true)
+      setSiteHasInvalidSection(true)
       setSectionContainsErrors(true)
       // Note that we do not call updateSection here, as that would result in an invalid preview being shown.
       // Instead, the preview will be based on the last valid config for this section.
@@ -75,9 +75,9 @@ const HtmlSectionEditor = ({
         onChange={opt => {
           if (opt != undefined) {
             if (sectionContainsErrors) {
-              //If the user is changing the section that had errors, then we can clear the siteInvalid flag
+              //If the user is changing the section that had errors, then we can clear the siteHasInvalidSection flag
               //because it will now be using a valid default template.
-              setSiteInvalid(false)
+              setSiteHasInvalidSection(false)
               setSectionContainsErrors(false)
             }
             const sectionTemplate = JSON.stringify(sectionTemplates[opt.label])
@@ -92,7 +92,7 @@ const HtmlSectionEditor = ({
       { moveSection && <IconButton
         aria-label="Move this section before the previous one"
         className="ms-2"
-        disabled={readOnly || siteInvalid}
+        disabled={readOnly || siteHasInvalidSection}
         icon={faChevronUp}
         variant="light"
         onClick={() => moveSection('up')}
@@ -100,7 +100,7 @@ const HtmlSectionEditor = ({
       { moveSection && <IconButton
         aria-label="Move this section after the next one"
         className="ms-2"
-        disabled={readOnly || siteInvalid}
+        disabled={readOnly || siteHasInvalidSection}
         icon={faChevronDown}
         variant="light"
         onClick={() => moveSection('down')}
@@ -108,14 +108,14 @@ const HtmlSectionEditor = ({
       { removeSection && <IconButton
         aria-label="Delete this section"
         className="ms-2"
-        disabled={readOnly || (siteInvalid && !sectionContainsErrors)}
+        disabled={readOnly || (siteHasInvalidSection && !sectionContainsErrors)}
         icon={faTimes}
         variant="light"
         onClick={() => removeSection()}
       /> }
     </div>
     <textarea value={editorValue} style={{ height: 'calc(100% - 2em)', width: '100%', minHeight: '300px' }}
-      disabled={readOnly || (siteInvalid && !sectionContainsErrors)}
+      disabled={readOnly || (siteHasInvalidSection && !sectionContainsErrors)}
       className={classNames('w-100 flex-grow-1 form-control font-monospace',
         { 'is-invalid': sectionContainsErrors })}
       onChange={e => {
