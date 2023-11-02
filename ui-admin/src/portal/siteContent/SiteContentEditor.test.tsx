@@ -5,7 +5,7 @@ import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen, waitFor } from '@testing-library/react'
 import { emptyApi, mockSiteContent } from 'test-utils/mock-site-content'
 import userEvent from '@testing-library/user-event'
-import { mockPortalEnvContext } from 'test-utils/mocking-utils'
+import {mockPortalEnvContext, mockPortalEnvironment} from 'test-utils/mocking-utils'
 
 test('enables live-preview text editing', async () => {
   const siteContent = mockSiteContent()
@@ -71,9 +71,8 @@ test('invalid site JSON disables Save button', async () => {
   const siteContent = mockSiteContent()
   const { RoutedComponent } = setupRouterTest(
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
-      loadSiteContent={jest.fn()} createNewVersion={jest.fn()} portalShortcode="foo"
-      switchToVersion={jest.fn()}
-      portalEnv={mockPortalEnvironment('sandbox')}/>)
+      loadSiteContent={jest.fn()} createNewVersion={jest.fn()}
+      switchToVersion={jest.fn()} portalEnvContext={mockPortalEnvContext('sandbox')}/>)
   render(RoutedComponent)
 
   //Act
@@ -89,9 +88,9 @@ test('invalid site JSON disables Add Page button', async () => {
   const siteContent = mockSiteContent()
   const { RoutedComponent } = setupRouterTest(
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
-      loadSiteContent={jest.fn()} createNewVersion={jest.fn()} portalShortcode="foo"
+      loadSiteContent={jest.fn()} createNewVersion={jest.fn()}
       switchToVersion={jest.fn()}
-      portalEnv={mockPortalEnvironment('sandbox')}/>)
+      portalEnvContext={mockPortalEnvContext('sandbox')}/>)
   render(RoutedComponent)
 
   //Act
@@ -108,8 +107,8 @@ test('invalid site JSON disables page selector', async () => {
   const siteContent = mockSiteContent()
   const { RoutedComponent } = setupRouterTest(
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
-      loadSiteContent={jest.fn()} createNewVersion={jest.fn()} portalShortcode="foo" switchToVersion={jest.fn()}
-      portalEnv={mockPortalEnvironment('sandbox')}/>)
+      loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
+      portalEnvContext={mockPortalEnvContext('sandbox')}/>)
   render(RoutedComponent)
 
   //Act
