@@ -168,9 +168,8 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     public void syncAllKitStatusesFromPepper() {
         // first get a list of all studies that have kit types configured
         List<StudyEnvironmentKitType> envKitTypes = studyEnvironmentKitTypeService.findAll();
-        List<StudyEnvironment> studyEnvs = studyEnvironmentService.findAll(
-                envKitTypes.stream().map(StudyEnvironmentKitType::getStudyEnvironmentId).collect(Collectors.toList())
-        );
+        List<UUID> studyEnvIds = envKitTypes.stream().map(StudyEnvironmentKitType::getStudyEnvironmentId).distinct().toList();
+        List<StudyEnvironment> studyEnvs = studyEnvironmentService.findAll(studyEnvIds);
         List<Study> studies = studyService.findAll(
                 studyEnvs.stream().map(StudyEnvironment::getStudyId).distinct().collect(Collectors.toList())
         );
@@ -183,9 +182,10 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             // then update the statuses in Juniper for each environment
            try {
                Collection<PepperKitStatus> pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
-               for (EnvironmentName environmentName : EnvironmentName.values()) {
-                     syncKitStatusesForStudyEnv(study.getShortcode(), environmentName, pepperKitStatuses);
-               }
+               // now find the environments for this study from the list of environments with kit types
+               studyEnvs.stream().filter(studyEnv -> studyEnv.getStudyId().equals(study.getId())).forEach( studyEnv -> {
+                   syncKitStatusesForStudyEnv(study.getShortcode(), studyEnv.getEnvironmentName(), pepperKitStatuses);
+               });
             } catch (PepperParseException | PepperApiException e) {
                 // if one sync fails, keep trying others in case the failure is just isolated unexpected data
                 log.error("kit status sync failed for study %s".formatted(study.getShortcode()), e);

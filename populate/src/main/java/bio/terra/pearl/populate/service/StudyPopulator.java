@@ -113,6 +113,13 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
                     .build();
             preEnrollmentResponseDao.create(response);
         }
+        for (String kitTypeName : studyPopEnv.getKitTypeNames()) {
+            var kitType = kitTypeDao.findByName(kitTypeName).get();
+            studyEnvironmentKitTypeDao.create(StudyEnvironmentKitType.builder()
+                    .studyEnvironmentId(savedEnv.getId())
+                    .kitTypeId(kitType.getId())
+                    .build());
+        }
         // now populate enrollees
         for (String enrolleeFile : studyPopEnv.getEnrolleeFiles()) {
             enrolleePopulator.populate(context.newFrom(enrolleeFile), overwrite);
@@ -156,14 +163,6 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
         }
         if (existingStudy == null) {
             existingStudy = studyService.create(popDto);
-        }
-
-        for (String kitTypeName : popDto.getKitTypeNames()) {
-            var kitType = kitTypeDao.findByName(kitTypeName).get();
-            studyEnvironmentKitTypeDao.create(StudyEnvironmentKitType.builder()
-                    .studyEnvironmentId(existingStudy.getId())
-                    .kitTypeId(kitType.getId())
-                    .build());
         }
 
         if (!overwrite) {

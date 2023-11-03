@@ -16,12 +16,10 @@ import java.util.UUID;
 @Service
 public class StudyEnvironmentKitTypeService extends CrudService<StudyEnvironmentKitType, StudyEnvironmentKitTypeDao> {
     private final KitTypeDao kitTypeDao;
-    private final StudyEnvironmentService studyEnvironmentService;
 
-    public StudyEnvironmentKitTypeService(StudyEnvironmentKitTypeDao dao, KitTypeDao kitTypeDao, StudyEnvironmentService studyEnvironmentService) {
+    public StudyEnvironmentKitTypeService(StudyEnvironmentKitTypeDao dao, KitTypeDao kitTypeDao) {
         super(dao);
         this.kitTypeDao = kitTypeDao;
-        this.studyEnvironmentService = studyEnvironmentService;
     }
 
     public List<KitType> findKitTypesByStudyEnvironmentId(UUID studyEnvId) {

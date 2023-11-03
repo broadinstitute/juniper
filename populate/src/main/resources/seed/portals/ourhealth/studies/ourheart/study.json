@@ -22,10 +22,10 @@
     "emails/surveyReminder.json",
     "emails/adHoc.json"
   ],
-  "kitTypeNames": [ "SALIVA" ],
   "studyEnvironmentDtos": [
     {
       "environmentName": "sandbox",
+      "kitTypeNames": [ "SALIVA" ],
       "studyEnvironmentConfig": {
         "acceptingEnrollment": true,
         "passwordProtected": false,

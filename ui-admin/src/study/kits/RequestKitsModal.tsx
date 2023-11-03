@@ -1,4 +1,4 @@
-import {paramsFromContext, StudyEnvContextT} from '../StudyEnvironmentRouter'
+import { paramsFromContext, StudyEnvContextT } from '../StudyEnvironmentRouter'
 import React, { useState } from 'react'
 import { useKitTypeSelect } from '../participants/RequestKitModal'
 import { doApiLoad } from 'api/api-utils'

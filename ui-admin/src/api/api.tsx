@@ -17,7 +17,7 @@ import {
   PreregistrationResponse
 } from '@juniper/ui-core'
 import { facetValuesToString, FacetValue } from './enrolleeSearch'
-import {StudyEnvParams} from "../study/StudyEnvironmentRouter";
+import { StudyEnvParams } from '../study/StudyEnvironmentRouter'
 
 export type {
   Answer,
@@ -1130,11 +1130,6 @@ function basePortalUrl(portalShortcode: string) {
 /** base api path for study-scoped api requests */
 function basePublicPortalEnvUrl(portalShortcode: string, envName: string) {
   return `${API_ROOT}/public/portals/v1/${portalShortcode}/env/${envName}`
-}
-
-/** base api path for study-scoped api requests */
-function baseStudyUrl(portalShortcode: string, studyShortcode: string) {
-  return `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}`
 }
 
 /** base api path for study-scoped api requests */
