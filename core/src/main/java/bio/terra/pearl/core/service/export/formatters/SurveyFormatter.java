@@ -13,8 +13,6 @@ import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -83,7 +81,7 @@ public class SurveyFormatter implements ExportFormatter {
             return header + OTHER_DESCRIPTION_KEY_SUFFIX;
         } else if (itemExportInfo.getQuestionStableId() != null) {
             // for now, strip the prefixes to aid in readability.  Once we have multi-source surveys, we can revisit this.
-            String cleanStableId = stripStudyPrefixes(itemExportInfo.getQuestionStableId());
+            String cleanStableId = stripStudyAndSurveyPrefixes(itemExportInfo.getQuestionStableId());
             header = ExportFormatUtils.getColumnKey(moduleExportInfo.getModuleName(), cleanStableId);
             if (itemExportInfo.isSplitOptionsIntoColumns()) {
                 header += ExportFormatUtils.COLUMN_NAME_DELIMITER + choice.stableId();
@@ -104,7 +102,7 @@ public class SurveyFormatter implements ExportFormatter {
         if (isOtherDescription) {
             return OTHER_DESCRIPTION_HEADER;
         }
-        return ExportFormatUtils.camelToWordCase(stripStudyPrefixes(itemExportInfo.getQuestionStableId()));
+        return ExportFormatUtils.camelToWordCase(stripStudyAndSurveyPrefixes(itemExportInfo.getQuestionStableId()));
     }
 
     public ModuleExportInfo getModuleExportInfo(ExportOptions exportOptions, String stableId, List<Survey> surveys,
@@ -135,11 +133,14 @@ public class SurveyFormatter implements ExportFormatter {
                 .build();
     }
 
-    protected String stripStudyPrefixes(String stableId) {
-        if (stableId.lastIndexOf("_") < 0) {
+    /** strip out study and survey prefixes.  so e.g. "oh_oh_famHx_question1" becomes "question1" */
+    public static String stripStudyAndSurveyPrefixes(String stableId) {
+        // if there are >= 3 underscores, filter out everything before the third underscore
+        int thirdUnderscoreIndex = StringUtils.ordinalIndexOf(stableId, "_", 3);
+        if (thirdUnderscoreIndex < 0) {
             return stableId;
         }
-        return stableId.substring(stableId.lastIndexOf('_') + 1);
+        return stableId.substring(thirdUnderscoreIndex + 1);
     }
 
     /**

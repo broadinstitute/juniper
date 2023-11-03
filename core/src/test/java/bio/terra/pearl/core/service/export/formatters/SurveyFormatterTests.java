@@ -1,10 +1,11 @@
-package bio.terra.pearl.core.service.export;
+package bio.terra.pearl.core.service.export.formatters;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.formatters.SurveyFormatter;
 import bio.terra.pearl.core.service.export.instance.ExportOptions;
 import bio.terra.pearl.core.service.export.instance.ItemExportInfo;
@@ -155,6 +156,14 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
         exportOptions = ExportOptions.builder().splitOptionsIntoColumns(false).stableIdsForOptions(true).build();
         valueMap = generateAnswerMap(questionDef, multiselectBoth, exportOptions);
         assertThat(valueMap.get("oh_surveyA.oh_surveyA_q1"), equalTo("red"));
+    }
+
+    @Test
+    public void testStripStudyAndSurveyPrefixes() {
+        assertThat(SurveyFormatter.stripStudyAndSurveyPrefixes("oh_oh_famHx_someQuestion"), equalTo("someQuestion"));
+        assertThat(SurveyFormatter.stripStudyAndSurveyPrefixes("oh_oh_famHx_someQuestion_suffix"), equalTo("someQuestion_suffix"));
+        assertThat(SurveyFormatter.stripStudyAndSurveyPrefixes("nonStandardPrefix_someQuestion"), equalTo("nonStandardPrefix_someQuestion"));
+        assertThat(SurveyFormatter.stripStudyAndSurveyPrefixes("someQuestion"), equalTo("someQuestion"));
     }
 
     /** helper for testing generation of answer maps values for a single question-answer pair */
