@@ -63,7 +63,6 @@ const HtmlSectionEditor = ({
     setEditorValue(newEditorValue)
 
     if (section.sectionType === 'RAW_HTML') {
-      console.log(newEditorValue)
       updateSection({ ...section, rawContent: newEditorValue, sectionConfig: undefined })
     } else {
       try {

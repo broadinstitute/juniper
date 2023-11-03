@@ -78,7 +78,7 @@ const HtmlPageView = ({
     newSectionArray[sectionIndex] = newSection
     htmlPage = {
       ...htmlPage,
-      sections: newSectionArray,
+      sections: newSectionArray
     }
     updatePage(htmlPage)
   }
