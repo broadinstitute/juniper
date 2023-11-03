@@ -45,26 +45,38 @@ const HtmlSectionEditor = ({
   const initial = SECTION_TYPES.find(sectionType => sectionType.value === section.sectionType)
   const [sectionTypeOpt, setSectionTypeOpt] = useState(initial)
 
-  const [editorValue, setEditorValue] = useState(() =>
-    JSON.stringify(JSON.parse(section?.sectionConfig ?? '{}'), null, 2))
+  const getSectionContent = (section: HtmlSection) => {
+    if (section.sectionType === 'RAW_HTML') {
+      return section.rawContent ?? ''
+    } else {
+      return JSON.stringify(JSON.parse(section?.sectionConfig ?? '{}'), null, 2)
+    }
+  }
+
+  const [editorValue, setEditorValue] = useState(getSectionContent(section))
 
   useEffect(() => {
-    setEditorValue(JSON.stringify(JSON.parse(section?.sectionConfig ?? '{}'), null, 2))
+    setEditorValue(getSectionContent(section))
   }, [section.sectionConfig])
 
   const handleEditorChange = (newEditorValue: string) => {
     setEditorValue(newEditorValue)
 
-    try {
-      JSON.parse(newEditorValue)
-      setSiteHasInvalidSection(false)
-      setSectionContainsErrors(false)
-      updateSection({ ...section, sectionConfig: newEditorValue })
-    } catch (e) {
-      setSiteHasInvalidSection(true)
-      setSectionContainsErrors(true)
-      // Note that we do not call updateSection here, as that would result in an invalid preview being shown.
-      // Instead, the preview will be based on the last valid config for this section.
+    if (section.sectionType === 'RAW_HTML') {
+      console.log(newEditorValue)
+      updateSection({ ...section, rawContent: newEditorValue, sectionConfig: undefined })
+    } else {
+      try {
+        JSON.parse(newEditorValue)
+        setSiteHasInvalidSection(false)
+        setSectionContainsErrors(false)
+        updateSection({ ...section, sectionConfig: newEditorValue, rawContent: undefined })
+      } catch (e) {
+        setSiteHasInvalidSection(true)
+        setSectionContainsErrors(true)
+        // Note that we do not call updateSection here, as that would result in an invalid preview being shown.
+        // Instead, the preview will be based on the last valid config for this section.
+      }
     }
   }
 

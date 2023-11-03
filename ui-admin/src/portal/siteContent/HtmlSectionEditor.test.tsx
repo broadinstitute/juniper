@@ -5,6 +5,7 @@ import { mockHtmlPage, mockHtmlSection } from 'test-utils/mock-site-content'
 import HtmlSectionEditor from './HtmlSectionEditor'
 import userEvent from '@testing-library/user-event'
 import { sectionTemplates } from './sectionTemplates'
+import { SectionType } from '@juniper/ui-core'
 
 test('readOnly disables section type selection', async () => {
   const mockPage = mockHtmlPage()
@@ -155,4 +156,24 @@ test('invalid JSON disables moveSection buttons', async () => {
   //Assert
   expect(screen.getByLabelText('Move this section before the previous one')).toHaveAttribute('aria-disabled', 'true')
   expect(screen.getByLabelText('Move this section after the next one')).toHaveAttribute('aria-disabled', 'true')
+})
+
+test('RAW_HTML sections should load content from the rawContent field', async () => {
+  //Arrange
+  const mockSection = {
+    id: 'testSection',
+    sectionType: 'RAW_HTML' as SectionType,
+    rawContent: '<p>Test</p>'
+  }
+
+  const { RoutedComponent } = setupRouterTest(
+    <HtmlSectionEditor section={mockSection} readOnly={false}  allowTypeChange={false} updateSection={jest.fn()}
+      setSiteHasInvalidSection={jest.fn()} siteHasInvalidSection={false}/>)
+  render(RoutedComponent)
+
+  //Act
+  const input = screen.getByRole('textbox')
+
+  //Assert
+  expect(input).toHaveValue(mockSection.rawContent)
 })

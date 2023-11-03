@@ -71,13 +71,14 @@ const HtmlPageView = ({
     const newSection = {
       ...htmlPage.sections[sectionIndex],
       sectionType: updatedSection.sectionType,
-      sectionConfig: updatedSection.sectionConfig
+      sectionConfig: updatedSection.sectionConfig,
+      rawContent: updatedSection.rawContent
     }
     const newSectionArray = [...htmlPage.sections]
     newSectionArray[sectionIndex] = newSection
     htmlPage = {
       ...htmlPage,
-      sections: newSectionArray
+      sections: newSectionArray,
     }
     updatePage(htmlPage)
   }
