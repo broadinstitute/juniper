@@ -66,7 +66,7 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
         assertThat(fetchedSurvey.getAnswerMappings().size(), greaterThan(0));
 
         var questionDefs = surveyQuestionDefinitionDao.findAllBySurveyId(fetchedSurvey.getId());
-        assertThat(questionDefs, hasSize(53));
+        assertThat(questionDefs, hasSize(52));
     }
 
     @Test
