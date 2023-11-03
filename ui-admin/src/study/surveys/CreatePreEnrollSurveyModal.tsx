@@ -8,7 +8,7 @@ import { successNotification } from 'util/notifications'
 import Modal from 'react-bootstrap/Modal'
 import InfoPopup from 'components/forms/InfoPopup'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { useFormCreationNameFields } from './CreateSurveyModal'
+import { useFormCreationNameFields } from './useFormCreationNameFields'
 import { ApiErrorResponse, defaultApiErrorHandle, doApiLoad } from 'api/api-utils'
 
 /** dialog for adding a new PreEnrollment survey */
