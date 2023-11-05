@@ -688,7 +688,39 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+    post:
+      summary: create a new notification config for the environment
+      tags: [ notificationConfig ]
+      operationId: create
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: The notification config
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/notificationConfigs/{configId}:
+    get:
+      summary: gets the notification config by id
+      tags: [ notificationConfig ]
+      operationId: get
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: configId, in: path, required: true, schema: { type: string, format: uuid} }
+      responses:
+        '200':
+          description: The notification config
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
     patch:
       summary: Since configs are immutable, a new config is made and the current one is deactivated.  The new config is attached to the study and is returned
       tags: [ notificationConfig ]
@@ -707,7 +739,6 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/notifications/adhoc:
     post:
       summary: Send a one-off notification/message to one or more enrollees with a specified notification config

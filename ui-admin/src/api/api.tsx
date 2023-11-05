@@ -888,6 +888,13 @@ export default {
     return fetch(url,  this.getGetInit())
   },
 
+  async findNotificationConfig(portalShortcode: string, studyShortcode: string, envName: string, id: string):
+Promise<NotificationConfig> {
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/notificationConfigs/${id}`
+    const response = await fetch(url,  this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   async findNotificationConfigsForStudyEnv(portalShortcode: string, studyShortcode: string, envName: string):
     Promise<NotificationConfig[]> {
     const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/notificationConfigs`

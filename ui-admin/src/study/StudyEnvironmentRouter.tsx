@@ -86,7 +86,8 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       />
     </NavBreadcrumb>
     <Routes>
-      <Route path="notificationContent/*" element={<NotificationContent studyEnvContext={studyEnvContext}/>}/>
+      <Route path="notificationContent/*" element={<NotificationContent studyEnvContext={studyEnvContext}
+                                                                        portalContext={portalContext}/>}/>
       <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
       <Route path="kits/*" element={<KitsRouter studyEnvContext={studyEnvContext}/>}/>
       <Route path="siteContent" element={<SiteContentLoader portalEnvContext={portalEnvContext}/>}/>

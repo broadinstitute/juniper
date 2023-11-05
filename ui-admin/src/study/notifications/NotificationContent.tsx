@@ -6,6 +6,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import NotificationConfigView from './NotificationConfigView'
 import { renderPageHeader } from 'util/pageUtils'
+import {LoadedPortalContextT} from "../../portal/PortalProvider";
 
 const CONFIG_GROUPS = [
   { title: 'Event', type: 'EVENT' },
@@ -14,7 +15,8 @@ const CONFIG_GROUPS = [
 ]
 
 /** shows configuration of notifications for a study */
-export default function NotificationContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
+export default function NotificationContent({ studyEnvContext, portalContext}:
+{studyEnvContext: StudyEnvContextT, portalContext: LoadedPortalContextT}) {
   const currentEnv = studyEnvContext.currentEnv
   const navigate = useNavigate()
   const [previousEnv, setPreviousEnv] = useState<string>(currentEnv.environmentName)
@@ -61,7 +63,7 @@ export default function NotificationContent({ studyEnvContext }: {studyEnvContex
       <div className="col-md-9 py-3">
         <Routes>
           <Route path="configs/:configId"
-            element={<NotificationConfigView studyEnvContext={studyEnvContext}/>}/>
+            element={<NotificationConfigView studyEnvContext={studyEnvContext} portalContext={portalContext}/>}/>
         </Routes>
         <Outlet/>
       </div>

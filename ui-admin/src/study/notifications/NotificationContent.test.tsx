@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 
-import { mockNotificationConfig, mockStudyEnvContext } from 'test-utils/mocking-utils'
+import {mockNotificationConfig, mockPortalContext, mockStudyEnvContext} from 'test-utils/mocking-utils'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import NotificationContent from './NotificationContent'
 import userEvent from '@testing-library/user-event'
@@ -30,7 +30,8 @@ test('renders routable config list', async () => {
     }
   ]
 
-  const { RoutedComponent, router } = setupRouterTest(<NotificationContent studyEnvContext={studyEnvContext}/>)
+  const { RoutedComponent, router } =
+      setupRouterTest(<NotificationContent studyEnvContext={studyEnvContext} portalContext={mockPortalContext()}/>)
   render(RoutedComponent)
   expect(screen.getByText('Participant Notifications')).toBeInTheDocument()
   expect(screen.getByText('Study enrollment')).toBeInTheDocument()

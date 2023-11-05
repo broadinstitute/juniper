@@ -47,7 +47,7 @@ export const useLoadingEffect = (loadingFunc: () => Promise<unknown>,
   useEffect(() => {
     reload()
   }, deps)
-  return { isLoading, isError, reload }
+  return { isLoading, isError, reload, setIsLoading }
 }
 
 /**
