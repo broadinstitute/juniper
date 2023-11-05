@@ -7,6 +7,10 @@ import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import NotificationConfigView from './NotificationConfigView'
 import { renderPageHeader } from 'util/pageUtils'
 import {LoadedPortalContextT} from "../../portal/PortalProvider";
+import {NotificationConfig} from "@juniper/ui-core";
+import Api from "../../api/api";
+import {useLoadingEffect} from "../../api/api-utils";
+import LoadingSpinner from "../../util/LoadingSpinner";
 
 const CONFIG_GROUPS = [
   { title: 'Event', type: 'EVENT' },
@@ -19,11 +23,18 @@ export default function NotificationContent({ studyEnvContext, portalContext}:
 {studyEnvContext: StudyEnvContextT, portalContext: LoadedPortalContextT}) {
   const currentEnv = studyEnvContext.currentEnv
   const navigate = useNavigate()
+  const [configList, setConfigList] = useState<NotificationConfig[]>([])
   const [previousEnv, setPreviousEnv] = useState<string>(currentEnv.environmentName)
   /** styles links as bold if they are the current path */
   const navStyleFunc = ({ isActive }: {isActive: boolean}) => {
     return isActive ? { fontWeight: 'bold' } : {}
   }
+
+  const {isLoading, reload} = useLoadingEffect(async () => {
+    const configList = await Api.findNotificationConfigsForStudyEnv(portalContext.portal.shortcode,
+        studyEnvContext.study.shortcode, currentEnv.environmentName)
+    setConfigList(configList)
+  }, [currentEnv.environmentName, studyEnvContext.study.shortcode])
 
   useEffect(() => {
     if (previousEnv !== currentEnv.environmentName) {
@@ -35,14 +46,15 @@ export default function NotificationContent({ studyEnvContext, portalContext}:
 
   return <div className="container-fluid px-4 py-2">
     { renderPageHeader('Emails & Notifications') }
-    <div className="row">
+    {isLoading && <LoadingSpinner/>}
+    {!isLoading && <div className="row">
       <div className="col-md-3 mh-100 bg-white border-end">
         <h4>Participant Notifications</h4>
         <ul className="list-unstyled p-2">
           { CONFIG_GROUPS.map(group => <li key={group.type}>
             <h6 className="pt-2">{group.title}</h6>
             <ul>
-              { currentEnv.notificationConfigs
+              { configList
                 .filter(config => config.notificationType === group.type)
                 .map(config => <li key={config.id} className="py-1">
                   <div className="d-flex">
@@ -67,6 +79,6 @@ export default function NotificationContent({ studyEnvContext, portalContext}:
         </Routes>
         <Outlet/>
       </div>
-    </div>
+    </div> }
   </div>
 }

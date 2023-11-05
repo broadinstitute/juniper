@@ -1121,7 +1121,12 @@ Promise<NotificationConfig> {
 
 /** gets an image url for a SiteImage suitable for including in an img tag */
 export function getImageUrl(portalShortcode: string, cleanFileName: string, version: number) {
-  return `${basePublicPortalEnvUrl(portalShortcode, 'live')}/siteImages/${version}/${cleanFileName}`
+  return `${getImageBaseUrl(portalShortcode)}/siteImages/${version}/${cleanFileName}`
+}
+
+/** gets the base url for public site images */
+export function getImageBaseUrl(portalShortcode: string) {
+  return `${basePublicPortalEnvUrl(portalShortcode, 'live')}/siteImages`
 }
 
 /** base api path for study-scoped api requests */

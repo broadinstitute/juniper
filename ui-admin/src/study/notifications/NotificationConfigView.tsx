@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { useNavigate, useParams } from 'react-router-dom'
 import Select from 'react-select'
@@ -9,6 +9,8 @@ import { Store } from 'react-notifications-component'
 import {doApiLoad, useLoadingEffect} from "api/api-utils";
 import {LoadedPortalContextT} from "portal/PortalProvider";
 import LoadingSpinner from "util/LoadingSpinner";
+import EmailEditor, { EditorRef, EmailEditorProps } from 'react-email-editor';
+import EmailTemplateEditor from "./EmailTemplateEditor";
 
 const configTypeOptions = [{ label: 'Event', value: 'EVENT' }, { label: 'Task reminder', value: 'TASK_REMINDER' },
   { label: 'Ad hoc', value: 'AD_HOC' }]
@@ -51,10 +53,7 @@ export default function NotificationConfigView({ studyEnvContext, portalContext}
     }, {setIsLoading})
   }
 
-  let templateVersionString = hasTemplate ? `v${workingConfig!.emailTemplate.version}` : ''
-  if (workingConfig?.emailTemplate.version !== config?.emailTemplate.version) {
-    templateVersionString = ' - unsaved changes'
-  }
+
 
   return <div>
     {!isLoading && !!workingConfig && <form className="bg-white p-3 my-2">
@@ -124,32 +123,16 @@ export default function NotificationConfigView({ studyEnvContext, portalContext}
         </label>
       </div>
 
-      { hasTemplate && <div className="mt-3">
-        <div className="d-flex align-items-baseline">
-          <h3 className="h6">{workingConfig.emailTemplate.name}</h3>
-          <div className="ms-2 text-muted fst-italic">
-            ({workingConfig.emailTemplate.stableId} {templateVersionString})
-          </div>
-        </div>
-        <div>
-          <label className="form-label">Subject
-            <input className="form-control" type="text" size={100} value={workingConfig.emailTemplate.subject}
-              onChange={e => setWorkingConfig({
-                ...workingConfig,
-                emailTemplate: { ...workingConfig.emailTemplate,
-                  subject: e.target.value, id: undefined,
-                  version: config!.emailTemplate.version + 1 }
-              })}/>
-          </label>
-        </div>
-        <textarea rows={20} cols={100} value={workingConfig.emailTemplate.body}
-                  onChange={e => setWorkingConfig({
-                    ...workingConfig,
-                    emailTemplate: { ...workingConfig.emailTemplate,
-                      body: e.target.value, id: undefined,
-                      version: config!.emailTemplate.version + 1 }
-                  })}/>
-      </div>}
+      { hasTemplate && <EmailTemplateEditor emailTemplate={workingConfig.emailTemplate}
+                                            portalShortcode={portal.shortcode}
+                                            updateEmailTemplate={updatedTemplate => setWorkingConfig({
+                                              ...workingConfig,
+                                              emailTemplate: {
+                                                ...updatedTemplate,
+                                                id: undefined,
+                                                version: config!.emailTemplate.version + 1
+                                              }
+                                            })}/>}
 
       <div className="d-flex justify-content-center">
         <button type="button" className="btn btn-primary" onClick={saveConfig}>Save</button>
