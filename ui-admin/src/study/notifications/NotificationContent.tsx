@@ -49,11 +49,10 @@ export default function NotificationContent({ studyEnvContext, portalContext}:
     {isLoading && <LoadingSpinner/>}
     {!isLoading && <div className="row">
       <div className="col-md-3 mh-100 bg-white border-end">
-        <h4>Participant Notifications</h4>
         <ul className="list-unstyled p-2">
           { CONFIG_GROUPS.map(group => <li key={group.type}>
             <h6 className="pt-2">{group.title}</h6>
-            <ul>
+            <ul className="list-unstyled p-2">
               { configList
                 .filter(config => config.notificationType === group.type)
                 .map(config => <li key={config.id} className="py-1">
