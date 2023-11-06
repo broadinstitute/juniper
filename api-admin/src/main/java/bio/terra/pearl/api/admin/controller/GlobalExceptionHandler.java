@@ -14,7 +14,6 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  // bad request
   @ExceptionHandler({
     MethodArgumentNotValidException.class,
     IllegalArgumentException.class,

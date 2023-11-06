@@ -15,11 +15,10 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  // bad request
   @ExceptionHandler({
-          MethodArgumentNotValidException.class,
-          IllegalArgumentException.class,
-          NoHandlerFoundException.class
+    MethodArgumentNotValidException.class,
+    IllegalArgumentException.class,
+    NoHandlerFoundException.class
   })
   public ResponseEntity<ErrorReport> validationExceptionHandler(Exception ex) {
     return buildErrorReport(ex, HttpStatus.BAD_REQUEST);

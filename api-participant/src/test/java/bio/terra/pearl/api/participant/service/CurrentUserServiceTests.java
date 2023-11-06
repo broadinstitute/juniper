@@ -16,6 +16,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,6 +68,28 @@ public class CurrentUserServiceTests extends BaseSpringBootTest {
       assertThat(
           e.getMessage(),
           equalTo("User not found for environment %s".formatted(portalEnv.getEnvironmentName())));
+    }
+  }
+
+  @Test
+  @Transactional
+  public void testUserLoginWrongPortal(TestInfo testInfo) {
+    String testName = getTestName(testInfo);
+    PortalEnvironment portalEnv1 =
+        portalEnvironmentFactory.buildPersisted(testName, EnvironmentName.sandbox);
+    var userBundle = participantUserFactory.buildPersisted(portalEnv1, testName);
+
+    PortalEnvironment portalEnv2 =
+        portalEnvironmentFactory.buildPersisted(testName + "2", EnvironmentName.sandbox);
+    String portalShortcode2 = portalService.find(portalEnv2.getPortalId()).get().getShortcode();
+
+    String token = generateFakeJwtToken(userBundle.user().getUsername());
+    try {
+      currentUserService.tokenLogin(token, portalShortcode2, portalEnv2.getEnvironmentName());
+      Assertions.fail("Should have thrown UnauthorizedException");
+    } catch (Exception e) {
+      assertThat(
+          e.getMessage(), equalTo("User not found for portal %s".formatted(portalShortcode2)));
     }
   }
 

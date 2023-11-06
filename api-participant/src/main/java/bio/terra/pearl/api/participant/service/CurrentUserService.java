@@ -73,16 +73,15 @@ public class CurrentUserService {
   }
 
   public UserWithEnrollees loadFromUser(ParticipantUser user, String portalShortcode) {
-    PortalParticipantUser portalParticipantUser =
-        portalParticipantUserService
-            .findOne(user.getId(), portalShortcode)
-            .orElseThrow(
-                () ->
-                    new UnauthorizedException(
-                        "User %s not found for portal %s"
-                            .formatted(user.getUsername(), portalShortcode)));
-    user.getPortalParticipantUsers().add(portalParticipantUser);
-    List<Enrollee> enrollees = enrolleeService.findByPortalParticipantUser(portalParticipantUser);
+    Optional<PortalParticipantUser> portalParticipantUser =
+        portalParticipantUserService.findOne(user.getId(), portalShortcode);
+    if (portalParticipantUser.isEmpty()) {
+      log.info("User {} not found for portal {}", user.getUsername(), portalShortcode);
+      throw new UnauthorizedException("User not found for portal " + portalShortcode);
+    }
+    PortalParticipantUser portalUser = portalParticipantUser.get();
+    user.getPortalParticipantUsers().add(portalUser);
+    List<Enrollee> enrollees = enrolleeService.findByPortalParticipantUser(portalUser);
     for (Enrollee enrollee : enrollees) {
       enrollee
           .getParticipantTasks()
