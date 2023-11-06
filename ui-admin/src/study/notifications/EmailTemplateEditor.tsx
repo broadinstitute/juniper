@@ -25,12 +25,18 @@ export default function EmailTemplateEditor({emailTemplate, updateEmailTemplate,
         })
         unlayer.addEventListener('design:updated', () => {
             if (!emailEditorRef.current?.editor) {return}
-            emailEditorRef.current.editor.exportHtml((data) => {
-                updateEmailTemplate({
-                    ...emailTemplate,
-                    body: insertPlaceholders(data.html)
-                })
-            });
+            unlayer.loadDesign({
+                // @ts-ignore
+                html: replacePlaceholders(emailTemplate.body),
+                classic: true
+            })
+            
+            // emailEditorRef.current.editor.exportHtml((data) => {
+            //     updateEmailTemplate({
+            //         ...emailTemplate,
+            //         body: insertPlaceholders(data.html)
+            //     })
+            // });
         })
     }
 
@@ -64,6 +70,7 @@ export default function EmailTemplateEditor({emailTemplate, updateEmailTemplate,
                         ref={emailEditorRef}
                         onLoad={onEditorLoaded}
                         onReady={() => 1}
+                        options={{tools: {image: {enabled: false}}}}
                     />
                 </Tab>
                 <Tab eventKey="html" title="Html">
