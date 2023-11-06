@@ -5,7 +5,6 @@ import bio.terra.pearl.api.participant.service.CurrentUnauthedUserService;
 import bio.terra.pearl.api.participant.service.CurrentUserService;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
-import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -39,9 +38,9 @@ public class CurrentUnauthedUserController implements CurrentUnauthedUserApi {
      */
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     // for now, log them in as long as the username exists
-    Optional<CurrentUserService.UserWithEnrollees> userOpt =
+    CurrentUserService.UserWithEnrollees userOpt =
         unauthedUserService.unauthedLogin(username, portalShortcode, environmentName);
-    return ResponseEntity.of(userOpt.map(user -> user));
+    return ResponseEntity.ok(userOpt);
   }
 
   @Override
@@ -53,8 +52,8 @@ public class CurrentUnauthedUserController implements CurrentUnauthedUserApi {
     String token = requestUtilService.requireToken(request);
     var environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     // for now, log them in as long as the username exists
-    Optional<CurrentUserService.UserWithEnrollees> userOpt =
+    CurrentUserService.UserWithEnrollees userOpt =
         unauthedUserService.unauthedRefresh(token, portalShortcode, environmentName);
-    return ResponseEntity.of(userOpt.map(user -> user));
+    return ResponseEntity.ok(userOpt);
   }
 }

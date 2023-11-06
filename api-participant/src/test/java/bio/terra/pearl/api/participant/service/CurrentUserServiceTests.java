@@ -8,11 +8,13 @@ import bio.terra.pearl.api.participant.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.portal.PortalService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import java.util.UUID;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,38 +27,50 @@ public class CurrentUserServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testUserLoginEmptyIfNoUser() {
+  public void testUnauthorizedIfNoUser() {
     String username = "test" + RandomStringUtils.randomAlphabetic(5) + "@test.com";
     String token = generateFakeJwtToken(username);
-    var userBundle = currentUserService.tokenLogin(token, "whatev", EnvironmentName.irb);
-    assertThat(userBundle.isEmpty(), equalTo(true));
+    try {
+      currentUserService.tokenLogin(token, "whatev", EnvironmentName.irb);
+      Assertions.fail("Should have thrown UnauthorizedException");
+    } catch (Exception e) {
+      assertThat(
+          e.getMessage(),
+          equalTo("User not found for environment %s".formatted(EnvironmentName.irb)));
+    }
   }
 
   @Test
   @Transactional
   public void testUserLoginIfPresent() {
-    var portalEnv = portalEnvironmentFactory.buildPersisted("testUserLogin");
+    PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testUserLogin");
     var userBundle = participantUserFactory.buildPersisted(portalEnv, "testUserLogin");
     String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
     String token = generateFakeJwtToken(userBundle.user().getUsername());
 
-    var loadedUserOpt =
-        currentUserService.tokenLogin(token, portalShortcode, portalEnv.getEnvironmentName());
-
-    assertThat(loadedUserOpt.isPresent(), equalTo(true));
-    var loadedUser = loadedUserOpt.get();
-    assertThat(loadedUser.user().getUsername(), equalTo(userBundle.user().getUsername()));
-    assertThat(loadedUser.user().getPortalParticipantUsers(), hasSize(1));
+    try {
+      var loadedUser =
+          currentUserService.tokenLogin(token, portalShortcode, portalEnv.getEnvironmentName());
+      assertThat(loadedUser.user().getUsername(), equalTo(userBundle.user().getUsername()));
+      assertThat(loadedUser.user().getPortalParticipantUsers(), hasSize(1));
+    } catch (Exception e) {
+      Assertions.fail("Unexpected exception: " + e.getMessage());
+    }
 
     String missingUsername = "missing" + RandomStringUtils.randomAlphabetic(5) + "@test.com";
     String missingUserToken = generateFakeJwtToken(missingUsername);
-    var missingUserOpt =
-        currentUserService.tokenLogin(
-            missingUserToken, portalShortcode, portalEnv.getEnvironmentName());
-    assertThat(missingUserOpt.isEmpty(), equalTo(true));
+    try {
+      currentUserService.tokenLogin(
+          missingUserToken, portalShortcode, portalEnv.getEnvironmentName());
+      Assertions.fail("Should have thrown UnauthorizedException");
+    } catch (Exception e) {
+      assertThat(
+          e.getMessage(),
+          equalTo("User not found for environment %s".formatted(portalEnv.getEnvironmentName())));
+    }
   }
 
-  String generateFakeJwtToken(String username) {
+  private String generateFakeJwtToken(String username) {
     var token = UUID.randomUUID();
     return JWT.create()
         .withClaim("token", token.toString())

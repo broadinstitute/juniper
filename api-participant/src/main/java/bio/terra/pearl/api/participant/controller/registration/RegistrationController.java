@@ -9,7 +9,6 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.service.workflow.RegistrationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
-import java.util.function.Function;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -42,11 +41,13 @@ public class RegistrationController implements RegistrationApi {
   public ResponseEntity<Object> register(
       String portalShortcode, String envName, UUID preRegResponseId, RegistrationInfo body) {
     var environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    // TODO: seems like user should be authorized (tokenLogin) before registering -DC
     registrationService.register(
         portalShortcode, environmentName, body.getEmail(), preRegResponseId);
     var token = requestUtilService.requireToken(request);
-    var userWithEnrollees = currentUserService.tokenLogin(token, portalShortcode, environmentName);
-    return ResponseEntity.of(userWithEnrollees.map(Function.identity()));
+    CurrentUserService.UserWithEnrollees userWithEnrollees =
+        currentUserService.tokenLogin(token, portalShortcode, environmentName);
+    return ResponseEntity.ok(userWithEnrollees);
   }
 
   @Override
@@ -60,12 +61,8 @@ public class RegistrationController implements RegistrationApi {
     // log in the user if not already
     if (registrationResult.participantUser().getToken() == null) {
       CurrentUserService.UserWithEnrollees loggedInUser =
-          currentUnauthedUserService
-              .unauthedLogin(
-                  registrationResult.participantUser().getUsername(),
-                  portalShortcode,
-                  environmentName)
-              .get();
+          currentUnauthedUserService.unauthedLogin(
+              registrationResult.participantUser().getUsername(), portalShortcode, environmentName);
       registrationResult =
           new RegistrationService.RegistrationResult(
               loggedInUser.user(), registrationResult.portalParticipantUser());

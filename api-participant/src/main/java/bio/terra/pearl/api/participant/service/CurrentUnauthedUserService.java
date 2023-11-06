@@ -1,5 +1,6 @@
 package bio.terra.pearl.api.participant.service;
 
+import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.pearl.core.dao.participant.ParticipantUserDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
@@ -8,9 +9,11 @@ import com.auth0.jwt.algorithms.Algorithm;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class CurrentUnauthedUserService {
   private ParticipantUserDao participantUserDao;
@@ -24,21 +27,22 @@ public class CurrentUnauthedUserService {
   }
 
   @Transactional
-  public Optional<CurrentUserService.UserWithEnrollees> unauthedRefresh(
+  public CurrentUserService.UserWithEnrollees unauthedRefresh(
       String token, String portalShortcode, EnvironmentName environmentName) {
     return currentUserService.refresh(token, portalShortcode, environmentName);
   }
 
   @Transactional
-  public Optional<CurrentUserService.UserWithEnrollees> unauthedLogin(
+  public CurrentUserService.UserWithEnrollees unauthedLogin(
       String username, String portalShortcode, EnvironmentName environmentName) {
     Optional<ParticipantUser> userOpt = participantUserDao.findOne(username, environmentName);
-    if (userOpt.isPresent()) {
-      ParticipantUser user = userOpt.get();
-      user = updateUnauthedUserToken(user);
-      return Optional.of(currentUserService.loadFromUser(user, portalShortcode));
+    if (userOpt.isEmpty()) {
+      log.info("User {} not found for environment {}", username, environmentName);
+      throw new UnauthorizedException("User not found for environment " + environmentName);
     }
-    return Optional.empty();
+    ParticipantUser user = userOpt.get();
+    user = updateUnauthedUserToken(user);
+    return currentUserService.loadFromUser(user, portalShortcode);
   }
 
   protected ParticipantUser updateUnauthedUserToken(ParticipantUser user) {
