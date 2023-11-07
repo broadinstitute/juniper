@@ -2,6 +2,7 @@ package bio.terra.pearl.api.admin.controller;
 
 import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.pearl.api.admin.model.ErrorReport;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,13 @@ public class GlobalExceptionHandler {
   })
   public ResponseEntity<ErrorReport> validationExceptionHandler(Exception ex) {
     return buildErrorReport(ex, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler({
+    JWTDecodeException.class,
+  })
+  public ResponseEntity<ErrorReport> authenticationExceptionHandler(Exception ex) {
+    return buildErrorReport(ex, HttpStatus.UNAUTHORIZED);
   }
 
   @ExceptionHandler({
