@@ -55,18 +55,19 @@ export const RedirectFromOAuth = () => {
           const accessToken = auth.user.access_token
 
           // Register or login
-          const loginResult = auth.user.profile.newUser
-            ? await Api.register({ preRegResponseId, email, accessToken })
-            : await Api.tokenLogin(accessToken)
+          try {
+            const loginResult = auth.user.profile.newUser
+              ? await Api.register({ preRegResponseId, email, accessToken })
+              : await Api.tokenLogin(accessToken)
 
-          loginUser(loginResult, accessToken)
+            loginUser(loginResult, accessToken)
 
-          // Decide if there's a study that has either been explicitly selected or is implicit because it's the only one
-          const portalStudy = findReturnToStudy() || getSingleStudy() || null
+            // Decide if there's a study that has either been explicitly selected
+            // or is implicit because it's the only one
+            const portalStudy = findReturnToStudy() || getSingleStudy() || null
 
-          // Enroll in the study if not already enrolled
-          if (portalStudy && !userHasJoinedPortalStudy(portalStudy, loginResult.enrollees)) {
-            try {
+            // Enroll in the study if not already enrolled
+            if (portalStudy && !userHasJoinedPortalStudy(portalStudy, loginResult.enrollees)) {
               const response = await Api.createEnrollee({
                 studyShortcode: portalStudy.study.shortcode,
                 preEnrollResponseId
@@ -81,10 +82,10 @@ export const RedirectFromOAuth = () => {
               updateEnrollee(response.enrollee).then(() => {
                 navigate('/hub', { replace: true, state: hubUpdate })
               })
-            } catch {
+            } else {
               navigate('/hub', { replace: true })
             }
-          } else {
+          } catch {
             navigate('/hub', { replace: true })
           }
 
