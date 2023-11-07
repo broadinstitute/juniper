@@ -59,6 +59,16 @@ public class StudyEnvironmentController implements StudyEnvironmentApi {
   }
 
   @Override
+  public ResponseEntity<Object> getKitTypes(
+      String portalShortcode, String studyShortcode, String envName) {
+    AdminUser adminUser = requestService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    var kitTypes =
+        studyEnvExtService.getKitTypes(adminUser, portalShortcode, studyShortcode, environmentName);
+    return ResponseEntity.ok(kitTypes);
+  }
+
+  @Override
   public ResponseEntity<Object> stats(
       String portalShortcode, String studyShortcode, String envName) {
     AdminUser adminUser = requestService.requireAdminUser(request);

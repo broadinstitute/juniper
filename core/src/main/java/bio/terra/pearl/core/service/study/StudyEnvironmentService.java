@@ -14,6 +14,7 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.datarepo.DataRepoJobService;
 import bio.terra.pearl.core.service.datarepo.DatasetService;
+import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
@@ -35,6 +36,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     private DataRepoJobService dataRepoJobService;
     private WithdrawnEnrolleeService withdrawnEnrolleeService;
     private AdminTaskService adminTaskService;
+    private StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
 
 
     public StudyEnvironmentService(StudyEnvironmentDao studyEnvironmentDao,
@@ -47,7 +49,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
                                    DatasetService datasetService,
                                    DataRepoJobService dataRepoJobService,
                                    WithdrawnEnrolleeService withdrawnEnrolleeService,
-                                   AdminTaskService adminTaskService) {
+                                   AdminTaskService adminTaskService, StudyEnvironmentKitTypeService studyEnvironmentKitTypeService) {
         super(studyEnvironmentDao);
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
         this.studyEnvironmentConfigService =  studyEnvironmentConfigService;
@@ -59,6 +61,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         this.dataRepoJobService = dataRepoJobService;
         this.withdrawnEnrolleeService = withdrawnEnrolleeService;
         this.adminTaskService = adminTaskService;
+        this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
     }
 
     public List<StudyEnvironment> findByStudy(UUID studyId) {
@@ -111,6 +114,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         datasetService.deleteByStudyEnvironmentId(studyEnvironmentId);
         withdrawnEnrolleeService.deleteByStudyEnvironmentId(studyEnvironmentId);
         adminTaskService.deleteByStudyEnvironmentId(studyEnvironmentId, null);
+        studyEnvironmentKitTypeService.deleteByStudyEnvironmentId(studyEnvironmentId, cascade);
         dao.delete(studyEnvironmentId);
         if (studyEnv.getStudyEnvironmentConfigId() != null) {
             studyEnvironmentConfigService.delete(studyEnv.getStudyEnvironmentConfigId());
