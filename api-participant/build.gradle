@@ -48,15 +48,42 @@ dependencies {
 }
 
 task copyWebApp(type: Copy) {
+    dependsOn(rootProject.bundleParticipantUI)
     from "$rootDir/ui-participant/build"
     into "$rootDir/api-participant/build/resources/main/static"
 }
 
-// for now, only jib depends on copyWebApp, so that a npm rebuild/install will not be triggered for
-// development redeploys.  this means to deploy locally with the static assets in place you'll
-// need to run the copyWebApp task yourself
-copyWebApp.dependsOn(rootProject.bundleParticipantUI)
-jibDockerBuild.dependsOn('copyWebApp')
+// creates copies of the fingerprinted js files without the asset fingerprint.
+task createUnfingerprintedJs(type: Copy) {
+    dependsOn('copyWebApp')
+    dependsOn('processResources')
+    from "$rootDir/api-participant/build/resources/main/static/static/js"
+    into "$rootDir/api-participant/build/resources/main/static/static/js"
+    rename("main.([0-9a-f]{8}).js", "main.js")
+    rename('(.*).([0-9a-f]{8}).chunk.js', '$1.chunk.js')
+}
+
+// creates copies of the fingerprinted CSS files without the asset fingerprint
+task createUnfingerprintedCss(type: Copy) {
+    dependsOn('copyWebApp')
+    dependsOn('processResources')
+    from "$rootDir/api-participant/build/resources/main/static/static/css"
+    into "$rootDir/api-participant/build/resources/main/static/static/css"
+    rename("main.*.css", "main.css")
+}
+
+// See comment in PublicApiController.java for why we want unfingerprinted versions of assets.  We still keep the fingerprinted
+// versions for reference to help in determining which version of a file the server *actually* has
+task createUnfingerprintedAssets() {
+    dependsOn('createUnfingerprintedJs')
+    dependsOn('createUnfingerprintedCss')
+}
+
+// for now, only jib depends on copyWebApp (via createUnfingerprintedAssets),
+// so that a npm rebuild/install will not be triggered for development redeploys.
+// this means to deploy locally with the static assets in place you'll
+// need to run the copyWebApp task yourself from the repo root with ./gradlew api-participant:copyWebApp
+jibDockerBuild.dependsOn('createUnfingerprintedAssets')
 
 test {
     useJUnitPlatform ()

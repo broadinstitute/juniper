@@ -15,6 +15,7 @@ import bio.terra.pearl.core.service.participant.ProfileService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +39,10 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testRequestKitAssemble() throws Exception {
-        var adminUser = adminUserFactory.buildPersisted("testRequestKit");
-        var kitType = kitTypeFactory.buildPersisted("testRequestKit");
-        var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testRequestKit");
+    public void testRequestKitAssemble(TestInfo testInfo) throws Exception {
+        var adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
+        var kitType = kitTypeFactory.buildPersisted(getTestName(testInfo));
+        var enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
         var enrollee = enrolleeBundle.enrollee();
         var profile = enrollee.getProfile();
         profile.setGivenName("Alex");
@@ -67,10 +68,10 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testRequestKitError() {
-        var adminUser = adminUserFactory.buildPersisted("testRequestKit");
-        var kitType = kitTypeFactory.buildPersisted("testRequestKit");
-        var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testRequestKit");
+    public void testRequestKitError(TestInfo testInfo) {
+        var adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
+        var kitType = kitTypeFactory.buildPersisted(getTestName(testInfo));
+        var enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
         var enrollee = enrolleeBundle.enrollee();
         var profile = enrollee.getProfile();
         profile.setGivenName("Alex");
@@ -95,12 +96,12 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testUpdateKitStatus() throws Exception {
+    public void testUpdateKitStatus(TestInfo testInfo) throws Exception {
         // Arrange
-        var adminUser = adminUserFactory.buildPersisted("testUpdateKitStatus");
-        var enrollee = enrolleeFactory.buildPersisted("testUpdateKitStatus");
-        var kitType = kitTypeFactory.buildPersisted("testUpdateKitStatus");
-        var kitRequest = kitRequestFactory.buildPersisted("testUpdateKitStatus",
+        var adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
+        var enrollee = enrolleeFactory.buildPersisted(getTestName(testInfo));
+        var kitType = kitTypeFactory.buildPersisted(getTestName(testInfo));
+        var kitRequest = kitRequestFactory.buildPersisted(getTestName(testInfo),
             enrollee.getId(), kitType.getId(), adminUser.getId());
 
         var response = PepperKitStatus.builder()
@@ -118,16 +119,17 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testGetSampleKitsForStudyEnvironment() throws Exception {
+    public void testGetSampleKitsForStudyEnvironment(TestInfo testInfo) throws Exception {
         // Arrange:
         //   2 kits, one with bogus status JSON
-        var adminUser = adminUserFactory.buildPersisted("testGetSampleKitsForStudyEnvironment");
-        var studyEnvironment = studyEnvironmentFactory.buildPersisted("testGetSampleKitsForStudyEnvironment");
-        var enrollee = enrolleeFactory.buildPersisted("testGetSampleKitsForStudyEnvironment", studyEnvironment);
-        var kitType = kitTypeFactory.buildPersisted("testGetSampleKitsForStudyEnvironment");
-        var kitRequest1 = kitRequestFactory.buildPersisted("testGetSampleKitsForStudyEnvironment",
+        String testName = getTestName(testInfo);
+        var adminUser = adminUserFactory.buildPersisted(testName);
+        var studyEnvironment = studyEnvironmentFactory.buildPersisted(testName);
+        var enrollee = enrolleeFactory.buildPersisted(testName, studyEnvironment);
+        var kitType = kitTypeFactory.buildPersisted(testName);
+        var kitRequest1 = kitRequestFactory.buildPersisted(testName,
                 enrollee.getId(), kitType.getId(), adminUser.getId());
-        var kitRequest2 = kitRequestDao.create(kitRequestFactory.builder("testGetSampleKitsForStudyEnvironment")
+        var kitRequest2 = kitRequestDao.create(kitRequestFactory.builder(testName)
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee.getId())
                 .kitTypeId(kitType.getId())
@@ -143,7 +145,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testSyncAllKitStatusesFromPepper() throws Exception {
+    public void testSyncAllKitStatusesFromPepper(TestInfo testInfo) throws Exception {
         /*
          * Arrange:
          *  - an admin user
@@ -152,20 +154,25 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
          *  - two enrollees, 1a and 1b, in the study environment, each with a sample kit
          *  - another enrollee in another study, also with a sample kit
          */
-        var adminUser = adminUserFactory.buildPersisted("testSyncAllKitStatusesFromPepper");
-        var studyEnvironment = studyEnvironmentFactory.buildPersisted("testSyncAllKitStatusesFromPepper");
+
+        String testName = getTestName(testInfo);
+        var kitType = kitTypeFactory.buildPersisted(testName);
+        var adminUser = adminUserFactory.buildPersisted(testName);
+        var studyEnvironment = studyEnvironmentFactory.buildPersisted(testName);
+        kitTypeFactory.attachTypeToEnvironment(kitType.getId(), studyEnvironment.getId());
         var study = studyDao.find(studyEnvironment.getStudyId()).get();
-        var kitType = kitTypeFactory.buildPersisted("testSyncAllKitStatusesFromPepper");
-        var enrollee1a = enrolleeFactory.buildPersisted("testSyncAllKitStatusesFromPepper", studyEnvironment);
-        var enrollee1b = enrolleeFactory.buildPersisted("testSyncAllKitStatusesFromPepper", studyEnvironment);
-        var kitRequest1a = kitRequestFactory.buildPersisted("testSyncAllKitStatusesFromPepper",
+        var enrollee1a = enrolleeFactory.buildPersisted(testName, studyEnvironment);
+        var enrollee1b = enrolleeFactory.buildPersisted(testName, studyEnvironment);
+        var kitRequest1a = kitRequestFactory.buildPersisted(testName,
             enrollee1a.getId(), kitType.getId(), adminUser.getId());
-        var kitRequest1b = kitRequestFactory.buildPersisted("testSyncAllKitStatusesFromPepper",
+        var kitRequest1b = kitRequestFactory.buildPersisted(testName,
             enrollee1b.getId(), kitType.getId(), adminUser.getId());
-        var studyEnvironment2 = studyEnvironmentFactory.buildPersisted("testSyncAllKitStatusesFromPepper2");
+
+        var studyEnvironment2 = studyEnvironmentFactory.buildPersisted(testName);
+        kitTypeFactory.attachTypeToEnvironment(kitType.getId(), studyEnvironment2.getId());
         var study2 = studyDao.find(studyEnvironment2.getStudyId()).get();
-        var enrollee2 = enrolleeFactory.buildPersisted("testSyncAllKitStatusesFromPepper", studyEnvironment2);
-        var kitRequest2 = kitRequestFactory.buildPersisted("testSyncAllKitStatusesFromPepper",
+        var enrollee2 = enrolleeFactory.buildPersisted(testName, studyEnvironment2);
+        var kitRequest2 = kitRequestFactory.buildPersisted(testName,
             enrollee2.getId(), kitType.getId(), adminUser.getId());
 
         /*
@@ -199,6 +206,22 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         verifyKit(kitRequest1a, kitStatus1a, KitRequestStatus.IN_PROGRESS);
         verifyKit(kitRequest1b, kitStatus1b, KitRequestStatus.COMPLETE);
         verifyKit(kitRequest2, kitStatus2, KitRequestStatus.FAILED);
+    }
+
+    @Transactional
+    @Test
+    public void testSyncAllKitStatusesSkipsWithNoKitTypes(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        var adminUser = adminUserFactory.buildPersisted(testName);
+        var studyEnvironment = studyEnvironmentFactory.buildPersisted(testName);
+
+        kitRequestService.syncAllKitStatusesFromPepper();
+
+        /**
+         * note that because we're testing that no kits attempt to be synced, this test is sensitive to studies
+         * leaking from other tests.  If this test fails, check that other tests are cleaning up after themselves.
+         */
+        Mockito.verifyNoInteractions(mockPepperDSMClient);
     }
 
     private void verifyKit(KitRequest kit, PepperKitStatus expectedDSMStatus, KitRequestStatus expectedStatus)

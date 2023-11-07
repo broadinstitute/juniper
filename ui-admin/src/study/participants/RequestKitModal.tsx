@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import Api, { KitType } from 'api/api'
-import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { paramsFromContext, StudyEnvContextT, StudyEnvParams } from 'study/StudyEnvironmentRouter'
 import Select from 'react-select'
 import { ApiErrorResponse, defaultApiErrorHandle, useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
@@ -19,7 +19,7 @@ export default function RequestKitModal({
     onSubmit: () => void }) {
   const { portal, study, currentEnv } = studyEnvContext
   const [isLoading, setIsLoading] = useState(false)
-  const { kitType, KitSelect } = useKitTypeSelect(portal.shortcode, study.shortcode)
+  const { kitType, KitSelect } = useKitTypeSelect(paramsFromContext(studyEnvContext))
   const handleSubmit = async () => {
     setIsLoading(true)
     try {
@@ -67,16 +67,16 @@ export default function RequestKitModal({
 
 /** hook for a kit type selector that handles loading the kit type options from the server.
  * returns the selected type and the KitSelect component to render */
-export const useKitTypeSelect = (portalShortcode: string, studyShortcode: string) => {
+export const useKitTypeSelect = (studyEnvParams: StudyEnvParams) => {
   const [kitTypes, setKitTypes] = useState<KitType[]>()
   const [kitType, setKitType] = useState('')
   const kitTypeOptions = kitTypes?.map(kitType => ({ label: kitType.displayName, value: kitType.name }))
   const selectedKitTypeOption = kitTypeOptions?.find(kitTypeOption => kitTypeOption.value === kitType)
 
   useLoadingEffect(async () => {
-    const fetchedKitTypes = await Api.fetchKitTypes(portalShortcode, studyShortcode)
+    const fetchedKitTypes = await Api.fetchKitTypes(studyEnvParams)
     setKitTypes(fetchedKitTypes)
-    kitType || setKitType(fetchedKitTypes[0].name)
+    kitType || setKitType(fetchedKitTypes[0]?.name)
   })
 
   return {

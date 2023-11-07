@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Getter @Setter @SuperBuilder
 @NoArgsConstructor
-public class StudyKitType extends BaseEntity {
-    private UUID studyId;
+public class StudyEnvironmentKitType extends BaseEntity {
+    private UUID studyEnvironmentId;
     private UUID kitTypeId;
 }

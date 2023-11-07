@@ -75,7 +75,8 @@
                 "text": "I am not currently taking a statin",
                 "value": "none"
               }
-            ]
+            ],
+            "isRequired": true
           },
           {
             "name": "oh_oh_medList_atorvastatin",
@@ -103,7 +104,8 @@
                 "text": "Atorvastatin other dose",
                 "value": "atorvastatinOtherDose"
               }
-            ]
+            ],
+            "isRequired": true
           },
           {
             "name": "oh_oh_medList_rosuvastatin",
@@ -135,7 +137,8 @@
                 "text": "Rosuvastatin other dose",
                 "value": "rosuvastatinOtherDose"
               }
-            ]
+            ],
+            "isRequired": true
           },
           {
             "name": "oh_oh_medList_simvastatin",
@@ -167,7 +170,8 @@
                 "text": "Simvastatin other dose",
                 "value": "simvastatinOtherDose"
               }
-            ]
+            ],
+            "isRequired": true
           },
           {
             "name": "oh_oh_medList_pravastatin",
@@ -195,7 +199,8 @@
                 "text": "Pravastatin other dose",
                 "value": "pravastatinOtherDose"
               }
-            ]
+            ],
+            "isRequired": true
           },
           {
             "name": "oh_oh_medList_fluvastatin",
@@ -219,7 +224,8 @@
                 "text": "Fluvastatin other dose",
                 "value": "fluvastatinOtherDose"
               }
-            ]
+            ],
+            "isRequired": true
           },
           {
             "name": "oh_oh_medList_pitavastatin",
@@ -243,7 +249,8 @@
                 "text": "Other Pitavastatin dose",
                 "value": "otherPitavastatinDose"
               }
-            ]
+            ],
+            "isRequired": true
           },
           {
             "name": "oh_oh_medList_otherCholesterolMeds",
@@ -273,7 +280,12 @@
             ],
             "showNoneItem": true,
             "noneValue": "noneOfTheAbove",
-            "noneText": "I am not currently taking any of these medications"
+            "noneText": "I am not currently taking any of these medications",
+            "showOtherItem": true,
+            "otherText": "Other",
+            "otherPlaceholder": "Please specify",
+            "otherErrorText": "A description is required for choices of \"other\".",
+            "isRequired": true
           }
         ]
       },
@@ -317,7 +329,8 @@
             ],
             "showNoneItem": true,
             "noneValue": "none",
-            "noneText": "I am not currently taking an antiplatelet medication"
+            "noneText": "I am not currently taking an antiplatelet medication",
+            "isRequired": true
           },
           {
             "name": "oh_oh_medList_bloodThinners",
@@ -359,7 +372,8 @@
             ],
             "showNoneItem": true,
             "noneValue": "none",
-            "noneText": "I am not currently taking a blood thinner (anticoagulant) medication"
+            "noneText": "I am not currently taking a blood thinner (anticoagulant) medication",
+            "isRequired": true
           }
         ]
       },
@@ -408,10 +422,6 @@
               {
                 "text": "Sotalol",
                 "value": "sotalol"
-              },
-              {
-                "text": "Other beta blocker",
-                "value": "otherBetaBlocker"
               },
               {
                 "text": "Lisinopril",
@@ -516,7 +526,12 @@
             ],
             "showNoneItem": true,
             "noneValue": "noneOfTheAbove",
-            "noneText": "I am not currently taking any of these medications"
+            "noneText": "I am not currently taking any of these medications",
+            "showOtherItem": true,
+            "otherText": "Other",
+            "otherPlaceholder": "Please specify",
+            "otherErrorText": "A description is required for choices of \"other\".",
+            "isRequired": true
           }
         ]
       },
@@ -586,6 +601,10 @@
                 "value": "ertugliflozin"
               },
               {
+                "text": "Sotagliflozin (Inpefa)",
+                "value": "sotagliflozin"
+              },
+              {
                 "text": "Sitagliptin (Januvia)",
                 "value": "sitagliptin"
               },
@@ -624,15 +643,21 @@
             ],
             "showNoneItem": true,
             "noneValue": "noneOfTheAbove",
-            "noneText": "I am not currently taking any of these medications"
+            "noneText": "I am not currently taking any of these medications",
+            "showOtherItem": true,
+            "otherText": "Other",
+            "otherPlaceholder": "Please specify",
+            "otherErrorText": "A description is required for choices of \"other\".",
+            "isRequired": true
           }
         ]
-      }, {
+      },
+      {
         "elements": [
           {
             "name": "oh_oh_medList_otherMeds",
             "type": "medications",
-            "title": "List any additional medications below."
+            "title": "List any additional medications below, including any vitamins and supplements."
           }
         ]
       }

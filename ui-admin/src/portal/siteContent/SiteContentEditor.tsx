@@ -4,7 +4,10 @@ import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClipboard, faClockRotateLeft, faImage, faPlus } from '@fortawesome/free-solid-svg-icons'
 import HtmlPageEditView from './HtmlPageEditView'
-import { HtmlPage, LocalSiteContent, ApiProvider, SiteContent, ApiContextT, HtmlSectionView } from '@juniper/ui-core'
+import {
+  HtmlPage, LocalSiteContent, ApiProvider, SiteContent,
+  ApiContextT, HtmlSectionView, SiteFooter
+} from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
 import SiteContentVersionSelector from './SiteContentVersionSelector'
 import { Button } from 'components/forms/Button'
@@ -34,13 +37,15 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   } = props
   const { portalEnv } = portalEnvContext
   const selectedLanguage = 'en'
+  const initialContent = siteContent
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
-  const [workingContent, setWorkingContent] = useState<SiteContent>(siteContent)
+  const [workingContent, setWorkingContent] = useState<SiteContent>(initialContent)
   const [showVersionSelector, setShowVersionSelector] = useState(false)
   const [showAddPageModal, setShowAddPageModal] = useState(false)
   const [showAddPreRegModal, setShowAddPreRegModal] = useState(false)
   const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage)
+  const [hasInvalidSection, setHasInvalidSection] = useState(false)
   if (!localContent) {
     return <div>no content for language {selectedLanguage}</div>
   }
@@ -106,6 +111,18 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     }
     updateLocalContent(updatedLocalContent)
   }
+
+  const updateFooter = (footer?: HtmlSection) => {
+    if (!localContent) {
+      return
+    }
+    const updatedLocalContent = {
+      ...localContent,
+      footerSection: footer
+    }
+    updateLocalContent(updatedLocalContent)
+  }
+
   const isEditable = !readOnly && portalEnv.environmentName === 'sandbox'
 
   const currentNavBarItem = selectedNavOpt.value ? navBarInternalItems
@@ -116,7 +133,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     .map(navItem => ({ label: navItem.text, value: navItem.text }))
   pageOpts.unshift(landingPageOption)
 
-  return <div className="d-flex bg-white">
+  return <div className="d-flex bg-white pb-5">
     <div className="d-flex flex-column flex-grow-1 mx-1 mb-1">
       <div className="d-flex p-2 align-items-center">
         <div className="d-flex flex-grow-1">
@@ -134,7 +151,17 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
         {
           isEditable && <div className="d-flex flex-grow-1">
             <Button className="ms-auto me-md-2" variant="primary"
-              disabled={readOnly}
+              disabled={readOnly || hasInvalidSection || (initialContent === workingContent)}
+              tooltipPlacement={'left'}
+              tooltip={(() => {
+                if (initialContent === workingContent) {
+                  return 'Site is unchanged. Make changes to save.'
+                }
+                if (hasInvalidSection) {
+                  return 'Site is invalid. Correct to save.'
+                }
+                return 'Save changes'
+              })()}
               onClick={() => createNewVersion(workingContent)}>
                   Save
             </Button>
@@ -150,13 +177,14 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
         <div className="d-flex flex-grow-1 mb-1">
           <div style={{ width: 250 }}>
             <Select options={pageOpts} value={selectedNavOpt}
+              isDisabled={hasInvalidSection} aria-label={'Select a page'}
               onChange={e => {
                 setSelectedNavOpt(e ?? landingPageOption)
               }}/>
           </div>
           <Button className="btn btn-secondary"
             tooltip={'Add a new page'}
-            disabled={readOnly || !isEditable}
+            disabled={readOnly || !isEditable || hasInvalidSection}
             onClick={() => setShowAddPageModal(!showAddPageModal)}>
             <FontAwesomeIcon icon={faPlus}/> Add page
           </Button>
@@ -188,12 +216,15 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           <Tab
             eventKey="designer"
             title="Designer"
+            disabled={hasInvalidSection}
           >
             <ErrorBoundary>
               <div>
                 {pageToRender &&
                     <ApiProvider api={previewApi}>
                       <HtmlPageEditView htmlPage={pageToRender} readOnly={readOnly}
+                        siteHasInvalidSection={hasInvalidSection} setSiteHasInvalidSection={setHasInvalidSection}
+                        footerSection={localContent.footerSection} updateFooter={updateFooter}
                         updatePage={page => updatePage(page, currentNavBarItem?.text)}/>
                     </ApiProvider>}
               </div>
@@ -202,12 +233,14 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           <Tab
             eventKey="preview"
             title="Preview"
+            disabled={hasInvalidSection}
           >
             <ErrorBoundary>
               <ApiProvider api={previewApi}>
                 { pageToRender.sections.map((section: HtmlSection) =>
                   <HtmlSectionView section={section} key={section.id}/>)
                 }
+                <SiteFooter footerSection={localContent.footerSection}/>
               </ApiProvider>
             </ErrorBoundary>
           </Tab>

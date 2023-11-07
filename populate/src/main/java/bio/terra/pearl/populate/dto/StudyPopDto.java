@@ -16,7 +16,6 @@ public class StudyPopDto extends Study {
     private List<String> surveyFiles = new ArrayList<>();
     private List<String> consentFormFiles = new ArrayList<>();
     private List<String> emailTemplateFiles = new ArrayList<>();
-    private List<String> kitTypeNames = new ArrayList<>();
     private List<StudyEnvironmentPopDto> studyEnvironmentDtos = new ArrayList<>();
 
     /**

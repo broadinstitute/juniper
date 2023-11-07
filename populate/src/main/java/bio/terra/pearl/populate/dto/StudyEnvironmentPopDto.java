@@ -27,7 +27,8 @@ public class StudyEnvironmentPopDto extends StudyEnvironment {
     private List<NotificationConfigPopDto> notificationConfigDtos = new ArrayList();
     @Builder.Default
     private List<PreEnrollmentResponsePopDto> preEnrollmentResponseDtos = new ArrayList<>();
-
+    @Builder.Default
+    private List<String> kitTypeNames = new ArrayList<>();
     @Builder.Default
     private List<String> enrolleeFiles = new ArrayList<>();
 

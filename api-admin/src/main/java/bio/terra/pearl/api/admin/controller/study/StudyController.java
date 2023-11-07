@@ -33,13 +33,6 @@ public class StudyController implements StudyApi {
     this.studyExtService = studyExtService;
   }
 
-  @Override
-  public ResponseEntity<Object> getKitTypes(String portalShortcode, String studyShortcode) {
-    AdminUser adminUser = requestService.requireAdminUser(request);
-    var kitTypes = studyExtService.getKitTypes(adminUser, portalShortcode, studyShortcode);
-    return ResponseEntity.ok(kitTypes);
-  }
-
   @ExceptionHandler({PSQLException.class})
   public ResponseEntity<ErrorReport> handleDatabaseError(PSQLException e) {
     if (e.getMessage().contains("study_shortcode_key")) {

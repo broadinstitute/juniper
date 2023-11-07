@@ -3,12 +3,15 @@ package bio.terra.pearl.api.admin.service.study;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
+import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,18 +21,21 @@ public class StudyEnvironmentExtService {
   private AuthUtilService authUtilService;
   private EnrolleeService enrolleeService;
   private WithdrawnEnrolleeService withdrawnEnrolleeService;
+  private StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
 
   public StudyEnvironmentExtService(
       StudyEnvironmentService studyEnvService,
       StudyEnvironmentConfigService studyEnvConfigService,
       AuthUtilService authUtilService,
       EnrolleeService enrolleeService,
-      WithdrawnEnrolleeService withdrawnEnrolleeService) {
+      WithdrawnEnrolleeService withdrawnEnrolleeService,
+      StudyEnvironmentKitTypeService studyEnvironmentKitTypeService) {
     this.studyEnvService = studyEnvService;
     this.studyEnvConfigService = studyEnvConfigService;
     this.authUtilService = authUtilService;
     this.enrolleeService = enrolleeService;
     this.withdrawnEnrolleeService = withdrawnEnrolleeService;
+    this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
   }
 
   /** currently only supports changing the pre-enroll survey id */
@@ -59,6 +65,12 @@ public class StudyEnvironmentExtService {
     existing.setAcceptingEnrollment(update.isAcceptingEnrollment());
     existing.setPassword(update.getPassword());
     return studyEnvConfigService.update(existing);
+  }
+
+  public List<KitType> getKitTypes(
+      AdminUser operator, String portalShortcode, String studyShortcode, EnvironmentName envName) {
+    StudyEnvironment studyEnv = authToStudyEnv(operator, portalShortcode, studyShortcode, envName);
+    return studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(studyEnv.getId());
   }
 
   public StudyEnvStats getStats(

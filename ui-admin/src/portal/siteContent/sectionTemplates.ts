@@ -34,10 +34,18 @@ const templateMailingListButtonConfig = {
   type: 'mailingList'
 }
 
+const templateLinkConfig = {
+  text: 'Enter text here',
+  href: 'Enter link here'
+}
+
 const templateItemSection = {
   title: 'Enter title here',
   items: [{
-    ...templateMailingListButtonConfig
+    ...templateLinkConfig
+  },
+  {
+    ...templateLinkConfig
   }]
 }
 
@@ -130,6 +138,12 @@ export const sectionTemplates: Record<string, object> = {
   },
   'LINK_SECTIONS_FOOTER': {
     itemSections: [
+      {
+        ...templateItemSection
+      },
+      {
+        ...templateItemSection
+      },
       {
         ...templateItemSection
       }

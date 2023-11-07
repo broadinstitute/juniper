@@ -3,198 +3,200 @@
   "stableId": "oh_oh_consent",
   "version": 1,
   "jsonContent":
-{
-  "logoPosition": "right",
-  "showQuestionNumbers": "off",
-  "showProgressBar": "bottom",
-  "calculatedValues": [
-    {
-      "name": "oh_oh_consent_signatureDate",
-      "expression": "iif({oh_oh_consent_signatureDate}, {oh_oh_consent_signatureDate}, currentDate())",
-      "includeIntoResult": true
-    },
-    {
-      "name": "oh_oh_consent_formattedSignatureDate",
-      "expression": "formatDate({oh_oh_consent_signatureDate})",
-      "includeIntoResult": true
-    }
-  ],
-  "pages": [
-    {
-      "name": "infoPage",
-      "elements": [
-        {
-          "type": "panel",
-          "elements": [
-            {
-              "type": "html",
-              "name": "mgbLogo",
-              "html": "<img alt='Mass General Brigham logo' src='/api/public/portals/v1/ourhealth/env/{portalEnvironmentName}/siteImages/1/mgb_logo.svg' style='margin-top:2rem' />"
-            },
-            {
-              "type": "html",
-              "name": "consentInfo1",
-              "html": "<h1 class='mt-4'>Research Consent Form<br><span class='h6'>Collection of Samples and Health Information for Research</span></h1><p><span class='fw-bold'>Research Tissue Bank</span> <span class='fw-bold'>Version</span>: February 2022</p><dl class='p-3 border border-dark'><div><dt class='d-inline'>Protocol Title: </dt><dd class='d-inline'>OurHealth</dd></div><div><dt class='d-inline'>Principal Investigator: </dt><dd class='d-inline'>Pradeep Natarajan, MD, MMSc</dd></div><div><dt class='d-inline'>Broad Institute Responsible Investigator: </dt><dd class='d-inline'>Pradeep Natarajan, MD, MMSc</dd></div><div><dt class='d-inline'>Description of Subject Population: </dt><dd class='d-inline'>South Asian individuals living in United States</dd></div></dl>"
-            },
-            {
-              "type": "html",
-              "name": "aboutThisForm",
-              "html": "<h2 class='my-4'>About this consent form</h2><p>Please read this form carefully and click “Next” when you are done to move on to the next section.</p><p>This form tells you important information about the collection and storage of samples for research. If you have questions about this study or the consent form at any time, please contact the OurHealth staff at <a href='tel:6177241240'>617-724-1240</a> or by email at <a href='mailto:info@ourhealthstudy.org'>info@ourhealthstudy.org</a>. If you decide to take part in this research study, you must sign this form, by typing and signing your name, to give your permission. We will email you a link to download a signed copy of this form to keep.</p>"
-            },
-            {
-              "type": "html",
-              "name": "keyPoints",
-              "html": "<h2 class='my-4'>Key Points</h2><p>We are asking you to be in this study because researchers at Mass General Brigham (Massachusetts General Hospital, Brigham & Women’s Hospital, and other Mass General Brigham institutions) are studying how genes and other factors affect the health of South Asians. To perform this research, we are asking you to provide your contact information, complete surveys, and provide a saliva sample to be stored for research purposes, including genetic testing.</p><p>The Broad Institute of MIT and Harvard’s Data Donation Platform (DDP), also known as Juniper, is the web-based participant platform being used by subjects to review, sign (by typing your name) the consent, and complete the surveys.</p><p>Taking part in this research study is voluntary. Your decision whether or not to participate <strong style='font-weight:normal;text-decoration:underline;'>will not affect your ability to get clinical care in any way</strong>. You may not directly benefit from participating in this study; however, your participation may help us better understand, treat, and even prevent diseases that may affect you, your family, and your community in the future.</p><p>The OurHealth staff is available at <a href='tel:6177241240'>617-724-1240</a> from Monday to Friday 9am – 5pm to assist with questions. You can also email the OurHealth staff at <a href='mailto:info@ourhealthstudy.org'>info@ourhealthstudy.org</a>. Pradeep Natarajan, MD, MMSc is the person in charge of this research study.</p><p>If you want to speak with someone not directly involved in this research study, please contact the Mass General Brigham internal review board (IRB). You can call them at <a href='tel:8572821900'>857-282-1900</a>. You can talk to them about your rights as a research subject, your concerns about the research, a complaint about the research, or any complaints about pressure to take part in or to continue in the research study.</p>"
-            },
-            {
-              "type": "html",
-              "name": "whatWillHappenIfYouTakePart",
-              "html": "<h2 class='my-4'>What will happen if you take part in this research sample biobank?</h2><ul><li>We will ask you if you have ever been a past or current patient within the Mass General Brigham system. If yes, we will look at your electronic health records now and, in the future, to update your health information (i.e., procedures, office visits, test results). A notation that you are taking part in this research study may be made in your electronic health record.  If no, we may contact you in the future to ask if you would be willing to sign any additional forms or documents that some hospitals or centers may require in order to share your electronic health records with us.</li><li>We will ask you for your contact information and mailing address. We will also ask you to complete surveys about your health and the health of your family. Additional survey(s) may become available during this study that you can choose to complete.</li><li>We will likely ask you to provide a sample of saliva at home—if so, we will use the address you provided to mail you a kit with detailed instructions on how to provide a saliva sample. We will ask you to send the saliva sample to us in a pre-stamped package that we will provide. We will study the cells from your saliva sample, including the genes found in the cells. No additional procedures will be required.</li><li>We will store your health information with your sample in a secure study database.</li><li>We may re-contact you in the future to get additional information or to ask if you are interested in joining other research studies.</li><li>The National Institutes of Health (NIH) and other organizations have developed central data (information) banks that analyze, collect, and share the information and results of certain types of genetic studies. Some (controlled-access) central data banks may store your genetic and medical information and provide the de-identified information to qualified researchers to use for further research. Other (open-access) data banks have de-identified data that are publicly viewable by anyone with internet access. We may share your de-identified information with other qualified researchers and central data banks. Therefore, you are providing your consent to share your results with these special data banks and other researchers, and have your information used for future research studies, including studies that have not yet been designed, studies involving diseases, and/or studies that may be for commercial purposes (such as the development or approval of new drugs). Your information will be de-identified and labeled only with a code number before it will be sent to central banks and other researchers. Your name and other information that could readily identify you will not be shared with central banks or other researchers. We will never sell your readily identifiable information to anyone under any circumstances.</li></ul>"
-            },
-            {
-              "type": "html",
-              "name": "whatTypeOfResearch",
-              "html": "<h2 class='my-4'>For what type of research will my samples be used?</h2><p>Your saliva sample contains cells with genetic information that can help us understand health and disease better. Your genes contain the instructions that tell our bodies how to grow and work. These instructions are referred to as your DNA. We know that certain changes in DNA can affect your health. For example,</p><ul><li>Certain DNA changes may increase or decrease the risk of developing specific health conditions like types of heart disease and some cancers.</li><li>Certain DNA changes may increase the risk of passing specific health conditions onto children, even if the parents don’t have those conditions.</li><li>Certain DNA changes may impact how certain medicines work and whether a person gets side effects after taking them.</li><li>Other DNA changes may tell us about things like where our ancestors may be from or how our bodies work.</li></ul><p>We will perform genetic testing on your saliva sample to learn about these changes, including but not limited to the following:</p><ul><li>Genome wide association analysis (GWAS) may be performed to identify genetic variants that are associated with a risk for a disease or condition. We may calculate a risk score based on genetic variants, called a “polygenic risk score”, to tell us about an increased or decreased risk for developing a certain disease or condition.</li><li>Whole genome sequencing may be performed to look at all or most of your genes to study links between disease and related disorders as well as many diseases or conditions.</li><li>Whole exome sequencing may be performed to look at only a portion of your genes that provide instructions, or code, for proteins, which are the building blocks of cells.</li></ul>"
-            },
-            {
-              "type": "html",
-              "name": "willIGetResults",
-              "html": "<h2 class='my-4'>Will I get results of research done using my samples?</h2><p>OurHealth aims to check DNA (genetic variants) for certain kinds of changes as described above. We do not intend to return research genetic results to subjects. It is likely that you will never be contacted with individual genetic research results.</p><p>However, there may be times when researchers are analyzing your electronic health record and DNA and discover information that may be medically important to you. If experts from OurHealth decide that the research results from your samples are of high medical importance, we may attempt to contact you to give you these results because of the following:</p><ul><li>Single DNA changes in some genes are related to health conditions that may require action by your clinical care team.  In these cases, there may be a possible intervention to decrease risk of developing the condition or to prevent the condition from progressing.</li><li>Many DNA changes can contribute to the development of a disease. Researchers are now looking at how the total number of changes across the genome are associated with an increased or decreased risk of developing a disease, also call a “polygenic risk score”. In these cases, there may be intervention to decrease risk of developing the condition or to prevent the condition from progressing, especially for those who are at the highest risk.</li></ul><p>If we contact you about research genetic results, we will ask if you wish to know about the results before we share them. We will emphasize that all research results should be validated by a clinical [Clinical Laboratory Improvement Amendments (CLIA)] genetic test. This should be arranged in consultation with your clinical provider, and the OurHealth study will not be responsible for costs incurred from repeat testing in a CLIA-certified lab. You can choose whether you want to know about these results or not. In any cases where you do not want to know about these results, they will not be disclosed to you, your family, or your provider. If you do want to know about these results, a genetic counselor will disclose and explain the results.</p><p>You may receive a newsletter or other information that will tell you about the research discoveries from OurHealth. This newsletter will not identify you or describe any of your individual results. You can opt out of receiving this newsletter at any time by sending an email to <a href='mailto:info@ourhealthstudy.org'>info@ourhealthstudy.org</a>.</p><p>We may publish what we learn in medical journals. In the future, when research results are published, they may show that South Asians are at an increased or decreased risk of developing a disease. These results will not identify you or describe any of your individual results.</p>"
-            },
-            {
-              "type": "html",
-              "name": "whatAreTheBenefits",
-              "html": "<h2 class='my-4'>What are the benefits to me?</h2><p>You will likely <strong style='font-weight:normal;text-decoration:underline;'>not receive any direct personal health benefits</strong> from research conducted on your information in this study.</p>"
-            },
-            {
-              "type": "html",
-              "name": "willIBePaid",
-              "html": "<h2 class='my-4'>Will I be paid for my samples?</h2><p>You will not receive payment for your sample(s).</p>"
-            },
-            {
-              "type": "html",
-              "name": "whatAreTheCosts",
-              "html": "<h2 class='my-4'>What are the costs to me to take part in the research tissue bank?</h2><p>There are no costs to participate in OurHealth.</p>"
-            },
-            {
-              "type": "html",
-              "name": "howIsInfoStored",
-              "html": "<h2 class='my-4'>How are my samples and health information stored in the Biobank?</h2><p>Staff at the Broad Institute’s Genomics Platform will assign your sample a code number and store it in a freezer. They will not keep your name or other information that could identify you with your sample. They will use the code number to connect your sample to your health information that is stored in a secure computer database. The computer database is protected with a password. Only staff at the Genomics Platform will know the computer database password.</p>"
-            },
-            {
-              "type": "html",
-              "name": "whichResearchesCanUse",
-              "html": "<h2 class='my-4'>Which researchers can use your samples and what information about you can they have?</h2><ul><li>Researchers from Mass General Brigham institutions listed on this IRB application will be allowed to work with your identified data and samples if they have approval from the Mass General Brigham IRB.</li><li>Your de-identified (coded) samples and health information may be shared with researchers at Mass General Brigham institutions, researchers at non-Mass General Brigham institutions or with for profit companies that are working with Mass General Brigham researchers.</li><li>Your samples will not be sold for profit; however, we may use your samples and information to develop new products or medical tests to be sold. Mass General Brigham and researchers may benefit if this happens. However, neither you nor your family will receive any payment if your samples and information are used for this purpose.</li></ul>"
-            },
-            {
-              "type": "html",
-              "name": "howLongWillSamplesBeKept",
-              "html": "<h2 class='my-4'>How long will the Biobank keep my samples and information?</h2><p>The code linking your samples to your health information may be kept indefinitely so that your samples and updated health information may be used for research in the future.</p>"
-            },
-            {
-              "type": "html",
-              "name": "canIStop",
-              "html": "<h2 class='my-4'>Can you stop allowing your samples and information to be stored and used for research?</h2><p>You have a right to withdraw your permission at any time. If you do, your samples and your information will be destroyed. However, it will not be possible to destroy samples and information that have already been given to researchers in some cases. If you decide to withdraw your permission, please contact the OurHealth staff by phone, <a href='tel:6177241240'>617-724-1240</a>, by email at <a href='mailto:info@ourhealthstudy.org'>info@ourhealthstudy.org</a>, or by mail at 185 Cambridge Street, 5.236, Boston, MA 02114.</p>"
-            },
-            {
-              "type": "html",
-              "name": "whatAreTheRisks",
-              "html": "<h2 style='margin-top:2rem;'>What are the risks?</h2><ul><li>The main risk of allowing us to store and use your samples and certain limited health information for research is a potential loss of privacy. We will protect your privacy by labeling your samples and information only with a code, using secure data encryption on the storage database, and keeping the key to the code in a password protected database.</li><li>There are federal laws and state protections that can help protect your privacy. The Federal law, known as the Genetic Information Nondiscrimination Act (GINA), protects you from genetic discrimination. GINA generally makes it illegal for health insurance companies, group health plans, and most employers to discriminate against you based on your genetic information. However, this law does not protect you against genetic discrimination by companies that sell life insurance, disability insurance, or long-term care insurance.</li><li>We do not think that there will be further risks to your privacy by sharing your samples and other information with other researchers at Mass General Brigham or by sharing your de-identified information with central data (information) banks that analyze, collect, and share the information and results of certain types of genetic studies.</li><li>As scientists learn more about DNA changes, it is possible that our understanding of their health impact will change over time. We might learn that a DNA change is more or less likely to cause a health problem in the future. If this happens with a result you have received, we may update you. You can always reach out to the OurHealth staff by phone (<a href='tel:6177241240'>617-724-1240</a>) or by email at <a href='mailto:info@ourhealthstudy.org'>info@ourhealthstudy.org</a>.</li><li>Taking part in a genetic study may bring unexpected information to light which could have a negative impact on you, your family or other relationships. You can reduce this risk by choosing not to participate or to not accept results in the event that they are offered to you.</li></ul>"
-            },
-            {
-              "type": "html",
-              "name": "whatHappensIfInjured",
-              "html": "<h2 class='my-4'>What happens if you are injured as a result of taking part in this research study?</h2><p>Injuries sometimes happen in research even when no one is at fault. There are no plans to pay you or give you other compensation for an injury, should one occur. However, you are not giving up any of your legal rights by signing this form.</p>"
-            },
-            {
-              "type": "html",
-              "name": "howWillPrivacyBeProtected",
-              "html": "<h2 class='my-4'>If you take part in this research study, how will we protect your privacy?</h2><p>Federal law requires Mass General Brigham to protect the privacy of health information and related information that identifies you. We refer to this information simply as “identifiable information.” The same federal laws that protect your health information will protect your research information.</p><p>In addition to Mass General Brigham researchers listed on this IRB application, the following people or groups may be able to see, use, and share your identifiable health information from the research:</p><ul><li>The Mass General Brigham IRB that oversees the project and the Mass General Brigham research quality improvement programs.</li><li>People from organizations that provide independent accreditation and oversight of hospitals and research.</li><li>People or organizations that we hire to do work for us, such as data storage companies, insurers, and lawyers, Federal and state agencies (such as the Food and Drug Administration, the Department of Health and Human Services, the National Institutes of Health, and other US or foreign government bodies that oversee or review research).</li></ul><p>We share your identifiable health information only when we must, and we ask anyone who receives it from us to protect your privacy.</p>"
-            },
-            {
-              "type": "html",
-              "name": "privacyRights",
-              "html": "<h2 class='my-4'>Your Privacy Rights</h2><p>You have the right not to sign this form that allows us to use and share your health information for research; however, if you don’t sign it, you can’t take part in this research study.</p>"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "documentationOfConsentPage",
-      "elements": [
-        {
-          "type": "panel",
-          "elements": [
-            {
-              "type": "html",
-              "name": "documentationOfConsent",
-              "html": "<h1 class='mb-4' style='margin-top:2rem;'>Documentation of Consent</h1><p>This is what I agree to:</p><ol><li>You can perform (or work with others to perform) genomic or molecular tests on my saliva sample and store the sample(s) until this research study is complete.</li><li>You can store the answers that I provide in study surveys until this research study is complete.</li><li>You can study and share the results of the genomic or molecular tests, survey responses, and my health information with established public databases (e.g., NIH data portals) and with other qualified researchers in a manner that does not include my name, or any other information that could be used to readily identify me, to be used by other qualified researchers to perform future research studies, including studies that have not yet been designed, studies for diseases other than cancer, and studies that may be for commercial purposes.</li><li>You can use the results of studying my saliva sample and my health information for future research studies, including studies that have not yet been designed, studies for any disease, and/or studies that may be for commercial purposes.</li><li>You can contact me in the future for reasons related to this research study.</li></ol>"
-            }
-          ]
-        },
-        {
-          "type": "radiogroup",
-          "name": "oh_oh_consent_agree",
-          "title": "Do you agree to the above?",
-          "titleLocation": "hidden",
-          "isRequired": true,
-          "choices": [
-            {
-              "value": "agree",
-              "text": "I agree"
-            },
-            {
-              "value": "doNotAgree",
-              "text": "I do not agree"
-            }
-          ],
-          "validators": [{
-            "type": "expression",
-            "text": "You must agree in order to take part in the study.",
-            "expression": "{oh_oh_consent_agree} = 'agree'"
-          }]
-        }
-      ]
-    },
-    {
-      "name": "signaturePage",
-      "elements": [
-        {
-          "type": "panel",
-          "elements": [
-            {
-              "type": "html",
-              "name": "statementOfPerson",
-              "html": "<h1 class='mb-4' style='margin-top:2rem;'>Statement of Person Giving Informed Consent and Authorization</h1><p>My full typed name below indicates:</p><ul><li>I have had enough time to read the consent and think about agreeing to participate in this study.</li><li>I have had all of my questions answered to my satisfaction.</li><li>I am willing to participate in this research study.</li><li>I have been told that my participation is voluntary and if I decide not to participate it will have no impact on my medical care.</li><li>I have been told that if I decide to participate now, I can decide to stop being in the study at any time. </li><li>I acknowledge that a copy of the signed consent form will be sent to my email address</li></ul>"
-            }
-          ]
-        },
-        {
-          "type": "text",
-          "isRequired": true,
-          "name": "oh_oh_consent_legalName",
-          "title": "Full legal name"
-        },
-        {
-          "type": "panel",
-          "elements": [
-            {
-              "type": "html",
-              "name": "signatureDateDisplay",
-              "html": "<p style='padding-top:2rem;margin:0;'><span style='font-weight:600;'>Today's date</span>: {oh_oh_consent_formattedSignatureDate}.</p>"
-            }
-          ]
-        },
-        {
-          "type": "signaturepad",
-          "isRequired": true,
-          "name": "oh_oh_consent_signature",
-          "title": "Signature of Subject",
-          "description": "I give my consent to take part in this research study and agree to allow my health information to be used and shared as described above."
-        }
-      ]
-    }
-  ]
-}
+  {
+    "logoPosition": "right",
+    "showQuestionNumbers": "off",
+    "showProgressBar": "bottom",
+    "calculatedValues": [
+      {
+        "name": "oh_oh_consent_signatureDate",
+        "expression": "iif({oh_oh_consent_signatureDate}, {oh_oh_consent_signatureDate}, currentDate())",
+        "includeIntoResult": true
+      },
+      {
+        "name": "oh_oh_consent_formattedSignatureDate",
+        "expression": "formatDate({oh_oh_consent_signatureDate})",
+        "includeIntoResult": true
+      }
+    ],
+    "pages": [
+      {
+        "name": "infoPage",
+        "elements": [
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "mgbLogo",
+                "html": "<img alt='Mass General Brigham logo' src='/api/public/portals/v1/ourhealth/env/{portalEnvironmentName}/siteImages/1/mgb_logo.svg' style='margin-top:2rem' />"
+              },
+              {
+                "type": "html",
+                "name": "consentInfo1",
+                "html": "<h1 class='mt-4'>Research Consent Form<br><span class='h6'>Collection of Samples and Health Information for Research</span></h1><p><span class='fw-bold'>Research Tissue Bank</span> <span class='fw-bold'>Version</span>: February 2022</p><dl class='p-3 border border-dark'><div><dt class='d-inline'>Protocol Title: </dt><dd class='d-inline'>OurHealth</dd></div><div><dt class='d-inline'>Principal Investigator: </dt><dd class='d-inline'>Pradeep Natarajan, MD, MMSc</dd></div><div><dt class='d-inline'>Broad Institute Responsible Investigator: </dt><dd class='d-inline'>Pradeep Natarajan, MD, MMSc</dd></div><div><dt class='d-inline'>Description of Subject Population: </dt><dd class='d-inline'>South Asian individuals living in United States</dd></div></dl>"
+              },
+              {
+                "type": "html",
+                "name": "aboutThisForm",
+                "html": "<h2 class='my-4'>About this consent form</h2><p>Please read this form carefully and click “Next” when you are done to move on to the next section.</p><p>This form tells you important information about the collection and storage of samples for research. If you have questions about this study or the consent form at any time, please contact the OurHealth staff at <a href='tel:6177241240'>617-724-1240</a> or by email at <a href='mailto:info@ourhealthstudy.org'>info@ourhealthstudy.org</a>. If you decide to take part in this research study, you must sign this form, by typing and signing your name, to give your permission. We will email you a link to download a signed copy of this form to keep.</p>"
+              },
+              {
+                "type": "html",
+                "name": "keyPoints",
+                "html": "<h2 class='my-4'>Key Points</h2><p>We are asking you to be in this study because researchers at Mass General Brigham (Massachusetts General Hospital, Brigham & Women’s Hospital, and other Mass General Brigham institutions) are studying how genes and other factors affect the health of South Asians. To perform this research, we are asking you to provide your contact information, complete surveys, and provide a saliva sample to be stored for research purposes, including genetic testing.</p><p>The Broad Institute of MIT and Harvard’s Data Donation Platform (DDP), also known as Juniper, is the web-based participant platform being used by subjects to review, sign (by typing your name) the consent, and complete the surveys.</p><p>Taking part in this research study is voluntary. Your decision whether or not to participate <strong style='font-weight:normal;text-decoration:underline;'>will not affect your ability to get clinical care in any way</strong>. You may not directly benefit from participating in this study; however, your participation may help us better understand, treat, and even prevent diseases that may affect you, your family, and your community in the future.</p><p>The OurHealth staff is available at <a href='tel:6177241240'>617-724-1240</a> from Monday to Friday 9am – 5pm to assist with questions. You can also email the OurHealth staff at <a href='mailto:info@ourhealthstudy.org'>info@ourhealthstudy.org</a>. Pradeep Natarajan, MD, MMSc is the person in charge of this research study.</p><p>If you want to speak with someone not directly involved in this research study, please contact the Mass General Brigham internal review board (IRB). You can call them at <a href='tel:8572821900'>857-282-1900</a>. You can talk to them about your rights as a research subject, your concerns about the research, a complaint about the research, or any complaints about pressure to take part in or to continue in the research study.</p>"
+              },
+              {
+                "type": "html",
+                "name": "whatWillHappenIfYouTakePart",
+                "html": "<h2 class='my-4'>What will happen if you take part in this research sample biobank?</h2><ul><li>We will ask you if you have ever been a past or current patient within the Mass General Brigham system. If yes, we will look at your electronic health records now and, in the future, to update your health information (i.e., procedures, office visits, test results). A notation that you are taking part in this research study may be made in your electronic health record.  If no, we may contact you in the future to ask if you would be willing to sign any additional forms or documents that some hospitals or centers may require in order to share your electronic health records with us.</li><li>We will ask you for your contact information and mailing address. We will also ask you to complete surveys about your health and the health of your family. Additional survey(s) may become available during this study that you can choose to complete.</li><li>We will likely ask you to provide a sample of saliva at home—if so, we will use the address you provided to mail you a kit with detailed instructions on how to provide a saliva sample. We will ask you to send the saliva sample to us in a pre-stamped package that we will provide. We will study the cells from your saliva sample, including the genes found in the cells. No additional procedures will be required.</li><li>We will store your health information with your sample in a secure study database.</li><li>We may re-contact you in the future to get additional information or to ask if you are interested in joining other research studies.</li><li>The National Institutes of Health (NIH) and other organizations have developed central data (information) banks that analyze, collect, and share the information and results of certain types of genetic studies. Some (controlled-access) central data banks may store your genetic and medical information and provide the de-identified information to qualified researchers to use for further research. Other (open-access) data banks have de-identified data that are publicly viewable by anyone with internet access. We may share your de-identified information with other qualified researchers and central data banks. Therefore, you are providing your consent to share your results with these special data banks and other researchers, and have your information used for future research studies, including studies that have not yet been designed, studies involving diseases, and/or studies that may be for commercial purposes (such as the development or approval of new drugs). Your information will be de-identified and labeled only with a code number before it will be sent to central banks and other researchers. Your name and other information that could readily identify you will not be shared with central banks or other researchers. We will never sell your readily identifiable information to anyone under any circumstances.</li></ul>"
+              },
+              {
+                "type": "html",
+                "name": "whatTypeOfResearch",
+                "html": "<h2 class='my-4'>For what type of research will my samples be used?</h2><p>Your saliva sample contains cells with genetic information that can help us understand health and disease better. Your genes contain the instructions that tell our bodies how to grow and work. These instructions are referred to as your DNA. We know that certain changes in DNA can affect your health. For example,</p><ul><li>Certain DNA changes may increase or decrease the risk of developing specific health conditions like types of heart disease and some cancers.</li><li>Certain DNA changes may increase the risk of passing specific health conditions onto children, even if the parents don’t have those conditions.</li><li>Certain DNA changes may impact how certain medicines work and whether a person gets side effects after taking them.</li><li>Other DNA changes may tell us about things like where our ancestors may be from or how our bodies work.</li></ul><p>We will perform genetic testing on your saliva sample to learn about these changes, including but not limited to the following:</p><ul><li>Genome wide association analysis (GWAS) may be performed to identify genetic variants that are associated with a risk for a disease or condition. We may calculate a risk score based on genetic variants, called a “polygenic risk score”, to tell us about an increased or decreased risk for developing a certain disease or condition.</li><li>Whole genome sequencing may be performed to look at all or most of your genes to study links between disease and related disorders as well as many diseases or conditions.</li><li>Whole exome sequencing may be performed to look at only a portion of your genes that provide instructions, or code, for proteins, which are the building blocks of cells.</li></ul>"
+              },
+              {
+                "type": "html",
+                "name": "willIGetResults",
+                "html": "<h2 class='my-4'>Will I get results of research done using my samples?</h2><p>OurHealth aims to check DNA (genetic variants) for certain kinds of changes as described above. We do not intend to return research genetic results to subjects. It is likely that you will never be contacted with individual genetic research results.</p><p>However, there may be times when researchers are analyzing your electronic health record and DNA and discover information that may be medically important to you. If experts from OurHealth decide that the research results from your samples are of high medical importance, we may attempt to contact you to give you these results because of the following:</p><ul><li>Single DNA changes in some genes are related to health conditions that may require action by your clinical care team.  In these cases, there may be a possible intervention to decrease risk of developing the condition or to prevent the condition from progressing.</li><li>Many DNA changes can contribute to the development of a disease. Researchers are now looking at how the total number of changes across the genome are associated with an increased or decreased risk of developing a disease, also call a “polygenic risk score”. In these cases, there may be intervention to decrease risk of developing the condition or to prevent the condition from progressing, especially for those who are at the highest risk.</li></ul><p>If we contact you about research genetic results, we will ask if you wish to know about the results before we share them. We will emphasize that all research results should be validated by a clinical [Clinical Laboratory Improvement Amendments (CLIA)] genetic test. This should be arranged in consultation with your clinical provider, and the OurHealth study will not be responsible for costs incurred from repeat testing in a CLIA-certified lab. You can choose whether you want to know about these results or not. In any cases where you do not want to know about these results, they will not be disclosed to you, your family, or your provider. If you do want to know about these results, a genetic counselor will disclose and explain the results.</p><p>You may receive a newsletter or other information that will tell you about the research discoveries from OurHealth. This newsletter will not identify you or describe any of your individual results. You can opt out of receiving this newsletter at any time by sending an email to <a href='mailto:info@ourhealthstudy.org'>info@ourhealthstudy.org</a>.</p><p>We may publish what we learn in medical journals. In the future, when research results are published, they may show that South Asians are at an increased or decreased risk of developing a disease. These results will not identify you or describe any of your individual results.</p>"
+              },
+              {
+                "type": "html",
+                "name": "myBenefits",
+                "html": "<h2 class='my-4'>What are the benefits to me?</h2><p>You will likely <strong style='font-weight:normal;text-decoration:underline;'>not receive any direct personal health benefits</strong> from research conducted on your information in this study.</p>"
+              },
+              {
+                "type": "html",
+                "name": "willIBePaid",
+                "html": "<h2 class='my-4'>Will I be paid for my samples?</h2><p>You will not receive payment for your sample(s).</p>"
+              },
+              {
+                "type": "html",
+                "name": "whatAreTheCosts",
+                "html": "<h2 class='my-4'>What are the costs to me to take part in the research tissue bank?</h2><p>There are no costs to participate in OurHealth.</p>"
+              },
+              {
+                "type": "html",
+                "name": "howIsInfoStored",
+                "html": "<h2 class='my-4'>How are my samples and health information stored in the Biobank?</h2><p>Staff at the Broad Institute’s Genomics Platform will assign your sample a code number and store it in a freezer. They will not keep your name or other information that could identify you with your sample. They will use the code number to connect your sample to your health information that is stored in a secure computer database. The computer database is protected with a password. Only staff at the Genomics Platform will know the computer database password.</p>"
+              },
+              {
+                "type": "html",
+                "name": "whichResearchesCanUse",
+                "html": "<h2 class='my-4'>Which researchers can use your samples and what information about you can they have?</h2><ul><li>Researchers from Mass General Brigham institutions listed on this IRB application will be allowed to work with your identified data and samples if they have approval from the Mass General Brigham IRB.</li><li>Your de-identified (coded) samples and health information may be shared with researchers at Mass General Brigham institutions, researchers at non-Mass General Brigham institutions or with for profit companies that are working with Mass General Brigham researchers.</li><li>Your samples will not be sold for profit; however, we may use your samples and information to develop new products or medical tests to be sold. Mass General Brigham and researchers may benefit if this happens. However, neither you nor your family will receive any payment if your samples and information are used for this purpose.</li></ul>"
+              },
+              {
+                "type": "html",
+                "name": "howLongWillSamplesBeKept",
+                "html": "<h2 class='my-4'>How long will the Biobank keep my samples and information?</h2><p>The code linking your samples to your health information may be kept indefinitely so that your samples and updated health information may be used for research in the future.</p>"
+              },
+              {
+                "type": "html",
+                "name": "canIStop",
+                "html": "<h2 class='my-4'>Can you stop allowing your samples and information to be stored and used for research?</h2><p>You have a right to withdraw your permission at any time. If you do, your samples and your information will be destroyed. However, it will not be possible to destroy samples and information that have already been given to researchers in some cases. If you decide to withdraw your permission, please contact the OurHealth staff by phone, <a href='tel:6177241240'>617-724-1240</a>, by email at <a href='mailto:info@ourhealthstudy.org'>info@ourhealthstudy.org</a>, or by mail at 185 Cambridge Street, 5.236, Boston, MA 02114.</p>"
+              },
+              {
+                "type": "html",
+                "name": "whatAreTheRisks",
+                "html": "<h2 style='margin-top:2rem;'>What are the risks?</h2><ul><li>The main risk of allowing us to store and use your samples and certain limited health information for research is a potential loss of privacy. We will protect your privacy by labeling your samples and information only with a code, using secure data encryption on the storage database, and keeping the key to the code in a password protected database.</li><li>There are federal laws and state protections that can help protect your privacy. The Federal law, known as the Genetic Information Nondiscrimination Act (GINA), protects you from genetic discrimination. GINA generally makes it illegal for health insurance companies, group health plans, and most employers to discriminate against you based on your genetic information. However, this law does not protect you against genetic discrimination by companies that sell life insurance, disability insurance, or long-term care insurance.</li><li>We do not think that there will be further risks to your privacy by sharing your samples and other information with other researchers at Mass General Brigham or by sharing your de-identified information with central data (information) banks that analyze, collect, and share the information and results of certain types of genetic studies.</li><li>As scientists learn more about DNA changes, it is possible that our understanding of their health impact will change over time. We might learn that a DNA change is more or less likely to cause a health problem in the future. If this happens with a result you have received, we may update you. You can always reach out to the OurHealth staff by phone (<a href='tel:6177241240'>617-724-1240</a>) or by email at <a href='mailto:info@ourhealthstudy.org'>info@ourhealthstudy.org</a>.</li><li>Taking part in a genetic study may bring unexpected information to light which could have a negative impact on you, your family or other relationships. You can reduce this risk by choosing not to participate or to not accept results in the event that they are offered to you.</li></ul>"
+              },
+              {
+                "type": "html",
+                "name": "whatHappensIfInjured",
+                "html": "<h2 class='my-4'>What happens if you are injured as a result of taking part in this research study?</h2><p>Injuries sometimes happen in research even when no one is at fault. There are no plans to pay you or give you other compensation for an injury, should one occur. However, you are not giving up any of your legal rights by signing this form.</p>"
+              },
+              {
+                "type": "html",
+                "name": "howWillPrivacyBeProtected",
+                "html": "<h2 class='my-4'>If you take part in this research study, how will we protect your privacy?</h2><p>Federal law requires Mass General Brigham to protect the privacy of health information and related information that identifies you. We refer to this information simply as “identifiable information.” The same federal laws that protect your health information will protect your research information.</p><p>In addition to Mass General Brigham researchers listed on this IRB application, the following people or groups may be able to see, use, and share your identifiable health information from the research:</p><ul><li>The Mass General Brigham IRB that oversees the project and the Mass General Brigham research quality improvement programs.</li><li>People from organizations that provide independent accreditation and oversight of hospitals and research.</li><li>People or organizations that we hire to do work for us, such as data storage companies, insurers, and lawyers, Federal and state agencies (such as the Food and Drug Administration, the Department of Health and Human Services, the National Institutes of Health, and other US or foreign government bodies that oversee or review research).</li></ul><p>We share your identifiable health information only when we must, and we ask anyone who receives it from us to protect your privacy.</p>"
+              },
+              {
+                "type": "html",
+                "name": "privacyRights",
+                "html": "<h2 class='my-4'>Your Privacy Rights</h2><p>You have the right not to sign this form that allows us to use and share your health information for research; however, if you don’t sign it, you can’t take part in this research study.</p>"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "documentationOfConsentPage",
+        "elements": [
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "documentationOfConsent",
+                "html": "<h1 class='mb-4' style='margin-top:2rem;'>Documentation of Consent</h1><p>This is what I agree to:</p><ol><li>You can perform (or work with others to perform) genomic or molecular tests on my saliva sample and store the sample(s) until this research study is complete.</li><li>You can store the answers that I provide in study surveys until this research study is complete.</li><li>You can study and share the results of the genomic or molecular tests, survey responses, and my health information with established public databases (e.g., NIH data portals) and with other qualified researchers in a manner that does not include my name, or any other information that could be used to readily identify me, to be used by other qualified researchers to perform future research studies, including studies that have not yet been designed, studies for diseases other than cancer, and studies that may be for commercial purposes.</li><li>You can use the results of studying my saliva sample and my health information for future research studies, including studies that have not yet been designed, studies for any disease, and/or studies that may be for commercial purposes.</li><li>You can contact me in the future for reasons related to this research study.</li></ol>"
+              }
+            ]
+          },
+          {
+            "type": "radiogroup",
+            "name": "oh_oh_consent_agree",
+            "title": "Do you agree to the above?",
+            "titleLocation": "hidden",
+            "isRequired": true,
+            "choices": [
+              {
+                "value": "agree",
+                "text": "I agree"
+              },
+              {
+                "value": "doNotAgree",
+                "text": "I do not agree"
+              }
+            ],
+            "validators": [
+              {
+                "type": "expression",
+                "text": "You must agree in order to take part in the study.",
+                "expression": "{oh_oh_consent_agree} = 'agree'"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "signaturePage",
+        "elements": [
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "statementOfPerson",
+                "html": "<h1 class='mb-4' style='margin-top:2rem;'>Statement of Person Giving Informed Consent and Authorization</h1><p>My full typed name below indicates:</p><ul><li>I have had enough time to read the consent and think about agreeing to participate in this study.</li><li>I have had all of my questions answered to my satisfaction.</li><li>I am willing to participate in this research study.</li><li>I have been told that my participation is voluntary and if I decide not to participate it will have no impact on my medical care.</li><li>I have been told that if I decide to participate now, I can decide to stop being in the study at any time. </li><li>I acknowledge that a copy of the signed consent form will be available to me via my Participant Dashboard.</li></ul>"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "isRequired": true,
+            "name": "oh_oh_consent_legalName",
+            "title": "Full legal name"
+          },
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "type": "html",
+                "name": "signatureDateDisplay",
+                "html": "<p style='padding-top:2rem;margin:0;'><span style='font-weight:600;'>Today's date</span>: {oh_oh_consent_formattedSignatureDate}.</p>"
+              }
+            ]
+          },
+          {
+            "type": "signaturepad",
+            "isRequired": true,
+            "name": "oh_oh_consent_signature",
+            "title": "Signature of Subject",
+            "description": "I give my consent to take part in this research study and agree to allow my health information to be used and shared as described above."
+          }
+        ]
+      }
+    ]
+  }
 }

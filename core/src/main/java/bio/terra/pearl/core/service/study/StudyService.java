@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import bio.terra.pearl.core.service.kit.StudyKitTypeService;
+import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,18 +19,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class StudyService extends CrudService<Study, StudyDao> {
     private StudyEnvironmentService studyEnvironmentService;
     private PortalStudyService portalStudyService;
-    private StudyKitTypeService studyKitTypeService;
+    private StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
 
     public enum AllowedCascades implements CascadeProperty {
         STUDY_ENVIRONMENTS
     }
 
     public StudyService(StudyDao studyDao, StudyEnvironmentService studyEnvironmentService,
-                        PortalStudyService portalStudyService, StudyKitTypeService studyKitTypeService) {
+                        PortalStudyService portalStudyService, StudyEnvironmentKitTypeService studyEnvironmentKitTypeService) {
         super(studyDao);
         this.studyEnvironmentService = studyEnvironmentService;
         this.portalStudyService = portalStudyService;
-        this.studyKitTypeService = studyKitTypeService;
+        this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
     }
 
     public Optional<Study> findByShortcode(String shortcode) {
@@ -60,7 +60,6 @@ public class StudyService extends CrudService<Study, StudyDao> {
 
     @Transactional
     public void delete(UUID studyId, Set<CascadeProperty> cascades) {
-        studyKitTypeService.deleteByStudyId(studyId, cascades);
         studyEnvironmentService.deleteByStudyId(studyId, cascades);
         dao.delete(studyId);
     }

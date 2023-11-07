@@ -3,13 +3,12 @@ package bio.terra.pearl.api.admin.service.study;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
-import bio.terra.pearl.core.service.kit.StudyKitTypeService;
+import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyService;
@@ -22,28 +21,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class StudyExtService {
   private final AuthUtilService authUtilService;
-  private final StudyKitTypeService studyKitTypeService;
+  private final StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
   private final StudyService studyService;
   private final PortalStudyService portalStudyService;
   private final SiteContentService siteContentService;
 
   public StudyExtService(
       AuthUtilService authUtilService,
-      StudyKitTypeService studyKitTypeService,
+      StudyEnvironmentKitTypeService studyEnvironmentKitTypeService,
       StudyService studyService,
       PortalStudyService portalStudyService,
       SiteContentService siteContentService) {
     this.authUtilService = authUtilService;
-    this.studyKitTypeService = studyKitTypeService;
+    this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
     this.studyService = studyService;
     this.portalStudyService = portalStudyService;
     this.siteContentService = siteContentService;
-  }
-
-  public List<KitType> getKitTypes(
-      AdminUser operator, String portalShortcode, String studyShortcode) {
-    var portalStudy = authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
-    return studyKitTypeService.findKitTypesByStudyId(portalStudy.getStudyId());
   }
 
   @Transactional

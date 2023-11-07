@@ -35,6 +35,7 @@ public class LocalizedSiteContentService extends ImmutableEntityService<Localize
         if (localSite.getFooterSection() != null) {
             HtmlSection footer = htmlSectionDao.create(localSite.getFooterSection());
             localSite.setFooterSectionId(footer.getId());
+            localSite.setFooterSection(footer);
         }
         LocalizedSiteContent savedSite = dao.create(localSite);
         for (int i = 0; i < localSite.getNavbarItems().size(); i++) {
@@ -52,6 +53,7 @@ public class LocalizedSiteContentService extends ImmutableEntityService<Localize
             dao.setLandingPageId(savedSite.getId(), landingPage.getId());
         }
         savedSite.setLandingPage(landingPage);
+        savedSite.setFooterSection(localSite.getFooterSection());
         return savedSite;
     }
 

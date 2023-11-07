@@ -2,15 +2,19 @@ package bio.terra.pearl.core.factory.kit;
 
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.model.kit.KitType;
+import bio.terra.pearl.core.model.kit.StudyEnvironmentKitType;
+import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class KitTypeFactory {
-    private final KitTypeDao kitTypeDao;
-
-    public KitTypeFactory(KitTypeDao kitTypeDao) {
-        this.kitTypeDao = kitTypeDao;
-    }
+    @Autowired
+    private KitTypeDao kitTypeDao;
+    @Autowired
+    private StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
 
     public KitType.KitTypeBuilder builder(String testName) {
         return KitType.builder()
@@ -22,5 +26,13 @@ public class KitTypeFactory {
     public KitType buildPersisted(String testName) {
         var kitType = builder(testName).build();
         return kitTypeDao.create(kitType);
+    }
+
+    public void attachTypeToEnvironment(UUID kitTypeId, UUID studyEnvId) {
+        var studyEnvironmentKitType = StudyEnvironmentKitType.builder()
+                .studyEnvironmentId(studyEnvId)
+                .kitTypeId(kitTypeId)
+                .build();
+        studyEnvironmentKitTypeService.create(studyEnvironmentKitType);
     }
 }

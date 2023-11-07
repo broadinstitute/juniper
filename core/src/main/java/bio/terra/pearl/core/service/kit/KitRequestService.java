@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
+import bio.terra.pearl.core.model.kit.StudyEnvironmentKitType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.MailingAddress;
 import bio.terra.pearl.core.model.participant.Profile;
@@ -44,7 +45,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     private final DaoUtils daoUtils;
 
     public KitRequestService(KitRequestDao dao,
-                             @Lazy EnrolleeService enrolleeService,
+                             StudyEnvironmentKitTypeService studyEnvironmentKitTypeService, @Lazy EnrolleeService enrolleeService,
                              KitTypeDao kitTypeDao,
                              PepperDSMClient pepperDSMClient,
                              ProfileService profileService,
@@ -53,6 +54,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                              ObjectMapper objectMapper,
                              DaoUtils daoUtils) {
         super(dao);
+        this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
         this.enrolleeService = enrolleeService;
         this.kitTypeDao = kitTypeDao;
         this.pepperDSMClient = pepperDSMClient;
@@ -164,30 +166,48 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      */
     @Transactional
     public void syncAllKitStatusesFromPepper() {
-        var studies = studyService.findAll();
+        // first get a list of all studies that have kit types configured
+        List<StudyEnvironmentKitType> envKitTypes = studyEnvironmentKitTypeService.findAll();
+        List<UUID> studyEnvIds = envKitTypes.stream().map(StudyEnvironmentKitType::getStudyEnvironmentId).distinct().toList();
+        List<StudyEnvironment> studyEnvs = studyEnvironmentService.findAll(studyEnvIds);
+        List<Study> studies = studyService.findAll(
+                studyEnvs.stream().map(StudyEnvironment::getStudyId).distinct().collect(Collectors.toList())
+        );
+        // it doesn't actually matter what order we process the studies in, but it's nice for logging to have them
+        // consistently alphabetical
+        studies.sort(Comparator.comparing(Study::getShortcode));
         for (Study study : studies) {
-            for (EnvironmentName environmentName : EnvironmentName.values()) {
-                try {
-                    syncKitStatusesForStudy(study, environmentName);
-                } catch (PepperParseException | PepperApiException e) {
-                    // if one sync fails, keep trying others in case the failure is just isolated unexpected data
-                    log.error("kit status sync failed for study %s".formatted(study.getShortcode()), e);
-                }
+            // for each study, grab all the statuses from Pepper
+            // (Pepper doesn't have a concept of study environments, so all kits from a study are under the same code)
+            // then update the statuses in Juniper for each environment
+           try {
+               Collection<PepperKitStatus> pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
+               // now find the environments for this study from the list of environments with kit types
+               studyEnvs.stream().filter(studyEnv -> studyEnv.getStudyId().equals(study.getId())).forEach( studyEnv -> {
+                   syncKitStatusesForStudyEnv(study.getShortcode(), studyEnv.getEnvironmentName(), pepperKitStatuses);
+               });
+            } catch (PepperParseException | PepperApiException e) {
+                // if one sync fails, keep trying others in case the failure is just isolated unexpected data
+                log.error("kit status sync failed for study %s".formatted(study.getShortcode()), e);
             }
         }
     }
 
     @Transactional
-    public void syncKitStatusesForStudy(Study study, EnvironmentName environmentName) throws PepperParseException, PepperApiException {
-        // This assumes that DSM is configured with a single study backing all environments of the Juniper study
-        // TODO: delay deserializing to a PepperKitStatus until after it's been recorded on the kit request
-        var pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
+    public void syncKitStatusesForStudyEnv(Study study, EnvironmentName environmentName) throws PepperParseException, PepperApiException {
+        Collection<PepperKitStatus> pepperKitStatuses = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
+        syncKitStatusesForStudyEnv(study.getShortcode(), environmentName, pepperKitStatuses);
+    }
+
+    private void syncKitStatusesForStudyEnv(String studyShortcode, EnvironmentName envName, Collection<PepperKitStatus> pepperKitStatuses) throws PepperParseException, PepperApiException {
+        UUID studyEnvId = studyEnvironmentService.findByStudy(studyShortcode, envName)
+                .orElseThrow(() -> new NotFoundException("No matching study")).getId();
         var pepperStatusFetchedAt = Instant.now();
         var pepperKitStatusByKitId = pepperKitStatuses.stream().collect(
                 Collectors.toMap(PepperKitStatus::getJuniperKitId, Function.identity(),
                         (kit1, kit2) -> !kit1.getCurrentStatus().equals("Deactivated") ? kit1 : kit2));
 
-        studyEnvironmentService.findByStudy(study.getShortcode(), environmentName).ifPresent(
+        studyEnvironmentService.find(studyEnvId).ifPresent(
                 studyEnvironment -> {
                     var kits = dao.findByStudyEnvironment(studyEnvironment.getId());
 
@@ -291,4 +311,5 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     private final StudyService studyService;
     private final StudyEnvironmentService studyEnvironmentService;
     private final ObjectMapper objectMapper;
+    private StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
 }
