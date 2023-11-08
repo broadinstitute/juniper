@@ -24,7 +24,7 @@ public class B2CConfigurationServiceTest {
     B2CPortalConfiguration b2cConfig = b2CService.getPortalConfiguration();
     notNull(b2cConfig, "b2cConfig should not be null");
     B2CPortalConfiguration.B2CProperties b2cProperties = b2cConfig.getPortalProperties("ourhealth");
-    assertThat(b2cProperties.getTenantName(), equalTo("ddpdevb2c"));
+    assertThat(b2cProperties.getTenantName(), equalTo("ourhealthdev"));
   }
 
   @Test
