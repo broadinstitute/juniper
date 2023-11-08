@@ -41,10 +41,9 @@ public class RegistrationController implements RegistrationApi {
   public ResponseEntity<Object> register(
       String portalShortcode, String envName, UUID preRegResponseId, RegistrationInfo body) {
     var environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    // TODO: seems like user should be authorized (tokenLogin) before registering -DC
+    var token = requestUtilService.requireToken(request);
     registrationService.register(
         portalShortcode, environmentName, body.getEmail(), preRegResponseId);
-    var token = requestUtilService.requireToken(request);
     CurrentUserService.UserWithEnrollees userWithEnrollees =
         currentUserService.tokenLogin(token, portalShortcode, environmentName);
     return ResponseEntity.ok(userWithEnrollees);

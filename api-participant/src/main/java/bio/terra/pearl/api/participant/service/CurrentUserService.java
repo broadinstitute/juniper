@@ -48,10 +48,10 @@ public class CurrentUserService {
   @Transactional
   public UserWithEnrollees tokenLogin(
       String token, String portalShortcode, EnvironmentName environmentName) {
-    UserWithEnrollees userOpt = loadByToken(token, portalShortcode, environmentName);
-    userOpt.user.setLastLogin(Instant.now());
-    participantUserDao.update(userOpt.user);
-    return userOpt;
+    UserWithEnrollees user = loadByToken(token, portalShortcode, environmentName);
+    user.user.setLastLogin(Instant.now());
+    participantUserDao.update(user.user);
+    return user;
   }
 
   @Transactional
@@ -66,7 +66,7 @@ public class CurrentUserService {
     var email = decodedJWT.getClaim("email").asString();
     Optional<ParticipantUser> userOpt = participantUserDao.findOne(email, environmentName);
     if (userOpt.isEmpty()) {
-      log.info("User {} not found for environment {}", email, environmentName);
+      log.info("User not found for environment {}", environmentName);
       throw new UnauthorizedException("User not found for environment " + environmentName);
     }
     return loadFromUser(userOpt.get(), portalShortcode);
@@ -76,7 +76,7 @@ public class CurrentUserService {
     Optional<PortalParticipantUser> portalParticipantUser =
         portalParticipantUserService.findOne(user.getId(), portalShortcode);
     if (portalParticipantUser.isEmpty()) {
-      log.info("User {} not found for portal {}", user.getUsername(), portalShortcode);
+      log.info("User {} not found for portal {}", user.getId(), portalShortcode);
       throw new UnauthorizedException("User not found for portal " + portalShortcode);
     }
     PortalParticipantUser portalUser = portalParticipantUser.get();
