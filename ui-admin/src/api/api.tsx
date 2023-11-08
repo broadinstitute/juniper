@@ -1121,7 +1121,7 @@ Promise<NotificationConfig> {
 
 /** gets an image url for a SiteImage suitable for including in an img tag */
 export function getImageUrl(portalShortcode: string, cleanFileName: string, version: number) {
-  return `${getImageBaseUrl(portalShortcode)}/siteImages/${version}/${cleanFileName}`
+  return `${getImageBaseUrl(portalShortcode)}/${version}/${cleanFileName}`
 }
 
 /** gets the base url for public site images */

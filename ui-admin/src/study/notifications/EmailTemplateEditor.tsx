@@ -3,11 +3,13 @@ import EmailEditor, {EditorRef, EmailEditorProps, Unlayer} from "react-email-edi
 import {EmailTemplate} from "@juniper/ui-core";
 import {Tab, Tabs} from "react-bootstrap";
 import {getImageBaseUrl} from "api/api";
+import {useUser} from "../../user/UserProvider";
 
 export default function EmailTemplateEditor({emailTemplate, updateEmailTemplate, portalShortcode}: {
     emailTemplate: EmailTemplate, portalShortcode: string, updateEmailTemplate: (emailTemplate: EmailTemplate) => void
 }) {
     const emailEditorRef = useRef<EditorRef>(null);
+    const { user } = useUser()
     const [activeTab, setActiveTab] = useState<string | null>('designer')
 
     const replacePlaceholders = (html: string) => {
@@ -25,18 +27,12 @@ export default function EmailTemplateEditor({emailTemplate, updateEmailTemplate,
         })
         unlayer.addEventListener('design:updated', () => {
             if (!emailEditorRef.current?.editor) {return}
-            unlayer.loadDesign({
-                // @ts-ignore
-                html: replacePlaceholders(emailTemplate.body),
-                classic: true
+            emailEditorRef.current.editor.exportHtml((data) => {
+                updateEmailTemplate({
+                    ...emailTemplate,
+                    body: insertPlaceholders(data.html)
+                })
             })
-            
-            // emailEditorRef.current.editor.exportHtml((data) => {
-            //     updateEmailTemplate({
-            //         ...emailTemplate,
-            //         body: insertPlaceholders(data.html)
-            //     })
-            // });
         })
     }
 
