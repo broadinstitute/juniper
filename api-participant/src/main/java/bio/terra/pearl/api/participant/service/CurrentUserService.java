@@ -66,7 +66,7 @@ public class CurrentUserService {
     var email = decodedJWT.getClaim("email").asString();
     Optional<ParticipantUser> userOpt = participantUserDao.findOne(email, environmentName);
     if (userOpt.isEmpty()) {
-      log.info("User not found for environment {}", environmentName);
+      log.info("User not found for environment {}. (Portal: {})", environmentName, portalShortcode);
       throw new UnauthorizedException("User not found for environment " + environmentName);
     }
     return loadFromUser(userOpt.get(), portalShortcode);

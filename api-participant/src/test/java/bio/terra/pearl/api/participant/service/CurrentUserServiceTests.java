@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.participant.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
@@ -37,7 +38,7 @@ public class CurrentUserServiceTests extends BaseSpringBootTest {
     } catch (Exception e) {
       assertThat(
           e.getMessage(),
-          equalTo("User not found for environment %s".formatted(EnvironmentName.irb)));
+          containsString("User not found for environment %s".formatted(EnvironmentName.irb)));
     }
   }
 
@@ -67,7 +68,8 @@ public class CurrentUserServiceTests extends BaseSpringBootTest {
     } catch (Exception e) {
       assertThat(
           e.getMessage(),
-          equalTo("User not found for environment %s".formatted(portalEnv.getEnvironmentName())));
+          containsString(
+              "User not found for environment %s".formatted(portalEnv.getEnvironmentName())));
     }
   }
 

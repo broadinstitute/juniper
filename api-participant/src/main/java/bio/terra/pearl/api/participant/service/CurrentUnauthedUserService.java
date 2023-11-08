@@ -37,7 +37,7 @@ public class CurrentUnauthedUserService {
       String username, String portalShortcode, EnvironmentName environmentName) {
     Optional<ParticipantUser> userOpt = participantUserDao.findOne(username, environmentName);
     if (userOpt.isEmpty()) {
-      log.info("User not found for environment {}", environmentName);
+      log.info("User not found for environment {}. (Portal: {})", environmentName, portalShortcode);
       throw new UnauthorizedException("User not found for environment " + environmentName);
     }
     ParticipantUser user = userOpt.get();
