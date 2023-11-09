@@ -1,11 +1,11 @@
 import React from 'react'
-import {render, screen, waitFor} from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 
 import { mockNotificationConfig, mockPortalContext, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import NotificationContent from './NotificationContent'
 import userEvent from '@testing-library/user-event'
-import Api from "api/api";
+import Api from 'api/api'
 
 test('renders routable config list', async () => {
   const studyEnvContext = mockStudyEnvContext()
@@ -31,7 +31,7 @@ test('renders routable config list', async () => {
     }
   ]
   jest.spyOn(Api, 'findNotificationConfigsForStudyEnv')
-      .mockImplementation(() => Promise.resolve(notificationConfigs))
+    .mockImplementation(() => Promise.resolve(notificationConfigs))
 
   const { RoutedComponent, router } =
       setupRouterTest(<NotificationContent studyEnvContext={studyEnvContext} portalContext={mockPortalContext()}/>)
