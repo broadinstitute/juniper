@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 
-import {mockNotificationConfig, mockPortalContext, mockStudyEnvContext} from 'test-utils/mocking-utils'
+import { mockNotificationConfig, mockPortalContext, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import NotificationContent from './NotificationContent'
 import userEvent from '@testing-library/user-event'

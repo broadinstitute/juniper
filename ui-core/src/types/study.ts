@@ -58,10 +58,10 @@ export type NotificationConfig = {
   active: boolean
   notificationType: string
   deliveryType: string
-  rule: string
+  rule?: string
   eventType: string
-  taskType: string
-  taskTargetStableId: string
+  taskType?: string
+  taskTargetStableId?: string
   afterMinutesIncomplete: number
   reminderIntervalMinutes: number
   maxNumReminders: number

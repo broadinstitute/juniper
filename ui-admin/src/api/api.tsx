@@ -17,6 +17,7 @@ import {
   PreregistrationResponse
 } from '@juniper/ui-core'
 import { facetValuesToString, FacetValue } from './enrolleeSearch'
+import { StudyEnvParams } from '../study/StudyEnvironmentRouter'
 
 export type {
   Answer,
@@ -842,6 +843,17 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async createNotificationConfig(studyEnvParams: StudyEnvParams,
+    config: NotificationConfig): Promise<NotificationConfig> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/notificationConfigs`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(config)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async testNotification(portalShortcode: string, envName: string,
     notificationConfigId: string, enrolleeRuleData: object): Promise<NotificationConfig> {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/notificationConfigs/${notificationConfigId}`
@@ -1151,6 +1163,10 @@ function baseStudyUrl(portalShortcode: string, studyShortcode: string) {
 /** base api path for study-scoped api requests */
 function baseStudyEnvUrl(portalShortcode: string, studyShortcode: string, envName: string) {
   return `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}/env/${envName}`
+}
+
+function baseStudyEnvUrlFromParams(studyEnvParams: StudyEnvParams) {
+  return baseStudyEnvUrl(studyEnvParams.portalShortcode, studyEnvParams.studyShortcode, studyEnvParams.envName)
 }
 
 /** base api path for populate api calls */
