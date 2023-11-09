@@ -4,7 +4,7 @@ import React from 'react'
 import { SectionConfig } from '../../../types/landingPageConfig'
 import { getSectionStyle } from '../../util/styleUtils'
 import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
-import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString }
+import {requireOptionalArray, requireOptionalBoolean, requireOptionalString, requirePlainObject, requireString}
   from '../../util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
@@ -13,6 +13,7 @@ import { InlineMarkdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
+import classNames from "classnames";
 
 type StepConfig = {
   image: MediaConfig,
@@ -23,6 +24,7 @@ type StepConfig = {
 type StepOverviewTemplateConfig = {
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   steps: StepConfig[]
+  showStepNumbers?: boolean, // whether to show step numbers, default true
   title?: string, // large heading text
 }
 
@@ -41,7 +43,8 @@ const validateStepOverviewTemplateConfig = (config: SectionConfig): StepOverview
   const buttons = requireOptionalArray(config, 'buttons', validateButtonConfig, message)
   const title = requireOptionalString(config, 'title', message)
   const steps = requireOptionalArray(config, 'steps', validateStepConfig, message)
-  return { buttons, steps, title }
+  const showStepNumbers = requireOptionalBoolean(config, 'showStepNumbers', message)
+  return { buttons, steps, title, showStepNumbers}
 }
 
 type StepOverviewTemplateProps = TemplateComponentProps<StepOverviewTemplateConfig>
@@ -51,11 +54,16 @@ type StepOverviewTemplateProps = TemplateComponentProps<StepOverviewTemplateConf
  */
 function StepOverviewTemplate(props: StepOverviewTemplateProps) {
   const { anchorRef, config } = props
-  const { buttons, steps, title } = config
+  const { buttons, steps, title, showStepNumbers = true } = config
 
   const hasButtons = (buttons || []).length > 0
   const { getImageUrl } = useApiContext()
-  // TODO: improve layout code for better flexing, especially with <> 4 steps
+  let lgWidthClass = 'col-lg-3'
+  if (steps.length === 2) {
+    lgWidthClass = 'col-lg-6'
+  } else if (steps.length === 3) {
+    lgWidthClass = 'col-lg-4'
+  }
   return <div id={anchorRef} style={getSectionStyle(config, getImageUrl)}>
     {!!title && (
       <h2 className="fs-1 fw-normal lh-sm text-center">
@@ -65,10 +73,12 @@ function StepOverviewTemplate(props: StepOverviewTemplateProps) {
     <div className="row mx-0">
       {
         _.map(steps, ({ image, duration, blurb }: StepConfig, i: number) => {
-          return <div key={i} className="col-12 col-lg-3 d-flex flex-column align-items-center mt-4">
+          return <div key={i}
+                      className={classNames("col-12 d-flex flex-column align-items-center mt-4",
+                          lgWidthClass)}>
             <div className="w-75 d-flex flex-column align-items-center align-items-lg-start">
               <ConfiguredMedia media={image} className="img-fluid p-3" style={{ maxWidth: '200px' }}/>
-              <p className="text-uppercase fs-5 fw-semibold mb-0">Step {i + 1}</p>
+              { showStepNumbers && <p className="text-uppercase fs-5 fw-semibold mb-0">Step {i + 1}</p> }
               <p className="text-uppercase fs-6">{duration}</p>
               <p className="fs-4 mb-0">
                 {blurb}

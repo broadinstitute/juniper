@@ -105,6 +105,7 @@ export const sectionTemplates: Record<string, object> = {
   },
   'STEP_OVERVIEW': {
     title: 'Enter title here',
+    showStepNumbers: true,
     steps: [
       {
         blurb: 'Enter blurb here',
