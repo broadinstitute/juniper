@@ -5,8 +5,10 @@ import static org.hamcrest.Matchers.equalTo;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.api.admin.service.study.StudyExtService;
+import bio.terra.pearl.core.factory.EnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.Study;
@@ -28,12 +30,16 @@ public class StudyExtServiceTests extends BaseSpringBootTest {
   @Autowired private AdminUserFactory adminUserFactory;
   @Autowired private StudyEnvironmentService studyEnvironmentService;
   @Autowired private StudyService studyService;
+  @Autowired private EnvironmentFactory environmentFactory;
 
   @Test
   @Transactional
   public void testStudyCreation(TestInfo testInfo) {
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
     Portal portal = portalFactory.buildPersisted(getTestName(testInfo));
+    for (EnvironmentName envName : EnvironmentName.values()) {
+        environmentFactory.buildPersisted(getTestName(testInfo), envName);
+    }
     String newStudyShortcode = "newStudy" + RandomStringUtils.randomAlphabetic(5);
     StudyExtService.StudyCreationDto studyDto =
         new StudyExtService.StudyCreationDto(newStudyShortcode, "the new study");

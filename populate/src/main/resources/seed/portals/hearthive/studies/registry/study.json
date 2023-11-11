@@ -1,13 +1,15 @@
 {
-  "name": "Pacing study",
-  "shortcode": "pacing",
+  "name": "Registry",
+  "shortcode": "hh_registry",
   "surveyFiles": [],
-  "consentFormFiles": [],
+  "consentFormFiles": [
+    "surveys/consent.json"
+  ],
   "studyEnvironmentDtos": [
     {
       "environmentName": "sandbox",
       "studyEnvironmentConfig": {
-        "acceptingEnrollment": false,
+        "acceptingEnrollment": true,
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true
@@ -16,7 +18,7 @@
     {
       "environmentName": "irb",
       "studyEnvironmentConfig": {
-        "acceptingEnrollment": false,
+        "acceptingEnrollment": true,
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": false
@@ -25,11 +27,17 @@
     {
       "environmentName": "live",
       "studyEnvironmentConfig": {
-        "acceptingEnrollment": false,
+        "acceptingEnrollment": true,
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": false
-      }
+      },
+      "configuredConsentDtos": [
+        {
+          "consentStableId": "hh_registry_consent",
+          "consentVersion": 1
+        }
+      ]
     }
   ]
 }

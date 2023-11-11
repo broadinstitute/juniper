@@ -3,10 +3,8 @@
   "shortcode": "hearthive",
   "populateStudyFiles": [
     "studies/cardiomyopathy/study.json",
-    "studies/pacing/study.json"
-  ],
-  "surveyFiles": [
-    "preRegistration.json"
+    "studies/pacing/study.json",
+    "studies/registry/study.json"
   ],
   "siteContentFiles": [
     "siteContent.json"
@@ -23,9 +21,6 @@
       },
       "siteContentPopDto": {
         "populateFileName": "siteContent.json"
-      },
-      "preRegSurveyDto": {
-        "populateFileName": "preRegistration.json"
       },
       "participantUserFiles": [
         "participants/consentedEnrollee.json",
@@ -62,6 +57,15 @@
     },
     {
       "populateFileName": "images/HEX_Round.webp"
+    },
+    {
+      "populateFileName": "images/step_1.png"
+    },
+    {
+      "populateFileName": "images/step_2.png"
+    },
+    {
+      "populateFileName": "images/step_3.png"
     },
     {
       "populateFileName": "images/favicon.ico"

@@ -22,7 +22,51 @@
           ],
           "logos": []
         }
-      }]
+      },{
+        "sectionType": "STEP_OVERVIEW",
+        "sectionConfigJson": {
+          "background": "linear-gradient(270deg, #C5248D 0%, #E35C76 50%, #FE7F4B 100%)",
+          "title": "How to Participate",
+          "showStepNumbers": false,
+          "fullWidth": true,
+          "steps": [
+            {
+              "image": {
+                "cleanFileName": "step_1.png",
+                "version": 1,
+                "alt": ""
+              },
+              "duration": "1 minute",
+              "blurb": "People living with or at risk of myocarditis or cardiomyopathy sign up on the website. "
+            },
+            {
+              "image": {
+                "cleanFileName": "step_2.png",
+                "version": 1,
+                "alt": ""
+              },
+              "duration": "20 minutes",
+              "blurb": "Participants enter their own health data in a short questionnaire."
+            },
+            {
+              "image": {
+                "cleanFileName": "step_3.png",
+                "version": 1,
+                "alt": ""
+              },
+              "duration": "",
+              "blurb": "Participants gain access to research projects and self-enroll in studies that interest them. "
+            }
+          ],
+          "buttons": [
+            {
+              "text": "Join Heart Hive",
+              "type": "join"
+            }
+          ]
+        }
+      }
+      ]
     },
     "navbarItemDtos": [{
       "itemType": "INTERNAL",

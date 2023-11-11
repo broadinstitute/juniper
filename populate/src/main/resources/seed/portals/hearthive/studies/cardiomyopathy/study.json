@@ -14,7 +14,7 @@
     {
       "environmentName": "sandbox",
       "studyEnvironmentConfig": {
-        "acceptingEnrollment": true,
+        "acceptingEnrollment": false,
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true
@@ -44,7 +44,7 @@
     {
       "environmentName": "irb",
       "studyEnvironmentConfig": {
-        "acceptingEnrollment": true,
+        "acceptingEnrollment": false,
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": false
@@ -53,7 +53,7 @@
     {
       "environmentName": "live",
       "studyEnvironmentConfig": {
-        "acceptingEnrollment": true,
+        "acceptingEnrollment": false,
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": false
