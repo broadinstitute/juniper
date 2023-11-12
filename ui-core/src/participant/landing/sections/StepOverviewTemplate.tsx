@@ -4,7 +4,7 @@ import React from 'react'
 import { SectionConfig } from '../../../types/landingPageConfig'
 import { getSectionStyle } from '../../util/styleUtils'
 import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
-import {requireOptionalArray, requireOptionalBoolean, requireOptionalString, requirePlainObject, requireString}
+import { requireOptionalArray, requireOptionalBoolean, requireOptionalString, requirePlainObject, requireString }
   from '../../util/validationUtils'
 
 import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
@@ -13,7 +13,7 @@ import { InlineMarkdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
-import classNames from "classnames";
+import classNames from 'classnames'
 
 type StepConfig = {
   image: MediaConfig,
@@ -44,7 +44,7 @@ const validateStepOverviewTemplateConfig = (config: SectionConfig): StepOverview
   const title = requireOptionalString(config, 'title', message)
   const steps = requireOptionalArray(config, 'steps', validateStepConfig, message)
   const showStepNumbers = requireOptionalBoolean(config, 'showStepNumbers', message)
-  return { buttons, steps, title, showStepNumbers}
+  return { buttons, steps, title, showStepNumbers }
 }
 
 type StepOverviewTemplateProps = TemplateComponentProps<StepOverviewTemplateConfig>
@@ -74,8 +74,8 @@ function StepOverviewTemplate(props: StepOverviewTemplateProps) {
       {
         _.map(steps, ({ image, duration, blurb }: StepConfig, i: number) => {
           return <div key={i}
-                      className={classNames("col-12 d-flex flex-column align-items-center mt-4",
-                          lgWidthClass)}>
+            className={classNames('col-12 d-flex flex-column align-items-center mt-4',
+              lgWidthClass)}>
             <div className="w-75 d-flex flex-column align-items-center align-items-lg-start">
               <ConfiguredMedia media={image} className="img-fluid p-3" style={{ maxWidth: '200px' }}/>
               { showStepNumbers && <p className="text-uppercase fs-5 fw-semibold mb-0">Step {i + 1}</p> }
