@@ -38,7 +38,7 @@ public class StudyExtServiceTests extends BaseSpringBootTest {
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
     Portal portal = portalFactory.buildPersisted(getTestName(testInfo));
     for (EnvironmentName envName : EnvironmentName.values()) {
-        environmentFactory.buildPersisted(getTestName(testInfo), envName);
+      environmentFactory.buildPersisted(getTestName(testInfo), envName);
     }
     String newStudyShortcode = "newStudy" + RandomStringUtils.randomAlphabetic(5);
     StudyExtService.StudyCreationDto studyDto =
