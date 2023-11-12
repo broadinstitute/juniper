@@ -6,7 +6,7 @@ import React, { useEffect, useId, useRef } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
-import Api, {getEnvSpec, getImageUrl, NavbarItem, PortalStudy} from 'api/api'
+import Api, { getEnvSpec, getImageUrl, NavbarItem, PortalStudy } from 'api/api'
 import { MailingListModal } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
@@ -27,10 +27,6 @@ export default function Navbar(props: NavbarProps) {
   const { user, logoutUser } = useUser()
   const envSpec = getEnvSpec()
   const navLinks = localContent.navbarItems
-  const joinable = filterJoinableStudies(portalEnv.portal.portalStudies)
-  const joinPath = joinable.length === 1
-    ? `/studies/${joinable[0].study.shortcode}/join`
-    : '/join'
 
   /** invoke B2C change password flow */
   function doChangePassword() {
@@ -102,7 +98,7 @@ export default function Navbar(props: NavbarProps) {
                     'd-flex justify-content-center',
                     'mb-3 mb-lg-0 ms-lg-3'
                   )}
-                  to={joinPath}
+                  to={getMainJoinLink(portalEnv.portal.portalStudies)}
                 >
                   Join
                 </NavLink>
@@ -200,7 +196,18 @@ export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
   return <></>
 }
 
-export const filterJoinableStudies = (portalStudies: PortalStudy[]): PortalStudy[] => {
+/** the default join link -- will be rendered in the top right corner */
+export const getMainJoinLink = (portalStudies: PortalStudy[]) => {
+  const joinable = filterUnjoinableStudies(portalStudies)
+  /** if there's only one joinable study, link directly to it */
+  const joinPath = joinable.length === 1
+    ? `/studies/${joinable[0].study.shortcode}/join`
+    : '/join'
+  return joinPath
+}
+
+/** filters out studies that are not accepting enrollment */
+export const filterUnjoinableStudies = (portalStudies: PortalStudy[]): PortalStudy[] => {
   return portalStudies.filter(pStudy =>
-      pStudy.study.studyEnvironments[0].studyEnvironmentConfig.acceptingEnrollment)
+    pStudy.study.studyEnvironments[0].studyEnvironmentConfig.acceptingEnrollment)
 }
