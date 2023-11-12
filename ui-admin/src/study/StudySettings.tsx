@@ -12,6 +12,7 @@ import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { renderPageHeader } from 'util/pageUtils'
+import InfoPopup from "../components/forms/InfoPopup";
 
 /** shows settings for both a study and its containing portal */
 export default function StudySettings({ studyEnvContext, portalContext }:
@@ -61,6 +62,14 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
       <label className="form-label">
         password <input type="text" className="form-control" value={config.password}
           onChange={e => updateConfig('password', e.target.value)}/>
+      </label>
+    </div>
+    <div>
+      <label className="form-label">
+        accepting enrollment <InfoPopup content={`If not checked, this study will be hidden from participants, and
+        they will not be able to enroll.`}/>
+        <input type="checkbox" checked={config.passwordProtected} className="ms-2"
+               onChange={e => updateConfig('acceptingEnrollment', e.target.checked)}/>
       </label>
     </div>
 

@@ -6,7 +6,7 @@ import React, { useEffect, useId, useRef } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
-import Api, { getEnvSpec, getImageUrl, NavbarItem } from 'api/api'
+import Api, {getEnvSpec, getImageUrl, NavbarItem, PortalStudy} from 'api/api'
 import { MailingListModal } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
@@ -27,9 +27,9 @@ export default function Navbar(props: NavbarProps) {
   const { user, logoutUser } = useUser()
   const envSpec = getEnvSpec()
   const navLinks = localContent.navbarItems
-
-  const joinPath = portalEnv.portal.portalStudies.length === 1
-    ? `/studies/${portalEnv.portal.portalStudies[0].study.shortcode}/join`
+  const joinable = filterJoinableStudies(portalEnv.portal.portalStudies)
+  const joinPath = joinable.length === 1
+    ? `/studies/${joinable[0].study.shortcode}/join`
     : '/join'
 
   /** invoke B2C change password flow */
@@ -198,4 +198,9 @@ export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
     return <a href={navLink.href} className={navLinkClasses} target="_blank">{navLink.text}</a>
   }
   return <></>
+}
+
+export const filterJoinableStudies = (portalStudies: PortalStudy[]): PortalStudy[] => {
+  return portalStudies.filter(pStudy =>
+      pStudy.study.studyEnvironments[0].studyEnvironmentConfig.acceptingEnrollment)
 }
