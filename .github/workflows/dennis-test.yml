@@ -49,11 +49,13 @@ jobs:
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
           arguments: build --info # if you need to see test failure full stacktraces, change this to `build --info`
-      - name: Report
-        uses: dorny/test-reporter@v1
+      - name: Upload test artifacts
         if: always()
+        uses: actions/upload-artifact@v3
         with:
-          name: Junit Tests
-          path: build/test-results/test/*.xml
-          reporter: java-junit
-          fail-on-error: true
+          name: test-results
+          path: |
+            api-admin/build/test-results/test/*.xml
+            api-participant/build/test-results/test/*.xml
+            core/build/test-results/test/*.xml
+            populate/build/test-results/test/*.xml
