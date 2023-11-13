@@ -1,5 +1,5 @@
 {
-  "name": "HeartHive",
+  "name": "The Heart Hive",
   "shortcode": "hearthive",
   "populateStudyFiles": [
     "studies/cardiomyopathy/study.json",
@@ -18,7 +18,8 @@
         "acceptingRegistration": true,
         "passwordProtected": false,
         "password": "broad_institute",
-        "initialized": true
+        "initialized": true,
+        "emailSourceAddress": "info@thehearthive.org"
       },
       "siteContentPopDto": {
         "populateFileName": "siteContent.json"
@@ -38,7 +39,8 @@
         "acceptingRegistration": true,
         "passwordProtected": false,
         "password": "broad_institute",
-        "initialized": false
+        "initialized": false,
+        "emailSourceAddress": "info@thehearthive.org"
       }
     },
     {
@@ -47,7 +49,8 @@
         "acceptingRegistration": true,
         "passwordProtected": false,
         "password": "broad_institute",
-        "initialized": false
+        "initialized": false,
+        "emailSourceAddress": "info@thehearthive.org"
       }
     }
   ],
