@@ -164,7 +164,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                                     required: !surveyConfig.required
                                   })
                                 }}>
-                                { surveyConfig.required? 'Make optional' : 'Make required' }
+                                { surveyConfig.required? 'Set as optional' : 'Set as required' }
                               </button>
                             </li>
                           </ul>
