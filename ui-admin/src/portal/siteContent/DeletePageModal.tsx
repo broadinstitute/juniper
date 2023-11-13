@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Modal from 'react-bootstrap/Modal'
 import { HtmlPage } from '@juniper/ui-core'
 
@@ -6,13 +6,9 @@ import { HtmlPage } from '@juniper/ui-core'
 const DeletePageModal = ({ renderedPage, deletePage, onDismiss }: {
   renderedPage: HtmlPage, deletePage: (page: HtmlPage) => void, onDismiss: () => void
 }) => {
-  const [confirmDeletePage, setConfirmDeletePage] = useState('')
-  const deleteString = `delete ${renderedPage.title}`
-
   return <Modal show={true}
     onHide={() => {
       onDismiss()
-      setConfirmDeletePage('')
     }}>
     <Modal.Header closeButton>
       <Modal.Title>Delete Page</Modal.Title>
@@ -20,19 +16,15 @@ const DeletePageModal = ({ renderedPage, deletePage, onDismiss }: {
     <Modal.Body>
       <div className="mb-3">
         Are you sure you want to delete the <strong>{renderedPage.title}</strong> page? Deleted pages
-        can be restored from the website version history.</div>
-      <form onSubmit={e => e.preventDefault()}>
-        <label className="form-label">
-          Confirm by typing &quot;{deleteString}&quot; below.<br/>
-          <input type="text" size={50} className="form-control" id="inputPageRemoval" value={confirmDeletePage}
-            onChange={event => setConfirmDeletePage(event.target.value)}/>
-        </label>
-      </form>
+        can be restored from the website version history.
+      </div>
+      <div className="mb-3">
+        Note that you must save your changes in the editor before your deletion will take effect.
+      </div>
     </Modal.Body>
     <Modal.Footer>
       <button
         className="btn btn-primary"
-        disabled={confirmDeletePage.toLowerCase() !== deleteString.toLowerCase()}
         onClick={() => {
           deletePage(renderedPage)
           onDismiss()
