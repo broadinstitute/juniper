@@ -1,32 +1,27 @@
 import React, { useState } from 'react'
 import Api, { Enrollee } from 'api/api'
-import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
-import { useUser } from 'user/UserProvider'
-import { failureNotification, successNotification } from 'util/notifications'
+import { participantListPath, StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { useNavigate } from 'react-router-dom'
+import { doApiLoad } from 'api/api-utils'
+import { Button } from 'components/forms/Button'
 
 /** shows not-commonly-used enrollee functionality */
 export default function AdvancedOptions({ enrollee, studyEnvContext }:
 {enrollee: Enrollee, studyEnvContext: StudyEnvContextT}) {
   const [shortcodeConfirm, setShortcodeConfirm] = useState('')
-  const { user } = useUser()
   const navigate = useNavigate()
   const withdrawString = `withdraw ${enrollee.profile.givenName} ${enrollee.profile.familyName}`
   const canWithdraw = shortcodeConfirm === withdrawString
   const doWithdraw = async () => {
-    if (!user.superuser) {
-      Store.addNotification(failureNotification('you are not authorized to withdraw participants'))
-      return
-    }
-    try {
+    doApiLoad(async () => {
       await Api.withdrawEnrollee(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
         studyEnvContext.currentEnv.environmentName, enrollee.shortcode)
       Store.addNotification(successNotification('withdrawal succeeded'))
-      navigate(studyEnvContext.currentEnvPath)
-    } catch (e) {
-      Store.addNotification(failureNotification('withdrawal failed'))
-    }
+      navigate(participantListPath(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
+        studyEnvContext.currentEnv.environmentName))
+    })
   }
   return <div className="p4">
     <form onSubmit={e => e.preventDefault()}>
@@ -40,7 +35,8 @@ export default function AdvancedOptions({ enrollee, studyEnvContext }:
             onChange={e => setShortcodeConfirm(e.target.value)}/>
         </label>
       </div>
-      <button type="button" className="btn btn-primary" onClick={doWithdraw} disabled={!canWithdraw}>Withdraw</button>
+      <Button variant="primary" className="btn btn-primary"
+        onClick={doWithdraw} disabled={!canWithdraw}>Withdraw</Button>
     </form>
 
   </div>
