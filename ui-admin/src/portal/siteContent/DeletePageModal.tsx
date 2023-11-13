@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Modal from 'react-bootstrap/Modal'
 import { HtmlPage } from '@juniper/ui-core'
 
-/** renders a modal allows the user to delete a page from the portal website */
+/** renders a modal for deleting pages from the portal website */
 const DeletePageModal = ({ renderedPage, deletePage, onDismiss }: {
   renderedPage: HtmlPage, deletePage: (page: HtmlPage) => void, onDismiss: () => void
 }) => {

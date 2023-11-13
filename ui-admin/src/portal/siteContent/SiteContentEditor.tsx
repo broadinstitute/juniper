@@ -154,7 +154,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     .map(navItem => ({ label: navItem.text, value: navItem.text }))
   pageOpts.unshift(landingPageOption)
 
-  const isLandingPage = selectedNavOpt.value === 'Landing page'
+  const isLandingPage = selectedNavOpt === landingPageOption
 
   return <div className="d-flex bg-white pb-5">
     <div className="d-flex flex-column flex-grow-1 mx-1 mb-1">
