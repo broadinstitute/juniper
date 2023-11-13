@@ -1,9 +1,7 @@
 import React from 'react'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
-import { mockEnrollee, mockParticipantNote, mockStudyEnvContext } from 'test-utils/mocking-utils'
-import { mockAdminUser } from 'test-utils/user-mocking-utils'
+import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { render, screen } from '@testing-library/react'
-import { ParticipantNote } from 'api/api'
 import AdvancedOptions from './AdvancedOptions'
 import userEvent from '@testing-library/user-event'
 
