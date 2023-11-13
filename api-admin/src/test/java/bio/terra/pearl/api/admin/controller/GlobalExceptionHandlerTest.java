@@ -53,9 +53,8 @@ public class GlobalExceptionHandlerTest {
   @Test
   void testBuildErrorReport() {
     Exception nestedException = new Exception("base exception", new Exception("root cause"));
-    GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
     ResponseEntity<ErrorReport> errorReport =
-        globalExceptionHandler.buildErrorReport(nestedException, HttpStatus.INTERNAL_SERVER_ERROR);
+        GlobalExceptionHandler.buildErrorReport(nestedException, HttpStatus.INTERNAL_SERVER_ERROR);
     assertThat(errorReport.getStatusCode(), equalTo(HttpStatus.INTERNAL_SERVER_ERROR));
     assertThat(errorReport.getBody().getMessage(), equalTo("base exception"));
     log.info("Global exception handler: " + errorReport);
@@ -81,7 +80,5 @@ public class GlobalExceptionHandlerTest {
     ResultActions result = mockMvc.perform(request);
 
     result.andExpect(status().is5xxServerError());
-    // result.andExpectAll(
-    //     status().is5xxServerError(), content().string(containsString("PsqlException")));
   }
 }
