@@ -130,7 +130,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                         <Link to={`surveys/${survey.stableId}?readOnly=${isReadOnlyEnv}`}>
                           {survey.name}
                           <span className="mx-1 detail">v{survey.version}</span>
-                          <span>{surveyConfig.required && <span className="detail">(required)</span>}</span>
+                          {surveyConfig.required && <span className="detail">(required)</span>}
                         </Link>
                       </div>
                       { !isReadOnlyEnv && <div className="nav-item dropdown ms-1">
