@@ -1,5 +1,6 @@
 package bio.terra.pearl.api.participant.service;
 
+import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.pearl.core.dao.participant.ParticipantUserDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -10,12 +11,15 @@ import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class CurrentUserService {
   private ParticipantUserDao participantUserDao;
@@ -38,46 +42,46 @@ public class CurrentUserService {
   }
 
   /**
-   * B2C handles all login logistics -- all this method does is confirm the user is in the DB, and
-   * update their last login time
+   * Validate token and verify user represented in token is authorized for portal. If so update user
+   * last login time
    */
   @Transactional
-  public Optional<UserWithEnrollees> tokenLogin(
+  public UserWithEnrollees tokenLogin(
       String token, String portalShortcode, EnvironmentName environmentName) {
-    Optional<UserWithEnrollees> userOpt = loadByToken(token, portalShortcode, environmentName);
-    userOpt.ifPresent(
-        userAndEnrolles -> {
-          userAndEnrolles.user.setLastLogin(Instant.now());
-          participantUserDao.update(userAndEnrolles.user);
-        });
-    return userOpt;
+    UserWithEnrollees user = loadByToken(token, portalShortcode, environmentName);
+    user.user.setLastLogin(Instant.now());
+    participantUserDao.update(user.user);
+    return user;
   }
 
   @Transactional
-  public Optional<UserWithEnrollees> refresh(
+  public UserWithEnrollees refresh(
       String token, String portalShortcode, EnvironmentName environmentName) {
     return loadByToken(token, portalShortcode, environmentName);
   }
 
-  protected Optional<UserWithEnrollees> loadByToken(
+  protected UserWithEnrollees loadByToken(
       String token, String portalShortcode, EnvironmentName environmentName) {
-    var decodedJWT = JWT.decode(token);
+    DecodedJWT decodedJWT = JWT.decode(token);
     var email = decodedJWT.getClaim("email").asString();
-    var userOpt = participantUserDao.findOne(email, environmentName);
-    if (userOpt.isPresent()) {
-      var user = userOpt.get();
-      return Optional.of(loadFromUser(user, portalShortcode));
+    Optional<ParticipantUser> userOpt = participantUserDao.findOne(email, environmentName);
+    if (userOpt.isEmpty()) {
+      log.info("User not found for environment {}. (Portal: {})", environmentName, portalShortcode);
+      throw new UnauthorizedException("User not found for environment " + environmentName);
     }
-    return Optional.empty();
+    return loadFromUser(userOpt.get(), portalShortcode);
   }
 
   public UserWithEnrollees loadFromUser(ParticipantUser user, String portalShortcode) {
-    // this get() will fail if the user has not registered for the given portal, which is what we
-    // want
-    PortalParticipantUser portalParticipantUser =
-        portalParticipantUserService.findOne(user.getId(), portalShortcode).get();
-    user.getPortalParticipantUsers().add(portalParticipantUser);
-    List<Enrollee> enrollees = enrolleeService.findByPortalParticipantUser(portalParticipantUser);
+    Optional<PortalParticipantUser> portalParticipantUser =
+        portalParticipantUserService.findOne(user.getId(), portalShortcode);
+    if (portalParticipantUser.isEmpty()) {
+      log.info("User {} not found for portal {}", user.getId(), portalShortcode);
+      throw new UnauthorizedException("User not found for portal " + portalShortcode);
+    }
+    PortalParticipantUser portalUser = portalParticipantUser.get();
+    user.getPortalParticipantUsers().add(portalUser);
+    List<Enrollee> enrollees = enrolleeService.findByPortalParticipantUser(portalUser);
     for (Enrollee enrollee : enrollees) {
       enrollee
           .getParticipantTasks()

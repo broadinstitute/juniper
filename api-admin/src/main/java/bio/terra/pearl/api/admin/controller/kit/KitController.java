@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.admin.controller.kit;
 
 import bio.terra.pearl.api.admin.api.KitApi;
+import bio.terra.pearl.api.admin.controller.GlobalExceptionHandler;
 import bio.terra.pearl.api.admin.model.ErrorReport;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.kit.KitExtService;
@@ -11,12 +12,9 @@ import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
 public class KitController implements KitApi {
@@ -50,10 +48,8 @@ public class KitController implements KitApi {
   }
 
   @ExceptionHandler(PepperApiException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  @ResponseBody
-  public ErrorReport handlePepperApiException(PepperApiException e) {
-    return new ErrorReport().statusCode(e.getHttpStatus().value()).message(e.getMessage());
+  public ResponseEntity<ErrorReport> handlePepperApiException(PepperApiException e) {
+    return GlobalExceptionHandler.badRequestExceptionHandler(e);
   }
 
   @Override
