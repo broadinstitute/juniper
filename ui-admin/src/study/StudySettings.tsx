@@ -66,7 +66,7 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
       <label className="form-label">
         accepting enrollment <InfoPopup content={`Uncheck this to hide the study from participants who have not
         yet joined and prevent any further enrollments.`}/>
-        <input type="checkbox" checked={config.passwordProtected} className="ms-2"
+        <input type="checkbox" checked={config.acceptingEnrollment} className="ms-2"
           onChange={e => updateConfig('acceptingEnrollment', e.target.checked)}/>
       </label>
     </div>
