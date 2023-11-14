@@ -18,9 +18,6 @@ const DeletePageModal = ({ renderedPage, deletePage, onDismiss }: {
         Are you sure you want to delete the <strong>{renderedPage.title}</strong> page? Deleted pages
         can be restored from the website version history.
       </div>
-      <div className="mb-3">
-        Note that you must save your changes in the editor before your deletion will take effect.
-      </div>
     </Modal.Body>
     <Modal.Footer>
       <button
