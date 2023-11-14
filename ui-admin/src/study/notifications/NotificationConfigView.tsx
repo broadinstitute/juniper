@@ -100,7 +100,7 @@ export default function NotificationConfigView({ studyEnvContext, portalContext 
           emailTemplate: {
             ...updatedTemplate,
             id: undefined,
-            version: config!.emailTemplate.version + 1
+            version: config ? config.emailTemplate.version + 1 : 1
           }
         })}/>}
 
