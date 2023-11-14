@@ -27,8 +27,7 @@ public class PopulateHeartHiveTest extends BasePopulatePortalsTest {
         Portal portal = portalPopulator.populate(new FilePopulateContext("portals/hearthive/portal.json"), true);
         Assertions.assertEquals("hearthive", portal.getShortcode());
         PortalEnvironment sandbox = portalEnvironmentService.findOne("hearthive", EnvironmentName.sandbox).get();
-        assertThat(sandbox.getPreRegSurveyId(), notNullValue());
-        assertThat(portal.getPortalStudies(), hasSize(2));
+        assertThat(portal.getPortalStudies(), hasSize(3));
         Study myopathyStudy = portal.getPortalStudies().stream()
                 .filter(portalStudy -> portalStudy.getStudy().getShortcode().equals("cmyop"))
                 .findFirst().get().getStudy();

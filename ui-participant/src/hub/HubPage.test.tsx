@@ -17,7 +17,10 @@ jest.mock('../providers/PortalProvider', () => {
             name: 'Test Study',
             shortcode: 'STUDYSHORTCODE',
             studyEnvironments: [{
-              id: 'test-study-env-id'
+              id: 'test-study-env-id',
+              studyEnvironmentConfig: {
+                acceptingEnrollment: true
+              }
             }]
           }
         }]
