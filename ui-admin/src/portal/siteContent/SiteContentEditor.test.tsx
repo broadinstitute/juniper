@@ -119,3 +119,17 @@ test('invalid site JSON disables page selector', async () => {
   const pageSelector = screen.getByLabelText('Select a page')
   expect(pageSelector).toBeDisabled()
 })
+
+test('delete page button is disabled when Landing page is selected', async () => {
+  //Arrange
+  const siteContent = mockSiteContent()
+  const { RoutedComponent } = setupRouterTest(
+    <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
+      loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
+      portalEnvContext={mockPortalEnvContext('sandbox')}/>)
+  render(RoutedComponent)
+
+  //Assert
+  const deletePageButton = screen.getByText('Delete page')
+  expect(deletePageButton).toHaveAttribute('aria-disabled', 'true')
+})
