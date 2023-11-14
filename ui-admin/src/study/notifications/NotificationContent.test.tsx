@@ -6,7 +6,7 @@ import { setupRouterTest } from 'test-utils/router-testing-utils'
 import NotificationContent from './NotificationContent'
 import userEvent from '@testing-library/user-event'
 import Api from 'api/api'
-import {ReactNotifications} from "react-notifications-component";
+import { ReactNotifications } from 'react-notifications-component'
 
 test('renders routable config list', async () => {
   const studyEnvContext = mockStudyEnvContext()
