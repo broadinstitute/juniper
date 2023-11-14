@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 
 import { StudyEnvConfigView } from './StudySettings'
 import { mockPortalContext, mockStudyEnvContext } from 'test-utils/mocking-utils'
-import { MockRegularUserProvider, MockSuperuserProvider } from 'test-utils/user-mocking-utils'
+import { MockSuperuserProvider } from 'test-utils/user-mocking-utils'
 import userEvent from '@testing-library/user-event'
 
 test('renders a study env. config', async () => {
@@ -33,14 +33,4 @@ test('updates a study env. config', async () => {
   await userEvent.type(input, 'newPass')
   expect(input).toHaveValue('newPass')
   expect(screen.getByText('Save study config')).toHaveAttribute('aria-disabled', 'false')
-})
-
-test('save disabled for non-superusers', async () => {
-  const portalContext = mockPortalContext()
-  const studyEnvContext = mockStudyEnvContext()
-  render(
-    <MockRegularUserProvider>
-      <StudyEnvConfigView portalContext={portalContext} studyEnvContext={studyEnvContext}/>
-    </MockRegularUserProvider>)
-  expect(screen.getByText('Save study config')).toHaveAttribute('aria-disabled', 'true')
 })

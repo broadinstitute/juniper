@@ -13,7 +13,13 @@
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true
-      }
+      },
+      "configuredConsentDtos": [
+        {
+          "consentStableId": "hh_registry_consent",
+          "consentVersion": 1
+        }
+      ]
     },
     {
       "environmentName": "irb",
@@ -31,13 +37,7 @@
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": false
-      },
-      "configuredConsentDtos": [
-        {
-          "consentStableId": "hh_registry_consent",
-          "consentVersion": 1
-        }
-      ]
+      }
     }
   ]
 }
