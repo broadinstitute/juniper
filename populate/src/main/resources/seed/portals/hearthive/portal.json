@@ -69,5 +69,8 @@
     },
     {
       "populateFileName": "images/favicon.ico"
-  }]
+    },
+    {
+      "populateFileName": "images/email_logo.webp"
+    }]
 }

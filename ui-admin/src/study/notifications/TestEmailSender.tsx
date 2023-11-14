@@ -3,9 +3,10 @@ import Api, { NotificationConfig } from 'api/api'
 import Modal from 'react-bootstrap/Modal'
 import { Store } from 'react-notifications-component'
 import { failureNotification, successNotification } from 'util/notifications'
+import { useUser } from '../../user/UserProvider'
 
 
-const exampleRuleData = {
+export const EXAMPLE_RULE_DATA = {
   profile: {
     givenName: 'Tester',
     familyName: 'McTester',
@@ -17,11 +18,17 @@ const exampleRuleData = {
 }
 
 /** Sends test emails based on a configurable profile */
-export default function TestEmailSender({ portalShortcode, environmentName, notificationConfig, show, setShow }:
-                                          {portalShortcode: string, environmentName: string,
-                                            show: boolean, setShow: (show: boolean) => void,
+export default function TestEmailSender({ portalShortcode, environmentName, notificationConfig, onDismiss }:
+                                          {portalShortcode: string, environmentName: string, onDismiss: () => void,
                                             notificationConfig: NotificationConfig}) {
-  const [ruleData, setRuleData] = useState(exampleRuleData)
+  const { user } = useUser()
+  const [ruleData, setRuleData] = useState({
+    ...EXAMPLE_RULE_DATA,
+    profile: {
+      ...EXAMPLE_RULE_DATA.profile,
+      contactEmail: user.username
+    }
+  })
   /** sends a test email with the given (saved) notification.  does not currently reflect unsaved changes */
   function sendTestEmail() {
     Api.testNotification(portalShortcode, environmentName, notificationConfig.id, ruleData).then(() =>
@@ -44,16 +51,18 @@ export default function TestEmailSender({ portalShortcode, environmentName, noti
     }
   }
 
-  return <Modal show={show} onHide={() => setShow(false)} className="modal-lg">
+  return <Modal show={true} onHide={onDismiss} className="modal-lg">
     <Modal.Header closeButton>
       <Modal.Title>Send test email</Modal.Title>
     </Modal.Header>
     <Modal.Body>
+      This will send a test email using the participant data below with the most recently saved version of the template.
+      Unsaved changes will not appear. Update the &apos;contactEmail&apos; field below to control the email desitnation.
       <textarea rows={20} cols={80} value={JSON.stringify(ruleData, null, 2)} onChange={updateRuleData}/>
     </Modal.Body>
     <Modal.Footer>
       <button type="button" className="btn btn-primary" onClick={sendTestEmail}>Send email</button>
-      <button type="button" className="ms-3 btn btn-secondary" onClick={() => setShow(false)}>Cancel</button>
+      <button type="button" className="ms-3 btn btn-secondary" onClick={onDismiss}>Cancel</button>
     </Modal.Footer>
   </Modal>
 }
