@@ -14,8 +14,8 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import CreateNotificationConfigModal from './CreateNotificationConfigModal'
 
 const CONFIG_GROUPS = [
-  { title: 'Event', type: 'EVENT' },
-  { title: 'Reminder', type: 'TASK_REMINDER' },
+  { title: 'Events', type: 'EVENT' },
+  { title: 'Participant Reminders', type: 'TASK_REMINDER' },
   { title: 'Ad-hoc', type: 'AD_HOC' }
 ]
 
@@ -53,7 +53,7 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
   }
 
   return <div className="container-fluid px-4 py-2">
-    { renderPageHeader('Emails & Notifications') }
+    { renderPageHeader('Participant email configuration') }
     {isLoading && <LoadingSpinner/>}
     {!isLoading && <div className="row">
       <div className="col-md-3 mh-100 bg-white border-end">

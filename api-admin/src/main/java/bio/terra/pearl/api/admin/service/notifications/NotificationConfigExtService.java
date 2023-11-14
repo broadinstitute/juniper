@@ -46,12 +46,13 @@ public class NotificationConfigExtService {
         studyEnvironmentService
             .findByStudy(studyShortcode, environmentName)
             .orElseThrow(StudyEnvironmentMissing::new);
-    var configs =
+    List<NotificationConfig> configs =
         notificationConfigService.findByStudyEnvironmentId(studyEnvironment.getId(), true);
     notificationConfigService.attachTemplates(configs);
     return configs;
   }
 
+  /** Gets the config specified by id, and confirms it belongs to the given portal and study */
   public Optional<NotificationConfig> find(
       AdminUser user,
       String portalShortcode,
@@ -71,7 +72,7 @@ public class NotificationConfigExtService {
     Optional<NotificationConfig> configOpt = notificationConfigService.find(configId);
     configOpt.ifPresent(
         config -> {
-          authNotificationConfig(config, portalEnvironment, studyEnvironment);
+          verifyNotificationConfig(config, portalEnvironment, studyEnvironment);
           notificationConfigService.attachTemplates(List.of(config));
         });
     return configOpt;
@@ -98,7 +99,7 @@ public class NotificationConfigExtService {
     StudyEnvironment studyEnvironment =
         studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
     NotificationConfig existing = notificationConfigService.find(configId).get();
-    authNotificationConfig(existing, portalEnvironment, studyEnvironment);
+    verifyNotificationConfig(existing, portalEnvironment, studyEnvironment);
     NotificationConfig newConfig = create(update, studyEnvironment, portalEnvironment);
     // after creating the new config, deactivate the old config
     existing.setActive(false);
@@ -107,10 +108,9 @@ public class NotificationConfigExtService {
   }
 
   /**
-   * deactivates the notification config with configId, and adds a new config as specified in the
-   * update object. Note though that the portalEnvironmentId and studyEnvironmentId will be set from
-   * the portalShortcode and studyShortcode params. If the update contains a new email template,
-   * that template will be created as well.
+   * creates a new notification config. Note though that the portalEnvironmentId and
+   * studyEnvironmentId will be set from the portalShortcode and studyShortcode params. If the
+   * update contains a new email template, that template will be created as well.
    */
   @Transactional
   public NotificationConfig create(
@@ -121,16 +121,20 @@ public class NotificationConfigExtService {
       AdminUser user) {
     authUtilService.authUserToPortal(user, portalShortcode);
     PortalEnvironment portalEnvironment =
-        portalEnvironmentService.findOne(portalShortcode, environmentName).get();
+        portalEnvironmentService
+            .findOne(portalShortcode, environmentName)
+            .orElseThrow(PortalEnvironmentMissing::new);
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
     StudyEnvironment studyEnvironment =
-        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
+        studyEnvironmentService
+            .findByStudy(studyShortcode, environmentName)
+            .orElseThrow(StudyEnvironmentMissing::new);
 
     return create(newConfig, studyEnvironment, portalEnvironment);
   }
 
   /** confirms the given config is associated with the given study and portal environments */
-  private void authNotificationConfig(
+  private void verifyNotificationConfig(
       NotificationConfig config,
       PortalEnvironment portalEnvironment,
       StudyEnvironment studyEnvironment) {

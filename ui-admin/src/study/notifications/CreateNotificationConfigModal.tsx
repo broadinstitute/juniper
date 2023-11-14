@@ -62,7 +62,7 @@ export default function CreateNotificationConfigModal({ studyEnvParams, onDismis
     <Modal.Body>
       <form className="bg-white p-3 my-2">
         <label className="form-label" htmlFor="templateName">
-                    Notification name (for internal reference)
+                    Notification name (this name is only for staff use -- participants will not see it)
         </label>
         <input type="text" size={20} id="templateName" className="form-control mb-3"
           value={config.emailTemplate.name}
