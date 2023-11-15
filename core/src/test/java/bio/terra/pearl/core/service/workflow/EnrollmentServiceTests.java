@@ -9,11 +9,13 @@ import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.ParsedPreEnrollResponse;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.HubResponse;
+import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -22,17 +24,20 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.notNullValue;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 public class EnrollmentServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
-    public void testAnonymousPreEnroll() throws JsonProcessingException {
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testAnonPreEnroll");
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testAnonPreEnroll");
-        Survey survey = surveyFactory.buildPersisted("testPreEnroll");
+    public void testAnonymousPreEnroll(TestInfo testInfo) throws JsonProcessingException {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(testInfo));
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(testInfo));
+        Survey survey = surveyFactory.buildPersisted(getTestName(testInfo));
         studyEnv.setPreEnrollSurveyId(survey.getId());
         studyEnvironmentService.update(studyEnv);
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
@@ -53,28 +58,52 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
 
         // now check that it can be used to enroll the participant
         ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,
-                "testAnonymousPreEnroll");
+                getTestName(testInfo));
         HubResponse hubResponse = enrollmentService.enroll(userBundle.user(), userBundle.ppUser(),
                 studyEnv.getEnvironmentName(), studyShortcode, savedResponse.getId());
         assertThat(hubResponse.getEnrollee(), notNullValue());
     }
 
+    /**
+     * confirm that the preEnrollResponse is not required even if the study has a preEnrollSurveyId
+     * This is to error on the side of letting users into the study in the event that a strange
+     * refresh/oauth redirect has caused us to lose track of their pre-enroll questionnaire.
+     * */
     @Test
     @Transactional
-    public void testEnrollDoesNotRequirePreEnroll() throws JsonProcessingException {
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testAnonPreEnroll");
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testAnonPreEnroll");
-        Survey survey = surveyFactory.buildPersisted("testPreEnroll");
+    public void testEnrollDoesNotRequirePreEnroll(TestInfo testInfo) {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(testInfo));
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(testInfo));
+        Survey survey = surveyFactory.buildPersisted(getTestName(testInfo));
         studyEnv.setPreEnrollSurveyId(survey.getId());
         studyEnvironmentService.update(studyEnv);
         ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,
-                "testEnrollRequiresPreEnroll");
+                getTestName(testInfo));
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
 
 
         HubResponse hubResponse = enrollmentService.enroll(userBundle.user(), userBundle.ppUser(),
                 studyEnv.getEnvironmentName(), studyShortcode, null);
         assertThat(hubResponse.getEnrollee(), notNullValue());
+    }
+
+    @Test
+    @Transactional
+    public void testEnrollChecksConfigAllowsEnrollment(TestInfo testInfo) {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(testInfo));
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(testInfo));
+
+        StudyEnvironmentConfig studyEnvConfig = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId()).orElseThrow();
+        studyEnvConfig.setAcceptingEnrollment(false);
+        studyEnvironmentConfigService.update(studyEnvConfig);
+
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,
+                getTestName(testInfo));
+        String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            enrollmentService.enroll(userBundle.user(), userBundle.ppUser(),
+                    studyEnv.getEnvironmentName(), studyShortcode, null);
+        });
     }
 
     @Autowired
@@ -87,6 +116,8 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
     private SurveyFactory surveyFactory;
     @Autowired
     private StudyEnvironmentService studyEnvironmentService;
+    @Autowired
+    private StudyEnvironmentConfigService studyEnvironmentConfigService;
     @Autowired
     private ParticipantUserFactory participantUserFactory;
     @Autowired

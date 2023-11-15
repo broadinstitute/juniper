@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.admin.controller.admin;
 
 import bio.terra.pearl.api.admin.api.AdminUserApi;
+import bio.terra.pearl.api.admin.controller.GlobalExceptionHandler;
 import bio.terra.pearl.api.admin.model.AdminUserDto;
 import bio.terra.pearl.api.admin.model.ErrorReport;
 import bio.terra.pearl.api.admin.model.RoleList;
@@ -18,7 +19,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -43,9 +43,8 @@ public class AdminUserController implements AdminUserApi {
   }
 
   @ExceptionHandler(ValidationException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ErrorReport handleValidationException(ValidationException e) {
-    return new ErrorReport().message(e.getMessage());
+  public ResponseEntity<ErrorReport> handleValidationException(ValidationException e) {
+    return GlobalExceptionHandler.badRequestExceptionHandler(e);
   }
 
   @Override

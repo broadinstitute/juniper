@@ -6,12 +6,12 @@ import { PortalEnvironment } from '@juniper/ui-core'
 import { doApiLoad } from 'api/api-utils'
 import { Button } from 'components/forms/Button'
 import { set } from 'lodash/fp'
-import { useUser } from 'user/UserProvider'
 import Api from 'api/api'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { renderPageHeader } from 'util/pageUtils'
+import InfoPopup from '../components/forms/InfoPopup'
 
 /** shows settings for both a study and its containing portal */
 export default function StudySettings({ studyEnvContext, portalContext }:
@@ -31,7 +31,6 @@ export default function StudySettings({ studyEnvContext, portalContext }:
 export function StudyEnvConfigView({ studyEnvContext, portalContext }:
                                        {studyEnvContext: StudyEnvContextT, portalContext: LoadedPortalContextT}) {
   const [config, setConfig] = useState(studyEnvContext.currentEnv.studyEnvironmentConfig)
-  const { user } = useUser()
   const [isLoading, setIsLoading] = useState(false)
   /** update a given field in the config */
   const updateConfig = (propName: string, value: string | boolean) => {
@@ -63,10 +62,18 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
           onChange={e => updateConfig('password', e.target.value)}/>
       </label>
     </div>
+    <div>
+      <label className="form-label">
+        accepting enrollment <InfoPopup content={`Uncheck this to hide the study from participants who have not
+        yet joined and prevent any further enrollments.`}/>
+        <input type="checkbox" checked={config.acceptingEnrollment} className="ms-2"
+          onChange={e => updateConfig('acceptingEnrollment', e.target.checked)}/>
+      </label>
+    </div>
 
     <Button onClick={save}
-      variant="primary" disabled={!user.superuser || isLoading}
-      tooltip={user.superuser ? 'Save' : 'You do not have permission to edit these settings'}>
+      variant="primary" disabled={isLoading}
+      tooltip={'Save'}>
       {isLoading && <LoadingSpinner/>}
       {!isLoading && 'Save study config'}
     </Button>

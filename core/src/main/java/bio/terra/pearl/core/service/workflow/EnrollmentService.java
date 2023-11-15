@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.ParsedPreEnrollResponse;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -13,7 +14,9 @@ import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import bio.terra.pearl.core.service.study.exception.StudyEnvConfigMissing;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,6 +34,7 @@ public class EnrollmentService {
     private SurveyService surveyService;
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
     private StudyEnvironmentService studyEnvironmentService;
+    private StudyEnvironmentConfigService studyEnvironmentConfigService;
     private PortalParticipantUserService portalParticipantUserService;
     private EnrolleeService enrolleeService;
     private EventService eventService;
@@ -40,11 +44,14 @@ public class EnrollmentService {
                              StudyEnvironmentService studyEnvironmentService,
                              PortalParticipantUserService portalParticipantUserService,
                              EnrolleeRuleService enrolleeRuleService,
-                             EnrolleeService enrolleeService, EventService eventService, ObjectMapper objectMapper) {
+                             StudyEnvironmentConfigService studyEnvironmentConfigService,
+                             EnrolleeService enrolleeService,
+                             EventService eventService, ObjectMapper objectMapper) {
         this.surveyService = surveyService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.studyEnvironmentService = studyEnvironmentService;
         this.portalParticipantUserService = portalParticipantUserService;
+        this.studyEnvironmentConfigService = studyEnvironmentConfigService;
         this.eventService = eventService;
         this.enrolleeService = enrolleeService;
         this.objectMapper = objectMapper;
@@ -80,7 +87,11 @@ public class EnrollmentService {
                                             String studyShortcode, UUID preEnrollResponseId) {
         logger.info("creating enrollee for user {}, study {}", user.getId(), studyShortcode);
         StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
-
+        StudyEnvironmentConfig studyEnvConfig = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId())
+                .orElseThrow(StudyEnvConfigMissing::new);
+        if (!studyEnvConfig.isAcceptingEnrollment()) {
+            throw new IllegalArgumentException("study %s is not accepting enrollment".formatted(studyShortcode));
+        }
         PreEnrollmentResponse preEnrollResponse = validatePreEnrollResponse(studyEnv, preEnrollResponseId, user.getId());
 
         Enrollee enrollee = Enrollee.builder()

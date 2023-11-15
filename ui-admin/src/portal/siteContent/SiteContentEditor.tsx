@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { HtmlSection, NavbarItemInternal } from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faClipboard, faClockRotateLeft, faImage, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faClipboard, faClockRotateLeft, faImage, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 import HtmlPageEditView from './HtmlPageEditView'
 import {
   HtmlPage, LocalSiteContent, ApiProvider, SiteContent,
@@ -16,6 +16,7 @@ import CreatePreRegSurveyModal from '../CreatePreRegSurveyModal'
 import { PortalEnvContext } from '../PortalRouter'
 import ErrorBoundary from 'util/ErrorBoundary'
 import { Tab, Tabs } from 'react-bootstrap'
+import DeletePageModal from './DeletePageModal'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -43,6 +44,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const [workingContent, setWorkingContent] = useState<SiteContent>(initialContent)
   const [showVersionSelector, setShowVersionSelector] = useState(false)
   const [showAddPageModal, setShowAddPageModal] = useState(false)
+  const [showDeletePageModal, setShowDeletePageModal] = useState(false)
   const [showAddPreRegModal, setShowAddPreRegModal] = useState(false)
   const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage)
   const [hasInvalidSection, setHasInvalidSection] = useState(false)
@@ -81,6 +83,25 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     }
     updateLocalContent(updatedLocalContent)
     setSelectedNavOpt({ label: newNavBarItem.text, value: newNavBarItem.text || 'Landing page' })
+  }
+
+  const deletePage = (page: HtmlPage) => {
+    if (!localContent) {
+      return
+    }
+    const updatedNavBarItems = [...localContent.navbarItems]
+    const matchedNavItemIndex = navBarInternalItems.findIndex(navItem => navItem.htmlPage === page)
+    if (matchedNavItemIndex === -1) {
+      return
+    }
+    updatedNavBarItems.splice(matchedNavItemIndex, 1)
+    const updatedLocalContent = {
+      ...localContent,
+      navbarItems: updatedNavBarItems
+    }
+
+    updateLocalContent(updatedLocalContent)
+    setSelectedNavOpt(landingPageOption)
   }
 
   /** updates the global SiteContent object with the given HtmlPage, which may be associated with a navItem */
@@ -132,6 +153,8 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const pageOpts: {label: string, value: string}[] = navBarInternalItems
     .map(navItem => ({ label: navItem.text, value: navItem.text }))
   pageOpts.unshift(landingPageOption)
+
+  const isLandingPage = selectedNavOpt === landingPageOption
 
   return <div className="d-flex bg-white pb-5">
     <div className="d-flex flex-column flex-grow-1 mx-1 mb-1">
@@ -187,6 +210,12 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             disabled={readOnly || !isEditable || hasInvalidSection}
             onClick={() => setShowAddPageModal(!showAddPageModal)}>
             <FontAwesomeIcon icon={faPlus}/> Add page
+          </Button>
+          <Button className="btn btn-secondary"
+            tooltip={!isLandingPage ? 'Delete this page' : 'You cannot delete the landing page'}
+            disabled={readOnly || !isEditable || hasInvalidSection || isLandingPage}
+            onClick={() => setShowDeletePageModal(!showAddPageModal)}>
+            <FontAwesomeIcon icon={faTrash}/> Delete page
           </Button>
           <Link to="../images" className="btn btn-light ms-auto border m-1">
             <FontAwesomeIcon icon={faImage} className="fa-lg"/> Manage images
@@ -257,6 +286,10 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
         <AddPageModal portalEnv={portalEnv} portalShortcode={portalEnvContext.portal.shortcode}
           insertNewPage={insertNewPage}
           show={showAddPageModal} setShow={setShowAddPageModal}/>
+    }
+    { showDeletePageModal &&
+        <DeletePageModal renderedPage={pageToRender} deletePage={deletePage}
+          onDismiss={() => setShowDeletePageModal(false)}/>
     }
     { showAddPreRegModal &&
         <CreatePreRegSurveyModal portalEnvContext={portalEnvContext} onDismiss={() => setShowAddPreRegModal(false)}/>

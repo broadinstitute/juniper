@@ -1,10 +1,12 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 
-import { mockNotificationConfig, mockStudyEnvContext } from 'test-utils/mocking-utils'
+import { mockNotificationConfig, mockPortalContext, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import NotificationContent from './NotificationContent'
 import userEvent from '@testing-library/user-event'
+import Api from 'api/api'
+import { ReactNotifications } from 'react-notifications-component'
 
 test('renders routable config list', async () => {
   const studyEnvContext = mockStudyEnvContext()
@@ -14,7 +16,7 @@ test('renders routable config list', async () => {
     notificationType: 'EVENT',
     eventType: 'STUDY_ENROLLMENT'
   }
-  studyEnvContext.currentEnv.notificationConfigs = [
+  const notificationConfigs = [
     enrollEmailConfig,
     {
       ...mockNotificationConfig(),
@@ -29,11 +31,17 @@ test('renders routable config list', async () => {
       taskType: 'SURVEY'
     }
   ]
+  jest.spyOn(Api, 'findNotificationConfigsForStudyEnv')
+    .mockImplementation(() => Promise.resolve(notificationConfigs))
 
-  const { RoutedComponent, router } = setupRouterTest(<NotificationContent studyEnvContext={studyEnvContext}/>)
+  const { RoutedComponent, router } =
+      setupRouterTest(<>
+        <ReactNotifications/>
+        <NotificationContent studyEnvContext={studyEnvContext} portalContext={mockPortalContext()}/>
+      </>)
   render(RoutedComponent)
-  expect(screen.getByText('Participant Notifications')).toBeInTheDocument()
-  expect(screen.getByText('Study enrollment')).toBeInTheDocument()
+  expect(screen.getByText('Participant email configuration')).toBeInTheDocument()
+  await waitFor(() => expect(screen.getByText('Study enrollment')).toBeInTheDocument())
   expect(screen.getByText('Reminder: CONSENT')).toBeInTheDocument()
   expect(screen.getByText('Reminder: SURVEY')).toBeInTheDocument()
 

@@ -6,11 +6,11 @@ import {
   NavbarItemExternal,
   NavbarItemInternal,
   NavbarItemInternalAnchor,
-  NavbarItemMailingList
+  NavbarItemMailingList, PortalStudy
 } from 'api/api'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 
-import { CustomNavLink } from './Navbar'
+import { CustomNavLink, getMainJoinLink } from './Navbar'
 
 describe('CustomNavLink', () => {
   it('renders internal links', () => {
@@ -90,5 +90,73 @@ describe('CustomNavLink', () => {
     const modal = document.querySelector('.modal') as HTMLElement
     expect(link).toHaveAttribute('data-bs-toggle', 'modal')
     expect(link).toHaveAttribute('data-bs-target', `#${CSS.escape(modal.getAttribute('id') as string)}`)
+  })
+})
+
+describe('joinPath', () => {
+  it('joins the study if there is one study', () => {
+    const portalStudies = [{
+      study: {
+        shortcode: 'foo',
+        name: 'Foo',
+        studyEnvironments: [{
+          studyEnvironmentConfig: {
+            acceptingEnrollment: true
+          }
+        }]
+      }
+    }] as PortalStudy[]
+    const joinPath = getMainJoinLink(portalStudies)
+    expect(joinPath).toBe('/studies/foo/join')
+  })
+  it('joins the portal if there are two studies', () => {
+    const portalStudies = [{
+      study: {
+        shortcode: 'foo',
+        name: 'Foo',
+        studyEnvironments: [{
+          studyEnvironmentConfig: {
+            acceptingEnrollment: true
+          }
+        }]
+      }
+    }, {
+      study: {
+        shortcode: 'bar',
+        name: 'Bar',
+        studyEnvironments: [{
+          studyEnvironmentConfig: {
+            acceptingEnrollment: true
+          }
+        }]
+      }
+    }] as PortalStudy[]
+    const joinPath = getMainJoinLink(portalStudies)
+    expect(joinPath).toBe('/join')
+  })
+  it('joins the portal if only one study is accepting enrollment', () => {
+    const portalStudies = [{
+      study: {
+        shortcode: 'foo',
+        name: 'Foo',
+        studyEnvironments: [{
+          studyEnvironmentConfig: {
+            acceptingEnrollment: true
+          }
+        }]
+      }
+    }, {
+      study: {
+        shortcode: 'bar',
+        name: 'Bar',
+        studyEnvironments: [{
+          studyEnvironmentConfig: {
+            acceptingEnrollment: false
+          }
+        }]
+      }
+    }] as PortalStudy[]
+    const joinPath = getMainJoinLink(portalStudies)
+    expect(joinPath).toBe('/studies/foo/join')
   })
 })

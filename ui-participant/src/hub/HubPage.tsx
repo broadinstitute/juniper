@@ -9,6 +9,7 @@ import { DocumentTitle } from 'util/DocumentTitle'
 import { userHasJoinedPortalStudy } from 'util/enrolleeUtils'
 
 import { HubMessageAlert, useHubUpdate } from './hubUpdates'
+import { filterUnjoinableStudies } from '../Navbar'
 
 
 /** renders the logged-in hub page */
@@ -19,7 +20,8 @@ export default function HubPage() {
   const hubUpdate = useHubUpdate()
   const [showMessage, setShowMessage] = useState(true)
 
-  const unjoinedStudies = portal.portalStudies.filter(pStudy => !userHasJoinedPortalStudy(pStudy, enrollees))
+  const unjoinedStudies = filterUnjoinableStudies(portal.portalStudies)
+    .filter(pStudy => !userHasJoinedPortalStudy(pStudy, enrollees))
   const hasUnjoinedStudies = unjoinedStudies.length > 0
   return (
     <>

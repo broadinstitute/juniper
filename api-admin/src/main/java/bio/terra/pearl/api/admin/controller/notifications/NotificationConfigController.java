@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Optional;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -42,14 +43,37 @@ public class NotificationConfigController implements NotificationConfigApi {
   }
 
   @Override
+  public ResponseEntity<Object> get(
+      String portalShortcode, String studyShortcode, String envName, UUID configId) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    Optional<NotificationConfig> configOpt =
+        notificationConfigExtService.find(
+            operator, portalShortcode, studyShortcode, environmentName, configId);
+    return ResponseEntity.of(configOpt.map(opt -> opt));
+  }
+
+  @Override
   public ResponseEntity<Object> replace(
       String portalShortcode, String studyShortcode, String envName, UUID configId, Object body) {
-    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    AdminUser operator = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     NotificationConfig config = objectMapper.convertValue(body, NotificationConfig.class);
     NotificationConfig newConfig =
         notificationConfigExtService.replace(
-            portalShortcode, studyShortcode, environmentName, configId, config, adminUser);
+            portalShortcode, studyShortcode, environmentName, configId, config, operator);
+    return ResponseEntity.ok(newConfig);
+  }
+
+  @Override
+  public ResponseEntity<Object> create(
+      String portalShortcode, String studyShortcode, String envName, Object body) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    NotificationConfig config = objectMapper.convertValue(body, NotificationConfig.class);
+    NotificationConfig newConfig =
+        notificationConfigExtService.create(
+            portalShortcode, studyShortcode, environmentName, config, adminUser);
     return ResponseEntity.ok(newConfig);
   }
 }

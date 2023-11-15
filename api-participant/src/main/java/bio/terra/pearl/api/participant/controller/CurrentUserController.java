@@ -5,8 +5,6 @@ import bio.terra.pearl.api.participant.service.CurrentUserService;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
-import java.util.Optional;
-import java.util.function.Function;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -28,19 +26,20 @@ public class CurrentUserController implements CurrentUserApi {
 
   @Override
   public ResponseEntity<Object> tokenLogin(String portalShortcode, String envName) {
-    var token = requestUtilService.requireToken(request);
+    String token = requestUtilService.requireToken(request);
     var environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    var userWithEnrollees = currentUserService.tokenLogin(token, portalShortcode, environmentName);
-    return ResponseEntity.of(userWithEnrollees.map(Function.identity()));
+    CurrentUserService.UserWithEnrollees userWithEnrollees =
+        currentUserService.tokenLogin(token, portalShortcode, environmentName);
+    return ResponseEntity.ok(userWithEnrollees);
   }
 
   @Override
   public ResponseEntity<Object> refresh(String portalShortcode, String envName) {
     String token = requestUtilService.requireToken(request);
     var environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    Optional<CurrentUserService.UserWithEnrollees> userOpt =
+    CurrentUserService.UserWithEnrollees userOpt =
         currentUserService.refresh(token, portalShortcode, environmentName);
-    return ResponseEntity.of(userOpt.map(user -> user));
+    return ResponseEntity.ok(userOpt);
   }
 
   @Override

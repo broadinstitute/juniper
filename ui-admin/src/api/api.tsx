@@ -843,6 +843,17 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async createNotificationConfig(studyEnvParams: StudyEnvParams,
+    config: NotificationConfig): Promise<NotificationConfig> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/notificationConfigs`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(config)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async testNotification(portalShortcode: string, envName: string,
     notificationConfigId: string, enrolleeRuleData: object): Promise<NotificationConfig> {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/notificationConfigs/${notificationConfigId}`
@@ -887,6 +898,13 @@ export default {
     }
     url += searchParams.toString()
     return fetch(url,  this.getGetInit())
+  },
+
+  async findNotificationConfig(portalShortcode: string, studyShortcode: string, envName: string, id: string):
+Promise<NotificationConfig> {
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/notificationConfigs/${id}`
+    const response = await fetch(url,  this.getGetInit())
+    return await this.processJsonResponse(response)
   },
 
   async findNotificationConfigsForStudyEnv(portalShortcode: string, studyShortcode: string, envName: string):
@@ -1115,7 +1133,12 @@ export default {
 
 /** gets an image url for a SiteImage suitable for including in an img tag */
 export function getImageUrl(portalShortcode: string, cleanFileName: string, version: number) {
-  return `${basePublicPortalEnvUrl(portalShortcode, 'live')}/siteImages/${version}/${cleanFileName}`
+  return `${getImageBaseUrl(portalShortcode)}/${version}/${cleanFileName}`
+}
+
+/** gets the base url for public site images */
+export function getImageBaseUrl(portalShortcode: string) {
+  return `${basePublicPortalEnvUrl(portalShortcode, 'live')}/siteImages`
 }
 
 /** base api path for study-scoped api requests */

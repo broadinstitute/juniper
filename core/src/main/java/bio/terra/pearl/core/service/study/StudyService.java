@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
+import org.postgresql.util.PSQLException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,13 +46,21 @@ public class StudyService extends CrudService<Study, StudyDao> {
 
     @Transactional
     public Study create(Study study) {
-        Study newStudy = dao.create(study);
-        study.getStudyEnvironments().forEach(studyEnv -> {
-            studyEnv.setStudyId(newStudy.getId());
-            StudyEnvironment newEnv = studyEnvironmentService.create(studyEnv);
-            newStudy.getStudyEnvironments().add(newEnv);
-        });
-        return newStudy;
+        try {
+            Study newStudy = dao.create(study);
+            study.getStudyEnvironments().forEach(studyEnv -> {
+                studyEnv.setStudyId(newStudy.getId());
+                StudyEnvironment newEnv = studyEnvironmentService.create(studyEnv);
+                newStudy.getStudyEnvironments().add(newEnv);
+            });
+            return newStudy;
+        } catch (Exception e) {
+            if (e.getCause() instanceof PSQLException && e.getMessage().contains("study_shortcode_key")) {
+                throw new IllegalArgumentException("A study with that shortcode already exists");
+            } else {
+                throw e;
+            }
+        }
     }
 
     public List<Study> findWithPreregContent(String portalShortcode, EnvironmentName envName) {

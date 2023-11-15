@@ -31,6 +31,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
@@ -51,6 +52,7 @@ public class AdminUserControllerTest {
   @MockBean private AuthUtilService authUtilService;
 
   @Autowired private AdminUserController adminUserController;
+  @SpyBean private GlobalExceptionHandler globalExceptionHandler;
 
   /*
    * AdminUserController.get
