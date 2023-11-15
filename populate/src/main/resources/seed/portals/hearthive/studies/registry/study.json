@@ -5,6 +5,9 @@
   "consentFormFiles": [
     "surveys/consent.json"
   ],
+  "emailTemplateFiles": [
+    "emails/studyEnroll.json"
+  ],
   "studyEnvironmentDtos": [
     {
       "environmentName": "sandbox",
@@ -19,7 +22,13 @@
           "consentStableId": "hh_registry_consent",
           "consentVersion": 1
         }
-      ]
+      ],
+      "notificationConfigDtos": [{
+        "notificationType": "EVENT",
+        "eventType": "STUDY_ENROLLMENT",
+        "emailTemplateStableId": "hh_registry_studyEnroll",
+        "emailTemplateVersion": 1
+      }]
     },
     {
       "environmentName": "irb",
