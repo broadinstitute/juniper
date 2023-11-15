@@ -5,9 +5,9 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { useNavigate } from 'react-router-dom'
 import { PortalContext, PortalContextT } from 'portal/PortalProvider'
 import InfoPopup from 'components/forms/InfoPopup'
-import { generateStableId } from 'util/pearlSurveyUtils'
 import { ApiErrorResponse, defaultApiErrorHandle, doApiLoad } from 'api/api-utils'
 import Api from 'api/api'
+import { useFormCreationNameFields } from './useFormCreationNameFields'
 
 /** renders a modal that creates a new survey in a portal and configures it to the current study env */
 const CreateSurveyModal = ({ studyEnvContext, onDismiss }:
@@ -17,6 +17,8 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss }:
   const portalContext = useContext(PortalContext) as PortalContextT
   const navigate = useNavigate()
   const { formName, formStableId, clearFields, nameInput, stableIdInput } = useFormCreationNameFields()
+  const [formRequired, setFormRequired] = useState(false)
+
   const createSurvey = async () => {
     doApiLoad(async () => {
       const createdSurvey = await Api.createNewSurvey(studyEnvContext.portal.shortcode,
@@ -33,7 +35,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss }:
             allowParticipantReedit: true,
             allowParticipantStart: true,
             id: '',
-            required: false,
+            required: formRequired,
             prepopulate: false,
             recurrenceIntervalDays: 0,
             recur: false,
@@ -68,6 +70,11 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss }:
         <label className="form-label mt-3" htmlFor="inputFormStableId">Survey Stable ID</label>
         <InfoPopup content={'A stable and unique identifier for the survey. May be shown in exported datasets.'}/>
         { stableIdInput }
+        <div className="form-check mt-3">
+          <label className="form-check-label" htmlFor="formRequired">Required</label>
+          <input type="checkbox" className="form-check-input" id="formRequired"
+            checked={formRequired} onChange={event => setFormRequired(event.target.checked)}/>
+        </div>
       </form>
     </Modal.Body>
     <Modal.Footer>
@@ -87,37 +94,3 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss }:
 }
 
 export default CreateSurveyModal
-
-/** hook for a form that sets a name and stableId */
-export const useFormCreationNameFields = () => {
-  const [formName, setFormName] = useState('')
-  const [formStableId, setFormStableId] = useState('')
-  const [enableAutofillStableId, setEnableAutofillStableId] = useState(true)
-
-  const clearFields = () => {
-    setFormName('')
-    setFormStableId('')
-    setEnableAutofillStableId(true)
-  }
-
-  const nameInput = <input type="text" size={50} className="form-control"
-    id="inputFormName" value={formName}
-    onChange={event => {
-      setFormName(event.target.value)
-      if (enableAutofillStableId) {
-        setFormStableId(generateStableId(event.target.value))
-      }
-    }}/>
-
-  const stableIdInput = <input type="text" size={50} className="form-control"
-    id="inputFormStableId" value={formStableId}
-    onChange={event => {
-      setFormStableId(event.target.value)
-      //Once the user has modified the stable ID on their own,
-      // disable autofill in order to prevent overwriting
-      setEnableAutofillStableId(false)
-    }
-    }/>
-
-  return { formName, formStableId, clearFields, nameInput, stableIdInput }
-}

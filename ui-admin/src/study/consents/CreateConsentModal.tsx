@@ -10,7 +10,7 @@ import Modal from 'react-bootstrap/Modal'
 import InfoPopup from 'components/forms/InfoPopup'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { doApiLoad } from 'api/api-utils'
-import { useFormCreationNameFields } from '../surveys/CreateSurveyModal'
+import { useFormCreationNameFields } from 'study/surveys/useFormCreationNameFields'
 
 /** creates a new consent form for a study */
 export default function CreateConsentModal({ studyEnvContext, onDismiss }: {

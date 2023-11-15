@@ -8,7 +8,7 @@ import InfoPopup from 'components/forms/InfoPopup'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { ApiErrorResponse, defaultApiErrorHandle, doApiLoad } from 'api/api-utils'
 import { PortalEnvContext } from './PortalRouter'
-import { useFormCreationNameFields } from '../study/surveys/CreateSurveyModal'
+import { useFormCreationNameFields } from 'study/surveys/useFormCreationNameFields'
 import { StudyEnvParams, studyEnvPreRegPath, useStudyEnvParamsFromPath } from '../study/StudyEnvironmentRouter'
 import { DocsKey, ZendeskLink } from '../util/zendeskUtils'
 
