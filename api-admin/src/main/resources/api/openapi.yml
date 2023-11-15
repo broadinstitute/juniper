@@ -1386,6 +1386,8 @@ components:
       properties:
         message:
           type: string
+        errorClass:
+          type: string
         statusCode:
           type: integer
     PortalShallowDto:

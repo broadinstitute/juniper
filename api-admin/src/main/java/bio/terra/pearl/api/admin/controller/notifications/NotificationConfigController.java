@@ -6,6 +6,7 @@ import bio.terra.pearl.api.admin.service.notifications.NotificationConfigExtServ
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,7 +51,9 @@ public class NotificationConfigController implements NotificationConfigApi {
     Optional<NotificationConfig> configOpt =
         notificationConfigExtService.find(
             operator, portalShortcode, studyShortcode, environmentName, configId);
-    return ResponseEntity.of(configOpt.map(opt -> opt));
+    return ResponseEntity.ok(
+        configOpt.orElseThrow(
+            () -> new NotFoundException("a config with that id does not exist in this study")));
   }
 
   @Override

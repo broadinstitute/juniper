@@ -1,10 +1,8 @@
 package bio.terra.pearl.api.admin.controller;
 
-import bio.terra.common.exception.BadRequestException;
-import bio.terra.common.exception.InternalServerErrorException;
-import bio.terra.common.exception.UnauthorizedException;
-import bio.terra.common.exception.ValidationException;
+import bio.terra.common.exception.*;
 import bio.terra.pearl.api.admin.model.ErrorReport;
+import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -38,11 +36,18 @@ public class GlobalExceptionHandler {
     return buildErrorReport(ex, HttpStatus.UNAUTHORIZED);
   }
 
-  @ExceptionHandler({
-    UnauthorizedException.class,
-  })
+  @ExceptionHandler({UnauthorizedException.class, PermissionDeniedException.class})
   public static ResponseEntity<ErrorReport> authorizationExceptionHandler(Exception ex) {
     return buildErrorReport(ex, HttpStatus.FORBIDDEN);
+  }
+
+  @ExceptionHandler({
+    NotFoundException.class,
+    javax.ws.rs.NotFoundException.class,
+    bio.terra.pearl.core.service.exception.NotFoundException.class
+  })
+  public static ResponseEntity<ErrorReport> notFoundExceptionHandler(Exception ex) {
+    return buildErrorReport(ex, HttpStatus.NOT_FOUND);
   }
 
   // catchall - internal server error
@@ -61,6 +66,10 @@ public class GlobalExceptionHandler {
     log.info("Global exception handler: " + causes, ex);
 
     return new ResponseEntity<>(
-        new ErrorReport().message(ex.getMessage()).statusCode(statusCode.value()), statusCode);
+        new ErrorReport()
+            .errorClass(ex.getClass().getName())
+            .message(ex.getMessage())
+            .statusCode(statusCode.value()),
+        statusCode);
   }
 }
