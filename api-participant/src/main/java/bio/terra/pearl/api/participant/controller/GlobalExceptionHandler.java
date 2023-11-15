@@ -6,6 +6,7 @@ import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.common.exception.ValidationException;
 import bio.terra.pearl.api.participant.model.ErrorReport;
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,12 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+  private HttpServletRequest request;
+
+  public GlobalExceptionHandler(HttpServletRequest request) {
+    this.request = request;
+  }
+
   @ExceptionHandler({
     MethodArgumentNotValidException.class,
     MethodArgumentTypeMismatchException.class,
@@ -27,38 +34,39 @@ public class GlobalExceptionHandler {
     ValidationException.class,
     BadRequestException.class
   })
-  public static ResponseEntity<ErrorReport> badRequestExceptionHandler(Exception ex) {
-    return buildErrorReport(ex, HttpStatus.BAD_REQUEST);
+  public ResponseEntity<ErrorReport> badRequestExceptionHandler(Exception ex) {
+    return buildErrorReport(ex, HttpStatus.BAD_REQUEST, request);
   }
 
   @ExceptionHandler({
     JWTDecodeException.class,
   })
-  public static ResponseEntity<ErrorReport> authenticationExceptionHandler(Exception ex) {
-    return buildErrorReport(ex, HttpStatus.UNAUTHORIZED);
+  public ResponseEntity<ErrorReport> authenticationExceptionHandler(Exception ex) {
+    return buildErrorReport(ex, HttpStatus.UNAUTHORIZED, request);
   }
 
   @ExceptionHandler({
     UnauthorizedException.class,
   })
-  public static ResponseEntity<ErrorReport> authorizationExceptionHandler(Exception ex) {
-    return buildErrorReport(ex, HttpStatus.FORBIDDEN);
+  public ResponseEntity<ErrorReport> authorizationExceptionHandler(Exception ex) {
+    return buildErrorReport(ex, HttpStatus.FORBIDDEN, request);
   }
 
   // catchall - internal server error
   @ExceptionHandler({InternalServerErrorException.class, Exception.class})
-  public static ResponseEntity<ErrorReport> internalErrorExceptionHandler(Exception ex) {
+  public ResponseEntity<ErrorReport> internalErrorExceptionHandler(Exception ex) {
     log.error("Exception caught by catch-all handler", ex);
-    return buildErrorReport(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+    return buildErrorReport(ex, HttpStatus.INTERNAL_SERVER_ERROR, request);
   }
 
   protected static ResponseEntity<ErrorReport> buildErrorReport(
-      Throwable ex, HttpStatus statusCode) {
+      Throwable ex, HttpStatus statusCode, HttpServletRequest request) {
+
     StringBuilder causes = new StringBuilder("Exception: ").append(ex);
     for (Throwable cause = ex.getCause(); cause != null; cause = cause.getCause()) {
       causes.append("\nCause: ").append(cause);
     }
-    log.info("Global exception handler: " + causes, ex);
+    log.info("{}\nRequest: {} {}", causes, request.getMethod(), request.getRequestURI(), ex);
 
     return new ResponseEntity<>(
         new ErrorReport().message(ex.getMessage()).statusCode(statusCode.value()), statusCode);

@@ -44,7 +44,7 @@ public class AdminUserController implements AdminUserApi {
 
   @ExceptionHandler(ValidationException.class)
   public ResponseEntity<ErrorReport> handleValidationException(ValidationException e) {
-    return GlobalExceptionHandler.badRequestExceptionHandler(e);
+    return GlobalExceptionHandler.badRequestHandler(e, request);
   }
 
   @Override
