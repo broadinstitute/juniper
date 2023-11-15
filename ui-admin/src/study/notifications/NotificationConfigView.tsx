@@ -98,13 +98,15 @@ export default function NotificationConfigView({ studyEnvContext, portalContext 
         updateEmailTemplate={updatedTemplate => setWorkingConfig(currentConfig => {
           // we have to use currentConfig since the template editor might call a stale version of this handler
           // due to the unlayer event listener setup
-          return {...currentConfig!,
-          emailTemplate: {
-            ...updatedTemplate,
-            id: undefined,
-            version: config ? config.emailTemplate.version + 1 : 1
+          return {
+            ...currentConfig!,
+            emailTemplate: {
+              ...updatedTemplate,
+              id: undefined,
+              version: config ? config.emailTemplate.version + 1 : 1
+            }
           }
-        }})}/>}
+        })}/>}
 
       <div className="d-flex justify-content-center">
         <button type="button" className="btn btn-primary" onClick={saveConfig}>Save</button>
