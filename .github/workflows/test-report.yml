@@ -1,8 +1,8 @@
-name: 'Test Report'
+name: 'Java Test Report'
 
 on:
   workflow_run:
-    workflows: ['Java CI Test']
+    workflows: ['Java CI']
     types:
       - completed
 
