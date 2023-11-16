@@ -29,6 +29,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -53,8 +54,12 @@ public class GlobalExceptionHandlerTest {
   @Test
   void testBuildErrorReport() {
     Exception nestedException = new Exception("base exception", new Exception("root cause"));
+    MockHttpServletRequest request = new MockHttpServletRequest();
+    request.setMethod("POST");
+    request.setRequestURI("/api/portals/v1/portal1/studies");
     ResponseEntity<ErrorReport> errorReport =
-        GlobalExceptionHandler.buildErrorReport(nestedException, HttpStatus.INTERNAL_SERVER_ERROR);
+        GlobalExceptionHandler.buildErrorReport(
+            nestedException, HttpStatus.INTERNAL_SERVER_ERROR, request);
     assertThat(errorReport.getStatusCode(), equalTo(HttpStatus.INTERNAL_SERVER_ERROR));
     assertThat(errorReport.getBody().getMessage(), equalTo("base exception"));
     log.info("Global exception handler: " + errorReport);
