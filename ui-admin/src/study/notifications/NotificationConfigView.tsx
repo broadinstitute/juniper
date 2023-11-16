@@ -55,25 +55,25 @@ export default function NotificationConfigView({ studyEnvContext, portalContext 
       <NotificationConfigBaseForm config={workingConfig} setConfig={setWorkingConfig}/>
       { isTaskReminder(workingConfig) && <div>
         <div>
-          <label className="form-label">Remind after
+          <label className="form-label mt-3">Remind after
             <div className="d-flex align-items-center">
-              <input className="form-control me-2" type="number" value={workingConfig.afterMinutesIncomplete}
+              <input className="form-control me-2" type="number" value={workingConfig.afterMinutesIncomplete / 60}
                 onChange={e => setWorkingConfig(
-                  { ...workingConfig, afterMinutesIncomplete: parseInt(e.target.value) || 0 }
+                  { ...workingConfig, afterMinutesIncomplete: parseInt(e.target.value) * 60 || 0 }
                 )}/>
-              minutes
+              hours
             </div>
           </label>
         </div>
         <div>
           <label className="form-label">Repeat reminder after
             <div className="d-flex align-items-center">
-              <input className="form-control me-2" type="number" value={workingConfig.reminderIntervalMinutes}
+              <input className="form-control me-2" type="number" value={workingConfig.reminderIntervalMinutes / 60}
                 onChange={e => setWorkingConfig(
-                  { ...workingConfig, reminderIntervalMinutes: parseInt(e.target.value) || 0 }
+                  { ...workingConfig, reminderIntervalMinutes: parseInt(e.target.value) * 60 || 0 }
                 )}
               />
-              minutes</div>
+              hours</div>
           </label>
         </div>
         <div>
@@ -95,12 +95,16 @@ export default function NotificationConfigView({ studyEnvContext, portalContext 
 
       { hasTemplate && <EmailTemplateEditor emailTemplate={workingConfig.emailTemplate}
         portalShortcode={portal.shortcode}
-        updateEmailTemplate={updatedTemplate => setWorkingConfig({
-          ...workingConfig,
-          emailTemplate: {
-            ...updatedTemplate,
-            id: undefined,
-            version: config ? config.emailTemplate.version + 1 : 1
+        updateEmailTemplate={updatedTemplate => setWorkingConfig(currentConfig => {
+          // we have to use currentConfig since the template editor might call a stale version of this handler
+          // due to the unlayer event listener setup
+          return {
+            ...currentConfig!,
+            emailTemplate: {
+              ...updatedTemplate,
+              id: undefined,
+              version: config ? config.emailTemplate.version + 1 : 1
+            }
           }
         })}/>}
 

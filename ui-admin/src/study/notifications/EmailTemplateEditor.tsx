@@ -9,6 +9,9 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
     emailTemplate: EmailTemplate, portalShortcode: string, updateEmailTemplate: (emailTemplate: EmailTemplate) => void
 }) {
   const emailEditorRef = useRef<EditorRef>(null)
+  // wrapper so that the unlayer event handler always accesses the latest state when updating
+  const emailTemplateRef = useRef(emailTemplate)
+  emailTemplateRef.current = emailTemplate
   const [activeTab, setActiveTab] = useState<string | null>('designer')
 
   const replacePlaceholders = (html: string) => {
@@ -28,7 +31,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
       if (!emailEditorRef.current?.editor) { return }
       emailEditorRef.current.editor.exportHtml(data => {
         updateEmailTemplate({
-          ...emailTemplate,
+          ...emailTemplateRef.current,
           body: insertPlaceholders(data.html)
         })
       })

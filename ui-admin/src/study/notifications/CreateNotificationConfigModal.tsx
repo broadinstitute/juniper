@@ -22,7 +22,7 @@ const getDefaultConfig = (): NotificationConfig => {
     active: true,
     portalEnvironmentId: '',
     studyEnvironmentId: '',
-    afterMinutesIncomplete: 720 * 60,
+    afterMinutesIncomplete: 72 * 60,
     reminderIntervalMinutes: 72 * 60,
     maxNumReminders: 3,
     emailTemplate: {
