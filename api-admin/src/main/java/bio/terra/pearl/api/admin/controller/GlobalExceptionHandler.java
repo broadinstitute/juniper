@@ -71,7 +71,13 @@ public class GlobalExceptionHandler {
     for (Throwable cause = ex.getCause(); cause != null; cause = cause.getCause()) {
       causes.append("\nCause: ").append(cause);
     }
-    log.info("{}\nRequest: {} {}", causes, request.getMethod(), request.getRequestURI(), ex);
+    log.info(
+        "{}\nRequest: {} {} {}",
+        causes,
+        request.getMethod(),
+        request.getRequestURI(),
+        statusCode.value(),
+        ex);
 
     return new ResponseEntity<>(
         new ErrorReport().message(ex.getMessage()).statusCode(statusCode.value()), statusCode);
