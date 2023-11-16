@@ -1,8 +1,8 @@
-name: 'Test Report'
+name: 'Java Test Report'
 
 on:
   workflow_run:
-    workflows: ['Java CI Test']
+    workflows: ['Java CI']
     types:
       - completed
 
@@ -19,9 +19,9 @@ jobs:
         with:
           artifact: test-results
           name: JUnit Tests
-          path: |
-            api-admin/build/test-results/test/*.xml
-            api-participant/build/test-results/test/*.xml
-            core/build/test-results/test/*.xml
+          path: >
+            api-admin/build/test-results/test/*.xml,
+            api-participant/build/test-results/test/*.xml,
+            core/build/test-results/test/*.xml,
             populate/build/test-results/test/*.xml
           reporter: java-junit

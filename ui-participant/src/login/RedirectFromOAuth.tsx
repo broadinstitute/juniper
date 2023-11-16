@@ -74,8 +74,8 @@ export const RedirectFromOAuth = () => {
               })
               const hubUpdate: HubUpdate = {
                 message: {
-                  title: 'Welcome to the study.',
-                  detail: 'Please read and sign the consent form below to complete registration.',
+                  title: `Welcome to ${portalStudy.study.name}`,
+                  detail: 'Please read and sign the consent form below to continue.',
                   type: 'info'
                 }
               }

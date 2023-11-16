@@ -49,7 +49,7 @@ public class KitController implements KitApi {
 
   @ExceptionHandler(PepperApiException.class)
   public ResponseEntity<ErrorReport> handlePepperApiException(PepperApiException e) {
-    return GlobalExceptionHandler.badRequestExceptionHandler(e);
+    return GlobalExceptionHandler.badRequestHandler(e, request);
   }
 
   @Override

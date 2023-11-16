@@ -86,7 +86,7 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
     if (isAlreadyEnrolled) {
       const hubUpdate: HubUpdate = {
         message: {
-          title: 'You are already enrolled in this study.',
+          title: `You are already enrolled in ${studyName}.`,
           type: 'info'
         }
       }
@@ -105,8 +105,8 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
           updateEnrollee(response.enrollee)
           const hubUpdate: HubUpdate = {
             message: {
-              title: 'Welcome to the study.',
-              detail: 'Please read and sign the consent form below to complete registration.',
+              title: `Welcome to ${studyName}.`,
+              detail: 'Please read and sign the consent form below to continue.',
               type: 'info'
             }
           }
