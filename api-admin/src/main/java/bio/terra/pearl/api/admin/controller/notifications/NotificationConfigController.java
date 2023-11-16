@@ -53,7 +53,7 @@ public class NotificationConfigController implements NotificationConfigApi {
             operator, portalShortcode, studyShortcode, environmentName, configId);
     return ResponseEntity.ok(
         configOpt.orElseThrow(
-            () -> new NotFoundException("a config with that id does not exist in this study")));
+            () -> new NotFoundException("A config with that id does not exist in this study")));
   }
 
   @Override
