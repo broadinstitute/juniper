@@ -18,7 +18,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  private HttpServletRequest request;
+  private final HttpServletRequest request;
 
   public GlobalExceptionHandler(HttpServletRequest request) {
     this.request = request;
@@ -65,7 +65,6 @@ public class GlobalExceptionHandler {
   // catchall - internal server error
   @ExceptionHandler({InternalServerErrorException.class, Exception.class})
   public ResponseEntity<ErrorReport> internalErrorExceptionHandler(Exception ex) {
-    log.error("Exception caught by catch-all handler", ex);
     return buildErrorReport(ex, HttpStatus.INTERNAL_SERVER_ERROR, request);
   }
 
@@ -76,13 +75,21 @@ public class GlobalExceptionHandler {
     for (Throwable cause = ex.getCause(); cause != null; cause = cause.getCause()) {
       causes.append("\nCause: ").append(cause);
     }
-    log.info(
-        "{}\nRequest: {} {} {}",
-        causes,
-        request.getMethod(),
-        request.getRequestURI(),
-        statusCode.value(),
-        ex);
+
+    String logString =
+        String.format(
+            "%s%nRequest: %s %s %s",
+            causes, request.getMethod(), request.getRequestURI(), statusCode.value());
+
+    switch (statusCode) {
+      case INTERNAL_SERVER_ERROR:
+        log.error(logString, ex);
+        break;
+      case BAD_REQUEST, UNAUTHORIZED, FORBIDDEN, NOT_FOUND:
+      default:
+        log.info(logString, ex);
+        break;
+    }
 
     return new ResponseEntity<>(
         new ErrorReport()
