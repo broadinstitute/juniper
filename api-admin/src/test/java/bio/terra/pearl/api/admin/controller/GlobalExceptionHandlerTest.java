@@ -58,10 +58,16 @@ public class GlobalExceptionHandlerTest {
     request.setMethod("POST");
     request.setRequestURI("/api/portals/v1/portal1/studies");
     ResponseEntity<ErrorReport> errorReport =
+        GlobalExceptionHandler.buildErrorReport(nestedException, HttpStatus.BAD_REQUEST, request);
+    assertThat(errorReport.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
+    assertThat(errorReport.getBody().getMessage(), equalTo("base exception"));
+
+    // we do not expose internal error exception messages to the client
+    errorReport =
         GlobalExceptionHandler.buildErrorReport(
             nestedException, HttpStatus.INTERNAL_SERVER_ERROR, request);
     assertThat(errorReport.getStatusCode(), equalTo(HttpStatus.INTERNAL_SERVER_ERROR));
-    assertThat(errorReport.getBody().getMessage(), equalTo("base exception"));
+    assertThat(errorReport.getBody().getMessage(), equalTo("Internal server error"));
     log.info("Global exception handler: " + errorReport);
   }
 
