@@ -71,17 +71,17 @@ public class GlobalExceptionHandler {
             "%s%nRequest: %s %s %s",
             causes, request.getMethod(), request.getRequestURI(), statusCode.value());
 
-    switch (statusCode) {
-      case INTERNAL_SERVER_ERROR:
-        log.error(logString, ex);
-        break;
-      case BAD_REQUEST, UNAUTHORIZED, FORBIDDEN, NOT_FOUND:
-      default:
-        log.info(logString, ex);
-        break;
+    String message;
+    if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR) {
+      log.error(logString, ex);
+      // don't share internal error messages with the client
+      message = "Internal server error";
+    } else {
+      log.info(logString, ex);
+      message = ex.getMessage();
     }
 
     return new ResponseEntity<>(
-        new ErrorReport().message(ex.getMessage()).statusCode(statusCode.value()), statusCode);
+        new ErrorReport().message(message).statusCode(statusCode.value()), statusCode);
   }
 }
