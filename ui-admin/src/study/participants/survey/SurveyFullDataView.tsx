@@ -126,6 +126,9 @@ export const getDisplayValue = (answer: Answer,
   if (answer.questionStableId.endsWith('signature')) {
     displayValue = <img src={answer.stringValue}/>
   }
+  if (answer.otherDescription) {
+    displayValue = `${displayValue} - ${answer.otherDescription}`
+  }
   return displayValue
 }
 

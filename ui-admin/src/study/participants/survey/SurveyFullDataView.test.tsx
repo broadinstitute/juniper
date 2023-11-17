@@ -31,6 +31,23 @@ describe('getDisplayValue', () => {
     expect(screen.getByText('option 2')).toBeTruthy()
   })
 
+  it('renders a free text other description', async () => {
+    const question: Question = {
+      isVisible: true,
+      choices: [{
+        text: 'option 1', value: 'option1Val'
+      }, {
+        text: 'option 2', value: 'option2Val'
+      }]
+    } as unknown as Question
+    const answer: Answer = {
+      stringValue: 'option2Val', questionStableId: 'testQ',
+      otherDescription: 'more detail'
+    } as Answer
+    render(<span>{getDisplayValue(answer, question)}</span>)
+    expect(screen.getByText('option 2 - more detail')).toBeTruthy()
+  })
+
   it('renders a choice array value', async () => {
     const question: Question = {
       isVisible: true,
