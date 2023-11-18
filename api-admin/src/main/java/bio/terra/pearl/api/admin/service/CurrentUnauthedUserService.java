@@ -1,6 +1,5 @@
 package bio.terra.pearl.api.admin.service;
 
-import bio.terra.pearl.core.dao.admin.AdminUserDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.admin.AdminUserWithPermissions;
 import bio.terra.pearl.core.service.admin.AdminUserService;
@@ -10,7 +9,6 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CurrentUnauthedUserService {
@@ -22,13 +20,14 @@ public class CurrentUnauthedUserService {
 
   public Optional<AdminUserWithPermissions> unauthedLogin(String username) {
     Optional<AdminUserWithPermissions> userOpt =
-            adminUserService.findByUsernameWithPermissions(username);
-    userOpt.ifPresent(userWithPermissions -> {
-      AdminUser user = userWithPermissions.user();
-      user.setToken(generateFakeJwtToken(username));
-      user.setLastLogin(Instant.now());
-      adminUserService.update(user);
-    });
+        adminUserService.findByUsernameWithPermissions(username);
+    userOpt.ifPresent(
+        userWithPermissions -> {
+          AdminUser user = userWithPermissions.user();
+          user.setToken(generateFakeJwtToken(username));
+          user.setLastLogin(Instant.now());
+          adminUserService.update(user);
+        });
     return userOpt;
   }
 
@@ -51,7 +50,7 @@ public class CurrentUnauthedUserService {
     userOpt.ifPresent(
         user -> {
           user.setToken(null);
-            adminUserService.update(user);
+          adminUserService.update(user);
         });
   }
 

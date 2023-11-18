@@ -1,13 +1,11 @@
 package bio.terra.pearl.api.admin.service;
 
-import bio.terra.pearl.core.dao.admin.AdminUserDao;
 import bio.terra.pearl.core.model.admin.AdminUserWithPermissions;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import com.auth0.jwt.JWT;
 import java.time.Instant;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CurrentUserService {
