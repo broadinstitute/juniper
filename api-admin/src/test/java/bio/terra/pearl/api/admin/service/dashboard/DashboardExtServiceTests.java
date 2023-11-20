@@ -28,7 +28,6 @@ public class DashboardExtServiceTests {
   @Test
   public void listPortalEnvAlertsRequiresAdmin() {
     AdminUser user = AdminUser.builder().superuser(false).build();
-    ParticipantDashboardAlert alert = new ParticipantDashboardAlert();
     when(mockAuthUtilService.authUserToPortal(user, "testPortal"))
         .thenThrow(new PermissionDeniedException("test"));
     Assertions.assertThrows(
