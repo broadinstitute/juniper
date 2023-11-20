@@ -44,13 +44,15 @@ export const AlertEditor = ({ initial, isReadOnly, updateAlert, onSave }: {
       </div>
       <div className="form-group pt-2">
         <label htmlFor="title">Title</label>
-        <input type="text" className="form-control" id="title" value={initial.title} onChange={e =>
-          updateAlert({ ...initial, title: e.target.value })
-        }/>
+        <input type="text" disabled={isReadOnly}
+          className="form-control" id="title" value={initial.title} onChange={e =>
+            updateAlert({ ...initial, title: e.target.value })
+          }
+        />
       </div>
       <div className="form-group pt-2">
         <label htmlFor="type">Type</label>
-        <select className="form-control" id="type" value={initial.type} onChange={e =>
+        <select className="form-control" disabled={isReadOnly} id="type" value={initial.type} onChange={e =>
           updateAlert({ ...initial, type: e.target.value as AlertLevel })
         }>
           <option value="primary">Primary</option>
@@ -62,9 +64,11 @@ export const AlertEditor = ({ initial, isReadOnly, updateAlert, onSave }: {
       </div>
       <div className="form-group pt-2">
         <label htmlFor="detail">Detail</label>
-        <textarea className="form-control" id="detail" rows={4} value={initial.detail} onChange={e =>
-          updateAlert({ ...initial, detail: e.target.value })
-        }/>
+        <textarea className="form-control" disabled={isReadOnly}
+          id="detail" rows={4} value={initial.detail} onChange={e =>
+            updateAlert({ ...initial, detail: e.target.value })
+          }
+        />
       </div>
       {!isReadOnly && <button className="btn btn-primary mt-2" onClick={() => onSave()}>Save</button>}
     </div>
