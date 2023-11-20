@@ -53,11 +53,11 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: test-results
-          path: |
-            api-admin/build/test-results/test/*.xml
-            api-participant/build/test-results/test/*.xml
-            core/build/test-results/test/*.xml
+          name: JUnit Tests
+          path: >
+            api-admin/build/test-results/test/*.xml,
+            api-participant/build/test-results/test/*.xml,
+            core/build/test-results/test/*.xml,
             populate/build/test-results/test/*.xml
       - name: JUnit test report
         uses: dorny/test-reporter@v1

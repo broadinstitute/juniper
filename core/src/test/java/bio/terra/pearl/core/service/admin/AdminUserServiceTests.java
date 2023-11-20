@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +55,20 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
 
         adminUserService.delete(savedUser.getId(), CascadeProperty.EMPTY_SET);
         assertThat(adminUserService.findByUsername(user.getUsername()).isEmpty(), equalTo(true));
+    }
+
+    @Test
+    @Transactional
+    public void testCaseInsensitiveLookup() {
+        AdminUser user = adminUserFactory.builder("testAdminUserCrud")
+                .username("MixedCaseName@test.co" + RandomStringUtils.randomNumeric(3))
+                .build();
+        adminUserService.create(user);
+
+        assertThat(adminUserService.findByUsername(user.getUsername()).isPresent(), is(true));
+        assertThat(adminUserService.findByUsername(user.getUsername().toUpperCase()).isPresent(), is(true));
+        assertThat(adminUserService.findByUsername(user.getUsername().toLowerCase()).isPresent(), is(true));
+        assertThat(adminUserService.findByUsername(user.getUsername() + "x").isPresent(), is(false));
     }
 
     @Test
