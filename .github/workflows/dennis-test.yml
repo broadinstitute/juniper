@@ -62,6 +62,7 @@ jobs:
       - name: JUnit test report
         uses: dorny/test-reporter@v1
         with:
+          name: JUnit Tests
           path: >
             api-admin/build/test-results/test/*.xml,
             api-participant/build/test-results/test/*.xml,
