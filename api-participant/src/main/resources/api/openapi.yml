@@ -86,7 +86,7 @@ paths:
           description: OK
           content: { application/json: { schema: { type: object } } }
         '500':
-                  $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}/mailingListContact:
     post:
       summary: submits a request to be added to a study or portal mailing list
