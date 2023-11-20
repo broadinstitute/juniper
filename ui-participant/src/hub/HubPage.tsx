@@ -17,14 +17,8 @@ import { ParticipantDashboardAlert, alertDefaults } from '@juniper/ui-core'
 export default function HubPage() {
   const { portal, portalEnv } = usePortalEnv()
   const { enrollees } = useUser()
-  const [dashboardAlerts, setDashboardAlerts] = useState<ParticipantDashboardAlert[]>([])
+  const [noActivitiesAlert, setNoActivitiesAlert] = useState<ParticipantDashboardAlert>()
 
-  const noActivitiesAlert = {
-    ...alertDefaults['NO_ACTIVITIES_REMAIN'],
-    ...dashboardAlerts.find(msg => msg.trigger === 'NO_ACTIVITIES_REMAIN')
-  }
-
-  //TODO: this causes a brief jitter on page load. move it to a provider?
   useEffect(() => {
     loadDashboardAlerts()
   }, [])
@@ -32,7 +26,10 @@ export default function HubPage() {
   const loadDashboardAlerts = async () => {
     try {
       const alerts = await Api.getPortalEnvDashboardAlerts(portal.shortcode, portalEnv.environmentName)
-      setDashboardAlerts(alerts)
+      setNoActivitiesAlert({
+        ...alertDefaults['NO_ACTIVITIES_REMAIN'],
+        ...alerts.find(msg => msg.trigger === 'NO_ACTIVITIES_REMAIN')
+      })
     } catch (error) {
       console.error(error)
     }
