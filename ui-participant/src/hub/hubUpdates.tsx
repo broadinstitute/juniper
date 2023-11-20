@@ -1,7 +1,8 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
-import { Alert, AlertProps } from '../Alert'
+import { Alert, AlertProps } from '@juniper/ui-core'
+
 
 export type HubUpdateMessage = {
   detail?: string

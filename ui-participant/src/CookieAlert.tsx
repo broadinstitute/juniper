@@ -1,8 +1,7 @@
 import { faCookieBite } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
 import { Link } from 'react-router-dom'
-
-import { Alert } from './Alert'
+import { Alert } from '@juniper/ui-core'
 
 type CookieAlertProps = {
   onDismiss: () => void

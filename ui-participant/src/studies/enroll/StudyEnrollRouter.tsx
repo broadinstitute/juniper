@@ -12,8 +12,7 @@ import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { useHasProvidedStudyPassword, usePreEnrollResponseId } from 'browserPersistentState'
 
 import { StudyEnrollPasswordGate } from './StudyEnrollPasswordGate'
-import { AlertLevel } from 'Alert'
-import { alertDefaults } from '@juniper/ui-core'
+import { AlertLevel, alertDefaults } from '@juniper/ui-core'
 
 export type StudyEnrollContext = {
   user: ParticipantUser,
