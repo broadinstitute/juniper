@@ -17,27 +17,25 @@ import { ParticipantDashboardAlert, alertDefaults } from '@juniper/ui-core'
 export default function HubPage() {
   const { portal, portalEnv } = usePortalEnv()
   const { enrollees } = useUser()
-  const [dashboardMessages, setDashboardMessages] = useState<ParticipantDashboardAlert[]>([])
+  const [dashboardAlerts, setDashboardAlerts] = useState<ParticipantDashboardAlert[]>([])
 
-  const noActivitiesMessage = {
+  const noActivitiesAlert = {
     ...alertDefaults['NO_ACTIVITIES_REMAIN'],
-    ...dashboardMessages.find(msg => msg.trigger === 'NO_ACTIVITIES_REMAIN')
+    ...dashboardAlerts.find(msg => msg.trigger === 'NO_ACTIVITIES_REMAIN')
   }
 
-  //TODO: this causes a brief jitter on page load.
-  // one solution is to rely on the portal object...but that's getting beefy
+  //TODO: this causes a brief jitter on page load. move it to a provider?
   useEffect(() => {
     loadDashboardAlerts()
   }, [])
 
-  const loadDashboardAlerts = () => {
-    Api.getPortalEnvDashboardAlerts(portal.shortcode, portalEnv.environmentName)
-      .then(response => {
-        setDashboardMessages(response)
-      })
-      .catch(error => {
-        console.error(error)
-      })
+  const loadDashboardAlerts = async () => {
+    try {
+      const alerts = await Api.getPortalEnvDashboardAlerts(portal.shortcode, portalEnv.environmentName)
+      setDashboardAlerts(alerts)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   const hubUpdate = useHubUpdate()
@@ -54,11 +52,11 @@ export default function HubPage() {
         className="hub-dashboard-background flex-grow-1"
         style={{ background: 'linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%' }}
       >
-        {!hasActiveTasks && <HubMessageAlert
+        {!hasActiveTasks && noActivitiesAlert && <HubMessageAlert
           message={{
-            title: noActivitiesMessage?.title,
-            detail: noActivitiesMessage?.detail,
-            type: noActivitiesMessage?.type
+            title: noActivitiesAlert.title,
+            detail: noActivitiesAlert.detail,
+            type: noActivitiesAlert.type
           } as HubUpdateMessage}
           className="mx-1 mx-md-auto my-1 my-md-5 shadow-sm"
           role="alert"
