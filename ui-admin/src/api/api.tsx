@@ -5,6 +5,7 @@ import {
   ConsentResponse,
   NotificationConfig,
   ParticipantTask,
+  ParticipantDashboardAlert,
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
@@ -1043,6 +1044,32 @@ Promise<NotificationConfig> {
       method: 'PATCH',
       headers: this.getInitHeaders(),
       body: JSON.stringify(update)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async listPortalEnvAlerts(portalShortcode: string, envName: string): Promise<ParticipantDashboardAlert[]> {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/dashboard/config/alerts`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async updatePortalEnvAlert(portalShortcode: string, envName: string, alertConfig: ParticipantDashboardAlert) {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/dashboard/config/alerts`
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(alertConfig)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async createPortalEnvAlert(portalShortcode: string, envName: string, alertConfig: ParticipantDashboardAlert) {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/dashboard/config/alerts`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(alertConfig)
     })
     return await this.processJsonResponse(response)
   },

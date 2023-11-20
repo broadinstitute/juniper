@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.portal;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
+import bio.terra.pearl.core.dao.dashboard.ParticipantDashboardAlertDao;
 import bio.terra.pearl.core.dao.site.SiteContentDao;
 import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.model.EnvironmentName;

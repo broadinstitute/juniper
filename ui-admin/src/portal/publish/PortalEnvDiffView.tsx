@@ -134,6 +134,13 @@ export default function PortalEnvDiffView(
       </div>
       <div className="my-2">
         <h2 className="h6">
+          Dashboard config</h2>
+        <div className="ms-4 ">
+          <span className="text-muted fst-italic">not yet implemented</span>
+        </div>
+      </div>
+      <div className="my-2">
+        <h2 className="h6">
           Prereg survey
           <span className="fst-italic text-muted fs-6 ms-3">
             (Note this is pre-registration for the Portal as a whole, not a

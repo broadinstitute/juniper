@@ -73,6 +73,20 @@ paths:
           content: { application/json: { schema: { type: object }}}
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/dashboard/config/alerts:
+    get:
+      summary: Lists all participant dashboard alert configs for a portal environment
+      tags: [ portal ]
+      operationId: listPortalEnvAlerts
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: OK
+          content: { application/json: { schema: { type: object } } }
+        '500':
+                  $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}/mailingListContact:
     post:
       summary: submits a request to be added to a study or portal mailing list

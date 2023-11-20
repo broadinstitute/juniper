@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: participant_dashboard_alert
+      author: mbemis
+      changes:
+        - createTable:
+            tableName: participant_dashboard_alert
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: {
+                nullable: false, primaryKey: true
+              } }
+              - column: { name: title, type: text, constraints: { nullable: false } }
+              - column: { name: detail, type: text, constraints: { nullable: false } }
+              - column: { name: trigger, type: text, constraints: { nullable: false } }
+              - column: { name: type, type: text, constraints: { nullable: false } }
+              - column: { name: portal_environment_id, type: uuid, constraints: {
+                nullable: false, foreignKeyName: fk_dashboard_alert_portal, references: portal_environment(id)
+              } }
+              - column: { name: study_environment_id, type: uuid, constraints: {
+                nullable: true, foreignKeyName: fk_dashboard_alert_study, references: study_environment(id)
+              } }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+        - addUniqueConstraint:
+            tableName: participant_dashboard_alert
+            constraintName: portal_env_id_study_env_id_trigger
+            columnNames: portal_environment_id, study_environment_id, trigger
+
