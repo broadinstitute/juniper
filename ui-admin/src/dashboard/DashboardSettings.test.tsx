@@ -2,7 +2,7 @@ import { mockPortalContext, mockStudyEnvContext } from 'test-utils/mocking-utils
 import { alertDefaults } from '@juniper/ui-core'
 import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
-import DashboardSettings, {AlertEditor, AlertEditorView} from './DashboardSettings'
+import DashboardSettings, { AlertEditorView } from './DashboardSettings'
 import Api from 'api/api'
 import userEvent from '@testing-library/user-event'
 
