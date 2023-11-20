@@ -3,7 +3,7 @@ import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { renderPageHeader } from 'util/pageUtils'
 import { LoadedPortalContextT } from 'portal/PortalProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { AlertLevel, ParticipantDashboardAlert, alertDefaults, MessageTrigger, Alert } from '@juniper/ui-core'
+import { AlertLevel, ParticipantDashboardAlert, alertDefaults, AlertTrigger, Alert } from '@juniper/ui-core'
 import Api from 'api/api'
 import { Store } from 'react-notifications-component'
 import { failureNotification, successNotification } from '../util/notifications'
@@ -37,7 +37,7 @@ export const AlertEditor = ({ initial, isReadOnly, updateAlert, onSave }: {
       <div className="form-group">
         <label htmlFor="trigger">Trigger</label>
         <select className="form-control" disabled={true} id="trigger" value={initial.trigger} onChange={e =>
-          updateAlert({ ...initial, trigger: e.target.value as MessageTrigger })
+          updateAlert({ ...initial, trigger: e.target.value as AlertTrigger })
         }>
           <option value="NO_ACTIVITIES_REMAIN">NO_ACTIVITIES_REMAIN</option>
         </select>

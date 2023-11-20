@@ -12,7 +12,6 @@ export * from './autoSaveUtils'
 export * from './reactUtils'
 export * from './surveyUtils'
 export * from './waitForImages'
-export * from './hubMessages'
 
 export * from './participant/dashboard/Alert'
 export * from './participant/landing/sections/HtmlSectionView'
