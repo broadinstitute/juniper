@@ -65,6 +65,7 @@ jobs:
             core/build/test-results/test/*.xml
             populate/build/test-results/test/*.xml
       - name: JUnit test report
+        # Generate a report if the tests fail or succeed, but not if the user cancels
         if: success() || failure()
         uses: dorny/test-reporter@v1
         with:
