@@ -54,10 +54,7 @@ public class GlobalExceptionHandler {
     return buildErrorReport(ex, HttpStatus.FORBIDDEN, request);
   }
 
-  @ExceptionHandler({
-    NotFoundException.class,
-    HttpRequestMethodNotSupportedException.class
-  })
+  @ExceptionHandler({NotFoundException.class, HttpRequestMethodNotSupportedException.class})
   public ResponseEntity<ErrorReport> notFoundExceptionHandler(Exception ex) {
     return buildErrorReport(ex, HttpStatus.NOT_FOUND, request);
   }

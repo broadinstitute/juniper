@@ -65,6 +65,7 @@ jobs:
             core/build/test-results/test/*.xml
             populate/build/test-results/test/*.xml
       - name: JUnit test report
+        if: success() || failure()
         uses: dorny/test-reporter@v1
         with:
           name: JUnit Tests
