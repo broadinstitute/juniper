@@ -10,7 +10,7 @@ import { navDivStyle, navListItemStyle } from 'util/subNavStyles'
 export default function PopulateRouteSelect({ portalShortcode }: {portalShortcode?: string}) {
   /** styles links as bold if they are the current path */
   function getLinkCssClasses({ isActive }: { isActive: boolean }) {
-    return `${isActive ? "fw-bold" : ""} d-flex align-items-center`;
+    return `${isActive ? 'fw-bold' : ''} d-flex align-items-center`
   }
 
   return <div className="container-fluid">
