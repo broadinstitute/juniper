@@ -3,7 +3,7 @@ import { NavLink, Outlet, Route, Routes, useNavigate } from 'react-router-dom'
 import NotificationConfigTypeDisplay, { deliveryTypeDisplayMap } from './NotifcationConfigTypeDisplay'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
-import { StudyEnvContextT, paramsFromContext } from '../StudyEnvironmentRouter'
+import { paramsFromContext, StudyEnvContextT } from '../StudyEnvironmentRouter'
 import NotificationConfigView from './NotificationConfigView'
 import { renderPageHeader } from 'util/pageUtils'
 import { LoadedPortalContextT } from '../../portal/PortalProvider'
@@ -16,8 +16,8 @@ import { navDivStyle, navListItemStyle } from 'util/subNavStyles'
 import CollapsableMenu from 'navbar/CollapsableMenu'
 
 const CONFIG_GROUPS = [
-  { title: 'Event', type: 'EVENT' },
-  { title: 'Reminder', type: 'TASK_REMINDER' },
+  { title: 'Events', type: 'EVENT' },
+  { title: 'Participant Reminders', type: 'TASK_REMINDER' },
   { title: 'Ad-hoc', type: 'AD_HOC' }
 ]
 
@@ -56,10 +56,11 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
 
   return (
     <div className="container-fluid px-4 py-2">
-      {renderPageHeader("Emails & Notifications")}
+      {renderPageHeader("Participant email configuration")}
       <div className="d-flex">
-        <div className="row">
-          <div className="col-md-3 mh-100 bg-white border-end">
+        {isLoading && <LoadingSpinner/>}
+        {!isLoading && <div className="row">
+          <div className="col-md-3 mh-100 bg-white">
             <div className="d-flex">
               <div style={navDivStyle}>
                 <ul className="list-unstyled">
@@ -71,8 +72,8 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
                   {CONFIG_GROUPS.map((group) => (
                     <li style={navListItemStyle}>
                       <CollapsableMenu header={group.title} headerClass="text-black" content={
-                        <ul className="list-unstyled">
-                          {currentEnv.notificationConfigs
+                        <ul className="list-unstyled p-2">
+                          {configList
                             .filter((config) => config.notificationType === group.type)
                             .map((config) => (
                               <li key={config.id} className="mb-2">
@@ -96,7 +97,7 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
                   <li style={navListItemStyle} className="ps-3">
                     <button
                       className="btn btn-secondary"
-                      onClick={() => alert("not yet implemented")}
+                      onClick={() => setShowCreateModal(true)}
                     >
                       <FontAwesomeIcon icon={faPlus} /> Add
                     </button>
@@ -105,7 +106,7 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
               </div>
             </div>
           </div>
-        </div>
+        </div> }
         <div className="flex-grow-1 bg-white p-3">
           <Routes>
             <Route path="configs/:configId"

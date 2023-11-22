@@ -15,7 +15,7 @@ export default function PopulateRouteSelect({ portalShortcode }: {portalShortcod
 
   return <div className="container-fluid">
     <div className="bg-white p-3 ps-5 row">
-      <div className="col-md-2 px-0 py-3 mh-100 bg-white border-end">
+      <div className="col-md-2 px-0 py-3 mh-100 bg-white">
         <div className="d-flex">
           <div style={navDivStyle}>
             <ul className="list-unstyled">
