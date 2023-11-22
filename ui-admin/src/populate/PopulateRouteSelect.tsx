@@ -5,6 +5,7 @@ import PopulateSurveyControl from './PopulateSurveyControl'
 import PopulateSiteContentControl from './PopulateSiteContent'
 import PopulateAdminConfig from './PopulateAdminConfig'
 import { navDivStyle, navListItemStyle } from 'util/subNavStyles'
+import { renderPageHeader } from 'util/pageUtils'
 
 /** shows links to the populate control panels, and handles the routing for them */
 export default function PopulateRouteSelect({ portalShortcode }: {portalShortcode?: string}) {
@@ -14,16 +15,12 @@ export default function PopulateRouteSelect({ portalShortcode }: {portalShortcod
   }
 
   return <div className="container-fluid">
-    <div className="bg-white p-3 ps-5 row">
-      <div className="col-md-2 px-0 py-3 mh-100 bg-white">
-        <div className="d-flex">
+    { renderPageHeader('Populate') }
+    <div className="d-flex">
+      <div className="bg-white p-3 ps-5 row">
+        <div className="col-md-2 px-0 py-3 mh-100 bg-white">
           <div style={navDivStyle}>
             <ul className="list-unstyled">
-              <li style={navListItemStyle} className="ps-3">
-                <NavLink to="." className={getLinkCssClasses}>
-                  Populate
-                </NavLink>
-              </li>
               <li style={navListItemStyle} className="ps-3">
                 <NavLink to="portal" className={getLinkCssClasses}>Portal</NavLink>
               </li>
@@ -40,7 +37,7 @@ export default function PopulateRouteSelect({ portalShortcode }: {portalShortcod
           </div>
         </div>
       </div>
-      <div className="col-md-6 py-3">
+      <div className="flex-grow-1 bg-white p-3">
         <Routes>
           <Route path="portal" element={<PopulatePortalControl/>}/>
           <Route path="survey"

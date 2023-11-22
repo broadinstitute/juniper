@@ -62,11 +62,6 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
         <div className="col-md-3 mh-100 bg-white">
           <div style={navDivStyle}>
             <ul className="list-unstyled">
-              <li style={navListItemStyle} className="ps-3">
-                <NavLink to="." className={getLinkCssClasses}>
-                  Participant Notifications
-                </NavLink>
-              </li>
               { CONFIG_GROUPS.map(group => <li style={navListItemStyle}>
                 <CollapsableMenu header={group.title} headerClass="text-black" content={
                   <ul className="list-unstyled p-2">
