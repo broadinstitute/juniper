@@ -4,38 +4,29 @@ import PopulatePortalControl from './PopulatePortalControl'
 import PopulateSurveyControl from './PopulateSurveyControl'
 import PopulateSiteContentControl from './PopulateSiteContent'
 import PopulateAdminConfig from './PopulateAdminConfig'
-import { navDivStyle, navListItemStyle } from 'util/subNavStyles'
+import { navDivStyle, navLinkStyleFunc, navListItemStyle } from 'util/subNavStyles'
 import { renderPageHeader } from 'util/pageUtils'
 
 /** shows links to the populate control panels, and handles the routing for them */
 export default function PopulateRouteSelect({ portalShortcode }: {portalShortcode?: string}) {
-  /** styles links as bold if they are the current path */
-  function getLinkCssClasses({ isActive }: { isActive: boolean }) {
-    return `${isActive ? 'fw-bold' : ''} d-flex align-items-center`
-  }
-
   return <div className="container-fluid">
     { renderPageHeader('Populate') }
     <div className="d-flex">
-      <div className="bg-white p-3 ps-5 row">
-        <div className="col-md-2 px-0 py-3 mh-100 bg-white">
-          <div style={navDivStyle}>
-            <ul className="list-unstyled">
-              <li style={navListItemStyle} className="ps-3">
-                <NavLink to="portal" className={getLinkCssClasses}>Portal</NavLink>
-              </li>
-              <li style={navListItemStyle} className="ps-3">
-                <NavLink to="survey" className={getLinkCssClasses}>Survey</NavLink>
-              </li>
-              <li style={navListItemStyle} className="ps-3">
-                <NavLink to="siteContent" className={getLinkCssClasses}>Site Content</NavLink>
-              </li>
-              <li style={navListItemStyle} className="ps-3">
-                <NavLink to="adminConfig" className={getLinkCssClasses}>Admin config</NavLink>
-              </li>
-            </ul>
-          </div>
-        </div>
+      <div style={navDivStyle}>
+        <ul className="list-unstyled">
+          <li style={navListItemStyle} className="ps-3">
+            <NavLink to="portal" style={navLinkStyleFunc}>Portal</NavLink>
+          </li>
+          <li style={navListItemStyle} className="ps-3">
+            <NavLink to="survey" style={navLinkStyleFunc}>Survey</NavLink>
+          </li>
+          <li style={navListItemStyle} className="ps-3">
+            <NavLink to="siteContent" style={navLinkStyleFunc}>Site Content</NavLink>
+          </li>
+          <li style={navListItemStyle} className="ps-3">
+            <NavLink to="adminConfig" style={navLinkStyleFunc}>Admin config</NavLink>
+          </li>
+        </ul>
       </div>
       <div className="flex-grow-1 bg-white p-3">
         <Routes>

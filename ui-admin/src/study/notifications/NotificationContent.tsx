@@ -12,7 +12,7 @@ import Api from 'api/api'
 import { useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import CreateNotificationConfigModal from './CreateNotificationConfigModal'
-import { navDivStyle, navListItemStyle } from 'util/subNavStyles'
+import { navDivStyle, navLinkStyleFunc, navListItemStyle } from 'util/subNavStyles'
 import CollapsableMenu from 'navbar/CollapsableMenu'
 
 const CONFIG_GROUPS = [
@@ -29,10 +29,6 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
   const [configList, setConfigList] = useState<NotificationConfig[]>([])
   const [previousEnv, setPreviousEnv] = useState<string>(currentEnv.environmentName)
   const [showCreateModal, setShowCreateModal] = useState(false)
-  /** styles links as bold if they are the current path */
-  function getLinkCssClasses({ isActive }: { isActive: boolean }) {
-    return `${isActive ? 'fw-bold' : ''} d-flex align-items-center`
-  }
 
   const { isLoading, reload } = useLoadingEffect(async () => {
     const configList = await Api.findNotificationConfigsForStudyEnv(portalContext.portal.shortcode,
@@ -58,35 +54,32 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
     { renderPageHeader('Participant email configuration') }
     <div className="d-flex">
       {isLoading && <LoadingSpinner/>}
-      {!isLoading && <div className="row">
-        <div className="col-md-3 mh-100 bg-white">
-          <div style={navDivStyle}>
-            <ul className="list-unstyled">
-              { CONFIG_GROUPS.map(group => <li style={navListItemStyle}>
-                <CollapsableMenu header={group.title} headerClass="text-black" content={
-                  <ul className="list-unstyled p-2">
-                    { configList
-                      .filter(config => config.notificationType === group.type)
-                      .map(config => <li key={config.id} className="mb-2">
-                        <div className="d-flex">
-                          <NavLink to={`configs/${config.id}`} className={getLinkCssClasses}>
-                            <NotificationConfigTypeDisplay config={config}/>
-                            <span className="text-muted fst-italic"> ({deliveryTypeDisplayMap[config.deliveryType]})</span>
-                          </NavLink>
-                        </div>
-                      </li>
-                      ) }
-                  </ul>}
-                />
-              </li>)}
-              <li style={navListItemStyle} className="ps-3">
-                <button className="btn btn-secondary" onClick={() => setShowCreateModal(true)}>
-                  <FontAwesomeIcon icon={faPlus}/> Add
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
+      {!isLoading && <div style={navDivStyle}>
+        <ul className="list-unstyled">
+          { CONFIG_GROUPS.map(group => <li style={navListItemStyle}>
+            <CollapsableMenu header={group.title} headerClass="text-black" content={
+              <ul className="list-unstyled p-2">
+                { configList
+                  .filter(config => config.notificationType === group.type)
+                  .map(config => <li key={config.id} className="mb-2">
+                    <div className="d-flex">
+                      <NavLink to={`configs/${config.id}`} style={navLinkStyleFunc}>
+                        <NotificationConfigTypeDisplay config={config}/>
+                        <span
+                          className="text-muted fst-italic"> ({deliveryTypeDisplayMap[config.deliveryType]})</span>
+                      </NavLink>
+                    </div>
+                  </li>
+                  ) }
+              </ul>}
+            />
+          </li>)}
+          <li style={navListItemStyle} className="ps-3">
+            <button className="btn btn-secondary" onClick={() => setShowCreateModal(true)}>
+              <FontAwesomeIcon icon={faPlus}/> Add
+            </button>
+          </li>
+        </ul>
       </div> }
       <div className="flex-grow-1 bg-white p-3">
         <Routes>
