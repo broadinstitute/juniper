@@ -68,37 +68,29 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
                     Participant Notifications
                   </NavLink>
                 </li>
-                {CONFIG_GROUPS.map(group => (
-                  <li style={navListItemStyle}>
-                    <CollapsableMenu header={group.title} headerClass="text-black" content={
-                      <ul className="list-unstyled p-2">
-                        {configList
-                          .filter(config => config.notificationType === group.type)
-                          .map(config => (
-                            <li key={config.id} className="mb-2">
-                              <div className="d-flex">
-                                <NavLink
-                                  to={`configs/${config.id}`}
-                                  className={getLinkCssClasses}
-                                >
-                                  <NotificationConfigTypeDisplay config={config} />
-                                  <span className="text-muted fst-italic">
-                                    {' '}
-                                    ({deliveryTypeDisplayMap[config.deliveryType]})
-                                  </span>
-                                </NavLink>
-                              </div>
-                            </li>
-                          ))}
-                      </ul>}/>
-                  </li>
-                ))}
+                {CONFIG_GROUPS.map(group => <li style={navListItemStyle}>
+                  <CollapsableMenu header={group.title} headerClass="text-black" content={
+                    <ul className="list-unstyled p-2">
+                      { configList
+                        .filter(config => config.notificationType === group.type)
+                        .map(config => <li key={config.id} className="mb-2">
+                          <div className="d-flex">
+                            <NavLink to={`configs/${config.id}`} className={getLinkCssClasses}>
+                              <NotificationConfigTypeDisplay config={config} />
+                              <span className="text-muted fst-italic">
+                                {' '}
+                                ({deliveryTypeDisplayMap[config.deliveryType]})
+                              </span>
+                            </NavLink>
+                          </div>
+                        </li>
+                        ) }
+                    </ul>}
+                  />
+                </li>)}
                 <li style={navListItemStyle} className="ps-3">
-                  <button
-                    className="btn btn-secondary"
-                    onClick={() => setShowCreateModal(true)}
-                  >
-                    <FontAwesomeIcon icon={faPlus} /> Add
+                  <button className="btn btn-secondary" onClick={() => setShowCreateModal(true)}>
+                    <FontAwesomeIcon icon={faPlus}/> Add
                   </button>
                 </li>
               </ul>
