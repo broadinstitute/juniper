@@ -18,13 +18,14 @@ export default function RequestKitsModal({
     studyEnvContext: StudyEnvContextT,
     onDismiss: () => void,
     enrolleeShortcodes: string[],
-    onSubmit: () => void }) {
+    onSubmit: (success: boolean) => void }) {
   const { portal, study, currentEnv } = studyEnvContext
   const [isLoading, setIsLoading] = useState(false)
 
   const { kitType, KitSelect } = useKitTypeSelect(paramsFromContext(studyEnvContext))
   const handleSubmit = async () => {
     doApiLoad(async () => {
+      let success = false
       const response = await Api.requestKits(portal.shortcode, study.shortcode, currentEnv.environmentName,
         enrolleeShortcodes, kitType)
       if (response.exceptions.length) {
@@ -37,8 +38,9 @@ export default function RequestKitsModal({
         Store.addNotification(successNotification(
                     `${response.kitRequests.length} kit requests created`
         ))
+        success = true
       }
-      onSubmit()
+      onSubmit(success)
     }, { setIsLoading })
   }
   const kitPluralized = pluralize('kit', enrolleeShortcodes.length)
