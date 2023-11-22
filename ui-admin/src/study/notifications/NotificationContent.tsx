@@ -3,7 +3,7 @@ import { NavLink, Outlet, Route, Routes, useNavigate } from 'react-router-dom'
 import NotificationConfigTypeDisplay, { deliveryTypeDisplayMap } from './NotifcationConfigTypeDisplay'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
-import { paramsFromContext, StudyEnvContextT } from '../StudyEnvironmentRouter'
+import { StudyEnvContextT, paramsFromContext } from '../StudyEnvironmentRouter'
 import NotificationConfigView from './NotificationConfigView'
 import { renderPageHeader } from 'util/pageUtils'
 import { LoadedPortalContextT } from '../../portal/PortalProvider'
@@ -12,24 +12,26 @@ import Api from 'api/api'
 import { useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import CreateNotificationConfigModal from './CreateNotificationConfigModal'
+import { navDivStyle, navListItemStyle } from 'util/subNavStyles'
+import CollapsableMenu from 'navbar/CollapsableMenu'
 
 const CONFIG_GROUPS = [
-  { title: 'Events', type: 'EVENT' },
-  { title: 'Participant Reminders', type: 'TASK_REMINDER' },
+  { title: 'Event', type: 'EVENT' },
+  { title: 'Reminder', type: 'TASK_REMINDER' },
   { title: 'Ad-hoc', type: 'AD_HOC' }
 ]
 
 /** shows configuration of notifications for a study */
 export default function NotificationContent({ studyEnvContext, portalContext }:
-{studyEnvContext: StudyEnvContextT, portalContext: LoadedPortalContextT}) {
+  {studyEnvContext: StudyEnvContextT, portalContext: LoadedPortalContextT}) {
   const currentEnv = studyEnvContext.currentEnv
   const navigate = useNavigate()
   const [configList, setConfigList] = useState<NotificationConfig[]>([])
   const [previousEnv, setPreviousEnv] = useState<string>(currentEnv.environmentName)
   const [showCreateModal, setShowCreateModal] = useState(false)
   /** styles links as bold if they are the current path */
-  const navStyleFunc = ({ isActive }: {isActive: boolean}) => {
-    return isActive ? { fontWeight: 'bold' } : {}
+  function getLinkCssClasses({ isActive }: { isActive: boolean }) {
+    return `${isActive ? "fw-bold" : ""} d-flex align-items-center`;
   }
 
   const { isLoading, reload } = useLoadingEffect(async () => {
@@ -52,43 +54,69 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
     setShowCreateModal(false)
   }
 
-  return <div className="container-fluid px-4 py-2">
-    { renderPageHeader('Participant email configuration') }
-    {isLoading && <LoadingSpinner/>}
-    {!isLoading && <div className="row">
-      <div className="col-md-3 mh-100 bg-white border-end">
-        <ul className="list-unstyled p-2">
-          { CONFIG_GROUPS.map(group => <li key={group.type}>
-            <h6 className="pt-2">{group.title}</h6>
-            <ul className="list-unstyled p-2">
-              { configList
-                .filter(config => config.notificationType === group.type)
-                .map(config => <li key={config.id} className="py-1">
-                  <div className="d-flex">
-                    <NavLink to={`configs/${config.id}`} style={navStyleFunc}>
-                      <NotificationConfigTypeDisplay config={config}/>
-                      <span className="text-muted fst-italic"> ({deliveryTypeDisplayMap[config.deliveryType]})</span>
+  return (
+    <div className="container-fluid px-4 py-2">
+      {renderPageHeader("Emails & Notifications")}
+      <div className="d-flex">
+        <div className="row">
+          <div className="col-md-3 mh-100 bg-white border-end">
+            <div className="d-flex">
+              <div style={navDivStyle}>
+                <ul className="list-unstyled">
+                  <li style={navListItemStyle} className="ps-3">
+                    <NavLink to="." className={getLinkCssClasses}>
+                      Participant Notifications
                     </NavLink>
-                  </div>
-                </li>
-                ) }
-            </ul>
-          </li>)}
-        </ul>
-        <button className="btn btn-secondary" onClick={() => setShowCreateModal(true)}>
-          <FontAwesomeIcon icon={faPlus}/> Add
-        </button>
+                  </li>
+                  {CONFIG_GROUPS.map((group) => (
+                    <li style={navListItemStyle}>
+                      <CollapsableMenu header={group.title} headerClass="text-black" content={
+                        <ul className="list-unstyled">
+                          {currentEnv.notificationConfigs
+                            .filter((config) => config.notificationType === group.type)
+                            .map((config) => (
+                              <li key={config.id} className="mb-2">
+                                <div className="d-flex">
+                                  <NavLink
+                                    to={`configs/${config.id}`}
+                                    className={getLinkCssClasses}
+                                  >
+                                    <NotificationConfigTypeDisplay config={config} />
+                                    <span className="text-muted fst-italic">
+                                      {" "}
+                                      ({deliveryTypeDisplayMap[config.deliveryType]})
+                                    </span>
+                                  </NavLink>
+                                </div>
+                              </li>
+                            ))}
+                        </ul>}/>
+                    </li>
+                  ))}
+                  <li style={navListItemStyle} className="ps-3">
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => alert("not yet implemented")}
+                    >
+                      <FontAwesomeIcon icon={faPlus} /> Add
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex-grow-1 bg-white p-3">
+          <Routes>
+            <Route path="configs/:configId"
+              element={<NotificationConfigView studyEnvContext={studyEnvContext} portalContext={portalContext}/>}/>
+          </Routes>
+          <Outlet/>
+        </div>
+        { showCreateModal && <CreateNotificationConfigModal studyEnvParams={paramsFromContext(studyEnvContext)}
+          onDismiss={() => setShowCreateModal(false)} onCreate={onCreate}
+        /> }
       </div>
-      <div className="col-md-9 py-3">
-        <Routes>
-          <Route path="configs/:configId"
-            element={<NotificationConfigView studyEnvContext={studyEnvContext} portalContext={portalContext}/>}/>
-        </Routes>
-        <Outlet/>
-      </div>
-    </div> }
-    { showCreateModal && <CreateNotificationConfigModal studyEnvParams={paramsFromContext(studyEnvContext)}
-      onDismiss={() => setShowCreateModal(false)} onCreate={onCreate}
-    /> }
-  </div>
+    </div>
+  );
 }
