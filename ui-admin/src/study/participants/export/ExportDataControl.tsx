@@ -7,7 +7,8 @@ import { currentIsoDate } from 'util/timeUtils'
 import { failureNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { Link } from 'react-router-dom'
-import { saveBlobAsDownload } from '../../../util/downloadUtils'
+import { saveBlobAsDownload } from 'util/downloadUtils'
+import {doApiLoad} from "../../../api/api-utils";
 
 const FILE_FORMATS = [{
   label: 'Tab-delimted (.tsv)',
@@ -37,32 +38,26 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
     }
   }
 
-  const saveLoadedData = async (response: Response, fileName: string) => {
-    if (!response.ok) {
-      Store.addNotification(failureNotification('Export failed'))
-      setIsLoading(false)
-      return
-    }
-    const blob = await response.blob()
-    saveBlobAsDownload(blob, fileName)
-    setIsLoading(false)
-  }
-
   const doExport = () => {
-    setIsLoading(true)
-    Api.exportEnrollees(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
-      studyEnvContext.currentEnv.environmentName, optionsFromState()).then(response => {
-      saveLoadedData(response, `${currentIsoDate()  }-enrollees.${fileFormat.fileSuffix}`)
-    })
+    doApiLoad(async () => {
+      const response = await Api.exportEnrollees(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
+          studyEnvContext.currentEnv.environmentName, optionsFromState())
+      const fileName = `${currentIsoDate()}-enrollees.${fileFormat.fileSuffix}`
+      const blob = await response.blob()
+      saveBlobAsDownload(blob, fileName)
+    }, {setIsLoading})
   }
 
   const doDictionaryExport = () => {
-    setIsLoading(true)
-    Api.exportDictionary(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
-      studyEnvContext.currentEnv.environmentName, optionsFromState()).then(response => {
-      saveLoadedData(response, `${currentIsoDate()  }-DataDictionary.xlsx`)
-    })
+    doApiLoad(async () => {
+      const response = await Api.exportDictionary(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
+          studyEnvContext.currentEnv.environmentName, optionsFromState())
+      const fileName = `${currentIsoDate()}-DataDictionary.xlsx`
+      const blob = await response.blob()
+      saveBlobAsDownload(blob, fileName)
+    }, {setIsLoading})
   }
+
   const humanReadableChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     setHumanReadable(e.target.value === 'true')
   }

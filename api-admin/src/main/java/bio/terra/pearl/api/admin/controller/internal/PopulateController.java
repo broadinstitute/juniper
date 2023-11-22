@@ -1,11 +1,16 @@
 package bio.terra.pearl.api.admin.controller.internal;
 
+import bio.terra.common.exception.InternalServerErrorException;
 import bio.terra.pearl.api.admin.api.PopulateApi;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.PopulateExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -99,5 +104,17 @@ public class PopulateController implements PopulateApi {
     populateExtService.bulkPopulateEnrollees(
         portalShortcode, environmentName, studyShortcode, numEnrollees, user);
     return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Resource> exportPortal(String portalShortcode) {
+    AdminUser user = authUtilService.requireAdminUser(request);
+    try {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      populateExtService.exportPortal(portalShortcode, baos, user);
+      return ResponseEntity.ok().body(new ByteArrayResource(baos.toByteArray()));
+    } catch (IOException e) {
+      throw new InternalServerErrorException("Error exporting portal", e);
+    }
   }
 }

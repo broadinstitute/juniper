@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: Juniper Admin API
-  description: API for portal and study management
+  title: Juniper Participant API
+  description: API for pparticipant UI
   version: 0.0.1
 paths:
   /status:

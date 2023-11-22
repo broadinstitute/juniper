@@ -11,20 +11,23 @@ import bio.terra.pearl.populate.service.*;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
+import bio.terra.pearl.populate.service.export.PortalExportService;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PopulateExtService {
-  private BaseSeedPopulator baseSeedPopulator;
-  private EnrolleePopulator enrolleePopulator;
-  private SurveyPopulator surveyPopulator;
-  private PortalPopulator portalPopulator;
-  private SiteContentPopulator siteContentPopulator;
-  private PortalParticipantUserPopulator portalParticipantUserPopulator;
-  private AdminConfigPopulator adminConfigPopulator;
+  private final BaseSeedPopulator baseSeedPopulator;
+  private final EnrolleePopulator enrolleePopulator;
+  private final SurveyPopulator surveyPopulator;
+  private final PortalPopulator portalPopulator;
+  private final SiteContentPopulator siteContentPopulator;
+  private final PortalParticipantUserPopulator portalParticipantUserPopulator;
+  private final AdminConfigPopulator adminConfigPopulator;
+  private final PortalExportService portalExportService;
 
   public PopulateExtService(
       BaseSeedPopulator baseSeedPopulator,
@@ -33,7 +36,8 @@ public class PopulateExtService {
       PortalPopulator portalPopulator,
       SiteContentPopulator siteContentPopulator,
       PortalParticipantUserPopulator portalParticipantUserPopulator,
-      AdminConfigPopulator adminConfigPopulator) {
+      AdminConfigPopulator adminConfigPopulator,
+      PortalExportService portalExportService) {
     this.baseSeedPopulator = baseSeedPopulator;
     this.enrolleePopulator = enrolleePopulator;
     this.surveyPopulator = surveyPopulator;
@@ -41,6 +45,7 @@ public class PopulateExtService {
     this.siteContentPopulator = siteContentPopulator;
     this.portalParticipantUserPopulator = portalParticipantUserPopulator;
     this.adminConfigPopulator = adminConfigPopulator;
+    this.portalExportService = portalExportService;
   }
 
   public BaseSeedPopulator.SetupStats populateBaseSeed(AdminUser user) {
@@ -130,6 +135,12 @@ public class PopulateExtService {
             portalShortcode, envName, studyShortcode, numEnrollees);
     enrolleePopulator.bulkPopulateEnrollees(
         portalShortcode, envName, studyShortcode, usernamesToLink);
+  }
+
+  public void exportPortal(String portalShortcode, OutputStream os, AdminUser user)
+      throws IOException {
+    authorizeUser(user);
+    portalExportService.export(portalShortcode, os);
   }
 
   protected void authorizeUser(AdminUser user) {

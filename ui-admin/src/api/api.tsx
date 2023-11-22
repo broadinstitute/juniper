@@ -1090,6 +1090,12 @@ Promise<NotificationConfig> {
     return await this.processJsonResponse(response)
   },
 
+  async exportPortal(portalShortcode: string) {
+    const url = `${basePopulateUrl()}/portal/${portalShortcode}/export`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   async populateSurvey(fileName: string, overwrite: boolean, portalShortcode: string) {
     const url = `${basePopulateUrl()}/survey/${portalShortcode}?filePathName=${fileName}&overwrite=${overwrite}`
     const response = await fetch(url, {

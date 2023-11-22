@@ -1093,6 +1093,19 @@ paths:
                 type: object
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/internal/v1/populate/portal/{portalShortcode}/export:
+    get:
+      summary: Export configs
+      tags: [ populate ]
+      operationId: exportPortal
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: zip file of portal configs
+          content: { text/plain: { schema: { type: string, format: binary } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/internal/v1/populate/siteContent/{portalShortcode}:
     post:
       summary: Populates a siteContent to a given portal
