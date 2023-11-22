@@ -70,11 +70,8 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
                       .map(config => <li key={config.id} className="mb-2">
                         <div className="d-flex">
                           <NavLink to={`configs/${config.id}`} className={getLinkCssClasses}>
-                            <NotificationConfigTypeDisplay config={config} />
-                            <span className="text-muted fst-italic">
-                              {' '}
-                              ({deliveryTypeDisplayMap[config.deliveryType]})
-                            </span>
+                            <NotificationConfigTypeDisplay config={config}/>
+                            <span className="text-muted fst-italic"> ({deliveryTypeDisplayMap[config.deliveryType]})</span>
                           </NavLink>
                         </div>
                       </li>
