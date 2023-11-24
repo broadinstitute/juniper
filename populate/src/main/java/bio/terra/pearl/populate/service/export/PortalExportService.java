@@ -47,6 +47,7 @@ public class PortalExportService {
         ExportPopulateContext context = new ExportPopulateContext(portal, zipOut);
         writeSurveys(portal, context);
         writePortal(context);
+        zipOut.finish();
     }
 
     /** writes all versions of all surveys to the zip file */
@@ -61,7 +62,7 @@ public class PortalExportService {
     /** this should be called last, as it relies on the portalPopDto in the context being fully populated */
     public void writePortal(ExportPopulateContext context) {
         try {
-            String fileString = objectMapper.writeValueAsString(context.getPortalPopDto());
+            String fileString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(context.getPortalPopDto());
             context.writeFileForEntity("portal.json", fileString, context.getPortalPopDto().getId());
         } catch (Exception e) {
             throw new RuntimeException("Error writing portal to json", e);
@@ -70,9 +71,10 @@ public class PortalExportService {
 
     public void writeSurvey(Survey survey, ExportPopulateContext context) {
         SurveyPopDto surveyPopDto = new SurveyPopDto();
-        BeanUtils.copyProperties(survey, surveyPopDto, "id", "portalId", "createdAt", "lastUpdatedAt");
+        BeanUtils.copyProperties(survey, surveyPopDto, "id", "portalId", "content");
         try {
-            String fileString = objectMapper.writeValueAsString(surveyPopDto);
+            surveyPopDto.setJsonContent(objectMapper.readTree(survey.getContent()));
+            String fileString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(surveyPopDto);
             context.writeFileForEntity(fileNameForSurvey(survey), fileString, survey.getId());
             context.getPortalPopDto().getSurveyFiles().add(fileNameForSurvey(survey));
         } catch (Exception e) {
