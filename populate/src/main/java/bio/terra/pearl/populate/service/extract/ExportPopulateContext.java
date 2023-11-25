@@ -1,8 +1,7 @@
-package bio.terra.pearl.populate.service.export;
+package bio.terra.pearl.populate.service.extract;
 
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.populate.dto.PortalPopDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -27,6 +26,9 @@ public class ExportPopulateContext {
     }
 
     public void writeFileForEntity(String fileName, String fileContent, UUID entityId) {
+        if (writtenEntities.containsKey(entityId)) {
+            return;
+        }
         try {
             zipOut.putNextEntry(new ZipEntry(fileName));
             zipOut.write(fileContent.getBytes());

@@ -11,7 +11,7 @@ import bio.terra.pearl.populate.service.*;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
-import bio.terra.pearl.populate.service.export.PortalExportService;
+import bio.terra.pearl.populate.service.extract.PortalExtractService;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ public class PopulateExtService {
   private final SiteContentPopulator siteContentPopulator;
   private final PortalParticipantUserPopulator portalParticipantUserPopulator;
   private final AdminConfigPopulator adminConfigPopulator;
-  private final PortalExportService portalExportService;
+  private final PortalExtractService portalExtractService;
 
   public PopulateExtService(
       BaseSeedPopulator baseSeedPopulator,
@@ -37,7 +37,7 @@ public class PopulateExtService {
       SiteContentPopulator siteContentPopulator,
       PortalParticipantUserPopulator portalParticipantUserPopulator,
       AdminConfigPopulator adminConfigPopulator,
-      PortalExportService portalExportService) {
+      PortalExtractService portalExtractService) {
     this.baseSeedPopulator = baseSeedPopulator;
     this.enrolleePopulator = enrolleePopulator;
     this.surveyPopulator = surveyPopulator;
@@ -45,7 +45,7 @@ public class PopulateExtService {
     this.siteContentPopulator = siteContentPopulator;
     this.portalParticipantUserPopulator = portalParticipantUserPopulator;
     this.adminConfigPopulator = adminConfigPopulator;
-    this.portalExportService = portalExportService;
+    this.portalExtractService = portalExtractService;
   }
 
   public BaseSeedPopulator.SetupStats populateBaseSeed(AdminUser user) {
@@ -140,7 +140,7 @@ public class PopulateExtService {
   public void exportPortal(String portalShortcode, OutputStream os, AdminUser user)
       throws IOException {
     authorizeUser(user);
-    portalExportService.export(portalShortcode, os);
+    portalExtractService.extract(portalShortcode, os);
   }
 
   protected void authorizeUser(AdminUser user) {
