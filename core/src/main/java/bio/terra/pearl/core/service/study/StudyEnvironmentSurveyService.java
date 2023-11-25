@@ -15,6 +15,11 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
         super(dao);
     }
 
+    public List<StudyEnvironmentSurvey> findAllByStudyEnvId(UUID studyEnvId) {
+        return dao.findAllByStudyEnvironmentId(studyEnvId);
+    }
+
+
     public List<StudyEnvironmentSurvey> findAllByStudyEnvIdWithSurvey(UUID studyEnvId) {
         return dao.findAllByStudyEnvIdWithSurvey(studyEnvId, true);
     }

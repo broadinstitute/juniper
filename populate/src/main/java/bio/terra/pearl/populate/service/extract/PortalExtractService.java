@@ -10,7 +10,6 @@ import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.portal.exception.PortalConfigMissing;
 import bio.terra.pearl.populate.dto.PortalEnvironmentPopDto;
-import bio.terra.pearl.populate.dto.site.SiteContentPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,16 +29,18 @@ public class PortalExtractService {
     private final PortalEnvironmentConfigService portalEnvironmentConfigService;
     private final SurveyExtractor surveyExtractor;
     private final SiteContentExtractor siteContentExtractor;
+    private final StudyExtractor studyExtractor;
     private final ObjectMapper objectMapper;
 
     public PortalExtractService(PortalService portalService,
                                 PortalEnvironmentService portalEnvironmentService, PortalEnvironmentConfigService portalEnvironmentConfigService, SurveyExtractor surveyExtractor,
-                                SiteContentExtractor siteContentExtractor, @Qualifier("extractionObjectMapper") ObjectMapper objectMapper) {
+                                SiteContentExtractor siteContentExtractor, StudyExtractor studyExtractor, @Qualifier("extractionObjectMapper") ObjectMapper objectMapper) {
         this.portalService = portalService;
         this.portalEnvironmentService = portalEnvironmentService;
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.surveyExtractor = surveyExtractor;
         this.siteContentExtractor = siteContentExtractor;
+        this.studyExtractor = studyExtractor;
         this.objectMapper = objectMapper;
         this.objectMapper.addMixIn(Portal.class, PortalMixin.class);
     }
@@ -51,6 +52,7 @@ public class PortalExtractService {
         ExtractPopulateContext context = new ExtractPopulateContext(portal, zipOut);
         siteContentExtractor.writeSiteContents(portal, context);
         surveyExtractor.writeSurveys(portal, context);
+        studyExtractor.writeStudies(portal, context);
         extractPortalEnvs(portal, context);
         writePortal(portal, context);
         zipOut.finish();

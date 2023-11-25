@@ -29,7 +29,7 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
     }
 
     public List<StudyEnvironmentSurvey> findAllByStudyEnvironmentId(UUID studyEnvId) {
-        return findAllByStudyEnvironmentId(studyEnvId, true);
+        return findAllByProperty("study_environment_id", studyEnvId);
     }
 
     public List<StudyEnvironmentSurvey> findAllByStudyEnvironmentId(UUID studyEnvId, Boolean active) {

@@ -1,9 +1,14 @@
 package bio.terra.pearl.populate.service.extract;
 
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.site.LocalizedSiteContent;
+import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import bio.terra.pearl.populate.dto.site.LocalizedSiteContentPopDto;
+import bio.terra.pearl.populate.dto.site.SiteContentPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -45,5 +50,14 @@ public class SurveyExtractor {
 
     protected String fileNameForSurvey(Survey survey) {
         return "surveys/%s-%s.json".formatted(survey.getStableId(), survey.getVersion());
+    }
+
+    /** stub class for just writing out the file name */
+    protected static class SurveyPopDtoStub extends SurveyPopDto {
+        @JsonIgnore
+        @Override
+        public List<AnswerMapping> getAnswerMappings() { return null; }
+        @JsonIgnore @Override
+        public int getVersion() { return 0; }
     }
 }

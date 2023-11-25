@@ -14,9 +14,9 @@ import lombok.Setter;
 
 @Getter @Setter @NoArgsConstructor
 public class PortalPopDto extends Portal {
-    private Set<String> surveyFiles = new HashSet<>(); // surveys that are not specific to a study (e.g. preReg)
-    private Set<String> populateStudyFiles = new HashSet<>();
-    private Set<String> siteContentFiles = new HashSet<>();
+    private List<String> surveyFiles = new ArrayList<>(); // surveys that are not specific to a study (e.g. preReg)
+    private List<String> populateStudyFiles = new ArrayList<>();
+    private List<String> siteContentFiles = new ArrayList<>();
     private List<PortalEnvironmentPopDto> portalEnvironmentDtos = new ArrayList<>();
     private List<SiteImagePopDto> siteImageDtos = new ArrayList<>();
     /**
