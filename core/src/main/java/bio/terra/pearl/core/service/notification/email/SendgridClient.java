@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.notification.email;
 
 import bio.terra.pearl.core.model.notification.SendgridEvent;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
+import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,10 +25,11 @@ public class SendgridClient {
   public static final String SENDGRID_API_KEY_VAR = "env.email.sendgridApiKey";
   private final String sendGridApiKey;
   private String emailRedirectAddress = "";
-
-  public SendgridClient(Environment env) {
+  private final String deploymentZone;
+  public SendgridClient(Environment env, ApplicationRoutingPaths applicationRoutingPaths) {
     this.sendGridApiKey = env.getProperty(SENDGRID_API_KEY_VAR, "");
     this.emailRedirectAddress = env.getProperty(EMAIL_REDIRECT_VAR, "");
+    deploymentZone = applicationRoutingPaths.getDeploymentZone();
   }
 
 
@@ -71,16 +73,18 @@ public class SendgridClient {
     return events;
   }
 
-  public Mail buildEmail(NotificationContextInfo contextInfo, String toAddress, String fromAddress,
+  public Mail buildEmail(NotificationContextInfo contextInfo, String toAddress, String fromAddress, String fromName,
                          StringSubstitutor stringSubstitutor) {
     Email from = new Email(fromAddress);
     Email to = new Email(toAddress);
 
-    String fromName = "Juniper";
-    if (contextInfo.portal() != null) {
-      // Set the 'from' name on the email to the portal name
-      from.setName(contextInfo.portal().getName());
+    if (fromName == null) {
+      fromName = "Juniper";
     }
+    if (!deploymentZone.equalsIgnoreCase("prod")) {
+      fromName += " (%s)".formatted(deploymentZone);
+    }
+    from.setName(fromName);
 
     String subject = stringSubstitutor.replace(contextInfo.template().getSubject());
     String contentString = stringSubstitutor.replace(contextInfo.template().getBody());

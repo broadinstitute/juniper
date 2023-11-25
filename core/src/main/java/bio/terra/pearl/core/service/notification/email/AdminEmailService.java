@@ -62,8 +62,8 @@ public class AdminEmailService {
   protected void buildAndSendEmail(NotificationContextInfo contextInfo, String adminUsername) throws Exception {
     StringSubstitutor substitutor = AdminEmailSubstitutor.newSubstitutor(adminUsername,
         contextInfo, routingPaths);
-    String fromAddress = "info@ourhealthstudy.org"; // this should be replaced with support@juniper.terra.bio once we have it
-    Mail mail = sendgridClient.buildEmail(contextInfo, adminUsername, fromAddress, substitutor);
+    String fromAddress = routingPaths.getSupportEmailAddress();
+    Mail mail = sendgridClient.buildEmail(contextInfo, adminUsername, fromAddress, "Juniper", substitutor);
     sendgridClient.sendEmail(mail);
   }
 

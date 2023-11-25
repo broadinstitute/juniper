@@ -19,6 +19,7 @@ import com.sendgrid.Mail;
 import org.apache.commons.text.StringSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.scheduling.annotation.Async;
@@ -38,7 +39,8 @@ public class EnrolleeEmailService implements NotificationSender {
     public EnrolleeEmailService(NotificationService notificationService,
                                 PortalEnvironmentService portalEnvService, PortalService portalService,
                                 StudyService studyService, EmailTemplateService emailTemplateService,
-                                ApplicationRoutingPaths routingPaths, SendgridClient sendgridClient) {
+                                ApplicationRoutingPaths routingPaths, SendgridClient sendgridClient,
+                                Environment environment) {
         this.notificationService = notificationService;
         this.portalEnvService = portalEnvService;
         this.portalService = portalService;
@@ -111,7 +113,21 @@ public class EnrolleeEmailService implements NotificationSender {
             // if this portal environment hasn't been configured with a specific email, just send from the support address
             fromAddress = routingPaths.getSupportEmailAddress();
         }
-        Mail mail = sendgridClient.buildEmail(contextInfo, ruleData.profile().getContactEmail(), fromAddress, substitutor);
+        String fromName = "Juniper";
+        if (contextInfo.portal().getName() != null) {
+            fromName = contextInfo.portal().getName();
+        }
+
+        if (!contextInfo.portalEnv().getEnvironmentName().isLive()) {
+            fromName += " (%s)".formatted(contextInfo.portalEnv().getEnvironmentName());
+        }
+
+        Mail mail = sendgridClient.buildEmail(
+                contextInfo,
+                ruleData.profile().getContactEmail(),
+                fromAddress,
+                fromName,
+                substitutor);
         return mail;
     }
 
