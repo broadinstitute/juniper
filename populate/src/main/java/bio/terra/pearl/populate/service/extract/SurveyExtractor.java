@@ -22,7 +22,7 @@ public class SurveyExtractor {
     }
 
     /** writes all versions of all surveys to the zip file */
-    public void writeSurveys(Portal portal, ExportPopulateContext context) {
+    public void writeSurveys(Portal portal, ExtractPopulateContext context) {
         List<Survey> surveys = surveyService.findByPortalId(portal.getId());
         for (Survey survey : surveys) {
             surveyService.attachAnswerMappings(survey);
@@ -30,7 +30,7 @@ public class SurveyExtractor {
         }
     }
 
-    public void writeSurvey(Survey survey, ExportPopulateContext context) {
+    public void writeSurvey(Survey survey, ExtractPopulateContext context) {
         SurveyPopDto surveyPopDto = new SurveyPopDto();
         BeanUtils.copyProperties(survey, surveyPopDto, "id", "portalId", "content");
         try {

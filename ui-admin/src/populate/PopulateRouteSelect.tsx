@@ -4,7 +4,7 @@ import PopulatePortalControl from './PopulatePortalControl'
 import PopulateSurveyControl from './PopulateSurveyControl'
 import PopulateSiteContentControl from './PopulateSiteContent'
 import PopulateAdminConfig from './PopulateAdminConfig'
-import ExportPortal from "./ExportPortal";
+import ExtractPortal from "./ExtractPortal";
 
 /** shows links to the populate control panels, and handles the routing for them */
 export default function PopulateRouteSelect({ portalShortcode }: {portalShortcode?: string}) {
@@ -24,7 +24,7 @@ export default function PopulateRouteSelect({ portalShortcode }: {portalShortcod
             <NavLink to="siteContent" style={navStyleFunc}>Site Content</NavLink>
           </li>
           <li className="py-1"><NavLink to="adminConfig" style={navStyleFunc}>Admin config</NavLink></li>
-          <li className="py-1"><NavLink to="exportPortal" style={navStyleFunc}>Export portal</NavLink></li>
+          <li className="py-1"><NavLink to="extractPortal" style={navStyleFunc}>Extract portal</NavLink></li>
         </ul>
       </div>
       <div className="col-md-6 py-3">
@@ -36,8 +36,8 @@ export default function PopulateRouteSelect({ portalShortcode }: {portalShortcod
             element={<PopulateSiteContentControl initialPortalShortcode={portalShortcode || ''}/>}/>
           <Route path="adminConfig"
             element={<PopulateAdminConfig/>}/>
-          <Route path="exportPortal"
-                 element={<ExportPortal initialPortalShortcode={portalShortcode || ''}/>}/>
+          <Route path="extractPortal"
+                 element={<ExtractPortal initialPortalShortcode={portalShortcode || ''}/>}/>
           <Route path="*" element={<div>Choose a populate option</div>}/>
         </Routes>
         <Outlet/>

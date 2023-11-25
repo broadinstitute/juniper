@@ -10,7 +10,7 @@ import {Button} from "../components/forms/Button";
 import {doApiLoad} from "../api/api-utils";
 
 /** control for downloading portal configs as a zip file */
-export default function ExportPortal({ initialPortalShortcode }: {initialPortalShortcode: string}) {
+export default function ExtractPortal({ initialPortalShortcode }: {initialPortalShortcode: string}) {
     const [portalShortcode, setPortalShortcode] = useState(initialPortalShortcode)
     const [isLoading, setIsLoading] = useState(false)
 

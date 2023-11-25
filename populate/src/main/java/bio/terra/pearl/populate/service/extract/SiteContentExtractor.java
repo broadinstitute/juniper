@@ -4,6 +4,7 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.site.*;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.populate.dto.site.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.BeanUtils;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class SiteContentExtractor {
@@ -21,9 +23,11 @@ public class SiteContentExtractor {
     public SiteContentExtractor(SiteContentService siteContentService, @Qualifier("extractionObjectMapper") ObjectMapper objectMapper) {
         this.siteContentService = siteContentService;
         this.objectMapper = objectMapper;
+        this.objectMapper.addMixIn(NavbarItem .class, NavbarItemMixin.class);
+        this.objectMapper.addMixIn(HtmlSection.class, HtmlSectionMixin.class);
     }
 
-    public void writeSiteContents(Portal portal, ExportPopulateContext context) {
+    public void writeSiteContents(Portal portal, ExtractPopulateContext context) {
         List<SiteContent> siteContents = siteContentService.findByPortalId(portal.getId());
         for (SiteContent siteContent : siteContents) {
             siteContentService.attachChildContent(siteContent, "en");
@@ -31,7 +35,7 @@ public class SiteContentExtractor {
         }
     }
 
-    public void writeSiteContent(SiteContent siteContent, ExportPopulateContext context) {
+    public void writeSiteContent(SiteContent siteContent, ExtractPopulateContext context) {
         SiteContentPopDto siteContentPopDto = new SiteContentPopDto();
         BeanUtils.copyProperties(siteContent, siteContentPopDto, "id", "portalId", "localizedSiteContents");
         for (LocalizedSiteContent localSite : siteContent.getLocalizedSiteContents()) {
@@ -51,7 +55,7 @@ public class SiteContentExtractor {
         }
     }
 
-    public LocalizedSiteContentPopDto convertLocalizedSiteContent(LocalizedSiteContent lsc, ExportPopulateContext context) throws JsonProcessingException {
+    public LocalizedSiteContentPopDto convertLocalizedSiteContent(LocalizedSiteContent lsc, ExtractPopulateContext context) throws JsonProcessingException {
         LocalizedSiteContentPopDto localPopDto = new LocalizedSiteContentPopDto();
         BeanUtils.copyProperties(lsc, localPopDto, "id", "siteContentId", "navbarItems", "footerSection", "footerSectionId", "landingPage", "landingPageId");
         for (NavbarItem navbarItem : lsc.getNavbarItems()) {
@@ -70,7 +74,7 @@ public class SiteContentExtractor {
         return localPopDto;
     }
 
-    public NavbarItemPopDto convertNavbarItem(NavbarItem navbarItem, LocalizedSiteContent lsc, ExportPopulateContext context) throws JsonProcessingException {
+    public NavbarItemPopDto convertNavbarItem(NavbarItem navbarItem, LocalizedSiteContent lsc, ExtractPopulateContext context) throws JsonProcessingException {
         NavbarItemPopDto navbarItemPopDto = new NavbarItemPopDto();
         if (navbarItem.getItemType().equals(NavbarItemType.INTERNAL)) {
             String navbarFile = "siteContent/page-%s-%s.json".formatted(navbarItem.getHtmlPage().getPath(), lsc.getLanguage());
@@ -105,5 +109,29 @@ public class SiteContentExtractor {
             throw new RuntimeException("Error converting section config to json", e);
         }
         return htmlSectionPopDto;
+    }
+
+    /** don't serialize the item order -- it's captured in the order of the list */
+    protected static class NavbarItemMixin {
+        @JsonIgnore
+        public UUID getItemOrder() {return null;}
+    }
+
+    /** don't serialize the section order -- it's captured in the order of the list */
+    protected static class HtmlSectionMixin {
+        @JsonIgnore
+        public UUID getSectionOrder() {return null;}
+    }
+
+    /** stub class for just writing out the file name */
+    protected static class SiteContentPopDtoStub extends SiteContentPopDto {
+        @JsonIgnore @Override
+        public List<LocalizedSiteContent> getLocalizedSiteContents() { return null; }
+        @JsonIgnore @Override
+        public List<LocalizedSiteContentPopDto> getLocalizedSiteContentDtos() { return null; }
+        @JsonIgnore @Override
+        public String getDefaultLanguage() { return null; }
+        @JsonIgnore @Override
+        public int getVersion() { return 0; }
     }
 }

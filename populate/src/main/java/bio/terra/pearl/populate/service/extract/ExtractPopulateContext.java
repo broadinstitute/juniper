@@ -11,14 +11,14 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class ExportPopulateContext {
+public class ExtractPopulateContext {
     @Getter
     private final ZipOutputStream zipOut;
     private Map<UUID, String> writtenEntities = new HashMap<>();
     @Getter
     private final PortalPopDto portalPopDto;
 
-    public ExportPopulateContext(Portal portal, ZipOutputStream zipOut) {
+    public ExtractPopulateContext(Portal portal, ZipOutputStream zipOut) {
         this.zipOut = zipOut;
         portalPopDto = new PortalPopDto();
         portalPopDto.setShortcode(portal.getShortcode());
@@ -37,11 +37,9 @@ public class ExportPopulateContext {
         } catch (IOException e) {
             throw new RuntimeException("Error writing file for entity: " + entityId, e);
         }
-
     }
 
-
-    public void markEntityAsExported(UUID entityId, String fileName) {
-        writtenEntities.put(entityId, fileName);
+    public String getFileNameForEntity(UUID entityId) {
+        return writtenEntities.get(entityId);
     }
 }

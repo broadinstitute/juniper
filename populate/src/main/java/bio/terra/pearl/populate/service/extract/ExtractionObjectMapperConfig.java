@@ -18,8 +18,6 @@ public class ExtractionObjectMapperConfig {
     public ExtractionObjectMapperConfig(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper.copy();
         this.objectMapper.addMixIn(BaseEntity .class, BaseEntityMixin.class);
-        this.objectMapper.addMixIn(NavbarItem .class, NavbarItemMixin.class);
-        this.objectMapper.addMixIn(HtmlSection.class, HtmlSectionMixin.class);
     }
 
     @Bean(name = "extractionObjectMapper")
@@ -36,17 +34,4 @@ public class ExtractionObjectMapperConfig {
         @JsonIgnore
         public Instant getLastUpdatedAt() {return null;}
     }
-
-    /** don't serialize the item order -- it's captured in the order of the list */
-    protected static class NavbarItemMixin {
-        @JsonIgnore
-        public UUID getItemOrder() {return null;}
-    }
-
-    /** don't serialize the section order -- it's captured in the order of the list */
-    protected static class HtmlSectionMixin {
-        @JsonIgnore
-        public UUID getSectionOrder() {return null;}
-    }
-
 }
