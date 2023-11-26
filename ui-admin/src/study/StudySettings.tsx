@@ -12,6 +12,7 @@ import { successNotification } from 'util/notifications'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { renderPageHeader } from 'util/pageUtils'
 import InfoPopup from '../components/forms/InfoPopup'
+import useUpdateEffect from '../util/useUpdateEffect'
 
 /** shows settings for both a study and its containing portal */
 export default function StudySettings({ studyEnvContext, portalContext }:
@@ -37,6 +38,10 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
     setConfig(set(propName, value))
   }
 
+  useUpdateEffect(() => {
+    setConfig(studyEnvContext.currentEnv.studyEnvironmentConfig)
+  }, [studyEnvContext.currentEnv.environmentName, studyEnvContext.study.shortcode])
+
   /** saves any changes to the server */
   const save = async () => {
     doApiLoad(async () => {
@@ -58,7 +63,7 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
     </div>
     <div>
       <label className="form-label">
-        password <input type="text" className="form-control" value={config.password}
+        password <input type="text" className="form-control" value={config.password ?? ''}
           onChange={e => updateConfig('password', e.target.value)}/>
       </label>
     </div>
