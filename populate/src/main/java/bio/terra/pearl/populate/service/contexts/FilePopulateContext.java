@@ -54,8 +54,9 @@ public class FilePopulateContext {
         return populatedFileEntities.get(fileName);
     }
 
-    public void markFilenameAsPopulated(String fileName, UUID entity) {
-        populatedFileEntities.put(fileName, entity);
+    public void markFilenameAsPopulated(String filename, UUID entity) {
+        String normalizedName = Paths.get(filename).normalize().toString();
+        populatedFileEntities.put(normalizedName, entity);
     }
 
     /**
@@ -63,14 +64,16 @@ public class FilePopulateContext {
      * copies of a survey in the same populate run
      */
     public boolean isAlreadyPopulated(String filename) {
-        return populatedFileEntities.containsKey(filename);
+        String normalizedName = Paths.get(filename).normalize().toString();
+        return populatedFileEntities.containsKey(normalizedName);
     }
 
     public <T extends BaseEntity> Optional<T> fetchFromPopDto(FilePopulatable popDto, ImmutableEntityService<T, ?> service) {
         if (popDto.getPopulateFileName() != null) {
             String fullName = getBasePath() + "/" + popDto.getPopulateFileName();
-            if (isAlreadyPopulated(fullName)) {
-                return service.find(getUUIDForFileName(fullName));
+            String normalizedName = Paths.get(fullName).normalize().toString();
+            if (isAlreadyPopulated(normalizedName)) {
+                return service.find(getUUIDForFileName(normalizedName));
             }
         }
         return Optional.empty();

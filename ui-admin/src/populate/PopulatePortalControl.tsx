@@ -3,6 +3,7 @@ import Api from 'api/api'
 import { failureNotification, successNotification } from '../util/notifications'
 import { Store } from 'react-notifications-component'
 import { FileNameControl, OverwriteControl, PopulateButton } from './PopulateControls'
+import {doApiLoad} from "../api/api-utils";
 
 /** control for invoking the populate portal API */
 export default function PopulatePortalControl() {
@@ -11,14 +12,10 @@ export default function PopulatePortalControl() {
   const [fileName, setFileName] = useState('')
   /** execute the command */
   const populate = async () => {
-    setIsLoading(true)
-    try {
-      await Api.populatePortal(fileName, isOverwrite)
-      Store.addNotification(successNotification('Populate succeeded'))
-    } catch {
-      Store.addNotification(failureNotification('Populate failed'))
-    }
-    setIsLoading(false)
+    doApiLoad(async () => {
+        await Api.populatePortal(fileName, isOverwrite)
+        Store.addNotification(successNotification('Populate succeeded'))
+    }, {setIsLoading})
   }
   return <form className="row">
     <h3 className="h5">Portal</h3>

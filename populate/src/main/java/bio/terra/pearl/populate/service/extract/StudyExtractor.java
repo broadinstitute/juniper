@@ -79,13 +79,13 @@ public class StudyExtractor {
         );
         if (studyEnv.getPreEnrollSurveyId() != null) {
             SurveyExtractor.SurveyPopDtoStub surveyPopDtoStub = new SurveyExtractor.SurveyPopDtoStub();
-            surveyPopDtoStub.setPopulateFileName(context.getFileNameForEntity(studyEnv.getPreEnrollSurveyId()));
+            surveyPopDtoStub.setPopulateFileName("../../" + context.getFileNameForEntity(studyEnv.getPreEnrollSurveyId()));
         }
         List<StudyEnvironmentSurvey> studyEnvSurveys = studyEnvironmentSurveyService.findAllByStudyEnvId(studyEnv.getId());
         for (StudyEnvironmentSurvey studyEnvSurvey : studyEnvSurveys) {;
             StudyEnvironmentSurveyPopDto studyEnvSurveyPopDto = new StudyEnvironmentSurveyPopDto();
             BeanUtils.copyProperties(studyEnvSurvey, studyEnvSurveyPopDto, "id", "studyEnvironmentId", "surveyId");
-            studyEnvSurveyPopDto.setPopulateFileName(context.getFileNameForEntity(studyEnvSurvey.getSurveyId()));
+            studyEnvSurveyPopDto.setPopulateFileName("../../" + context.getFileNameForEntity(studyEnvSurvey.getSurveyId()));
             studyEnvPopDto.getConfiguredSurveyDtos().add(studyEnvSurveyPopDto);
         }
         return studyEnvPopDto;
