@@ -3,6 +3,7 @@ package bio.terra.pearl.populate.service.extract;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
@@ -92,6 +93,7 @@ public class PortalExtractService {
     protected static class PortalMixin {
         @JsonIgnore public List<PortalParticipantUser> getPortalParticipantUsers() { return null; }
         @JsonIgnore public List<PortalStudy> getPortalStudies() { return null; }
+        @JsonIgnore public List<PortalEnvironment> getPortalEnvironments() { return null; }
     }
 
     protected static class PortalEnvironmentMixin {
