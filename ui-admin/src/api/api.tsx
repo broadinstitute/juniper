@@ -1090,8 +1090,8 @@ Promise<NotificationConfig> {
     return await this.processJsonResponse(response)
   },
 
-  async exportPortal(portalShortcode: string) {
-    const url = `${basePopulateUrl()}/portal/${portalShortcode}/export`
+  async extractPortal(portalShortcode: string) {
+    const url = `${basePopulateUrl()}/portal/${portalShortcode}/extract`
     return fetch(url, this.getGetInit())
   },
 

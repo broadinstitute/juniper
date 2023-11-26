@@ -26,12 +26,16 @@ public class ExtractPopulateContext {
     }
 
     public void writeFileForEntity(String fileName, String fileContent, UUID entityId) {
+        writeFileForEntity(fileName, fileContent.getBytes(), entityId);
+    }
+
+    public void writeFileForEntity(String fileName, byte[] bytes, UUID entityId) {
         if (writtenEntities.containsKey(entityId)) {
             return;
         }
         try {
             zipOut.putNextEntry(new ZipEntry(fileName));
-            zipOut.write(fileContent.getBytes());
+            zipOut.write(bytes);
             zipOut.closeEntry();
             writtenEntities.put(entityId, fileName);
         } catch (IOException e) {

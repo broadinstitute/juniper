@@ -137,7 +137,7 @@ public class PopulateExtService {
         portalShortcode, envName, studyShortcode, usernamesToLink);
   }
 
-  public void exportPortal(String portalShortcode, OutputStream os, AdminUser user)
+  public void extractPortal(String portalShortcode, OutputStream os, AdminUser user)
       throws IOException {
     authorizeUser(user);
     portalExtractService.extract(portalShortcode, os);

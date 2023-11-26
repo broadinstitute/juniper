@@ -31,17 +31,19 @@ public class PortalExtractService {
     private final SurveyExtractor surveyExtractor;
     private final SiteContentExtractor siteContentExtractor;
     private final StudyExtractor studyExtractor;
+    private final ImageExtractor imageExtractor;
     private final ObjectMapper objectMapper;
 
     public PortalExtractService(PortalService portalService,
                                 PortalEnvironmentService portalEnvironmentService, PortalEnvironmentConfigService portalEnvironmentConfigService, SurveyExtractor surveyExtractor,
-                                SiteContentExtractor siteContentExtractor, StudyExtractor studyExtractor, @Qualifier("extractionObjectMapper") ObjectMapper objectMapper) {
+                                SiteContentExtractor siteContentExtractor, StudyExtractor studyExtractor, ImageExtractor imageExtractor, @Qualifier("extractionObjectMapper") ObjectMapper objectMapper) {
         this.portalService = portalService;
         this.portalEnvironmentService = portalEnvironmentService;
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.surveyExtractor = surveyExtractor;
         this.siteContentExtractor = siteContentExtractor;
         this.studyExtractor = studyExtractor;
+        this.imageExtractor = imageExtractor;
         this.objectMapper = objectMapper;
         this.objectMapper.addMixIn(Portal.class, PortalMixin.class);
     }
@@ -51,6 +53,7 @@ public class PortalExtractService {
                 .orElseThrow(() -> new NotFoundException("Portal not found: " + portalShortcode));
         ZipOutputStream zipOut = new ZipOutputStream(os);
         ExtractPopulateContext context = new ExtractPopulateContext(portal, zipOut);
+        imageExtractor.writeImages(portal, context);
         siteContentExtractor.writeSiteContents(portal, context);
         surveyExtractor.writeSurveys(portal, context);
         studyExtractor.writeStudies(portal, context);

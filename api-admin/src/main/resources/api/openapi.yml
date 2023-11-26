@@ -1093,11 +1093,11 @@ paths:
                 type: object
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/internal/v1/populate/portal/{portalShortcode}/export:
+  /api/internal/v1/populate/portal/{portalShortcode}/extract:
     get:
-      summary: Export configs
+      summary: Extract portal configs as a zip file
       tags: [ populate ]
-      operationId: exportPortal
+      operationId: extractPortal
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
       responses:

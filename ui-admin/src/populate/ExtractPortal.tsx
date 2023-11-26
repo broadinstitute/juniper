@@ -16,7 +16,7 @@ export default function ExtractPortal({ initialPortalShortcode }: {initialPortal
 
     const doExport = () => {
         doApiLoad(async () => {
-            const response = await Api.exportPortal(portalShortcode)
+            const response = await Api.extractPortal(portalShortcode)
             const blob = await response.blob()
             const fileName = `${currentIsoDate()}-${portalShortcode}-config.zip`
             saveBlobAsDownload(blob, fileName)

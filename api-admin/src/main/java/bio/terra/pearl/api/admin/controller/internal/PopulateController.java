@@ -107,11 +107,11 @@ public class PopulateController implements PopulateApi {
   }
 
   @Override
-  public ResponseEntity<Resource> exportPortal(String portalShortcode) {
+  public ResponseEntity<Resource> extractPortal(String portalShortcode) {
     AdminUser user = authUtilService.requireAdminUser(request);
     try {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      populateExtService.exportPortal(portalShortcode, baos, user);
+      populateExtService.extractPortal(portalShortcode, baos, user);
       return ResponseEntity.ok().body(new ByteArrayResource(baos.toByteArray()));
     } catch (IOException e) {
       throw new InternalServerErrorException("Error exporting portal", e);
