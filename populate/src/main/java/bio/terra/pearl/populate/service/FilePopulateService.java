@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -16,10 +18,12 @@ import org.springframework.stereotype.Component;
  * takes arguments with folder paths and maps them to a relevant file and populator.
  * */
 @Component
+@Slf4j
 public class FilePopulateService {
-    private static final Logger logger = LoggerFactory.getLogger(FilePopulateService.class);
     public static final String SEED_ROOT = "seed/";
     public static final String ABSOLUTE_SEED_ROOT = "populate/src/main/resources/seed/";
+
+    public static final String TMP_POPULATE_DIR = System.getProperty("java.io.tmpdir") + "/populate";
 
     // Whether to read files from the classpath or from local directory structure
     private boolean isPopulateFromClasspath;
@@ -48,14 +52,19 @@ public class FilePopulateService {
             ClassPathResource cpr = new ClassPathResource(SEED_ROOT + context.getBasePath() + "/" + relativePath);
             return cpr.getInputStream();
         }
-        /**
-         * depending on whether you are running gradle or spring boot, the root directory could either be
-         * the root folder or api-admin, or populate.  So strip out api-admin or populate if it's there
-         */
-        String projectDir = System.getProperty("user.dir").replace("/api-admin", "")
-                .replace("/populate", "");
-        String pathName = projectDir + "/" + ABSOLUTE_SEED_ROOT + context.getBasePath() + "/" + relativePath;
-        Path filePath = Path.of(pathName);
+        Path filePath;
+        if (context.isFromTempDir()) {
+            filePath = Path.of(TMP_POPULATE_DIR + "/" + context.getBasePath() + "/" + relativePath);
+        } else {
+            /**
+             * depending on whether you are running gradle or spring boot, the root directory could either be
+             * the root folder or api-admin, or populate.  So strip out api-admin or populate if it's there
+             */
+            String projectDir = System.getProperty("user.dir").replace("/api-admin", "")
+                    .replace("/populate", "");
+            String pathName = projectDir + "/" + ABSOLUTE_SEED_ROOT + context.getBasePath() + "/" + relativePath;
+            filePath = Path.of(pathName);
+        }
         return Files.newInputStream(filePath);
     }
 }

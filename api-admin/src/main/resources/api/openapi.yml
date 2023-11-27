@@ -1093,6 +1093,28 @@ paths:
                 type: object
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/internal/v1/populate/portal/upload:
+    post:
+      summary: upload a zip file of a portal (typically generated from the extract endpoint)
+      tags: [ populate ]
+      operationId: uploadPortal
+      parameters:
+        - { name: overwrite, in: query, required: false, schema: { type: boolean } }
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: portal object (abbreviated)
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/internal/v1/populate/portal/{portalShortcode}/extract:
     get:
       summary: Extract portal configs as a zip file

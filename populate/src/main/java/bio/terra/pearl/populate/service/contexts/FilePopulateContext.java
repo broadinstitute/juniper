@@ -25,9 +25,16 @@ public class FilePopulateContext {
     private String rootFileName;
     /** maps file names to UUIDs of the entity populated from them */
     protected Map<String, UUID> populatedFileEntities = new HashMap<>();
+    /** whether this context maps to the populate seed directory, or the temp directory */
+    protected boolean isFromTempDir = false;
 
     public FilePopulateContext(String filePathName) {
         setPaths(filePathName);
+    }
+
+    public FilePopulateContext(String filePathName, boolean isFromTempDir) {
+        this(filePathName);
+        this.isFromTempDir = isFromTempDir;
     }
 
     protected void setPaths(String filePathName) {
@@ -39,6 +46,7 @@ public class FilePopulateContext {
     public FilePopulateContext newFrom(String relativeFilePath) {
         var popContext = new FilePopulateContext(applyRelativePath(relativeFilePath));
         popContext.populatedFileEntities = this.populatedFileEntities;
+        popContext.isFromTempDir = this.isFromTempDir;
         return popContext;
     }
 

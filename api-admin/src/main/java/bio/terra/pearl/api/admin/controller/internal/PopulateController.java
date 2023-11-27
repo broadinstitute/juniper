@@ -13,6 +13,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Note this controller does not explicitly validate the safety of the passed-in filenames. Rather,
@@ -53,6 +54,14 @@ public class PopulateController implements PopulateApi {
     AdminUser user = authUtilService.requireAdminUser(request);
     var populatedObj =
         populateExtService.populatePortal(filePathName, user, Boolean.TRUE.equals(overwrite));
+    return ResponseEntity.ok(populatedObj);
+  }
+
+  @Override
+  public ResponseEntity<Object> uploadPortal(Boolean overwrite, MultipartFile portalZip) {
+    AdminUser user = authUtilService.requireAdminUser(request);
+    var populatedObj =
+        populateExtService.populatePortal(portalZip, user, Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
   }
 
