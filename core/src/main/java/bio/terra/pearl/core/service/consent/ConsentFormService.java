@@ -26,6 +26,10 @@ public class ConsentFormService extends VersionedEntityService<ConsentForm, Cons
         }
     }
 
+    public List<ConsentForm> findByPortalId(UUID portalId) {
+        return dao.findByPortalId(portalId);
+    }
+
     @Transactional
     public ConsentForm createNewVersion(UUID portalId, ConsentForm consentForm) {
         ConsentForm newConsent = new ConsentForm();

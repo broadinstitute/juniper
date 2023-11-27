@@ -17,7 +17,10 @@ export default function PopulatePortalControl() {
         Store.addNotification(successNotification('Populate succeeded'))
     }, {setIsLoading})
   }
-  return <form className="row">
+  return <form className="row" onSubmit={e => {
+      e.preventDefault()
+      if (!isLoading) { populate() }
+  }}>
     <h3 className="h5">Portal</h3>
     <p>Repopulates the entire portal, including all studies contained in the portal. </p>
     <div className="d-flex flex-column row-gap-2">

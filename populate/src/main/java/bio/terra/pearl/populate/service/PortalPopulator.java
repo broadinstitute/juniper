@@ -27,18 +27,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePopulateContext> {
 
-    private PortalService portalService;
-
-    private PortalEnvironmentService portalEnvironmentService;
-    private SiteImagePopulator siteImagePopulator;
-    private StudyPopulator studyPopulator;
-    private SurveyPopulator surveyPopulator;
-    private SiteContentPopulator siteContentPopulator;
-    private PortalStudyService portalStudyService;
-    private PortalParticipantUserPopulator portalParticipantUserPopulator;
-    private MailingListContactService mailingListContactService;
-    private AdminUserPopulator adminUserPopulator;
-
+    private final PortalService portalService;
+    private final PortalEnvironmentService portalEnvironmentService;
+    private final SiteImagePopulator siteImagePopulator;
+    private final StudyPopulator studyPopulator;
+    private final SurveyPopulator surveyPopulator;
+    private final SiteContentPopulator siteContentPopulator;
+    private final PortalStudyService portalStudyService;
+    private final PortalParticipantUserPopulator portalParticipantUserPopulator;
+    private final MailingListContactService mailingListContactService;
+    private final AdminUserPopulator adminUserPopulator;
+    private final ConsentFormPopulator consentFormPopulator;
 
 
     public PortalPopulator(PortalService portalService,
@@ -46,11 +45,10 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
                            PortalStudyService portalStudyService,
                            SiteContentPopulator siteContentPopulator,
                            PortalParticipantUserPopulator portalParticipantUserPopulator,
-                           PortalParticipantUserService ppUserService,
                            PortalEnvironmentService portalEnvironmentService,
                            SiteImagePopulator siteImagePopulator, SurveyPopulator surveyPopulator,
                            AdminUserPopulator adminUserPopulator,
-                           MailingListContactService mailingListContactService) {
+                           MailingListContactService mailingListContactService, ConsentFormPopulator consentFormPopulator) {
         this.siteContentPopulator = siteContentPopulator;
         this.portalParticipantUserPopulator = portalParticipantUserPopulator;
         this.portalEnvironmentService = portalEnvironmentService;
@@ -61,6 +59,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         this.portalStudyService = portalStudyService;
         this.mailingListContactService = mailingListContactService;
         this.adminUserPopulator = adminUserPopulator;
+        this.consentFormPopulator = consentFormPopulator;
     }
 
     private void populateStudy(String studyFileName, PortalPopulateContext context, Portal portal, boolean overwrite) throws IOException {
@@ -158,6 +157,9 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         }
         for (String surveyFile : popDto.getSurveyFiles()) {
             surveyPopulator.populate(portalPopContext.newFrom(surveyFile), overwrite);
+        }
+        for (String consentFile : popDto.getConsentFormFiles()) {
+            consentFormPopulator.populate(portalPopContext.newFrom(consentFile), overwrite);
         }
         for (String siteContentFile : popDto.getSiteContentFiles()) {
             siteContentPopulator.populate(portalPopContext.newFrom(siteContentFile), overwrite);

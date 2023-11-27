@@ -19,11 +19,6 @@ public class ConsentFormDao extends BaseVersionedJdbiDao<ConsentForm> {
         return findByTwoProperties("stable_id", stableId, "version", version);
     }
 
-    public List<ConsentForm> findAllById(Collection<UUID> ids) {
-
-        return findAllByPropertyCollection("id", ids);
-    }
-
     @Override
     protected Class<ConsentForm> getClazz() {
         return ConsentForm.class;

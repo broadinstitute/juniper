@@ -32,11 +32,12 @@ public class PortalExtractService {
     private final SiteContentExtractor siteContentExtractor;
     private final StudyExtractor studyExtractor;
     private final ImageExtractor imageExtractor;
+    private final ConsentFormExtractor consentFormExtractor;
     private final ObjectMapper objectMapper;
 
     public PortalExtractService(PortalService portalService,
                                 PortalEnvironmentService portalEnvironmentService, PortalEnvironmentConfigService portalEnvironmentConfigService, SurveyExtractor surveyExtractor,
-                                SiteContentExtractor siteContentExtractor, StudyExtractor studyExtractor, ImageExtractor imageExtractor, @Qualifier("extractionObjectMapper") ObjectMapper objectMapper) {
+                                SiteContentExtractor siteContentExtractor, StudyExtractor studyExtractor, ImageExtractor imageExtractor, ConsentFormExtractor consentFormExtractor, @Qualifier("extractionObjectMapper") ObjectMapper objectMapper) {
         this.portalService = portalService;
         this.portalEnvironmentService = portalEnvironmentService;
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
@@ -44,6 +45,7 @@ public class PortalExtractService {
         this.siteContentExtractor = siteContentExtractor;
         this.studyExtractor = studyExtractor;
         this.imageExtractor = imageExtractor;
+        this.consentFormExtractor = consentFormExtractor;
         this.objectMapper = objectMapper;
         this.objectMapper.addMixIn(Portal.class, PortalMixin.class);
     }
@@ -55,6 +57,7 @@ public class PortalExtractService {
         ExtractPopulateContext context = new ExtractPopulateContext(portal, zipOut);
         imageExtractor.writeImages(portal, context);
         siteContentExtractor.writeSiteContents(portal, context);
+        consentFormExtractor.writeForms(portal, context);
         surveyExtractor.writeSurveys(portal, context);
         studyExtractor.writeStudies(portal, context);
         extractPortalEnvs(portal, context);

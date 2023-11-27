@@ -15,6 +15,7 @@ export default function ExtractPortal({ initialPortalShortcode }: {initialPortal
     const [isLoading, setIsLoading] = useState(false)
 
     const doExport = () => {
+
         doApiLoad(async () => {
             const response = await Api.extractPortal(portalShortcode)
             const blob = await response.blob()
@@ -23,8 +24,11 @@ export default function ExtractPortal({ initialPortalShortcode }: {initialPortal
         }, {setIsLoading})
     }
 
-    return <form>
-      <h3>Export portal</h3>
+    return <form onSubmit={e => {
+        e.preventDefault()
+        if (!isLoading) { doExport() }
+    }}>
+      <h3>Extract portal</h3>
     <PortalShortcodeControl portalShortcode={portalShortcode} setPortalShortcode={setPortalShortcode}/>
         <br/>
     <Button variant="primary" type="button" onClick={doExport} disabled={isLoading}>
