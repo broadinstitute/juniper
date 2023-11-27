@@ -17,7 +17,7 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import javax.validation.Validator;
+import jakarta.validation.Validator;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
@@ -196,7 +196,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
         };
     }
 
-    /** Validate returned object based on javax.validation annotations. */
+    /** Validate returned object based on jakarta.validation annotations. */
     private <T> ResponseAndBody<T> validate(ResponseAndBody<T> responseAndBody, Class<T> clazz) throws PepperParseException {
         var violations = validator.validate(responseAndBody.responseObj);
         if (!violations.isEmpty()) {

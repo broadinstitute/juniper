@@ -7,10 +7,10 @@ import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import com.auth0.jwt.JWT;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
 @Service

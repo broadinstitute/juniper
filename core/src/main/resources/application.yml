@@ -7,9 +7,6 @@ env:
     name: ${DATABASE_NAME:pearl}
     password: ${DATABASE_USER_PASSWORD:dbpwd}
     user: ${DATABASE_USER:dbuser}
-  tracing:
-    exportEnabled: ${CLOUD_TRACE_ENABLED:false}
-    samplingRate: ${SAMPLING_PROBABILITY:0}
   email:
     sendgridApiKey: ${SENDGRID_API_KEY:}
 
@@ -43,9 +40,3 @@ liquibase:
 terra.common:
   kubernetes:
     inKubernetes: false
-
-  tracing:
-    stackdriverExportEnabled: ${env.tracing.exportEnabled}
-    samplingRate: ${env.tracing.samplingRate}
-
-

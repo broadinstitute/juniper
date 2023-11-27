@@ -1,10 +1,11 @@
 dependencies {
-    implementation 'io.swagger.core.v3:swagger-annotations'
+    implementation 'io.swagger.core.v3:swagger-annotations:2.2.2'
+    implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
     runtimeOnly 'org.webjars.npm:swagger-ui-dist:4.9.0'
-    swaggerCodegen 'io.swagger.codegen.v3:swagger-codegen-cli'
+    swaggerCodegen 'io.swagger.codegen.v3:swagger-codegen-cli:3.0.47'
 
     // Versioned by Spring:
-    implementation 'javax.validation:validation-api'
+    implementation 'jakarta.validation:jakarta.validation-api'
     implementation 'org.webjars:webjars-locator-core'
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
@@ -22,6 +23,7 @@ generateSwaggerCode {
         apiPackage       : "${artifactGroup}.api",
         dateLibrary      : 'java11',
         java8            : true,
+        jakarta          : true,
         interfaceOnly    : 'true',
         useTags          : 'true',
         springBootVersion: dependencyManagement.managedVersions['org.springframework.boot:spring-boot']

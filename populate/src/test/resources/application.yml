@@ -8,10 +8,6 @@ env:
     password: ${DATABASE_USER_PASSWORD:dbpwd}
     user: ${DATABASE_USER:test_dbuser}
 
-  tracing:
-    exportEnabled: ${CLOUD_TRACE_ENABLED:false}
-    samplingRate: ${SAMPLING_PROBABILITY:0}
-
   populate.populate-from-classpath: true
 
 # Below here is non-deployment-specific
@@ -44,8 +40,3 @@ liquibase:
 terra.common:
   kubernetes:
     inKubernetes: false
-
-  tracing:
-    stackdriverExportEnabled: ${env.tracing.exportEnabled}
-    samplingRate: ${env.tracing.samplingRate}
-
