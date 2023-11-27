@@ -1,12 +1,9 @@
 package bio.terra.pearl.populate.service.extract;
 
 import bio.terra.pearl.core.model.portal.Portal;
-import bio.terra.pearl.core.model.site.LocalizedSiteContent;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.survey.SurveyService;
-import bio.terra.pearl.populate.dto.site.LocalizedSiteContentPopDto;
-import bio.terra.pearl.populate.dto.site.SiteContentPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;

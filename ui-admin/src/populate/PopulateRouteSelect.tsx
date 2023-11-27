@@ -4,7 +4,7 @@ import PopulatePortalControl from './PopulatePortalControl'
 import PopulateSurveyControl from './PopulateSurveyControl'
 import PopulateSiteContentControl from './PopulateSiteContent'
 import PopulateAdminConfig from './PopulateAdminConfig'
-import ExtractPortal from "./ExtractPortal";
+import ExtractPortal from './ExtractPortal'
 
 /** shows links to the populate control panels, and handles the routing for them */
 export default function PopulateRouteSelect({ portalShortcode }: {portalShortcode?: string}) {
@@ -37,7 +37,7 @@ export default function PopulateRouteSelect({ portalShortcode }: {portalShortcod
           <Route path="adminConfig"
             element={<PopulateAdminConfig/>}/>
           <Route path="extractPortal"
-                 element={<ExtractPortal initialPortalShortcode={portalShortcode || ''}/>}/>
+            element={<ExtractPortal initialPortalShortcode={portalShortcode || ''}/>}/>
           <Route path="*" element={<div>Choose a populate option</div>}/>
         </Routes>
         <Outlet/>

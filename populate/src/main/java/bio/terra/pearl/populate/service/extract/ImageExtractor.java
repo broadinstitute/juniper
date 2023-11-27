@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.site.SiteImage;
 import bio.terra.pearl.core.service.site.SiteImageService;
 import bio.terra.pearl.populate.dto.site.SiteImagePopDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public class ImageExtractor {
     private final SiteImageService siteImageService;
     private final ObjectMapper objectMapper;
 
-    public ImageExtractor(SiteImageService siteImageService, ObjectMapper objectMapper) {
+    public ImageExtractor(SiteImageService siteImageService, @Qualifier("extractionObjectMapper") ObjectMapper objectMapper) {
         this.siteImageService = siteImageService;
         this.objectMapper = objectMapper;
     }

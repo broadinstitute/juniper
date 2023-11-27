@@ -7,7 +7,7 @@ import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { Button } from 'components/forms/Button'
 import { LoadedPortalContextT } from '../PortalProvider'
-import {useFileUploadButton} from "util/uploadUtils";
+import { useFileUploadButton } from 'util/uploadUtils'
 
 
 const FLE_TYPE_REGEX = /image\/(gif|ico|jpeg|jpg|png|svg|webp)/

@@ -37,7 +37,8 @@ public class PortalExtractService {
 
     public PortalExtractService(PortalService portalService,
                                 PortalEnvironmentService portalEnvironmentService, PortalEnvironmentConfigService portalEnvironmentConfigService, SurveyExtractor surveyExtractor,
-                                SiteContentExtractor siteContentExtractor, StudyExtractor studyExtractor, ImageExtractor imageExtractor, ConsentFormExtractor consentFormExtractor, @Qualifier("extractionObjectMapper") ObjectMapper objectMapper) {
+                                SiteContentExtractor siteContentExtractor, StudyExtractor studyExtractor, ImageExtractor imageExtractor, ConsentFormExtractor consentFormExtractor,
+                                @Qualifier("extractionObjectMapper") ObjectMapper objectMapper) {
         this.portalService = portalService;
         this.portalEnvironmentService = portalEnvironmentService;
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;

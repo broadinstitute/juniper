@@ -4,11 +4,9 @@ import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
 import Api from 'api/api'
 import { currentIsoDate } from 'util/timeUtils'
-import { failureNotification } from 'util/notifications'
-import { Store } from 'react-notifications-component'
 import { Link } from 'react-router-dom'
 import { saveBlobAsDownload } from 'util/downloadUtils'
-import {doApiLoad} from "../../../api/api-utils";
+import { doApiLoad } from 'api/api-utils'
 
 const FILE_FORMATS = [{
   label: 'Tab-delimted (.tsv)',
@@ -41,21 +39,21 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
   const doExport = () => {
     doApiLoad(async () => {
       const response = await Api.exportEnrollees(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
-          studyEnvContext.currentEnv.environmentName, optionsFromState())
+        studyEnvContext.currentEnv.environmentName, optionsFromState())
       const fileName = `${currentIsoDate()}-enrollees.${fileFormat.fileSuffix}`
       const blob = await response.blob()
       saveBlobAsDownload(blob, fileName)
-    }, {setIsLoading})
+    }, { setIsLoading })
   }
 
   const doDictionaryExport = () => {
     doApiLoad(async () => {
       const response = await Api.exportDictionary(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
-          studyEnvContext.currentEnv.environmentName, optionsFromState())
+        studyEnvContext.currentEnv.environmentName, optionsFromState())
       const fileName = `${currentIsoDate()}-DataDictionary.xlsx`
       const blob = await response.blob()
       saveBlobAsDownload(blob, fileName)
-    }, {setIsLoading})
+    }, { setIsLoading })
   }
 
   const humanReadableChanged = (e: React.ChangeEvent<HTMLInputElement>) => {

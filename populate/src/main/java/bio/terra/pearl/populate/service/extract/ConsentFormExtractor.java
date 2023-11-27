@@ -2,11 +2,8 @@ package bio.terra.pearl.populate.service.extract;
 
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.portal.Portal;
-import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
-import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dto.consent.ConsentFormPopDto;
-import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.BeanUtils;
@@ -21,8 +18,8 @@ public class ConsentFormExtractor {
     private final ObjectMapper objectMapper;
 
     public ConsentFormExtractor(ConsentFormService consentFormService, @Qualifier("extractionObjectMapper") ObjectMapper objectMapper) {
-        this.consentFormService = consentFormService;
         this.objectMapper = objectMapper;
+        this.consentFormService = consentFormService;
     }
 
     /** writes all versions of all surveys to the zip file */
