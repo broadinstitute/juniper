@@ -72,9 +72,8 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         return dao.findByStudy(studyShortcode, environmentName);
     }
 
-    /** gets all configuration content for the environment. */
-    public StudyEnvironment attachAllContent(StudyEnvironment studyEnvironment) {
-        return dao.attachAllContent(studyEnvironment);
+    public StudyEnvironment loadWithAllContent(StudyEnvironment studyEnvironment) {
+        return dao.loadWithAllContent(studyEnvironment);
     }
 
     @Transactional

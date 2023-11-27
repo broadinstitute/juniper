@@ -93,8 +93,22 @@ public class PortalDiffService {
     }
 
     protected PortalEnvironment loadPortalEnvForProcessing(String shortcode, EnvironmentName envName) {
-        PortalEnvironment portalEnv = portalEnvService.findOne(shortcode, envName).orElseThrow();
-        return portalEnvService.attachAllContent(portalEnv);
+        PortalEnvironment portalEnv = portalEnvService.findOne(shortcode, envName).get();
+        if (portalEnv.getPortalEnvironmentConfigId() != null) {
+            portalEnv.setPortalEnvironmentConfig(portalEnvironmentConfigService
+                    .find(portalEnv.getPortalEnvironmentConfigId()).get());
+        }
+        if (portalEnv.getSiteContentId() != null) {
+            portalEnv.setSiteContent(siteContentService.find(portalEnv.getSiteContentId()).get());
+        }
+        if (portalEnv.getPreRegSurveyId() != null) {
+            portalEnv.setPreRegSurvey(surveyService.find(portalEnv.getPreRegSurveyId()).get());
+        }
+        var notificationConfigs = notificationConfigService.findByPortalEnvironmentId(portalEnv.getId());
+        notificationConfigService.attachTemplates(notificationConfigs);
+        portalEnv.setNotificationConfigs(notificationConfigs);
+
+        return portalEnv;
     }
 
     public static <C extends VersionedEntityConfig, T extends BaseEntity & Versioned> ListChange<C, VersionedConfigChange<T>> diffConfigLists(
@@ -177,7 +191,7 @@ public class PortalDiffService {
 
     public StudyEnvironment loadStudyEnvForProcessing(String shortcode, EnvironmentName envName) {
         StudyEnvironment studyEnvironment = studyEnvironmentService.findByStudy(shortcode, envName).get();
-        return studyEnvironmentService.attachAllContent(studyEnvironment);
+        return studyEnvironmentService.loadWithAllContent(studyEnvironment);
     }
 
 
