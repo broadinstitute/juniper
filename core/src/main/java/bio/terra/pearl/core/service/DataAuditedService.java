@@ -6,8 +6,8 @@ import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.DataChangeRecord;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -21,6 +21,7 @@ import java.util.UUID;
  * This currently allows 'auditInfo' to be null--a later PR should remove that, once we upgrade all the calling services
  * to also support passing auditInfo to create/deletes
  * */
+@Slf4j
 public abstract class DataAuditedService<M extends BaseEntity, D extends BaseMutableJdbiDao<M>> {
     protected D dao;
     protected final Logger logger;
@@ -30,7 +31,7 @@ public abstract class DataAuditedService<M extends BaseEntity, D extends BaseMut
     public DataAuditedService(D dao, DataChangeRecordService dataChangeRecordService, ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         this.dataChangeRecordService = dataChangeRecordService;
-        logger = LoggerFactory.getLogger(this.getClass());
+        logger = log;
         this.dao = dao;
     }
 

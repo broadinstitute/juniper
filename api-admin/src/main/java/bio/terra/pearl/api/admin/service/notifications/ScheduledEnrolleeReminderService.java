@@ -1,15 +1,14 @@
 package bio.terra.pearl.api.admin.service.notifications;
 
 import bio.terra.pearl.core.service.notification.EnrolleeReminderService;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class ScheduledEnrolleeReminderService {
-  private static final Logger logger = LoggerFactory.getLogger(EnrolleeReminderService.class);
   private EnrolleeReminderService enrolleeReminderService;
 
   public ScheduledEnrolleeReminderService(EnrolleeReminderService enrolleeReminderService) {
@@ -24,8 +23,8 @@ public class ScheduledEnrolleeReminderService {
       lockAtMostFor = "500s",
       lockAtLeastFor = "10s")
   public void sendReminderEmails() {
-    logger.info("Beginning enrollee reminder processing");
+    log.info("Beginning enrollee reminder processing");
     enrolleeReminderService.sendTaskReminders();
-    logger.info("Enrollee reminder processing complete");
+    log.info("Enrollee reminder processing complete");
   }
 }

@@ -14,15 +14,14 @@ import bio.terra.pearl.core.service.DataAuditedService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantNoteService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 public class AdminTaskService extends DataAuditedService<AdminTask, AdminTaskDao> {
-    private static final Logger logger = LoggerFactory.getLogger(AdminTaskService.class);
     private EnrolleeService enrolleeService;
     private ParticipantNoteService participantNoteService;
 
