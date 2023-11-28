@@ -19,16 +19,16 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 /** listens for events and updates enrollee survey tasks accordingly */
 @Service
+@Slf4j
 public class SurveyTaskDispatcher {
-    private static final Logger logger = LoggerFactory.getLogger(SurveyTaskDispatcher.class);
     private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     private ParticipantTaskService participantTaskService;
 
@@ -49,7 +49,7 @@ public class SurveyTaskDispatcher {
                 enrolleeEvent.getEnrolleeRuleData(),
                 studyEnvSurveys);
         for (ParticipantTask task : tasksToAdd) {
-            logger.info("Task creation: enrollee {}  -- task {}, target {}", enrolleeEvent.getEnrollee().getShortcode(),
+            log.info("Task creation: enrollee {}  -- task {}, target {}", enrolleeEvent.getEnrollee().getShortcode(),
                     task.getTaskType(), task.getTargetStableId());
             task = participantTaskService.create(task);
             enrolleeEvent.getEnrollee().getParticipantTasks().add(task);

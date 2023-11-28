@@ -9,15 +9,13 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 @Controller
+@Slf4j
 public class EnrolleeController implements EnrolleeApi {
-  Logger log = LoggerFactory.getLogger(EnrolleeController.class);
-
   private AuthUtilService authUtilService;
   private EnrolleeExtService enrolleeExtService;
   private HttpServletRequest request;

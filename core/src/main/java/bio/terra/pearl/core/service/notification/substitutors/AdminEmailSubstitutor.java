@@ -3,16 +3,16 @@ package bio.terra.pearl.core.service.notification.substitutors;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import java.util.Map;
+
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /** handles template replacement.  Note that this class is not a Spring component since a separate instance should be created
  * for each email to be sent. */
+@Slf4j
 public class AdminEmailSubstitutor implements StringLookup {
-  private static final Logger logger = LoggerFactory.getLogger(AdminEmailSubstitutor.class);
   private Map<String, Object> valueMap;
   private final ApplicationRoutingPaths routingPaths;
 
@@ -37,7 +37,7 @@ public class AdminEmailSubstitutor implements StringLookup {
     try {
       return PropertyUtils.getNestedProperty(valueMap, key).toString();
     } catch (Exception e) {
-      logger.error("Could not resolve template value {}", key);
+      log.error("Could not resolve template value {}", key);
     }
     return "";
   }

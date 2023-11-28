@@ -15,9 +15,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.BiFunction;
+
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
  * which map question stableIds to the object properties they should be assigned to.
  */
 @Service
+@Slf4j
 public class AnswerProcessingService {
-    private static final Logger logger = LoggerFactory.getLogger(AnswerProcessingService.class);
     private ObjectMapper objectMapper;
     private ProfileService profileService;
     private DataChangeRecordDao dataChangeRecordDao;
@@ -123,7 +123,7 @@ public class AnswerProcessingService {
                 } catch (Exception e) {
                     String errorMsg = String.format("Error setting property %s, from stableId %s",
                             fieldTargetMap.get(stableId), stableId);
-                    logger.error(errorMsg, e);
+                    log.error(errorMsg, e);
                 }
             }
         }
