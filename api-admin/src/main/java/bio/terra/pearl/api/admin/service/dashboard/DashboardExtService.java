@@ -45,6 +45,7 @@ public class DashboardExtService {
   public ParticipantDashboardAlert updatePortalEnvAlert(
       String portalShortcode,
       EnvironmentName envName,
+      String triggerName,
       ParticipantDashboardAlert newAlert,
       AdminUser user) {
     Portal authedPortal = authUtilService.authUserToPortal(user, portalShortcode);
@@ -54,15 +55,19 @@ public class DashboardExtService {
           "You can only update dashboard alerts in the sandbox environment");
     }
 
+    if (!triggerName.equals(newAlert.getTrigger())) {
+      throw new IllegalArgumentException(
+          "Trigger name specified in payload does not match trigger name specified in path");
+    }
+
     PortalEnvironment portalEnv =
         portalEnvironmentService
             .findOne(authedPortal.getShortcode(), envName)
             .orElseThrow(PortalEnvironmentMissing::new);
 
     ParticipantDashboardAlert alert =
-        portalDashboardConfigService.findByPortalEnvId(portalEnv.getId()).stream()
-            .filter(a -> a.getTrigger().equals(newAlert.getTrigger()))
-            .findFirst()
+        portalDashboardConfigService
+            .findByPortalEnvIdAndTrigger(portalEnv.getId(), triggerName)
             .orElseThrow(() -> new NotFoundException("The specified alert does not exist"));
 
     BeanUtils.copyProperties(newAlert, alert);
@@ -72,6 +77,7 @@ public class DashboardExtService {
   public ParticipantDashboardAlert createPortalEnvAlert(
       String portalShortcode,
       EnvironmentName envName,
+      String triggerName,
       ParticipantDashboardAlert newAlert,
       AdminUser user) {
     Portal authedPortal = authUtilService.authUserToPortal(user, portalShortcode);
@@ -79,6 +85,11 @@ public class DashboardExtService {
     if (!envName.equals(EnvironmentName.sandbox)) {
       throw new IllegalArgumentException(
           "You can only create dashboard alerts in the sandbox environment");
+    }
+
+    if (!triggerName.equals(newAlert.getTrigger())) {
+      throw new IllegalArgumentException(
+          "Trigger name specified in payload does not match trigger name specified in path");
     }
 
     PortalEnvironment portalEnv =

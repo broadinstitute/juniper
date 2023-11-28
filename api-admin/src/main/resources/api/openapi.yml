@@ -996,6 +996,7 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/dashboard/config/alerts/{triggerName}:
     post:
       summary: Creates a participant dashboard alert config for a portal environment
       tags: [ dashboard ]
@@ -1003,6 +1004,7 @@ paths:
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: triggerName, in: path, required: true, schema: { type: string } }
       requestBody:
         required: true
         content: { application/json: { schema: { type: object } } }
@@ -1019,6 +1021,7 @@ paths:
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: triggerName, in: path, required: true, schema: { type: string } }
       requestBody:
         required: true
         content: { application/json: { schema: { type: object } } }

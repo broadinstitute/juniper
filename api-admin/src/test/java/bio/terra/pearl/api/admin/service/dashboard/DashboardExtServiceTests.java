@@ -45,7 +45,7 @@ public class DashboardExtServiceTests {
         PermissionDeniedException.class,
         () ->
             dashboardExtService.updatePortalEnvAlert(
-                "testPortal", EnvironmentName.sandbox, alert, user));
+                "testPortal", EnvironmentName.sandbox, "NO_ACTIVITIES_REMAIN", alert, user));
   }
 
   @Test
@@ -56,7 +56,7 @@ public class DashboardExtServiceTests {
         IllegalArgumentException.class,
         () ->
             dashboardExtService.updatePortalEnvAlert(
-                "testPortal", EnvironmentName.irb, alert, user));
+                "testPortal", EnvironmentName.irb, "NO_ACTIVITIES_REMAIN", alert, user));
   }
 
   @Test
@@ -69,7 +69,7 @@ public class DashboardExtServiceTests {
         PermissionDeniedException.class,
         () ->
             dashboardExtService.createPortalEnvAlert(
-                "testPortal", EnvironmentName.sandbox, alert, user));
+                "testPortal", EnvironmentName.sandbox, "NO_ACTIVITIES_REMAIN", alert, user));
   }
 
   @Test
@@ -80,6 +80,6 @@ public class DashboardExtServiceTests {
         IllegalArgumentException.class,
         () ->
             dashboardExtService.createPortalEnvAlert(
-                "testPortal", EnvironmentName.irb, alert, user));
+                "testPortal", EnvironmentName.irb, "NO_ACTIVITIES_REMAIN", alert, user));
   }
 }

@@ -140,8 +140,10 @@ export default function DashboardSettings({ studyEnvContext, portalContext }:
     setIsLoading(true)
     try {
       const response = alert.id === undefined ?
-        await Api.createPortalEnvAlert(portalContext.portal.shortcode, currentEnv.environmentName, alert) :
-        await Api.updatePortalEnvAlert(portalContext.portal.shortcode, currentEnv.environmentName, alert)
+        await Api.createPortalEnvAlert(
+          portalContext.portal.shortcode, currentEnv.environmentName, alert.trigger, alert) :
+        await Api.updatePortalEnvAlert(
+          portalContext.portal.shortcode, currentEnv.environmentName, alert.trigger, alert)
 
       await response
       await loadAlerts()

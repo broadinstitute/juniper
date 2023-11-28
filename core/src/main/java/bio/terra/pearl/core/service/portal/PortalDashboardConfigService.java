@@ -6,6 +6,7 @@ import bio.terra.pearl.core.service.CrudService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -17,6 +18,10 @@ public class PortalDashboardConfigService extends CrudService<ParticipantDashboa
 
     public List<ParticipantDashboardAlert> findByPortalEnvId(UUID portalEnvId) {
         return dao.findByPortalEnvironmentId(portalEnvId);
+    }
+
+    public Optional<ParticipantDashboardAlert> findByPortalEnvIdAndTrigger(UUID portalEnvId, String trigger) {
+        return dao.findByPortalEnvironmentIdAndTrigger(portalEnvId, trigger);
     }
 
     public ParticipantDashboardAlert update(ParticipantDashboardAlert participantDashboardAlert) {

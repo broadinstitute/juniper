@@ -1054,8 +1054,10 @@ Promise<NotificationConfig> {
     return await this.processJsonResponse(response)
   },
 
-  async updatePortalEnvAlert(portalShortcode: string, envName: string, alertConfig: ParticipantDashboardAlert) {
-    const url = `${basePortalEnvUrl(portalShortcode, envName)}/dashboard/config/alerts`
+  async updatePortalEnvAlert(
+    portalShortcode: string, envName: string, triggerName: string, alertConfig: ParticipantDashboardAlert
+  ) {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/dashboard/config/alerts/${triggerName}`
     const response = await fetch(url, {
       method: 'PATCH',
       headers: this.getInitHeaders(),
@@ -1064,8 +1066,10 @@ Promise<NotificationConfig> {
     return await this.processJsonResponse(response)
   },
 
-  async createPortalEnvAlert(portalShortcode: string, envName: string, alertConfig: ParticipantDashboardAlert) {
-    const url = `${basePortalEnvUrl(portalShortcode, envName)}/dashboard/config/alerts`
+  async createPortalEnvAlert(
+    portalShortcode: string, envName: string, triggerName: string, alertConfig: ParticipantDashboardAlert
+  ) {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/dashboard/config/alerts/${triggerName}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),

@@ -44,7 +44,7 @@ public class DashboardController implements DashboardApi {
 
   @Override
   public ResponseEntity<Object> updatePortalEnvAlert(
-      String portalShortcode, String envName, Object body) {
+      String portalShortcode, String envName, String triggerName, Object body) {
     AdminUser user = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
@@ -52,14 +52,15 @@ public class DashboardController implements DashboardApi {
         objectMapper.convertValue(body, ParticipantDashboardAlert.class);
 
     ParticipantDashboardAlert updatedAlert =
-        dashboardExtService.updatePortalEnvAlert(portalShortcode, environmentName, alert, user);
+        dashboardExtService.updatePortalEnvAlert(
+            portalShortcode, environmentName, triggerName, alert, user);
 
     return ResponseEntity.ok(updatedAlert);
   }
 
   @Override
   public ResponseEntity<Object> createPortalEnvAlert(
-      String portalShortcode, String envName, Object body) {
+      String portalShortcode, String envName, String triggerName, Object body) {
     AdminUser user = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
@@ -67,7 +68,8 @@ public class DashboardController implements DashboardApi {
         objectMapper.convertValue(body, ParticipantDashboardAlert.class);
 
     ParticipantDashboardAlert createdAlert =
-        dashboardExtService.createPortalEnvAlert(portalShortcode, environmentName, alert, user);
+        dashboardExtService.createPortalEnvAlert(
+            portalShortcode, environmentName, triggerName, alert, user);
 
     return ResponseEntity.ok(createdAlert);
   }
