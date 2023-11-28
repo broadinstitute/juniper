@@ -18,7 +18,7 @@ export default function RequestKitsModal({
     studyEnvContext: StudyEnvContextT,
     onDismiss: () => void,
     enrolleeShortcodes: string[],
-    onSubmit: () => void }) {
+    onSubmit: (anyKitWasCreated: boolean) => void }) {
   const { portal, study, currentEnv } = studyEnvContext
   const [isLoading, setIsLoading] = useState(false)
 
@@ -38,7 +38,7 @@ export default function RequestKitsModal({
                     `${response.kitRequests.length} kit requests created`
         ))
       }
-      onSubmit()
+      onSubmit(!!response.kitRequests.length)
     }, { setIsLoading })
   }
   const kitPluralized = pluralize('kit', enrolleeShortcodes.length)
