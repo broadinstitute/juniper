@@ -56,7 +56,6 @@ public class ScheduledDataRepoExportService {
     final ImmutableSet<String> REQUIRED_TDR_ENV_VARS =
         ImmutableSet.of(
             "serviceAccountCreds",
-            "deploymentZone",
             "storageAccountName",
             "storageAccountKey",
             "storageContainerName");
