@@ -74,11 +74,11 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
               </ul>}
             />
           </li>)}
-          <li style={navListItemStyle} className="ps-3">
+          { currentEnv.environmentName == 'sandbox' && <li style={navListItemStyle} className="ps-3">
             <button className="btn btn-secondary" onClick={() => setShowCreateModal(true)}>
               <FontAwesomeIcon icon={faPlus}/> Add
             </button>
-          </li>
+          </li> }
         </ul>
       </div> }
       <div className="flex-grow-1 bg-white p-3">
