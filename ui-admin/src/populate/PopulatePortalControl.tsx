@@ -24,6 +24,8 @@ export default function PopulatePortalControl() {
         return
       }
       Store.addNotification(successNotification('Populate succeeded'))
+      // redirect to home with a hard reload to capture the new portal
+      window.location.pathname = '/'
     }, { setIsLoading })
   }
 
