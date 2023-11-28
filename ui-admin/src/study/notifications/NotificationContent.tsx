@@ -12,6 +12,8 @@ import Api from 'api/api'
 import { useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import CreateNotificationConfigModal from './CreateNotificationConfigModal'
+import { navDivStyle, navLinkStyleFunc, navListItemStyle } from 'util/subNavStyles'
+import CollapsableMenu from 'navbar/CollapsableMenu'
 
 const CONFIG_GROUPS = [
   { title: 'Events', type: 'EVENT' },
@@ -21,16 +23,12 @@ const CONFIG_GROUPS = [
 
 /** shows configuration of notifications for a study */
 export default function NotificationContent({ studyEnvContext, portalContext }:
-{studyEnvContext: StudyEnvContextT, portalContext: LoadedPortalContextT}) {
+  {studyEnvContext: StudyEnvContextT, portalContext: LoadedPortalContextT}) {
   const currentEnv = studyEnvContext.currentEnv
   const navigate = useNavigate()
   const [configList, setConfigList] = useState<NotificationConfig[]>([])
   const [previousEnv, setPreviousEnv] = useState<string>(currentEnv.environmentName)
   const [showCreateModal, setShowCreateModal] = useState(false)
-  /** styles links as bold if they are the current path */
-  const navStyleFunc = ({ isActive }: {isActive: boolean}) => {
-    return isActive ? { fontWeight: 'bold' } : {}
-  }
 
   const { isLoading, reload } = useLoadingEffect(async () => {
     const configList = await Api.findNotificationConfigsForStudyEnv(portalContext.portal.shortcode,
@@ -54,41 +52,45 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
 
   return <div className="container-fluid px-4 py-2">
     { renderPageHeader('Participant email configuration') }
-    {isLoading && <LoadingSpinner/>}
-    {!isLoading && <div className="row">
-      <div className="col-md-3 mh-100 bg-white border-end">
-        <ul className="list-unstyled p-2">
-          { CONFIG_GROUPS.map(group => <li key={group.type}>
-            <h6 className="pt-2">{group.title}</h6>
-            <ul className="list-unstyled p-2">
-              { configList
-                .filter(config => config.notificationType === group.type)
-                .map(config => <li key={config.id} className="py-1">
-                  <div className="d-flex">
-                    <NavLink to={`configs/${config.id}`} style={navStyleFunc}>
-                      <NotificationConfigTypeDisplay config={config}/>
-                      <span className="text-muted fst-italic"> ({deliveryTypeDisplayMap[config.deliveryType]})</span>
-                    </NavLink>
-                  </div>
-                </li>
-                ) }
-            </ul>
+    <div className="d-flex">
+      {isLoading && <LoadingSpinner/>}
+      {!isLoading && <div style={navDivStyle}>
+        <ul className="list-unstyled">
+          { CONFIG_GROUPS.map(group => <li style={navListItemStyle}>
+            <CollapsableMenu header={group.title} headerClass="text-black" content={
+              <ul className="list-unstyled p-2">
+                { configList
+                  .filter(config => config.notificationType === group.type)
+                  .map(config => <li key={config.id} className="mb-2">
+                    <div className="d-flex">
+                      <NavLink to={`configs/${config.id}`} style={navLinkStyleFunc}>
+                        <NotificationConfigTypeDisplay config={config}/>
+                        <span
+                          className="text-muted fst-italic"> ({deliveryTypeDisplayMap[config.deliveryType]})</span>
+                      </NavLink>
+                    </div>
+                  </li>
+                  ) }
+              </ul>}
+            />
           </li>)}
+          { currentEnv.environmentName == 'sandbox' && <li style={navListItemStyle} className="ps-3">
+            <button className="btn btn-secondary" onClick={() => setShowCreateModal(true)}>
+              <FontAwesomeIcon icon={faPlus}/> Add
+            </button>
+          </li> }
         </ul>
-        <button className="btn btn-secondary" onClick={() => setShowCreateModal(true)}>
-          <FontAwesomeIcon icon={faPlus}/> Add
-        </button>
-      </div>
-      <div className="col-md-9 py-3">
+      </div> }
+      <div className="flex-grow-1 bg-white p-3">
         <Routes>
           <Route path="configs/:configId"
             element={<NotificationConfigView studyEnvContext={studyEnvContext} portalContext={portalContext}/>}/>
         </Routes>
         <Outlet/>
       </div>
-    </div> }
-    { showCreateModal && <CreateNotificationConfigModal studyEnvParams={paramsFromContext(studyEnvContext)}
-      onDismiss={() => setShowCreateModal(false)} onCreate={onCreate}
-    /> }
+      { showCreateModal && <CreateNotificationConfigModal studyEnvParams={paramsFromContext(studyEnvContext)}
+        onDismiss={() => setShowCreateModal(false)} onCreate={onCreate}
+      /> }
+    </div>
   </div>
 }
