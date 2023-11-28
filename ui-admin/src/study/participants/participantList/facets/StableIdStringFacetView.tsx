@@ -41,7 +41,7 @@ const StableIdStringArrayFacetView = ({ facetValue, updateValue }: {facetValue: 
 
   const facet = facetValue.facet
   return <div>
-    {facet.stableIdOptions.map((stableIdOption, index) => {
+    {facet.entities.map((stableIdOption, index) => {
       const stringValues = facetValue.values.find(val => val.stableId === stableIdOption.value)?.values ?? []
       const optValues = stringValues.map(stringVal => facet.options.find(opt => opt.value === stringVal))
       return <div key={index}><label>

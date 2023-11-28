@@ -5,6 +5,7 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.enrollee.EnrolleeExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.participant.EnrolleeSearchFacet;
 import bio.terra.pearl.core.service.participant.search.facets.FacetValueFactory;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -54,6 +55,36 @@ public class EnrolleeSearchController implements EnrolleeSearchApi {
         enrolleeExtService.search(
             adminUser, portalShortcode, studyShortcode, environmentName, facetValues);
     return ResponseEntity.ok(results);
+  }
+
+  @Override
+  public ResponseEntity<Object> facetSearch(
+      String portalShortcode, String studyShortcode, String envName, Object body) {
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+
+    List<SqlSearchableFacet> facetValues;
+    try {
+      facetValues = facetsFromJsonString(body.toString());
+    } catch (Exception e) {
+      return ResponseEntity.unprocessableEntity().body(e.getMessage());
+    }
+    var results =
+        enrolleeExtService.search(
+            adminUser, portalShortcode, studyShortcode, environmentName, facetValues);
+    return ResponseEntity.ok(results);
+  }
+
+  @Override
+  public ResponseEntity<Object> getSearchFacets(
+      String portalShortcode, String studyShortcode, String envName) {
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+
+    List<EnrolleeSearchFacet> facets =
+        enrolleeExtService.getSearchFacets(
+            adminUser, portalShortcode, studyShortcode, environmentName);
+    return ResponseEntity.ok(facets);
   }
 
   public List<SqlSearchableFacet> facetsFromJsonString(String facetString)

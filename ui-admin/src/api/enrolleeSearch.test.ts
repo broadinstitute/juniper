@@ -10,7 +10,7 @@ const rangeFacet: Facet = {
   category: 'profile',
   keyName: 'age',
   label: 'Age',
-  type: 'INT_RANGE',
+  facetType: 'INT_RANGE',
   min: 0,
   max: 150
 }
@@ -19,7 +19,7 @@ const stringFacet: Facet = {
   category: 'profile',
   keyName: 'sexAtBirth',
   label: 'Sex at birth',
-  type: 'STRING_OPTIONS',
+  facetType: 'STRING_OPTIONS',
   options: [
     { value: 'male', label: 'male' },
     { value: 'female', label: 'female' },
@@ -32,13 +32,13 @@ const stableIdFacet: Facet  = {
   category: 'participantTask',
   keyName: 'status',
   label: 'Task status',
-  type: 'STABLEID_STRING',
+  facetType: 'STABLEID_STRING',
   options: [
     { value: 'COMPLETE', label: 'Complete' },
     { value: 'IN_PROGRESS', label: 'In progress' },
     { value: 'NEW', label: 'New' }
   ],
-  stableIdOptions: [
+  entities: [
     { value: 'oh_oh_consent', label: 'Consent' },
     { value: 'oh_oh_basicInfo', label: 'Basics' },
     { value: 'oh_oh_cardioHx', label: 'Cardio History' }

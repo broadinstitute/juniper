@@ -7,6 +7,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.2.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@juniper/ui-core": "*",
+    "@mui/material": "^5.14.18",
     "@tanstack/react-table": "^8.8.2",
     "bootstrap": "^5.2.0",
     "classnames": "^2.3.2",

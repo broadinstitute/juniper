@@ -20,13 +20,18 @@ public class ParticipantTaskFactory {
 
   public ParticipantTask buildPersisted(EnrolleeFactory.EnrolleeBundle enrolleeBundle, String targetStableId,
                                         TaskStatus status, TaskType type) {
+    return buildPersisted(enrolleeBundle, targetStableId, RandomStringUtils.randomAlphabetic(6), status, type);
+  }
+
+  public ParticipantTask buildPersisted(EnrolleeFactory.EnrolleeBundle enrolleeBundle, String targetStableId,
+                                        String targetName, TaskStatus status, TaskType type) {
     ParticipantTask task = ParticipantTask.builder()
         .status(status)
         .enrolleeId(enrolleeBundle.enrollee().getId())
         .taskType(type)
         .targetStableId(targetStableId)
         .studyEnvironmentId(enrolleeBundle.enrollee().getStudyEnvironmentId())
-        .targetName(RandomStringUtils.randomAlphabetic(6))
+        .targetName(targetName)
         .portalParticipantUserId(enrolleeBundle.portalParticipantUser().getId())
         .build();
     return participantTaskService.create(task);

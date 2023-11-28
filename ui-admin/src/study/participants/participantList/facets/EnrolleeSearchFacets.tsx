@@ -84,7 +84,7 @@ type FacetViewProps = {
  * Renders a facet with the appropriate component for the facet type.
  */
 export const FacetView = ({ facet, facetValue, updateValue }: FacetViewProps) => {
-  const facetType = facet.type
+  const facetType = facet.facetType
   if (!facetValue) {
     facetValue = newFacetValue(facet)
   }
