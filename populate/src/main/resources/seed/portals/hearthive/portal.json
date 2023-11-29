@@ -26,6 +26,14 @@
         "participants/consentedEnrollee.json",
         "participants/gertrudeElion.json",
         "participants/newEnrollee.json"
+      ],
+      "participantDashboardAlerts": [
+        {
+          "title": "No activities remain",
+          "detail": "You have completed all Heart Hive activities. Thank you for your participation!",
+          "trigger": "NO_ACTIVITIES_REMAIN",
+          "type": "info"
+        }
       ]
     },
     {
