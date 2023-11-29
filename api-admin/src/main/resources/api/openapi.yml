@@ -182,19 +182,6 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/surveys/{stableId}:
-    get:
-      summary: gets all versions of the requested survey
-      tags: [ survey ]
-      operationId: getAllVersions
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: stableId, in: path, required: true, schema: { type: string } }
-      responses:
-        '200':
-          description: list of survey version metadata
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
     delete:
       summary: deletes the specified survey, will fail if the survey has any responses or is in use by a non-sandbox environment
       tags: [ survey ]
@@ -205,6 +192,20 @@ paths:
       responses:
         '204':
           description: No Content
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/surveys/{stableId}/metadata:
+    get:
+      summary: gets metadata for all versions of the requested survey
+      tags: [ survey ]
+      operationId: getAllVersions
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: list of survey version metadata
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/surveys:
@@ -291,6 +292,21 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+
+  /api/portals/v1/{portalShortcode}/consentForms/{stableId}/metadata:
+    get:
+      summary: gets metadata for all versions of the requested form
+      tags: [ consentForm ]
+      operationId: getAllVersions
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: list of consentForm version metadata
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/consentForms/{stableId}/{version}:
     get:
       summary: gets the requested form
@@ -307,19 +323,6 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/consentForms/{stableId}:
-    get:
-      summary: gets all versions of the requested form
-      tags: [ consentForm ]
-      operationId: getAllVersions
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: stableId, in: path, required: true, schema: { type: string } }
-      responses:
-        '200':
-          description: list of consentForm version metadata
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
     post:
       summary: Saves a new consentForm with anew stableId as a new form -- will be assigned version 1
       tags: [ consentForm ]

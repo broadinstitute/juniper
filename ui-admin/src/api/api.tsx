@@ -555,7 +555,7 @@ export default {
   },
 
   async getConsentFormVersions(portalShortcode: string, stableId: string): Promise<Survey[]> {
-    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/consentForms/${stableId}`,
+    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/consentForms/${stableId}/metadata`,
       this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -632,7 +632,8 @@ export default {
   },
 
   async getSurveyVersions(portalShortcode: string, stableId: string): Promise<Survey[]> {
-    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/surveys/${stableId}`, this.getGetInit())
+    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/surveys/${stableId}/metadata`,
+      this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
