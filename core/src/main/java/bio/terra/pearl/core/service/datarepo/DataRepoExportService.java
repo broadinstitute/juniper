@@ -24,8 +24,7 @@ import bio.terra.pearl.core.service.export.EnrolleeExportService;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
 import bio.terra.pearl.core.service.export.instance.ExportOptions;
 import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,10 +34,8 @@ import java.time.Instant;
 import java.util.*;
 
 @Service
+@Slf4j
 public class DataRepoExportService {
-
-    private static final Logger logger = LoggerFactory.getLogger(DataRepoExportService.class);
-
     Environment env;
     AzureBlobStorageClient azureBlobStorageClient;
     DataRepoJobService dataRepoJobService;
@@ -190,7 +187,7 @@ public class DataRepoExportService {
 
         try {
             JobModel ingestJob = dataRepoClient.ingestDataset(defaultSpendProfileId, dataset.getTdrDatasetId(), "enrollee", blobSasUrl);
-            logger.info("Ingest job returned with job ID {}", ingestJob.getId());
+            log.info("Ingest job returned with job ID {}", ingestJob.getId());
             //Store in DB
             DataRepoJob job = DataRepoJob.builder()
                     .studyEnvironmentId(dataset.getStudyEnvironmentId())
@@ -203,7 +200,7 @@ public class DataRepoExportService {
 
             dataRepoJobService.create(job);
         } catch (ApiException e) {
-            logger.error("Unable to ingest dataset {} for study env {}. Error: {}", dataset.getId(), dataset.getStudyEnvironmentId(), e.getMessage());
+            log.error("Unable to ingest dataset {} for study env {}. Error: {}", dataset.getId(), dataset.getStudyEnvironmentId(), e.getMessage());
         }
     }
 
@@ -239,7 +236,7 @@ public class DataRepoExportService {
         //Query for all running TDR jobs
         List<DataRepoJob> runningJobs = dataRepoJobDao.findAllByStatus(JobStatusEnum.RUNNING.getValue());
 
-        logger.info("Found {} running TDR jobs", runningJobs.size());
+        log.info("Found {} running TDR jobs", runningJobs.size());
 
         //For each running job, query TDR for the latest status
         for(DataRepoJob job : runningJobs) {
@@ -247,7 +244,7 @@ public class DataRepoExportService {
                 case CREATE_DATASET -> pollAndUpdateCreateJobStatus(job);
                 case INGEST_DATASET -> pollAndUpdateIngestJobStatus(job);
                 case DELETE_DATASET -> pollAndUpdateDeleteJobStatus(job);
-                default -> logger.error("Unknown job type '{}' for TDR job {}.", job.getJobType(), job.getTdrJobId());
+                default -> log.error("Unknown job type '{}' for TDR job {}.", job.getJobType(), job.getTdrJobId());
             }
         }
     }
@@ -261,7 +258,7 @@ public class DataRepoExportService {
                     LinkedHashMap<String, Object> jobResult = (LinkedHashMap<String, Object>) dataRepoClient.getJobResult(job.getTdrJobId());
                     UUID tdrDatasetId = UUID.fromString(jobResult.get("id").toString());
 
-                    logger.info("createDataset job ID {} has succeeded. Dataset {} has been created.", job.getId(), job.getDatasetName());
+                    log.info("createDataset job ID {} has succeeded. Dataset {} has been created.", job.getId(), job.getDatasetName());
 
                     datasetService.setTdrDatasetId(job.getDatasetId(), tdrDatasetId);
                     datasetService.updateStatus(job.getDatasetId(), DatasetStatus.CREATED);
@@ -273,23 +270,23 @@ public class DataRepoExportService {
                     // of safety to be totally safe.
                     String DEPLOYMENT_ZONE = env.getProperty("env.deploymentZone");
                     if(!DEPLOYMENT_ZONE.equalsIgnoreCase("prod")) {
-                        logger.info("Sharing dataset with Juniper dev team. If you're seeing this in prod, panic!");
+                        log.info("Sharing dataset with Juniper dev team. If you're seeing this in prod, panic!");
                         dataRepoClient.shareWithJuniperDevs(tdrDatasetId);
                     }
 
                     ingestDataForStudyEnvironment(job.getDatasetId());
                 }
                 case FAILED -> {
-                    logger.warn("createDataset job ID {} has failed. Dataset {} failed to create.", job.getId(), job.getDatasetName());
+                    log.warn("createDataset job ID {} has failed. Dataset {} failed to create.", job.getId(), job.getDatasetName());
 
                     datasetService.updateStatus(job.getDatasetId(), DatasetStatus.FAILED);
                     dataRepoJobService.updateJobStatus(job.getId(), jobStatus.getValue());
                 }
-                case RUNNING -> logger.info("createDataset job ID {} is running.", job.getId());
-                default -> logger.warn("createDataset job ID {} has unrecognized job status: {}", job.getId(), job.getStatus());
+                case RUNNING -> log.info("createDataset job ID {} is running.", job.getId());
+                default -> log.warn("createDataset job ID {} has unrecognized job status: {}", job.getId(), job.getStatus());
             }
         } catch (ApiException e) {
-            logger.error("Unable to get TDR job status for job ID {}", job.getTdrJobId());
+            log.error("Unable to get TDR job status for job ID {}", job.getTdrJobId());
         }
     }
 
@@ -299,19 +296,19 @@ public class DataRepoExportService {
 
             switch(jobStatus) {
                 case SUCCEEDED -> {
-                    logger.info("ingestDataset job ID {} has succeeded. Dataset {} successfully ingested.", job.getId(), job.getDatasetName());
+                    log.info("ingestDataset job ID {} has succeeded. Dataset {} successfully ingested.", job.getId(), job.getDatasetName());
                     dataRepoJobService.updateJobStatus(job.getId(), jobStatus.getValue());
                     datasetService.updateLastExported(job.getDatasetId(), Instant.now());
                 }
                 case FAILED -> {
-                    logger.warn("ingestDataset job ID {} has failed. Dataset {} failed to ingest.", job.getId(), job.getDatasetName());
+                    log.warn("ingestDataset job ID {} has failed. Dataset {} failed to ingest.", job.getId(), job.getDatasetName());
                     dataRepoJobService.updateJobStatus(job.getId(), jobStatus.getValue());
                 }
-                case RUNNING -> logger.info("ingestDataset job ID {} is running.", job.getId());
-                default -> logger.warn("ingestDataset job ID {} has unrecognized job status: {}", job.getId(), job.getStatus());
+                case RUNNING -> log.info("ingestDataset job ID {} is running.", job.getId());
+                default -> log.warn("ingestDataset job ID {} has unrecognized job status: {}", job.getId(), job.getStatus());
             }
         } catch (ApiException e) {
-            logger.error("Unable to get TDR job status for job ID {}. Error: {}", job.getTdrJobId(), e.getMessage());
+            log.error("Unable to get TDR job status for job ID {}. Error: {}", job.getTdrJobId(), e.getMessage());
         }
     }
 
@@ -323,20 +320,20 @@ public class DataRepoExportService {
                 case SUCCEEDED -> {
                     Dataset dataset = datasetService.findById(job.getDatasetId()).orElseThrow(() -> new DatasetNotFoundException(job.getDatasetId()));
 
-                    logger.info("deleteDataset job ID {} has succeeded. Dataset {} successfully deleted.", job.getId(), job.getDatasetId());
+                    log.info("deleteDataset job ID {} has succeeded. Dataset {} successfully deleted.", job.getId(), job.getDatasetId());
                     dataRepoJobService.updateJobStatus(job.getId(), jobStatus.getValue());
                     dataRepoJobService.deleteByDatasetId(dataset.getId());
                     datasetService.delete(dataset);
                 }
                 case FAILED -> {
-                    logger.warn("deleteDataset job ID {} has failed. Dataset {} failed to delete.", job.getId(), job.getDatasetId());
+                    log.warn("deleteDataset job ID {} has failed. Dataset {} failed to delete.", job.getId(), job.getDatasetId());
                     dataRepoJobService.updateJobStatus(job.getId(), jobStatus.getValue());
                 }
-                case RUNNING -> logger.info("deleteDataset job ID {} is running.", job.getId());
-                default -> logger.warn("deleteDataset job ID {} has unrecognized job status: {}", job.getId(), job.getStatus());
+                case RUNNING -> log.info("deleteDataset job ID {} is running.", job.getId());
+                default -> log.warn("deleteDataset job ID {} has unrecognized job status: {}", job.getId(), job.getStatus());
             }
         } catch (ApiException e) {
-            logger.error("Unable to get TDR job status for job ID {}. Error: {}", job.getTdrJobId(), e.getMessage());
+            log.error("Unable to get TDR job status for job ID {}. Error: {}", job.getTdrJobId(), e.getMessage());
         }
     }
 

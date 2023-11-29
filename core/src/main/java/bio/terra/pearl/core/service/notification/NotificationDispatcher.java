@@ -9,15 +9,15 @@ import bio.terra.pearl.core.service.workflow.EnrolleeEvent;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class NotificationDispatcher {
-    private static final Logger logger = LoggerFactory.getLogger(NotificationDispatcher.class);
     private NotificationConfigService notificationConfigService;
     private NotificationService notificationService;
     private Map<NotificationDeliveryType, NotificationSender> senderMap;

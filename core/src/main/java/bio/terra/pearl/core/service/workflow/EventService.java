@@ -12,8 +12,7 @@ import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.survey.EnrolleeSurveyEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -24,8 +23,8 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
+@Slf4j
 public class EventService {
-    private static final Logger logger = LoggerFactory.getLogger(EventService.class);
     private ParticipantTaskService participantTaskService;
     private EnrolleeRuleService enrolleeRuleService;
 
@@ -43,7 +42,7 @@ public class EventService {
                 .portalParticipantUser(ppUser)
                 .build();
         populateEvent(event);
-        logger.info("consent event for enrollee {}, studyEnv {} - formId {}, consented {}",
+        log.info("consent event for enrollee {}, studyEnv {} - formId {}, consented {}",
                 enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
                 response.getConsentFormId(), response.isConsented());
         applicationEventPublisher.publishEvent(event);
@@ -58,7 +57,7 @@ public class EventService {
                 .portalParticipantUser(ppUser)
                 .build();
         populateEvent(event);
-        logger.info("survey event for enrollee {}, studyEnv {} - formId {}, completed {}",
+        log.info("survey event for enrollee {}, studyEnv {} - formId {}, completed {}",
                 enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
                 response.getSurveyId(), response.isComplete());
         applicationEventPublisher.publishEvent(event);

@@ -1,15 +1,14 @@
 package bio.terra.pearl.api.admin.service;
 
 import bio.terra.pearl.core.service.kit.KitRequestService;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class ScheduledKitStatusService {
-  private static final Logger logger = LoggerFactory.getLogger(ScheduledKitStatusService.class);
   private final KitRequestService kitRequestService;
 
   public ScheduledKitStatusService(KitRequestService kitRequestService) {
@@ -25,8 +24,8 @@ public class ScheduledKitStatusService {
       lockAtLeastFor = "1m",
       lockAtMostFor = "360m")
   public void fetchUpdatedKitStatuses() {
-    logger.info("Updating kit status from Pepper...");
+    log.info("Updating kit status from Pepper...");
     kitRequestService.syncAllKitStatusesFromPepper();
-    logger.info("Finished updating kit status.");
+    log.info("Finished updating kit status.");
   }
 }

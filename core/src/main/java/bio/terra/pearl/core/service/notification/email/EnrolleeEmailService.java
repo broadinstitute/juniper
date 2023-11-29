@@ -16,18 +16,16 @@ import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.sendgrid.Mail;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class EnrolleeEmailService implements NotificationSender {
-    private static final Logger logger = LoggerFactory.getLogger(EnrolleeEmailService.class);
     private NotificationService notificationService;
     private PortalEnvironmentService portalEnvService;
     private PortalService portalService;
@@ -39,8 +37,7 @@ public class EnrolleeEmailService implements NotificationSender {
     public EnrolleeEmailService(NotificationService notificationService,
                                 PortalEnvironmentService portalEnvService, PortalService portalService,
                                 StudyService studyService, EmailTemplateService emailTemplateService,
-                                ApplicationRoutingPaths routingPaths, SendgridClient sendgridClient,
-                                Environment environment) {
+                                ApplicationRoutingPaths routingPaths, SendgridClient sendgridClient) {
         this.notificationService = notificationService;
         this.portalEnvService = portalEnvService;
         this.portalService = portalService;
@@ -65,13 +62,13 @@ public class EnrolleeEmailService implements NotificationSender {
             notification.setSentTo(ruleData.profile().getContactEmail());
             try {
                 buildAndSendEmail(contextInfo, ruleData, notification);
-                logger.info("Email sent: config: {}, enrollee: {}", config.getId(),
+                log.info("Email sent: config: {}, enrollee: {}", config.getId(),
                         ruleData.enrollee().getShortcode());
                 notification.setDeliveryStatus(NotificationDeliveryStatus.SENT);
             } catch (Exception e) {
                 notification.setDeliveryStatus(NotificationDeliveryStatus.FAILED);
                 // don't log the exception itself since the trace might have PII in it.
-                logger.error("Email failed to send: config: {}, enrollee: {}", config.getId(),
+                log.error("Email failed to send: config: {}, enrollee: {}", config.getId(),
                         ruleData.enrollee().getShortcode());
             }
         }
@@ -135,18 +132,18 @@ public class EnrolleeEmailService implements NotificationSender {
                                    EnrolleeRuleData ruleData,
                                    NotificationContextInfo contextInfo) {
         if (ruleData.profile() != null && ruleData.profile().isDoNotEmail()) {
-            logger.info("skipping email, enrollee {} is doNotEmail: notificationConfig: {}, portalEnv: {}",
+            log.info("skipping email, enrollee {} is doNotEmail: notificationConfig: {}, portalEnv: {}",
                     ruleData.enrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
             return false;
         }
         if (config.getEmailTemplateId() == null) {
-            logger.error("no email template configured: notificationConfig: {}, portalEnv: {}",
+            log.error("no email template configured: notificationConfig: {}, portalEnv: {}",
                     config.getId(), config.getPortalEnvironmentId());
             return false;
         }
         if (contextInfo == null) {
             // the environment hasn't finished populating yet, skip
-            logger.info("Email send skipped: no environment context could be loaded");
+            log.info("Email send skipped: no environment context could be loaded");
             return false;
         }
         return true;

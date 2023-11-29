@@ -8,10 +8,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sendgrid.*;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +18,8 @@ import java.time.Instant;
 import java.util.List;
 
 @Service
+@Slf4j
 public class SendgridClient {
-  private static final Logger logger = LoggerFactory.getLogger(SendgridClient.class);
   public static final String EMAIL_REDIRECT_VAR = "env.email.redirectAllTo";
   public static final String SENDGRID_API_KEY_VAR = "env.email.sendgridApiKey";
   private final String sendGridApiKey;
@@ -36,7 +35,7 @@ public class SendgridClient {
   public void sendEmail(Mail mail) throws Exception {
     if (StringUtils.isEmpty(sendGridApiKey)) {
       // if there's no API key, (likely because we're in a CI environment), don't even attempt to send an email
-      logger.info("Email send skipped: no sendgrid api provided");
+      log.info("Email send skipped: no sendgrid api provided");
       throw new UnsupportedOperationException("Attempted to send email without sendgrid key");
     }
     SendGrid sg = new SendGrid(sendGridApiKey);

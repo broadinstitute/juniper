@@ -6,8 +6,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
  * takes arguments with folder paths and maps them to a relevant file and populator.
  * */
 @Component
+@Slf4j
 public class FilePopulateService {
-    private static final Logger logger = LoggerFactory.getLogger(FilePopulateService.class);
     public static final String SEED_ROOT = "seed/";
     public static final String ABSOLUTE_SEED_ROOT = "populate/src/main/resources/seed/";
 

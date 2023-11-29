@@ -14,11 +14,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class BaseStatusService {
-  private static final Logger logger = LoggerFactory.getLogger(BaseStatusService.class);
   /** cached status */
   private final AtomicReference<SystemStatus> cachedStatus;
   /** configuration parameters */
@@ -64,7 +63,7 @@ public class BaseStatusService {
         newStatus.setOk(systems.values().stream().allMatch(SystemStatusSystems::isOk));
         newStatus.setSystems(systems);
       } catch (Exception e) {
-        logger.warn("Status check exception", e);
+        log.warn("Status check exception", e);
         newStatus.setOk(false);
       }
       cachedStatus.set(newStatus);
@@ -80,7 +79,7 @@ public class BaseStatusService {
           .get()
           .plusSeconds(configuration.stalenessThresholdSeconds())
           .isBefore(Instant.now())) {
-        logger.warn("Status has not been updated since {}", lastStatusUpdate);
+        log.warn("Status has not been updated since {}", lastStatusUpdate);
         cachedStatus.set(new SystemStatus().ok(false));
       }
       return cachedStatus.get();

@@ -9,19 +9,18 @@ import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import java.time.Duration;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class EnrolleeReminderService {
     private ParticipantTaskQueryService participantTaskQueryService;
     private StudyEnvironmentService studyEnvironmentService;
     private NotificationConfigService notificationConfigService;
     private EnrolleeRuleService enrolleeRuleService;
     private NotificationDispatcher notificationDispatcher;
-
-    private static final Logger logger = LoggerFactory.getLogger(EnrolleeReminderService.class);
 
     public EnrolleeReminderService(ParticipantTaskQueryService participantTaskQueryService,
                                    StudyEnvironmentService studyEnvironmentService,
@@ -43,7 +42,7 @@ public class EnrolleeReminderService {
     }
 
     public void sendTaskReminders(StudyEnvironment studyEnv) {
-        logger.info("querying enrollee reminder queries for study environment {} ({})", studyEnv.getId(), studyEnv.getEnvironmentName());
+        log.info("querying enrollee reminder queries for study environment {} ({})", studyEnv.getId(), studyEnv.getEnvironmentName());
         var allEnvConfigs = notificationConfigService.findByStudyEnvironmentId(studyEnv.getId(), true);
         var reminderConfigs = allEnvConfigs.stream().filter(config ->
                 config.getNotificationType().equals(NotificationType.TASK_REMINDER)).toList();
@@ -64,7 +63,7 @@ public class EnrolleeReminderService {
                         timeSinceCreation,
                         maxTimeSinceCreation,
                         timeSinceLastNotification);
-        logger.info("Found {} enrollees with tasks needing reminder from config {}: taskType {}",
+        log.info("Found {} enrollees with tasks needing reminder from config {}: taskType {}",
                 enrolleesWithTasks.size(), notificationConfig.getId(), notificationConfig.getTaskType());
 
         // bulk load the enrollees
