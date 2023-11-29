@@ -34,9 +34,8 @@ export const HubMessageAlert = (props: HubMessageAlertProps) => {
       level={message.type}
       icon={message.icon}
       title={message.title}
+      detail={message.detail}
       {...otherProps}
-    >
-      {message.detail}
-    </Alert>
+    />
   )
 }

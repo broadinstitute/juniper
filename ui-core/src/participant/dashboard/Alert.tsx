@@ -3,6 +3,7 @@ import { faCheck, faCircleInfo, faTriangleExclamation, faXmark } from '@fortawes
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classNames from 'classnames'
 import React from 'react'
+import { Markdown } from '../landing/Markdown'
 
 export type AlertLevel =
   | 'primary'
@@ -62,13 +63,14 @@ export type AlertProps = {
   icon?: IconDefinition
   level?: AlertLevel
   title: string
+  detail?: string
   onDismiss?: () => void
 } & JSX.IntrinsicElements['div']
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
 export const Alert = (props: AlertProps) => {
-  const { children, className, icon, level = 'info', title, onDismiss, ...otherProps } = props
+  const { className, icon, level = 'info', title, detail, onDismiss, ...otherProps } = props
   const renderedIcon = icon ? icon : getDefaultIcon(level)
 
   return (
@@ -78,8 +80,8 @@ export const Alert = (props: AlertProps) => {
     >
       {renderedIcon && <FontAwesomeIcon className="me-3 fa-xl" icon={renderedIcon} />}
       <div className="flex-grow-1">
-        <div className="alert-heading fw-bold">{title}</div>
-        <div style={{ whiteSpace: 'pre-wrap' }}>{children}</div>
+        <div className="alert-heading fw-bold"><Markdown>{title}</Markdown></div>
+        { detail && <div style={{ whiteSpace: 'pre-wrap' }}><Markdown>{detail}</Markdown></div> }
       </div>
       {!!onDismiss && <button aria-label="Close" className="btn-close ms-3" onClick={onDismiss} />}
     </div>
