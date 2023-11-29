@@ -70,7 +70,8 @@ public class DashboardExtService {
             .findByPortalEnvIdAndTrigger(portalEnv.getId(), triggerName)
             .orElseThrow(() -> new NotFoundException("The specified alert does not exist"));
 
-    BeanUtils.copyProperties(newAlert, alert);
+    alert.setTitle(newAlert.getTitle());
+    alert.setDetail(newAlert.getDetail());
     return portalDashboardConfigService.update(alert);
   }
 
@@ -98,6 +99,7 @@ public class DashboardExtService {
             .orElseThrow(PortalEnvironmentMissing::new);
 
     newAlert.setPortalEnvironmentId(portalEnv.getId());
+    newAlert.setStudyEnvironmentId(null);
     return portalDashboardConfigService.create(newAlert);
   }
 }
