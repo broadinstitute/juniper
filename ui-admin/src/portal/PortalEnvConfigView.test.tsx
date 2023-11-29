@@ -22,6 +22,29 @@ test('renders a portal env. config', async () => {
     .toBe(envConfig.acceptingRegistration)
 })
 
+test('changes state when portal env changes', async () => {
+  const portalContext = mockPortalContext()
+  const portalEnv = portalContext.portal?.portalEnvironments[0] as PortalEnvironment
+  const envConfig = portalEnv.portalEnvironmentConfig
+  const { rerender } = render(<MockSuperuserProvider>
+    <PortalEnvConfigView portalContext={portalContext} portalEnv={portalEnv}/>
+  </MockSuperuserProvider>)
+
+  expect(screen.getByLabelText('password')).toHaveValue(envConfig.password)
+  const differentEnv = {
+    ...portalEnv,
+    portalEnvironmentConfig: {
+      ...portalEnv.portalEnvironmentConfig,
+      password: 'newPass3'
+    },
+    environmentName: 'irb'
+  }
+  rerender(<MockSuperuserProvider>
+    <PortalEnvConfigView portalContext={portalContext} portalEnv={differentEnv}/>
+  </MockSuperuserProvider>)
+  expect(screen.getByLabelText('password')).toHaveValue('newPass3')
+})
+
 test('updates a portal env. config', async () => {
   const portalContext = mockPortalContext()
   const portalEnv = portalContext.portal?.portalEnvironments[0] as PortalEnvironment

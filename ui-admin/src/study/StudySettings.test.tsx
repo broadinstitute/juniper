@@ -20,6 +20,31 @@ test('renders a study env. config', async () => {
     .toBe(expectedConfig.passwordProtected)
 })
 
+test('updates display when study env. changes', async () => {
+  const portalContext = mockPortalContext()
+  const studyEnvContext = mockStudyEnvContext()
+  const expectedConfig = studyEnvContext.currentEnv.studyEnvironmentConfig
+  const { rerender } = render(<MockSuperuserProvider>
+    <StudyEnvConfigView portalContext={portalContext} studyEnvContext={studyEnvContext}/>
+  </MockSuperuserProvider>)
+  expect(screen.getByLabelText('password')).toHaveValue(expectedConfig.password)
+  const differentEnvContext = {
+    ...studyEnvContext,
+    currentEnv: {
+      ...studyEnvContext.currentEnv,
+      studyEnvironmentConfig: {
+        ...studyEnvContext.currentEnv.studyEnvironmentConfig,
+        password: 'newPass3'
+      },
+      environmentName: 'irb'
+    }
+  }
+  rerender(<MockSuperuserProvider>
+    <StudyEnvConfigView portalContext={portalContext} studyEnvContext={differentEnvContext}/>
+  </MockSuperuserProvider>)
+  expect(screen.getByLabelText('password')).toHaveValue('newPass3')
+})
+
 test('updates a study env. config', async () => {
   const portalContext = mockPortalContext()
   const studyEnvContext = mockStudyEnvContext()
@@ -34,3 +59,4 @@ test('updates a study env. config', async () => {
   expect(input).toHaveValue('newPass')
   expect(screen.getByText('Save study config')).toHaveAttribute('aria-disabled', 'false')
 })
+
