@@ -1,11 +1,12 @@
 package bio.terra.pearl.api.admin.service.dashboard;
 
+import static bio.terra.pearl.core.model.dashboard.AlertTrigger.NO_ACTIVITIES_REMAIN;
 import static org.mockito.Mockito.when;
 
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
@@ -45,7 +46,7 @@ public class DashboardExtServiceTests {
         PermissionDeniedException.class,
         () ->
             dashboardExtService.updatePortalEnvAlert(
-                "testPortal", EnvironmentName.sandbox, "NO_ACTIVITIES_REMAIN", alert, user));
+                "testPortal", EnvironmentName.sandbox, NO_ACTIVITIES_REMAIN, alert, user));
   }
 
   @Test
@@ -56,7 +57,7 @@ public class DashboardExtServiceTests {
         IllegalArgumentException.class,
         () ->
             dashboardExtService.updatePortalEnvAlert(
-                "testPortal", EnvironmentName.irb, "NO_ACTIVITIES_REMAIN", alert, user));
+                "testPortal", EnvironmentName.irb, NO_ACTIVITIES_REMAIN, alert, user));
   }
 
   @Test
@@ -69,7 +70,7 @@ public class DashboardExtServiceTests {
         PermissionDeniedException.class,
         () ->
             dashboardExtService.createPortalEnvAlert(
-                "testPortal", EnvironmentName.sandbox, "NO_ACTIVITIES_REMAIN", alert, user));
+                "testPortal", EnvironmentName.sandbox, NO_ACTIVITIES_REMAIN, alert, user));
   }
 
   @Test
@@ -80,6 +81,6 @@ public class DashboardExtServiceTests {
         IllegalArgumentException.class,
         () ->
             dashboardExtService.createPortalEnvAlert(
-                "testPortal", EnvironmentName.irb, "NO_ACTIVITIES_REMAIN", alert, user));
+                "testPortal", EnvironmentName.irb, NO_ACTIVITIES_REMAIN, alert, user));
   }
 }

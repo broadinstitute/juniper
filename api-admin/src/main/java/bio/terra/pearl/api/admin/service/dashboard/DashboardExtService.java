@@ -2,8 +2,9 @@ package bio.terra.pearl.api.admin.service.dashboard;
 
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.dashboard.AlertTrigger;
+import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.exception.NotFoundException;
@@ -11,7 +12,6 @@ import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.exception.PortalEnvironmentMissing;
 import java.util.List;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -45,7 +45,7 @@ public class DashboardExtService {
   public ParticipantDashboardAlert updatePortalEnvAlert(
       String portalShortcode,
       EnvironmentName envName,
-      String triggerName,
+      AlertTrigger triggerName,
       ParticipantDashboardAlert newAlert,
       AdminUser user) {
     Portal authedPortal = authUtilService.authUserToPortal(user, portalShortcode);
@@ -72,13 +72,14 @@ public class DashboardExtService {
 
     alert.setTitle(newAlert.getTitle());
     alert.setDetail(newAlert.getDetail());
+    alert.setType(newAlert.getType());
     return portalDashboardConfigService.update(alert);
   }
 
   public ParticipantDashboardAlert createPortalEnvAlert(
       String portalShortcode,
       EnvironmentName envName,
-      String triggerName,
+      AlertTrigger triggerName,
       ParticipantDashboardAlert newAlert,
       AdminUser user) {
     Portal authedPortal = authUtilService.authUserToPortal(user, portalShortcode);

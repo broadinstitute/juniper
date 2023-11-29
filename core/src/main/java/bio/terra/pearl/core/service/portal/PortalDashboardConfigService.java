@@ -1,7 +1,8 @@
 package bio.terra.pearl.core.service.portal;
 
 import bio.terra.pearl.core.dao.dashboard.ParticipantDashboardAlertDao;
-import bio.terra.pearl.core.model.ParticipantDashboardAlert;
+import bio.terra.pearl.core.model.dashboard.AlertTrigger;
+import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.service.CrudService;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ public class PortalDashboardConfigService extends CrudService<ParticipantDashboa
         return dao.findByPortalEnvironmentId(portalEnvId);
     }
 
-    public Optional<ParticipantDashboardAlert> findByPortalEnvIdAndTrigger(UUID portalEnvId, String trigger) {
+    public Optional<ParticipantDashboardAlert> findByPortalEnvIdAndTrigger(UUID portalEnvId, AlertTrigger trigger) {
         return dao.findByPortalEnvironmentIdAndTrigger(portalEnvId, trigger);
     }
 

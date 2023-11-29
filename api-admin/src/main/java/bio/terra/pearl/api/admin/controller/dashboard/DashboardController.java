@@ -4,8 +4,9 @@ import bio.terra.pearl.api.admin.api.DashboardApi;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.dashboard.DashboardExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.dashboard.AlertTrigger;
+import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -51,9 +52,11 @@ public class DashboardController implements DashboardApi {
     ParticipantDashboardAlert alert =
         objectMapper.convertValue(body, ParticipantDashboardAlert.class);
 
+    AlertTrigger trigger = AlertTrigger.valueOf(triggerName);
+
     ParticipantDashboardAlert updatedAlert =
         dashboardExtService.updatePortalEnvAlert(
-            portalShortcode, environmentName, triggerName, alert, user);
+            portalShortcode, environmentName, trigger, alert, user);
 
     return ResponseEntity.ok(updatedAlert);
   }
@@ -67,9 +70,11 @@ public class DashboardController implements DashboardApi {
     ParticipantDashboardAlert alert =
         objectMapper.convertValue(body, ParticipantDashboardAlert.class);
 
+    AlertTrigger trigger = AlertTrigger.valueOf(triggerName);
+
     ParticipantDashboardAlert createdAlert =
         dashboardExtService.createPortalEnvAlert(
-            portalShortcode, environmentName, triggerName, alert, user);
+            portalShortcode, environmentName, trigger, alert, user);
 
     return ResponseEntity.ok(createdAlert);
   }

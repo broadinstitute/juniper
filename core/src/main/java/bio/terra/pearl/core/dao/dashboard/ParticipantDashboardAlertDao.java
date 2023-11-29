@@ -1,7 +1,8 @@
 package bio.terra.pearl.core.dao.dashboard;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
-import bio.terra.pearl.core.model.ParticipantDashboardAlert;
+import bio.terra.pearl.core.model.dashboard.AlertTrigger;
+import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,7 @@ public class ParticipantDashboardAlertDao extends BaseMutableJdbiDao<Participant
         return findAllByProperty("portal_environment_id", portalEnvironmentId);
     }
 
-    public Optional<ParticipantDashboardAlert> findByPortalEnvironmentIdAndTrigger(UUID portalEnvironmentId, String trigger) {
+    public Optional<ParticipantDashboardAlert> findByPortalEnvironmentIdAndTrigger(UUID portalEnvironmentId, AlertTrigger trigger) {
         return findByTwoProperties("portal_environment_id", portalEnvironmentId, "trigger", trigger);
     }
 

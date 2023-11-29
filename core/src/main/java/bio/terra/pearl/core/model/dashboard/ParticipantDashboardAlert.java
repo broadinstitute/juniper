@@ -1,6 +1,8 @@
-package bio.terra.pearl.core.model;
+package bio.terra.pearl.core.model.dashboard;
 
 import java.util.UUID;
+
+import bio.terra.pearl.core.model.BaseEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,6 +19,6 @@ public class ParticipantDashboardAlert extends BaseEntity {
 
     private String title;
     private String detail;
-    private String trigger;
-    private String type;
+    private AlertTrigger trigger;
+    private AlertType type;
 }
