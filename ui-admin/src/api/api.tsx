@@ -556,12 +556,12 @@ export default {
 
   async getConsentFormVersions(portalShortcode: string, stableId: string): Promise<Survey[]> {
     const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/consentForms/${stableId}`,
-        this.getGetInit())
+      this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
   async updateConfiguredConsent(portalShortcode: string, studyShortcode: string, environmentName: string,
-                                configuredConsent: StudyEnvironmentConsent): Promise<StudyEnvironmentConsent> {
+    configuredConsent: StudyEnvironmentConsent): Promise<StudyEnvironmentConsent> {
     const url =`${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
         `/env/${environmentName}/configuredConsents/${configuredConsent.id}`
 

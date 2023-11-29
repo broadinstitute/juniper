@@ -7,7 +7,7 @@ import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 
 public class MockAuthServiceAlwaysRejects extends AuthUtilService {
   public MockAuthServiceAlwaysRejects() {
-    super(null, null, null, null, null, null, consentFormService);
+    super(null, null, null, null, null, null, null);
   }
 
   @Override

@@ -32,7 +32,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     readOnly = false,
     onCancel,
     onSave,
-      isConsentForm
+    isConsentForm
   } = props
 
   const FORM_DRAFT_KEY = getFormDraftKey({ form: currentForm })
