@@ -11,6 +11,8 @@ import Api, {
 
 import { failureNotification, successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
+import {useLoadingEffect} from "../../api/api-utils";
+import LoadingSpinner from "../../util/LoadingSpinner";
 
 /** Handles logic for updating study environment surveys */
 function RawConsentView({ studyEnvContext, consent, readOnly = false }:
@@ -61,27 +63,59 @@ function RawConsentView({ studyEnvContext, consent, readOnly = false }:
 }
 
 export type ConsentParamsT = StudyParams & {
-  consentStableId: string
+  consentStableId: string,
+  version: string
+}
+
+/** loads a consentForm */
+export const useLoadedConsentForm = (portalShortcode: string, stableId: string, version: number) => {
+  const [form, setForm] = useState<ConsentForm | undefined>()
+
+  /** load the survey from the server to get answer mappings and ensure we've got the latest content */
+  const { isLoading } = useLoadingEffect(async () => {
+    const form = await Api.getConsentForm(portalShortcode, stableId, version)
+    setForm(form)
+  }, [portalShortcode, stableId, version])
+
+  return { isLoading, form }
+}
+
+/** read consent-form-related url params */
+export const useSurveyParams = () => {
+  const params = useParams<ConsentParamsT>()
+  const [searchParams] = useSearchParams()
+  const isReadOnly = searchParams.get('readOnly') === 'true'
+  const version = params.version ? parseInt(params.version) : undefined
+
+  return { isReadOnly, version, stableId: params.consentStableId }
 }
 
 /** routable component for survey editing */
 function ConsentView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const params = useParams<ConsentParamsT>()
   const consentStableId: string | undefined = params.consentStableId
-
+  const version = params.version ? parseInt(params.version) : undefined
   const { currentEnv } = studyEnvContext
   const [searchParams] = useSearchParams()
   const isReadOnly = searchParams.get('readOnly') === 'true'
-
+  const configuredForm = currentEnv.configuredConsents
+      .find(s => s.consentForm.stableId === consentStableId)?.consentForm
+  const appliedVersion = version || configuredForm?.version
   if (!consentStableId) {
     return <span>you need to specify the stableId of the consentForm</span>
   }
-
-  const consent = currentEnv.configuredConsents.find(s => s.consentForm.stableId === consentStableId)?.consentForm
-  if (!consent) {
-    return <span>The consent {consentStableId} does not exist in this environment</span>
+  if (!appliedVersion) {
+    return <span>The consent form {consentStableId} is not already configured for this environment
+      -- you must specify a version</span>
   }
-  return <RawConsentView studyEnvContext={studyEnvContext} consent={consent} readOnly={isReadOnly}/>
+
+  const { isLoading, form } = useLoadedConsentForm(studyEnvContext.portal.shortcode,
+      consentStableId, appliedVersion)
+  return <>
+    { isLoading && <LoadingSpinner/> }
+    { !isLoading && form && <RawConsentView studyEnvContext={studyEnvContext}
+                                            consent={form} readOnly={isReadOnly}/> }
+  </>
 }
 
 export default ConsentView

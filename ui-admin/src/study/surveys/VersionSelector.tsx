@@ -86,7 +86,7 @@ export default function VersionSelector({
         studyEnvContext.portal.shortcode,
         studyEnvContext.study.shortcode,
         studyEnvContext.currentEnv.environmentName
-      )}/surveys/${stableId}/${selectedVersion}?readOnly=true`}
+      )}/${isConsentForm ? 'consentForms' : 'surveys'}/${stableId}/${selectedVersion}?readOnly=true`}
       className="btn btn-secondary"
       aria-disabled={!selectedVersion}
       style={{ pointerEvents: selectedVersion ? undefined : 'none' }}
