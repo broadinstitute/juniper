@@ -548,6 +548,31 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async getConsentForm(portalShortcode: string, stableId: string, version: number): Promise<Survey> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/consentForms/${stableId}/${version}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async getConsentFormVersions(portalShortcode: string, stableId: string): Promise<Survey[]> {
+    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/consentForms/${stableId}`,
+        this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async updateConfiguredConsent(portalShortcode: string, studyShortcode: string, environmentName: string,
+                                configuredConsent: StudyEnvironmentConsent): Promise<StudyEnvironmentConsent> {
+    const url =`${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
+        `/env/${environmentName}/configuredConsents/${configuredConsent.id}`
+
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(configuredConsent)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async createNewConsentForm(portalShortcode: string, consentForm: ConsentForm): Promise<ConsentForm> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/consentForms/`
         + `${consentForm.stableId}`
@@ -644,19 +669,6 @@ export default {
       method: 'PATCH',
       headers: this.getInitHeaders(),
       body: JSON.stringify(configuredSurvey)
-    })
-    return await this.processJsonResponse(response)
-  },
-
-  async updateConfiguredConsent(portalShortcode: string, studyShortcode: string, environmentName: string,
-    configuredConsent: StudyEnvironmentConsent): Promise<StudyEnvironmentConsent> {
-    const url =`${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
-      `/env/${environmentName}/configuredConsents/${configuredConsent.id}`
-
-    const response = await fetch(url, {
-      method: 'PATCH',
-      headers: this.getInitHeaders(),
-      body: JSON.stringify(configuredConsent)
     })
     return await this.processJsonResponse(response)
   },

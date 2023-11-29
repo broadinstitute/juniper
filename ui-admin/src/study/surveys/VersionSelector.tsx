@@ -13,25 +13,35 @@ import { useLoadingEffect } from '../../api/api-utils'
 /** component for selecting versions of a form */
 export default function VersionSelector({
   studyEnvContext, stableId, show, setShow,
-  visibleVersionPreviews, setVisibleVersionPreviews
+  visibleVersionPreviews, setVisibleVersionPreviews, isConsentForm = false
 }:
                                           {studyEnvContext: StudyEnvContextT, stableId: string,
                                             show: boolean, setShow: (show: boolean) => void
                                             visibleVersionPreviews: VersionedForm[],
-                                            setVisibleVersionPreviews: (versions: VersionedForm[]) => void}) {
+                                            setVisibleVersionPreviews: (versions: VersionedForm[]) => void,
+                                          isConsentForm?: boolean}) {
   const [versionList, setVersionList] = useState<VersionedForm[]>([])
   const [selectedVersion, setSelectedVersion] = useState<number>()
   const selectId = useId()
 
   const { isLoading } = useLoadingEffect(async () => {
-    const result = await Api.getSurveyVersions(studyEnvContext.portal.shortcode, stableId)
+    let result
+    if (isConsentForm) {
+      result = await Api.getConsentFormVersions(studyEnvContext.portal.shortcode, stableId)
+    } else {
+      result = await Api.getSurveyVersions(studyEnvContext.portal.shortcode, stableId)
+    }
     setVersionList(result.sort((a, b) => b.version - a.version))
   }, [stableId])
 
-  function loadVersion(version: number) {
-    Api.getSurvey(studyEnvContext.portal.shortcode, stableId, version).then(result => {
-      setVisibleVersionPreviews([...visibleVersionPreviews, result])
-    })
+  async function loadVersion(version: number) {
+    let result
+    if (isConsentForm) {
+      result = await Api.getConsentForm(studyEnvContext.portal.shortcode, stableId, version)
+    } else {
+      result = await Api.getSurvey(studyEnvContext.portal.shortcode, stableId, version)
+    }
+    setVisibleVersionPreviews([...visibleVersionPreviews, result])
   }
 
   const versionOpts = versionList.map(formVersion => ({
