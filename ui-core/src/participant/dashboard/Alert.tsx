@@ -3,7 +3,7 @@ import { faCheck, faCircleInfo, faTriangleExclamation, faXmark } from '@fortawes
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classNames from 'classnames'
 import React from 'react'
-import { Markdown } from '../landing/Markdown'
+import { InlineMarkdown } from '../landing/Markdown'
 
 export type AlertLevel =
   | 'primary'
@@ -80,8 +80,8 @@ export const Alert = (props: AlertProps) => {
     >
       {renderedIcon && <FontAwesomeIcon className="me-3 fa-xl" icon={renderedIcon} />}
       <div className="flex-grow-1">
-        <div className="alert-heading fw-bold"><Markdown>{title}</Markdown></div>
-        { detail && <div style={{ whiteSpace: 'pre-wrap' }}><Markdown>{detail}</Markdown></div> }
+        <div className="alert-heading fw-bold"><InlineMarkdown>{title}</InlineMarkdown></div>
+        { detail && <div style={{ whiteSpace: 'pre-wrap' }}><InlineMarkdown>{detail}</InlineMarkdown></div> }
       </div>
       {!!onDismiss && <button aria-label="Close" className="btn-close ms-3" onClick={onDismiss} />}
     </div>

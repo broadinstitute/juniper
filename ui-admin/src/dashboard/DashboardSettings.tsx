@@ -18,8 +18,7 @@ export const AlertPreview = ({ alert }: { alert: ParticipantDashboardAlert }) =>
     level={alert.type}
     style={{ maxWidth: 768 }}
     detail={alert.detail}
-    className={classNames('alert', `alert-${alert.type}`, 'd-flex',
-      'flex-row', 'align-items-center', 'shadow-sm')}/>
+    className={classNames('shadow-sm')}/>
 }
 
 /**
