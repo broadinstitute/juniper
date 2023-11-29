@@ -3,7 +3,10 @@ import Api, { NotificationConfig } from 'api/api'
 import Modal from 'react-bootstrap/Modal'
 import { Store } from 'react-notifications-component'
 import { failureNotification, successNotification } from 'util/notifications'
-import { useUser } from '../../user/UserProvider'
+import { useUser } from 'user/UserProvider'
+import { doApiLoad } from 'api/api-utils'
+import { Button } from '../../components/forms/Button'
+import LoadingSpinner from '../../util/LoadingSpinner'
 
 
 export const EXAMPLE_RULE_DATA = {
@@ -22,6 +25,7 @@ export default function TestEmailSender({ portalShortcode, environmentName, noti
                                           {portalShortcode: string, environmentName: string, onDismiss: () => void,
                                             notificationConfig: NotificationConfig}) {
   const { user } = useUser()
+  const [isLoading, setIsLoading] = useState(false)
   const [ruleData, setRuleData] = useState({
     ...EXAMPLE_RULE_DATA,
     profile: {
@@ -31,14 +35,16 @@ export default function TestEmailSender({ portalShortcode, environmentName, noti
   })
   /** sends a test email with the given (saved) notification.  does not currently reflect unsaved changes */
   function sendTestEmail() {
-    Api.testNotification(portalShortcode, environmentName, notificationConfig.id, ruleData).then(() =>
-      Store.addNotification(successNotification(
-        'Sent test email'
-      ))).catch(() =>
-      Store.addNotification(failureNotification(
-        'error sending test email '
-      ))
-    )
+    doApiLoad(async () => {
+      await Api.testNotification(portalShortcode, environmentName, notificationConfig.id, ruleData).then(() =>
+        Store.addNotification(successNotification(
+          'Sent test email'
+        ))).catch(() =>
+        Store.addNotification(failureNotification(
+          'error sending test email '
+        ))
+      )
+    }, { setIsLoading })
   }
 
   /** updates the data that will be used to generate the fake email */
@@ -61,7 +67,8 @@ export default function TestEmailSender({ portalShortcode, environmentName, noti
       <textarea rows={20} cols={80} value={JSON.stringify(ruleData, null, 2)} onChange={updateRuleData}/>
     </Modal.Body>
     <Modal.Footer>
-      <button type="button" className="btn btn-primary" onClick={sendTestEmail}>Send email</button>
+      <Button variant="primary" className="btn btn-primary" onClick={sendTestEmail}
+        disabled={isLoading}>{isLoading ? <LoadingSpinner/> : 'Send email'}</Button>
       <button type="button" className="ms-3 btn btn-secondary" onClick={onDismiss}>Cancel</button>
     </Modal.Footer>
   </Modal>
