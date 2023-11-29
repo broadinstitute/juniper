@@ -20,7 +20,8 @@ public class ApplicationRoutingPaths {
     private final String participantDashboardPath = "/hub";
     @Getter
     private final String supportEmailAddress;  // the site-wide support email address (e.g. support@juniper...) NOT study-specific
-
+    @Getter
+    private final String deploymentZone; // demo|prod|local
 
     public ApplicationRoutingPaths(Environment env) {
         participantUiHostname = env.getProperty("env.hostnames.participantUi");
@@ -28,6 +29,7 @@ public class ApplicationRoutingPaths {
         adminUiHostname = env.getProperty("env.hostnames.adminUi");
         adminApiHostname = env.getProperty("env.hostnames.adminApi");
         supportEmailAddress = env.getProperty("env.email.supportEmailAddress");
+        deploymentZone = env.getProperty("env.deploymentZone", "local");
     }
 
     public String getAdminBaseUrl() {

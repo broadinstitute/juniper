@@ -1,6 +1,7 @@
 # All env variables that are used in one place
 # This is for deployment-specific values, which may be managed by other teams
 env:
+  deploymentZone: ${DEPLOYMENT_ZONE:local}
   db:
     host: ${DATABASE_HOSTNAME:127.0.0.1}:5432
     init: ${INIT_DB:false}
@@ -19,7 +20,6 @@ env:
     storageAccountKey: ${TDR_EXPORT_STORAGE_ACCOUNT_KEY:}
     storageContainerName: ${TDR_EXPORT_STORAGE_CONTAINER_NAME:}
     billingProfileId: ${BILLING_PROFILE_ID:550212cf-45dc-478f-9fe6-9b3290e2a1fe}
-    deploymentZone: ${DEPLOYMENT_ZONE:}
     tdrExportEnabled: ${TDR_EXPORT_ENABLED:false}
   dsm:
     useLiveDsm: ${USE_LIVE_DSM:false}

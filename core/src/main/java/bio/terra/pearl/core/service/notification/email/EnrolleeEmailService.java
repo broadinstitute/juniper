@@ -110,7 +110,21 @@ public class EnrolleeEmailService implements NotificationSender {
             // if this portal environment hasn't been configured with a specific email, just send from the support address
             fromAddress = routingPaths.getSupportEmailAddress();
         }
-        Mail mail = sendgridClient.buildEmail(contextInfo, ruleData.profile().getContactEmail(), fromAddress, substitutor);
+        String fromName = "Juniper";
+        if (contextInfo.portal().getName() != null) {
+            fromName = contextInfo.portal().getName();
+        }
+
+        if (!contextInfo.portalEnv().getEnvironmentName().isLive()) {
+            fromName += " (%s)".formatted(contextInfo.portalEnv().getEnvironmentName());
+        }
+
+        Mail mail = sendgridClient.buildEmail(
+                contextInfo,
+                ruleData.profile().getContactEmail(),
+                fromAddress,
+                fromName,
+                substitutor);
         return mail;
     }
 
