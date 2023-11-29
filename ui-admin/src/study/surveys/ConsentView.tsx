@@ -11,8 +11,8 @@ import Api, {
 
 import { failureNotification, successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
-import {useLoadingEffect} from "../../api/api-utils";
-import LoadingSpinner from "../../util/LoadingSpinner";
+import { useLoadingEffect } from '../../api/api-utils'
+import LoadingSpinner from '../../util/LoadingSpinner'
 
 /** Handles logic for updating study environment surveys */
 function RawConsentView({ studyEnvContext, consent, readOnly = false }:
@@ -99,7 +99,7 @@ function ConsentView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const [searchParams] = useSearchParams()
   const isReadOnly = searchParams.get('readOnly') === 'true'
   const configuredForm = currentEnv.configuredConsents
-      .find(s => s.consentForm.stableId === consentStableId)?.consentForm
+    .find(s => s.consentForm.stableId === consentStableId)?.consentForm
   const appliedVersion = version || configuredForm?.version
   if (!consentStableId) {
     return <span>you need to specify the stableId of the consentForm</span>
@@ -110,11 +110,11 @@ function ConsentView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   }
 
   const { isLoading, form } = useLoadedConsentForm(studyEnvContext.portal.shortcode,
-      consentStableId, appliedVersion)
+    consentStableId, appliedVersion)
   return <>
     { isLoading && <LoadingSpinner/> }
     { !isLoading && form && <RawConsentView studyEnvContext={studyEnvContext}
-                                            consent={form} readOnly={isReadOnly}/> }
+      consent={form} readOnly={isReadOnly}/> }
   </>
 }
 
