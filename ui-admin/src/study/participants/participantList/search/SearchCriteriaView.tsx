@@ -1,24 +1,18 @@
-import React, { useState } from 'react'
-import { FacetValue, facetNameAndValue } from '../../../../api/enrolleeSearch'
+import React from 'react'
+import { FacetValue, facetNameAndValueString } from '../../../../api/enrolleeSearch'
 
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 
 /**
- * Implements a modal dialog for specifying specific search criteria for the participant list.
+ * Implements a view of the current search criteria, showing the facets and values that have been selected
  */
 const SearchCriteriaView = ({ facetValues, updateFacetValues }:
                                { facetValues: FacetValue[],
                                  updateFacetValues: (values: FacetValue[]) => void,
                                }) => {
-  const [localFacets, setLocalFacets] = useState(facetValues)
-
-  const updateLocalFacets = (facetValues: FacetValue[]) => {
-    setLocalFacets(facetValues)
-  }
-
   const handleDelete = (deleteFacet: FacetValue) => {
-    // probably need to match on category too
+    //TODO may need to match on category if keyName is not unique -DC
     updateFacetValues(facetValues.filter(facet => facet.facet.keyName !== deleteFacet.facet.keyName))
   }
 
@@ -28,7 +22,7 @@ const SearchCriteriaView = ({ facetValues, updateFacetValues }:
         return (
           <Chip
             key={facetValue.facet.keyName}
-            label={facetNameAndValue(facetValue)}
+            label={facetNameAndValueString(facetValue)}
             onDelete={() => handleDelete(facetValue)}
           />
         )
