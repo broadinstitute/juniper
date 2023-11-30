@@ -24,6 +24,7 @@ export default function HubPage() {
   }, [])
 
   const loadDashboardAlerts = async () => {
+    if (!portalEnv) { return }
     const alerts = await Api.getPortalEnvDashboardAlerts(portal.shortcode, portalEnv.environmentName)
     setNoActivitiesAlert({
       ...alertDefaults['NO_ACTIVITIES_REMAIN'],
