@@ -24,15 +24,11 @@ export default function HubPage() {
   }, [])
 
   const loadDashboardAlerts = async () => {
-    try {
-      const alerts = await Api.getPortalEnvDashboardAlerts(portal.shortcode, portalEnv.environmentName)
-      setNoActivitiesAlert({
-        ...alertDefaults['NO_ACTIVITIES_REMAIN'],
-        ...alerts.find(msg => msg.trigger === 'NO_ACTIVITIES_REMAIN')
-      })
-    } catch (error) {
-      console.error(error)
-    }
+    const alerts = await Api.getPortalEnvDashboardAlerts(portal.shortcode, portalEnv.environmentName)
+    setNoActivitiesAlert({
+      ...alertDefaults['NO_ACTIVITIES_REMAIN'],
+      ...alerts.find(msg => msg.trigger === 'NO_ACTIVITIES_REMAIN')
+    })
   }
 
   const hubUpdate = useHubUpdate()
