@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.consent;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import bio.terra.pearl.core.model.PortalAttached;
 import bio.terra.pearl.core.model.Versioned;
 import java.util.UUID;
 import lombok.Builder;
@@ -14,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @NoArgsConstructor
 @SuperBuilder
-public class ConsentForm extends BaseEntity implements Versioned {
+public class ConsentForm extends BaseEntity implements Versioned, PortalAttached {
     private String stableId;
     @Builder.Default
     private int version = 1;

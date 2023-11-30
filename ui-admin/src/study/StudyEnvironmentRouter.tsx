@@ -118,6 +118,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
         </Route>
         <Route path="consentForms">
           <Route path=":consentStableId">
+            <Route path=":version" element={<ConsentView studyEnvContext={studyEnvContext}/>}/>
             <Route index element={<ConsentView studyEnvContext={studyEnvContext}/>}/>
           </Route>
           <Route path="*" element={<div>Unknown consent page</div>}/>

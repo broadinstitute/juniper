@@ -10,9 +10,12 @@ import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.portal.PortalService;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,5 +76,23 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
             adminUserFactory.builder("authAdminToPortalAllowsSuperUser").superuser(true));
     Portal portal = portalFactory.buildPersisted("authAdminToPortalAllowsSuperUser");
     assertThat(authUtilService.authUserToPortal(user, portal.getShortcode()), notNullValue());
+  }
+
+  @Test
+  public void testVerifyObjToPortal() {
+    Portal portal = Portal.builder().id(UUID.randomUUID()).build();
+    Assertions.assertThrows(
+        NotFoundException.class,
+        () -> {
+          authUtilService.verifyObjInPortal(portal, Optional.of(new Survey()));
+        });
+    Assertions.assertThrows(
+        NotFoundException.class,
+        () -> {
+          authUtilService.verifyObjInPortal(portal, Optional.empty());
+        });
+
+    Survey survey = Survey.builder().portalId(portal.getId()).build();
+    authUtilService.verifyObjInPortal(portal, Optional.of(survey));
   }
 }
