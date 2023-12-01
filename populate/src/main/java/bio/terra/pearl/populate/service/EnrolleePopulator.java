@@ -248,7 +248,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 .kitTypeId(kitType.getId())
                 .sentToAddress(objectMapper.writeValueAsString(sentToAddress))
                 .status(kitRequestPopDto.getStatus())
-                .externalKit(kitRequestPopDto.getExternalRequestJson().toString())
+                .externalKit(kitRequestPopDto.getExternalKitJson().toString())
                 .externalKitFetchedAt(Instant.now())
                 .build();
         kitRequest = kitRequestService.create(kitRequest);
@@ -419,10 +419,10 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         popDto.getKitRequestDtos().forEach(kitDto -> {
             try {
                 KitRequestStatus kitRequestStatus = PopulateUtils.randomItem(Arrays.asList(KitRequestStatus.values()));
-                PepperKit pepperRequest = objectMapper.readValue(kitDto.getExternalRequestJson().toString(), PepperKit.class);
+                PepperKit pepperRequest = objectMapper.readValue(kitDto.getExternalKitJson().toString(), PepperKit.class);
                 pepperRequest.setCurrentStatus(kitRequestStatus.toString());
                 generateFakeDates(kitDto, kitRequestStatus, pepperRequest);
-                kitDto.setExternalRequestJson(objectMapper.valueToTree(pepperRequest));
+                kitDto.setExternalKitJson(objectMapper.valueToTree(pepperRequest));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }

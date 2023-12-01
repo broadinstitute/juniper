@@ -75,7 +75,7 @@
       "creatingAdminUsername": "staff@ourhealth.org",
       "kitTypeName": "SALIVA",
       "status": "CREATED",
-      "externalRequestJson": {
+      "externalKitJson": {
         "kitId": "11111111-2222-3333-4444-555555555555",
         "currentStatus": "kit without label",
         "labelDate": "2023-05-24",
@@ -98,7 +98,7 @@
       "creatingAdminUsername": "staff2@ourhealth.org",
       "kitTypeName": "SALIVA",
       "status": "DEACTIVATED",
-      "externalRequestJson": {
+      "externalKitJson": {
         "kitId": "11111111-2222-3333-4444-555555555556",
         "currentStatus": "deactivated",
         "labelDate": "2023-05-12",
