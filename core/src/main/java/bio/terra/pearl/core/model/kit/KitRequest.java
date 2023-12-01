@@ -28,6 +28,6 @@ public class KitRequest extends BaseEntity {
      * JSON blob of the request state from DSM or another sample processor, kept to make sure we capture
      * any fields that don't happen to be stored directly in our model
      */
-    private String externalRequest;
-    private Instant externalRequestFetchedAt;
+    private String externalKit;
+    private Instant externalKitFetchedAt;
 }

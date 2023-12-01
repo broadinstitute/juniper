@@ -34,7 +34,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public PepperKitRequest sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
+    public PepperKit sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
         log.info("STUB sending kit request");
         if (address.getCity().startsWith(BAD_ADDRESS_PREFIX) || address.getStreet1().startsWith(BAD_ADDRESS_PREFIX)) {
             throw new  PepperApiException(
@@ -47,7 +47,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
                             .build(),
                     HttpStatus.BAD_REQUEST);
         }
-        PepperKitRequest status = PepperKitRequest.builder()
+        PepperKit status = PepperKit.builder()
                 .juniperKitId(kitRequest.getId().toString())
                 .dsmShippingLabel(UUID.randomUUID().toString())
                 .participantId(enrollee.getShortcode())
@@ -57,20 +57,20 @@ public class StubPepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public PepperKitRequest fetchKitStatus(UUID kitRequestId) {
+    public PepperKit fetchKitStatus(UUID kitRequestId) {
         log.info("STUB fetching kit status");
-        return PepperKitRequest.builder()
+        return PepperKit.builder()
                 .juniperKitId(kitRequestId.toString())
                 .currentStatus("SENT")
                 .build();
     }
 
     @Override
-    public Collection<PepperKitRequest> fetchKitStatusByStudy(String studyShortcode) {
+    public Collection<PepperKit> fetchKitStatusByStudy(String studyShortcode) {
         log.info("STUB fetching status by study");
         var studyEnvironment = studyEnvironmentDao.findByStudy(studyShortcode, EnvironmentName.sandbox).get();
         return kitRequestService.findByStudyEnvironment(studyEnvironment.getId()).stream().map(kit -> {
-            PepperKitRequest status = PepperKitRequest.builder()
+            PepperKit status = PepperKit.builder()
                     .juniperKitId(kit.getId().toString())
                     .currentStatus(getNextStatus(kit))
                     .build();
@@ -91,7 +91,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
     private String getNextStatus(KitRequest kit) {
         List<String> statusVals = MOCK_STATUS_SEQUENCE.stream().map(status -> status.pepperString).toList();
         try {
-            PepperKitRequest pepperStatus = objectMapper.readValue(kit.getExternalRequest(), PepperKitRequest.class);
+            PepperKit pepperStatus = objectMapper.readValue(kit.getExternalKit(), PepperKit.class);
             String currentStatus = pepperStatus.getCurrentStatus();
             int currentStatusIndex = statusVals.indexOf(currentStatus);
             int nextStatusIndex = (currentStatusIndex + 1) % statusVals.size();

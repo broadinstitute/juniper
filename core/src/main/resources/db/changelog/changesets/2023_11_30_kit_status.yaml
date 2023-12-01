@@ -17,9 +17,9 @@ databaseChangeLog:
                 END);
         - renameColumn:
             oldColumnName: dsm_status
-            newColumnName: external_request
+            newColumnName: external_kit
             tableName: kit_request
         - renameColumn:
             oldColumnName: dsm_status_fetched_at
-            newColumnName: external_request_fetched_at
+            newColumnName: external_kit_fetched_at
             tableName: kit_request

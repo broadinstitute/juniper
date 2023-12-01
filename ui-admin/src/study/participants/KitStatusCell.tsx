@@ -12,7 +12,7 @@ export default function KitStatusCell(
   { kitRequest: KitRequest, infoPlacement?: Placement }
 ) {
   const infoTexts: Record<string, string> = {
-    'CREATED': 'Kit has not yet shipped',
+    'CREATED': 'Kit request received, has not yet shipped',
     'QUEUE': 'Shipping label has been printed',
     'SENT': 'Kit has been sent to the participant',
     'RECEIVED': 'Kit has been returned by the participant',
@@ -21,8 +21,8 @@ export default function KitStatusCell(
   }
   const currentStatus = kitRequest.status
   const info = currentStatus ? infoTexts[currentStatus] : ''
-  const errorMessage = kitRequest.parsedExternalRequest?.errorMessage ?
-      `: ${kitRequest.parsedExternalRequest.errorMessage}` : ''
+  const errorMessage = kitRequest.parsedExternalKit?.errorMessage ?
+      `: ${kitRequest.parsedExternalKit.errorMessage}` : ''
   const content = `${info}${errorMessage}`
   return <>
     {kitRequest.status}

@@ -4,15 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.util.Set;
-
 /** holds kit request data as it is received from Pepper */
 @Getter @Setter
 @SuperBuilder @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PepperKitRequest {
+public class PepperKit {
     private String juniperKitId;
     private String currentStatus;
     private String dsmShippingLabel;

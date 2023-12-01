@@ -238,7 +238,7 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
     enableColumnFilter: false
   }, {
     header: 'Status',
-    accessorKey: 'parsedExternalRequest',
+    accessorKey: 'parsedExternalKit',
     cell: data => <KitStatusCell kitRequest={data.row.original} infoPlacement='left'/>,
     enableColumnFilter: false
   }]

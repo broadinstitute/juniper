@@ -1,9 +1,5 @@
 package bio.terra.pearl.core.model.kit;
 
-import bio.terra.pearl.core.service.kit.pepper.PepperKitRequest;
-
-import java.util.Set;
-
 /**
  * Kit status.  This mostly mimics PepperKitStatus (the statuses stored internally in Pepper), but with the addition of
  * "new" for kits that are recorded in juniper but do not exist in any external system yet, and "UNKNOWN" for the rare case

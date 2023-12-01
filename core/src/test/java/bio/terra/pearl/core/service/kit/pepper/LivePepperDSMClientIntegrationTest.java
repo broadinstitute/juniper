@@ -117,7 +117,7 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
 
         // Assert
         assertThat(statuses, not(statuses.isEmpty()));
-        assertThat(statuses, everyItem(where(PepperKitRequest::getJuniperKitId, notNullValue())));
+        assertThat(statuses, everyItem(where(PepperKit::getJuniperKitId, notNullValue())));
     }
 
     @Autowired

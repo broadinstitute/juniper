@@ -153,7 +153,7 @@ export type KitType = {
   description: string
 }
 
-export type PepperKitStatus = {
+export type PepperKit = {
   kitId: string,
   currentStatus: string,
   labelDate: string,
@@ -193,7 +193,7 @@ export type SiteImageMetadata = {
   version: number
 }
 
-const emptyPepperKitStatus: PepperKitStatus = {
+const emptyPepperKit: PepperKit = {
   kitId: '',
   currentStatus: '(unknown)',
   labelDate: '',
@@ -211,12 +211,12 @@ const emptyPepperKitStatus: PepperKitStatus = {
  * Therefore, this function will never raise an error and will always return an object that conforms to the
  * `PepperKitStatus` type.
  */
-function parsePepperKitStatus(json: string | undefined): PepperKitStatus {
+function parsePepperKitStatus(json: string | undefined): PepperKit {
   if (json) {
     try {
       const pepperStatus = JSON.parse(json)
       return {
-        ...emptyPepperKitStatus,
+        ...emptyPepperKit,
         ..._pick(pepperStatus,
           'juniperKitId', 'currentStatus', 'labelDate', 'scanDate', 'receiveDate', 'trackingNumber',
           'returnTrackingNumber', 'errorMessage')
@@ -225,7 +225,7 @@ function parsePepperKitStatus(json: string | undefined): PepperKitStatus {
       // ignore; fall-through to result for unexpected value
     }
   }
-  return emptyPepperKitStatus
+  return emptyPepperKit
 }
 
 export type KitRequest = {
@@ -235,8 +235,8 @@ export type KitRequest = {
   kitType: KitType,
   sentToAddress: string,
   status: string
-  externalRequest?: string
-  parsedExternalRequest?: PepperKitStatus
+  externalKit?: string
+  parsedExternalKit?: PepperKit
 }
 
 export type Config = {
@@ -695,7 +695,7 @@ export default {
     const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}`
     const response = await fetch(url, this.getGetInit())
     const enrollee: Enrollee = await this.processJsonResponse(response)
-    enrollee.kitRequests?.forEach(kit => { kit.parsedExternalRequest = parsePepperKitStatus(kit.externalRequest) })
+    enrollee.kitRequests?.forEach(kit => { kit.parsedExternalKit = parsePepperKitStatus(kit.externalKit) })
     return enrollee
   },
 
@@ -764,7 +764,7 @@ export default {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/kits`
     const response = await fetch(url, this.getGetInit())
     const kits: KitRequest[] = await this.processJsonResponse(response)
-    kits.forEach(kit => { kit.parsedExternalRequest = parsePepperKitStatus(kit.externalRequest) })
+    kits.forEach(kit => { kit.parsedExternalKit = parsePepperKitStatus(kit.externalKit) })
     return kits
   },
 
@@ -799,7 +799,7 @@ export default {
       body: JSON.stringify(enrolleeShortcodes)
     })
     const listResponse: KitRequestListResponse = await this.processJsonResponse(response)
-    listResponse.kitRequests.forEach(kit => { kit.parsedExternalRequest = parsePepperKitStatus(kit.externalRequest) })
+    listResponse.kitRequests.forEach(kit => { kit.parsedExternalKit = parsePepperKitStatus(kit.externalKit) })
     return listResponse
   },
 

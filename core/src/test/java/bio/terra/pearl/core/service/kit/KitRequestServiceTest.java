@@ -103,7 +103,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         var kitRequest = kitRequestFactory.buildPersisted(getTestName(testInfo),
             enrollee.getId(), kitType.getId(), adminUser.getId());
 
-        var response = PepperKitRequest.builder()
+        var response = PepperKit.builder()
                 .juniperKitId(kitRequest.getId().toString())
                 .currentStatus("SENT")
                 .build();
@@ -132,7 +132,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee.getId())
                 .kitTypeId(kitType.getId())
-                .externalRequest("BOOM!")
+                .externalKit("BOOM!")
                 .build());
 
         // Act
@@ -179,15 +179,15 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
          *  - the first study has two kits, one in flight and one complete
          *  - the second study has one kit with an error
          */
-        var kitStatus1a = PepperKitRequest.builder()
+        var kitStatus1a = PepperKit.builder()
                 .juniperKitId(kitRequest1a.getId().toString())
                 .currentStatus(PepperKitStatus.SENT.pepperString)
                 .build();
-        var kitStatus1b = PepperKitRequest.builder()
+        var kitStatus1b = PepperKit.builder()
                 .juniperKitId(kitRequest1b.getId().toString())
                 .currentStatus(PepperKitStatus.RECEIVED.pepperString)
                 .build();
-        var kitStatus2 = PepperKitRequest.builder()
+        var kitStatus2 = PepperKit.builder()
                 .juniperKitId(kitRequest2.getId().toString())
                 .currentStatus(PepperKitStatus.ERRORED.pepperString)
                 .errorMessage("Something went wrong")
@@ -223,11 +223,11 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         Mockito.verifyNoInteractions(mockPepperDSMClient);
     }
 
-    private void verifyKit(KitRequest kit, PepperKitRequest expectedDSMStatus, KitRequestStatus expectedStatus)
+    private void verifyKit(KitRequest kit, PepperKit expectedDSMStatus, KitRequestStatus expectedStatus)
             throws JsonProcessingException {
         var savedKit = kitRequestDao.find(kit.getId()).get();
         assertThat(savedKit.getStatus(), equalTo(expectedStatus));
-        assertThat(objectMapper.readValue(savedKit.getExternalRequest(), PepperKitRequest.class),
+        assertThat(objectMapper.readValue(savedKit.getExternalKit(), PepperKit.class),
                 equalTo(expectedDSMStatus));
     }
 

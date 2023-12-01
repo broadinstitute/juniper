@@ -21,7 +21,7 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
 import bio.terra.pearl.core.service.kit.KitRequestService;
-import bio.terra.pearl.core.service.kit.pepper.PepperKitRequest;
+import bio.terra.pearl.core.service.kit.pepper.PepperKit;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.participant.*;
@@ -248,8 +248,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 .kitTypeId(kitType.getId())
                 .sentToAddress(objectMapper.writeValueAsString(sentToAddress))
                 .status(kitRequestPopDto.getStatus())
-                .externalRequest(kitRequestPopDto.getExternalRequestJson().toString())
-                .externalRequestFetchedAt(Instant.now())
+                .externalKit(kitRequestPopDto.getExternalRequestJson().toString())
+                .externalKitFetchedAt(Instant.now())
                 .build();
         kitRequest = kitRequestService.create(kitRequest);
         if (kitRequestPopDto.getCreatedAt() != null) {
@@ -419,7 +419,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         popDto.getKitRequestDtos().forEach(kitDto -> {
             try {
                 KitRequestStatus kitRequestStatus = PopulateUtils.randomItem(Arrays.asList(KitRequestStatus.values()));
-                PepperKitRequest pepperRequest = objectMapper.readValue(kitDto.getExternalRequestJson().toString(), PepperKitRequest.class);
+                PepperKit pepperRequest = objectMapper.readValue(kitDto.getExternalRequestJson().toString(), PepperKit.class);
                 pepperRequest.setCurrentStatus(kitRequestStatus.toString());
                 generateFakeDates(kitDto, kitRequestStatus, pepperRequest);
                 kitDto.setExternalRequestJson(objectMapper.valueToTree(pepperRequest));
@@ -429,7 +429,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         });
     }
 
-    private static void generateFakeDates(KitRequestPopDto kitDto, KitRequestStatus status, PepperKitRequest pepperRequest) {
+    private static void generateFakeDates(KitRequestPopDto kitDto, KitRequestStatus status, PepperKit pepperRequest) {
         Instant recent = Instant.now();
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault());
         switch (status) {

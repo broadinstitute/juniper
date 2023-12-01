@@ -141,18 +141,18 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
     @Transactional
     @Test
     public void testSendKitRequest() throws Exception {
-        PepperKitRequest kitStatus = PepperKitRequest.builder()
+        PepperKit kitStatus = PepperKit.builder()
                 .juniperKitId(kitRequest.getId().toString())
                 .currentStatus(PepperKitStatus.CREATED.pepperString)
                 .build();
         PepperKitStatusResponse mockResponse = PepperKitStatusResponse.builder()
                         .isError(false)
-                .kits(new PepperKitRequest[]{kitStatus})
+                .kits(new PepperKit[]{kitStatus})
                 .build();
 
         mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(mockResponse));
 
-        PepperKitRequest parsedResponse = client.sendKitRequest("testStudy", enrollee, kitRequest, address);
+        PepperKit parsedResponse = client.sendKitRequest("testStudy", enrollee, kitRequest, address);
 
         assertThat(parsedResponse.getCurrentStatus(), equalTo(PepperKitStatus.CREATED.pepperString));
         verifyRequestForPath("/shipKit");
@@ -162,10 +162,10 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
     @Test
     public void testFetchKitStatus() throws Exception {
         // Arrange
-        PepperKitRequest kitStatus = PepperKitRequest.builder()
+        PepperKit kitStatus = PepperKit.builder()
                 .juniperKitId("testFetchKitStatusByStudy1")
                 .build();
-        PepperKitRequest[] kits = { kitStatus };
+        PepperKit[] kits = { kitStatus };
         var pepperResponse = PepperKitStatusResponse.builder()
                 .kits(kits)
                 .isError(false)
@@ -186,13 +186,13 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
     @Test
     public void testFetchKitStatusByStudy() throws Exception {
         // Arrange
-        PepperKitRequest kitStatus1 = PepperKitRequest.builder()
+        PepperKit kitStatus1 = PepperKit.builder()
                 .juniperKitId("testFetchKitStatusByStudy_kit1")
                 .build();
-        PepperKitRequest kitStatus2 = PepperKitRequest.builder()
+        PepperKit kitStatus2 = PepperKit.builder()
                 .juniperKitId("testFetchKitStatusByStudy_kit2")
                 .build();
-        PepperKitRequest[] kits = { kitStatus1, kitStatus2 };
+        PepperKit[] kits = { kitStatus1, kitStatus2 };
         var pepperResponse = PepperKitStatusResponse.builder()
                 .kits(kits)
                 .isError(false)

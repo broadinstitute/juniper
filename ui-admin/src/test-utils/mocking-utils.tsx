@@ -9,7 +9,7 @@ import {
   KitRequest,
   KitType,
   NotificationConfig,
-  ParticipantNote, PepperKitStatus,
+  ParticipantNote, PepperKit,
   Portal,
   PortalStudy, SiteImageMetadata,
   StudyEnvironmentConsent, SurveyResponse
@@ -208,7 +208,7 @@ export const mockKitType: () => KitType = () => ({
 })
 
 /** returns a mock PepperKitStatus */
-export const mockExternalKitRequest = (): PepperKitStatus => {
+export const mockExternalKitRequest = (): PepperKit => {
   return {
     kitId: '',
     currentStatus: 'Kit Without Label',
@@ -242,8 +242,8 @@ export const mockKitRequest: (args?: {
     country: 'US'
   }),
   status: status || 'CREATED',
-  externalRequest: JSON.stringify(mockExternalKitRequest()),
-  parsedExternalRequest: mockExternalKitRequest()
+  externalKit: JSON.stringify(mockExternalKitRequest()),
+  parsedExternalKit: mockExternalKitRequest()
 })
 
 /** returns a simple mock enrollee loosely based on the jsalk.json synthetic enrollee */

@@ -6,7 +6,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
-import bio.terra.pearl.core.service.kit.pepper.PepperKitRequest;
+import bio.terra.pearl.core.service.kit.pepper.PepperKit;
 import bio.terra.pearl.core.service.kit.pepper.PepperKitAddress;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,12 +56,12 @@ public class KitRequestFactory {
                 .kitTypeId(kitTypeId)
                 .build();
         var savedKitRequest = kitRequestDao.create(kitRequest);
-        var dsmStatus = PepperKitRequest.builder()
+        var dsmStatus = PepperKit.builder()
                 .currentStatus("kit without label")
                 .juniperKitId(savedKitRequest.getId().toString())
                 .build();
-        savedKitRequest.setExternalRequest(objectMapper.writeValueAsString(dsmStatus));
-        savedKitRequest.setExternalRequestFetchedAt(Instant.now());
+        savedKitRequest.setExternalKit(objectMapper.writeValueAsString(dsmStatus));
+        savedKitRequest.setExternalKitFetchedAt(Instant.now());
         return kitRequestDao.update(savedKitRequest);
     }
 }
