@@ -100,7 +100,6 @@ public class DashboardExtService {
             .orElseThrow(PortalEnvironmentMissing::new);
 
     newAlert.setPortalEnvironmentId(portalEnv.getId());
-    newAlert.setStudyEnvironmentId(null);
     return portalDashboardConfigService.create(newAlert);
   }
 }
