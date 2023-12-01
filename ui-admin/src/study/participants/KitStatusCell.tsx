@@ -21,7 +21,8 @@ export default function KitStatusCell(
   }
   const currentStatus = kitRequest.status
   const info = currentStatus ? infoTexts[currentStatus] : ''
-  const errorMessage = kitRequest.parsedExternalRequest?.errorMessage ? `: ${kitRequest.parsedExternalRequest.errorMessage}` : ''
+  const errorMessage = kitRequest.parsedExternalRequest?.errorMessage ?
+      `: ${kitRequest.parsedExternalRequest.errorMessage}` : ''
   const content = `${info}${errorMessage}`
   return <>
     {kitRequest.status}
