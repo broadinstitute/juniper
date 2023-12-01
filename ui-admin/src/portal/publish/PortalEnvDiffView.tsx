@@ -160,8 +160,8 @@ export default function PortalEnvDiffView(
         {changeSet.studyEnvChanges.map(studyEnvChange => {
           const matchedChange = selectedChanges.studyEnvChanges
             .find(change => change.studyShortcode === studyEnvChange.studyShortcode) as StudyEnvironmentChange
-          const studyName = portal.portalStudies.find(study =>
-            study.study.shortcode === studyEnvChange.studyShortcode)?.study.name || studyEnvChange.studyShortcode
+          const studyName = portal.portalStudies.find(portalStudy =>
+            portalStudy.study.shortcode === studyEnvChange.studyShortcode)?.study.name || studyEnvChange.studyShortcode
           return <StudyEnvDiff key={studyEnvChange.studyShortcode} studyName={studyName} studyEnvChange={studyEnvChange}
             selectedChanges={matchedChange} setSelectedChanges={updateSelectedStudyEnvChanges}/>
         })}
