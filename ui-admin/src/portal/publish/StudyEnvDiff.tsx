@@ -9,6 +9,7 @@ import {
 } from './diffComponents'
 
 type StudyEnvDiffProps = {
+  studyName: string,
   studyEnvChange: StudyEnvironmentChange,
   selectedChanges: StudyEnvironmentChange,
   setSelectedChanges: (update: StudyEnvironmentChange) => void
@@ -16,9 +17,9 @@ type StudyEnvDiffProps = {
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
-const StudyEnvDiff = ({ studyEnvChange, selectedChanges, setSelectedChanges }: StudyEnvDiffProps) => {
-  return <div className="px-3 mb-5">
-    <h2 className="h5">{studyEnvChange.studyShortcode}</h2>
+const StudyEnvDiff = ({ studyName, studyEnvChange, selectedChanges, setSelectedChanges }: StudyEnvDiffProps) => {
+  return <div className="px-3 my-2 py-2" style={{ backgroundColor: '#ededed' }}>
+    <h2 className="h5 pb-2">{studyName}</h2>
     <div className="my-1">
       <h3 className="h6">Environment config</h3>
       <div className="ms-4">
