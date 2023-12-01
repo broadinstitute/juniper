@@ -207,24 +207,25 @@ export const mockKitType: () => KitType = () => ({
   description: 'Test sample collection kit'
 })
 
+/** returns a mock PepperKitStatus */
 export const mockExternalKitRequest = (): PepperKitStatus => {
   return {
     kitId: '',
-        currentStatus: 'Kit Without Label',
-      labelDate: '',
-      scanDate: '',
-      receiveDate: '',
-      trackingNumber: '',
-      returnTrackingNumber: '',
-      errorMessage: ''
+    currentStatus: 'Kit Without Label',
+    labelDate: '',
+    scanDate: '',
+    receiveDate: '',
+    trackingNumber: '',
+    returnTrackingNumber: '',
+    errorMessage: ''
   }
 }
 
 /** returns a mock kit request */
 export const mockKitRequest: (args?: {
   enrollee?: Enrollee,
-  dsmStatus?: string
-}) => KitRequest = ({ enrollee, dsmStatus } = {}) => ({
+  status?: string
+}) => KitRequest = ({ enrollee, status } = {}) => ({
   id: 'kitRequestId',
   createdAt: 1,
   enrollee,
@@ -240,7 +241,7 @@ export const mockKitRequest: (args?: {
     postalCode: '02138',
     country: 'US'
   }),
-  status: 'CREATED',
+  status: status || 'CREATED',
   externalRequest: JSON.stringify(mockExternalKitRequest()),
   parsedExternalRequest: mockExternalKitRequest()
 })
