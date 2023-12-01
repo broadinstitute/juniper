@@ -5,9 +5,9 @@ import Api from 'api/api'
 import { useConfig } from 'providers/ConfigProvider'
 
 /** renders a modal that adds a new page to the site */
-const AddPageModal = ({ portalEnv, portalShortcode, insertNewPage, show, setShow }: {
+const AddPageModal = ({ portalEnv, portalShortcode, insertNewPage, onDismiss }: {
   portalEnv: PortalEnvironment, portalShortcode: string, insertNewPage: (page: HtmlPage) => void,
-  show: boolean, setShow:  React.Dispatch<React.SetStateAction<boolean>>
+  onDismiss: () => void
 }) => {
   const zoneConfig = useConfig()
 
@@ -20,7 +20,7 @@ const AddPageModal = ({ portalEnv, portalShortcode, insertNewPage, show, setShow
       path: pagePath,
       sections: []
     })
-    setShow(false)
+    onDismiss()
   }
 
   const clearFields = () => {
@@ -31,10 +31,9 @@ const AddPageModal = ({ portalEnv, portalShortcode, insertNewPage, show, setShow
   const portalUrl = Api.getParticipantLink(portalEnv.portalEnvironmentConfig, zoneConfig.participantUiHostname,
     portalShortcode, portalEnv.environmentName)
 
-  return <Modal show={show}
-    onHide={() => {
-      setShow(false)
+  return <Modal onHide={() => {
       clearFields()
+      onDismiss()
     }}>
     <Modal.Header closeButton>
       <Modal.Title>Add New Page</Modal.Title>
@@ -67,7 +66,7 @@ const AddPageModal = ({ portalEnv, portalShortcode, insertNewPage, show, setShow
         onClick={addPage}
       >Create</button>
       <button className="btn btn-secondary" onClick={() => {
-        setShow(false)
+        onDismiss()
         clearFields()
       }}>Cancel</button>
     </Modal.Footer>

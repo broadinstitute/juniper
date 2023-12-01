@@ -12,14 +12,13 @@ import { useId, useState } from 'react'
  *
  * */
 export default function useReactSingleSelect<T>(items: T[],
-  labelFunction: (i: T) => {label: string, value: T},
-  initialValue?: T) {
-  const [selectedItem, setSelectedItem] = useState(initialValue)
+  labelFunction: (i: T) => {label: React.ReactNode, value: T},
+  setSelectedItem: (i?: T) => void, selectedItem?: T) {
   const options = items.map(labelFunction)
   const selectedValue = selectedItem ? labelFunction(selectedItem).value : undefined
   const selectedOption = options.find(opt => opt.value === selectedValue)
   const selectInputId = useId()
 
-  const onChange = (opt: {label: string, value: T} | null) => setSelectedItem(opt?.value)
-  return { onChange, options, selectedItem, selectedOption, selectInputId }
+  const onChange = (opt: {label: React.ReactNode, value: T} | null) => setSelectedItem(opt?.value)
+  return { onChange, options, selectedOption, selectInputId }
 }

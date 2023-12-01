@@ -86,16 +86,7 @@ export default function SiteImageList({ portalContext, portalEnv }:
     getSortedRowModel: getSortedRowModel()
   })
 
-  /** Only show the most recent version of a given image in the list */
-  const filterPriorVersions = (imageList: SiteImageMetadata[]) => {
-    const latestVersions: Record<string, SiteImageMetadata> = {}
-    imageList.forEach(image => {
-      if (image.version > (latestVersions[image.cleanFileName]?.version ?? -1)) {
-        latestVersions[image.cleanFileName] = image
-      }
-    })
-    return Object.values(latestVersions)
-  }
+
 
   const onSubmitUpload = () => {
     reload()
@@ -106,6 +97,7 @@ export default function SiteImageList({ portalContext, portalEnv }:
 
   const { isLoading, reload } = useLoadingEffect(async () => {
     const result = await Api.getPortalImages(portalContext.portal.shortcode)
+    /** Only show the most recent version of a given image in the list */
     setImages(filterPriorVersions(result))
   }, [portalContext.portal.shortcode, portalEnv.environmentName])
 
@@ -133,4 +125,15 @@ export default function SiteImageList({ portalContext, portalEnv }:
       existingImage={updatingImage}
       onSubmit={onSubmitUpload}/> }
   </div>
+}
+
+/** Return an array of only the most recent of each image version */
+export const filterPriorVersions = (imageList: SiteImageMetadata[]): SiteImageMetadata[] => {
+  const latestVersions: Record<string, SiteImageMetadata> = {}
+  imageList.forEach(image => {
+    if (image.version > (latestVersions[image.cleanFileName]?.version ?? -1)) {
+      latestVersions[image.cleanFileName] = image
+    }
+  })
+  return Object.values(latestVersions)
 }

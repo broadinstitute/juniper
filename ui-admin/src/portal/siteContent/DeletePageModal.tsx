@@ -27,9 +27,7 @@ const DeletePageModal = ({ renderedPage, deletePage, onDismiss }: {
           onDismiss()
         }}
       >Delete</button>
-      <button className="btn btn-secondary" onClick={() => {
-        onDismiss()
-      }}>Cancel</button>
+      <button className="btn btn-secondary" onClick={onDismiss}>Cancel</button>
     </Modal.Footer>
   </Modal>
 }

@@ -17,8 +17,13 @@ export default function CreateNewStudyModal({ onDismiss }: {onDismiss: () => voi
   const { portalList, reload } = useNavContext()
   const [studyName, setStudyName] = useState('')
   const [studyShortcode, setStudyShortcode] = useState('')
-  const { onChange, options, selectedItem: selectedPortal, selectedOption, selectInputId } =
-        useReactSingleSelect(portalList, (portal: Portal) => ({ label: portal.name, value: portal }), portalList[0])
+  const [selectedPortal, setSelectedPortal] = useState<Portal>()
+  const { onChange, options, selectedOption, selectInputId } =
+        useReactSingleSelect(
+            portalList,
+            (portal: Portal) => ({ label: portal.name, value: portal }),
+            setSelectedPortal,
+            portalList[0])
 
   const [isLoading, setIsLoading] = useState(false)
   const createStudy = async () => {
