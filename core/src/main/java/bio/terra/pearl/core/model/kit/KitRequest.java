@@ -23,15 +23,11 @@ public class KitRequest extends BaseEntity {
      * In the future, we might decide to store separate fields, or maybe use the postgres jsonb type.
      */
     private String sentToAddress;
-    /**
-     * Status of the Juniper kit request. Since the Juniper and Pepper entities have related but separate lifecycles,
-     * we may need to track separate status. This will help Juniper know whether the kit is waiting on something to
-     * happen in Pepper or if action is needed on the Juniper side.
-     */
     private KitRequestStatus status;
     /**
-     * JSON blob of status from DSM
+     * JSON blob of the request state from DSM or another sample processor, kept to make sure we capture
+     * any fields that don't happen to be stored directly in our model
      */
-    private String dsmStatus;
-    private Instant dsmStatusFetchedAt;
+    private String externalRequest;
+    private Instant externalRequestFetchedAt;
 }

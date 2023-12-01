@@ -235,8 +235,8 @@ export type KitRequest = {
   kitType: KitType,
   sentToAddress: string,
   status: string
-  dsmStatus?: string
-  pepperStatus?: PepperKitStatus
+  externalRequest?: string
+  parsedExternalRequest?: PepperKitStatus
 }
 
 export type Config = {
@@ -695,7 +695,7 @@ export default {
     const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}`
     const response = await fetch(url, this.getGetInit())
     const enrollee: Enrollee = await this.processJsonResponse(response)
-    enrollee.kitRequests?.forEach(kit => { kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus) })
+    enrollee.kitRequests?.forEach(kit => { kit.parsedExternalRequest = parsePepperKitStatus(kit.externalRequest) })
     return enrollee
   },
 
@@ -764,7 +764,7 @@ export default {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/kits`
     const response = await fetch(url, this.getGetInit())
     const kits: KitRequest[] = await this.processJsonResponse(response)
-    kits.forEach(kit => { kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus) })
+    kits.forEach(kit => { kit.parsedExternalRequest = parsePepperKitStatus(kit.externalRequest) })
     return kits
   },
 
@@ -799,7 +799,7 @@ export default {
       body: JSON.stringify(enrolleeShortcodes)
     })
     const listResponse: KitRequestListResponse = await this.processJsonResponse(response)
-    listResponse.kitRequests.forEach(kit => { kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus) })
+    listResponse.kitRequests.forEach(kit => { kit.parsedExternalRequest = parsePepperKitStatus(kit.externalRequest) })
     return listResponse
   },
 

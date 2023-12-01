@@ -16,7 +16,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
-import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -104,7 +103,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         var kitRequest = kitRequestFactory.buildPersisted(getTestName(testInfo),
             enrollee.getId(), kitType.getId(), adminUser.getId());
 
-        var response = PepperKitStatus.builder()
+        var response = PepperKitRequest.builder()
                 .juniperKitId(kitRequest.getId().toString())
                 .currentStatus("SENT")
                 .build();
@@ -133,7 +132,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee.getId())
                 .kitTypeId(kitType.getId())
-                .dsmStatus("BOOM!")
+                .externalRequest("BOOM!")
                 .build());
 
         // Act
@@ -180,17 +179,17 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
          *  - the first study has two kits, one in flight and one complete
          *  - the second study has one kit with an error
          */
-        var kitStatus1a = PepperKitStatus.builder()
+        var kitStatus1a = PepperKitRequest.builder()
                 .juniperKitId(kitRequest1a.getId().toString())
-                .currentStatus(PepperKitStatus.Status.SENT.currentStatus)
+                .currentStatus(PepperKitStatus.SENT.pepperString)
                 .build();
-        var kitStatus1b = PepperKitStatus.builder()
+        var kitStatus1b = PepperKitRequest.builder()
                 .juniperKitId(kitRequest1b.getId().toString())
-                .currentStatus(PepperKitStatus.Status.RECEIVED.currentStatus)
+                .currentStatus(PepperKitStatus.RECEIVED.pepperString)
                 .build();
-        var kitStatus2 = PepperKitStatus.builder()
+        var kitStatus2 = PepperKitRequest.builder()
                 .juniperKitId(kitRequest2.getId().toString())
-                .currentStatus(PepperKitStatus.Status.ERRORED.currentStatus)
+                .currentStatus(PepperKitStatus.ERRORED.pepperString)
                 .errorMessage("Something went wrong")
                 .errorDate(DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault()).format(Instant.now()))
                 .build();
@@ -203,9 +202,9 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         kitRequestService.syncAllKitStatusesFromPepper();
 
         /* Load and verify each kit */
-        verifyKit(kitRequest1a, kitStatus1a, KitRequestStatus.IN_PROGRESS);
-        verifyKit(kitRequest1b, kitStatus1b, KitRequestStatus.COMPLETE);
-        verifyKit(kitRequest2, kitStatus2, KitRequestStatus.FAILED);
+        verifyKit(kitRequest1a, kitStatus1a, KitRequestStatus.SENT);
+        verifyKit(kitRequest1b, kitStatus1b, KitRequestStatus.RECEIVED);
+        verifyKit(kitRequest2, kitStatus2, KitRequestStatus.ERRORED);
     }
 
     @Transactional
@@ -224,11 +223,11 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         Mockito.verifyNoInteractions(mockPepperDSMClient);
     }
 
-    private void verifyKit(KitRequest kit, PepperKitStatus expectedDSMStatus, KitRequestStatus expectedStatus)
+    private void verifyKit(KitRequest kit, PepperKitRequest expectedDSMStatus, KitRequestStatus expectedStatus)
             throws JsonProcessingException {
         var savedKit = kitRequestDao.find(kit.getId()).get();
         assertThat(savedKit.getStatus(), equalTo(expectedStatus));
-        assertThat(objectMapper.readValue(savedKit.getDsmStatus(), PepperKitStatus.class),
+        assertThat(objectMapper.readValue(savedKit.getExternalRequest(), PepperKitRequest.class),
                 equalTo(expectedDSMStatus));
     }
 

@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: kit_status
+      author: dbush
+      changes:
+        - sql:
+            sql:
+              update kit_request set status = (CASE 
+                WHEN cast(dsm_status AS json)->>'currentStatus' = 'kit without label' THEN 'CREATED'
+                WHEN cast(dsm_status AS json)->>'currentStatus' = 'queue' THEN 'QUEUED'
+                WHEN cast(dsm_status AS json)->>'currentStatus' = 'sent' THEN 'SENT'
+                WHEN cast(dsm_status AS json)->>'currentStatus' = 'received' THEN 'RECEIVED'
+                WHEN cast(dsm_status AS json)->>'currentStatus' = 'error' THEN 'ERRORED'
+                WHEN cast(dsm_status AS json)->>'currentStatus' = 'deactivated' THEN 'DEACTIVATED'
+                WHEN cast(dsm_status AS json)->>'currentStatus' = NULL THEN NULL
+                ELSE 'UNKNOWN'
+                END);
+        - renameColumn:
+            oldColumnName: dsm_status
+            newColumnName: external_request
+            tableName: kit_request
+        - renameColumn:
+            oldColumnName: dsm_status_fetched_at
+            newColumnName: external_request_fetched_at
+            tableName: kit_request

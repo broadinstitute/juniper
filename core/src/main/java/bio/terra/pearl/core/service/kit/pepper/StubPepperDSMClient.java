@@ -5,20 +5,12 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.service.kit.KitRequestService;
-import bio.terra.pearl.core.service.kit.pepper.PepperDSMClient;
-import bio.terra.pearl.core.service.kit.pepper.PepperKitAddress;
-import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -42,7 +34,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public PepperKitStatus sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
+    public PepperKitRequest sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
         log.info("STUB sending kit request");
         if (address.getCity().startsWith(BAD_ADDRESS_PREFIX) || address.getStreet1().startsWith(BAD_ADDRESS_PREFIX)) {
             throw new  PepperApiException(
@@ -55,7 +47,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
                             .build(),
                     HttpStatus.BAD_REQUEST);
         }
-        PepperKitStatus status = PepperKitStatus.builder()
+        PepperKitRequest status = PepperKitRequest.builder()
                 .juniperKitId(kitRequest.getId().toString())
                 .dsmShippingLabel(UUID.randomUUID().toString())
                 .participantId(enrollee.getShortcode())
@@ -65,20 +57,20 @@ public class StubPepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public PepperKitStatus fetchKitStatus(UUID kitRequestId) {
+    public PepperKitRequest fetchKitStatus(UUID kitRequestId) {
         log.info("STUB fetching kit status");
-        return PepperKitStatus.builder()
+        return PepperKitRequest.builder()
                 .juniperKitId(kitRequestId.toString())
                 .currentStatus("SENT")
                 .build();
     }
 
     @Override
-    public Collection<PepperKitStatus> fetchKitStatusByStudy(String studyShortcode) {
+    public Collection<PepperKitRequest> fetchKitStatusByStudy(String studyShortcode) {
         log.info("STUB fetching status by study");
         var studyEnvironment = studyEnvironmentDao.findByStudy(studyShortcode, EnvironmentName.sandbox).get();
         return kitRequestService.findByStudyEnvironment(studyEnvironment.getId()).stream().map(kit -> {
-            PepperKitStatus status = PepperKitStatus.builder()
+            PepperKitRequest status = PepperKitRequest.builder()
                     .juniperKitId(kit.getId().toString())
                     .currentStatus(getNextStatus(kit))
                     .build();
@@ -86,20 +78,20 @@ public class StubPepperDSMClient implements PepperDSMClient {
         }).toList();
     }
 
-    protected List<PepperKitStatus.Status> MOCK_STATUS_SEQUENCE = List.of(
-            PepperKitStatus.Status.CREATED,
-            PepperKitStatus.Status.QUEUED,
-            PepperKitStatus.Status.SENT,
-            PepperKitStatus.Status.RECEIVED,
-            PepperKitStatus.Status.ERRORED,
-            PepperKitStatus.Status.DEACTIVATED
+    protected List<PepperKitStatus> MOCK_STATUS_SEQUENCE = List.of(
+            PepperKitStatus.CREATED,
+            PepperKitStatus.QUEUED,
+            PepperKitStatus.SENT,
+            PepperKitStatus.RECEIVED,
+            PepperKitStatus.ERRORED,
+            PepperKitStatus.DEACTIVATED
     );
 
     /** helper to get the next status for a kit */
     private String getNextStatus(KitRequest kit) {
-        List<String> statusVals = MOCK_STATUS_SEQUENCE.stream().map(status -> status.currentStatus).toList();
+        List<String> statusVals = MOCK_STATUS_SEQUENCE.stream().map(status -> status.pepperString).toList();
         try {
-            PepperKitStatus pepperStatus = objectMapper.readValue(kit.getDsmStatus(), PepperKitStatus.class);
+            PepperKitRequest pepperStatus = objectMapper.readValue(kit.getExternalRequest(), PepperKitRequest.class);
             String currentStatus = pepperStatus.getCurrentStatus();
             int currentStatusIndex = statusVals.indexOf(currentStatus);
             int nextStatusIndex = (currentStatusIndex + 1) % statusVals.size();

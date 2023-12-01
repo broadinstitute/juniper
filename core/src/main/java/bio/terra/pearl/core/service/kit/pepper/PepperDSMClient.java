@@ -17,7 +17,7 @@ public interface PepperDSMClient {
      * @return status result from Pepper
      * @throws PepperApiException on error from Pepper or failure to process the Pepper response
      */
-    PepperKitStatus sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) throws PepperApiException, PepperParseException;
-    PepperKitStatus fetchKitStatus(UUID kitRequestId) throws PepperApiException, PepperParseException;
-    Collection<PepperKitStatus> fetchKitStatusByStudy(String studyShortcode) throws PepperApiException, PepperParseException;
+    PepperKitRequest sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) throws PepperApiException, PepperParseException;
+    PepperKitRequest fetchKitStatus(UUID kitRequestId) throws PepperApiException, PepperParseException;
+    Collection<PepperKitRequest> fetchKitStatusByStudy(String studyShortcode) throws PepperApiException, PepperParseException;
 }

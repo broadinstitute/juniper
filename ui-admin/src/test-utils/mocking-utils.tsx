@@ -228,8 +228,8 @@ export const mockKitRequest: (args?: {
     country: 'US'
   }),
   status: 'CREATED',
-  dsmStatus,
-  pepperStatus: {
+  externalRequest: dsmStatus,
+  parsedExternalRequest: {
     kitId: '',
     currentStatus: 'Kit Without Label',
     labelDate: '',

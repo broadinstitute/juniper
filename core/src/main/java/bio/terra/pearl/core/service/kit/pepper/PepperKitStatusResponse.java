@@ -16,7 +16,7 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class PepperKitStatusResponse extends PepperResponse {
-    private PepperKitStatus[] kits;
+    private PepperKitRequest[] kits;
 
     /**
      * Minimally parses the given JSON as a PepperKitStatusResponse to extract the list of kits.

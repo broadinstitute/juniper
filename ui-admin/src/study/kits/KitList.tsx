@@ -24,7 +24,7 @@ import { Store } from 'react-notifications-component'
 import { useUser } from '../../user/UserProvider'
 
 type KitStatusTabConfig = {
-  status: string,
+  statuses: string[],
   key: string,
   additionalColumns?: string[]
 }
@@ -50,19 +50,19 @@ const defaultColumns: VisibilityState = {
  */
 const statusTabs: KitStatusTabConfig[] = [
   {
-    status: 'kit without label',
+    statuses: ['CREATED'],
     key: 'created',
     additionalColumns: []
   },
   {
-    status: 'queue',
-    key: 'labeled',
+    statuses: ['QUEUED'],
+    key: 'queued',
     additionalColumns: [
       'pepperStatus_labelDate', 'pepperStatus_trackingNumber'
     ]
   },
   {
-    status: 'sent',
+    statuses: ['SENT'],
     key: 'sent',
     additionalColumns: [
       'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
@@ -70,7 +70,7 @@ const statusTabs: KitStatusTabConfig[] = [
     ]
   },
   {
-    status: 'received',
+    statuses: ['RECEIVED'],
     key: 'returned',
     additionalColumns: [
       'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
@@ -79,8 +79,18 @@ const statusTabs: KitStatusTabConfig[] = [
     ]
   },
   {
-    status: 'error',
+    statuses: ['ERRORED', 'UNKNOWN'],
     key: 'issues',
+    additionalColumns: [
+      'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
+      'pepperStatus_scanDate', 'pepperStatus_returnTrackingNumber',
+      'pepperStatus_receiveDate',
+      'pepperStatus'
+    ]
+  },
+  {
+    statuses: ['DEACTIVATED'],
+    key: 'deactivated',
     additionalColumns: [
       'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
       'pepperStatus_scanDate', 'pepperStatus_returnTrackingNumber',
@@ -113,8 +123,8 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
     setKits(kits)
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
-  const kitsByStatus = _groupBy(kits, kit => {
-    return statusTabs.find(tab => tab.status === kit.pepperStatus?.currentStatus.toLowerCase())?.status || 'error'
+  const kitsByTabKey = _groupBy(kits, kit => {
+    return statusTabs.find(tab => tab.statuses.includes(kit.status))?.key || 'issues'
   })
 
   const tabLinkStyle = ({ isActive }: {isActive: boolean}) => ({
@@ -137,7 +147,7 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
     <div className="container-fluid p-0 mt-2">
       <div className="d-flex w-100 align-items-center mb-2" style={{ backgroundColor: '#ccc' }}>
         { statusTabs.map(tab => {
-          const kits = kitsByStatus[tab.status] || []
+          const kits = kitsByTabKey[tab.key] || []
           return <NavLink key={tab.key} to={tab.key} style={tabLinkStyle}>
             <div className="py-2 px-4">
               {kits?.length} {_capitalize(tab.key)}
@@ -158,7 +168,7 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
             <KitListView
               studyEnvContext={studyEnvContext}
               tab={tab.key}
-              kits={kitsByStatus[tab.status] || []}
+              kits={kitsByTabKey[tab.key] || []}
               initialColumnVisibility={initialColumnVisibility(tab)}/>
           }/>
         })}
@@ -228,7 +238,7 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
     enableColumnFilter: false
   }, {
     header: 'Status',
-    accessorKey: 'pepperStatus',
+    accessorKey: 'parsedExternalRequest',
     cell: data => <KitStatusCell kitRequest={data.row.original} infoPlacement='left'/>,
     enableColumnFilter: false
   }]
