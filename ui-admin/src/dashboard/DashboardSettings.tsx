@@ -92,7 +92,7 @@ export const AlertEditorView = ({ initial, isReadOnly, updateAlert, onSave }: {
   </>
 }
 
-/** shows configuration of alerts for a portal dashboard. currently this lets users manage their messages
+/** shows configuration of alerts for a portal dashboard. currently this lets users manage their alerts
  * at the portal-level. we'll soon add support for configuring these at the study-level.
  * The intended order of precedence will be study > portal > default
  */
@@ -107,8 +107,8 @@ export default function DashboardSettings({ studyEnvContext, portalContext }:
     setDashboardAlerts(dashboardAlerts.map(a => a.id === alert.id ? alert : a))
   }
 
-  //Currently, we only support editing the 'NO_ACTIVITIES_REMAIN' message, but once we support
-  //editing other message, we'll need to add them here.
+  //Currently, we only support editing the 'NO_ACTIVITIES_REMAIN' alert, but once we support
+  //editing other alerts, we'll need to add them here.
   const defaultEditableAlerts = [alertDefaults['NO_ACTIVITIES_REMAIN']]
 
   useEffect(() => {

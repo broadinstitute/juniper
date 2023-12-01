@@ -9,7 +9,7 @@ import React from 'react'
 import {
   adminTasksPath,
   studyEnvDataBrowserPath, studyEnvDatasetListViewPath, studyEnvFormsPath,
-  studyEnvMailingListPath, studyEnvMessagesPath,
+  studyEnvMailingListPath, studyEnvAlertsPath,
   studyEnvMetricsPath, studyEnvNotificationsPath,
   studyEnvSiteContentPath, studyEnvSiteSettingsPath
 } from '../study/StudyEnvironmentRouter'
@@ -77,7 +77,7 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
             className="text-white p-1 rounded" style={navStyleFunc}>Emails &amp; Notifications</NavLink>
         </li>
         <li>
-          <NavLink to={studyEnvMessagesPath(portalShortcode, study.shortcode, 'sandbox')}
+          <NavLink to={studyEnvAlertsPath(portalShortcode, study.shortcode, 'sandbox')}
             className="text-white p-1 rounded" style={navStyleFunc}>Participant Dashboard</NavLink>
         </li>
       </ul>}/>
