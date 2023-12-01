@@ -91,7 +91,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
       <Route path="kits/*" element={<KitsRouter studyEnvContext={studyEnvContext}/>}/>
       <Route path="siteContent" element={<SiteContentLoader portalEnvContext={portalEnvContext}/>}/>
-      <Route path="images" element={<SiteImageList portalContext={portalContext} portalEnv={portalEnv}/>}/>
+      <Route path="media" element={<SiteImageList portalContext={portalContext} portalEnv={portalEnv}/>}/>
       <Route path="metrics" element={<StudyEnvMetricsView studyEnvContext={studyEnvContext}/>}/>
       <Route path="mailingList" element={<MailingListView portalContext={portalContext}
         portalEnv={portalEnv}/>}/>

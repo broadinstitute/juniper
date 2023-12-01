@@ -35,3 +35,19 @@ test('renders table with a clickable image', async () => {
   await userEvent.click(screen.getByTitle('show full-size preview'))
   await waitFor(() => expect(screen.getByAltText('full-size preview of testImage.png')).toBeInTheDocument())
 })
+
+test('does not render a preview for a non-image type', async () => {
+  jest.spyOn(Api, 'getPortalImages').mockImplementation(() => Promise.resolve([{
+    id: 'fakeId',
+    cleanFileName: 'testDoc.pdf',
+    version: 1,
+    createdAt: Date.now()
+  }]))
+  const { RoutedComponent } = setupRouterTest(
+    <SiteImageList portalContext={mockPortalContext()}
+      portalEnv={mockPortalEnvironment('sandbox')}/>)
+  render(RoutedComponent)
+  await waitFor(() => expect(screen.getByText('Showing 1 of 1 rows')).toBeInTheDocument())
+  expect(screen.getByText('testDoc.pdf')).toBeInTheDocument()
+  expect(screen.getByText('no preview')).toBeInTheDocument()
+})
