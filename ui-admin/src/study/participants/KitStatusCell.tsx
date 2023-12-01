@@ -12,7 +12,7 @@ export default function KitStatusCell(
   { kitRequest: KitRequest, infoPlacement?: Placement }
 ) {
   const infoTexts: Record<string, string> = {
-    'CREATED': 'Kit request has been received',
+    'CREATED': 'Kit has not yet shipped',
     'QUEUE': 'Shipping label has been printed',
     'SENT': 'Kit has been sent to the participant',
     'RECEIVED': 'Kit has been returned by the participant',
