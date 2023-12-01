@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useId } from 'react'
 
 /**
  * helper function for setting up an accessible react-select component, returns the currently selected item, and a

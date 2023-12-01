@@ -31,10 +31,10 @@ const AddPageModal = ({ portalEnv, portalShortcode, insertNewPage, onDismiss }: 
   const portalUrl = Api.getParticipantLink(portalEnv.portalEnvironmentConfig, zoneConfig.participantUiHostname,
     portalShortcode, portalEnv.environmentName)
 
-  return <Modal onHide={() => {
-      clearFields()
-      onDismiss()
-    }}>
+  return <Modal show={true} onHide={() => {
+    clearFields()
+    onDismiss()
+  }}>
     <Modal.Header closeButton>
       <Modal.Title>Add New Page</Modal.Title>
     </Modal.Header>

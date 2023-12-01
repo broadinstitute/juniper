@@ -20,10 +20,10 @@ export default function CreateNewStudyModal({ onDismiss }: {onDismiss: () => voi
   const [selectedPortal, setSelectedPortal] = useState<Portal>()
   const { onChange, options, selectedOption, selectInputId } =
         useReactSingleSelect(
-            portalList,
-            (portal: Portal) => ({ label: portal.name, value: portal }),
-            setSelectedPortal,
-            portalList[0])
+          portalList,
+          (portal: Portal) => ({ label: portal.name, value: portal }),
+          setSelectedPortal,
+          portalList[0])
 
   const [isLoading, setIsLoading] = useState(false)
   const createStudy = async () => {

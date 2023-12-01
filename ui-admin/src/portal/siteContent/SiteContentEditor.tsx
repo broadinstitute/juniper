@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { HtmlSection, NavbarItemInternal } from 'api/api'
+import Api, { HtmlSection, NavbarItemInternal } from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faClipboard, faClockRotateLeft, faImage, faPalette, faPlus, faTrash} from '@fortawesome/free-solid-svg-icons'
+import { faClipboard, faClockRotateLeft, faImage, faPalette, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 import HtmlPageEditView from './HtmlPageEditView'
 import {
   HtmlPage, LocalSiteContent, ApiProvider, SiteContent,
@@ -17,12 +17,10 @@ import { PortalEnvContext } from '../PortalRouter'
 import ErrorBoundary from 'util/ErrorBoundary'
 import { Tab, Tabs } from 'react-bootstrap'
 import DeletePageModal from './DeletePageModal'
-import BrandingModal from "./BrandingModal";
-import Api from "../../api/api";
-import {faExternalLink} from "@fortawesome/free-solid-svg-icons/faExternalLink";
-import {useConfig} from "../../providers/ConfigProvider";
-import Modal from "react-bootstrap/Modal";
-import LoadingSpinner from "../../util/LoadingSpinner";
+import BrandingModal from './BrandingModal'
+import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
+import { useConfig } from '../../providers/ConfigProvider'
+import Modal from 'react-bootstrap/Modal'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -157,13 +155,13 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     if (hasInvalidSection || (initialContent !== workingContent)) {
       setShowUnsavedPreviewModal(true)
     } else {
-        showParticipantView()
+      showParticipantView()
     }
   }
 
   const showParticipantView = () => {
     const url = Api.getParticipantLink(portalEnv.portalEnvironmentConfig, zoneConfig.participantUiHostname,
-        portalEnvContext.portal.shortcode, portalEnv.environmentName)
+      portalEnvContext.portal.shortcode, portalEnv.environmentName)
     window.open(url, '_blank')
   }
 
@@ -244,7 +242,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             <FontAwesomeIcon icon={faTrash}/> Delete page
           </Button>
           <Button variant="light"  className="ms-auto  border m-1" tooltip={''}
-                  onClick={() => setShowBrandingModal(true)}
+            onClick={() => setShowBrandingModal(true)}
           >
             <FontAwesomeIcon icon={faPalette} className="fa-lg"/> Branding
           </Button>
@@ -327,7 +325,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     }
     { showBrandingModal &&
         <BrandingModal onDismiss={() => setShowBrandingModal(false)} localContent={localContent}
-        updateLocalContent={updateLocalContent} portalShortcode={portalEnvContext.portal.shortcode}/>
+          updateLocalContent={updateLocalContent} portalShortcode={portalEnvContext.portal.shortcode}/>
     }
     { showUnsavedPreviewModal &&
         <Modal show={true} onHide={() => setShowUnsavedPreviewModal(false)}>
@@ -336,8 +334,9 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           </Modal.Body>
           <Modal.Footer>
             <button className="btn btn-primary" onClick={() => {
-                  showParticipantView()
-                  setShowUnsavedPreviewModal(false)}}>
+              showParticipantView()
+              setShowUnsavedPreviewModal(false)
+            }}>
               Launch participant view in new tab
             </button>
             <button className="btn btn-secondary" onClick={() => setShowUnsavedPreviewModal(false)}>Cancel</button>

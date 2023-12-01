@@ -87,7 +87,6 @@ export default function SiteImageList({ portalContext, portalEnv }:
   })
 
 
-
   const onSubmitUpload = () => {
     reload()
     setUpdatingImage(undefined)
