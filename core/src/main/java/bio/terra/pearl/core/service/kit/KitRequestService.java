@@ -278,9 +278,9 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             kit.setExternalKitFetchedAt(pepperStatusFetchedAt);
             KitRequestStatus newStatus = PepperKitStatus.mapToKitRequestStatus(pepperKit.getCurrentStatus());
             if (newStatus != kit.getStatus()) {
-                eventService.publishKitStatusEvent()
+               eventService.publishKitStatusEvent() //figure out how to load the enrollee and/or portalParticipantUser
             }
-            kit.setStatus(PepperKitStatus.mapToKitRequestStatus(pepperKit.getCurrentStatus()));
+            kit.setStatus(newStatus);
             dao.update(kit);
         } catch (JsonProcessingException e) {
             logger.warn(

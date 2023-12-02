@@ -46,7 +46,8 @@ public class EventService {
     public KitStatusEvent publishKitStatusEvent(KitRequest kitRequest, KitRequestStatus priorStatus,
                                                 PortalParticipantUser ppUser) {
         KitStatusEvent event = KitStatusEvent.newInstance(kitRequest, priorStatus);
-        event.setEnrollee(enrolleeS);
+        Enrollee enrollee =
+        event.setEnrollee(enrollee);
         event.setPortalParticipantUser(ppUser);
         populateEvent(event);
         log.info("kit status event for enrollee {}, studyEnv {} - status {} => {}",
