@@ -21,7 +21,7 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
 import bio.terra.pearl.core.service.kit.KitRequestService;
-import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
+import bio.terra.pearl.core.service.kit.pepper.PepperKit;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.participant.*;
@@ -242,15 +242,14 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         var adminUser = adminUserDao.findByUsername(kitRequestPopDto.getCreatingAdminUsername()).get();
         var kitType = kitTypeDao.findByName(kitRequestPopDto.getKitTypeName()).get();
         var sentToAddress = KitRequestService.makePepperKitAddress(profile);
-        var kitRequestStatus = KitRequestStatus.valueOf(kitRequestPopDto.getStatusName());
         var kitRequest = KitRequest.builder()
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee.getId())
                 .kitTypeId(kitType.getId())
                 .sentToAddress(objectMapper.writeValueAsString(sentToAddress))
-                .status(kitRequestStatus)
-                .dsmStatus(kitRequestPopDto.getDsmStatusJson().toString())
-                .dsmStatusFetchedAt(Instant.now())
+                .status(kitRequestPopDto.getStatus())
+                .externalKit(kitRequestPopDto.getExternalKitJson().toString())
+                .externalKitFetchedAt(Instant.now())
                 .build();
         kitRequest = kitRequestService.create(kitRequest);
         if (kitRequestPopDto.getCreatedAt() != null) {
@@ -419,46 +418,34 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     private void populateKitRequests(EnrolleePopDto popDto) {
         popDto.getKitRequestDtos().forEach(kitDto -> {
             try {
-                var pepperStatus = objectMapper.readValue(kitDto.getDsmStatusJson().toString(), PepperKitStatus.class);
-                var status = PopulateUtils.randomItem(List.of("CREATED", "LABELED", "SCANNED", "RECEIVED"));
-                // Set appropriate statuses:
-                //   PepperKitStatus.currentStatus - status according to GP workflow in Pepper
-                //   KitRequestPopDto.statusName - status according to study staff workflow in Juniper
-                pepperStatus.setCurrentStatus(status);
-                switch (status) {
-                    case "CREATED" -> kitDto.setStatusName("CREATED");
-                    case "LABELED", "SCANNED" -> kitDto.setStatusName("IN_PROGRESS");
-                    case "RECEIVED" -> kitDto.setStatusName("COMPLETE");
-                    default -> {
-                        pepperStatus.setCurrentStatus("ERROR");
-                        kitDto.setStatus(KitRequestStatus.FAILED);
-                    }
-                }
-                generateFakeDates(kitDto, pepperStatus, status);
-                kitDto.setDsmStatusJson(objectMapper.valueToTree(pepperStatus));
+                KitRequestStatus kitRequestStatus = PopulateUtils.randomItem(Arrays.asList(KitRequestStatus.values()));
+                PepperKit pepperRequest = objectMapper.readValue(kitDto.getExternalKitJson().toString(), PepperKit.class);
+                pepperRequest.setCurrentStatus(kitRequestStatus.toString());
+                generateFakeDates(kitDto, kitRequestStatus, pepperRequest);
+                kitDto.setExternalKitJson(objectMapper.valueToTree(pepperRequest));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         });
     }
 
-    private static void generateFakeDates(KitRequestPopDto kitDto, PepperKitStatus pepperStatus, String status) {
+    private static void generateFakeDates(KitRequestPopDto kitDto, KitRequestStatus status, PepperKit pepperRequest) {
         Instant recent = Instant.now();
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault());
         switch (status) {
             // Intentional fall-through to set all dates up to and including the date of `status`
-            case "RECEIVED":
+            case RECEIVED:
                 recent = recent.minus(PopulateUtils.randomInteger(1, 72), HOURS);
-                pepperStatus.setReceiveDate(formatter.format(recent));
-            case "SCANNED":
+                pepperRequest.setReceiveDate(formatter.format(recent));
+            case SENT:
                 recent = recent.minus(PopulateUtils.randomInteger(10, 30), DAYS);
-                pepperStatus.setScanDate(formatter.format(recent));
-                pepperStatus.setReturnTrackingNumber("1Z%s".formatted(PopulateUtils.randomString(12)));
-            case "LABELED":
+                pepperRequest.setScanDate(formatter.format(recent));
+                pepperRequest.setReturnTrackingNumber("1Z%s".formatted(PopulateUtils.randomString(12)));
+            case QUEUED:
                 recent = recent.minus(PopulateUtils.randomInteger(5, 7), DAYS);
-                pepperStatus.setLabelDate(formatter.format(recent));
-                pepperStatus.setTrackingNumber("1Z%s".formatted(PopulateUtils.randomString(12)));
-            case "CREATED":
+                pepperRequest.setLabelDate(formatter.format(recent));
+                pepperRequest.setTrackingNumber("1Z%s".formatted(PopulateUtils.randomString(12)));
+            case CREATED:
                 kitDto.setCreatedAt(recent.minus(PopulateUtils.randomInteger(12, 48), HOURS));
         }
     }

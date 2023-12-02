@@ -74,8 +74,8 @@
     {
       "creatingAdminUsername": "staff@ourhealth.org",
       "kitTypeName": "SALIVA",
-      "statusName": "CREATED",
-      "dsmStatusJson": {
+      "status": "CREATED",
+      "externalKitJson": {
         "kitId": "11111111-2222-3333-4444-555555555555",
         "currentStatus": "kit without label",
         "labelDate": "2023-05-24",
@@ -97,8 +97,8 @@
     {
       "creatingAdminUsername": "staff2@ourhealth.org",
       "kitTypeName": "SALIVA",
-      "statusName": "FAILED",
-      "dsmStatusJson": {
+      "status": "DEACTIVATED",
+      "externalKitJson": {
         "kitId": "11111111-2222-3333-4444-555555555556",
         "currentStatus": "deactivated",
         "labelDate": "2023-05-12",
@@ -112,7 +112,7 @@
         "deactivationReason": "",
         "trackingNumbers": [],
         "returnTrackingNumber": "",
-        "errors": [],
+        "errors": ["Kit request was cancelled at request of participant"],
         "discardDate": "",
         "discardReason": ""
       }
