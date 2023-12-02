@@ -2,6 +2,8 @@ package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
+import bio.terra.pearl.core.model.kit.KitRequest;
+import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -9,6 +11,7 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
+import bio.terra.pearl.core.service.kit.KitSentEvent;
 import bio.terra.pearl.core.service.kit.KitStatusEvent;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
@@ -20,7 +23,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 /**
- * All event publishing should be done via method calls in this service, to ensure that the events are constructed
+ * All event publishing should be done via method calls in this service,
+ * to ensure that the events are constructed
  * properly with appropriate supporting data.
  */
 
@@ -47,6 +51,24 @@ public class EventService {
                                                 PortalParticipantUser ppUser) {
         KitStatusEvent event = KitStatusEvent.newInstance(kitRequest, priorStatus);
         Enrollee enrollee =
+        event.setEnrollee(enrollee);
+        event.setPortalParticipantUser(ppUser);
+        populateEvent(event);
+        log.info("kit status event for enrollee {}, studyEnv {} - status {} => {}",
+                enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
+                priorStatus, kitRequest.getExternalRequest());
+        applicationEventPublisher.publishEvent(event);
+        return event;
+    }
+
+    /** publishes a KitStatusEvent.
+     *
+     * @param kitRequest the current kit request already updated with the new status
+     * @param priorDsmStatus the prior status
+     */
+    public KitStatusEvent publishKitStatusEvent(Enrollee enrollee, KitRequest kitRequest, KitRequestStatus priorStatus,
+                                                PortalParticipantUser ppUser) {
+        KitStatusEvent event = KitSentEvent.newInstance(kitRequest, priorStatus);
         event.setEnrollee(enrollee);
         event.setPortalParticipantUser(ppUser);
         populateEvent(event);

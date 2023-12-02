@@ -40,7 +40,7 @@ public class SurveyTaskDispatcher {
 
     /** survey tasks could be triggered by just about anything, so listen to all enrollee events */
     @EventListener
-    @Order(DispatcherOrder.SURVEY)
+    @Order(DispatcherOrder.SURVEY_TASK)
     public void createSurveyTasks(EnrolleeEvent enrolleeEvent) {
         List<StudyEnvironmentSurvey> studyEnvSurveys = studyEnvironmentSurveyService
                 .findAllByStudyEnvIdWithSurvey(enrolleeEvent.getEnrollee().getStudyEnvironmentId());

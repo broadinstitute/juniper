@@ -45,13 +45,13 @@ public class ConsentTaskDispatcher {
      * for why we use two separate listening methods to accomplish that
      */
     @EventListener
-    @Order(DispatcherOrder.CONSENT)
+    @Order(DispatcherOrder.CONSENT_TASK)
     public void handleEvent(EnrolleeCreationEvent enrolleeEvent) {
         updateConsentTasks(enrolleeEvent);
     }
 
     @EventListener
-    @Order(DispatcherOrder.CONSENT)
+    @Order(DispatcherOrder.CONSENT_TASK)
     public void handleEvent(EnrolleeConsentEvent enrolleeEvent) {
         updateConsentTasks(enrolleeEvent);
     }
