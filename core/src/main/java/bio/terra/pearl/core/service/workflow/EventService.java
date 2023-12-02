@@ -9,6 +9,8 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
+import bio.terra.pearl.core.service.kit.KitStatusEvent;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.survey.EnrolleeSurveyEvent;
@@ -25,13 +27,33 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class EventService {
-    private ParticipantTaskService participantTaskService;
-    private EnrolleeRuleService enrolleeRuleService;
+    private final ParticipantTaskService participantTaskService;
+    private final EnrolleeRuleService enrolleeRuleService;
+    private final EnrolleeService enrolleeService;
 
     public EventService(ParticipantTaskService participantTaskService,
-                        EnrolleeRuleService enrolleeRuleService) {
+                        EnrolleeRuleService enrolleeRuleService, EnrolleeService enrolleeService) {
         this.participantTaskService = participantTaskService;
         this.enrolleeRuleService = enrolleeRuleService;
+        this.enrolleeService = enrolleeService;
+    }
+
+    /** publishes a KitStatusEvent.
+     *
+     * @param kitRequest the current kit request already updated with the new status
+     * @param priorDsmStatus the prior status
+     */
+    public KitStatusEvent publishKitStatusEvent(KitRequest kitRequest, KitRequestStatus priorStatus,
+                                                PortalParticipantUser ppUser) {
+        KitStatusEvent event = KitStatusEvent.newInstance(kitRequest, priorStatus);
+        event.setEnrollee(enrolleeS);
+        event.setPortalParticipantUser(ppUser);
+        populateEvent(event);
+        log.info("kit status event for enrollee {}, studyEnv {} - status {} => {}",
+                enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
+                priorStatus, kitRequest.getExternalRequest());
+        applicationEventPublisher.publishEvent(event);
+        return event;
     }
 
     public EnrolleeConsentEvent publishEnrolleeConsentEvent(Enrollee enrollee, ConsentResponse response,

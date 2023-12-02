@@ -22,6 +22,7 @@ import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
+import bio.terra.pearl.core.service.workflow.EventService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -41,11 +42,10 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     // possible statuses are.
     private static final Set<String> PEPPER_COMPLETED_STATUSES = Set.of("PROCESSED", "CANCELLED");
     private static final Set<String> PEPPER_FAILED_STATUSES = Set.of("CONTAMINATED");
-
     private final DaoUtils daoUtils;
 
     public KitRequestService(KitRequestDao dao,
-                             StudyEnvironmentKitTypeService studyEnvironmentKitTypeService, @Lazy EnrolleeService enrolleeService,
+                             EventService eventService, StudyEnvironmentKitTypeService studyEnvironmentKitTypeService, @Lazy EnrolleeService enrolleeService,
                              KitTypeDao kitTypeDao,
                              PepperDSMClient pepperDSMClient,
                              ProfileService profileService,
@@ -54,6 +54,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                              ObjectMapper objectMapper,
                              DaoUtils daoUtils) {
         super(dao);
+        this.eventService = eventService;
         this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
         this.enrolleeService = enrolleeService;
         this.kitTypeDao = kitTypeDao;
@@ -275,6 +276,10 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         try {
             kit.setExternalKit(objectMapper.writeValueAsString(pepperKit));
             kit.setExternalKitFetchedAt(pepperStatusFetchedAt);
+            KitRequestStatus newStatus = PepperKitStatus.mapToKitRequestStatus(pepperKit.getCurrentStatus());
+            if (newStatus != kit.getStatus()) {
+                eventService.publishKitStatusEvent()
+            }
             kit.setStatus(PepperKitStatus.mapToKitRequestStatus(pepperKit.getCurrentStatus()));
             dao.update(kit);
         } catch (JsonProcessingException e) {
@@ -292,5 +297,6 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     private final StudyService studyService;
     private final StudyEnvironmentService studyEnvironmentService;
     private final ObjectMapper objectMapper;
+    private final EventService eventService;
     private StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
 }
