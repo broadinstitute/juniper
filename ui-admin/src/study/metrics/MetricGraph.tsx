@@ -7,6 +7,10 @@ import { MetricInfo } from './StudyEnvMetricsView'
 import Plot from 'react-plotly.js'
 import { instantToDefaultString } from 'util/timeUtils'
 import { useLoadingEffect } from 'api/api-utils'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faClipboard } from '@fortawesome/free-solid-svg-icons'
+import { Button } from 'components/forms/Button'
+import InfoPopup from 'components/forms/InfoPopup'
 
 const EXPORT_DELIMITER = '\t'
 
@@ -14,8 +18,9 @@ const EXPORT_DELIMITER = '\t'
  * Shows a plot for a specified metric.  Handles fetching the raw metrics from the server, transforming them to
  * plotly traces, and then rendering a graph
  */
-export default function MetricGraph({ studyEnvContext, metricInfo }: {studyEnvContext: StudyEnvContextT,
-  metricInfo: MetricInfo}) {
+export default function MetricGraph({ startDate, endDate, studyEnvContext, metricInfo }: {
+  startDate?: Date, endDate?: Date, studyEnvContext: StudyEnvContextT, metricInfo: MetricInfo
+}) {
   const [metricData, setMetricData] = useState<BasicMetricDatum[] | null>(null)
   const [plotlyTraces, setPlotlyTraces] = useState<PlotlyTimeTrace[] | null>(null)
 
@@ -36,21 +41,32 @@ export default function MetricGraph({ studyEnvContext, metricInfo }: {studyEnvCo
     ).join('\n')
     navigator.clipboard.writeText(dataString)
   }
+
   const hasDataToPlot = !!plotlyTraces?.length && plotlyTraces[0].x.length
-  return <div className="p-2">
+
+  return <div className="container p-2">
     <LoadingSpinner isLoading={isLoading}>
       <div className="d-flex align-items-baseline">
-        <h2 className="h5">{metricInfo.title} <span className="text-muted">(cumulative)</span> </h2>
-        <button className="btn btn-secondary ms-3" onClick={copyRawData}>Copy raw data</button>
+        <h2 className="h5">{metricInfo.title}</h2>
+        <InfoPopup content={metricInfo.tooltip} />
+        <Button
+          variant="secondary"
+          tooltip={'Copy raw data to clipboard'}
+          onClick={copyRawData}
+        >
+          <FontAwesomeIcon icon={faClipboard} className={'fa-regular'} />
+        </Button>
       </div>
-      { hasDataToPlot && <Plot
-        // eslint-disable-next-line
-        data={plotlyTraces as any ?? []}
-        layout={{ height: 300, yaxis: { rangemode: 'tozero', autorange: true } }}
-      />}
-      { !hasDataToPlot && <div>
-        <span className="text-muted fst-italic">No data</span>
-      </div>}
+      <div className="container border">
+        { hasDataToPlot ? <Plot
+          // eslint-disable-next-line
+          data={plotlyTraces as any ?? []}
+          layout={{
+            height: 300, yaxis: { rangemode: 'tozero', autorange: true },
+            xaxis: { range: [startDate!.toISOString(), endDate!.toISOString()] }
+          }}
+        /> : <span className="text-muted fst-italic">No data</span>}
+      </div>
     </LoadingSpinner>
   </div>
 }
