@@ -16,6 +16,7 @@ export const emptyChangeSet: PortalEnvironmentChange = {
   configChanges: [],
   preRegSurveyChanges: { changed: false },
   notificationConfigChanges: { addedItems: [], removedItems: [], changedItems: [] },
+  participantDashboardAlertChanges: [],
   studyEnvChanges: []
 }
 
@@ -134,9 +135,42 @@ export default function PortalEnvDiffView(
       </div>
       <div className="my-2">
         <h2 className="h6">
-          Dashboard config</h2>
-        <div className="ms-4 ">
-          <span className="text-muted fst-italic">not yet implemented</span>
+          Participant dashboard alerts</h2>
+        <div className="ms-4">
+          { changeSet.participantDashboardAlertChanges.length > 0 ?
+            changeSet.participantDashboardAlertChanges.map(alertChange => (
+              <div key={alertChange.trigger} className="px-3 my-2 py-2" style={{ backgroundColor: '#ededed' }}>
+                <h2 className="h5 pb-2">{alertChange.trigger}</h2>
+                <ConfigChanges configChanges={alertChange.changes}
+                  selectedChanges={selectedChanges.participantDashboardAlertChanges.find(change =>
+                    change.trigger === alertChange.trigger)?.changes || []
+                  }
+                  updateSelectedChanges={(updatedConfigChanges: ConfigChange[]) => {
+                    const updatedAlertChanges = [
+                      ...changeSet.participantDashboardAlertChanges.map(change => {
+                        return {
+                          trigger: change.trigger,
+                          changes: []
+                        }
+                      }),
+                      ...selectedChanges.participantDashboardAlertChanges
+                    ]
+                    const matchedIndex = updatedAlertChanges.findIndex(change =>
+                      change.trigger === alertChange.trigger)
+                    updatedAlertChanges[matchedIndex] = {
+                      trigger: alertChange.trigger,
+                      changes: updatedConfigChanges
+                    }
+                    setSelectedChanges({
+                      ...selectedChanges,
+                      participantDashboardAlertChanges: updatedAlertChanges
+                    })
+                  }}
+                />
+              </div>
+            )) :
+            <span className="fst-italic text-muted">no changes</span>
+          }
         </div>
       </div>
       <div className="my-2">

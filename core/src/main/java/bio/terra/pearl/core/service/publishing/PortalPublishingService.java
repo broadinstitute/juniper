@@ -3,6 +3,8 @@ package bio.terra.pearl.core.service.publishing;
 import bio.terra.pearl.core.dao.publishing.PortalEnvironmentChangeRecordDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.dashboard.AlertType;
+import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -14,12 +16,14 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
+import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.stereotype.Service;
@@ -32,6 +36,7 @@ public class PortalPublishingService {
     private PortalEnvironmentService portalEnvironmentService;
     private PortalEnvironmentConfigService portalEnvironmentConfigService;
     private PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao;
+    private PortalDashboardConfigService portalDashboardConfigService;
     private NotificationConfigService notificationConfigService;
     private SurveyService surveyService;
     private EmailTemplateService emailTemplateService;
@@ -44,6 +49,7 @@ public class PortalPublishingService {
                                    PortalEnvironmentService portalEnvironmentService,
                                    PortalEnvironmentConfigService portalEnvironmentConfigService,
                                    PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao,
+                                   PortalDashboardConfigService portalDashboardConfigService,
                                    NotificationConfigService notificationConfigService, SurveyService surveyService,
                                    EmailTemplateService emailTemplateService, SiteContentService siteContentService,
                                    StudyPublishingService studyPublishingService, ObjectMapper objectMapper) {
@@ -51,6 +57,7 @@ public class PortalPublishingService {
         this.portalEnvironmentService = portalEnvironmentService;
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.portalEnvironmentChangeRecordDao = portalEnvironmentChangeRecordDao;
+        this.portalDashboardConfigService = portalDashboardConfigService;
         this.notificationConfigService = notificationConfigService;
         this.surveyService = surveyService;
         this.emailTemplateService = emailTemplateService;
@@ -74,6 +81,7 @@ public class PortalPublishingService {
         applyChangesToPreRegSurvey(destEnv, envChanges.preRegSurveyChanges());
         applyChangesToSiteContent(destEnv, envChanges.siteContentChange());
         applyChangesToNotificationConfigs(destEnv, envChanges.notificationConfigChanges());
+        applyChangesToParticipantDashboardAlerts(destEnv, envChanges.participantDashboardAlertChanges());
         for(StudyEnvironmentChange studyEnvChange : envChanges.studyEnvChanges()) {
             StudyEnvironment studyEnv = portalDiffService.loadStudyEnvForProcessing(studyEnvChange.studyShortcode(), destEnv.getEnvironmentName());
             studyPublishingService.applyChanges(studyEnv, studyEnvChange, destEnv.getId());
@@ -139,6 +147,46 @@ public class PortalPublishingService {
         }
         for(VersionedConfigChange<EmailTemplate> change : listChange.changedItems()) {
             PublishingUtils.applyChangesToVersionedConfig(change, notificationConfigService, emailTemplateService, destEnv.getEnvironmentName());
+        }
+    }
+
+    protected void applyChangesToParticipantDashboardAlerts(PortalEnvironment destEnv, List<ParticipantDashboardAlertChange> changes) throws Exception {
+        for(ParticipantDashboardAlertChange change : changes) {
+            Optional<ParticipantDashboardAlert> destAlert = portalDashboardConfigService.findByPortalEnvIdAndTrigger(destEnv.getId(), change.trigger());
+            if(destAlert.isEmpty()) {
+                // The alert doesn't exist in the dest env yet, so default all the required fields before
+                // applying the changes from the change list
+                ParticipantDashboardAlert newAlert = ParticipantDashboardAlert.builder()
+                        .portalEnvironmentId(destEnv.getId())
+                        .type(AlertType.primary)
+                        .title("")
+                        .detail("")
+                        .portalEnvironmentId(destEnv.getId())
+                        .trigger(change.trigger())
+                        .build();
+
+                applyAlertChanges(newAlert, change.changes());
+                portalDashboardConfigService.create(newAlert);
+            } else {
+                ParticipantDashboardAlert alert = destAlert.get();
+                applyAlertChanges(alert, change.changes());
+                portalDashboardConfigService.update(alert);
+            }
+        }
+    }
+
+    protected void applyAlertChanges(ParticipantDashboardAlert alert, List<ConfigChange> changes) {
+        try {
+            for (ConfigChange alertChange : changes) {
+                //The 'type' property is an enum, so we need to handle it differently than the other properties
+                if(alertChange.propertyName().equals("type")) {
+                    PropertyUtils.setProperty(alert, alertChange.propertyName(), AlertType.valueOf(alertChange.newValue().toString()));
+                } else {
+                    PropertyUtils.setProperty(alert, alertChange.propertyName(), alertChange.newValue());
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error applying changes to alert: " + alert.getId(), e);
         }
     }
 

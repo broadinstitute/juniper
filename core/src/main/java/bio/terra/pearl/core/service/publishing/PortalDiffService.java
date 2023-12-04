@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.Versioned;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
+import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -16,6 +17,7 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
+import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.site.SiteContentService;
@@ -32,12 +34,13 @@ import org.springframework.stereotype.Service;
 public class PortalDiffService {
     public static final List<String> CONFIG_IGNORE_PROPS = List.of("id", "createdAt", "lastUpdatedAt", "class",
             "studyEnvironmentId", "portalEnvironmentId", "emailTemplateId", "emailTemplate",
-            "consentFormId", "consentForm", "surveyId", "survey", "versionedEntity");
+            "consentFormId", "consentForm", "surveyId", "survey", "versionedEntity", "trigger");
     private PortalEnvironmentService portalEnvService;
     private PortalEnvironmentConfigService portalEnvironmentConfigService;
     private SiteContentService siteContentService;
     private SurveyService surveyService;
     private NotificationConfigService notificationConfigService;
+    private PortalDashboardConfigService portalDashboardConfigService;
     private ObjectMapper objectMapper;
     private PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao;
     private StudyEnvironmentService studyEnvironmentService;
@@ -47,6 +50,7 @@ public class PortalDiffService {
                              PortalEnvironmentConfigService portalEnvironmentConfigService,
                              SiteContentService siteContentService, SurveyService surveyService,
                              NotificationConfigService notificationConfigService,
+                             PortalDashboardConfigService portalDashboardConfigService,
                              ObjectMapper objectMapper,
                              PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao,
                              StudyEnvironmentService studyEnvironmentService, StudyService studyService) {
@@ -55,6 +59,7 @@ public class PortalDiffService {
         this.siteContentService = siteContentService;
         this.surveyService = surveyService;
         this.notificationConfigService = notificationConfigService;
+        this.portalDashboardConfigService = portalDashboardConfigService;
         this.objectMapper = objectMapper;
         this.portalEnvironmentChangeRecordDao = portalEnvironmentChangeRecordDao;
         this.studyEnvironmentService = studyEnvironmentService;
@@ -83,13 +88,42 @@ public class PortalDiffService {
             studyEnvChanges.add(studyEnvChange);
         }
 
+        List<ParticipantDashboardAlert> destAlerts = new ArrayList<>(destEnv.getParticipantDashboardAlerts());
+        List<ParticipantDashboardAlert> sourceAlerts = new ArrayList<>(sourceEnv.getParticipantDashboardAlerts());
+        List<ParticipantDashboardAlertChange> participantDashboardAlertChanges = diffAlertLists(sourceAlerts, destAlerts);
+
         return new PortalEnvironmentChange(
                 siteContentRecord,
                 envConfigChanges,
                 preRegRecord,
                 notificationConfigChanges,
+                participantDashboardAlertChanges,
                 studyEnvChanges
         );
+    }
+
+    protected List<ParticipantDashboardAlertChange> diffAlertLists(
+            List<ParticipantDashboardAlert> sourceAlerts,
+            List<ParticipantDashboardAlert> destAlerts) throws Exception {
+        List<ParticipantDashboardAlert> unmatchedDestAlerts = new ArrayList<>(destAlerts);
+        List<ParticipantDashboardAlertChange> changedAlerts = new ArrayList<>();
+        for (ParticipantDashboardAlert sourceAlert : sourceAlerts) {
+            ParticipantDashboardAlert matchedAlert = unmatchedDestAlerts.stream().filter(
+                            destAlert -> sourceAlert.getTrigger().equals(destAlert.getTrigger()))
+                    .findAny().orElse(null);
+            if (matchedAlert == null) {
+                List<ConfigChange> newAlert = ConfigChange.allChanges(sourceAlert, null, CONFIG_IGNORE_PROPS);
+                changedAlerts.add(new ParticipantDashboardAlertChange(sourceAlert.getTrigger(), newAlert));
+            } else {
+                unmatchedDestAlerts.remove(matchedAlert);
+                List<ConfigChange> changedAlert = ConfigChange.allChanges(sourceAlert, matchedAlert, CONFIG_IGNORE_PROPS);
+                if(!changedAlert.isEmpty()) {
+                    changedAlerts.add(new ParticipantDashboardAlertChange(sourceAlert.getTrigger(), changedAlert));
+                }
+            }
+        }
+
+        return changedAlerts;
     }
 
     protected PortalEnvironment loadPortalEnvForProcessing(String shortcode, EnvironmentName envName) {
@@ -107,6 +141,9 @@ public class PortalDiffService {
         var notificationConfigs = notificationConfigService.findByPortalEnvironmentId(portalEnv.getId());
         notificationConfigService.attachTemplates(notificationConfigs);
         portalEnv.setNotificationConfigs(notificationConfigs);
+
+        List<ParticipantDashboardAlert> alerts = portalDashboardConfigService.findByPortalEnvId(portalEnv.getId());
+        portalEnv.setParticipantDashboardAlerts(alerts);
 
         return portalEnv;
     }
