@@ -5,7 +5,7 @@ import PortalEnvDiffView, { emptyChangeSet } from './PortalEnvDiffView'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 
 import { PortalEnvironmentChange } from 'api/api'
-import userEvent from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event'
 
 
 describe('PortalEnvDiff', () => {
