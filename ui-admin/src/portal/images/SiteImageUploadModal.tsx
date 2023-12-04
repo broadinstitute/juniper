@@ -10,9 +10,9 @@ import { LoadedPortalContextT } from '../PortalProvider'
 
 
 export const allowedImageTypes = ['gif', 'ico', 'jpeg', 'jpg', 'png', 'svg', 'webp']
-export const allowedApplicationTypes = ['pdf']
+export const allowedDocumentTypes = ['pdf']
 const FILE_TYPE_REGEX = new RegExp(
-  `^(?:image\\/(?:${allowedImageTypes.join('|')}))|(?:application\\/(?:${allowedApplicationTypes.join('|')}))$`
+  `^(?:image\\/(?:${allowedImageTypes.join('|')}))|(?:application\\/(?:${allowedDocumentTypes.join('|')}))$`
 )
 /** Renders a modal for an admin to submit a sample collection kit request. */
 export default function SiteImageUploadModal({
@@ -62,7 +62,7 @@ export default function SiteImageUploadModal({
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
         <div>
-          <p>Supported extensions are {[...allowedImageTypes, ...allowedApplicationTypes].join(', ')}.
+          <p>Supported extensions are {[...allowedImageTypes, ...allowedDocumentTypes].join(', ')}.
             Maximum size is 10MB</p>
           File:
           <div>
