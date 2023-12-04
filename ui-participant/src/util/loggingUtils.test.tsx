@@ -18,6 +18,8 @@ const TestComponent = () => {
 
 test('logs JS exceptions', async () => {
   const logSpy = jest.spyOn(Api, 'log').mockImplementation(jest.fn())
+  // avoid cluttering the console with the error message from the expected error
+  jest.spyOn(console, 'error').mockImplementation(jest.fn())
   render(<TestComponent/>)
   expect(screen.getByText('Will throw error')).toBeInTheDocument()
   await new Promise(r => setTimeout(r, 200))

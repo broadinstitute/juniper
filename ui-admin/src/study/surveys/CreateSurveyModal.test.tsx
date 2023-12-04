@@ -8,20 +8,17 @@ import Api from 'api/api'
 
 describe('CreateSurveyModal', () => {
   test('disables Create button when survey name and stable ID are blank', () => {
-    //Arrange
     const studyEnvContext = mockStudyEnvContext()
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
       studyEnvContext={studyEnvContext}
       onDismiss={jest.fn()}/>)
     render(RoutedComponent)
 
-    //Assert
     const createButton = screen.getByText('Create')
     expect(createButton).toBeDisabled()
   })
 
   test('enables Create button when survey name and stable ID are filled out', async () => {
-    //Arrange
     const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
@@ -29,19 +26,16 @@ describe('CreateSurveyModal', () => {
       onDismiss={jest.fn()}/>)
     render(RoutedComponent)
 
-    //Act
     const surveyNameInput = screen.getByLabelText('Survey Name')
     const surveyStableIdInput = screen.getByLabelText('Survey Stable ID')
     await user.type(surveyNameInput, 'Test Survey')
     await user.type(surveyStableIdInput, 'test_survey_id')
 
-    //Assert
     const createButton = screen.getByText('Create')
     expect(createButton).toBeEnabled()
   })
 
   test('should autofill the stable ID as the user fills in the survey name', async () => {
-    //Arrange
     const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
@@ -49,18 +43,16 @@ describe('CreateSurveyModal', () => {
       onDismiss={jest.fn()}/>)
     render(RoutedComponent)
 
-    //Act
     const surveyNameInput = screen.getByLabelText('Survey Name')
     const surveyStableIdInput = screen.getByLabelText('Survey Stable ID')
     await user.type(surveyNameInput, 'Test Survey')
 
-    //Assert
     //Confirm that auto-fill stable ID worked
     expect(surveyStableIdInput).toHaveValue('testSurvey')
   })
 
   test('create a required survey', async () => {
-    //Arrange
+    jest.spyOn(window, 'alert').mockImplementation(jest.fn())
     const survey = mockSurvey()
     jest.spyOn(Api, 'createConfiguredSurvey').mockImplementation(() => Promise.resolve(mockConfiguredSurvey()))
     jest.spyOn(Api, 'createNewSurvey').mockImplementation(() => Promise.resolve(survey))
@@ -71,7 +63,6 @@ describe('CreateSurveyModal', () => {
       onDismiss={jest.fn()}/>)
     render(RoutedComponent)
 
-    //Act
     const surveyNameInput = screen.getByLabelText('Survey Name')
     const surveyStableIdInput = screen.getByLabelText('Survey Stable ID')
     const requiredCheckbox = screen.getByLabelText('Required')
@@ -80,7 +71,6 @@ describe('CreateSurveyModal', () => {
     await user.click(requiredCheckbox)
     await user.click(screen.getByText('Create'))
 
-    //Assert
     expect(Api.createConfiguredSurvey).toHaveBeenCalledWith(studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
       studyEnvContext.currentEnv.environmentName,
