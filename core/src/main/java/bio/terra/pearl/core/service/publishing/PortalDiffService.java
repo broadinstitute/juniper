@@ -90,14 +90,14 @@ public class PortalDiffService {
 
         List<ParticipantDashboardAlert> destAlerts = new ArrayList<>(destEnv.getParticipantDashboardAlerts());
         List<ParticipantDashboardAlert> sourceAlerts = new ArrayList<>(sourceEnv.getParticipantDashboardAlerts());
-        List<ParticipantDashboardAlertChange> participantDashboardAlertChanges = diffAlertLists(sourceAlerts, destAlerts);
+        List<ParticipantDashboardAlertChange> alertChangeLists = diffAlertLists(sourceAlerts, destAlerts);
 
         return new PortalEnvironmentChange(
                 siteContentRecord,
                 envConfigChanges,
                 preRegRecord,
                 notificationConfigChanges,
-                participantDashboardAlertChanges,
+                alertChangeLists,
                 studyEnvChanges
         );
     }
@@ -106,24 +106,23 @@ public class PortalDiffService {
             List<ParticipantDashboardAlert> sourceAlerts,
             List<ParticipantDashboardAlert> destAlerts) throws Exception {
         List<ParticipantDashboardAlert> unmatchedDestAlerts = new ArrayList<>(destAlerts);
-        List<ParticipantDashboardAlertChange> changedAlerts = new ArrayList<>();
+        List<ParticipantDashboardAlertChange> alertChangeLists = new ArrayList<>();
         for (ParticipantDashboardAlert sourceAlert : sourceAlerts) {
-            ParticipantDashboardAlert matchedAlert = unmatchedDestAlerts.stream().filter(
-                            destAlert -> sourceAlert.getTrigger().equals(destAlert.getTrigger()))
-                    .findAny().orElse(null);
+            ParticipantDashboardAlert matchedAlert = unmatchedDestAlerts.stream().filter(destAlert ->
+                            sourceAlert.getTrigger().equals(destAlert.getTrigger())).findAny().orElse(null);
             if (matchedAlert == null) {
                 List<ConfigChange> newAlert = ConfigChange.allChanges(sourceAlert, null, CONFIG_IGNORE_PROPS);
-                changedAlerts.add(new ParticipantDashboardAlertChange(sourceAlert.getTrigger(), newAlert));
+                alertChangeLists.add(new ParticipantDashboardAlertChange(sourceAlert.getTrigger(), newAlert));
             } else {
                 unmatchedDestAlerts.remove(matchedAlert);
-                List<ConfigChange> changedAlert = ConfigChange.allChanges(sourceAlert, matchedAlert, CONFIG_IGNORE_PROPS);
-                if(!changedAlert.isEmpty()) {
-                    changedAlerts.add(new ParticipantDashboardAlertChange(sourceAlert.getTrigger(), changedAlert));
+                List<ConfigChange> alertChanges = ConfigChange.allChanges(sourceAlert, matchedAlert, CONFIG_IGNORE_PROPS);
+                if(!alertChanges.isEmpty()) {
+                    alertChangeLists.add(new ParticipantDashboardAlertChange(sourceAlert.getTrigger(), alertChanges));
                 }
             }
         }
 
-        return changedAlerts;
+        return alertChangeLists;
     }
 
     protected PortalEnvironment loadPortalEnvForProcessing(String shortcode, EnvironmentName envName) {
