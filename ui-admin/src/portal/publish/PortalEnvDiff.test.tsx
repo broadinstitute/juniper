@@ -24,15 +24,15 @@ describe('PortalEnvDiff', () => {
   })
 
   it('handles a changeset with one item', async () => {
-    const {portal} = mockPortalContext()
+    const { portal } = mockPortalContext()
     const changeSet: PortalEnvironmentChange = {
       ...emptyChangeSet,
       configChanges: [
-        {propertyName: 'password', oldValue: 'secret', newValue: 'moreSecret'}
+        { propertyName: 'password', oldValue: 'secret', newValue: 'moreSecret' }
       ]
     }
     const spyApplyChanges = jest.fn(() => 1)
-    const {RoutedComponent} = setupRouterTest(<PortalEnvDiffView
+    const { RoutedComponent } = setupRouterTest(<PortalEnvDiffView
       portal={portal}
       destEnvName={portal.portalEnvironments[0].environmentName}
       applyChanges={spyApplyChanges}
@@ -55,7 +55,7 @@ describe('PortalEnvDiff', () => {
   })
 
   it('handles changes with siteContent', async () => {
-    const {portal} = mockPortalContext()
+    const { portal } = mockPortalContext()
     const changeSet: PortalEnvironmentChange = {
       ...emptyChangeSet,
       siteContentChange: {
@@ -67,7 +67,7 @@ describe('PortalEnvDiff', () => {
       }
     }
     const spyApplyChanges = jest.fn(() => 1)
-    const {RoutedComponent} = setupRouterTest(<PortalEnvDiffView
+    const { RoutedComponent } = setupRouterTest(<PortalEnvDiffView
       portal={portal}
       destEnvName={portal.portalEnvironments[0].environmentName}
       applyChanges={spyApplyChanges}
