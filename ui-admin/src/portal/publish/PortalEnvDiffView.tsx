@@ -45,6 +45,12 @@ const getDefaultPortalEnvChanges = (changes: PortalEnvironmentChange) => {
   }
   return {
     ...emptyChangeSet,
+    participantDashboardAlertChanges: changes.participantDashboardAlertChanges.map(alertChange => (
+      {
+        trigger: alertChange.trigger,
+        changes: []
+      }
+    )),
     studyEnvChanges: changes.studyEnvChanges.map(studyEnvChange => (
       {
         ...getDefaultStudyEnvChanges(studyEnvChange),
@@ -146,18 +152,10 @@ export default function PortalEnvDiffView(
                     change.trigger === alertChange.trigger)?.changes || []
                   }
                   updateSelectedChanges={(updatedConfigChanges: ConfigChange[]) => {
-                    const updatedAlertChanges = [
-                      ...changeSet.participantDashboardAlertChanges.map(change => {
-                        return {
-                          trigger: change.trigger,
-                          changes: []
-                        }
-                      }),
-                      ...selectedChanges.participantDashboardAlertChanges
-                    ]
-                    const matchedIndex = updatedAlertChanges.findIndex(change =>
+                    const updatedAlertChanges = selectedChanges.participantDashboardAlertChanges
+                    const alertIndex = updatedAlertChanges.findIndex(change =>
                       change.trigger === alertChange.trigger)
-                    updatedAlertChanges[matchedIndex] = {
+                    updatedAlertChanges[alertIndex] = {
                       trigger: alertChange.trigger,
                       changes: updatedConfigChanges
                     }
