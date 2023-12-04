@@ -217,8 +217,8 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             onClick={() => setShowDeletePageModal(!showAddPageModal)}>
             <FontAwesomeIcon icon={faTrash}/> Delete page
           </Button>
-          <Link to="../images" className="btn btn-light ms-auto border m-1">
-            <FontAwesomeIcon icon={faImage} className="fa-lg"/> Manage images
+          <Link to="../media" className="btn btn-light ms-auto border m-1">
+            <FontAwesomeIcon icon={faImage} className="fa-lg"/> Manage media
           </Link>
           { portalEnv.preRegSurveyId &&
             <Link to={'../forms/preReg'} className="btn btn-light border m-1">
