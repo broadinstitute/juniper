@@ -5,7 +5,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { cloneDeep } from 'lodash'
 import { MetricInfo } from './StudyEnvMetricsView'
 import Plot from 'react-plotly.js'
-import { instantToDefaultString } from 'util/timeUtils'
+import {dateMinusDays, instantToDefaultString} from 'util/timeUtils'
 import { useLoadingEffect } from 'api/api-utils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClipboard } from '@fortawesome/free-solid-svg-icons'
@@ -14,12 +14,14 @@ import InfoPopup from 'components/forms/InfoPopup'
 
 const EXPORT_DELIMITER = '\t'
 
+export type DateRangeMode = 'ALL_TIME' | 'LAST_MONTH' | 'LAST_WEEK' | 'LAST_24_HOURS'
+
 /**
  * Shows a plot for a specified metric.  Handles fetching the raw metrics from the server, transforming them to
  * plotly traces, and then rendering a graph
  */
-export default function MetricGraph({ startDate, endDate, studyEnvContext, metricInfo }: {
-  startDate?: Date, endDate?: Date, studyEnvContext: StudyEnvContextT, metricInfo: MetricInfo
+export default function MetricGraph({ studyEnvContext, metricInfo, dateRangeMode }: {
+  studyEnvContext: StudyEnvContextT, metricInfo: MetricInfo, dateRangeMode: DateRangeMode
 }) {
   const [metricData, setMetricData] = useState<BasicMetricDatum[] | null>(null)
   const [plotlyTraces, setPlotlyTraces] = useState<PlotlyTimeTrace[] | null>(null)
@@ -48,7 +50,7 @@ export default function MetricGraph({ startDate, endDate, studyEnvContext, metri
     <LoadingSpinner isLoading={isLoading}>
       <div className="d-flex align-items-baseline">
         <h2 className="h5">{metricInfo.title}</h2>
-        <InfoPopup content={metricInfo.tooltip} />
+        { metricInfo.tooltip && <InfoPopup content={metricInfo.tooltip} /> }
         <Button
           variant="secondary"
           tooltip={'Copy raw data to clipboard'}
@@ -62,10 +64,10 @@ export default function MetricGraph({ startDate, endDate, studyEnvContext, metri
           // eslint-disable-next-line
           data={plotlyTraces as any ?? []}
           layout={{
-            height: 300, yaxis: { rangemode: 'tozero', autorange: true },
-            xaxis: { range: [startDate!.toISOString(), endDate!.toISOString()] }
+            autosize: true, yaxis: { rangemode: 'tozero', autorange: true },
+            xaxis: { range: makePlotlyXAxisRange({ dateRangeMode }) }
           }}
-        /> : <span className="text-muted fst-italic">No data</span>}
+        /> : <div className="my-5"><span className="text-muted fst-italic">No data</span></div>}
       </div>
     </LoadingSpinner>
   </div>
@@ -114,4 +116,20 @@ export const makePlotlyTraces = (metrics: BasicMetricDatum[]): PlotlyTimeTrace[]
     trace.y.push(trace.x.length + trace.yOffset)
   }
   return Object.values(tracesByName)
+}
+
+export function makePlotlyXAxisRange({ dateRangeMode }: {
+  dateRangeMode: DateRangeMode
+}) {
+  const currentDate = new Date()
+  switch (dateRangeMode) {
+    case 'ALL_TIME':
+      return undefined
+    case 'LAST_MONTH':
+      return [dateMinusDays(currentDate, 30).toISOString(), currentDate.toISOString()]
+    case 'LAST_WEEK':
+      return [dateMinusDays(currentDate, 7).toISOString(), currentDate.toISOString()]
+    case 'LAST_24_HOURS':
+      return [dateMinusDays(currentDate, 1).toISOString(), currentDate.toISOString()]
+  }
 }
