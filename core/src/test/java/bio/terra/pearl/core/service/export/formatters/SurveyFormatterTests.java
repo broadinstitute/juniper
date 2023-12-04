@@ -6,9 +6,9 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
-import bio.terra.pearl.core.service.export.formatters.SurveyFormatter;
-import bio.terra.pearl.core.service.export.instance.ExportOptions;
-import bio.terra.pearl.core.service.export.instance.ItemExportInfo;
+import bio.terra.pearl.core.service.export.ExportOptions;
+import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
+import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -19,7 +19,6 @@ import java.util.UUID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-import org.apache.commons.math3.analysis.function.Exp;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -177,11 +176,11 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
         SurveyFormatter surveyFormatter = new SurveyFormatter(objectMapper);
         var moduleExportInfo = surveyFormatter
                 .getModuleExportInfo(exportOptions, "oh_surveyA", List.of(testSurvey), List.of(question));
-        ItemExportInfo itemExportInfo = moduleExportInfo.getItems().stream().filter(
+        ItemFormatter itemFormatter = moduleExportInfo.getItems().stream().filter(
                 itemInfo -> "oh_surveyA_q1".equals(itemInfo.getQuestionStableId())
         ).findFirst().get();
         Map<String, List<Answer>> answerMap = Map.of("oh_surveyA_q1", List.of(answer));
-        surveyFormatter.addAnswersToMap(moduleExportInfo, itemExportInfo, answerMap, valueMap);
+        surveyFormatter.addAnswersToMap(moduleExportInfo, itemFormatter, answerMap, valueMap);
         return valueMap;
     }
 

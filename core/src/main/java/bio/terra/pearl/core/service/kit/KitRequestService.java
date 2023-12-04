@@ -121,8 +121,8 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     /**
      * Fetch all kits for an enrollee.
      */
-    public Collection<KitRequest> getKitRequests(Enrollee enrollee) {
-        return dao.findByEnrollee(enrollee.getId());
+    public List<KitRequest> findByEnrolleeId(UUID enrolleeId) {
+        return dao.findByEnrollee(enrolleeId);
     }
 
     /**

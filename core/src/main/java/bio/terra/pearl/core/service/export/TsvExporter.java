@@ -1,17 +1,18 @@
 package bio.terra.pearl.core.service.export;
 
-import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
+
+import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
+import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 
 public class TsvExporter extends BaseExporter {
     public static final String DELIMITER = "\t";
 
-    public TsvExporter(List<ModuleExportInfo> moduleExportInfos, List<Map<String, String>> enrolleeMaps) {
+    public TsvExporter(List<ModuleFormatter> moduleExportInfos, List<Map<String, String>> enrolleeMaps) {
         super(moduleExportInfos, enrolleeMaps);
     }
 

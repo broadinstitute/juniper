@@ -9,8 +9,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.service.export.instance.ExportOptions;
-import bio.terra.pearl.core.service.export.instance.ItemExportInfo;
+import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import org.junit.jupiter.api.Test;
@@ -106,9 +105,9 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         assertThat(socialHealthModule.getModuleName(), equalTo(survey.getStableId()));
         assertThat(socialHealthModule.getItems(), hasSize(4));
         // module should contain both the response properties and question items
-        assertThat(socialHealthModule.getItems().stream().map(ItemExportInfo::getPropertyAccessor).toList(),
+        assertThat(socialHealthModule.getItems().stream().map(ItemFormatter::getPropertyAccessor).toList(),
                 hasItems(null, "lastUpdatedAt", "complete"));
-        assertThat(socialHealthModule.getItems().stream().map(ItemExportInfo::getQuestionStableId).toList(),
+        assertThat(socialHealthModule.getItems().stream().map(ItemFormatter::getQuestionStableId).toList(),
                 hasItems(null, "hd_hd_socialHealth_neighborhoodSharesValues", "hd_hd_socialHealth_neighborhoodIsWalkable"));
     }
 
@@ -168,7 +167,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         assertThat(socialHealthModule.getModuleName(), equalTo(survey.getStableId()));
         // module should contain both question items from both surveys, but no duplicates
         assertThat(socialHealthModule.getItems(), hasSize(5));
-        assertThat(socialHealthModule.getItems().stream().map(ItemExportInfo::getQuestionStableId).toList(),
+        assertThat(socialHealthModule.getItems().stream().map(ItemFormatter::getQuestionStableId).toList(),
                 hasItems(null, "hd_hd_socialHealth_neighborhoodSharesValues", "hd_hd_socialHealth_neighborhoodIsWalkable", "hd_hd_socialHealth_neighborhoodNoisy"));
     }
 }

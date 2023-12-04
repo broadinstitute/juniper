@@ -1,6 +1,6 @@
 package bio.terra.pearl.core.service.export;
 
-import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
+import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -12,9 +12,9 @@ public class JsonExporter extends BaseExporter {
 
     private final ObjectMapper objectMapper;
 
-    public JsonExporter(List<ModuleExportInfo> moduleExportInfos, List<Map<String, String>> enrolleeMaps,
+    public JsonExporter(List<ModuleFormatter> moduleFormatters, List<Map<String, String>> enrolleeMaps,
                         ObjectMapper objectMapper) {
-        super(moduleExportInfos, enrolleeMaps);
+        super(moduleFormatters, enrolleeMaps);
         this.objectMapper = objectMapper;
     }
 

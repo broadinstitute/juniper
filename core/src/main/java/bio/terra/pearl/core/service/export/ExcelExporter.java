@@ -1,12 +1,13 @@
 package bio.terra.pearl.core.service.export;
 
-import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
-import org.apache.commons.lang3.StringUtils;
+
+import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
+import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -20,8 +21,8 @@ public class ExcelExporter extends BaseExporter {
     protected final SXSSFSheet sheet;
     private static final String SHEET_NAME = "Participants";
 
-    public ExcelExporter(List<ModuleExportInfo> moduleInfos, List<Map<String, String>> enrolleeMaps) {
-        super(moduleInfos, enrolleeMaps);
+    public ExcelExporter(List<ModuleFormatter> moduleFormatters, List<Map<String, String>> enrolleeMaps) {
+        super(moduleFormatters, enrolleeMaps);
         workbook = new SXSSFWorkbook(ROW_ACCESS_WINDOW_SIZE);
         sheet = workbook.createSheet(getSheetName());
         sheet.trackAllColumnsForAutoSizing();

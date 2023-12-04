@@ -4,7 +4,7 @@ import bio.terra.pearl.core.model.participant.MailingAddress;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.formatters.ProfileFormatter;
-import bio.terra.pearl.core.service.export.instance.ExportOptions;
+import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import java.time.LocalDate;
 import java.util.Map;

@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.service.export;
 
-import bio.terra.pearl.core.service.export.instance.ExportOptions;
-import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
+import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.OutputStream;
 import java.util.List;
@@ -20,9 +19,9 @@ public class DictionaryExportService {
     public void exportDictionary(ExportOptions exportOptions, UUID portalId,
                                  UUID studyEnvironmentId,
                                  OutputStream os) throws Exception {
-        List<ModuleExportInfo> moduleInfos = enrolleeExportService.generateModuleInfos(exportOptions, studyEnvironmentId);
+        List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateModuleInfos(exportOptions, studyEnvironmentId);
         // for now, we only support Excel
-        DataDictionaryExcelExporter exporter = new DataDictionaryExcelExporter(moduleInfos, objectMapper);
+        DataDictionaryExcelExporter exporter = new DataDictionaryExcelExporter(moduleFormatters, objectMapper);
         exporter.export(os);
     }
 }

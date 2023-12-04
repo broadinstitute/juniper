@@ -22,8 +22,8 @@ import bio.terra.pearl.core.service.exception.datarepo.DatasetNotFoundException;
 import bio.terra.pearl.core.service.export.*;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
-import bio.terra.pearl.core.service.export.instance.ExportOptions;
-import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
+import bio.terra.pearl.core.service.export.ExportOptions;
+import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -214,14 +214,14 @@ public class DataRepoExportService {
         Set<TdrColumn> tdrColumns = new LinkedHashSet<>();
 
         try {
-            List<ModuleExportInfo> moduleExportInfos = enrolleeExportService.generateModuleInfos(exportOptions, studyEnvironmentId);
+            List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateModuleInfos(exportOptions, studyEnvironmentId);
             List<Map<String, String>> enrolleeMaps = enrolleeExportService.generateExportMaps(studyEnvironmentId,
-                    moduleExportInfos, exportOptions.limit());
+                    moduleFormatters, exportOptions.limit());
 
-            TsvExporter tsvExporter = new TsvExporter(moduleExportInfos, enrolleeMaps);
+            TsvExporter tsvExporter = new TsvExporter(moduleFormatters, enrolleeMaps);
 
-            tsvExporter.applyToEveryColumn((moduleExportInfo, itemExportInfo, choice, isOtherDescription) -> tdrColumns.add(new TdrColumn(
-                    DataRepoExportUtils.juniperToDataRepoColumnName(moduleExportInfo.getFormatter().getColumnKey(moduleExportInfo, itemExportInfo, choice, isOtherDescription)),
+            tsvExporter.applyToEveryColumn((moduleExportInfo, itemExportInfo, choice, isOtherDescription, moduleRepeatNum) -> tdrColumns.add(new TdrColumn(
+                    DataRepoExportUtils.juniperToDataRepoColumnName(moduleExportInfo.getColumnKey(itemExportInfo, choice, isOtherDescription, moduleRepeatNum)),
                     DataRepoExportUtils.juniperToDataRepoColumnType(itemExportInfo.getDataType())
                 )
             ));

@@ -3,8 +3,8 @@ package bio.terra.pearl.core.service.export;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.service.export.formatters.ProfileFormatter;
-import bio.terra.pearl.core.service.export.formatters.SurveyFormatter;
-import bio.terra.pearl.core.service.export.instance.ItemExportInfo;
+import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
+import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayOutputStream;
@@ -25,8 +25,8 @@ public class TsvExporterTests extends BaseSpringBootTest {
                 .moduleName("test1")
                 .formatter(new ProfileFormatter()) // use the profile formatter since it's just a basic bean format
                 .items(List.of(
-                        ItemExportInfo.builder().baseColumnKey("test1.field1").propertyAccessor("field1").build(),
-                        ItemExportInfo.builder().baseColumnKey("test1.field2").propertyAccessor("field2").build()
+                        ItemFormatter.builder().baseColumnKey("test1.field1").propertyAccessor("field1").build(),
+                        ItemFormatter.builder().baseColumnKey("test1.field2").propertyAccessor("field2").build()
                         )).build();
         Map<String, String> valueMap = Map.of("test1.field1", "blahblah",
                 "test1.field2", "bloblob");
@@ -41,7 +41,7 @@ public class TsvExporterTests extends BaseSpringBootTest {
                 .moduleName("test1")
                 .formatter(new SurveyFormatter(objectMapper)) // use the profile formatter since it's just a basic bean format
                 .items(List.of(
-                        ItemExportInfo.builder()
+                        ItemFormatter.builder()
                                 .baseColumnKey("survey.q1")
                                 .allowMultiple(true)
                                 .splitOptionsIntoColumns(true)

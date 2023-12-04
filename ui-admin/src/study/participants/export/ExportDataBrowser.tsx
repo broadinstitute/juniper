@@ -3,6 +3,7 @@ import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Api, { ExportData } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import {
+  CellContext,
   ColumnDef,
   getCoreRowModel,
   getSortedRowModel,
@@ -16,7 +17,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { useLoadingEffect } from 'api/api-utils'
 import { Button } from 'components/forms/Button'
-import { renderPageHeader } from 'util/pageUtils'
+import {renderPageHeader, renderTruncatedText} from 'util/pageUtils'
+import {failureNotification} from "../../../util/notifications";
+import {Store} from "react-notifications-component";
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -34,7 +37,9 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
     const enrolleeCols = data.valueMaps.map(valueMap => ({
       id: valueMap['enrollee.shortcode'],
       header: valueMap['enrollee.shortcode'],
-      accessorFn: (d: string) => valueMap[d]
+      accessorFn: (d: string) => valueMap[d],
+      enableSorting: false,
+      cell: (info: CellContext<string, string>) => renderTruncatedText(info.getValue(), 100)
     }))
     return [{
       header: 'Key',
@@ -71,7 +76,11 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
       studyEnvContext.study.shortcode,
       studyEnvContext.currentEnv.environmentName, { fileFormat: 'JSON', limit: 10 })
     const result = await response.json()
-    setData(result)
+    if (!response.ok) {
+      Store.addNotification(failureNotification('Failed to load export data', result.message))
+    } else {
+      setData(result)
+    }
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
   return <div className="container-fluid px-4 py-2">

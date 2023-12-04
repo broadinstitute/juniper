@@ -1,9 +1,9 @@
 package bio.terra.pearl.core.service.export;
 
 import bio.terra.pearl.core.model.survey.QuestionChoice;
-import bio.terra.pearl.core.service.export.formatters.SurveyFormatter;
-import bio.terra.pearl.core.service.export.instance.ItemExportInfo;
-import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
+import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
+import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.Map;
 
 public abstract class BaseExporter {
 
-    protected final List<ModuleExportInfo> moduleExportInfos;
+    protected final List<ModuleFormatter> moduleFormatters;
     protected final List<Map<String, String>> enrolleeMaps;
     /**
      * map of column keys to the value that should be exported if the value for an enrollee is nullish.
@@ -24,8 +24,8 @@ public abstract class BaseExporter {
     protected final Map<String, String> columnEmptyValueMap;
     public final String DEFAULT_EMPTY_STRING_VALUE = "";
 
-    public BaseExporter(List<ModuleExportInfo> moduleExportInfos, List<Map<String, String>> enrolleeMaps) {
-        this.moduleExportInfos = moduleExportInfos;
+    public BaseExporter(List<ModuleFormatter> moduleFormatters, List<Map<String, String>> enrolleeMaps) {
+        this.moduleFormatters = moduleFormatters;
         this.enrolleeMaps = enrolleeMaps;
         this.columnEmptyValueMap = makeEmptyValueMap();
     }
@@ -34,8 +34,8 @@ public abstract class BaseExporter {
 
     protected List<String> getColumnKeys() {
         List<String> columnKeys = new ArrayList<>();
-        applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription, choice) -> {
-            columnKeys.add(moduleExportInfo.getFormatter().getColumnKey(moduleExportInfo, itemExportInfo, isOtherDescription, choice));
+        applyToEveryColumn((moduleFormatter, itemExportInfo, isOtherDescription, choice, moduleRepeatNum) -> {
+            columnKeys.add(moduleFormatter.getColumnKey(itemExportInfo, isOtherDescription, choice, moduleRepeatNum));
         });
         return columnKeys;
     }
@@ -43,8 +43,8 @@ public abstract class BaseExporter {
     /** gets the header row - uses getColumnHeader from ExportFormatter */
     protected List<String> getHeaderRow() {
         List<String> headers = new ArrayList<>();
-        applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription, choice) -> {
-            headers.add(moduleExportInfo.getFormatter().getColumnHeader(moduleExportInfo, itemExportInfo, isOtherDescription, choice));
+        applyToEveryColumn((moduleFormatter, itemExportInfo, isOtherDescription, choice, moduleRepeatNum) -> {
+            headers.add(moduleFormatter.getColumnHeader(itemExportInfo, isOtherDescription, choice, moduleRepeatNum));
         });
         return headers;
     }
@@ -52,8 +52,8 @@ public abstract class BaseExporter {
     /** gets the subheader row -- uses getColumnSubHeader from ExportFormatter */
     protected List<String> getSubHeaderRow() {
         List<String> headers = new ArrayList<>();
-        applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription, choice) -> {
-            headers.add(moduleExportInfo.getFormatter().getColumnSubHeader(moduleExportInfo, itemExportInfo, isOtherDescription, choice));
+        applyToEveryColumn((moduleFormatter, itemExportInfo, isOtherDescription, choice, moduleRepeatNum) -> {
+            headers.add(moduleFormatter.getColumnSubHeader(itemExportInfo, isOtherDescription, choice, moduleRepeatNum));
         });
         return headers;
     }
@@ -76,24 +76,15 @@ public abstract class BaseExporter {
 
     /** class for operating iteratively over columns (variables) of an export */
     public interface ColumnProcessor {
-        void apply(ModuleExportInfo moduleExportInfo,
-                   ItemExportInfo itemExportInfo, boolean isOtherDescription, QuestionChoice choice);
+        void apply(ModuleFormatter moduleExportInfo,
+                   ItemFormatter itemFormatter, boolean isOtherDescription, QuestionChoice choice, int moduleRepeatNum);
     }
 
     public void applyToEveryColumn(ColumnProcessor columnProcessor) {
-        for (ModuleExportInfo moduleExportInfo : moduleExportInfos) {
-            for (ItemExportInfo itemExportInfo : moduleExportInfo.getItems()) {
-                if (itemExportInfo.isSplitOptionsIntoColumns()) {
-                    // add a column for each option
-                    for (QuestionChoice choice : itemExportInfo.getChoices()) {
-                        columnProcessor.apply(moduleExportInfo, itemExportInfo, false, choice);
-                    }
-                } else {
-                    columnProcessor.apply(moduleExportInfo, itemExportInfo,false, null);
-                }
-                if (itemExportInfo.isHasOtherDescription()) {
-                    // for questions with free-text other, we add an additional column to capture that value
-                    columnProcessor.apply(moduleExportInfo, itemExportInfo, true, null);
+        for (ModuleFormatter moduleFormatter : moduleFormatters) {
+            for (int moduleRepeatNum = 1; moduleRepeatNum <= moduleFormatter.getMaxNumRepeats(); moduleRepeatNum++) {
+                for (ItemFormatter itemFormatter : (List<ItemFormatter>) moduleFormatter.getItemFormatters()) {
+                    itemFormatter.applyToEveryColumn(columnProcessor, moduleFormatter, moduleRepeatNum);
                 }
             }
         }
@@ -101,13 +92,9 @@ public abstract class BaseExporter {
 
     protected Map<String, String> makeEmptyValueMap() {
         Map<String, String> emptyValueMap = new HashMap<>();
-        applyToEveryColumn((moduleExportInfo, itemExportInfo, isOtherDescription, choice) -> {
-            String columnKey = moduleExportInfo.getFormatter().getColumnKey(moduleExportInfo, itemExportInfo, isOtherDescription, choice);
-            if (itemExportInfo.isSplitOptionsIntoColumns()) {
-                emptyValueMap.put(columnKey, SurveyFormatter.SPLIT_OPTION_UNSELECTED_VALUE);
-            } else {
-                emptyValueMap.put(columnKey, DEFAULT_EMPTY_STRING_VALUE);
-            }
+        applyToEveryColumn((moduleFormatter, itemFormatter, isOtherDescription, choice, moduleRepeatNum) -> {
+            String columnKey = moduleFormatter.getColumnKey(itemFormatter, isOtherDescription, choice, moduleRepeatNum);
+            emptyValueMap.put(columnKey, itemFormatter.getEmptyValue());
         });
         return emptyValueMap;
     }
