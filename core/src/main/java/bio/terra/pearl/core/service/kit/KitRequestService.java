@@ -11,6 +11,7 @@ import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.kit.StudyEnvironmentKitType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.MailingAddress;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -19,6 +20,7 @@ import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.kit.pepper.*;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
@@ -45,21 +47,24 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     private final DaoUtils daoUtils;
 
     public KitRequestService(KitRequestDao dao,
-                             EventService eventService, StudyEnvironmentKitTypeService studyEnvironmentKitTypeService, @Lazy EnrolleeService enrolleeService,
+                             StudyEnvironmentKitTypeService studyEnvironmentKitTypeService, @Lazy EnrolleeService enrolleeService,
+                             EventService eventService,
                              KitTypeDao kitTypeDao,
                              PepperDSMClient pepperDSMClient,
                              ProfileService profileService,
+                             @Lazy PortalParticipantUserService portalParticipantUserService,
                              @Lazy StudyEnvironmentService studyEnvironmentService,
                              @Lazy StudyService studyService,
                              ObjectMapper objectMapper,
                              DaoUtils daoUtils) {
         super(dao);
-        this.eventService = eventService;
         this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
         this.enrolleeService = enrolleeService;
+        this.eventService = eventService;
         this.kitTypeDao = kitTypeDao;
         this.pepperDSMClient = pepperDSMClient;
         this.profileService = profileService;
+        this.portalParticipantUserService = portalParticipantUserService;
         this.studyEnvironmentService = studyEnvironmentService;
         this.studyService = studyService;
         this.objectMapper = objectMapper;
@@ -203,19 +208,19 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     private void syncKitStatusesForStudyEnv(String studyShortcode, EnvironmentName envName, Collection<PepperKit> pepperKits) throws PepperParseException, PepperApiException {
         UUID studyEnvId = studyEnvironmentService.findByStudy(studyShortcode, envName)
                 .orElseThrow(() -> new NotFoundException("No matching study")).getId();
-        var pepperStatusFetchedAt = Instant.now();
-        var pepperKitStatusByKitId = pepperKits.stream().collect(
+        Instant pepperStatusFetchedAt = Instant.now();
+        Map<String, PepperKit> pepperKitByKitId = pepperKits.stream().collect(
                 Collectors.toMap(PepperKit::getJuniperKitId, Function.identity(),
                         (kit1, kit2) -> !kit1.getCurrentStatus().equals("Deactivated") ? kit1 : kit2));
 
         studyEnvironmentService.find(studyEnvId).ifPresent(
                 studyEnvironment -> {
-                    var kits = dao.findByStudyEnvironment(studyEnvironment.getId());
+                    List<KitRequest> kits = dao.findByStudyEnvironment(studyEnvironment.getId());
 
                     // The set of kits returned from DSM may be different from the set of incomplete kits in Juniper, but
                     // we want to update the records in Juniper so those are the ones we want to iterate here.
                     for (KitRequest kit : kits) {
-                        var pepperKitStatus = pepperKitStatusByKitId.get(kit.getId().toString());
+                        PepperKit pepperKitStatus = pepperKitByKitId.get(kit.getId().toString());
                         if (pepperKitStatus != null) {
                             saveKitStatus(kit, pepperKitStatus, pepperStatusFetchedAt);
                         }
@@ -273,22 +278,38 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      * to allow the rest of the batch to be processed.
      */
     private void saveKitStatus(KitRequest kit, PepperKit pepperKit, Instant pepperStatusFetchedAt) {
+        KitRequestStatus priorStatus = kit.getStatus();
         try {
             kit.setExternalKit(objectMapper.writeValueAsString(pepperKit));
             kit.setExternalKitFetchedAt(pepperStatusFetchedAt);
-            KitRequestStatus newStatus = PepperKitStatus.mapToKitRequestStatus(pepperKit.getCurrentStatus());
-            if (newStatus != kit.getStatus()) {
-               eventService.publishKitStatusEvent() //figure out how to load the enrollee and/or portalParticipantUser
-            }
-            kit.setStatus(newStatus);
+            kit.setStatus(PepperKitStatus.mapToKitRequestStatus(pepperKit.getCurrentStatus()));
             dao.update(kit);
+            notifyKitStatus(kit, priorStatus);
         } catch (JsonProcessingException e) {
-            logger.warn(
+            logger.error(
                     "Unable to serialize status JSON for kit %s: %s".formatted(kit.getId(), pepperKit.toString()),
                     e);
         }
     }
 
+    private void notifyKitStatus(KitRequest kit, KitRequestStatus priorStatus) {
+        // only notify on status change
+        if (priorStatus == kit.getStatus()) {
+            return;
+        }
+        Enrollee enrollee = kit.getEnrollee();
+        List<PortalParticipantUser> ppUsers = portalParticipantUserService.findByParticipantUserId(enrollee.getParticipantUserId());
+        if (ppUsers.isEmpty()) {
+            log.error("No portal participant user found for enrollee %s".formatted(enrollee.getShortcode()));
+            return;
+        }
+        if (ppUsers.size() > 1) {
+            log.error("Multiple portal participant users found for enrollee %s".formatted(enrollee.getShortcode()));
+            return;
+        }
+
+        eventService.publishKitStatusEvent(kit, priorStatus, ppUsers.get(0));
+    }
 
     private final EnrolleeService enrolleeService;
     private final KitTypeDao kitTypeDao;
@@ -298,5 +319,6 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     private final StudyEnvironmentService studyEnvironmentService;
     private final ObjectMapper objectMapper;
     private final EventService eventService;
-    private StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
+    private final StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
+    private final PortalParticipantUserService portalParticipantUserService;
 }

@@ -33,48 +33,33 @@ import org.springframework.stereotype.Service;
 public class EventService {
     private final ParticipantTaskService participantTaskService;
     private final EnrolleeRuleService enrolleeRuleService;
-    private final EnrolleeService enrolleeService;
 
     public EventService(ParticipantTaskService participantTaskService,
-                        EnrolleeRuleService enrolleeRuleService, EnrolleeService enrolleeService) {
+                        EnrolleeRuleService enrolleeRuleService) {
         this.participantTaskService = participantTaskService;
         this.enrolleeRuleService = enrolleeRuleService;
-        this.enrolleeService = enrolleeService;
     }
 
     /** publishes a KitStatusEvent.
      *
-     * @param kitRequest the current kit request already updated with the new status
-     * @param priorDsmStatus the prior status
+     * @param kitRequest current kit request already updated with the new status
+     * @param priorStatus prior kit status
+     * @return the event that was published, or null if no event was published
      */
     public KitStatusEvent publishKitStatusEvent(KitRequest kitRequest, KitRequestStatus priorStatus,
                                                 PortalParticipantUser ppUser) {
-        KitStatusEvent event = KitStatusEvent.newInstance(kitRequest, priorStatus);
-        Enrollee enrollee =
-        event.setEnrollee(enrollee);
-        event.setPortalParticipantUser(ppUser);
-        populateEvent(event);
-        log.info("kit status event for enrollee {}, studyEnv {} - status {} => {}",
-                enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
-                priorStatus, kitRequest.getExternalRequest());
-        applicationEventPublisher.publishEvent(event);
-        return event;
-    }
-
-    /** publishes a KitStatusEvent.
-     *
-     * @param kitRequest the current kit request already updated with the new status
-     * @param priorDsmStatus the prior status
-     */
-    public KitStatusEvent publishKitStatusEvent(Enrollee enrollee, KitRequest kitRequest, KitRequestStatus priorStatus,
-                                                PortalParticipantUser ppUser) {
+        // currently only publish events for SENT status
+        if (!KitRequestStatus.SENT.equals(kitRequest.getStatus())) {
+            return null;
+        }
         KitStatusEvent event = KitSentEvent.newInstance(kitRequest, priorStatus);
+        Enrollee enrollee = kitRequest.getEnrollee();
         event.setEnrollee(enrollee);
         event.setPortalParticipantUser(ppUser);
         populateEvent(event);
-        log.info("kit status event for enrollee {}, studyEnv {} - status {} => {}",
+        log.info("Kit status event for enrollee {}, studyEnv {}: status {} => {}",
                 enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
-                priorStatus, kitRequest.getExternalRequest());
+                priorStatus, kitRequest.getStatus());
         applicationEventPublisher.publishEvent(event);
         return event;
     }
