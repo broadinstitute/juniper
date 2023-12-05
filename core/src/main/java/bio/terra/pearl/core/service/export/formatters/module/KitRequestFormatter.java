@@ -7,6 +7,7 @@ import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
 import bio.terra.pearl.core.service.export.formatters.item.KitRequestTypeFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,15 +32,18 @@ public class KitRequestFormatter extends ModuleFormatter<KitRequest, PropertyIte
     @Override
     public Map<String, String> toStringMap(EnrolleeExportData enrolleeData) {
         List<KitRequest> kitRequests = enrolleeData.getKitRequests();
+        // sort the kits oldest first
+        List<KitRequest> sortedKitRequests = kitRequests.stream()
+                .sorted(Comparator.comparing(KitRequest::getCreatedAt)).toList();
         Map<String, String> allKitMap = new HashMap<>();
-        for (int i = 0; i < kitRequests.size(); i++) {
+        for (int i = 0; i < sortedKitRequests.size(); i++) {
             for (PropertyItemFormatter<KitRequest> itemInfo : getItemFormatters()) {
-                String value = itemInfo.getExportString(kitRequests.get(i));
+                String value = itemInfo.getExportString(sortedKitRequests.get(i));
                 String columnName = getColumnKey(itemInfo, false, null, i + 1);
                 allKitMap.put(columnName, value);
             }
         }
-        maxNumRepeats = Math.max(maxNumRepeats, kitRequests.size());
+        maxNumRepeats = Math.max(maxNumRepeats, sortedKitRequests.size());
         return allKitMap;
     }
 }

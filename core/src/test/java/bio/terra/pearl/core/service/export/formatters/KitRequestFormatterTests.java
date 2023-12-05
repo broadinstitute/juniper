@@ -34,14 +34,16 @@ public class KitRequestFormatterTests {
                 KitRequest.builder()
                         .kitTypeId(kitTypeList.get(1).getId())
                         .status(KitRequestStatus.DEACTIVATED)
+                        .createdAt(Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS))
                         .build()
         );
         EnrolleeExportData exportData = new EnrolleeExportData(null, null, null, null, null, kitRequests);
         Map<String, String> valueMap = moduleFormatter.toStringMap(exportData);
 
-        assertThat(valueMap.get("sample_kit.status"), equalTo("CREATED"));
-        assertThat(valueMap.get("sample_kit.kitType"), equalTo("type1"));
-        assertThat(valueMap.get("sample_kit.2.status"), equalTo("DEACTIVATED"));
-        assertThat(valueMap.get("sample_kit.2.kitType"), equalTo("type2"));
+        // the older kit should be first
+        assertThat(valueMap.get("sample_kit.status"), equalTo("DEACTIVATED"));
+        assertThat(valueMap.get("sample_kit.kitType"), equalTo("type2"));
+        assertThat(valueMap.get("sample_kit.2.status"), equalTo("CREATED"));
+        assertThat(valueMap.get("sample_kit.2.kitType"), equalTo("type1"));
     }
 }
