@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import MetricGraph, { DateRangeMode } from './MetricGraph'
+import MetricGraph, { LabeledDateRangeMode } from './MetricGraph'
 import { renderPageHeader } from 'util/pageUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons'
@@ -24,15 +24,17 @@ const metricMetadata: MetricInfo[] = [
   { name: 'STUDY_SURVEY_COMPLETION', title: 'Total Surveys Completed' }
 ]
 
-const dateRangeRadioPicker = ({ onDateSelect, onDismiss } : {
-  onDateSelect: (dateRangeMode: DateRangeMode) => void
+const dateRangeRadioPicker = ({ selectedDateRangeMode, onDateSelect, onDismiss } : {
+  selectedDateRangeMode: LabeledDateRangeMode
+  onDateSelect: (dateRangeMode: LabeledDateRangeMode) => void
   onDismiss: () => void
 }) => {
   return <div>
     <div className="form-check">
       <input className="form-check-input" type="radio" name="plotTimeRange" id="allTime"
+        checked={selectedDateRangeMode.value === 'ALL_TIME'}
         onChange={() => {
-          onDateSelect('ALL_TIME')
+          onDateSelect({label: 'All Time', value: 'ALL_TIME'})
           onDismiss()
         }}/>
       <label className="form-check-label" htmlFor="allTime">
@@ -41,8 +43,9 @@ const dateRangeRadioPicker = ({ onDateSelect, onDismiss } : {
     </div>
     <div className="form-check">
       <input className="form-check-input" type="radio" name="plotTimeRange" id="lastMonth"
+        checked={selectedDateRangeMode.value === 'LAST_MONTH'}
         onChange={() => {
-          onDateSelect('LAST_MONTH')
+          onDateSelect({label: 'Last Month', value: 'LAST_MONTH'})
           onDismiss()
         }}/>
       <label className="form-check-label" htmlFor="lastMonth">
@@ -51,8 +54,9 @@ const dateRangeRadioPicker = ({ onDateSelect, onDismiss } : {
     </div>
     <div className="form-check">
       <input className="form-check-input" type="radio" name="plotTimeRange" id="lastWeek"
+        checked={selectedDateRangeMode.value === 'LAST_WEEK'}
         onChange={() => {
-          onDateSelect('LAST_WEEK')
+          onDateSelect({label: 'Last Week', value: 'LAST_WEEK'})
           onDismiss()
         }}/>
       <label className="form-check-label" htmlFor="lastWeek">
@@ -61,8 +65,9 @@ const dateRangeRadioPicker = ({ onDateSelect, onDismiss } : {
     </div>
     <div className="form-check">
       <input className="form-check-input" type="radio" name="plotTimeRange" id="last24Hours"
+        checked={selectedDateRangeMode.value === 'LAST_24_HOURS'}
         onChange={() => {
-          onDateSelect('LAST_24_HOURS')
+          onDateSelect({label: 'Last 24 Hours', value: 'LAST_24_HOURS'})
           onDismiss()
         }}/>
       <label className="form-check-label" htmlFor="last24Hours">
@@ -75,7 +80,8 @@ const dateRangeRadioPicker = ({ onDateSelect, onDismiss } : {
 /** shows summary stats for the study.  very simple for now--this will eventually have charts and graphs */
 export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const [showDateRangePicker, setShowDateRangePicker] = useState(false)
-  const [selectedDateRangeMode, setSelectedDateRangeMode] = useState<DateRangeMode>('LAST_MONTH')
+  const [selectedDateRangeMode,
+    setSelectedDateRangeMode] = useState<LabeledDateRangeMode>({label: 'Last Month', value: 'LAST_MONTH'})
 
   const metricsByName = metricMetadata.reduce<Record<string, MetricInfo>>((prev,
     current) => {
@@ -92,13 +98,14 @@ export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContex
       </div>
       <div className="position-relative ms-auto me-2 ms-2">
         <Button onClick={() => setShowDateRangePicker(!showDateRangePicker)}
-          variant="light" className="border m-1">
+          variant="light" className="border mb-1">
           <FontAwesomeIcon icon={faCalendarDays} className="fa-lg"/> Edit date range
         </Button>
         { showDateRangePicker && <div className="position-absolute border border-gray rounded bg-white p-3"
           style={{ right: 0 }}>
           <div className="border-b border-black">
             { dateRangeRadioPicker({
+              selectedDateRangeMode,
               onDateSelect: setSelectedDateRangeMode,
               onDismiss: () => setShowDateRangePicker(false)
             }) }
@@ -109,13 +116,13 @@ export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContex
     <div className="row">
       <div className="mt-2">
         <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_ENROLLMENT']}
-          dateRangeMode={selectedDateRangeMode}/>
+          labeledDateRangeMode={selectedDateRangeMode}/>
         <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_ENROLLEE_CONSENTED']}
-          dateRangeMode={selectedDateRangeMode}/>
+          labeledDateRangeMode={selectedDateRangeMode}/>
         <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_REQUIRED_SURVEY_COMPLETION']}
-          dateRangeMode={selectedDateRangeMode}/>
+          labeledDateRangeMode={selectedDateRangeMode}/>
         <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_SURVEY_COMPLETION']}
-          dateRangeMode={selectedDateRangeMode}/>
+          labeledDateRangeMode={selectedDateRangeMode}/>
       </div>
     </div>
   </div>
