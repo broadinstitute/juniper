@@ -21,7 +21,7 @@ export default function MetricSummary({ metrics, dateRangeMode }: {
 
   return <div className="container-fluid">
     <h4 className="my-3 align-center">Summary</h4>
-    <div className="row">
+    <div className="row my-3">
       { dateRangeMode.mode !== 'ALL_TIME' && <MetricSummaryCard title={dateRangeMode.label} isTrend={true}
         value={getFilteredMetrics().length}/> }
       <MetricSummaryCard title="Cumulative" value={metrics.length}/>

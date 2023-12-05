@@ -16,6 +16,7 @@ import MetricSummary from './MetricSummary'
 const EXPORT_DELIMITER = '\t'
 
 export type DateRangeMode = 'ALL_TIME' | 'LAST_MONTH' | 'LAST_WEEK' | 'LAST_24_HOURS'
+
 export type LabeledDateRangeMode = {
   label: string,
   mode: DateRangeMode
@@ -81,7 +82,9 @@ export default function MetricGraph({ studyEnvContext, metricInfo, dateRangeMode
                 autosize: true, yaxis: { rangemode: 'tozero', autorange: true },
                 xaxis: { range: dateRange ? unixToPlotlyDateRange(dateRange) : undefined } //undefined means auto-range
               }}
-            /> : <div className="my-5"><span className="text-muted fst-italic">No data</span></div>}
+            /> : <div className="d-flex justify-content-center align-items-center h-100">
+              <span className="text-muted fst-italic">No data</span>
+            </div>}
           </div>
           <div className="col-3 border">
             <MetricSummary metrics={metricData ?? []} dateRangeMode={dateRangeMode}/>
@@ -116,7 +119,6 @@ export const JITTER_AMOUNT = 0.05
  * this is not performance optimized since we're assuming the size of the metrics[] in the near term will be <10000
  * */
 export const makePlotlyTraces = (metrics: BasicMetricDatum[]): PlotlyTimeTrace[] => {
-  console.log(metrics)
   const tracesByName: Record<string, PlotlyTimeTrace> = {}
   for (let i = 0; i < metrics.length; i++) {
     const metric = metrics[i]

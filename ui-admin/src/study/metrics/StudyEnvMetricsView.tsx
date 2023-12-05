@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import MetricGraph, { LabeledDateRangeMode } from './MetricGraph'
+import MetricGraph, { LabeledDateRangeMode, unixToPlotlyDateRange } from './MetricGraph'
 import { renderPageHeader } from 'util/pageUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons'
 import { Button } from '../../components/forms/Button'
+import Plot from 'react-plotly.js'
+import MetricSummary from './MetricSummary'
 
 export type MetricInfo = {
   name: string,
@@ -36,7 +38,7 @@ const dateRangeRadioPicker = ({ selectedDateRangeMode, onDateSelect, onDismiss }
   ]
 
   return dateRangeOptions.map((dateRangeOption, index) => {
-    return <div className="form-check">
+    return <div className="form-check" key={index}>
       <input className="form-check-input" type="radio" name="plotTimeRange" id={`dateRange-${index}`}
         checked={selectedDateRangeMode.mode === dateRangeOption.mode}
         onChange={() => {
@@ -64,11 +66,9 @@ export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContex
   return <div className="container-fluid px-4 py-2">
     { renderPageHeader('Participant Analytics') }
     <div className="d-flex align-items-center justify-content-between">
-      <div className="d-flex">
-        <h4>{studyEnvContext.study.name} Summary
-          <span className="fst-italic text-muted ms-3">({studyEnvContext.currentEnv.environmentName})</span>
-        </h4>
-      </div>
+      <h4>{studyEnvContext.study.name} Summary
+        <span className="fst-italic text-muted ms-3">({studyEnvContext.currentEnv.environmentName})</span>
+      </h4>
       <div className="position-relative ms-auto me-2 ms-2">
         <Button onClick={() => setShowDateRangePicker(!showDateRangePicker)}
           variant="light" className="border mb-1">
@@ -86,16 +86,14 @@ export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContex
         </div> }
       </div>
     </div>
-    <div className="row">
+    <div className="row my-2">
       <div className="mt-2">
-        <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_ENROLLMENT']}
-          dateRangeMode={selectedDateRangeMode}/>
-        <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_ENROLLEE_CONSENTED']}
-          dateRangeMode={selectedDateRangeMode}/>
-        <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_REQUIRED_SURVEY_COMPLETION']}
-          dateRangeMode={selectedDateRangeMode}/>
-        <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_SURVEY_COMPLETION']}
-          dateRangeMode={selectedDateRangeMode}/>
+        { metricMetadata.map(metric => {
+          return <MetricGraph key={metric.name}
+            studyEnvContext={studyEnvContext}
+            metricInfo={metricsByName[metric.name]}
+            dateRangeMode={selectedDateRangeMode}/>
+        })}
       </div>
     </div>
   </div>
