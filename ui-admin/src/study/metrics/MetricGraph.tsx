@@ -22,8 +22,8 @@ export type LabeledDateRangeMode = {
 }
 
 export type MetricDateRange = {
-  startDate: number | undefined,
-  endDate: number | undefined
+  startDate: number,
+  endDate: number
 }
 
 /**
@@ -55,7 +55,7 @@ export default function MetricGraph({ studyEnvContext, metricInfo, dateRangeMode
   }
 
   const hasDataToPlot = !!plotlyTraces?.length && plotlyTraces[0].x.length
-  const plotlyXAxisRange = makePlotlyXAxisRange({ dateRangeMode })
+  const dateRange = getDateRangeFromMode({ dateRangeMode })
 
   return <div className="container p-2 w-75">
     <LoadingSpinner isLoading={isLoading}>
@@ -79,7 +79,7 @@ export default function MetricGraph({ studyEnvContext, metricInfo, dateRangeMode
               data={plotlyTraces as any ?? []}
               layout={{
                 autosize: true, yaxis: { rangemode: 'tozero', autorange: true },
-                xaxis: { range: unixToPlotlyDateRange(plotlyXAxisRange) }
+                xaxis: { range: dateRange ? unixToPlotlyDateRange(dateRange) : undefined } //undefined means auto-range
               }}
             /> : <div className="my-5"><span className="text-muted fst-italic">No data</span></div>}
           </div>
@@ -141,13 +141,13 @@ export const makePlotlyTraces = (metrics: BasicMetricDatum[]): PlotlyTimeTrace[]
 /**
  *
  */
-export function makePlotlyXAxisRange({ dateRangeMode }: {
+export function getDateRangeFromMode({ dateRangeMode }: {
   dateRangeMode: LabeledDateRangeMode
-}): MetricDateRange {
+}): MetricDateRange | undefined {
   const currentDate = new Date()
   switch (dateRangeMode.mode) {
     case 'ALL_TIME':
-      return { startDate: undefined, endDate: undefined }
+      return undefined
     case 'LAST_MONTH':
       return { startDate: dateMinusDays(currentDate, 30).getTime(), endDate: currentDate.getTime() }
     case 'LAST_WEEK':
