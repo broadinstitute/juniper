@@ -28,59 +28,33 @@ const dateRangeRadioPicker = ({ selectedDateRangeMode, onDateSelect, onDismiss }
   onDateSelect: (dateRangeMode: LabeledDateRangeMode) => void
   onDismiss: () => void
 }) => {
-  return <div>
-    <div className="form-check">
-      <input className="form-check-input" type="radio" name="plotTimeRange" id="allTime"
-        checked={selectedDateRangeMode.value === 'ALL_TIME'}
+  const dateRangeOptions: LabeledDateRangeMode[] = [
+    { label: 'All Time', mode: 'ALL_TIME' },
+    { label: 'Last Month', mode: 'LAST_MONTH' },
+    { label: 'Last Week', mode: 'LAST_WEEK' },
+    { label: 'Last 24 Hours', mode: 'LAST_24_HOURS' }
+  ]
+
+  return dateRangeOptions.map((dateRangeOption, index) => {
+    return <div className="form-check">
+      <input className="form-check-input" type="radio" name="plotTimeRange" id={`dateRange-${index}`}
+        checked={selectedDateRangeMode.mode === dateRangeOption.mode}
         onChange={() => {
-          onDateSelect({ label: 'All Time', value: 'ALL_TIME' })
+          onDateSelect(dateRangeOption)
           onDismiss()
         }}/>
-      <label className="form-check-label" htmlFor="allTime">
-          All Time
+      <label className="form-check-label" htmlFor={`dateRange-${index}`}>
+        {dateRangeOption.label}
       </label>
     </div>
-    <div className="form-check">
-      <input className="form-check-input" type="radio" name="plotTimeRange" id="lastMonth"
-        checked={selectedDateRangeMode.value === 'LAST_MONTH'}
-        onChange={() => {
-          onDateSelect({ label: 'Last Month', value: 'LAST_MONTH' })
-          onDismiss()
-        }}/>
-      <label className="form-check-label" htmlFor="lastMonth">
-          Last Month
-      </label>
-    </div>
-    <div className="form-check">
-      <input className="form-check-input" type="radio" name="plotTimeRange" id="lastWeek"
-        checked={selectedDateRangeMode.value === 'LAST_WEEK'}
-        onChange={() => {
-          onDateSelect({ label: 'Last Week', value: 'LAST_WEEK' })
-          onDismiss()
-        }}/>
-      <label className="form-check-label" htmlFor="lastWeek">
-        Last Week
-      </label>
-    </div>
-    <div className="form-check">
-      <input className="form-check-input" type="radio" name="plotTimeRange" id="last24Hours"
-        checked={selectedDateRangeMode.value === 'LAST_24_HOURS'}
-        onChange={() => {
-          onDateSelect({ label: 'Last 24 Hours', value: 'LAST_24_HOURS' })
-          onDismiss()
-        }}/>
-      <label className="form-check-label" htmlFor="last24Hours">
-        Last 24 Hours
-      </label>
-    </div>
-  </div>
+  })
 }
 
 /** shows summary stats for the study.  very simple for now--this will eventually have charts and graphs */
 export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const [showDateRangePicker, setShowDateRangePicker] = useState(false)
   const [selectedDateRangeMode,
-    setSelectedDateRangeMode] = useState<LabeledDateRangeMode>({ label: 'Last Month', value: 'LAST_MONTH' })
+    setSelectedDateRangeMode] = useState<LabeledDateRangeMode>({ label: 'Last Month', mode: 'LAST_MONTH' })
 
   const metricsByName = metricMetadata.reduce<Record<string, MetricInfo>>((prev,
     current) => {
@@ -115,13 +89,13 @@ export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContex
     <div className="row">
       <div className="mt-2">
         <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_ENROLLMENT']}
-          labeledDateRangeMode={selectedDateRangeMode}/>
+          dateRangeMode={selectedDateRangeMode}/>
         <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_ENROLLEE_CONSENTED']}
-          labeledDateRangeMode={selectedDateRangeMode}/>
+          dateRangeMode={selectedDateRangeMode}/>
         <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_REQUIRED_SURVEY_COMPLETION']}
-          labeledDateRangeMode={selectedDateRangeMode}/>
+          dateRangeMode={selectedDateRangeMode}/>
         <MetricGraph studyEnvContext={studyEnvContext} metricInfo={metricsByName['STUDY_SURVEY_COMPLETION']}
-          labeledDateRangeMode={selectedDateRangeMode}/>
+          dateRangeMode={selectedDateRangeMode}/>
       </div>
     </div>
   </div>

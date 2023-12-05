@@ -5,13 +5,13 @@ import { BasicMetricDatum } from 'api/api'
 /**
  *
  */
-export default function MetricSummary({ metrics, labeledDateRangeMode }: {
-  metrics: BasicMetricDatum[], labeledDateRangeMode: LabeledDateRangeMode
+export default function MetricSummary({ metrics, dateRangeMode }: {
+  metrics: BasicMetricDatum[], dateRangeMode: LabeledDateRangeMode
 }) {
   const getFilteredMetrics = () => {
-    if (labeledDateRangeMode.value === 'ALL_TIME') { return metrics }
-    const startDate = makePlotlyXAxisRange({ labeledDateRangeMode }).startDate! / 1000
-    const endDate = makePlotlyXAxisRange({ labeledDateRangeMode }).endDate! / 1000
+    if (dateRangeMode.mode === 'ALL_TIME') { return metrics }
+    const startDate = makePlotlyXAxisRange({ dateRangeMode }).startDate! / 1000
+    const endDate = makePlotlyXAxisRange({ dateRangeMode }).endDate! / 1000
 
     return metrics.filter(metric => {
       if (startDate && endDate) {
@@ -24,7 +24,7 @@ export default function MetricSummary({ metrics, labeledDateRangeMode }: {
   return <div className="container-fluid">
     <h4 className="my-3 align-center">Summary</h4>
     <div className="row">
-      { labeledDateRangeMode.value !== 'ALL_TIME' && <MetricSummaryCard title={labeledDateRangeMode.label}
+      { dateRangeMode.mode !== 'ALL_TIME' && <MetricSummaryCard title={dateRangeMode.label}
         value={`${getFilteredMetrics().length < 0 ? '' : '+'}${getFilteredMetrics().length.toString()}`}/> }
       <MetricSummaryCard title="Cumulative" value={metrics.length.toString()}/>
     </div>

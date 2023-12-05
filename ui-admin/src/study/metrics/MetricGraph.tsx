@@ -18,7 +18,7 @@ const EXPORT_DELIMITER = '\t'
 export type DateRangeMode = 'ALL_TIME' | 'LAST_MONTH' | 'LAST_WEEK' | 'LAST_24_HOURS'
 export type LabeledDateRangeMode = {
   label: string,
-  value: DateRangeMode
+  mode: DateRangeMode
 }
 
 export type MetricDateRange = {
@@ -30,8 +30,8 @@ export type MetricDateRange = {
  * Shows a plot for a specified metric.  Handles fetching the raw metrics from the server, transforming them to
  * plotly traces, and then rendering a graph
  */
-export default function MetricGraph({ studyEnvContext, metricInfo, labeledDateRangeMode }: {
-  studyEnvContext: StudyEnvContextT, metricInfo: MetricInfo, labeledDateRangeMode: LabeledDateRangeMode
+export default function MetricGraph({ studyEnvContext, metricInfo, dateRangeMode }: {
+  studyEnvContext: StudyEnvContextT, metricInfo: MetricInfo, dateRangeMode: LabeledDateRangeMode
 }) {
   const [metricData, setMetricData] = useState<BasicMetricDatum[] | null>(null)
   const [plotlyTraces, setPlotlyTraces] = useState<PlotlyTimeTrace[] | null>(null)
@@ -55,7 +55,7 @@ export default function MetricGraph({ studyEnvContext, metricInfo, labeledDateRa
   }
 
   const hasDataToPlot = !!plotlyTraces?.length && plotlyTraces[0].x.length
-  const plotlyXAxisRange = makePlotlyXAxisRange({ labeledDateRangeMode })
+  const plotlyXAxisRange = makePlotlyXAxisRange({ dateRangeMode })
 
   return <div className="container p-2 w-75">
     <LoadingSpinner isLoading={isLoading}>
@@ -84,7 +84,7 @@ export default function MetricGraph({ studyEnvContext, metricInfo, labeledDateRa
             /> : <div className="my-5"><span className="text-muted fst-italic">No data</span></div>}
           </div>
           <div className="col-3 border">
-            <MetricSummary metrics={metricData ?? []} labeledDateRangeMode={labeledDateRangeMode}/>
+            <MetricSummary metrics={metricData ?? []} dateRangeMode={dateRangeMode}/>
           </div>
         </div>
       </div>
@@ -141,11 +141,11 @@ export const makePlotlyTraces = (metrics: BasicMetricDatum[]): PlotlyTimeTrace[]
 /**
  *
  */
-export function makePlotlyXAxisRange({ labeledDateRangeMode }: {
-  labeledDateRangeMode: LabeledDateRangeMode
+export function makePlotlyXAxisRange({ dateRangeMode }: {
+  dateRangeMode: LabeledDateRangeMode
 }): MetricDateRange {
   const currentDate = new Date()
-  switch (labeledDateRangeMode.value) {
+  switch (dateRangeMode.mode) {
     case 'ALL_TIME':
       return { startDate: undefined, endDate: undefined }
     case 'LAST_MONTH':
