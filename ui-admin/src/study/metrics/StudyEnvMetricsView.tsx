@@ -5,7 +5,6 @@ import { renderPageHeader } from 'util/pageUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons'
 import { Button } from '../../components/forms/Button'
-import { dateMinusDays } from 'util/timeUtils'
 
 export type MetricInfo = {
   name: string,
@@ -34,7 +33,7 @@ const dateRangeRadioPicker = ({ selectedDateRangeMode, onDateSelect, onDismiss }
       <input className="form-check-input" type="radio" name="plotTimeRange" id="allTime"
         checked={selectedDateRangeMode.value === 'ALL_TIME'}
         onChange={() => {
-          onDateSelect({label: 'All Time', value: 'ALL_TIME'})
+          onDateSelect({ label: 'All Time', value: 'ALL_TIME' })
           onDismiss()
         }}/>
       <label className="form-check-label" htmlFor="allTime">
@@ -45,7 +44,7 @@ const dateRangeRadioPicker = ({ selectedDateRangeMode, onDateSelect, onDismiss }
       <input className="form-check-input" type="radio" name="plotTimeRange" id="lastMonth"
         checked={selectedDateRangeMode.value === 'LAST_MONTH'}
         onChange={() => {
-          onDateSelect({label: 'Last Month', value: 'LAST_MONTH'})
+          onDateSelect({ label: 'Last Month', value: 'LAST_MONTH' })
           onDismiss()
         }}/>
       <label className="form-check-label" htmlFor="lastMonth">
@@ -56,7 +55,7 @@ const dateRangeRadioPicker = ({ selectedDateRangeMode, onDateSelect, onDismiss }
       <input className="form-check-input" type="radio" name="plotTimeRange" id="lastWeek"
         checked={selectedDateRangeMode.value === 'LAST_WEEK'}
         onChange={() => {
-          onDateSelect({label: 'Last Week', value: 'LAST_WEEK'})
+          onDateSelect({ label: 'Last Week', value: 'LAST_WEEK' })
           onDismiss()
         }}/>
       <label className="form-check-label" htmlFor="lastWeek">
@@ -67,7 +66,7 @@ const dateRangeRadioPicker = ({ selectedDateRangeMode, onDateSelect, onDismiss }
       <input className="form-check-input" type="radio" name="plotTimeRange" id="last24Hours"
         checked={selectedDateRangeMode.value === 'LAST_24_HOURS'}
         onChange={() => {
-          onDateSelect({label: 'Last 24 Hours', value: 'LAST_24_HOURS'})
+          onDateSelect({ label: 'Last 24 Hours', value: 'LAST_24_HOURS' })
           onDismiss()
         }}/>
       <label className="form-check-label" htmlFor="last24Hours">
@@ -81,7 +80,7 @@ const dateRangeRadioPicker = ({ selectedDateRangeMode, onDateSelect, onDismiss }
 export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const [showDateRangePicker, setShowDateRangePicker] = useState(false)
   const [selectedDateRangeMode,
-    setSelectedDateRangeMode] = useState<LabeledDateRangeMode>({label: 'Last Month', value: 'LAST_MONTH'})
+    setSelectedDateRangeMode] = useState<LabeledDateRangeMode>({ label: 'Last Month', value: 'LAST_MONTH' })
 
   const metricsByName = metricMetadata.reduce<Record<string, MetricInfo>>((prev,
     current) => {

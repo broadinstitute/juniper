@@ -55,6 +55,7 @@ export default function MetricGraph({ studyEnvContext, metricInfo, labeledDateRa
   }
 
   const hasDataToPlot = !!plotlyTraces?.length && plotlyTraces[0].x.length
+  const plotlyXAxisRange = makePlotlyXAxisRange({ labeledDateRangeMode })
 
   return <div className="container p-2 w-75">
     <LoadingSpinner isLoading={isLoading}>
@@ -78,13 +79,12 @@ export default function MetricGraph({ studyEnvContext, metricInfo, labeledDateRa
               data={plotlyTraces as any ?? []}
               layout={{
                 autosize: true, yaxis: { rangemode: 'tozero', autorange: true },
-                xaxis: { range: makePlotlyXAxisRange({ labeledDateRangeMode }) }
+                xaxis: { range: unixToPlotlyDateRange(plotlyXAxisRange) }
               }}
             /> : <div className="my-5"><span className="text-muted fst-italic">No data</span></div>}
           </div>
           <div className="col-3 border">
-            <MetricSummary studyEnvContext={studyEnvContext} metrics={metricData ?? []}
-              metricInfo={metricInfo} labeledDateRangeMode={labeledDateRangeMode}/>
+            <MetricSummary metrics={metricData ?? []} labeledDateRangeMode={labeledDateRangeMode}/>
           </div>
         </div>
       </div>
@@ -149,11 +149,19 @@ export function makePlotlyXAxisRange({ labeledDateRangeMode }: {
     case 'ALL_TIME':
       return { startDate: undefined, endDate: undefined }
     case 'LAST_MONTH':
-      // return [dateMinusDays(currentDate, 30).toISOString(), currentDate.toISOString()]
       return { startDate: dateMinusDays(currentDate, 30).getTime(), endDate: currentDate.getTime() }
     case 'LAST_WEEK':
       return { startDate: dateMinusDays(currentDate, 7).getTime(), endDate: currentDate.getTime() }
     case 'LAST_24_HOURS':
       return { startDate: dateMinusDays(currentDate, 1).getTime(), endDate: currentDate.getTime() }
   }
+}
+
+/**
+ * Converts a MetricDateRange to a tuple of ISO date strings, suitable for passing to Plotly
+ */
+export const unixToPlotlyDateRange = (dateRange: MetricDateRange): [string, string] => {
+  const startDate = dateRange.startDate ? new Date(dateRange.startDate) : undefined
+  const endDate = dateRange.endDate ? new Date(dateRange.endDate) : undefined
+  return [startDate?.toISOString() ?? '', endDate?.toISOString() ?? '']
 }
