@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import PrintFormModal from './PrintFormModal'
 import { Link, Route, Routes } from 'react-router-dom'
-import {renderTruncatedText} from "../../../util/pageUtils";
+import { renderTruncatedText } from '../../../util/pageUtils'
 type SurveyFullDataViewProps = {
   answers: Answer[],
   survey: Survey | ConsentForm,

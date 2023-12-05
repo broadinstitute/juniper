@@ -17,9 +17,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { useLoadingEffect } from 'api/api-utils'
 import { Button } from 'components/forms/Button'
-import {renderPageHeader, renderTruncatedText} from 'util/pageUtils'
-import {failureNotification} from "../../../util/notifications";
-import {Store} from "react-notifications-component";
+import { renderPageHeader, renderTruncatedText } from 'util/pageUtils'
+import { failureNotification } from '../../../util/notifications'
+import { Store } from 'react-notifications-component'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
