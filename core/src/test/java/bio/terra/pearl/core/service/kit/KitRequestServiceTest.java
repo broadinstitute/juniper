@@ -15,7 +15,6 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.kit.pepper.*;
-import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.EventService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,12 +31,12 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 public class KitRequestServiceTest extends BaseSpringBootTest {
@@ -46,7 +45,6 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     @Test
     public void testRequestKitAssemble(TestInfo testInfo) throws Exception {
         var adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
-        var kitType = kitTypeFactory.buildPersisted(getTestName(testInfo));
         var enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
         var enrollee = enrolleeBundle.enrollee();
         var profile = enrollee.getProfile();
@@ -101,29 +99,19 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    void testUpdateKitStatus(TestInfo testInfo) throws Exception {
+    public void testUpdateKitStatus(TestInfo testInfo) throws Exception {
         // Arrange
         var adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
+        var enrollee = enrolleeFactory.buildPersisted(getTestName(testInfo));
         var kitType = kitTypeFactory.buildPersisted(getTestName(testInfo));
         var kitRequest = kitRequestFactory.buildPersisted(getTestName(testInfo),
-            enrolleeBundle.enrollee(), kitType.getId(), adminUser.getId());
+                enrollee, kitType.getId(), adminUser.getId());
 
         var response = PepperKit.builder()
                 .juniperKitId(kitRequest.getId().toString())
                 .currentStatus("SENT")
                 .build();
         when(mockPepperDSMClient.fetchKitStatus(kitRequest.getId())).thenReturn(response);
-
-        when(mockEventService.publishKitStatusEvent(any(KitRequest.class), any(KitRequestStatus.class), any(PortalParticipantUser.class))).thenAnswer(invocation -> {
-            KitRequest kitRequestArg = (KitRequest) invocation.getArguments()[0];
-            KitRequestStatus priorStatusArg =  (KitRequestStatus) invocation.getArguments()[1];
-            PortalParticipantUser ppUserArg = (PortalParticipantUser) invocation.getArguments()[2];
-            assertThat(kitRequestArg, equalTo(kitRequest));
-            assertThat(priorStatusArg, equalTo(KitRequestStatus.CREATED));
-            assertThat(ppUserArg, equalTo(enrolleeBundle.portalParticipantUser()));
-            return null;
-        });
 
         // Act
         var sampleKitStatus = kitRequestService.syncKitStatusFromPepper(kitRequest.getId());
@@ -221,6 +209,8 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .thenReturn(List.of(kitStatus1a, kitStatus1b));
         when(mockPepperDSMClient.fetchKitStatusByStudy(study2.getShortcode()))
                 .thenReturn(List.of(kitStatus2));
+        when(mockEventService.publishKitStatusEvent(any(KitRequest.class), any(Enrollee.class), any(PortalParticipantUser.class), any(KitRequestStatus.class)))
+                .thenReturn(null);
 
         /* Finally, sync the kit statuses  */
         kitRequestService.syncAllKitStatusesFromPepper();
@@ -229,6 +219,36 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         verifyKit(kitRequest1a, kitStatus1a, KitRequestStatus.SENT);
         verifyKit(kitRequest1b, kitStatus1b, KitRequestStatus.RECEIVED);
         verifyKit(kitRequest2, kitStatus2, KitRequestStatus.ERRORED);
+    }
+
+    @Transactional
+    @Test
+    void testNotifyKitStatus(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
+
+        UUID kitRequestId = UUID.randomUUID();
+        KitRequest kitRequest = KitRequest.builder()
+                .id(kitRequestId)
+                .status(KitRequestStatus.SENT)
+                .enrolleeId(enrolleeBundle.enrollee().getId())
+                .build();
+
+        when(mockEventService.publishKitStatusEvent(any(KitRequest.class), any(Enrollee.class), any(PortalParticipantUser.class), any(KitRequestStatus.class))).thenAnswer(invocation -> {
+            KitRequest kitRequestArg = (KitRequest) invocation.getArguments()[0];
+            Enrollee enrolleeArg = (Enrollee) invocation.getArguments()[1];
+            PortalParticipantUser ppUserArg = (PortalParticipantUser) invocation.getArguments()[2];
+            KitRequestStatus priorStatusArg = (KitRequestStatus) invocation.getArguments()[3];
+
+            assertThat(kitRequestArg.getId(), equalTo(kitRequestId));
+            assertThat(kitRequestArg.getStatus(), equalTo(KitRequestStatus.SENT));
+            assertThat(ppUserArg.getProfileId(), equalTo(enrolleeBundle.portalParticipantUser().getProfileId()));
+            assertThat(enrolleeArg.getShortcode(), equalTo(enrolleeBundle.enrollee().getShortcode()));
+            assertThat(priorStatusArg, equalTo(KitRequestStatus.CREATED));
+            return null;
+        });
+
+        kitRequestService.notifyKitStatus(kitRequest, KitRequestStatus.CREATED);
     }
 
     @Transactional
@@ -260,9 +280,6 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     private PepperDSMClient mockPepperDSMClient;
     @MockBean
     private EventService mockEventService;
-    @Autowired
-    private StubPepperDSMClient stubPepperDSMClient;
-
     @Autowired
     private AdminUserFactory adminUserFactory;
     @Autowired

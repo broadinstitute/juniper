@@ -13,7 +13,6 @@ import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
 import bio.terra.pearl.core.service.kit.KitSentEvent;
 import bio.terra.pearl.core.service.kit.KitStatusEvent;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.survey.EnrolleeSurveyEvent;
@@ -23,9 +22,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 /**
- * All event publishing should be done via method calls in this service,
- * to ensure that the events are constructed
- * properly with appropriate supporting data.
+ * All event publishing should be done via method calls in this service to ensure that the
+ * events are constructed properly with appropriate supporting data.
  */
 
 @Service
@@ -40,22 +38,16 @@ public class EventService {
         this.enrolleeRuleService = enrolleeRuleService;
     }
 
-    /** publishes a KitStatusEvent.
+    /** Publish a KitStatusEvent.
      *
      * @param kitRequest current kit request already updated with the new status
      * @param priorStatus prior kit status
-     * @return the event that was published, or null if no event was published
      */
-    public KitStatusEvent publishKitStatusEvent(KitRequest kitRequest, KitRequestStatus priorStatus,
-                                                PortalParticipantUser ppUser) {
-        // currently only publish events for SENT status
-        if (!KitRequestStatus.SENT.equals(kitRequest.getStatus())) {
-            return null;
-        }
+    public KitStatusEvent publishKitStatusEvent(KitRequest kitRequest, Enrollee enrollee,
+                                                PortalParticipantUser portalParticipantUser, KitRequestStatus priorStatus) {
         KitStatusEvent event = KitSentEvent.newInstance(kitRequest, priorStatus);
-        Enrollee enrollee = kitRequest.getEnrollee();
         event.setEnrollee(enrollee);
-        event.setPortalParticipantUser(ppUser);
+        event.setPortalParticipantUser(portalParticipantUser);
         populateEvent(event);
         log.info("Kit status event for enrollee {}, studyEnv {}: status {} => {}",
                 enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
