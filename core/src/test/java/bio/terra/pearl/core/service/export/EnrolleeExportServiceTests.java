@@ -9,8 +9,11 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.service.export.formatters.item.AnswerItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
-import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
+import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
+import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -99,16 +102,20 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 .build());
         surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
 
-        var exportModuleInfo = enrolleeExportService.generateSurveyModules(new ExportOptions(), studyEnv.getId());
-        assertThat(exportModuleInfo, hasSize(1));
-        ModuleExportInfo socialHealthModule = exportModuleInfo.get(0);
+        List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateSurveyModules(new ExportOptions(), studyEnv.getId());
+        assertThat(moduleFormatters, hasSize(1));
+        ModuleFormatter<SurveyResponse, ItemFormatter<SurveyResponse>> socialHealthModule = moduleFormatters.get(0);
         assertThat(socialHealthModule.getModuleName(), equalTo(survey.getStableId()));
-        assertThat(socialHealthModule.getItems(), hasSize(4));
+        assertThat(socialHealthModule.getItemFormatters(), hasSize(4));
         // module should contain both the response properties and question items
-        assertThat(socialHealthModule.getItems().stream().map(ItemFormatter::getPropertyAccessor).toList(),
-                hasItems(null, "lastUpdatedAt", "complete"));
-        assertThat(socialHealthModule.getItems().stream().map(ItemFormatter::getQuestionStableId).toList(),
-                hasItems(null, "hd_hd_socialHealth_neighborhoodSharesValues", "hd_hd_socialHealth_neighborhoodIsWalkable"));
+        assertThat(socialHealthModule.getItemFormatters().stream()
+                .filter(itemFormatter -> itemFormatter instanceof PropertyItemFormatter)
+                .map(itemFormatter -> ((PropertyItemFormatter) itemFormatter).getPropertyName()).toList(),
+                hasItems("lastUpdatedAt", "complete"));
+        assertThat(socialHealthModule.getItemFormatters().stream()
+                        .filter(itemFormatter -> itemFormatter instanceof AnswerItemFormatter)
+                        .map(itemFormatter -> ((AnswerItemFormatter) itemFormatter).getQuestionStableId()).toList(),
+                hasItems("hd_hd_socialHealth_neighborhoodSharesValues", "hd_hd_socialHealth_neighborhoodIsWalkable"));
     }
 
     private final String SOCIAL_HEALTH_V2_EXCERPT = """
@@ -163,11 +170,13 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
         var exportModuleInfo = enrolleeExportService.generateSurveyModules(new ExportOptions(), studyEnv.getId());
         assertThat(exportModuleInfo, hasSize(1));
-        ModuleExportInfo socialHealthModule = exportModuleInfo.get(0);
+        ModuleFormatter<SurveyResponse, ItemFormatter<SurveyResponse>> socialHealthModule = exportModuleInfo.get(0);
         assertThat(socialHealthModule.getModuleName(), equalTo(survey.getStableId()));
         // module should contain both question items from both surveys, but no duplicates
-        assertThat(socialHealthModule.getItems(), hasSize(5));
-        assertThat(socialHealthModule.getItems().stream().map(ItemFormatter::getQuestionStableId).toList(),
-                hasItems(null, "hd_hd_socialHealth_neighborhoodSharesValues", "hd_hd_socialHealth_neighborhoodIsWalkable", "hd_hd_socialHealth_neighborhoodNoisy"));
+        assertThat(socialHealthModule.getItemFormatters(), hasSize(5));
+        assertThat(socialHealthModule.getItemFormatters().stream()
+                        .filter(itemFormatter -> itemFormatter instanceof AnswerItemFormatter)
+                        .map(itemFormatter -> ((AnswerItemFormatter) itemFormatter).getQuestionStableId()).toList(),
+                hasItems("hd_hd_socialHealth_neighborhoodSharesValues", "hd_hd_socialHealth_neighborhoodIsWalkable", "hd_hd_socialHealth_neighborhoodNoisy"));
     }
 }

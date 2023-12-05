@@ -14,7 +14,8 @@ public class EnrolleeFormatter extends BeanModuleFormatter<Enrollee> {
     public static final List<String> INCLUDED_PROPERTIES = List.of("shortcode", "consented", "createdAt");
 
     public EnrolleeFormatter(ExportOptions exportOptions) {
-        itemFormatters = INCLUDED_PROPERTIES.stream().map(propName -> new PropertyItemFormatter<Enrollee>(propName, Enrollee.class)).toList();
+        itemFormatters = INCLUDED_PROPERTIES.stream().map(propName -> new PropertyItemFormatter<Enrollee>(propName, Enrollee.class))
+                .collect(Collectors.toList());
         moduleName = ENROLLEE_MODULE_NAME;
         displayName = "Enrollee";
     }

@@ -9,7 +9,7 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
 import bio.terra.pearl.core.service.export.ExportOptions;
-import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
+import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
@@ -68,7 +68,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
 
     private void checkExportContent(UUID sandboxEnvironmentId) throws Exception {
         ExportOptions options = new ExportOptions(false, false, true, ExportFileFormat.TSV, null);
-        List<ModuleExportInfo> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
+        List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
         List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, options.limit());
 
         assertThat(exportData, hasSize(5));

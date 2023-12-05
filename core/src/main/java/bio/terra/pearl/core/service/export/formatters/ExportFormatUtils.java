@@ -72,18 +72,6 @@ public class ExportFormatUtils {
 
     }
 
-    public static String getPropertyForExport(Object bean, String property) {
-        Object value = null;
-        try {
-            value = PropertyUtils.getNestedProperty(bean, property);
-        } catch (Exception e) {
-            log.warn("Error getting property {} from bean {}", property, bean, e);
-        }
-        String columnValue = ExportFormatUtils.formatForExport(value);
-        return columnValue;
-    }
-
-
     /** converts, e.g. "mailingAddress" to "Mailing Address" */
     public static String camelToWordCase(String camelCased) {
         String spacedString = camelCased.replace(".", " - ");

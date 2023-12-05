@@ -4,7 +4,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.module.EnrolleeFormatter;
-import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
+import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import java.time.Instant;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -19,9 +19,9 @@ public class EnrolleeFormatterTests {
                 .consented(true)
                 .createdAt(Instant.parse("2023-08-21T05:17:25.00Z"))
                 .build();
-        ModuleExportInfo moduleExportInfo = new EnrolleeFormatter().getModuleExportInfo(new ExportOptions());
-        EnrolleeExportData exportData = new EnrolleeExportData(enrollee, null, null, null, null);
-        Map<String, String> valueMap = moduleExportInfo.toStringMap(exportData);
+        EnrolleeFormatter moduleFormatter = new EnrolleeFormatter(new ExportOptions());
+        EnrolleeExportData exportData = new EnrolleeExportData(enrollee, null, null, null, null, null);
+        Map<String, String> valueMap = moduleFormatter.toStringMap(exportData);
 
         assertThat(valueMap.get("enrollee.shortcode"), equalTo("TESTER"));
         assertThat(valueMap.get("enrollee.consented"), equalTo("true"));

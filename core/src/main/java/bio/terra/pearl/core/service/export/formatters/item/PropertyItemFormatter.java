@@ -50,10 +50,12 @@ public class PropertyItemFormatter<T> extends ItemFormatter<T> {
         return value;
     }
 
-    @Override
+    /**
+     * because we need to generate a tsv,
+     * we format everything as a string exactly as the characters should appear in the tsv,
+     * the metadata will include information on the actual data type
+     */
     public String getExportString(T bean) {
         return ExportFormatUtils.formatForExport(getRawExportValue(bean));
     }
-
-
 }

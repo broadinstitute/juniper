@@ -79,7 +79,10 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
             columnHeader =  moduleName + ExportFormatUtils.COLUMN_NAME_DELIMITER + cleanStableId;
             if (isOtherDescription) {
                 columnHeader += OTHER_DESCRIPTION_KEY_SUFFIX;
-            } else if (answerItemFormatter.isSplitOptionsIntoColumns()) {
+            } else if (answerItemFormatter.isSplitOptionsIntoColumns() && choice != null) {
+                // the null check above is because even when we are splitting options into columns, we might need to
+                // get a column header for the question as a whole (e.g. for the data dictionary), in which case
+                // we would call this method with a null choice
                 columnHeader += ExportFormatUtils.COLUMN_NAME_DELIMITER + choice.stableId();
             }
         }
@@ -136,7 +139,7 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
             if (itemFormatter instanceof PropertyItemFormatter) {
                 // it's a property of the SurveyResponse
                 valueMap.put(getColumnKey(itemFormatter, false, null, 1),
-                        itemFormatter.getExportString(matchedResponse));
+                        ((PropertyItemFormatter) itemFormatter).getExportString(matchedResponse));
             } else {
                 // it's an answer value
                 addAnswersToMap((AnswerItemFormatter) itemFormatter, answerMap, valueMap);

@@ -3,13 +3,14 @@ package bio.terra.pearl.core.service.export.formatters;
 import bio.terra.pearl.core.model.participant.MailingAddress;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
-import bio.terra.pearl.core.service.export.formatters.ProfileFormatter;
 import bio.terra.pearl.core.service.export.ExportOptions;
-import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
+import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import java.time.LocalDate;
 import java.util.Map;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import bio.terra.pearl.core.service.export.formatters.module.ProfileFormatter;
 import org.junit.jupiter.api.Test;
 
 public class ProfileFormatterTests {
@@ -24,9 +25,9 @@ public class ProfileFormatterTests {
                         .city("Boston")
                         .build())
                 .build();
-        ModuleExportInfo moduleExportInfo = new ProfileFormatter().getModuleExportInfo(new ExportOptions());
-        EnrolleeExportData exportData = new EnrolleeExportData(null, profile, null, null, null);
-        Map<String, String> enrolleeMap = moduleExportInfo.toStringMap(exportData);
+        ProfileFormatter moduleFormatter = new ProfileFormatter(new ExportOptions());
+        EnrolleeExportData exportData = new EnrolleeExportData(null, profile, null, null, null, null);
+        Map<String, String> enrolleeMap = moduleFormatter.toStringMap(exportData);
 
         assertThat(enrolleeMap.get("profile.familyName"), equalTo("Tester"));
         assertThat(enrolleeMap.get("profile.givenName"), equalTo("Bob"));
@@ -35,13 +36,14 @@ public class ProfileFormatterTests {
         assertThat(enrolleeMap.get("profile.mailingAddress.city"), equalTo("Boston"));
     }
 
+    @Test
     public void testToStringMapWithNoAddress() throws Exception {
         Profile profile = Profile.builder()
                 .familyName("Tester")
                 .build();
-        ModuleExportInfo moduleExportInfo = new ProfileFormatter().getModuleExportInfo(new ExportOptions());
-        EnrolleeExportData exportData = new EnrolleeExportData(null, profile, null, null, null);
-        Map<String, String> enrolleeMap = moduleExportInfo.toStringMap(exportData);
+        ProfileFormatter moduleFormatter = new ProfileFormatter(new ExportOptions());
+        EnrolleeExportData exportData = new EnrolleeExportData(null, profile, null, null, null, null);
+        Map<String, String> enrolleeMap = moduleFormatter.toStringMap(exportData);
 
         assertThat(enrolleeMap.get("profile.familyName"), equalTo("Tester"));
         assertThat(enrolleeMap.get("profile.mailingAddress.city"), equalTo(""));

@@ -22,12 +22,6 @@ public abstract class ItemFormatter<T> {
     protected String baseColumnKey;
     protected DataValueExportType dataType;
 
-    /**
-     * because we need to generate a tsv,
-     * we format everything as a string exactly as the characters should appear in the tsv,
-     * the metadata will include information on the actual data type
-     */
-    public abstract String getExportString(T bean);
 
     /** if this item maps to a single column in the export, this function is trivial.
      * Override this for itemFormatters that map to multiple columns */

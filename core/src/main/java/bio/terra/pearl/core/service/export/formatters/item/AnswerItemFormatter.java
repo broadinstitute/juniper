@@ -110,9 +110,4 @@ public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
             return super.getEmptyValue();
         }
     }
-
-    @Override
-    public String getExportString(SurveyResponse bean) {
-        return "";
-    }
 }
