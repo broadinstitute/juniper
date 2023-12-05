@@ -1,6 +1,7 @@
 # All env variables that are used in one place
 # This is for deployment-specific values, which may be managed by other teams
 env:
+  deploymentZone: ${DEPLOYMENT_ZONE:local}
   db:
     host: ${DATABASE_HOSTNAME:127.0.0.1}:5432
     init: ${INIT_DB:false}

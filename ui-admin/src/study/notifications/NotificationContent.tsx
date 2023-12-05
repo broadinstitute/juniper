@@ -56,7 +56,7 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
       {isLoading && <LoadingSpinner/>}
       {!isLoading && <div style={navDivStyle}>
         <ul className="list-unstyled">
-          { CONFIG_GROUPS.map(group => <li style={navListItemStyle}>
+          { CONFIG_GROUPS.map(group => <li style={navListItemStyle} key={group.title}>
             <CollapsableMenu header={group.title} headerClass="text-black" content={
               <ul className="list-unstyled p-2">
                 { configList

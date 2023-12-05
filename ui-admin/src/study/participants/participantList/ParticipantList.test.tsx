@@ -6,7 +6,6 @@ import Api, { EnrolleeSearchResult } from 'api/api'
 import { mockEnrolleeSearchResult, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import userEvent from '@testing-library/user-event'
-import { act } from 'react-dom/test-utils'
 import { KEYWORD_FACET } from 'api/enrolleeSearch'
 
 const mockSearchApi = (numSearchResults: number) => {
@@ -52,9 +51,7 @@ test('filters participants based on shortcode', async () => {
   await screen.findByText('JOSALK')
 
   //Search for some unknown shortcode
-  await act(() =>
-    userEvent.type(screen.getAllByPlaceholderText('Filter...')[0], 'UNKNOWN SHORTCODE')
-  )
+  await userEvent.type(screen.getAllByPlaceholderText('Filter...')[0], 'UNKNOWN SHORTCODE')
 
   //Assert that JOSALK is no longer visible in the table
   await waitFor(() => {
@@ -102,10 +99,10 @@ test('allows the user to cycle pages', async () => {
   expect(screen.getByText('Showing 10 of 100 rows')).toBeInTheDocument()
   expect(screen.getByText('Page 1 of 10')).toBeInTheDocument()
 
-  await act(() => userEvent.click(screen.getByLabelText('Next page')))
+  await userEvent.click(screen.getByLabelText('Next page'))
   expect(screen.getByText('Page 2 of 10')).toBeInTheDocument()
 
-  await act(() => userEvent.click(screen.getByLabelText('Previous page')))
+  await userEvent.click(screen.getByLabelText('Previous page'))
   expect(screen.getByText('Page 1 of 10')).toBeInTheDocument()
 })
 
@@ -122,7 +119,7 @@ test('allows the user to change the page size', async () => {
   expect(screen.getByText('Page 1 of 10')).toBeInTheDocument()
 
   jest.spyOn(Storage.prototype, 'setItem')
-  await act(() => userEvent.selectOptions(screen.getByLabelText('Number of rows per page'), '25'))
+  await userEvent.selectOptions(screen.getByLabelText('Number of rows per page'), '25')
   expect(screen.getByText('Showing 25 of 100 rows')).toBeInTheDocument()
   expect(screen.getByText('Page 1 of 4')).toBeInTheDocument()
 

@@ -12,19 +12,20 @@ export default function KitStatusCell(
   { kitRequest: KitRequest, infoPlacement?: Placement }
 ) {
   const infoTexts: Record<string, string> = {
-    'kit without label': 'Kit request has been received',
-    'queue': 'Shipping label has been printed',
-    'sent': 'Kit has been sent to the participant',
-    'received': 'Kit has been returned by the participant',
-    'error': 'There was a problem fulfilling this kit request',
-    'deactivated': 'Kit is deactivated'
+    'CREATED': 'Kit request received, has not yet shipped',
+    'QUEUE': 'Shipping label has been printed',
+    'SENT': 'Kit has been sent to the participant',
+    'RECEIVED': 'Kit has been returned by the participant',
+    'ERRORED': 'There was a problem fulfilling this kit request',
+    'DEACTIVATED': 'Kit is deactivated - no further processing will be done'
   }
-  const currentStatus = kitRequest.pepperStatus?.currentStatus
-  const info = currentStatus ? infoTexts[currentStatus.toLowerCase()] : ''
-  const errorMessage = kitRequest.pepperStatus?.errorMessage ? `: ${kitRequest.pepperStatus.errorMessage}` : ''
+  const currentStatus = kitRequest.status
+  const info = currentStatus ? infoTexts[currentStatus] : ''
+  const errorMessage = kitRequest.parsedExternalKit?.errorMessage ?
+      `: ${kitRequest.parsedExternalKit.errorMessage}` : ''
   const content = `${info}${errorMessage}`
   return <>
-    {kitRequest.pepperStatus?.currentStatus}
+    {kitRequest.status}
     {info && <InfoPopup content={content} placement={infoPlacement}/>}
   </>
 }

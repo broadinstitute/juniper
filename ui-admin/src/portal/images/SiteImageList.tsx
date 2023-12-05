@@ -14,10 +14,11 @@ import { LoadedPortalContextT } from '../PortalProvider'
 import { useLoadingEffect } from 'api/api-utils'
 import TableClientPagination from 'util/TablePagination'
 import { Modal } from 'react-bootstrap'
-import SiteImageUploadModal from './SiteImageUploadModal'
+import SiteImageUploadModal, { allowedImageTypes } from './SiteImageUploadModal'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { Button } from '../../components/forms/Button'
+import { Button } from 'components/forms/Button'
+import { renderPageHeader } from 'util/pageUtils'
 
 /** shows a list of images in a table */
 export default function SiteImageList({ portalContext, portalEnv }:
@@ -36,6 +37,9 @@ export default function SiteImageList({ portalContext, portalEnv }:
     setShowUploadModal(true)
   }
 
+  const supportsPreview = (image: SiteImageMetadata) => {
+    return allowedImageTypes.some(ext => image.cleanFileName.endsWith(ext))
+  }
 
   const columns: ColumnDef<SiteImageMetadata>[] = [{
     header: 'File name',
@@ -50,17 +54,19 @@ export default function SiteImageList({ portalContext, portalEnv }:
   }, {
     header: '',
     id: 'thumbnail',
-    cell: ({ row: { original: image } }) => <button onClick={() => setPreviewImage(image)}
-      style={{
-        minHeight: '44px', minWidth: '90px',
-        maxHeight: '44px', maxWidth: '90px'
-      }}
-      className="border-1 bg-white"
-      title="show full-size preview">
-      <img src={getImageUrl(portalContext.portal.shortcode, image.cleanFileName, image.version)}
-        style={{ maxHeight: '40px', maxWidth: '80px' }}
-      />
-    </button>
+    cell: ({ row: { original: image } }) => supportsPreview(image) ?
+      <button onClick={() => setPreviewImage(image)}
+        style={{
+          minHeight: '44px', minWidth: '90px',
+          maxHeight: '44px', maxWidth: '90px'
+        }}
+        className="border-1 bg-white"
+        title="show full-size preview">
+        <img src={getImageUrl(portalContext.portal.shortcode, image.cleanFileName, image.version)}
+          style={{ maxHeight: '40px', maxWidth: '80px' }}
+        />
+      </button> :
+      <span className="text-muted">no preview</span>
   }, {
     header: '',
     id: 'actions',
@@ -101,10 +107,11 @@ export default function SiteImageList({ portalContext, portalEnv }:
   }, [portalContext.portal.shortcode, portalEnv.environmentName])
 
 
-  return <div className="container p-3">
-    <h1 className="h4">Site images </h1>
-    <Button variant="secondary" onClick={() => setShowUploadModal(true)} >
-      <FontAwesomeIcon icon={faPlus}/> Add Image
+  return <div className="container-fluid px-4 py-2">
+    { renderPageHeader('Site Media')}
+    <Button onClick={() => setShowUploadModal(true)}
+      variant="light" className="border m-1">
+      <FontAwesomeIcon icon={faPlus} className="fa-lg"/> Upload
     </Button>
     <LoadingSpinner isLoading={isLoading}>
       {basicTableLayout(table)}

@@ -246,8 +246,8 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           >
             <FontAwesomeIcon icon={faPalette} className="fa-lg"/> Branding
           </Button>
-          <Link to="../images" className="btn btn-light border m-1">
-            <FontAwesomeIcon icon={faImage} className="fa-lg"/> Manage images
+          <Link to="../media" className="btn btn-light border m-1">
+            <FontAwesomeIcon icon={faImage} className="fa-lg"/> Manage media
           </Link>
           { portalEnv.preRegSurveyId &&
             <Link to={'../forms/preReg'} className="btn btn-light border m-1">
