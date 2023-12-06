@@ -5,7 +5,7 @@ import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons'
 import { modeToDateRange, LabeledDateRangeMode } from './metricUtils'
 
 /**
- *
+ * Shows a list of summary stats for a metric
  */
 export default function MetricSummary({ metricData, dateRangeMode }: {
   metricData: BasicMetricDatum[], dateRangeMode: LabeledDateRangeMode
@@ -30,7 +30,7 @@ export default function MetricSummary({ metricData, dateRangeMode }: {
 }
 
 /**
- * Returns a card that shows a metric summary.
+ * Returns a card that shows a value for a metric summary
  */
 export const MetricSummaryCard = ({ title, value, isTrend }: { title: string, value: number, isTrend?: boolean }) => {
   return <div className="card mb-2">

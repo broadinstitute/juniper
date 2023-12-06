@@ -17,17 +17,20 @@ export default function MetricGraph({ metricData, dateRangeMode }: {
   const dateRange = modeToDateRange({ dateRangeMode })
 
   return <>
-    { hasDataToPlot ? <Plot
-      className="w-100"
-      // eslint-disable-next-line
-      data={plotlyTraces as any ?? []}
-      layout={{
-        autosize: true, yaxis: { rangemode: 'tozero', autorange: true },
-        xaxis: { range: dateRange ? unixToPlotlyDateRange(dateRange) : undefined } //undefined uses auto-range
-      }}
-    /> : <div className="d-flex justify-content-center align-items-center h-100">
-      <span className="text-muted fst-italic">No data</span>
-    </div>}
+    { hasDataToPlot ?
+      <Plot
+        className="w-100"
+        // eslint-disable-next-line
+        data={plotlyTraces as any ?? []}
+        layout={{
+          autosize: true, yaxis: { rangemode: 'tozero', autorange: true },
+          xaxis: { range: dateRange ? unixToPlotlyDateRange(dateRange) : undefined } //undefined defaults to autorange
+        }}
+      /> :
+      <div className="d-flex justify-content-center align-items-center h-100">
+        <span className="text-muted fst-italic">No data</span>
+      </div>
+    }
   </>
 }
 
