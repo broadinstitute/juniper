@@ -69,6 +69,9 @@ public class PortalParticipantUserDao extends BaseJdbiDao<PortalParticipantUser>
         return findAllByProperty("profile_id", profileId);
     }
 
+    public Optional<PortalParticipantUser> findByParticipantUserIdAndProfileId(UUID userId, UUID profileId) {
+        return findByTwoProperties("participant_user_id", userId, "profile_id", profileId);
+    }
 
 
     /**

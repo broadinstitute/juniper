@@ -288,29 +288,27 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             log.error("Unable to serialize status JSON for kit %s: %s".formatted(kit.getId(), pepperKit.toString()), e);
         }
         try {
-            notifyKitStatus(kit, priorStatus);
+            notifyKitStatusChange(kit, priorStatus);
         } catch (Exception e) {
             log.error("Error publishing kit status event for KitRequest enrollee %s".formatted(kit.getEnrolleeId()), e);
         }
     }
 
-    protected void notifyKitStatus(KitRequest kitRequest, KitRequestStatus priorStatus) {
+    protected void notifyKitStatusChange(KitRequest kitRequest, KitRequestStatus priorStatus) {
         // only notify on status change
         if (priorStatus == kitRequest.getStatus()) {
             return;
         }
+        // for now, only notify when the kit is sent
         if (!KitRequestStatus.SENT.equals(kitRequest.getStatus())) {
             return;
         }
 
         Enrollee enrollee = enrolleeService.find(kitRequest.getEnrolleeId()).orElseThrow(() ->
                 new IllegalStateException("Invalid enrollee for KitRequest %s: enrollee ID=%s".formatted(kitRequest.getId(), kitRequest.getEnrolleeId())));
-        List<PortalParticipantUser> ppUsers = portalParticipantUserService.findByParticipantUserId(enrollee.getParticipantUserId());
-        if (ppUsers.size() != 1) {
-            throw new IllegalStateException("Invalid portal participant user for enrollee %s: count=%d".formatted(enrollee.getShortcode(), ppUsers.size()));
-        }
+        PortalParticipantUser ppUser = portalParticipantUserService.findForEnrollee(enrollee);
 
-        eventService.publishKitStatusEvent(kitRequest, enrollee, ppUsers.get(0), priorStatus);
+        eventService.publishKitStatusEvent(kitRequest, enrollee, ppUser, priorStatus);
     }
 
     private final EnrolleeService enrolleeService;

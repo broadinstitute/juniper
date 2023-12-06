@@ -248,7 +248,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
             return null;
         });
 
-        kitRequestService.notifyKitStatus(kitRequest, KitRequestStatus.CREATED);
+        kitRequestService.notifyKitStatusChange(kitRequest, KitRequestStatus.CREATED);
     }
 
     @Transactional
