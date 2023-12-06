@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { Dispatch, SetStateAction, useId } from 'react'
 
 /**
  * helper function for setting up an accessible react-select component, returns the currently selected item, and a
@@ -12,14 +12,13 @@ import { useId, useState } from 'react'
  *
  * */
 export default function useReactSingleSelect<T>(items: T[],
-  labelFunction: (i: T) => {label: string, value: T},
-  initialValue?: T) {
-  const [selectedItem, setSelectedItem] = useState(initialValue)
+  labelFunction: (i: T) => {label: React.ReactNode, value: T},
+  setSelectedItem: Dispatch<SetStateAction<T | undefined>>, selectedItem?: T) {
   const options = items.map(labelFunction)
   const selectedValue = selectedItem ? labelFunction(selectedItem).value : undefined
   const selectedOption = options.find(opt => opt.value === selectedValue)
   const selectInputId = useId()
 
-  const onChange = (opt: {label: string, value: T} | null) => setSelectedItem(opt?.value)
-  return { onChange, options, selectedItem, selectedOption, selectInputId }
+  const onChange = (opt: {label: React.ReactNode, value: T} | null) => setSelectedItem(opt?.value)
+  return { onChange, options, selectedOption, selectInputId }
 }

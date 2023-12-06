@@ -9,8 +9,7 @@ describe('AddPageModal', () => {
   test('disables Create button when title and path aren\'t filled out', async () => {
     //Arrange
     const { RoutedComponent } = setupRouterTest(<AddPageModal
-      show={true}
-      setShow={jest.fn()}
+      onDismiss={jest.fn()}
       insertNewPage={jest.fn()}
       portalEnv={mockPortalEnvironment('sandbox')}
       portalShortcode={'test'}
@@ -26,8 +25,7 @@ describe('AddPageModal', () => {
   test('enables Create button when title and path are filled out', async () => {
     //Arrange
     const { RoutedComponent } = setupRouterTest(<AddPageModal
-      show={true}
-      setShow={jest.fn()}
+      onDismiss={jest.fn()}
       insertNewPage={jest.fn()}
       portalEnv={mockPortalEnvironment('sandbox')}
       portalShortcode={'test'}
@@ -51,8 +49,7 @@ describe('AddPageModal', () => {
     //Arrange
     const mockInsertNewPageFn = jest.fn()
     const { RoutedComponent } = setupRouterTest(<AddPageModal
-      show={true}
-      setShow={jest.fn()}
+      onDismiss={jest.fn()}
       insertNewPage={mockInsertNewPageFn}
       portalEnv={mockPortalEnvironment('sandbox')}
       portalShortcode={'test'}
