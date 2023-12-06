@@ -2,19 +2,17 @@ import React from 'react'
 import { BasicMetricDatum } from 'api/api'
 import { cloneDeep } from 'lodash'
 import Plot from 'react-plotly.js'
-import { modeToDateRange, LabeledDateRangeMode, unixToPlotlyDateRange } from './metricUtils'
+import {modeToDateRange, LabeledDateRangeMode, unixToPlotlyDateRange, MetricDateRange} from './metricUtils'
 
 /**
  * Shows a plot for a specified metric.  Handles fetching the raw metrics from the server, transforming them to
  * plotly traces, and then rendering a graph
  */
-export default function MetricGraph({ metricData, dateRangeMode }: {
-  metricData?: BasicMetricDatum[], dateRangeMode: LabeledDateRangeMode
+export default function MetricGraph({ metricData, dateRange }: {
+  metricData?: BasicMetricDatum[], dateRange?: MetricDateRange
 }) {
   const plotlyTraces = makePlotlyTraces(metricData || [])
-
   const hasDataToPlot = !!plotlyTraces?.length && plotlyTraces[0].x.length
-  const dateRange = modeToDateRange({ dateRangeMode })
 
   return <>
     { hasDataToPlot ?

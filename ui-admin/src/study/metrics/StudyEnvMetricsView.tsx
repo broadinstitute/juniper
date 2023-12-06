@@ -1,12 +1,12 @@
-import React, { useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { renderPageHeader } from 'util/pageUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons'
 import { Button } from 'components/forms/Button'
 import MetricView from './MetricView'
-import { LabeledDateRangeMode } from './metricUtils'
-import MetricDateRangeModal from "./MetricDateRangeModal";
+import {LabeledDateRangeMode, MetricDateRange, modeToDateRange} from './metricUtils'
+import MetricDateRangeModal from './MetricDateRangeModal'
 
 export type MetricInfo = {
   name: string,
@@ -30,6 +30,14 @@ export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContex
   const [showDateRangePicker, setShowDateRangePicker] = useState(false)
   const [selectedDateRangeMode,
     setSelectedDateRangeMode] = useState<LabeledDateRangeMode>({ label: 'Last Month', mode: 'LAST_MONTH' })
+  const [dateRange, setDateRange] = useState<MetricDateRange | undefined>(
+    modeToDateRange({ dateRangeMode: { label: 'Last Month', mode: 'LAST_MONTH' }})!)
+
+  useEffect(() => {
+    if (selectedDateRangeMode.mode !== 'CUSTOM') {
+      setDateRange(modeToDateRange({ dateRangeMode: selectedDateRangeMode }))
+    }
+  }, [selectedDateRangeMode])
 
   const metricsByName = metricMetadata.reduce<Record<string, MetricInfo>>((prev,
     current) => {
@@ -50,20 +58,21 @@ export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContex
         { showDateRangePicker &&
           <MetricDateRangeModal
             onDismiss={() => setShowDateRangePicker(false)}
+            setDateRange={setDateRange}
+            dateRange={dateRange!}
             setSelectedDateRangeMode={setSelectedDateRangeMode}
             selectedDateRangeMode={selectedDateRangeMode}
           /> }
       </div>
     </div>
-    <div className="row my-4">
-      <div className="col-7">
-        { metricMetadata.map(metric => {
-          return <MetricView key={metric.name}
-            studyEnvContext={studyEnvContext}
-            metricInfo={metricsByName[metric.name]}
-            dateRangeMode={selectedDateRangeMode}/>
-        })}
-      </div>
+    <div className="row my-4 w-75">
+      { metricMetadata.map(metric => {
+        return <MetricView key={metric.name}
+          studyEnvContext={studyEnvContext}
+          metricInfo={metricsByName[metric.name]}
+          dateRange={dateRange}
+          dateRangeMode={selectedDateRangeMode}/>
+      })}
     </div>
   </div>
 }

@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Modal from 'react-bootstrap/Modal'
 import { Button } from 'components/forms/Button'
-import { LabeledDateRangeMode } from './metricUtils'
+import { LabeledDateRangeMode, MetricDateRange } from './metricUtils'
 
 const dateRangeRadioPicker = ({ selectedDateRangeMode, onDateSelect } : {
   selectedDateRangeMode: LabeledDateRangeMode
@@ -32,10 +32,16 @@ const dateRangeRadioPicker = ({ selectedDateRangeMode, onDateSelect } : {
 /**
  * Modal for selecting a date range for a MetricView
  */
-export default function MetricDateRangeModal({ selectedDateRangeMode, setSelectedDateRangeMode, onDismiss }: {
-  selectedDateRangeMode: LabeledDateRangeMode,
+export default function MetricDateRangeModal({
+  setDateRange, dateRange,
+  selectedDateRangeMode, setSelectedDateRangeMode, onDismiss
+}: {
+  selectedDateRangeMode: LabeledDateRangeMode, setDateRange: (dateRange: MetricDateRange) => void,
+  dateRange: MetricDateRange,
   onDismiss: () => void, setSelectedDateRangeMode: (dateRangeMode: LabeledDateRangeMode) => void
 }) {
+  const [customDateRange, setCustomDateRange] = useState<MetricDateRange>(dateRange)
+
   return <Modal show={true} className="modal" onHide={onDismiss}>
     <Modal.Header closeButton>
       <Modal.Title>Select date range</Modal.Title>
@@ -45,11 +51,36 @@ export default function MetricDateRangeModal({ selectedDateRangeMode, setSelecte
         selectedDateRangeMode,
         onDateSelect: setSelectedDateRangeMode
       }) }
+      { selectedDateRangeMode.mode === 'CUSTOM' &&
+        <div className="row">
+          <div className="col">
+            <label className="form-label mt-3" htmlFor="startDate">
+              Start date
+            </label>
+            <input type="date" size={20} id="startDate" className="form-control"
+              onChange={e =>
+                setCustomDateRange({ ...customDateRange, startDate: new Date(e.target.value).getTime() })
+              }/>
+          </div>
+          <div className="col">
+            <label className="form-label mt-3" htmlFor="endDate">
+              End date
+            </label>
+            <input type="date" size={20} id="endDate" className="form-control"
+              onChange={e =>
+                setCustomDateRange({ ...customDateRange, endDate: new Date(e.target.value).getTime() })
+              }/>
+          </div>
+        </div>
+      }
     </Modal.Body>
     <Modal.Footer>
       <Button variant="primary"
         onClick={() => {
           setSelectedDateRangeMode(selectedDateRangeMode)
+          if (selectedDateRangeMode.mode === 'CUSTOM') {
+            setDateRange(customDateRange)
+          }
           onDismiss()
         }}>Done</Button>
     </Modal.Footer>

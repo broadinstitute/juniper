@@ -11,13 +11,14 @@ import { faClipboard } from '@fortawesome/free-solid-svg-icons'
 import InfoPopup from 'components/forms/InfoPopup'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { instantToDefaultString } from 'util/timeUtils'
-import { LabeledDateRangeMode, METRIC_EXPORT_DELIMITER } from './metricUtils'
+import {LabeledDateRangeMode, METRIC_EXPORT_DELIMITER, MetricDateRange} from './metricUtils'
 
 /**
  * Shows a graph and summary for a metric.
  */
-export default function MetricView({ studyEnvContext, metricInfo, dateRangeMode }: {
-  studyEnvContext: StudyEnvContextT, metricInfo: MetricInfo, dateRangeMode: LabeledDateRangeMode
+export default function MetricView({ studyEnvContext, metricInfo, dateRange, dateRangeMode }: {
+  studyEnvContext: StudyEnvContextT, metricInfo: MetricInfo,
+  dateRange?: MetricDateRange, dateRangeMode: LabeledDateRangeMode
 }) {
   const [metricData, setMetricData] = useState<BasicMetricDatum[]>([])
 
@@ -40,7 +41,7 @@ export default function MetricView({ studyEnvContext, metricInfo, dateRangeMode 
 
   return <div className="container mb-2">
     <LoadingSpinner isLoading={isLoading}>
-      <div className="d-flex">
+      <div className="d-flex align-items-baselin">
         <h2 className="h5">{metricInfo.title}</h2>
         { metricInfo.tooltip && <InfoPopup content={metricInfo.tooltip} /> }
         <Button
@@ -54,10 +55,10 @@ export default function MetricView({ studyEnvContext, metricInfo, dateRangeMode 
       <div className="container-fluid border">
         <div className="row">
           <div className="col border">
-            <MetricGraph metricData={metricData} dateRangeMode={dateRangeMode}/>
+            <MetricGraph metricData={metricData} dateRange={dateRange}/>
           </div>
           <div className="col-3 border">
-            <MetricSummary metricData={metricData ?? []} dateRangeMode={dateRangeMode}/>
+            <MetricSummary metricData={metricData ?? []} dateRange={dateRange} dateRangeMode={dateRangeMode}/>
           </div>
         </div>
       </div>

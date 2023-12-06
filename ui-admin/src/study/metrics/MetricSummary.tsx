@@ -2,16 +2,15 @@ import React from 'react'
 import { BasicMetricDatum } from 'api/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons'
-import { modeToDateRange, LabeledDateRangeMode } from './metricUtils'
+import {modeToDateRange, LabeledDateRangeMode, MetricDateRange} from './metricUtils'
 
 /**
  * Shows a list of summary stats for a metric
  */
-export default function MetricSummary({ metricData, dateRangeMode }: {
-  metricData: BasicMetricDatum[], dateRangeMode: LabeledDateRangeMode
+export default function MetricSummary({ metricData, dateRange, dateRangeMode }: {
+  metricData: BasicMetricDatum[], dateRange?: MetricDateRange, dateRangeMode: LabeledDateRangeMode
 }) {
   const getFilteredMetrics = () => {
-    const dateRange = modeToDateRange({ dateRangeMode })
     if (dateRangeMode.mode === 'ALL_TIME' || !dateRange) { return metricData }
 
     return metricData.filter(metric => {
