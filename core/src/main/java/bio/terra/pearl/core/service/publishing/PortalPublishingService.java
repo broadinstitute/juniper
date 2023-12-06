@@ -178,12 +178,7 @@ public class PortalPublishingService {
     protected void applyAlertChanges(ParticipantDashboardAlert alert, List<ConfigChange> changes) {
         try {
             for (ConfigChange alertChange : changes) {
-                //The 'type' property is an enum, so we need to handle it differently than the other properties
-                if(alertChange.propertyName().equals("type")) {
-                    PropertyUtils.setProperty(alert, alertChange.propertyName(), AlertType.valueOf(alertChange.newValue().toString()));
-                } else {
-                    PropertyUtils.setProperty(alert, alertChange.propertyName(), alertChange.newValue());
-                }
+                PublishingUtils.setPropertyEnumSafe(alert, alertChange.propertyName(), alertChange.newValue());
             }
         } catch (Exception e) {
             throw new RuntimeException("Error applying changes to alert: " + alert.getId(), e);
