@@ -1,98 +1,34 @@
-import React, { useState } from 'react'
-import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import Api, { BasicMetricDatum } from 'api/api'
-import LoadingSpinner from 'util/LoadingSpinner'
+import React from 'react'
+import { BasicMetricDatum } from 'api/api'
 import { cloneDeep } from 'lodash'
-import { MetricInfo } from './StudyEnvMetricsView'
 import Plot from 'react-plotly.js'
-import { dateMinusDays, instantToDefaultString } from 'util/timeUtils'
-import { useLoadingEffect } from 'api/api-utils'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faClipboard } from '@fortawesome/free-solid-svg-icons'
-import { Button } from 'components/forms/Button'
-import InfoPopup from 'components/forms/InfoPopup'
-import MetricSummary from './MetricSummary'
-
-const EXPORT_DELIMITER = '\t'
-
-export type DateRangeMode = 'ALL_TIME' | 'LAST_MONTH' | 'LAST_WEEK' | 'LAST_24_HOURS'
-
-export type LabeledDateRangeMode = {
-  label: string,
-  mode: DateRangeMode
-}
-
-export type MetricDateRange = {
-  startDate: number,
-  endDate: number
-}
+import { modeToDateRange, LabeledDateRangeMode, unixToPlotlyDateRange } from './metricUtils'
 
 /**
  * Shows a plot for a specified metric.  Handles fetching the raw metrics from the server, transforming them to
  * plotly traces, and then rendering a graph
  */
-export default function MetricGraph({ studyEnvContext, metricInfo, dateRangeMode }: {
-  studyEnvContext: StudyEnvContextT, metricInfo: MetricInfo, dateRangeMode: LabeledDateRangeMode
+export default function MetricGraph({ metricData, dateRangeMode }: {
+  metricData?: BasicMetricDatum[], dateRangeMode: LabeledDateRangeMode
 }) {
-  const [metricData, setMetricData] = useState<BasicMetricDatum[] | null>(null)
-  const [plotlyTraces, setPlotlyTraces] = useState<PlotlyTimeTrace[] | null>(null)
-
-  const { isLoading } = useLoadingEffect(async () => {
-    const result = await Api.fetchMetric(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
-      studyEnvContext.currentEnv.environmentName, metricInfo.name)
-    setPlotlyTraces(makePlotlyTraces(result))
-    setMetricData(result)
-  }, [metricInfo.name, studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
-
-  const copyRawData = () => {
-    if (!metricData) {
-      return
-    }
-    let dataString = `${['name', 'subcategory', 'time'].join(EXPORT_DELIMITER)  }\n`
-    dataString += metricData.map(metricDatum =>
-      [metricInfo.name, metricDatum.subcategory, instantToDefaultString(metricDatum.time)].join(EXPORT_DELIMITER)
-    ).join('\n')
-    navigator.clipboard.writeText(dataString)
-  }
+  const plotlyTraces = makePlotlyTraces(metricData || [])
 
   const hasDataToPlot = !!plotlyTraces?.length && plotlyTraces[0].x.length
-  const dateRange = getDateRangeFromMode({ dateRangeMode })
+  const dateRange = modeToDateRange({ dateRangeMode })
 
-  return <div className="container p-2 w-75">
-    <LoadingSpinner isLoading={isLoading}>
-      <div className="d-flex align-items-baseline">
-        <h2 className="h5">{metricInfo.title}</h2>
-        { metricInfo.tooltip && <InfoPopup content={metricInfo.tooltip} /> }
-        <Button
-          variant="secondary"
-          tooltip={'Copy raw data to clipboard'}
-          onClick={copyRawData}
-        >
-          <FontAwesomeIcon icon={faClipboard} className={'fa-regular'} />
-        </Button>
-      </div>
-      <div className="container-fluid border">
-        <div className="row">
-          <div className="col border w-100">
-            { hasDataToPlot ? <Plot
-              className="w-100"
-              // eslint-disable-next-line
-              data={plotlyTraces as any ?? []}
-              layout={{
-                autosize: true, yaxis: { rangemode: 'tozero', autorange: true },
-                xaxis: { range: dateRange ? unixToPlotlyDateRange(dateRange) : undefined } //undefined means auto-range
-              }}
-            /> : <div className="d-flex justify-content-center align-items-center h-100">
-              <span className="text-muted fst-italic">No data</span>
-            </div>}
-          </div>
-          <div className="col-3 border">
-            <MetricSummary metrics={metricData ?? []} dateRangeMode={dateRangeMode}/>
-          </div>
-        </div>
-      </div>
-    </LoadingSpinner>
-  </div>
+  return <>
+    { hasDataToPlot ? <Plot
+      className="w-100"
+      // eslint-disable-next-line
+      data={plotlyTraces as any ?? []}
+      layout={{
+        autosize: true, yaxis: { rangemode: 'tozero', autorange: true },
+        xaxis: { range: dateRange ? unixToPlotlyDateRange(dateRange) : undefined } //undefined uses auto-range
+      }}
+    /> : <div className="d-flex justify-content-center align-items-center h-100">
+      <span className="text-muted fst-italic">No data</span>
+    </div>}
+  </>
 }
 
 type PlotlyTimeTrace = {
@@ -138,32 +74,4 @@ export const makePlotlyTraces = (metrics: BasicMetricDatum[]): PlotlyTimeTrace[]
     trace.y.push(trace.x.length + trace.yOffset)
   }
   return Object.values(tracesByName)
-}
-
-/**
- *
- */
-export function getDateRangeFromMode({ dateRangeMode }: {
-  dateRangeMode: LabeledDateRangeMode
-}): MetricDateRange | undefined {
-  const currentDate = new Date()
-  switch (dateRangeMode.mode) {
-    case 'ALL_TIME':
-      return undefined
-    case 'LAST_MONTH':
-      return { startDate: dateMinusDays(currentDate, 30).getTime(), endDate: currentDate.getTime() }
-    case 'LAST_WEEK':
-      return { startDate: dateMinusDays(currentDate, 7).getTime(), endDate: currentDate.getTime() }
-    case 'LAST_24_HOURS':
-      return { startDate: dateMinusDays(currentDate, 1).getTime(), endDate: currentDate.getTime() }
-  }
-}
-
-/**
- * Converts a MetricDateRange to a tuple of ISO date strings, suitable for passing to Plotly
- */
-export const unixToPlotlyDateRange = (dateRange: MetricDateRange): [string, string] => {
-  const startDate = dateRange.startDate ? new Date(dateRange.startDate) : undefined
-  const endDate = dateRange.endDate ? new Date(dateRange.endDate) : undefined
-  return [startDate?.toISOString() ?? '', endDate?.toISOString() ?? '']
 }

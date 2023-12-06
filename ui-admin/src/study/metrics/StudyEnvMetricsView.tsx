@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import MetricGraph, { LabeledDateRangeMode, unixToPlotlyDateRange } from './MetricGraph'
 import { renderPageHeader } from 'util/pageUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons'
-import { Button } from '../../components/forms/Button'
-import Plot from 'react-plotly.js'
-import MetricSummary from './MetricSummary'
+import { Button } from 'components/forms/Button'
+import MetricView from './MetricView'
+import { LabeledDateRangeMode } from './metricUtils'
 
 export type MetricInfo = {
   name: string,
@@ -89,7 +88,7 @@ export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContex
     <div className="row my-2">
       <div className="mt-2">
         { metricMetadata.map(metric => {
-          return <MetricGraph key={metric.name}
+          return <MetricView key={metric.name}
             studyEnvContext={studyEnvContext}
             metricInfo={metricsByName[metric.name]}
             dateRangeMode={selectedDateRangeMode}/>
