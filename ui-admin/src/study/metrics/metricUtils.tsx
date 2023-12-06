@@ -1,6 +1,6 @@
 import { dateMinusDays } from 'util/timeUtils'
 
-export type DateRangeMode = 'ALL_TIME' | 'LAST_MONTH' | 'LAST_WEEK' | 'LAST_24_HOURS'
+export type DateRangeMode = 'ALL_TIME' | 'LAST_MONTH' | 'LAST_WEEK' | 'LAST_24_HOURS' | 'CUSTOM'
 
 export type LabeledDateRangeMode = {
   label: string,
@@ -30,6 +30,8 @@ export function modeToDateRange({ dateRangeMode }: {
       return { startDate: dateMinusDays(currentDate, 7).getTime(), endDate: currentDate.getTime() }
     case 'LAST_24_HOURS':
       return { startDate: dateMinusDays(currentDate, 1).getTime(), endDate: currentDate.getTime() }
+    case 'CUSTOM':
+      return undefined
   }
 }
 

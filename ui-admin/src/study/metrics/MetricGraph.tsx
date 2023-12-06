@@ -19,11 +19,13 @@ export default function MetricGraph({ metricData, dateRangeMode }: {
   return <>
     { hasDataToPlot ?
       <Plot
+        config={{ responsive: true }}
         className="w-100"
         // eslint-disable-next-line
         data={plotlyTraces as any ?? []}
         layout={{
-          autosize: true, yaxis: { rangemode: 'tozero', autorange: true },
+          autosize: false,
+          yaxis: { rangemode: 'tozero', autorange: true },
           xaxis: { range: dateRange ? unixToPlotlyDateRange(dateRange) : undefined } //undefined defaults to autorange
         }}
       /> :

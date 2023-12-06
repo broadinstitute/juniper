@@ -6,6 +6,7 @@ import { faCalendarDays } from '@fortawesome/free-solid-svg-icons'
 import { Button } from 'components/forms/Button'
 import MetricView from './MetricView'
 import { LabeledDateRangeMode } from './metricUtils'
+import MetricDateRangeModal from "./MetricDateRangeModal";
 
 export type MetricInfo = {
   name: string,
@@ -24,33 +25,6 @@ const metricMetadata: MetricInfo[] = [
   { name: 'STUDY_SURVEY_COMPLETION', title: 'Total Surveys Completed' }
 ]
 
-const dateRangeRadioPicker = ({ selectedDateRangeMode, onDateSelect, onDismiss } : {
-  selectedDateRangeMode: LabeledDateRangeMode
-  onDateSelect: (dateRangeMode: LabeledDateRangeMode) => void
-  onDismiss: () => void
-}) => {
-  const dateRangeOptions: LabeledDateRangeMode[] = [
-    { label: 'All Time', mode: 'ALL_TIME' },
-    { label: 'Last Month', mode: 'LAST_MONTH' },
-    { label: 'Last Week', mode: 'LAST_WEEK' },
-    { label: 'Last 24 Hours', mode: 'LAST_24_HOURS' }
-  ]
-
-  return dateRangeOptions.map((dateRangeOption, index) => {
-    return <div className="form-check" key={index}>
-      <input className="form-check-input" type="radio" name="plotTimeRange" id={`dateRange-${index}`}
-        checked={selectedDateRangeMode.mode === dateRangeOption.mode}
-        onChange={() => {
-          onDateSelect(dateRangeOption)
-          onDismiss()
-        }}/>
-      <label className="form-check-label" htmlFor={`dateRange-${index}`}>
-        {dateRangeOption.label}
-      </label>
-    </div>
-  })
-}
-
 /** shows summary stats for the study.  very simple for now--this will eventually have charts and graphs */
 export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const [showDateRangePicker, setShowDateRangePicker] = useState(false)
@@ -68,25 +42,21 @@ export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContex
       <h4>{studyEnvContext.study.name} Summary
         <span className="fst-italic text-muted ms-3">({studyEnvContext.currentEnv.environmentName})</span>
       </h4>
-      <div className="position-relative ms-auto me-2 ms-2">
+      <div className="me-2 ms-2">
         <Button onClick={() => setShowDateRangePicker(!showDateRangePicker)}
           variant="light" className="border mb-1">
           <FontAwesomeIcon icon={faCalendarDays} className="fa-lg"/> Edit date range
         </Button>
-        { showDateRangePicker && <div className="position-absolute border border-gray rounded bg-white p-3"
-          style={{ right: 0 }}>
-          <div className="border-b border-black">
-            { dateRangeRadioPicker({
-              selectedDateRangeMode,
-              onDateSelect: setSelectedDateRangeMode,
-              onDismiss: () => setShowDateRangePicker(false)
-            }) }
-          </div>
-        </div> }
+        { showDateRangePicker &&
+          <MetricDateRangeModal
+            onDismiss={() => setShowDateRangePicker(false)}
+            setSelectedDateRangeMode={setSelectedDateRangeMode}
+            selectedDateRangeMode={selectedDateRangeMode}
+          /> }
       </div>
     </div>
-    <div className="row my-2">
-      <div className="mt-2">
+    <div className="row my-4">
+      <div className="col-7">
         { metricMetadata.map(metric => {
           return <MetricView key={metric.name}
             studyEnvContext={studyEnvContext}

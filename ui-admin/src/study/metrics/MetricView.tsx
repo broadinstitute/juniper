@@ -38,9 +38,9 @@ export default function MetricView({ studyEnvContext, metricInfo, dateRangeMode 
     navigator.clipboard.writeText(dataString)
   }
 
-  return <div className="container p-2 w-75">
+  return <div className="container mb-2">
     <LoadingSpinner isLoading={isLoading}>
-      <div className="d-flex align-items-baseline">
+      <div className="d-flex">
         <h2 className="h5">{metricInfo.title}</h2>
         { metricInfo.tooltip && <InfoPopup content={metricInfo.tooltip} /> }
         <Button
