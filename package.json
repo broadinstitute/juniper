@@ -28,8 +28,5 @@
   },
   "scripts": {
     "lint": "eslint --max-warnings=0 e2e-tests ui-admin/src ui-core/src ui-participant/src"
-  },
-  "dependencies": {
-    "react-date-picker": "^10.5.2"
   }
 }
