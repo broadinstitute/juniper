@@ -4,7 +4,7 @@ import SurveyEditorView from './SurveyEditorView'
 import { getFormDraftKey } from 'forms/designer/utils/formDraftUtils'
 import { VersionedForm } from '@juniper/ui-core'
 import { mockStudyEnvContext } from 'test-utils/mocking-utils'
-import {setupRouterTest} from "../../test-utils/router-testing-utils";
+import { setupRouterTest } from '../../test-utils/router-testing-utils'
 
 describe('SurveyEditorView', () => {
   const mockForm: VersionedForm = {
@@ -24,10 +24,10 @@ describe('SurveyEditorView', () => {
 
     jest.spyOn(Storage.prototype, 'getItem')
     const { RoutedComponent } = setupRouterTest(<SurveyEditorView
-        studyEnvContext={mockStudyEnvContext()}
-        currentForm={mockForm}
-        onCancel={jest.fn()}
-        onSave={jest.fn()}
+      studyEnvContext={mockStudyEnvContext()}
+      currentForm={mockForm}
+      onCancel={jest.fn()}
+      onSave={jest.fn()}
     />)
     render(RoutedComponent)
 
@@ -43,10 +43,10 @@ describe('SurveyEditorView', () => {
     jest.spyOn(Storage.prototype, 'getItem')
 
     const { RoutedComponent } = setupRouterTest(<SurveyEditorView
-        studyEnvContext={mockStudyEnvContext()}
-        currentForm={mockForm}
-        onCancel={jest.fn()}
-        onSave={jest.fn()}
+      studyEnvContext={mockStudyEnvContext()}
+      currentForm={mockForm}
+      onCancel={jest.fn()}
+      onSave={jest.fn()}
     />)
     render(RoutedComponent)
 
@@ -58,10 +58,10 @@ describe('SurveyEditorView', () => {
   test('allows the user to download the JSON file', async () => {
     //Arrange
     const { RoutedComponent } = setupRouterTest(<SurveyEditorView
-        studyEnvContext={mockStudyEnvContext()}
-        currentForm={mockForm}
-        onCancel={jest.fn()}
-        onSave={jest.fn()}
+      studyEnvContext={mockStudyEnvContext()}
+      currentForm={mockForm}
+      onCancel={jest.fn()}
+      onSave={jest.fn()}
     />)
     render(RoutedComponent)
 

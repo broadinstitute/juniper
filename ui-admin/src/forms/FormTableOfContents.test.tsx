@@ -1,7 +1,7 @@
 import { FormContent } from '@juniper/ui-core'
 
 import { getTableOfContentsTree } from './FormTableOfContents'
-import React from "react";
+import React from 'react'
 
 const formContent: FormContent = {
   title: 'Test Survey',
