@@ -4,6 +4,7 @@ import SurveyEditorView from './SurveyEditorView'
 import { getFormDraftKey } from 'forms/designer/utils/formDraftUtils'
 import { VersionedForm } from '@juniper/ui-core'
 import { mockStudyEnvContext } from 'test-utils/mocking-utils'
+import {setupRouterTest} from "../../test-utils/router-testing-utils";
 
 describe('SurveyEditorView', () => {
   const mockForm: VersionedForm = {
@@ -22,13 +23,13 @@ describe('SurveyEditorView', () => {
     localStorage.setItem(FORM_DRAFT_KEY, JSON.stringify({}))
 
     jest.spyOn(Storage.prototype, 'getItem')
-
-    render(<SurveyEditorView
-      studyEnvContext={mockStudyEnvContext()}
-      currentForm={mockForm}
-      onCancel={jest.fn()}
-      onSave={jest.fn()}
+    const { RoutedComponent } = setupRouterTest(<SurveyEditorView
+        studyEnvContext={mockStudyEnvContext()}
+        currentForm={mockForm}
+        onCancel={jest.fn()}
+        onSave={jest.fn()}
     />)
+    render(RoutedComponent)
 
     //Assert
     const modalHeader = screen.getByText('Survey Draft Loaded')
@@ -41,12 +42,13 @@ describe('SurveyEditorView', () => {
 
     jest.spyOn(Storage.prototype, 'getItem')
 
-    render(<SurveyEditorView
-      studyEnvContext={mockStudyEnvContext()}
-      currentForm={mockForm}
-      onCancel={jest.fn()}
-      onSave={jest.fn()}
+    const { RoutedComponent } = setupRouterTest(<SurveyEditorView
+        studyEnvContext={mockStudyEnvContext()}
+        currentForm={mockForm}
+        onCancel={jest.fn()}
+        onSave={jest.fn()}
     />)
+    render(RoutedComponent)
 
     //Assert
     expect(localStorage.getItem).toHaveBeenCalledWith(FORM_DRAFT_KEY)
@@ -55,12 +57,13 @@ describe('SurveyEditorView', () => {
 
   test('allows the user to download the JSON file', async () => {
     //Arrange
-    render(<SurveyEditorView
-      studyEnvContext={mockStudyEnvContext()}
-      currentForm={mockForm}
-      onCancel={jest.fn()}
-      onSave={jest.fn()}
+    const { RoutedComponent } = setupRouterTest(<SurveyEditorView
+        studyEnvContext={mockStudyEnvContext()}
+        currentForm={mockForm}
+        onCancel={jest.fn()}
+        onSave={jest.fn()}
     />)
+    render(RoutedComponent)
 
     //Act
     const downloadButton = screen.getByRole('button', { name: 'Download JSON' })

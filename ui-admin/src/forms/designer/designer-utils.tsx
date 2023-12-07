@@ -7,8 +7,7 @@ export const getElementLabel = (element: FormElement, path?: string,
   setSelectedElementPath?: (path: string) => void): React.ReactNode => {
   let labelNode
   if ('type' in element && element.type === 'panel') {
-    labelNode = <span>Panel <span className="fw-light fst-italic">
-      ({element.elements.length} elements)</span> </span>
+    labelNode = <span>Panel <span className="fw-light fst-italic">({element.elements.length} items)</span> </span>
   } else {
     labelNode = <span>{element.name}</span>
   }
