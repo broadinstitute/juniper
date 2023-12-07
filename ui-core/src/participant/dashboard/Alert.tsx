@@ -6,11 +6,11 @@ import React from 'react'
 import { InlineMarkdown } from '../landing/Markdown'
 
 export type AlertLevel =
-  | 'primary'
-  | 'info'
-  | 'success'
-  | 'warning'
-  | 'danger'
+  | 'PRIMARY'
+  | 'INFO'
+  | 'SUCCESS'
+  | 'WARNING'
+  | 'DANGER'
 
 export type AlertTrigger =
   'NO_ACTIVITIES_REMAIN' |
@@ -30,18 +30,18 @@ export const alertDefaults: Record<AlertTrigger, ParticipantDashboardAlert> = {
     title: 'All activities complete',
     detail: 'You have completed all activities for this study. We will notify you ' +
       'as soon as new activities are available. Thank you for your participation!',
-    type: 'primary',
+    type: 'PRIMARY',
     trigger: 'NO_ACTIVITIES_REMAIN'
   },
   'WELCOME': {
     title: 'Welcome to the study.',
     detail: 'Please read and sign the consent form below to continue.',
-    type: 'info',
+    type: 'INFO',
     trigger: 'WELCOME'
   },
   'STUDY_ALREADY_ENROLLED': {
     title: 'You are already enrolled in this study.',
-    type: 'info',
+    type: 'INFO',
     trigger: 'STUDY_ALREADY_ENROLLED'
   }
 }
@@ -51,11 +51,11 @@ export const alertDefaults: Record<AlertTrigger, ParticipantDashboardAlert> = {
  */
 export const getDefaultIcon = (alertLevel: AlertLevel): IconDefinition | undefined => {
   return {
-    primary: undefined,
-    info: faCircleInfo,
-    success: faCheck,
-    warning: faTriangleExclamation,
-    danger: faXmark
+    PRIMARY: undefined,
+    INFO: faCircleInfo,
+    SUCCESS: faCheck,
+    WARNING: faTriangleExclamation,
+    DANGER: faXmark
   }[alertLevel]
 }
 
@@ -70,13 +70,14 @@ export type AlertProps = {
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
 export const Alert = (props: AlertProps) => {
-  const { className, icon, level = 'info', title, detail, onDismiss, ...otherProps } = props
+  const { className, icon, level = 'INFO', title, detail, onDismiss, ...otherProps } = props
   const renderedIcon = icon ? icon : getDefaultIcon(level)
 
   return (
     <div
       {...otherProps}
-      className={classNames('alert', `alert-${level}`, 'd-flex', 'flex-row', 'align-items-center', className)}
+      className={classNames('alert', `alert-${level.toLowerCase()}`,
+        'd-flex', 'flex-row', 'align-items-center', className)}
     >
       {renderedIcon && <FontAwesomeIcon className="me-3 fa-xl" icon={renderedIcon} />}
       <div className="flex-grow-1">

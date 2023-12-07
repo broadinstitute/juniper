@@ -53,11 +53,11 @@ export const AlertEditor = ({ initial, isReadOnly, updateAlert, onSave }: {
         <select className="form-control" disabled={isReadOnly} id="type" value={initial.type} onChange={e =>
           updateAlert({ ...initial, type: e.target.value as AlertLevel })
         }>
-          <option value="primary">Primary</option>
-          <option value="success">Success</option>
-          <option value="danger">Danger</option>
-          <option value="warning">Warning</option>
-          <option value="info">Info</option>
+          <option value="PRIMARY">Primary</option>
+          <option value="SUCCESS">Success</option>
+          <option value="DANGER">Danger</option>
+          <option value="WARNING">Warning</option>
+          <option value="INFO">Info</option>
         </select>
       </div>
       <div className="form-group pt-2">
