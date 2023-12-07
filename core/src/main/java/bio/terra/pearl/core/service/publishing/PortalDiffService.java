@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.Versioned;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
+import bio.terra.pearl.core.model.dashboard.AlertTrigger;
 import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
@@ -27,9 +28,8 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.beans.IntrospectionException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -107,16 +107,19 @@ public class PortalDiffService {
     protected List<ParticipantDashboardAlertChange> diffAlertLists(
             List<ParticipantDashboardAlert> sourceAlerts,
             List<ParticipantDashboardAlert> destAlerts) throws ReflectiveOperationException, IntrospectionException {
-        List<ParticipantDashboardAlert> unmatchedDestAlerts = new ArrayList<>(destAlerts);
+        Map<AlertTrigger, ParticipantDashboardAlert> unmatchedDestAlertsMap = new HashMap<>();
+        for (ParticipantDashboardAlert destAlert : destAlerts) {
+            unmatchedDestAlertsMap.put(destAlert.getTrigger(), destAlert);
+        }
+
         List<ParticipantDashboardAlertChange> alertChangeLists = new ArrayList<>();
         for (ParticipantDashboardAlert sourceAlert : sourceAlerts) {
-            ParticipantDashboardAlert matchedAlert = unmatchedDestAlerts.stream().filter(destAlert ->
-                            sourceAlert.getTrigger().equals(destAlert.getTrigger())).findAny().orElse(null);
+            ParticipantDashboardAlert matchedAlert = unmatchedDestAlertsMap.get(sourceAlert.getTrigger());
             if (matchedAlert == null) {
                 List<ConfigChange> newAlert = ConfigChange.allChanges(sourceAlert, null, CONFIG_IGNORE_PROPS);
                 alertChangeLists.add(new ParticipantDashboardAlertChange(sourceAlert.getTrigger(), newAlert));
             } else {
-                unmatchedDestAlerts.remove(matchedAlert);
+                unmatchedDestAlertsMap.remove(matchedAlert.getTrigger());
                 List<ConfigChange> alertChanges = ConfigChange.allChanges(sourceAlert, matchedAlert, CONFIG_IGNORE_PROPS);
                 if(!alertChanges.isEmpty()) {
                     alertChangeLists.add(new ParticipantDashboardAlertChange(sourceAlert.getTrigger(), alertChanges));
