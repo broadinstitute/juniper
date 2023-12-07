@@ -46,7 +46,7 @@ export const PageListDesigner = (props: PageListDesignerProps) => {
           <p>This form does not contain any pages.</p>
         ) : (
           <PagesList
-              setSelectedElementPath={setSelectedElementPath}
+            setSelectedElementPath={setSelectedElementPath}
             formContent={formContent}
             readOnly={readOnly}
             onChange={onChange}

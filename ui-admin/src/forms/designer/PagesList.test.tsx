@@ -43,7 +43,7 @@ describe('PagesList', () => {
   it('renders list of clickable pages', async () => {
     const setSelectedElementPath = jest.fn()
     render(<PagesList formContent={formContent} readOnly={false} onChange={jest.fn()}
-                      setSelectedElementPath={setSelectedElementPath}/>)
+      setSelectedElementPath={setSelectedElementPath}/>)
 
     // Assert
     const listItems = screen.getAllByRole('listitem')
@@ -58,7 +58,7 @@ describe('PagesList', () => {
 
     const onChange = jest.fn()
     render(<PagesList formContent={formContent} readOnly={false} onChange={onChange}
-                      setSelectedElementPath={jest.fn()}/>)
+      setSelectedElementPath={jest.fn()}/>)
 
     // Act
     const listItems = screen.getAllByRole('listitem')
@@ -143,7 +143,7 @@ describe('PagesList', () => {
 
     const onChange = jest.fn()
     render(<PagesList formContent={formContent} readOnly={false} onChange={onChange}
-                      setSelectedElementPath={jest.fn()}/>)
+      setSelectedElementPath={jest.fn()}/>)
 
     // Act
     const listItems = screen.getAllByRole('listitem')

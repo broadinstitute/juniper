@@ -27,7 +27,7 @@ export const PagesList = (props: PagesListProps) => {
           >
             <div className="flex-grow-1 text-truncate ms-2">
               <Button variant={'secondary'}
-                      onClick={() => setSelectedElementPath(`pages[${i}]`)}>Page {i + 1}</Button>
+                onClick={() => setSelectedElementPath(`pages[${i}]`)}>Page {i + 1}</Button>
             </div>
             <div className="flex-shrink-0">
               <IconButton

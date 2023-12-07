@@ -1,5 +1,5 @@
 import { flow, get, identity, set, update } from 'lodash/fp'
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 
 import { FormContent, FormContentPage, FormElement } from '@juniper/ui-core'
 
@@ -10,7 +10,7 @@ import { QuestionDesigner } from './designer/QuestionDesigner'
 import { QuestionTemplatesDesigner } from './designer/QuestionTemplatesDesigner'
 import { FormTableOfContents } from './FormTableOfContents'
 import { PageListDesigner } from './designer/PageListDesigner'
-import {useSearchParams} from "react-router-dom";
+import { useSearchParams } from 'react-router-dom'
 
 type FormDesignerProps = {
   readOnly?: boolean
@@ -21,15 +21,13 @@ type FormDesignerProps = {
 /** UI for editing forms. */
 export const FormDesigner = (props: FormDesignerProps) => {
   const { readOnly = false, value, onChange } = props
-    const [searchParams, setSearchParams] = useSearchParams()
-    const selectedElementPath = searchParams.get('selectedElementPath') ?? 'pages'
-    const selectedElement = getSurveyElementFromPath(selectedElementPath, value)
-    const setSelectedElementPath = (path: string) => {
-      searchParams.set('selectedElementPath', path)
-        setSearchParams(searchParams)
-    }
-
-   console.log('selectedElementPath: ', selectedElementPath)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const selectedElementPath = searchParams.get('selectedElementPath') ?? 'pages'
+  const selectedElement = getSurveyElementFromPath(selectedElementPath, value)
+  const setSelectedElementPath = (path: string) => {
+    searchParams.set('selectedElementPath', path)
+    setSearchParams(searchParams)
+  }
   return (
     <div className="overflow-hidden flex-grow-1 d-flex flex-row mh-100" style={{ flexBasis: 0 }}>
       <div className="flex-shrink-0 border-end" style={{ width: 400, overflowY: 'scroll' }}>
@@ -44,7 +42,7 @@ export const FormDesigner = (props: FormDesignerProps) => {
           if (selectedElementPath === 'pages') {
             return (
               <PageListDesigner
-                  setSelectedElementPath={setSelectedElementPath}
+                setSelectedElementPath={setSelectedElementPath}
                 formContent={value}
                 readOnly={readOnly}
                 onChange={onChange}
@@ -63,9 +61,9 @@ export const FormDesigner = (props: FormDesignerProps) => {
           }
           if (selectedElement === undefined) {
             return (
-                <p className="mt-5 text-center">Select an element to edit</p>
+              <p className="mt-5 text-center">Select an element to edit</p>
             )
-        }
+          }
 
           if (!('type' in selectedElement) && !('questionTemplateName' in selectedElement)) {
             return (
@@ -152,10 +150,10 @@ export const FormDesigner = (props: FormDesignerProps) => {
 }
 
 const getSurveyElementFromPath = (elementPath: string, obj: object):  FormContentPage | FormElement | undefined => {
-    try {
-        return get(elementPath, obj) as FormContentPage | FormElement
-    } catch (e) {
-        return undefined
-    }
+  try {
+    return get(elementPath, obj) as FormContentPage | FormElement
+  } catch (e) {
+    return undefined
+  }
 }
 

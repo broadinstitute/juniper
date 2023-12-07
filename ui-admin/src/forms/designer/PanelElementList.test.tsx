@@ -28,8 +28,8 @@ describe('PanelElementList', () => {
   it('renders clickable', async () => {
     const setSelectedElementPath = jest.fn()
     render(<PanelElementList readOnly={false} value={elements}
-                             onChange={jest.fn()} selectedElementPath={'pages[0].elements[0]'}
-    setSelectedElementPath={setSelectedElementPath}/>)
+      onChange={jest.fn()} selectedElementPath={'pages[0].elements[0]'}
+      setSelectedElementPath={setSelectedElementPath}/>)
 
     const listItems = screen.getAllByRole('listitem')
     expect(listItems.map(el => el.textContent)).toEqual(['foo', 'bar', 'baz'])
@@ -43,7 +43,7 @@ describe('PanelElementList', () => {
 
     const onChange = jest.fn()
     render(<PanelElementList readOnly={false} value={elements} onChange={onChange}  selectedElementPath={''}
-                             setSelectedElementPath={jest.fn()}/>)
+      setSelectedElementPath={jest.fn()}/>)
 
     // Act
     const moveBarUpButton = screen.getAllByLabelText('Move this element before the previous one')[1]
@@ -97,7 +97,7 @@ describe('PanelElementList', () => {
 
     const onChange = jest.fn()
     render(<PanelElementList readOnly={false} value={elements} onChange={onChange} selectedElementPath={''}
-                             setSelectedElementPath={jest.fn()} />)
+      setSelectedElementPath={jest.fn()} />)
 
     // Act
     const deleteBarButton = screen.getAllByLabelText('Move this element out of panel')[1]
@@ -131,7 +131,7 @@ describe('PanelElementList', () => {
 
     const onChange = jest.fn()
     render(<PanelElementList readOnly={false} value={elements} onChange={onChange} selectedElementPath={''}
-                             setSelectedElementPath={jest.fn()} />)
+      setSelectedElementPath={jest.fn()} />)
 
     // Act
     const deleteBarButton = screen.getAllByLabelText('Delete this element')[1]

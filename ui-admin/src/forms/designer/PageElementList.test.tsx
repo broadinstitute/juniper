@@ -28,7 +28,7 @@ describe('PageElementList', () => {
   it('renders elements', () => {
     // Act
     render(<PageElementList readOnly={false} value={elements} onChange={jest.fn()} selectedElementPath={''}
-    setSelectedElementPath={jest.fn()}/>)
+      setSelectedElementPath={jest.fn()}/>)
 
     // Assert
     const listItems = screen.getAllByRole('listitem')
@@ -41,7 +41,7 @@ describe('PageElementList', () => {
 
     const onChange = jest.fn()
     render(<PageElementList readOnly={false} value={elements} onChange={onChange} selectedElementPath={''}
-                            setSelectedElementPath={jest.fn()}/>)
+      setSelectedElementPath={jest.fn()}/>)
 
     // Act
     const moveBarUpButton = screen.getAllByLabelText('Move this element before the previous one')[1]
@@ -111,7 +111,7 @@ describe('PageElementList', () => {
 
       const onChange = jest.fn()
       render(<PageElementList readOnly={false} value={elements} onChange={onChange} selectedElementPath={''}
-                              setSelectedElementPath={jest.fn()}/>)
+        setSelectedElementPath={jest.fn()}/>)
 
       // Act
       const deleteButton = screen.getAllByLabelText('Delete this element')[0]
@@ -127,7 +127,7 @@ describe('PageElementList', () => {
 
       const onChange = jest.fn()
       render(<PageElementList readOnly={false} value={elements} onChange={onChange} selectedElementPath={''}
-                              setSelectedElementPath={jest.fn()}/>)
+        setSelectedElementPath={jest.fn()}/>)
 
       // Act
       const deleteButton = screen.getAllByLabelText('Delete this element')[1]
@@ -144,7 +144,7 @@ describe('PageElementList', () => {
 
         const onChange = jest.fn()
         render(<PageElementList readOnly={false} value={elements} onChange={onChange} selectedElementPath={''}
-                                setSelectedElementPath={jest.fn()}/>)
+          setSelectedElementPath={jest.fn()}/>)
 
         // Act
         const deleteButton = screen.getAllByLabelText('Delete this element')[2]
@@ -161,7 +161,7 @@ describe('PageElementList', () => {
 
         const onChange = jest.fn()
         render(<PageElementList readOnly={false} value={elements} onChange={onChange} selectedElementPath={''}
-                                setSelectedElementPath={jest.fn()}/>)
+          setSelectedElementPath={jest.fn()}/>)
 
         const deleteButton = screen.getAllByLabelText('Delete this element')[2]
         await act(() => user.click(deleteButton))
@@ -179,7 +179,7 @@ describe('PageElementList', () => {
 
         const onChange = jest.fn()
         render(<PageElementList readOnly={false} value={elements} onChange={onChange} selectedElementPath={''}
-                                setSelectedElementPath={jest.fn()}/>)
+          setSelectedElementPath={jest.fn()}/>)
 
         const deleteButton = screen.getAllByLabelText('Delete this element')[2]
         await act(() => user.click(deleteButton))

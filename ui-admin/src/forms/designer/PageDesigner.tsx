@@ -34,12 +34,14 @@ export type PageDesignerProps = {
 
 /** UI for editing a page of a form. */
 export const PageDesigner = (props: PageDesignerProps) => {
-  const { readOnly, formContent, value, onChange,
-  selectedElementPath, setSelectedElementPath } = props
+  const {
+    readOnly, formContent, value, onChange,
+    selectedElementPath, setSelectedElementPath
+  } = props
 
   const [showCreatePanelModal, setShowCreatePanelModal] = useState(false)
   const [showCreateQuestionModal, setShowCreateQuestionModal] = useState(false)
-    const pageNum = getPageNumberFromPath(selectedElementPath)
+  const pageNum = getPageNumberFromPath(selectedElementPath)
   return (
     <div>
       <h2>Page {pageNum !== undefined ? pageNum + 1 : ''}</h2>
@@ -130,9 +132,9 @@ export const PageDesigner = (props: PageDesignerProps) => {
 }
 
 const getPageNumberFromPath = (path: string) => {
-    const matchResult = path.match('pages\\[(\\d+)\\]')
-    if (matchResult) {
-        return parseInt(matchResult[1])
-    }
-    return undefined
+  const matchResult = path.match('pages\\[(\\d+)\\]')
+  if (matchResult) {
+    return parseInt(matchResult[1])
+  }
+  return undefined
 }
