@@ -70,13 +70,12 @@ public class PortalParticipantUserService extends ImmutableEntityService<PortalP
         return dao.findByPortalEnvironmentId(portalId);
     }
 
-    public List<PortalParticipantUser> findbyProfileId(UUID profileId) {
+    public Optional<PortalParticipantUser> findByProfileId(UUID profileId) {
         return dao.findByProfileId(profileId);
     }
 
     public PortalParticipantUser findForEnrollee(Enrollee enrollee) {
-        Optional<PortalParticipantUser> ppUser =
-                dao.findByParticipantUserIdAndProfileId(enrollee.getParticipantUserId(), enrollee.getProfileId());
+        Optional<PortalParticipantUser> ppUser = dao.findByProfileId(enrollee.getProfileId());
         return ppUser.orElseThrow(() ->
                 new IllegalStateException("No portal participant user found for enrollee %s".formatted(enrollee.getShortcode())));
     }
