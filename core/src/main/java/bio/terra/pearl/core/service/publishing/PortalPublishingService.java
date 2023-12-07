@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.publishing;
 import bio.terra.pearl.core.dao.publishing.PortalEnvironmentChangeRecordDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.dashboard.AlertTrigger;
 import bio.terra.pearl.core.model.dashboard.AlertType;
 import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
@@ -156,15 +157,7 @@ public class PortalPublishingService {
             if(destAlert.isEmpty()) {
                 // The alert doesn't exist in the dest env yet, so default all the required fields before
                 // applying the changes from the change list
-                ParticipantDashboardAlert newAlert = ParticipantDashboardAlert.builder()
-                        .portalEnvironmentId(destEnv.getId())
-                        .type(AlertType.primary)
-                        .title("")
-                        .detail("")
-                        .portalEnvironmentId(destEnv.getId())
-                        .trigger(change.trigger())
-                        .build();
-
+                ParticipantDashboardAlert newAlert = getDefaultDashboardAlert(destEnv, change.trigger());
                 applyAlertChanges(newAlert, change.changes());
                 portalDashboardConfigService.create(newAlert);
             } else {
@@ -173,6 +166,17 @@ public class PortalPublishingService {
                 portalDashboardConfigService.update(alert);
             }
         }
+    }
+
+    private ParticipantDashboardAlert getDefaultDashboardAlert(PortalEnvironment destEnv, AlertTrigger trigger) {
+        ParticipantDashboardAlert newAlert = ParticipantDashboardAlert.builder()
+                .portalEnvironmentId(destEnv.getId())
+                .type(AlertType.primary)
+                .title("")
+                .detail("")
+                .portalEnvironmentId(destEnv.getId())
+                .trigger(trigger)
+                .build();
     }
 
     protected void applyAlertChanges(ParticipantDashboardAlert alert, List<ConfigChange> changes) {
