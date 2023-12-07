@@ -46,7 +46,7 @@ export default function HubPage() {
         className="hub-dashboard-background flex-grow-1"
         style={{ background: 'linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%' }}
       >
-        {!hasActiveTasks && noActivitiesAlert && <HubMessageAlert
+        {hasActiveTasks && noActivitiesAlert && <HubMessageAlert
           message={{
             title: noActivitiesAlert.title,
             detail: noActivitiesAlert.detail,

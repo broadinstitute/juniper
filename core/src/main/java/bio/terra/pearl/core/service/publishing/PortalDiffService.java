@@ -107,19 +107,19 @@ public class PortalDiffService {
     protected List<ParticipantDashboardAlertChange> diffAlertLists(
             List<ParticipantDashboardAlert> sourceAlerts,
             List<ParticipantDashboardAlert> destAlerts) throws ReflectiveOperationException, IntrospectionException {
-        Map<AlertTrigger, ParticipantDashboardAlert> unmatchedDestAlertsMap = new HashMap<>();
+        Map<AlertTrigger, ParticipantDashboardAlert> unmatchedDestAlerts = new HashMap<>();
         for (ParticipantDashboardAlert destAlert : destAlerts) {
-            unmatchedDestAlertsMap.put(destAlert.getTrigger(), destAlert);
+            unmatchedDestAlerts.put(destAlert.getTrigger(), destAlert);
         }
 
         List<ParticipantDashboardAlertChange> alertChangeLists = new ArrayList<>();
         for (ParticipantDashboardAlert sourceAlert : sourceAlerts) {
-            ParticipantDashboardAlert matchedAlert = unmatchedDestAlertsMap.get(sourceAlert.getTrigger());
+            ParticipantDashboardAlert matchedAlert = unmatchedDestAlerts.get(sourceAlert.getTrigger());
             if (matchedAlert == null) {
                 List<ConfigChange> newAlert = ConfigChange.allChanges(sourceAlert, null, CONFIG_IGNORE_PROPS);
                 alertChangeLists.add(new ParticipantDashboardAlertChange(sourceAlert.getTrigger(), newAlert));
             } else {
-                unmatchedDestAlertsMap.remove(matchedAlert.getTrigger());
+                unmatchedDestAlerts.remove(matchedAlert.getTrigger());
                 List<ConfigChange> alertChanges = ConfigChange.allChanges(sourceAlert, matchedAlert, CONFIG_IGNORE_PROPS);
                 if(!alertChanges.isEmpty()) {
                     alertChangeLists.add(new ParticipantDashboardAlertChange(sourceAlert.getTrigger(), alertChanges));

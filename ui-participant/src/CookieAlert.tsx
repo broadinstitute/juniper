@@ -14,7 +14,7 @@ export const CookieAlert = (props: CookieAlertProps) => {
     <Alert
       className="mb-1"
       icon={faCookieBite}
-      level="warning"
+      level="WARNING"
       role="alert"
       style={{
         position: 'fixed',
