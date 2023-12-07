@@ -28,7 +28,7 @@ public class ExcelExporter extends BaseExporter {
         sheet.trackAllColumnsForAutoSizing();
     }
 
-    public void export(OutputStream os) throws IOException {
+    public void export(OutputStream os) {
         List<String> columnKeys = getColumnKeys();
         List<String> headerRowValues = getHeaderRow();
         List<String> subHeaderRowValues = getSubHeaderRow();
@@ -41,8 +41,11 @@ public class ExcelExporter extends BaseExporter {
             List<String> rowValues = getRowValues(valueMap, columnKeys);
             writeRowToSheet(rowValues, i + 2);
         });
-
-        writeAndCloseSheet(os);
+        try {
+            writeAndCloseSheet(os);
+        } catch (IOException e) {
+            throw new RuntimeException("Error writing excel file", e);
+        }
     }
 
     protected void writeAndCloseSheet(OutputStream os) throws IOException {

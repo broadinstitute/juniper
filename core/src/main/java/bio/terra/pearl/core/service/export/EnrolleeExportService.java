@@ -15,6 +15,8 @@ import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 
@@ -63,11 +65,7 @@ public class EnrolleeExportService {
         List<ModuleFormatter> moduleFormatters = generateModuleInfos(exportOptions, studyEnvironmentId);
         var enrolleeMaps = generateExportMaps(studyEnvironmentId, moduleFormatters, exportOptions.limit());
         BaseExporter exporter = getExporter(exportOptions.fileFormat(), moduleFormatters, enrolleeMaps);
-        try {
-            exporter.export(os);
-        } catch (Exception e) {
-            throw new RuntimeException("Error writing export to output stream", e);
-        }
+        exporter.export(os);
     }
 
     public List<Map<String, String>> generateExportMaps(UUID studyEnvironmentId,

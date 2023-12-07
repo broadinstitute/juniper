@@ -18,15 +18,19 @@ public class JsonExporter extends BaseExporter {
         this.objectMapper = objectMapper;
     }
 
-    public void export(OutputStream os) throws IOException {
+    public void export(OutputStream os) {
         PrintWriter printWriter = new PrintWriter(os);
         List<String> columnKeys = getColumnKeys();
         List<String> headerRowValues = getHeaderRow();
         List<String> subHeaderRowValues = getSubHeaderRow();
 
         JsonExport jsonExport = new JsonExport(columnKeys, headerRowValues, subHeaderRowValues, enrolleeMaps);
-        printWriter.println(objectMapper.writeValueAsString(jsonExport));
-        printWriter.flush();
+        try {
+            printWriter.println(objectMapper.writeValueAsString(jsonExport));
+            printWriter.flush();
+        } catch (IOException e) {
+            throw new RuntimeException("Error writing json to stream", e);
+        }
         // do not close os -- that's the caller's responsibility
     }
 

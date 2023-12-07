@@ -64,7 +64,7 @@ public class DataDictionaryExcelExporter extends ExcelExporter {
 
     /** writes the dictionary */
     @Override
-    public void export(OutputStream os) throws IOException {
+    public void export(OutputStream os) {
         sheet.setColumnWidth(VARIABLE_NAME_COL_NUMBER, 40 * 256);
         sheet.setColumnWidth(DATATYPE_COL_NUMBER, 10 * 256);
         sheet.setColumnWidth(QUESTION_TYPE_COL_NUMBER, 12 * 256);
@@ -77,7 +77,11 @@ public class DataDictionaryExcelExporter extends ExcelExporter {
                 addItemRows(moduleFormatter, itemFormatter);
             }
         }
-        writeAndCloseSheet(os);
+        try {
+            writeAndCloseSheet(os);
+        } catch (IOException e) {
+            throw new RuntimeException("Error writing excel file", e);
+        }
     }
 
 

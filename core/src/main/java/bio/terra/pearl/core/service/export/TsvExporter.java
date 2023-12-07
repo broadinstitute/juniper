@@ -21,7 +21,7 @@ public class TsvExporter extends BaseExporter {
      * can be supported
      */
     @Override
-    public void export(OutputStream os) throws IOException {
+    public void export(OutputStream os) {
         PrintWriter printWriter = new PrintWriter(os);
         List<String> columnKeys = getColumnKeys();
         List<String> headerRowValues = getHeaderRow();
