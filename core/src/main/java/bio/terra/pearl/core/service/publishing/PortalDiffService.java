@@ -25,6 +25,8 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.beans.IntrospectionException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -104,7 +106,7 @@ public class PortalDiffService {
 
     protected List<ParticipantDashboardAlertChange> diffAlertLists(
             List<ParticipantDashboardAlert> sourceAlerts,
-            List<ParticipantDashboardAlert> destAlerts) throws Exception {
+            List<ParticipantDashboardAlert> destAlerts) throws ReflectiveOperationException, IntrospectionException {
         List<ParticipantDashboardAlert> unmatchedDestAlerts = new ArrayList<>(destAlerts);
         List<ParticipantDashboardAlertChange> alertChangeLists = new ArrayList<>();
         for (ParticipantDashboardAlert sourceAlert : sourceAlerts) {

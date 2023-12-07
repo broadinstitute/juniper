@@ -150,7 +150,7 @@ public class PortalPublishingService {
         }
     }
 
-    protected void applyChangesToParticipantDashboardAlerts(PortalEnvironment destEnv, List<ParticipantDashboardAlertChange> changes) throws Exception {
+    protected void applyChangesToParticipantDashboardAlerts(PortalEnvironment destEnv, List<ParticipantDashboardAlertChange> changes) {
         for(ParticipantDashboardAlertChange change : changes) {
             Optional<ParticipantDashboardAlert> destAlert = portalDashboardConfigService.findByPortalEnvIdAndTrigger(destEnv.getId(), change.trigger());
             if(destAlert.isEmpty()) {
