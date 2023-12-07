@@ -15,5 +15,6 @@ public record PortalEnvironmentChange(VersionedEntityChange<SiteContent> siteCon
                                       List<ConfigChange> configChanges,
                                       VersionedEntityChange<Survey> preRegSurveyChanges,
                                       ListChange<NotificationConfig, VersionedConfigChange<EmailTemplate>> notificationConfigChanges,
+                                      List<ParticipantDashboardAlertChange> participantDashboardAlertChanges,
                                       List<StudyEnvironmentChange> studyEnvChanges)
 {}

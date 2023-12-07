@@ -1,5 +1,6 @@
 import _pick from 'lodash/pick'
 import {
+  AlertTrigger,
   ConsentForm,
   Survey,
   ConsentResponse,
@@ -263,6 +264,7 @@ export type PortalEnvironmentChange = {
   configChanges: ConfigChange[],
   preRegSurveyChanges: VersionedEntityChange,
   notificationConfigChanges: ListChange<NotificationConfig, VersionedConfigChange>
+  participantDashboardAlertChanges: ParticipantDashboardAlertChange[],
   studyEnvChanges: StudyEnvironmentChange[]
 }
 
@@ -302,6 +304,11 @@ export type VersionedConfigChange = {
   sourceId: string,
   configChanges: ConfigChange[],
   documentChange: VersionedEntityChange
+}
+
+export type ParticipantDashboardAlertChange = {
+  trigger: AlertTrigger,
+  changes: ConfigChange[]
 }
 
 export type ExportOptions = {

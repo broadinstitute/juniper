@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.publishing;
 
 import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +10,7 @@ import java.util.Objects;
 import org.apache.commons.beanutils.PropertyUtils;
 
 public record ConfigChange(String propertyName, Object oldValue, Object newValue) {
-    public ConfigChange(Object source, Object dest, String propertyName) throws Exception {
+    public ConfigChange(Object source, Object dest, String propertyName) throws ReflectiveOperationException {
         this(propertyName,
                 dest != null ? PropertyUtils.getProperty(dest, propertyName) : null,
                 source != null ? PropertyUtils.getProperty(source, propertyName) : null);
@@ -19,7 +20,7 @@ public record ConfigChange(String propertyName, Object oldValue, Object newValue
      * gets a list of change records for each property that has changed between source and dest.  If one of source
      * or dest is null, all properties will be returned.  If both are null, an empty list will be returned
      */
-    public static <T> List<ConfigChange> allChanges(T source, T dest, List<String> ignoreProperties) throws Exception {
+    public static <T> List<ConfigChange> allChanges(T source, T dest, List<String> ignoreProperties) throws ReflectiveOperationException, IntrospectionException {
         if (source == null && dest == null) {
             return List.of();
         }
