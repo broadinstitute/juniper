@@ -33,14 +33,13 @@ const dateRangeRadioPicker = ({ selectedDateRangeMode, onDateSelect } : {
  * Modal for selecting a date range for a MetricView
  */
 export default function MetricDateRangeModal({
-  setDateRange, dateRange,
-  selectedDateRangeMode, setSelectedDateRangeMode, onDismiss
+  setDateRange, dateRange, selectedDateRangeMode, setSelectedDateRangeMode, onDismiss
 }: {
-  selectedDateRangeMode: LabeledDateRangeMode, setDateRange: (dateRange: MetricDateRange) => void,
-  dateRange: MetricDateRange,
-  onDismiss: () => void, setSelectedDateRangeMode: (dateRangeMode: LabeledDateRangeMode) => void
+  selectedDateRangeMode: LabeledDateRangeMode, setSelectedDateRangeMode: (dateRangeMode: LabeledDateRangeMode) => void
+  dateRange?: MetricDateRange, setDateRange: (dateRange?: MetricDateRange) => void, onDismiss: () => void
 }) {
-  const [customDateRange, setCustomDateRange] = useState<MetricDateRange>(dateRange)
+  const [customStartDate, setCustomStartDate] = useState(dateRange?.startDate)
+  const [customEndDate, setCustomEndDate] = useState(dateRange?.endDate)
 
   return <Modal show={true} className="modal" onHide={onDismiss}>
     <Modal.Header closeButton>
@@ -58,8 +57,9 @@ export default function MetricDateRangeModal({
               Start date
             </label>
             <input type="date" size={20} id="startDate" className="form-control"
+              value={customStartDate ? new Date(customStartDate).toISOString().split('T')[0] : ''}
               onChange={e =>
-                setCustomDateRange({ ...customDateRange, startDate: new Date(e.target.value).getTime() })
+                setCustomStartDate(new Date(e.target.value).getTime())
               }/>
           </div>
           <div className="col">
@@ -67,8 +67,9 @@ export default function MetricDateRangeModal({
               End date
             </label>
             <input type="date" size={20} id="endDate" className="form-control"
+              value={customEndDate ? new Date(customEndDate).toISOString().split('T')[0] : ''}
               onChange={e =>
-                setCustomDateRange({ ...customDateRange, endDate: new Date(e.target.value).getTime() })
+                setCustomEndDate(new Date(e.target.value).getTime())
               }/>
           </div>
         </div>
@@ -76,10 +77,11 @@ export default function MetricDateRangeModal({
     </Modal.Body>
     <Modal.Footer>
       <Button variant="primary"
+        disabled={selectedDateRangeMode.mode === 'CUSTOM' && (!customStartDate || !customEndDate)}
         onClick={() => {
           setSelectedDateRangeMode(selectedDateRangeMode)
-          if (selectedDateRangeMode.mode === 'CUSTOM') {
-            setDateRange(customDateRange)
+          if (selectedDateRangeMode.mode === 'CUSTOM' && customStartDate && customEndDate) {
+            setDateRange({ startDate: customStartDate, endDate: customEndDate })
           }
           onDismiss()
         }}>Done</Button>

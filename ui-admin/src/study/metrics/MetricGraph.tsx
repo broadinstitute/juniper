@@ -2,7 +2,7 @@ import React from 'react'
 import { BasicMetricDatum } from 'api/api'
 import { cloneDeep } from 'lodash'
 import Plot from 'react-plotly.js'
-import {modeToDateRange, LabeledDateRangeMode, unixToPlotlyDateRange, MetricDateRange} from './metricUtils'
+import { unixToPlotlyDateRange, MetricDateRange } from './metricUtils'
 
 /**
  * Shows a plot for a specified metric.  Handles fetching the raw metrics from the server, transforming them to

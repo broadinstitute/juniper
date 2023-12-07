@@ -2,7 +2,7 @@ import React from 'react'
 import { BasicMetricDatum } from 'api/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons'
-import {modeToDateRange, LabeledDateRangeMode, MetricDateRange} from './metricUtils'
+import { LabeledDateRangeMode, MetricDateRange } from './metricUtils'
 
 /**
  * Shows a list of summary stats for a metric
@@ -11,7 +11,9 @@ export default function MetricSummary({ metricData, dateRange, dateRangeMode }: 
   metricData: BasicMetricDatum[], dateRange?: MetricDateRange, dateRangeMode: LabeledDateRangeMode
 }) {
   const getFilteredMetrics = () => {
-    if (dateRangeMode.mode === 'ALL_TIME' || !dateRange) { return metricData }
+    if (dateRangeMode.mode === 'ALL_TIME' || !dateRange) {
+      return metricData
+    }
 
     return metricData.filter(metric => {
       return metric.time >= dateRange.startDate / 1000 && metric.time <= dateRange.endDate / 1000
@@ -21,8 +23,8 @@ export default function MetricSummary({ metricData, dateRange, dateRangeMode }: 
   return <div className="container-fluid">
     <h4 className="my-3 align-center">Summary</h4>
     <div className="row my-3">
-      { dateRangeMode.mode !== 'ALL_TIME' && <MetricSummaryCard title={dateRangeMode.label} isTrend={true}
-        value={getFilteredMetrics().length}/> }
+      { dateRangeMode.mode !== 'ALL_TIME' &&
+        <MetricSummaryCard title={dateRangeMode.label} isTrend={true} value={getFilteredMetrics().length}/> }
       <MetricSummaryCard title="Cumulative" value={metricData.length}/>
     </div>
   </div>

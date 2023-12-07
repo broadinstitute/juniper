@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { renderPageHeader } from 'util/pageUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons'
 import { Button } from 'components/forms/Button'
 import MetricView from './MetricView'
-import {LabeledDateRangeMode, MetricDateRange, modeToDateRange} from './metricUtils'
+import { LabeledDateRangeMode, MetricDateRange, modeToDateRange } from './metricUtils'
 import MetricDateRangeModal from './MetricDateRangeModal'
 
 export type MetricInfo = {
@@ -28,10 +28,9 @@ const metricMetadata: MetricInfo[] = [
 /** shows summary stats for the study.  very simple for now--this will eventually have charts and graphs */
 export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const [showDateRangePicker, setShowDateRangePicker] = useState(false)
-  const [selectedDateRangeMode,
-    setSelectedDateRangeMode] = useState<LabeledDateRangeMode>({ label: 'Last Month', mode: 'LAST_MONTH' })
-  const [dateRange, setDateRange] = useState<MetricDateRange | undefined>(
-    modeToDateRange({ dateRangeMode: { label: 'Last Month', mode: 'LAST_MONTH' }})!)
+  const [selectedDateRangeMode, setSelectedDateRangeMode] =
+    useState<LabeledDateRangeMode>({ label: 'Last Month', mode: 'LAST_MONTH' })
+  const [dateRange, setDateRange] = useState<MetricDateRange>()
 
   useEffect(() => {
     if (selectedDateRangeMode.mode !== 'CUSTOM') {
@@ -59,7 +58,7 @@ export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContex
           <MetricDateRangeModal
             onDismiss={() => setShowDateRangePicker(false)}
             setDateRange={setDateRange}
-            dateRange={dateRange!}
+            dateRange={dateRange}
             setSelectedDateRangeMode={setSelectedDateRangeMode}
             selectedDateRangeMode={selectedDateRangeMode}
           /> }

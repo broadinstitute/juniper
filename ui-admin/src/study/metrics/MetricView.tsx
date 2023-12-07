@@ -11,7 +11,7 @@ import { faClipboard } from '@fortawesome/free-solid-svg-icons'
 import InfoPopup from 'components/forms/InfoPopup'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { instantToDefaultString } from 'util/timeUtils'
-import {LabeledDateRangeMode, METRIC_EXPORT_DELIMITER, MetricDateRange} from './metricUtils'
+import { LabeledDateRangeMode, METRIC_EXPORT_DELIMITER, MetricDateRange } from './metricUtils'
 
 /**
  * Shows a graph and summary for a metric.
@@ -39,9 +39,9 @@ export default function MetricView({ studyEnvContext, metricInfo, dateRange, dat
     navigator.clipboard.writeText(dataString)
   }
 
-  return <div className="container mb-2">
+  return <div className="container mb-4">
     <LoadingSpinner isLoading={isLoading}>
-      <div className="d-flex align-items-baselin">
+      <div className="d-flex align-items-baseline">
         <h2 className="h5">{metricInfo.title}</h2>
         { metricInfo.tooltip && <InfoPopup content={metricInfo.tooltip} /> }
         <Button
