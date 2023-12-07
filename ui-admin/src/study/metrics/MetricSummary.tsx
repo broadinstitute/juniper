@@ -20,11 +20,17 @@ export default function MetricSummary({ metricData, dateRange, dateRangeMode }: 
     })
   }
 
+  const startDateString = dateRange ? new Date(dateRange.startDate).toISOString().split('T')[0] : ''
+  const endDateString = dateRange ? new Date(dateRange.endDate).toISOString().split('T')[0] : ''
+
+  const dateRangeLabel = dateRangeMode.mode === 'CUSTOM' ?
+    `${startDateString} - ${endDateString}` : dateRangeMode.label
+
   return <div className="container-fluid">
     <h4 className="my-3 align-center">Summary</h4>
     <div className="row my-3">
       { dateRangeMode.mode !== 'ALL_TIME' &&
-        <MetricSummaryCard title={dateRangeMode.label} isTrend={true} value={getFilteredMetrics().length}/> }
+        <MetricSummaryCard title={dateRangeLabel} isTrend={true} value={getFilteredMetrics().length}/> }
       <MetricSummaryCard title="Cumulative" value={metricData.length}/>
     </div>
   </div>
