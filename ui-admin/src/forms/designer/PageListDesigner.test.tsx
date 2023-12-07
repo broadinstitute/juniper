@@ -27,7 +27,8 @@ describe('PageListDesigner', () => {
     const user = userEvent.setup()
 
     const onChange = jest.fn()
-    render(<PageListDesigner formContent={formContent} readOnly={false} onChange={onChange} />)
+    render(<PageListDesigner formContent={formContent} readOnly={false} onChange={onChange}
+                             setSelectedElementPath={jest.fn()} />)
 
     // Act
     const addPageButton = screen.getByText('Add page')
@@ -58,7 +59,8 @@ describe('PageListDesigner', () => {
     const user = userEvent.setup()
 
     const onChange = jest.fn()
-    render(<PageListDesigner formContent={formContent} readOnly={true} onChange={onChange} />)
+    render(<PageListDesigner formContent={formContent} readOnly={true} onChange={onChange}
+                             setSelectedElementPath={jest.fn()}/>)
 
     // Act
     const addPageButton = screen.getByText('Add page')
@@ -71,7 +73,8 @@ describe('PageListDesigner', () => {
   it('shows a message when there are no pages', async () => {
     // Arrange
     const onChange = jest.fn()
-    render(<PageListDesigner formContent={{ title: 'Empty form', pages: [] }} readOnly={false} onChange={onChange} />)
+    render(<PageListDesigner formContent={{ title: 'Empty form', pages: [] }} readOnly={false} onChange={onChange}
+                             setSelectedElementPath={jest.fn()}/>)
 
     // Assert
     expect(screen.getByText('This form does not contain any pages.')).toBeInTheDocument()

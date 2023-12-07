@@ -17,7 +17,8 @@ const getTableOfContentsTreeHelper = (parentPath: string) => {
   return (formElement: FormElement, elementIndex: number): FormContentTableOfContentsTreeItem => {
     if ('type' in formElement && formElement.type === 'panel') {
       return {
-        label: `Panel (${formElement.elements.length} elements)`,
+        label: <span>Panel <span className="fw-light fst-italic">
+          ({formElement.elements.length} items)</span></span>,
         data: {
           isSelectable: true,
           path: `${parentPath}[${elementIndex}]`
