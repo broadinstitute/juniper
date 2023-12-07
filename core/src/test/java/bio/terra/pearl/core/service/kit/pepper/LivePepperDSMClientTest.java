@@ -55,7 +55,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
                 .thenReturn("secret");
 
         enrollee = enrolleeFactory.buildPersisted(info.getDisplayName());
-        kitRequest = kitRequestFactory.buildPersisted(info.getDisplayName(), enrollee.getId());
+        kitRequest = kitRequestFactory.buildPersisted(info.getDisplayName(), enrollee);
         address = PepperKitAddress.builder().build();
     }
 
