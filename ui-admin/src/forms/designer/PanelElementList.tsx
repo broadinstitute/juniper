@@ -11,11 +11,13 @@ type PanelElementListProps = {
   readOnly: boolean
   value: FormPanel['elements']
   onChange: (newValue: FormPanel['elements'], removedElement?: FormElement) => void
+  setSelectedElementPath: (path: string) => void
+  selectedElementPath: string
 }
 
 /** UI for editing a list of form elements in a panel. */
 export const PanelElementList = (props: PanelElementListProps) => {
-  const { readOnly, value, onChange } = props
+  const { readOnly, value, onChange, setSelectedElementPath, selectedElementPath } = props
 
   return (
     <>
@@ -27,7 +29,7 @@ export const PanelElementList = (props: PanelElementListProps) => {
               className="list-group-item d-flex align-items-center"
             >
               <div className="flex-grow-1 text-truncate ms-2">
-                {getElementLabel(element)}
+                {getElementLabel(element, `${selectedElementPath}.elements[${i}]`, setSelectedElementPath)}
               </div>
               <div className="flex-shrink-0">
                 <IconButton

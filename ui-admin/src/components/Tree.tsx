@@ -5,7 +5,7 @@ import React, { Dispatch, SetStateAction, useRef, useState } from 'react'
 
 export type TreeItemT<T> = {
   /** User facing label. */
-  label: string
+  label: React.ReactNode
 
   /** Data associated with this tree item. */
   data: T
