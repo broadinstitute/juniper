@@ -21,6 +21,11 @@ public class KitStatusEvent extends EnrolleeEvent {
                 .kitRequest(kitRequest)
                 .priorStatus(priorStatus)
                     .build();
+        } else if (KitRequestStatus.RECEIVED.equals(kitRequest.getStatus())) {
+            return KitReceivedEvent.builder()
+                .kitRequest(kitRequest)
+                .priorStatus(priorStatus)
+                    .build();
         }
         return KitStatusEvent.builder()
             .kitRequest(kitRequest)
