@@ -29,7 +29,7 @@ describe('PageDesigner', () => {
       const user = userEvent.setup()
 
       render(<PageDesigner readOnly={false} value={page} formContent={{ title: '', pages: [] }} onChange={jest.fn()}
-        setSelectedElementPath={jest.fn()} selectedElementPath={'pages[0]'}/>)
+        setSelectedElementPath={jest.fn()} selectedElementPath={'pages[0]'} setShowCreateQuestionModal={jest.fn()}/>)
 
       const createPanelButton = screen.getByText('Add panel')
 
@@ -51,7 +51,7 @@ describe('PageDesigner', () => {
 
       const onChange = jest.fn()
       render(<PageDesigner readOnly={false} value={page} formContent={{ title: '', pages: [] }} onChange={onChange}
-        setSelectedElementPath={jest.fn()} selectedElementPath={'pages[0]'}/>)
+        setSelectedElementPath={jest.fn()} selectedElementPath={'pages[0]'} setShowCreateQuestionModal={jest.fn()}/>)
 
       await act(() => user.click(screen.getByText('Add panel')))
 

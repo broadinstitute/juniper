@@ -30,17 +30,17 @@ export type PageDesignerProps = {
   onChange: (newValue: FormContentPage) => void
     selectedElementPath: string,
     setSelectedElementPath: (path: string) => void
+  setShowCreateQuestionModal: (show: boolean) => void
 }
 
 /** UI for editing a page of a form. */
 export const PageDesigner = (props: PageDesignerProps) => {
   const {
     readOnly, formContent, value, onChange,
-    selectedElementPath, setSelectedElementPath
+    selectedElementPath, setSelectedElementPath, setShowCreateQuestionModal
   } = props
 
   const [showCreatePanelModal, setShowCreatePanelModal] = useState(false)
-  const [showCreateQuestionModal, setShowCreateQuestionModal] = useState(false)
   const pageNum = getPageNumberFromPath(selectedElementPath)
   return (
     <div>
@@ -78,28 +78,6 @@ export const PageDesigner = (props: PageDesignerProps) => {
           onChange({ ...value, elements: newValue })
         }}
       />
-
-      {showCreateQuestionModal && (
-        <Modal show className="modal-lg" onHide={() => setShowCreateQuestionModal(false)}>
-          <Modal.Header closeButton>New Question</Modal.Header>
-          <Modal.Body>
-            <NewQuestionForm
-              readOnly={readOnly}
-              questionTemplates={formContent.questionTemplates || []}
-              onCreate={newQuestion => {
-                setShowCreateQuestionModal(false)
-                onChange({
-                  ...value,
-                  elements: [
-                    ...value.elements,
-                    newQuestion
-                  ]
-                })
-              }}
-            />
-          </Modal.Body>
-        </Modal>
-      )}
 
       {showCreatePanelModal && (
         <Modal show onHide={() => setShowCreatePanelModal(false)}>
