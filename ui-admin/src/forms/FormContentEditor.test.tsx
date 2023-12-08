@@ -13,12 +13,12 @@ const formContent: string = JSON.stringify({
 
 describe('FormContentEditor', () => {
   it('should trap FormDesigner errors in an ErrorBoundary', () => {
-    // Arrange
+    // avoid cluttering the console with the error message from the expected error
+    jest.spyOn(console, 'error').mockImplementation(jest.fn())
     const { container } = render(<FormContentEditor
       initialContent={formContent} visibleVersionPreviews={[]} readOnly={false} onChange={jest.fn()}
     />)
 
-    // Assert
     // Our custom ErrorBoundary text
     expect(container).toHaveTextContent('Something went wrong')
     // JSON Editor and Preview tabs should still be visible

@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.export.instance;
+package bio.terra.pearl.core.service.export;
 
 import bio.terra.pearl.core.service.export.ExportFileFormat;
 import lombok.Builder;

@@ -6,9 +6,11 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
-import bio.terra.pearl.core.service.export.formatters.SurveyFormatter;
-import bio.terra.pearl.core.service.export.instance.ExportOptions;
-import bio.terra.pearl.core.service.export.instance.ItemExportInfo;
+import bio.terra.pearl.core.service.export.ExportOptions;
+import bio.terra.pearl.core.service.export.formatters.item.AnswerItemFormatter;
+import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
+import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
+import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -19,7 +21,6 @@ import java.util.UUID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-import org.apache.commons.math3.analysis.function.Exp;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,15 +28,14 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
     @Autowired
     ObjectMapper objectMapper;
     @Test
-    public void testToStringMap() throws Exception {
+    public void testToStringMap() {
         Survey testSurvey =  Survey.builder().id(UUID.randomUUID()).stableId("oh_surveyA").version(1).build();
         SurveyQuestionDefinition questionDef = SurveyQuestionDefinition.builder()
                 .questionStableId("oh_surveyA_q1")
                 .questionType("text")
                 .exportOrder(1)
                 .build();
-        var moduleExportInfo = new SurveyFormatter(objectMapper)
-                .getModuleExportInfo(new ExportOptions(), "oh_surveyA", List.of(testSurvey), List.of(questionDef));
+        SurveyFormatter moduleFormatter = new SurveyFormatter(new ExportOptions(), "oh_surveyA", List.of(testSurvey), List.of(questionDef), objectMapper);
         SurveyResponse testResponse = SurveyResponse.builder()
                 .id(UUID.randomUUID())
                 .surveyId(testSurvey.getId()).build();
@@ -46,8 +46,8 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
                 .stringValue("easyValue")
                 .build();
         EnrolleeExportData enrolleeExportData = new EnrolleeExportData(null, null,
-                List.of(answer), null, List.of(testResponse));
-        Map<String, String> valueMap = moduleExportInfo.toStringMap(enrolleeExportData);
+                List.of(answer), null, List.of(testResponse), null);
+        Map<String, String> valueMap = moduleFormatter.toStringMap(enrolleeExportData);
 
         assertThat(valueMap.get("oh_surveyA.oh_surveyA_q1"), equalTo("easyValue"));
         assertThat(valueMap.get("oh_surveyA.complete"), equalTo("false"));
@@ -174,14 +174,12 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
                 .stableId("oh_surveyA")
                 .version(1)
                 .build();
-        SurveyFormatter surveyFormatter = new SurveyFormatter(objectMapper);
-        var moduleExportInfo = surveyFormatter
-                .getModuleExportInfo(exportOptions, "oh_surveyA", List.of(testSurvey), List.of(question));
-        ItemExportInfo itemExportInfo = moduleExportInfo.getItems().stream().filter(
-                itemInfo -> "oh_surveyA_q1".equals(itemInfo.getQuestionStableId())
-        ).findFirst().get();
-        Map<String, List<Answer>> answerMap = Map.of("oh_surveyA_q1", List.of(answer));
-        surveyFormatter.addAnswersToMap(moduleExportInfo, itemExportInfo, answerMap, valueMap);
+        SurveyFormatter moduleFormatter = new SurveyFormatter(exportOptions, "oh_surveyA", List.of(testSurvey), List.of(question), objectMapper);
+        AnswerItemFormatter itemFormatter = (AnswerItemFormatter) moduleFormatter.getItemFormatters().stream().filter(
+                itemInfo -> itemInfo instanceof AnswerItemFormatter)
+                .findFirst().orElseThrow(() -> new IllegalStateException("formatter did not produce an AnswerItemFormatter"));
+        Map<String, List<Answer>> answerMap = Map.of(question.getQuestionStableId(), List.of(answer));
+        moduleFormatter.addAnswersToMap(itemFormatter, answerMap, valueMap);
         return valueMap;
     }
 

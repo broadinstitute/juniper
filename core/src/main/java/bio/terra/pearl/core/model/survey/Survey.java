@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.survey;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import bio.terra.pearl.core.model.PortalAttached;
 import bio.terra.pearl.core.model.Versioned;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Getter @Setter @NoArgsConstructor @SuperBuilder
-public class Survey extends BaseEntity implements Versioned {
+public class Survey extends BaseEntity implements Versioned, PortalAttached {
     private String stableId;
     @Builder.Default
     private int version = 1;

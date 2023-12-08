@@ -20,7 +20,7 @@ export const emptyChangeSet: PortalEnvironmentChange = {
   studyEnvChanges: []
 }
 
-const emptyStudyEnvChange: StudyEnvironmentChange = {
+export const emptyStudyEnvChange: StudyEnvironmentChange = {
   studyShortcode: '',
   configChanges: [],
   preEnrollSurveyChanges: { changed: false },
@@ -88,7 +88,7 @@ type EnvironmentDiffProps = {
  * loads and displays the differences between two portal environments
  * */
 export default function PortalEnvDiffView(
-  { changeSet, destEnvName, applyChanges, sourceEnvName }: EnvironmentDiffProps) {
+  { changeSet, destEnvName, applyChanges, sourceEnvName, portal }: EnvironmentDiffProps) {
   const [selectedChanges, setSelectedChanges] = useState<PortalEnvironmentChange>(getDefaultPortalEnvChanges(changeSet))
 
   const updateSelectedStudyEnvChanges = (update: StudyEnvironmentChange) => {
@@ -199,7 +199,9 @@ export default function PortalEnvDiffView(
         {changeSet.studyEnvChanges.map(studyEnvChange => {
           const matchedChange = selectedChanges.studyEnvChanges
             .find(change => change.studyShortcode === studyEnvChange.studyShortcode) as StudyEnvironmentChange
-          return <StudyEnvDiff key={studyEnvChange.studyShortcode} studyEnvChange={studyEnvChange}
+          const studyName = portal.portalStudies.find(portalStudy =>
+            portalStudy.study.shortcode === studyEnvChange.studyShortcode)?.study.name || studyEnvChange.studyShortcode
+          return <StudyEnvDiff key={studyEnvChange.studyShortcode} studyName={studyName} studyEnvChange={studyEnvChange}
             selectedChanges={matchedChange} setSelectedChanges={updateSelectedStudyEnvChanges}/>
         })}
       </div>

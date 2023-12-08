@@ -59,7 +59,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
                 .emailSourceAddress("info@portal.org").build();
         PortalEnvironment portalEnv = PortalEnvironment.builder()
                 .environmentName(EnvironmentName.irb).portalEnvironmentConfig(portalEnvConfig).build();
-        Portal portal = Portal.builder().shortcode("portal1").build();
+        Portal portal = Portal.builder().shortcode("portal1").name("MyPortal").build();
         EmailTemplate emailTemplate = EmailTemplate.builder()
                     .body("family name ${profile.familyName}")
                     .subject("Welcome ${profile.givenName}").build();
@@ -69,6 +69,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
         assertThat(email.personalization.get(0).getTos().get(0).getEmail(), equalTo("test@test.com"));
         assertThat(email.content.get(0).getValue(), equalTo("family name tester"));
         assertThat(email.from.getEmail(), equalTo("info@portal.org"));
+        assertThat(email.from.getName(), equalTo("MyPortal (irb) (local)"));
         assertThat(email.getSubject(), equalTo("Welcome given"));
     }
 

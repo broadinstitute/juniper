@@ -8,17 +8,17 @@ import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import java.util.HashMap;
 import java.util.Map;
+
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /** handles template replacement.  Note that this class is not a Spring component since a separate instance should be created
  * for each email to be sent. */
+@Slf4j
 public class EnrolleeEmailSubstitutor implements StringLookup {
-    private static final Logger logger = LoggerFactory.getLogger(EnrolleeEmailSubstitutor.class);
     private final Map<String, Object> valueMap = new HashMap<>();
     private EnrolleeRuleData enrolleeRuleData;
     private NotificationContextInfo contextInfo;
@@ -67,7 +67,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         try {
             return PropertyUtils.getNestedProperty(valueMap, key).toString();
         } catch (Exception e) {
-            logger.error("Could not resolve template value {}, environment: {}, enrollee: {}",
+            log.error("Could not resolve template value {}, environment: {}, enrollee: {}",
                     key, contextInfo.portal().getShortcode(), enrolleeRuleData.enrollee().getShortcode());
         }
         return "";

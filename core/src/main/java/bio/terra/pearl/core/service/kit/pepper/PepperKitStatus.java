@@ -1,64 +1,53 @@
 package bio.terra.pearl.core.service.kit.pepper;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+import bio.terra.pearl.core.model.kit.KitRequestStatus;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;
 
-@Getter @Setter
-@SuperBuilder @NoArgsConstructor
-@EqualsAndHashCode
-@ToString
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class PepperKitStatus {
+@Slf4j
+public enum PepperKitStatus {
+    CREATED("kit without label"),
+    QUEUED("queue"),
+    SENT("sent"),
+    RECEIVED("received"),
+    ERRORED("error"),
+    DEACTIVATED("deactivated");
 
-    public enum Status {
-        CREATED("kit without label"),
-        QUEUED("queue"),
-        SENT("sent"),
-        RECEIVED("received"),
-        ERRORED("error"),
-        DEACTIVATED("deactivated");
 
-        Status(String currentStatus) {
-            this.currentStatus = currentStatus;
-        }
-
-        public final String currentStatus;
-
-        public static Status fromCurrentStatus(String currentStatus) {
-            for (Status status : Status.values()) {
-                if (status.currentStatus.equals(currentStatus.toLowerCase())) {
-                    return status;
-                }
-            }
-            throw new IllegalArgumentException("Unexpected Pepper currentStatus: " + currentStatus);
-        }
-
-        public static boolean isCompleted(Status status) {
-            return Set.of(Status.RECEIVED, Status.DEACTIVATED).contains(status);
-        }
-
-        public static boolean isFailed(Status status) {
-            return status == Status.ERRORED;
-        }
-
+    PepperKitStatus(String pepperString) {
+        this.pepperString = pepperString;
     }
 
-    private String juniperKitId;
-    private String currentStatus;
-    private String dsmShippingLabel;
-    private String participantId; // Juniper enrollee shortcode
-    private String labelDate;
-    private String labelByEmail;
-    private String scanDate;
-    private String scanByEmail;
-    private String receiveDate;
-    private String trackingScanBy;
-    private String trackingNumber;
-    private String returnTrackingNumber;
-    private String errorMessage;
-    private String errorDate;
-    private Boolean error;
+    public final String pepperString;
+
+    public static PepperKitStatus fromCurrentStatus(String currentStatus) {
+        for (PepperKitStatus status : PepperKitStatus.values()) {
+            if (status.pepperString.equals(currentStatus.toLowerCase())) {
+                return status;
+            }
+        }
+        return null;
+    }
+
+    public static KitRequestStatus mapToKitRequestStatus(String currentStatus) {
+        PepperKitStatus pepperKitStatus = fromCurrentStatus(currentStatus);
+        if (pepperKitStatus != null) {
+            try {
+                return KitRequestStatus.valueOf(pepperKitStatus.name());
+            } catch (IllegalArgumentException e) {
+                // log will be below
+            }
+        }
+        log.error("Unknown PepperKitStatus: {}", currentStatus);
+        return KitRequestStatus.UNKNOWN;
+    }
+
+    public static boolean isCompleted(PepperKitStatus status) {
+        return Set.of(PepperKitStatus.RECEIVED, PepperKitStatus.DEACTIVATED).contains(status);
+    }
+
+    public static boolean isFailed(PepperKitStatus status) {
+        return status == PepperKitStatus.ERRORED;
+    }
 }

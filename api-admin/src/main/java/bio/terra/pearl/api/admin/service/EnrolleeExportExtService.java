@@ -6,7 +6,7 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.export.DictionaryExportService;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
-import bio.terra.pearl.core.service.export.instance.ExportOptions;
+import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import java.io.OutputStream;
 import org.springframework.stereotype.Service;
@@ -40,11 +40,8 @@ public class EnrolleeExportExtService {
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
     StudyEnvironment studyEnv =
         studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
-    try {
-      enrolleeExportService.export(options, studyEnv.getId(), os);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+
+    enrolleeExportService.export(options, studyEnv.getId(), os);
   }
 
   public void exportDictionary(

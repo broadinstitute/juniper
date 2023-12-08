@@ -73,16 +73,16 @@ public class KitRequestDaoTest extends BaseSpringBootTest {
                 throw new RuntimeException(e);
             }
         };
-        var incompleteKits = Stream.of(KitRequestStatus.CREATED, KitRequestStatus.IN_PROGRESS).map(makeKit).toList();
-        var completeKits = Stream.of(KitRequestStatus.COMPLETE, KitRequestStatus.FAILED).map(makeKit).toList();
+        var incompleteKits = Stream.of(KitRequestStatus.CREATED, KitRequestStatus.SENT).map(makeKit).toList();
+        var completeKits = Stream.of(KitRequestStatus.RECEIVED, KitRequestStatus.ERRORED).map(makeKit).toList();
 
         // Act
         var fetchedIncompleteKits = kitRequestDao.findByStatus(
                 studyEnvironment.getId(),
-                List.of(KitRequestStatus.CREATED, KitRequestStatus.IN_PROGRESS));
+                List.of(KitRequestStatus.CREATED, KitRequestStatus.SENT));
         var fetchedCompleteKits = kitRequestDao.findByStatus(
                 studyEnvironment.getId(),
-                List.of(KitRequestStatus.COMPLETE, KitRequestStatus.FAILED));
+                List.of(KitRequestStatus.RECEIVED, KitRequestStatus.ERRORED));
 
         // Assert
         assertThat(fetchedIncompleteKits, containsInAnyOrder(incompleteKits.toArray()));

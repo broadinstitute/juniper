@@ -7,6 +7,7 @@ import { render, screen, within } from '@testing-library/react'
 
 
 test('renders survey links for configured surveys', async () => {
+  jest.spyOn(window, 'alert').mockImplementation(jest.fn())
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()
 
@@ -20,6 +21,7 @@ test('renders survey links for configured surveys', async () => {
 })
 
 test('renders survey taken badges', async () => {
+  jest.spyOn(window, 'alert').mockImplementation(jest.fn())
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()
   enrollee.surveyResponses.push({
@@ -43,6 +45,7 @@ test('renders survey taken badges', async () => {
 
 
 test('renders consent links for configured consents', async () => {
+  jest.spyOn(window, 'alert').mockImplementation(jest.fn())
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()
 
@@ -56,6 +59,7 @@ test('renders consent links for configured consents', async () => {
 })
 
 test('renders consent taken badges', async () => {
+  jest.spyOn(window, 'alert').mockImplementation(jest.fn())
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()
   enrollee.consentResponses.push({

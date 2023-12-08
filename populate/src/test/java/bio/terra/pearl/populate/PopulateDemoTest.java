@@ -8,19 +8,17 @@ import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
-import bio.terra.pearl.core.service.export.instance.ExportOptions;
-import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
+import bio.terra.pearl.core.service.export.ExportOptions;
+import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import java.util.Set;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -70,7 +68,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
 
     private void checkExportContent(UUID sandboxEnvironmentId) throws Exception {
         ExportOptions options = new ExportOptions(false, false, true, ExportFileFormat.TSV, null);
-        List<ModuleExportInfo> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
+        List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
         List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, options.limit());
 
         assertThat(exportData, hasSize(5));

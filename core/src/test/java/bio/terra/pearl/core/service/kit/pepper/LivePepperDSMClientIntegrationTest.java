@@ -8,8 +8,6 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.function.Executable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,9 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * details about setting the DSM_JWT_SIGNING_SECRET environment variable.
  */
 public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
-
-    public static final Logger log = LoggerFactory.getLogger(LivePepperDSMClientIntegrationTest.class);
-
     public static final String STUDY_SHORTCODE = "ourheart";
 
     @Autowired
@@ -41,7 +36,7 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
     public void testSendKitRequest() throws Exception {
         var enrollee = enrolleeFactory.buildPersisted("testSendKitRequest");
         var kitType = kitTypeDao.findByName("SALIVA").get();
-        var kitRequest = kitRequestFactory.buildPersisted("testSendKitRequest", enrollee.getId(), kitType.getId());
+        var kitRequest = kitRequestFactory.buildPersisted("testSendKitRequest", enrollee, kitType.getId());
         kitRequest.setKitType(kitType);
         var address = PepperKitAddress.builder()
                 .firstName("Juniper")
@@ -61,7 +56,7 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
     @IntegrationTest
     public void testSendKitRequestParsesPepperError() throws Exception {
         var enrollee = enrolleeFactory.buildPersisted("testSendKitRequestParsesPepperError");
-        var kitRequest = kitRequestFactory.buildPersisted("testSendKitRequestParsesPepperError", enrollee.getId());
+        var kitRequest = kitRequestFactory.buildPersisted("testSendKitRequestParsesPepperError", enrollee);
         var address = PepperKitAddress.builder()
                 .firstName("Juniper")
                 .lastName("Testerson")
@@ -122,7 +117,7 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
 
         // Assert
         assertThat(statuses, not(statuses.isEmpty()));
-        assertThat(statuses, everyItem(where(PepperKitStatus::getJuniperKitId, notNullValue())));
+        assertThat(statuses, everyItem(where(PepperKit::getJuniperKitId, notNullValue())));
     }
 
     @Autowired

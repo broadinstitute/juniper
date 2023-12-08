@@ -44,7 +44,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public PepperKitStatus sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address)
+    public PepperKit sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address)
     throws PepperApiException, PepperParseException {
         var request = buildAuthedPostRequest("shipKit", makeKitRequestBody(studyShortcode, enrollee, kitRequest, address));
         PepperKitStatusResponse response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
@@ -56,7 +56,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public PepperKitStatus fetchKitStatus(UUID kitRequestId) throws PepperApiException, PepperParseException {
+    public PepperKit fetchKitStatus(UUID kitRequestId) throws PepperApiException, PepperParseException {
         var request = buildAuthedGetRequest("kitstatus/juniperKit/%s".formatted(kitRequestId));
         var response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
         if (response.getKits().length != 1) {
@@ -67,7 +67,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public Collection<PepperKitStatus> fetchKitStatusByStudy(String studyShortcode) throws PepperApiException, PepperParseException {
+    public Collection<PepperKit> fetchKitStatusByStudy(String studyShortcode) throws PepperApiException, PepperParseException {
         var request = buildAuthedGetRequest("kitstatus/study/%s".formatted(makePepperStudyName(studyShortcode)));
         var response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
         return Arrays.asList(response.getKits());

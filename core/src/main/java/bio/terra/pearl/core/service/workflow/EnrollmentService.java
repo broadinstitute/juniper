@@ -22,15 +22,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 public class EnrollmentService {
     private static final String QUALIFIED_STABLE_ID = "qualified";
-    private static final Logger logger = LoggerFactory.getLogger(EnrollmentService.class);
     private SurveyService surveyService;
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
     private StudyEnvironmentService studyEnvironmentService;
@@ -85,7 +85,7 @@ public class EnrollmentService {
     @Transactional
     public HubResponse<Enrollee> enroll(ParticipantUser user, PortalParticipantUser ppUser, EnvironmentName envName,
                                             String studyShortcode, UUID preEnrollResponseId) {
-        logger.info("creating enrollee for user {}, study {}", user.getId(), studyShortcode);
+        log.info("creating enrollee for user {}, study {}", user.getId(), studyShortcode);
         StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
         StudyEnvironmentConfig studyEnvConfig = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId())
                 .orElseThrow(StudyEnvConfigMissing::new);
@@ -108,7 +108,7 @@ public class EnrollmentService {
             preEnrollmentResponseDao.update(preEnrollResponse);
         }
         EnrolleeEvent event = eventService.publishEnrolleeCreationEvent(enrollee, ppUser);
-        logger.info("Enrollee created: user {}, study {}, shortcode {}, {} tasks added",
+        log.info("Enrollee created: user {}, study {}, shortcode {}, {} tasks added",
                 user.getId(), studyShortcode, enrollee.getShortcode(), enrollee.getParticipantTasks().size());
         HubResponse hubResponse = eventService.buildHubResponse(event, enrollee);
         return hubResponse;
@@ -121,7 +121,7 @@ public class EnrollmentService {
             return null;
         }
         if (preEnrollResponseId == null) {
-            logger.warn("Could not match enrollee to pre-enrollment survey results; user {}", participantUserId);
+            log.warn("Could not match enrollee to pre-enrollment survey results; user {}", participantUserId);
             return null;
         }
         PreEnrollmentResponse response = preEnrollmentResponseDao.find(preEnrollResponseId).get();

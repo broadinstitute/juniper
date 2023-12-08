@@ -24,11 +24,17 @@ public class AdminUserDao extends BaseMutableJdbiDao<AdminUser> {
     }
 
     public Optional<AdminUser> findByUsername(String username) {
-        return findByProperty("username", username);
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from " + tableName + " where lower(username) = :username;")
+                        .bind("username", username.toLowerCase())
+                        .mapTo(clazz)
+                        .findOne()
+        );
     }
 
+    /** does a case-insensitive search for the username */
     public Optional<AdminUserWithPermissions> findByUsernameWithPermissions(String username) {
-        Optional<AdminUser> userOpt = findByProperty("username", username);
+        Optional<AdminUser> userOpt = findByUsername(username);
         if (userOpt.isPresent()) {
             return loadWithPermissions(userOpt.get());
         }

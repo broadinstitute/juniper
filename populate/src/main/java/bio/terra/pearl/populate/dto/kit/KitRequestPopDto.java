@@ -10,6 +10,5 @@ import lombok.Setter;
 public class KitRequestPopDto extends KitRequest {
     private String creatingAdminUsername;
     private String kitTypeName;
-    private String statusName;
-    private JsonNode dsmStatusJson;
+    private JsonNode externalKitJson;
 }

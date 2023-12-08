@@ -1,7 +1,6 @@
 package bio.terra.pearl.core;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,16 +10,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Running this application should trigger liquibase migrations
  */
 @SpringBootApplication
+@Slf4j
 public class CoreCliApp
         implements CommandLineRunner {
 
-    private static Logger LOG = LoggerFactory
-            .getLogger(CoreCliApp.class);
-
     public static void main(String[] args) {
-        LOG.info("STARTING APPLICATION - pearl core");
+        log.info("STARTING APPLICATION - pearl core");
         SpringApplication.run(CoreCliApp.class, args);
-        LOG.info("APPLICATION FINISHED - pearl core");
+        log.info("APPLICATION FINISHED - pearl core");
     }
 
     @Override

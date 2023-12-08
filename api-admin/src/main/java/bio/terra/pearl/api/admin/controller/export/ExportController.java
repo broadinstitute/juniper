@@ -6,7 +6,7 @@ import bio.terra.pearl.api.admin.service.EnrolleeExportExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
-import bio.terra.pearl.core.service.export.instance.ExportOptions;
+import bio.terra.pearl.core.service.export.ExportOptions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayOutputStream;
 import javax.servlet.http.HttpServletRequest;

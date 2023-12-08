@@ -83,7 +83,7 @@ public class KitExtService {
 
   public Collection<KitRequest> getKitRequests(AdminUser adminUser, String enrolleeShortcode) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(adminUser, enrolleeShortcode);
-    return kitRequestService.getKitRequests(enrollee);
+    return kitRequestService.findByEnrolleeId(enrollee.getId());
   }
 
   public void refreshKitStatuses(

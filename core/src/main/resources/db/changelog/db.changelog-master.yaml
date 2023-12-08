@@ -150,6 +150,12 @@ databaseChangeLog:
       file: changesets/2023_10_30_study_env_kit_type.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2023_11_30_kit_status.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2023_12_06_portal_participant_user.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2023_11_17_participant_dashboard_alerts.yaml
       relativeToChangelogFile: true
 

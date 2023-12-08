@@ -55,7 +55,7 @@ jobs:
         with:
           arguments: build --info # if you need to see test failure full stacktraces, change this to `build --info`
       - name: Upload test artifacts
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v3
         with:
           name: test-results
@@ -64,6 +64,18 @@ jobs:
             api-participant/build/test-results/test/*.xml
             core/build/test-results/test/*.xml
             populate/build/test-results/test/*.xml
+      - name: JUnit test report
+        # Generate a report if the tests fail or succeed, but not if the user cancels
+        if: success() || failure()
+        uses: dorny/test-reporter@v1
+        with:
+          name: JUnit Tests
+          path: >
+            api-admin/build/test-results/test/*.xml,
+            api-participant/build/test-results/test/*.xml,
+            core/build/test-results/test/*.xml,
+            populate/build/test-results/test/*.xml
+          reporter: java-junit
 
   # Need to uncomment these in follow up PR, The new Trivy and Tag workflows need to exist on the development branch
   # before the following steps will work

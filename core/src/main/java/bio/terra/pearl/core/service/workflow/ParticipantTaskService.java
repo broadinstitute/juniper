@@ -3,20 +3,18 @@ package bio.terra.pearl.core.service.workflow;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.CrudService;
-import bio.terra.pearl.core.service.admin.AdminUserService;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 public class ParticipantTaskService extends CrudService<ParticipantTask, ParticipantTaskDao> {
-    private static final Logger logger = LoggerFactory.getLogger(AdminUserService.class);
-
     public ParticipantTaskService(ParticipantTaskDao dao) {
         super(dao);
     }
@@ -39,7 +37,7 @@ public class ParticipantTaskService extends CrudService<ParticipantTask, Partici
     @Override
     public ParticipantTask create(ParticipantTask task) {
         ParticipantTask savedTask = dao.create(task);
-        logger.info("ParticipantTask created - id: {}, targetStableId: {}, enrolleeId: {}",
+        log.info("ParticipantTask created - id: {}, targetStableId: {}, enrolleeId: {}",
                 task.getId(), task.getTargetStableId(), task.getEnrolleeId());
         return savedTask;
     }

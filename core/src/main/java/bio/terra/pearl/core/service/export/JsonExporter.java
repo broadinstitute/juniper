@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.export;
 
-import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
+import bio.terra.pearl.core.service.exception.internal.IOInternalException;
+import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -12,21 +13,25 @@ public class JsonExporter extends BaseExporter {
 
     private final ObjectMapper objectMapper;
 
-    public JsonExporter(List<ModuleExportInfo> moduleExportInfos, List<Map<String, String>> enrolleeMaps,
+    public JsonExporter(List<ModuleFormatter> moduleFormatters, List<Map<String, String>> enrolleeMaps,
                         ObjectMapper objectMapper) {
-        super(moduleExportInfos, enrolleeMaps);
+        super(moduleFormatters, enrolleeMaps);
         this.objectMapper = objectMapper;
     }
 
-    public void export(OutputStream os) throws IOException {
+    public void export(OutputStream os) {
         PrintWriter printWriter = new PrintWriter(os);
         List<String> columnKeys = getColumnKeys();
         List<String> headerRowValues = getHeaderRow();
         List<String> subHeaderRowValues = getSubHeaderRow();
 
         JsonExport jsonExport = new JsonExport(columnKeys, headerRowValues, subHeaderRowValues, enrolleeMaps);
-        printWriter.println(objectMapper.writeValueAsString(jsonExport));
-        printWriter.flush();
+        try {
+            printWriter.println(objectMapper.writeValueAsString(jsonExport));
+            printWriter.flush();
+        } catch (IOException e) {
+            throw new IOInternalException("Error writing json to stream", e);
+        }
         // do not close os -- that's the caller's responsibility
     }
 

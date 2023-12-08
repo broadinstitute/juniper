@@ -2,6 +2,8 @@ package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
+import bio.terra.pearl.core.model.kit.KitRequest;
+import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -9,30 +11,49 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
+import bio.terra.pearl.core.service.kit.KitSentEvent;
+import bio.terra.pearl.core.service.kit.KitStatusEvent;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.survey.EnrolleeSurveyEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 /**
- * All event publishing should be done via method calls in this service, to ensure that the events are constructed
- * properly with appropriate supporting data.
+ * All event publishing should be done via method calls in this service to ensure that the
+ * events are constructed properly with appropriate supporting data.
  */
 
 @Service
+@Slf4j
 public class EventService {
-    private static final Logger logger = LoggerFactory.getLogger(EventService.class);
-    private ParticipantTaskService participantTaskService;
-    private EnrolleeRuleService enrolleeRuleService;
+    private final ParticipantTaskService participantTaskService;
+    private final EnrolleeRuleService enrolleeRuleService;
 
     public EventService(ParticipantTaskService participantTaskService,
                         EnrolleeRuleService enrolleeRuleService) {
         this.participantTaskService = participantTaskService;
         this.enrolleeRuleService = enrolleeRuleService;
+    }
+
+    /** Publish a KitStatusEvent.
+     *
+     * @param kitRequest current kit request already updated with the new status
+     * @param priorStatus prior kit status
+     */
+    public KitStatusEvent publishKitStatusEvent(KitRequest kitRequest, Enrollee enrollee,
+                                                PortalParticipantUser portalParticipantUser, KitRequestStatus priorStatus) {
+        KitStatusEvent event = KitSentEvent.newInstance(kitRequest, priorStatus);
+        event.setEnrollee(enrollee);
+        event.setPortalParticipantUser(portalParticipantUser);
+        populateEvent(event);
+        log.info("Kit status event for enrollee {}, studyEnv {}: status {} => {}",
+                enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
+                priorStatus, kitRequest.getStatus());
+        applicationEventPublisher.publishEvent(event);
+        return event;
     }
 
     public EnrolleeConsentEvent publishEnrolleeConsentEvent(Enrollee enrollee, ConsentResponse response,
@@ -43,7 +64,7 @@ public class EventService {
                 .portalParticipantUser(ppUser)
                 .build();
         populateEvent(event);
-        logger.info("consent event for enrollee {}, studyEnv {} - formId {}, consented {}",
+        log.info("consent event for enrollee {}, studyEnv {} - formId {}, consented {}",
                 enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
                 response.getConsentFormId(), response.isConsented());
         applicationEventPublisher.publishEvent(event);
@@ -58,7 +79,7 @@ public class EventService {
                 .portalParticipantUser(ppUser)
                 .build();
         populateEvent(event);
-        logger.info("survey event for enrollee {}, studyEnv {} - formId {}, completed {}",
+        log.info("survey event for enrollee {}, studyEnv {} - formId {}, completed {}",
                 enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
                 response.getSurveyId(), response.isComplete());
         applicationEventPublisher.publishEvent(event);
