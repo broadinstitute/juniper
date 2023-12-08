@@ -16,7 +16,7 @@ const configTypeOptions = [{ label: 'Event', value: 'EVENT' }, { label: 'Task re
 const deliveryTypeOptions = [{ label: 'Email', value: 'EMAIL' }]
 const eventTypeOptions = [{ label: 'Study Enrollment', value: 'STUDY_ENROLLMENT' },
   { label: 'Study Consent', value: 'STUDY_CONSENT' }, { label: 'Survey Response', value: 'SURVEY_RESPONSE' },
-  { label: 'Kit Sent', value: 'KIT_SENT' }]
+  { label: 'Kit Sent', value: 'KIT_SENT' }, { label: 'Kit Returned', value: 'KIT_RECEIVED' }]
 const taskTypeOptions = [{ label: 'Survey', value: 'SURVEY' }, { label: 'Consent', value: 'CONSENT' }]
 
 

@@ -299,8 +299,8 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         if (priorStatus == kitRequest.getStatus()) {
             return;
         }
-        // for now, only notify when the kit is sent
-        if (!KitRequestStatus.SENT.equals(kitRequest.getStatus())) {
+        // only notify when the kit is sent or received
+        if (!List.of(KitRequestStatus.SENT, KitRequestStatus.RECEIVED).contains(kitRequest.getStatus())) {
             return;
         }
 
