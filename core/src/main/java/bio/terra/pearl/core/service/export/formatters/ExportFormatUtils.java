@@ -1,23 +1,23 @@
 package bio.terra.pearl.core.service.export.formatters;
 
-import bio.terra.pearl.core.service.export.instance.ItemExportInfo;
-import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
 import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
 import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.apache.commons.beanutils.NestedNullException;
+
+import bio.terra.pearl.core.service.export.DataValueExportType;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 
+@Slf4j
 public class ExportFormatUtils {
     public static final String ANALYSIS_DATE_FORMAT = "yyyy-MM-dd";
     public static final String ANALYSIS_DATE_TIME_FORMAT = "yyyy-MM-dd hh:mma";
@@ -44,6 +44,7 @@ public class ExportFormatUtils {
                 .withZone(ZoneOffset.UTC).format(instant);
     }
 
+    /** simple property formatter -- just branches on the class of the thing to format */
     public static String formatForExport(Object value) {
         if (value == null) {
             return NULL_STRING;
@@ -58,48 +59,17 @@ public class ExportFormatUtils {
         return value.toString();
     }
 
-    public static List<String> getIncludedProperties(Class clazz, List<String> excludedProps) throws Exception {
-        BeanInfo info = Introspector.getBeanInfo(clazz);
-        return Arrays.asList(info.getPropertyDescriptors()).stream()
-                .map(descriptor -> descriptor.getName())
-                .filter(name -> !excludedProps.contains(name))
-                .collect(Collectors.toList());
-    }
-
-    public static Map<String, String> mapBeanForExport(Object bean, ModuleExportInfo moduleInfo) throws Exception {
-        Map<String, String> valueMap = new HashMap<>();
-        for (ItemExportInfo itemInfo : moduleInfo.getItems()) {
-            addPropertyForExport(bean, itemInfo, valueMap);
-        }
-        return valueMap;
-    }
-
-    public static void addPropertyForExport(Object bean, ItemExportInfo itemExportInfo, Map<String, String> valueMap) throws Exception {
-        Object value = null;
+    public static List<String> getIncludedProperties(Class clazz, List<String> excludedProps) {
         try {
-            value = PropertyUtils.getNestedProperty(bean, itemExportInfo.getPropertyAccessor());
-        } catch (NestedNullException e) {
-            // do nothing
+            BeanInfo info = Introspector.getBeanInfo(clazz);
+            return Arrays.asList(info.getPropertyDescriptors()).stream()
+                    .map(descriptor -> descriptor.getName())
+                    .filter(name -> !excludedProps.contains(name))
+                    .collect(Collectors.toList());
+        } catch (IntrospectionException e) {
+            throw new IllegalStateException("Error introspecting class " + clazz.getName(), e);
         }
-        String columnValue = ExportFormatUtils.formatForExport(value);
-        valueMap.put(itemExportInfo.getBaseColumnKey(), columnValue);
-    }
 
-    public static ItemExportInfo getItemInfoForBeanProp(String moduleName, String propertyName, Class beanClass) {
-        DataValueExportType dataType = DataValueExportType.STRING;
-        try {
-            BeanInfo info = Introspector.getBeanInfo(beanClass);
-            PropertyDescriptor descriptor = Arrays.stream(info.getPropertyDescriptors()).filter(pd -> pd.getName().equals(propertyName))
-                    .findFirst().get();
-            dataType = DATA_TYPE_MAP.getOrDefault(descriptor.getPropertyType(), DataValueExportType.STRING);
-        } catch (Exception e) {
-            // default is string
-        }
-        return ItemExportInfo.builder()
-                .propertyAccessor(propertyName)
-                .baseColumnKey(moduleName + COLUMN_NAME_DELIMITER + propertyName)
-                .dataType(dataType)
-                .build();
     }
 
     /** converts, e.g. "mailingAddress" to "Mailing Address" */
@@ -107,10 +77,6 @@ public class ExportFormatUtils {
         String spacedString = camelCased.replace(".", " - ");
         return StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(
                         StringUtils.capitalize(spacedString)), " ");
-    }
-
-    public static String getColumnKey(String moduleName, String fieldName) {
-        return moduleName + COLUMN_NAME_DELIMITER + fieldName;
     }
 
 }

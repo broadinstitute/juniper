@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.export.formatters;
+package bio.terra.pearl.core.service.export;
 
 public enum DataValueExportType {
     STRING,
