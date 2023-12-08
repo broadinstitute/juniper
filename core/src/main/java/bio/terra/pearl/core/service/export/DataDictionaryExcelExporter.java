@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.export;
 
 import bio.terra.pearl.core.model.survey.QuestionChoice;
+import bio.terra.pearl.core.service.exception.internal.IOInternalException;
 import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
 import bio.terra.pearl.core.service.export.formatters.item.AnswerItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
@@ -80,7 +81,7 @@ public class DataDictionaryExcelExporter extends ExcelExporter {
         try {
             writeAndCloseSheet(os);
         } catch (IOException e) {
-            throw new RuntimeException("Error writing excel file", e);
+            throw new IOInternalException("Error writing excel file", e);
         }
     }
 

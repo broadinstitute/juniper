@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.export;
 
+import bio.terra.pearl.core.service.exception.internal.IOInternalException;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class JsonExporter extends BaseExporter {
             printWriter.println(objectMapper.writeValueAsString(jsonExport));
             printWriter.flush();
         } catch (IOException e) {
-            throw new RuntimeException("Error writing json to stream", e);
+            throw new IOInternalException("Error writing json to stream", e);
         }
         // do not close os -- that's the caller's responsibility
     }
