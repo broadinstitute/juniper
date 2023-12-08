@@ -11,8 +11,8 @@ type PanelElementListProps = {
   readOnly: boolean
   value: FormPanel['elements']
   onChange: (newValue: FormPanel['elements'], removedElement?: FormElement) => void
-    setSelectedElementPath: (path: string) => void
-    selectedElementPath: string
+  setSelectedElementPath: (path: string) => void
+  selectedElementPath: string
 }
 
 /** UI for editing a list of form elements in a panel. */
