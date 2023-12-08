@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Question } from '@juniper/ui-core'
+import { HtmlQuestion, Question } from '@juniper/ui-core'
 
 import { BaseFields } from './questions/BaseFields'
 import { CheckboxFields } from './questions/CheckboxFields'
@@ -9,6 +9,7 @@ import { OtherOptionFields } from './questions/OtherOptionFields'
 import { questionTypeDescriptions, questionTypeLabels } from './questions/questionTypes'
 import { TextFields } from './questions/TextFields'
 import { VisibilityFields } from './questions/VisibilityFields'
+import { Textarea } from '../../components/forms/Textarea'
 
 export type QuestionDesignerProps = {
   question: Question
@@ -88,6 +89,19 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
               />
             )
           }
+          {
+            question.type === 'html' && <Textarea
+              disabled={readOnly}
+              label="HTML"
+              rows={5}
+              value={(question as HtmlQuestion)?.html || ''}
+              onChange={value => {
+                onChange({
+                  ...question,
+                  html: value
+                })
+              }}
+            />}
         </>
       )}
 

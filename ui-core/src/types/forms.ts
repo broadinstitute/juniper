@@ -95,9 +95,12 @@ export type HtmlElement = {
 
 type BaseQuestion = BaseElement & {
   name: string
-  title: string
   description?: string
   isRequired?: boolean
+}
+
+export type TitledQuestion = BaseQuestion & {
+    title: string
 }
 
 export type QuestionChoice = {
@@ -112,7 +115,7 @@ type WithOtherOption<T> = T & {
   otherErrorText?: string
 }
 
-export type CheckboxQuestion = WithOtherOption<BaseQuestion & {
+export type CheckboxQuestion = WithOtherOption<TitledQuestion & {
   type: 'checkbox'
   choices: QuestionChoice[]
   showNoneItem?: boolean
@@ -120,23 +123,23 @@ export type CheckboxQuestion = WithOtherOption<BaseQuestion & {
   noneValue?: string
 }>
 
-export type DropdownQuestion = WithOtherOption<BaseQuestion & {
+export type DropdownQuestion = WithOtherOption<TitledQuestion & {
   type: 'dropdown'
   choices: QuestionChoice[]
 }>
 
-export type RadiogroupQuestion = WithOtherOption<BaseQuestion & {
+export type RadiogroupQuestion = WithOtherOption<TitledQuestion & {
   type: 'radiogroup'
   choices: QuestionChoice[]
 }>
 
-export type TemplatedQuestion = Omit<BaseQuestion, 'title'> & {
+export type TemplatedQuestion = BaseQuestion & {
   name: string
   title?: string
   questionTemplateName: string
 }
 
-export type TextQuestion = BaseQuestion & {
+export type TextQuestion = TitledQuestion & {
   type: 'text'
   inputType?: 'text' | 'number'
   size?: number
@@ -144,12 +147,18 @@ export type TextQuestion = BaseQuestion & {
   max?: number
 }
 
-export type SignatureQuestion = BaseQuestion & {
+export type SignatureQuestion = TitledQuestion & {
   type: 'signaturepad'
 }
 
-export type MedicationsQuestion = BaseQuestion & {
+export type MedicationsQuestion = TitledQuestion & {
   type: 'medications'
+}
+
+
+export type HtmlQuestion = BaseQuestion & {
+  type: 'html',
+  html: string
 }
 
 export type Question =
@@ -160,6 +169,9 @@ export type Question =
   | SignatureQuestion
   | TemplatedQuestion
   | TextQuestion
+  | HtmlQuestion
+
+export type InteractiveQuestion = Exclude<Question, HtmlQuestion>
 
 /** Possible values for the 'type' field of a Question. */
 export type QuestionType = Exclude<Question, TemplatedQuestion>['type']
