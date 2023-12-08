@@ -33,6 +33,10 @@ public class ParticipantTaskService extends CrudService<ParticipantTask, Partici
         return dao.findTaskForActivity(ppUserId, studyEnvironmentId, activityStableId);
     }
 
+    public Optional<ParticipantTask> findByKitRequestId(UUID kitRequestId) {
+        return dao.findByKitRequestId(kitRequestId);
+    }
+
     @Transactional
     @Override
     public ParticipantTask create(ParticipantTask task) {
