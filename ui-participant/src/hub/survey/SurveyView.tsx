@@ -70,7 +70,7 @@ export function RawSurveyView({ form, enrollee, resumableData, pager, studyShort
       const hubUpdate: HubUpdate = {
         message: {
           title: `${form.name} completed`,
-          type: 'success'
+          type: 'SUCCESS'
         }
       }
       await updateEnrollee(response.enrollee)

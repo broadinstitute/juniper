@@ -1,24 +1,40 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { usePortalEnv } from '../providers/PortalProvider'
 import { useUser } from '../providers/UserProvider'
 
-import { Enrollee, ParticipantTask, Portal, Study } from '../api/api'
+import Api, { Enrollee, ParticipantTask, Portal, Study } from '../api/api'
 import TaskLink, { getTaskPath, isTaskAccessible, isTaskActive } from './TaskLink'
 import { Link, NavLink } from 'react-router-dom'
 import { DocumentTitle } from 'util/DocumentTitle'
 import { userHasJoinedPortalStudy } from 'util/enrolleeUtils'
 
-import { HubMessageAlert, useHubUpdate } from './hubUpdates'
+import { HubMessageAlert, HubUpdateMessage, useHubUpdate } from './hubUpdates'
 import { filterUnjoinableStudies } from '../Navbar'
+import { ParticipantDashboardAlert, alertDefaults } from '@juniper/ui-core'
 
 
 /** renders the logged-in hub page */
 export default function HubPage() {
-  const { portal } = usePortalEnv()
+  const { portal, portalEnv } = usePortalEnv()
   const { enrollees } = useUser()
+  const [noActivitiesAlert, setNoActivitiesAlert] = useState<ParticipantDashboardAlert>()
+
+  useEffect(() => {
+    loadDashboardAlerts()
+  }, [])
+
+  const loadDashboardAlerts = async () => {
+    if (!portalEnv) { return }
+    const alerts = await Api.getPortalEnvDashboardAlerts(portal.shortcode, portalEnv.environmentName)
+    setNoActivitiesAlert({
+      ...alertDefaults['NO_ACTIVITIES_REMAIN'],
+      ...alerts.find(msg => msg.trigger === 'NO_ACTIVITIES_REMAIN')
+    })
+  }
 
   const hubUpdate = useHubUpdate()
   const [showMessage, setShowMessage] = useState(true)
+  const hasActiveTasks = enrollees.some(enrollee => enrollee.participantTasks.some(task => isTaskActive(task)))
 
   const unjoinedStudies = filterUnjoinableStudies(portal.portalStudies)
     .filter(pStudy => !userHasJoinedPortalStudy(pStudy, enrollees))
@@ -30,6 +46,16 @@ export default function HubPage() {
         className="hub-dashboard-background flex-grow-1"
         style={{ background: 'linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%' }}
       >
+        {!hasActiveTasks && noActivitiesAlert && <HubMessageAlert
+          message={{
+            title: noActivitiesAlert.title,
+            detail: noActivitiesAlert.detail,
+            type: noActivitiesAlert.type
+          } as HubUpdateMessage}
+          className="mx-1 mx-md-auto my-1 my-md-5 shadow-sm"
+          role="alert"
+          style={{ maxWidth: 768 }}
+        /> }
         {!!hubUpdate?.message && showMessage && (
           <HubMessageAlert
             message={hubUpdate.message}

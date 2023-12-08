@@ -1,5 +1,6 @@
 package bio.terra.pearl.populate.dto;
 
+import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.populate.dto.site.SiteContentPopDto;
@@ -18,4 +19,5 @@ public class PortalEnvironmentPopDto extends PortalEnvironment {
     private SurveyPopDto preRegSurveyDto;
     private SiteContentPopDto siteContentPopDto;
     private List<MailingListContact> mailingListContacts = new ArrayList<>();
+    private List<ParticipantDashboardAlert> participantDashboardAlerts = new ArrayList<>();
 }

@@ -67,7 +67,7 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
       const hubUpdate: HubUpdate = {
         message: {
           title: `${form.name} completed`,
-          type: 'success'
+          type: 'SUCCESS'
         }
       }
       updateEnrollee(response.enrollee).then(() => {

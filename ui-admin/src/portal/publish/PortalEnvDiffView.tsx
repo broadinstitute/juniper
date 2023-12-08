@@ -16,6 +16,7 @@ export const emptyChangeSet: PortalEnvironmentChange = {
   configChanges: [],
   preRegSurveyChanges: { changed: false },
   notificationConfigChanges: { addedItems: [], removedItems: [], changedItems: [] },
+  participantDashboardAlertChanges: [],
   studyEnvChanges: []
 }
 
@@ -44,6 +45,12 @@ const getDefaultPortalEnvChanges = (changes: PortalEnvironmentChange) => {
   }
   return {
     ...emptyChangeSet,
+    participantDashboardAlertChanges: changes.participantDashboardAlertChanges.map(alertChange => (
+      {
+        trigger: alertChange.trigger,
+        changes: []
+      }
+    )),
     studyEnvChanges: changes.studyEnvChanges.map(studyEnvChange => (
       {
         ...getDefaultStudyEnvChanges(studyEnvChange),
@@ -130,6 +137,38 @@ export default function PortalEnvDiffView(
                 <VersionChangeView record={changeSet.siteContentChange}/>
               </label>}
           { !changeSet.siteContentChange.changed && <VersionChangeView record={changeSet.siteContentChange}/> }
+        </div>
+      </div>
+      <div className="my-2">
+        <h2 className="h6">
+          Participant dashboard alerts</h2>
+        <div className="ms-4">
+          { changeSet.participantDashboardAlertChanges.length > 0 ?
+            changeSet.participantDashboardAlertChanges.map(alertChange => (
+              <div key={alertChange.trigger} className="px-3 my-2 py-2" style={{ backgroundColor: '#ededed' }}>
+                <h2 className="h5 pb-2">{alertChange.trigger}</h2>
+                <ConfigChanges configChanges={alertChange.changes}
+                  selectedChanges={selectedChanges.participantDashboardAlertChanges.find(change =>
+                    change.trigger === alertChange.trigger)?.changes || []
+                  }
+                  updateSelectedChanges={(updatedConfigChanges: ConfigChange[]) => {
+                    const updatedAlertChanges = selectedChanges.participantDashboardAlertChanges
+                    const alertIndex = updatedAlertChanges.findIndex(change =>
+                      change.trigger === alertChange.trigger)
+                    updatedAlertChanges[alertIndex] = {
+                      trigger: alertChange.trigger,
+                      changes: updatedConfigChanges
+                    }
+                    setSelectedChanges({
+                      ...selectedChanges,
+                      participantDashboardAlertChanges: updatedAlertChanges
+                    })
+                  }}
+                />
+              </div>
+            )) :
+            <span className="fst-italic text-muted">no changes</span>
+          }
         </div>
       </div>
       <div className="my-2">

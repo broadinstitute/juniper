@@ -1,6 +1,7 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -10,6 +11,7 @@ import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.MailingListContactService;
+import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
@@ -30,6 +32,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
     private PortalService portalService;
 
     private PortalEnvironmentService portalEnvironmentService;
+    private PortalDashboardConfigService portalDashboardConfigService;
     private SiteImagePopulator siteImagePopulator;
     private StudyPopulator studyPopulator;
     private SurveyPopulator surveyPopulator;
@@ -48,12 +51,14 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
                            PortalParticipantUserPopulator portalParticipantUserPopulator,
                            PortalParticipantUserService ppUserService,
                            PortalEnvironmentService portalEnvironmentService,
+                           PortalDashboardConfigService portalDashboardConfigService,
                            SiteImagePopulator siteImagePopulator, SurveyPopulator surveyPopulator,
                            AdminUserPopulator adminUserPopulator,
                            MailingListContactService mailingListContactService) {
         this.siteContentPopulator = siteContentPopulator;
         this.portalParticipantUserPopulator = portalParticipantUserPopulator;
         this.portalEnvironmentService = portalEnvironmentService;
+        this.portalDashboardConfigService = portalDashboardConfigService;
         this.siteImagePopulator = siteImagePopulator;
         this.surveyPopulator = surveyPopulator;
         this.portalService = portalService;
@@ -98,6 +103,10 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         }
         for (String userFileName : portalEnvPopDto.getParticipantUserFiles()) {
             portalParticipantUserPopulator.populate(envConfig.newFrom(userFileName), overwrite);
+        }
+        for (ParticipantDashboardAlert alert : portalEnvPopDto.getParticipantDashboardAlerts()) {
+            alert.setPortalEnvironmentId(savedEnv.getId());
+            portalDashboardConfigService.create(alert);
         }
         // re-save the portal environment to update it with any attached siteContents or preRegSurveys
         portalEnvironmentService.update(savedEnv);
