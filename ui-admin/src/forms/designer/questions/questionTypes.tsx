@@ -6,7 +6,8 @@ export const questionTypeLabels: Record<QuestionType, string> = {
   dropdown: 'Dropdown',
   radiogroup: 'Radio group',
   signaturepad: 'Signature',
-  medications: 'Medications'
+  medications: 'Medications',
+  html: 'Html'
 }
 
 export const questionTypeDescriptions: Record<QuestionType, string> = {
@@ -15,7 +16,8 @@ export const questionTypeDescriptions: Record<QuestionType, string> = {
   dropdown: 'Prompts the participant to choose a response from a menu of choices.',
   radiogroup: 'Shows choices as radio buttons and prompts the participant to select a response.',
   signaturepad: 'Prompts the participant to sign a form.',
-  medications: 'Prompts the participant to choose medications from a list.'
+  medications: 'Prompts the participant to choose medications from a list.',
+  html: 'freeform HTML'
 }
 
 //Returns an object with all possible fields for each question type
@@ -88,6 +90,13 @@ export const baseQuestions: Record<QuestionType, Question> = {
     min: undefined,
     max: undefined,
     size: undefined,
+    visibleIf: undefined
+  },
+  html: {
+    type: 'html',
+    name: '',
+    html: '',
+    isRequired: false,
     visibleIf: undefined
   }
 }
