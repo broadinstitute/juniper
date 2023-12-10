@@ -8,22 +8,25 @@ import InfoPopup from 'components/forms/InfoPopup'
 import { ApiErrorResponse, defaultApiErrorHandle, doApiLoad } from 'api/api-utils'
 import Api from 'api/api'
 import { useFormCreationNameFields } from './useFormCreationNameFields'
+import useReactSingleSelect, {useNonNullReactSingleSelect} from "../../util/react-select-utils";
+import Select from "react-select";
+import {SurveyType} from "@juniper/ui-core";
 
 /** renders a modal that creates a new survey in a portal and configures it to the current study env */
-const CreateSurveyModal = ({ studyEnvContext, onDismiss }:
-                               {studyEnvContext: StudyEnvContextT, onDismiss: () => void}) => {
+const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
+                               {studyEnvContext: StudyEnvContextT, onDismiss: () => void, type: SurveyType}) => {
   const [isLoading, setIsLoading] = useState(false)
 
   const portalContext = useContext(PortalContext) as PortalContextT
   const navigate = useNavigate()
   const { formName, formStableId, clearFields, nameInput, stableIdInput } = useFormCreationNameFields()
-  const [formRequired, setFormRequired] = useState(false)
+    const [formRequired, setFormRequired] = useState(false)
 
   const createSurvey = async () => {
     doApiLoad(async () => {
       const createdSurvey = await Api.createNewSurvey(studyEnvContext.portal.shortcode,
         {
-          createdAt: 0, id: '', lastUpdatedAt: 0, version: 1,
+          createdAt: 0, id: '', lastUpdatedAt: 0, version: 1, surveyType: type,
           content: '{"pages":[]}', name: formName, stableId: formStableId
         })
       try {
@@ -55,26 +58,25 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss }:
     }, { setIsLoading })
   }
 
-
   return <Modal show={true} onHide={onDismiss}>
     <Modal.Header closeButton>
-      <Modal.Title>Create New Survey</Modal.Title>
+      <Modal.Title>Create New {type === 'RESEARCH' ? 'Research Survey' : 'Outreach'}</Modal.Title>
       <div className="ms-4">
         {studyEnvContext.study.name}: {studyEnvContext.currentEnv.environmentName}
       </div>
     </Modal.Header>
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
-        <label className="form-label" htmlFor="inputFormName">Survey Name</label>
+        <label className="form-label" htmlFor="inputFormName">Name</label>
         { nameInput }
-        <label className="form-label mt-3" htmlFor="inputFormStableId">Survey Stable ID</label>
+        <label className="form-label mt-3" htmlFor="inputFormStableId">Stable ID</label>
         <InfoPopup content={'A stable and unique identifier for the survey. May be shown in exported datasets.'}/>
         { stableIdInput }
-        <div className="form-check mt-3">
+          { type === 'RESEARCH' && <div className="form-check mt-3">
           <label className="form-check-label" htmlFor="formRequired">Required</label>
           <input type="checkbox" className="form-check-input" id="formRequired"
             checked={formRequired} onChange={event => setFormRequired(event.target.checked)}/>
-        </div>
+        </div>}
       </form>
     </Modal.Body>
     <Modal.Footer>

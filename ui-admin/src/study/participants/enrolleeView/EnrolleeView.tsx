@@ -62,7 +62,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
     return `${isActive ? 'fw-bold' : ''} d-flex align-items-center`
   }
 
-  const surveys = currentEnv.configuredSurveys
+  const surveys: StudyEnvironmentSurvey[] = currentEnv.configuredSurveys
   const responseMap: ResponseMapT = {}
   surveys.forEach(configSurvey => {
     // to match responses to surveys, filter using the tasks, since those have the stableIds
@@ -74,6 +74,11 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
       .filter(response => matchedResponseIds.includes(response.id))
     responseMap[configSurvey.survey.stableId] = { survey: configSurvey, responses: matchedResponses }
   })
+
+  const researchSurveys = surveys
+      .filter(survey => survey.survey.surveyType === 'RESEARCH')
+  const outreachSurveys = surveys
+      .filter(survey => survey.survey.surveyType === 'OUTREACH')
 
   const consents = currentEnv.configuredConsents
   const consentMap: ConsentResponseMapT = {}
@@ -136,7 +141,23 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
               <li style={navListItemStyle}>
                 <CollapsableMenu header={'Surveys'} headerClass="text-black" content={
                   <ul className="list-unstyled">
-                    {surveys.map(survey => {
+                    {researchSurveys.map(survey => {
+                      const stableId = survey.survey.stableId
+                      return <li className="mb-2 d-flex justify-content-between
+                        align-items-center" key={stableId}>
+                        <NavLink to={`surveys/${stableId}`} className={getLinkCssClasses}>
+                          { survey.survey.name }
+                        </NavLink>
+                        {badgeForResponses(responseMap[stableId].responses)}
+                      </li>
+                    })}
+                  </ul>}
+                />
+              </li>
+              <li style={navListItemStyle}>
+                <CollapsableMenu header={'Outreach'} headerClass="text-black" content={
+                  <ul className="list-unstyled">
+                    {outreachSurveys.map(survey => {
                       const stableId = survey.survey.stableId
                       return <li className="mb-2 d-flex justify-content-between
                         align-items-center" key={stableId}>
@@ -232,6 +253,8 @@ const badgeForResponses = (responses: SurveyResponse[]) => {
   } else {
     if (responses[0].complete) {
       return statusDisplayMap['COMPLETE']
+    } else if (responses[0].answers.length === 0) {
+      return statusDisplayMap['VIEWED']
     } else {
       return statusDisplayMap['IN_PROGRESS']
     }
@@ -252,7 +275,8 @@ function isConsented(responses: ConsentResponse[]) {
 const statusDisplayMap: Record<ParticipantTaskStatus, React.ReactNode> = {
   'COMPLETE': <FontAwesomeIcon icon={faCircleCheck} style={{ color: '#888' }} title="Complete"/>,
   'IN_PROGRESS': <FontAwesomeIcon icon={faCircleHalfStroke} style={{ color: '#888' }} title="In Progress"/>,
-  'NEW': <FontAwesomeIcon icon={faEmptyCircle} style={{ color: '#888' }} title="Not Started"/>,
+  'NEW': <FontAwesomeIcon icon={faEmptyCircle} style={{ color: '#888' }} title="No response"/>,
+  'VIEWED': <FontAwesomeIcon icon={faEmptyCircle} style={{ color: '#888' }} title="Viewed"/>,
   'REJECTED': <FontAwesomeIcon icon={faCircleXmark} style={{ color: '#888' }} title="Rejected"/>
 }
 

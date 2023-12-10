@@ -11,6 +11,7 @@ import java.util.Arrays;
  */
 public enum TaskStatus {
     NEW,
+    VIEWED, // the participant has affirmatively viewed the task (e.g. clicked on it)
     IN_PROGRESS,
     COMPLETE,
     REJECTED;

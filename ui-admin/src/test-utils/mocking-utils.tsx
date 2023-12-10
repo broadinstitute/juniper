@@ -78,7 +78,8 @@ export const mockSurvey: () => Survey = () => ({
   content: '{}',
   name: 'Survey number one',
   lastUpdatedAt: 0,
-  createdAt: 0
+  createdAt: 0,
+  surveyType: 'RESEARCH'
 })
 
 /** returns a mock portal study */

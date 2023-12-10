@@ -10,7 +10,7 @@ describe('CreateSurveyModal', () => {
   test('disables Create button when survey name and stable ID are blank', () => {
     const studyEnvContext = mockStudyEnvContext()
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
-      studyEnvContext={studyEnvContext}
+      studyEnvContext={studyEnvContext} type={'RESEARCH'}
       onDismiss={jest.fn()}/>)
     render(RoutedComponent)
 
@@ -22,7 +22,7 @@ describe('CreateSurveyModal', () => {
     const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
-      studyEnvContext={studyEnvContext}
+      studyEnvContext={studyEnvContext} type={'RESEARCH'}
       onDismiss={jest.fn()}/>)
     render(RoutedComponent)
 
@@ -39,7 +39,7 @@ describe('CreateSurveyModal', () => {
     const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
-      studyEnvContext={studyEnvContext}
+      studyEnvContext={studyEnvContext} type={'RESEARCH'}
       onDismiss={jest.fn()}/>)
     render(RoutedComponent)
 
@@ -59,7 +59,7 @@ describe('CreateSurveyModal', () => {
     const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
-      studyEnvContext={studyEnvContext}
+      studyEnvContext={studyEnvContext} type={'RESEARCH'}
       onDismiss={jest.fn()}/>)
     render(RoutedComponent)
 

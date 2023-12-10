@@ -5,6 +5,9 @@
   "consentFormFiles": [
     "surveys/consent.json"
   ],
+  "surveyFiles": [
+    "surveys/outsideAdvert.json"
+  ],
   "emailTemplateFiles": [
     "emails/studyEnroll.json"
   ],
@@ -23,12 +26,23 @@
           "consentVersion": 1
         }
       ],
+      "configuredSurveyDtos": [
+        {
+          "surveyStableId": "hh_outsideAdvert",
+          "surveyVersion": 1
+        }
+      ],
       "notificationConfigDtos": [{
         "notificationType": "EVENT",
         "eventType": "STUDY_ENROLLMENT",
         "emailTemplateStableId": "hh_registry_studyEnroll",
         "emailTemplateVersion": 1
-      }]
+      }],
+      "enrolleeFiles": [
+        "enrollees/gertrudeElion.json",
+        "enrollees/newEnrollee.json",
+        "enrollees/consentedEnrollee.json"
+      ]
     },
     {
       "environmentName": "irb",

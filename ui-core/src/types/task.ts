@@ -25,6 +25,7 @@ export type ParticipantTaskStatus =
   | 'IN_PROGRESS'
   | 'COMPLETE'
   | 'REJECTED'
+  | 'VIEWED'
 
 export type ParticipantTaskType =
   | 'CONSENT'

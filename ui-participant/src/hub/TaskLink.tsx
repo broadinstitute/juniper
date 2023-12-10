@@ -27,6 +27,10 @@ const statusDisplayMap: Record<ParticipantTaskStatus, StatusDisplayInfo> = {
   'REJECTED': {
     icon: <FontAwesomeIcon icon={faCircleXmark} style={{ color: '#777' }}/>,
     statusDisplay: 'Declined'
+  },
+  'VIEWED': {
+    icon: <FontAwesomeIcon icon={faCircle} style={{ color: '#777' }}/>,
+    statusDisplay: 'Not started'
   }
 }
 
@@ -83,6 +87,9 @@ export function getTaskPath(task: ParticipantTask, enrolleeShortcode: string, st
   } else if (task.taskType === 'SURVEY') {
     return `/hub/study/${studyShortcode}/enrollee/${enrolleeShortcode}/survey/${task.targetStableId}`
       + `/${task.targetAssignedVersion}?taskId=${task.id}`
+  } else if (task.taskType === 'OUTREACH') {
+    return `/hub/study/${studyShortcode}/enrollee/${enrolleeShortcode}/outreach/${task.targetStableId}`
+        + `/${task.targetAssignedVersion}?taskId=${task.id}`
   }
   return ''
 }

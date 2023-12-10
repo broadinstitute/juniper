@@ -170,7 +170,14 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     protected ParticipantTask updateTaskToResponse(ParticipantTask task, SurveyResponse response) {
         task.setSurveyResponseId(response.getId());
         if (task.getStatus() != TaskStatus.COMPLETE) { // task statuses shouldn't ever change from complete to not
-            task.setStatus(response.isComplete() ? TaskStatus.COMPLETE : TaskStatus.IN_PROGRESS);
+            if (response.isComplete()) {
+                task.setStatus(TaskStatus.COMPLETE);
+            } else if (task.getStatus() == TaskStatus.NEW && response.getAnswers().size() == 0) {
+                // if the task is new and no answers we submitted, this is just indicating the survey was viewed
+                task.setStatus(TaskStatus.VIEWED);
+            } else {
+                task.setStatus(TaskStatus.IN_PROGRESS);
+            }
         }
         return participantTaskService.update(task);
     }
