@@ -21,7 +21,7 @@ export default function HubRouter() {
       <Route path="study/:studyShortcode/enrollee/:enrolleeShortcode/survey/:stableId/:version"
         element={<SurveyView/>}/>
       <Route path="study/:studyShortcode/enrollee/:enrolleeShortcode/outreach/:stableId/:version"
-             element={<HubPage/>}/>
+        element={<HubPage/>}/>
       <Route index element={<HubPage/>}/>
       <Route path="*" element={<div>unknown hub route</div>}/>
     </Routes>

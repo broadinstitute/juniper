@@ -1,17 +1,13 @@
 import React, { useState } from 'react'
-import { usePortalEnv } from '../providers/PortalProvider'
-import { useUser } from '../providers/UserProvider'
+import { usePortalEnv } from 'providers/PortalProvider'
+import { useUser } from 'providers/UserProvider'
 
-import { Enrollee, ParticipantTask, Portal, Study } from '../api/api'
-import TaskLink, { getTaskPath, isTaskAccessible, isTaskActive } from './TaskLink'
-import { Link, NavLink } from 'react-router-dom'
+import { Enrollee, Portal, Study } from 'api/api'
 import { DocumentTitle } from 'util/DocumentTitle'
-import { userHasJoinedPortalStudy } from 'util/enrolleeUtils'
 
 import { HubMessageAlert, useHubUpdate } from './hubUpdates'
-import { filterUnjoinableStudies } from '../Navbar'
-import StudyResearchTasks from "./StudyResearchTasks";
-import OutreachTasks from "./OutreachTasks";
+import StudyResearchTasks from './StudyResearchTasks'
+import OutreachTasks from './OutreachTasks'
 
 
 /** renders the logged-in hub page */
@@ -22,9 +18,6 @@ export default function HubPage() {
   const hubUpdate = useHubUpdate()
   const [showMessage, setShowMessage] = useState(true)
 
-  const unjoinedStudies = filterUnjoinableStudies(portal.portalStudies)
-    .filter(pStudy => !userHasJoinedPortalStudy(pStudy, enrollees))
-  const hasUnjoinedStudies = unjoinedStudies.length > 0
   return (
     <>
       <DocumentTitle title="Dashboard" />
@@ -49,12 +42,10 @@ export default function HubPage() {
           style={{ background: '#fff', maxWidth: 768 }}
         >
           {enrollees.map(enrollee => <StudySection key={enrollee.id} enrollee={enrollee} portal={portal} />)}
-
         </main>
         <div className="hub-dashboard mx-auto"
-             style={{ maxWidth: 768 }}>
-            <OutreachTasks enrollees={enrollees} studies={portal.portalStudies.map(pStudy => pStudy.study)}/>
-
+          style={{ maxWidth: 768 }}>
+          <OutreachTasks enrollees={enrollees} studies={portal.portalStudies.map(pStudy => pStudy.study)}/>
         </div>
       </div>
     </>
@@ -75,7 +66,8 @@ const StudySection = (props: StudySectionProps) => {
   return (
     <>
       <h1 className="mb-4">{matchedStudy.name}</h1>
-      <StudyResearchTasks enrollee={enrollee} study={matchedStudy} />
+      <StudyResearchTasks enrollee={enrollee} studyShortcode={matchedStudy.shortcode}
+        participantTasks={enrollee.participantTasks} />
     </>
   )
 }

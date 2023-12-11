@@ -36,8 +36,22 @@ test('renders a Create Survey modal', async () => {
   const { RoutedComponent } = setupRouterTest(<StudyContent studyEnvContext={studyEnvContext}/>)
   render(RoutedComponent)
 
-  const addSurveyButton = screen.getByTestId('addSurvey')
+  const addSurveyButton = screen.getByTestId('addResearchSurvey')
   fireEvent.click(addSurveyButton)
-  expect(screen.getByText('Survey Name')).toBeInTheDocument()
-  expect(screen.getByText('Survey Stable ID')).toBeInTheDocument()
+  expect(screen.getByText('Create New Research Survey')).toBeInTheDocument()
+  expect(screen.getByText('Name')).toBeInTheDocument()
+  expect(screen.getByText('Stable ID')).toBeInTheDocument()
+})
+
+test('renders a Create Outreach Survey modal', async () => {
+  const studyEnvContext = mockStudyEnvContext()
+
+  const { RoutedComponent } = setupRouterTest(<StudyContent studyEnvContext={studyEnvContext}/>)
+  render(RoutedComponent)
+
+  const addSurveyButton = screen.getByTestId('addOutreachSurvey')
+  fireEvent.click(addSurveyButton)
+  expect(screen.getByText('Create New Outreach')).toBeInTheDocument()
+  expect(screen.getByText('Name')).toBeInTheDocument()
+  expect(screen.getByText('Stable ID')).toBeInTheDocument()
 })

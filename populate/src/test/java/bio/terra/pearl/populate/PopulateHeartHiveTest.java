@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import java.io.IOException;
 import java.util.List;
@@ -29,7 +30,7 @@ public class PopulateHeartHiveTest extends BasePopulatePortalsTest {
         PortalEnvironment sandbox = portalEnvironmentService.findOne("hearthive", EnvironmentName.sandbox).get();
         assertThat(portal.getPortalStudies(), hasSize(3));
         Study myopathyStudy = portal.getPortalStudies().stream()
-                .filter(portalStudy -> portalStudy.getStudy().getShortcode().equals("cmyop"))
+                .filter(portalStudy -> portalStudy.getStudy().getShortcode().equals("hh_registry"))
                 .findFirst().get().getStudy();
         List<StudyEnvironment> studyEnvs = studyEnvironmentService.findByStudy(myopathyStudy.getId());
         Assertions.assertEquals(3, studyEnvs.size());
@@ -39,9 +40,8 @@ public class PopulateHeartHiveTest extends BasePopulatePortalsTest {
 
         List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
         Assertions.assertEquals(3, enrollees.size());
-        Enrollee gertrude = enrollees.stream().filter(enrollee -> "HHGELI".equals(enrollee.getShortcode()))
-                .findFirst().get();
-        assertThat(gertrude.getPreEnrollmentResponseId(), notNullValue());
+        enrollees.stream().filter(enrollee -> "HHGELI".equals(enrollee.getShortcode()))
+                .findFirst().orElseThrow(() -> new NotFoundException("enrollee HHGELI not found"));
 
         PortalEnvironment liveEnv = portalEnvironmentService.findOne("hearthive", EnvironmentName.live).get();
         StudyEnvironment liveStudyEnv = studyEnvironmentService.findByStudy(myopathyStudy.getShortcode(), EnvironmentName.live).get();

@@ -30,6 +30,7 @@ export type ParticipantTaskStatus =
 export type ParticipantTaskType =
   | 'CONSENT'
   | 'SURVEY'
+  | 'OUTREACH'
   | 'KIT_REQUEST'
 
 export {}

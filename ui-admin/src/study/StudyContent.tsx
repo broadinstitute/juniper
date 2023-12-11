@@ -8,7 +8,7 @@ import CreateSurveyModal from './surveys/CreateSurveyModal'
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
 import ArchiveSurveyModal from './surveys/ArchiveSurveyModal'
 import DeleteSurveyModal from './surveys/DeleteSurveyModal'
-import {StudyEnvironmentSurvey, Survey, SurveyType} from '@juniper/ui-core'
+import { StudyEnvironmentSurvey, Survey, SurveyType } from '@juniper/ui-core'
 import CreateConsentModal from './consents/CreateConsentModal'
 import { Button, IconButton } from 'components/forms/Button'
 import CreatePreEnrollSurveyModal from './surveys/CreatePreEnrollSurveyModal'
@@ -33,11 +33,11 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
   const [selectedSurveyConfig, setSelectedSurveyConfig] = useState<StudyEnvironmentSurvey>()
   const [createSurveyType, setCreateSurveyType] = useState<SurveyType>('RESEARCH')
   const configuredResearchSurveys =  currentEnv.configuredSurveys
-      .filter(configSurvey => configSurvey.survey.surveyType === 'RESEARCH')
-      .sort((a, b) => a.surveyOrder - b.surveyOrder)
+    .filter(configSurvey => configSurvey.survey.surveyType === 'RESEARCH')
+    .sort((a, b) => a.surveyOrder - b.surveyOrder)
   const configuredOutreachSurveys =  currentEnv.configuredSurveys
-      .filter(configSurvey => configSurvey.survey.surveyType === 'OUTREACH')
-      .sort((a, b) => a.surveyOrder - b.surveyOrder)
+    .filter(configSurvey => configSurvey.survey.surveyType === 'OUTREACH')
+    .sort((a, b) => a.surveyOrder - b.surveyOrder)
   currentEnv.configuredConsents
     .sort((a, b) => a.consentOrder - b.consentOrder)
 
@@ -54,7 +54,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
     <LoadingSpinner isLoading={isLoading}>
       <div className="col-12">
         { currentEnv.studyEnvironmentConfig.initialized && <ul className="list-unstyled">
-          <li className="mb-3 rounded-2 p-3" style={{background: '#efefef'}}>
+          <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
             <h6>Pre-enrollment questionnaire</h6>
             <div className="flex-grow-1 pt-3">
               { preEnrollSurvey && <ul className="list-unstyled">
@@ -89,7 +89,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
               }
             </div>
           </li>
-          <li className="mb-3 rounded-2 p-3" style={{background: '#efefef'}}>
+          <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
             <h2 className="h6">Consent forms</h2>
             <div className="flex-grow-1 pt-3">
               <ul className="list-unstyled">
@@ -111,23 +111,23 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
               </ul>
             </div>
           </li>
-          <li className="mb-3 rounded-2 p-3" style={{background: '#efefef'}}>
+          <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
             <h6>Research Surveys</h6>
             <div className="flex-grow-1 pt-3">
               <ul className="list-unstyled">
                 { configuredResearchSurveys.map((surveyConfig, index) => {
                   const survey = surveyConfig.survey
                   return <SurveyListItem key={index} survey={survey} surveyConfig={surveyConfig}
-                                    setSelectedSurveyConfig={setSelectedSurveyConfig}
-                                    updateConfiguredSurvey={updateConfiguredSurvey}
-                                    setShowDeleteSurveyModal={setShowDeleteSurveyModal}
-                                    setShowArchiveSurveyModal={setShowArchiveSurveyModal}
-                                    showArchiveSurveyModal={showArchiveSurveyModal}
-                                    showDeleteSurveyModal={showDeleteSurveyModal}
-                                    isReadOnlyEnv={isReadOnlyEnv}/>
+                    setSelectedSurveyConfig={setSelectedSurveyConfig}
+                    updateConfiguredSurvey={updateConfiguredSurvey}
+                    setShowDeleteSurveyModal={setShowDeleteSurveyModal}
+                    setShowArchiveSurveyModal={setShowArchiveSurveyModal}
+                    showArchiveSurveyModal={showArchiveSurveyModal}
+                    showDeleteSurveyModal={showDeleteSurveyModal}
+                    isReadOnlyEnv={isReadOnlyEnv}/>
                 })}
                 {!isReadOnlyEnv && <li>
-                  <Button variant="secondary" data-testid={'addSurvey'} onClick={() => {
+                  <Button variant="secondary" data-testid={'addResearchSurvey'} onClick={() => {
                     setShowCreateSurveyModal(!showCreateSurveyModal)
                     setCreateSurveyType('RESEARCH')
                   }}>
@@ -137,31 +137,31 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
               </ul>
             </div>
           </li>
-              <li className="mb-3 rounded-2 p-3" style={{background: '#efefef'}}>
-                <h6>Outreach</h6>
-                <div className="flex-grow-1 pt-3">
-                  <ul className="list-unstyled">
-                    { currentEnv.configuredSurveys.map((surveyConfig, index) => {
-                      const survey = surveyConfig.survey
-                      return <SurveyListItem key={index} survey={survey} surveyConfig={surveyConfig}
-                        setSelectedSurveyConfig={setSelectedSurveyConfig}
-                        updateConfiguredSurvey={updateConfiguredSurvey}
-                        setShowDeleteSurveyModal={setShowDeleteSurveyModal}
-                        setShowArchiveSurveyModal={setShowArchiveSurveyModal}
-                        showArchiveSurveyModal={showArchiveSurveyModal}
-                        showDeleteSurveyModal={showDeleteSurveyModal}
-                        isReadOnlyEnv={isReadOnlyEnv}
-                      />
-                    })}
-                    {!isReadOnlyEnv && <li>
-                      <Button variant="secondary" data-testid={'addSurvey'} onClick={() => {
-                        setShowCreateSurveyModal(!showCreateSurveyModal)
-                        setCreateSurveyType('OUTREACH')
-                      }}>
-                        <FontAwesomeIcon icon={faPlus}/> Add
-                      </Button>
-                    </li> }
-                  </ul>
+          <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
+            <h6>Outreach</h6>
+            <div className="flex-grow-1 pt-3">
+              <ul className="list-unstyled">
+                { configuredOutreachSurveys.map((surveyConfig, index) => {
+                  const survey = surveyConfig.survey
+                  return <SurveyListItem key={index} survey={survey} surveyConfig={surveyConfig}
+                    setSelectedSurveyConfig={setSelectedSurveyConfig}
+                    updateConfiguredSurvey={updateConfiguredSurvey}
+                    setShowDeleteSurveyModal={setShowDeleteSurveyModal}
+                    setShowArchiveSurveyModal={setShowArchiveSurveyModal}
+                    showArchiveSurveyModal={showArchiveSurveyModal}
+                    showDeleteSurveyModal={showDeleteSurveyModal}
+                    isReadOnlyEnv={isReadOnlyEnv}
+                  />
+                })}
+                {!isReadOnlyEnv && <li>
+                  <Button variant="secondary" data-testid={'addOutreachSurvey'} onClick={() => {
+                    setShowCreateSurveyModal(!showCreateSurveyModal)
+                    setCreateSurveyType('OUTREACH')
+                  }}>
+                    <FontAwesomeIcon icon={faPlus}/> Add
+                  </Button>
+                </li> }
+              </ul>
             </div>
           </li>
         </ul> }
@@ -197,55 +197,57 @@ type SurveyListItemProps = {
 }
 
 const SurveyListItem = (props: SurveyListItemProps) => {
-  const { survey, surveyConfig, isReadOnlyEnv,
+  const {
+    survey, surveyConfig, isReadOnlyEnv,
     setSelectedSurveyConfig, setShowDeleteSurveyModal, updateConfiguredSurvey, setShowArchiveSurveyModal,
-  showDeleteSurveyModal, showArchiveSurveyModal} = props
-    return <li className="p-1 d-flex align-items-center">
-      <div className="d-flex align-items-center">
-        <Link to={`surveys/${survey.stableId}?readOnly=${isReadOnlyEnv}`}>
-          {survey.name}
-          <span className="mx-1 detail">v{survey.version}</span>
-          {surveyConfig.required && <span className="detail">(required)</span>}
-        </Link>
-      </div>
-      { !isReadOnlyEnv && <div className="nav-item dropdown ms-1">
-        <IconButton icon={faEllipsisH}  data-bs-toggle="dropdown"
-                    aria-expanded="false" aria-label="configure survey menu"/>
-        <div className="dropdown-menu">
-          <ul className="list-unstyled">
-            <li>
-              <button className="dropdown-item"
-                      onClick={() => {
-                        setShowArchiveSurveyModal(!showArchiveSurveyModal)
-                        setSelectedSurveyConfig(surveyConfig)
-                      }}>
+    showDeleteSurveyModal, showArchiveSurveyModal
+  } = props
+  return <li className="p-1 d-flex align-items-center">
+    <div className="d-flex align-items-center">
+      <Link to={`surveys/${survey.stableId}?readOnly=${isReadOnlyEnv}`}>
+        {survey.name}
+        <span className="mx-1 detail">v{survey.version}</span>
+        {surveyConfig.required && <span className="detail">(required)</span>}
+      </Link>
+    </div>
+    { !isReadOnlyEnv && <div className="nav-item dropdown ms-1">
+      <IconButton icon={faEllipsisH}  data-bs-toggle="dropdown"
+        aria-expanded="false" aria-label="configure survey menu"/>
+      <div className="dropdown-menu">
+        <ul className="list-unstyled">
+          <li>
+            <button className="dropdown-item"
+              onClick={() => {
+                setShowArchiveSurveyModal(!showArchiveSurveyModal)
+                setSelectedSurveyConfig(surveyConfig)
+              }}>
                 Archive
-              </button>
-            </li>
-            <li className="pt-2">
-              <button className="dropdown-item"
-                      onClick={() => {
-                        setShowDeleteSurveyModal(!showDeleteSurveyModal)
-                        setSelectedSurveyConfig(surveyConfig)
-                      }}>
+            </button>
+          </li>
+          <li className="pt-2">
+            <button className="dropdown-item"
+              onClick={() => {
+                setShowDeleteSurveyModal(!showDeleteSurveyModal)
+                setSelectedSurveyConfig(surveyConfig)
+              }}>
                 Delete
-              </button>
-            </li>
-            <li className="pt-2">
-              <button className="dropdown-item"
-                      onClick={async () => {
-                        await updateConfiguredSurvey({
-                          ...surveyConfig,
-                          required: !surveyConfig.required
-                        })
-                      }}>
-                { surveyConfig.required? 'Set as optional' : 'Set as required' }
-              </button>
-            </li>
-          </ul>
-        </div>
-      </div> }
-    </li>
+            </button>
+          </li>
+          <li className="pt-2">
+            <button className="dropdown-item"
+              onClick={async () => {
+                await updateConfiguredSurvey({
+                  ...surveyConfig,
+                  required: !surveyConfig.required
+                })
+              }}>
+              { surveyConfig.required? 'Set as optional' : 'Set as required' }
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div> }
+  </li>
 }
 
 export default StudyContent

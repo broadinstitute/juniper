@@ -26,8 +26,8 @@ describe('CreateSurveyModal', () => {
       onDismiss={jest.fn()}/>)
     render(RoutedComponent)
 
-    const surveyNameInput = screen.getByLabelText('Survey Name')
-    const surveyStableIdInput = screen.getByLabelText('Survey Stable ID')
+    const surveyNameInput = screen.getByLabelText('Name')
+    const surveyStableIdInput = screen.getByLabelText('Stable ID')
     await user.type(surveyNameInput, 'Test Survey')
     await user.type(surveyStableIdInput, 'test_survey_id')
 
@@ -43,8 +43,8 @@ describe('CreateSurveyModal', () => {
       onDismiss={jest.fn()}/>)
     render(RoutedComponent)
 
-    const surveyNameInput = screen.getByLabelText('Survey Name')
-    const surveyStableIdInput = screen.getByLabelText('Survey Stable ID')
+    const surveyNameInput = screen.getByLabelText('Name')
+    const surveyStableIdInput = screen.getByLabelText('Stable ID')
     await user.type(surveyNameInput, 'Test Survey')
 
     //Confirm that auto-fill stable ID worked
@@ -63,8 +63,8 @@ describe('CreateSurveyModal', () => {
       onDismiss={jest.fn()}/>)
     render(RoutedComponent)
 
-    const surveyNameInput = screen.getByLabelText('Survey Name')
-    const surveyStableIdInput = screen.getByLabelText('Survey Stable ID')
+    const surveyNameInput = screen.getByLabelText('Name')
+    const surveyStableIdInput = screen.getByLabelText('Stable ID')
     const requiredCheckbox = screen.getByLabelText('Required')
     await user.type(surveyNameInput, survey.name)
     await user.type(surveyStableIdInput, survey.stableId)
@@ -90,6 +90,7 @@ describe('CreateSurveyModal', () => {
           id: survey.id,
           lastUpdatedAt: 0,
           name: survey.name,
+          surveyType: 'RESEARCH',
           stableId: survey.stableId,
           version: 1
         },

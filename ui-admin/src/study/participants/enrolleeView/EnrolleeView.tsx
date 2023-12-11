@@ -76,9 +76,9 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
   })
 
   const researchSurveys = surveys
-      .filter(survey => survey.survey.surveyType === 'RESEARCH')
+    .filter(survey => survey.survey.surveyType === 'RESEARCH')
   const outreachSurveys = surveys
-      .filter(survey => survey.survey.surveyType === 'OUTREACH')
+    .filter(survey => survey.survey.surveyType === 'OUTREACH')
 
   const consents = currentEnv.configuredConsents
   const consentMap: ConsentResponseMapT = {}

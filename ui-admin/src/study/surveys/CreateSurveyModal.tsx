@@ -8,9 +8,7 @@ import InfoPopup from 'components/forms/InfoPopup'
 import { ApiErrorResponse, defaultApiErrorHandle, doApiLoad } from 'api/api-utils'
 import Api from 'api/api'
 import { useFormCreationNameFields } from './useFormCreationNameFields'
-import useReactSingleSelect, {useNonNullReactSingleSelect} from "../../util/react-select-utils";
-import Select from "react-select";
-import {SurveyType} from "@juniper/ui-core";
+import { SurveyType } from '@juniper/ui-core'
 
 /** renders a modal that creates a new survey in a portal and configures it to the current study env */
 const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
@@ -20,7 +18,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
   const portalContext = useContext(PortalContext) as PortalContextT
   const navigate = useNavigate()
   const { formName, formStableId, clearFields, nameInput, stableIdInput } = useFormCreationNameFields()
-    const [formRequired, setFormRequired] = useState(false)
+  const [formRequired, setFormRequired] = useState(false)
 
   const createSurvey = async () => {
     doApiLoad(async () => {
@@ -72,7 +70,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
         <label className="form-label mt-3" htmlFor="inputFormStableId">Stable ID</label>
         <InfoPopup content={'A stable and unique identifier for the survey. May be shown in exported datasets.'}/>
         { stableIdInput }
-          { type === 'RESEARCH' && <div className="form-check mt-3">
+        { type === 'RESEARCH' && <div className="form-check mt-3">
           <label className="form-check-label" htmlFor="formRequired">Required</label>
           <input type="checkbox" className="form-check-input" id="formRequired"
             checked={formRequired} onChange={event => setFormRequired(event.target.checked)}/>

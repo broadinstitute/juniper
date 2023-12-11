@@ -35,8 +35,8 @@ export default function useReactSingleSelect<T>(items: T[],
  *
  * */
 export function useNonNullReactSingleSelect<T>(items: T[],
-                                                labelFunction: (i: T) => {label: React.ReactNode, value: T},
-                                                setSelectedItem: Dispatch<SetStateAction<T>>, selectedItem: T) {
+  labelFunction: (i: T) => {label: React.ReactNode, value: T},
+  setSelectedItem: Dispatch<SetStateAction<T>>, selectedItem: T) {
   const options = items.map(labelFunction)
   const selectedValue = selectedItem ? labelFunction(selectedItem).value : undefined
   const selectedOption = options.find(opt => opt.value === selectedValue)

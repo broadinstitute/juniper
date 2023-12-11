@@ -32,6 +32,7 @@ import { DocumentTitle } from 'util/DocumentTitle'
 const TASK_ID_PARAM = 'taskId'
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
 
+/** gets the task ID from the URL */
 export const useTaskIdParam = (): string | null => {
   const [searchParams] = useSearchParams()
   return searchParams.get(TASK_ID_PARAM)
@@ -40,8 +41,10 @@ export const useTaskIdParam = (): string | null => {
 /**
  * display a single survey form to a participant.
  */
-export function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode,
-                                taskId, activeResponse, showHeaders=true }:
+export function RawSurveyView({
+  form, enrollee, resumableData, pager, studyShortcode,
+  taskId, activeResponse, showHeaders=true
+}:
 {
   form: Survey, enrollee: Enrollee, taskId: string, activeResponse?: SurveyResponse,
   resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string, showHeaders?: boolean
@@ -185,7 +188,7 @@ export function PagedSurveyView({
 }
 
 /** handles loading the survey form and responses from the server */
-function SurveyView({showHeaders=true}: {showHeaders?: boolean}) {
+function SurveyView({ showHeaders=true }: {showHeaders?: boolean}) {
   const { portal } = usePortalEnv()
   const { enrollees } = useUser()
   const [formAndResponses, setFormAndResponse] = useState<SurveyWithResponse | null>(null)

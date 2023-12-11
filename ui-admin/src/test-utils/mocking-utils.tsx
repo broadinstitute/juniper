@@ -14,8 +14,7 @@ import {
   PortalStudy, SiteImageMetadata,
   StudyEnvironmentConsent, SurveyResponse
 } from 'api/api'
-import { Survey } from '@juniper/ui-core/build/types/forms'
-import { ParticipantTask } from '@juniper/ui-core/build/types/task'
+import { Survey, ParticipantTask, ParticipantTaskType } from '@juniper/ui-core'
 
 import _times from 'lodash/times'
 import _random from 'lodash/random'
@@ -295,8 +294,8 @@ export const mockEnrolleeSearchResult: () => EnrolleeSearchResult = () => {
 }
 
 /** helper function to generate a ParticipantTask object for a survey and enrollee */
-export const taskForForm = (form: Survey | ConsentForm, enrolleeId: string,
-  isConsent: boolean): ParticipantTask => {
+export const taskForForm = (form: Survey | ConsentForm, enrolleeId: string, taskType: ParticipantTaskType):
+    ParticipantTask => {
   return {
     id: randomString(10),
     blocksHub: false,
@@ -305,7 +304,7 @@ export const taskForForm = (form: Survey | ConsentForm, enrolleeId: string,
     portalParticipantUserId: randomString(10),
     status: 'NEW',
     studyEnvironmentId: randomString(10),
-    taskType: isConsent ? 'CONSENT' : 'SURVEY',
+    taskType,
     targetName: form.name,
     targetStableId: form.stableId,
     targetAssignedVersion: form.version,
