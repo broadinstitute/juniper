@@ -1,5 +1,6 @@
 package bio.terra.pearl.populate;
 
+import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.Portal;
@@ -46,10 +47,14 @@ public class PopulateHeartHiveTest extends BasePopulatePortalsTest {
         PortalEnvironment liveEnv = portalEnvironmentService.findOne("hearthive", EnvironmentName.live).get();
         StudyEnvironment liveStudyEnv = studyEnvironmentService.findByStudy(myopathyStudy.getShortcode(), EnvironmentName.live).get();
 
-        enrolleeFactory.buildWithPortalUser("testPopulateHeartHive", liveEnv, liveStudyEnv);
+        EnrolleeFactory.EnrolleeBundle prodEnrollee = enrolleeFactory.buildWithPortalUser("testPopulateHeartHive", liveEnv, liveStudyEnv);
         // confirm we can't populate with overwrite if the liveEnrollee isn't withdrawn
         Assertions.assertThrows(UnsupportedOperationException.class, () -> {
             portalPopulator.populate(new FilePopulateContext("portals/hearthive/portal.json"), true);
         });
+
+        withdrawnEnrolleeService.withdrawEnrollee(prodEnrollee.enrollee());
+        // confirm we can now repopulate with overwrite
+        portalPopulator.populate(new FilePopulateContext("portals/hearthive/portal.json"), true);
     }
 }

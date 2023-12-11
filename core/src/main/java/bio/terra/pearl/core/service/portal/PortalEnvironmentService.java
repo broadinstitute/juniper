@@ -22,13 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PortalEnvironmentService extends CrudService<PortalEnvironment, PortalEnvironmentDao> {
-    private PortalEnvironmentConfigService portalEnvironmentConfigService;
-    private PortalParticipantUserService portalParticipantUserService;
-    private ParticipantUserService participantUserService;
-    private PreregistrationResponseDao preregistrationResponseDao;
-    private NotificationConfigService notificationConfigService;
-    private MailingListContactService mailingListContactService;
-    private DataChangeRecordService dataChangeRecordService;
+    private final PortalEnvironmentConfigService portalEnvironmentConfigService;
+    private final PortalParticipantUserService portalParticipantUserService;
+    private final ParticipantUserService participantUserService;
+    private final PreregistrationResponseDao preregistrationResponseDao;
+    private final NotificationConfigService notificationConfigService;
+    private final MailingListContactService mailingListContactService;
+    private final DataChangeRecordService dataChangeRecordService;
+    private final PortalDashboardConfigService portalDashboardConfigService;
 
     public PortalEnvironmentService(PortalEnvironmentDao portalEnvironmentDao,
                                     PortalEnvironmentConfigService portalEnvironmentConfigService,
@@ -37,7 +38,8 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
                                     PreregistrationResponseDao preregistrationResponseDao,
                                     NotificationConfigService notificationConfigService,
                                     MailingListContactService mailingListContactService,
-                                    DataChangeRecordService dataChangeRecordService) {
+                                    DataChangeRecordService dataChangeRecordService,
+                                    PortalDashboardConfigService portalDashboardConfigService) {
         super(portalEnvironmentDao);
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.portalParticipantUserService = portalParticipantUserService;
@@ -46,6 +48,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         this.notificationConfigService = notificationConfigService;
         this.mailingListContactService = mailingListContactService;
         this.dataChangeRecordService = dataChangeRecordService;
+        this.portalDashboardConfigService = portalDashboardConfigService;
     }
 
     public List<PortalEnvironment> findByPortal(UUID portalId) {
@@ -98,6 +101,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         notificationConfigService.deleteByPortalEnvironmentId(id);
         mailingListContactService.deleteByPortalEnvId(id);
         dataChangeRecordService.deleteByPortalEnvironmentId(id);
+        portalDashboardConfigService.deleteAlertsByPortalEnvId(id);
         dao.delete(id);
         portalEnvironmentConfigService.delete(envConfigId, cascades);
     }
