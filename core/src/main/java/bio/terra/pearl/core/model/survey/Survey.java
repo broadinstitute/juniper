@@ -20,6 +20,7 @@ public class Survey extends BaseEntity implements Versioned, PortalAttached {
     private Integer publishedVersion;
     private String content;
     private String name;
+    @Builder.Default
     private SurveyType surveyType = SurveyType.RESEARCH;
     private String blurb; // brief description of the survey for, e.g., showing in a dashboard
 

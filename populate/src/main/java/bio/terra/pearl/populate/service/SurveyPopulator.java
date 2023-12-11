@@ -44,9 +44,6 @@ public class SurveyPopulator extends BasePopulator<Survey, SurveyPopDto, PortalP
         UUID portalId = portalService.findOneByShortcode(context.getPortalShortcode()).get().getId();
         popDto.setPortalId(portalId);
         String newContent = popDto.getJsonContent().toString();
-        if (popDto.getSurveyType() == null) {
-            popDto.setSurveyType(SurveyType.RESEARCH);
-        }
         popDto.setContent(newContent);
     }
 

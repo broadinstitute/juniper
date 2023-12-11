@@ -57,7 +57,7 @@ public class SurveyTaskDispatcher {
         }
     }
 
-    /** builds the consent tasks, does not add them to the event or persist them,
+    /** builds the survey tasks, does not add them to the event or persist them,
      * studyEnvSurveys must each have the Survey attached */
     public List<ParticipantTask> buildTasks(Enrollee enrollee,
                                             PortalParticipantUser portalParticipantUser,
