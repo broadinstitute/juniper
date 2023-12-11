@@ -118,5 +118,5 @@ export function isTaskAccessible(task: ParticipantTask, enrollee: Enrollee) {
 
 /** is the task ready to be worked on (not done or rejected) */
 export function isTaskActive(task: ParticipantTask) {
-  return ['NEW', 'IN_PROGRESS'].includes(task.status)
+  return ['NEW', 'VIEWED', 'IN_PROGRESS'].includes(task.status)
 }
