@@ -12,11 +12,13 @@ type PageElementListProps = {
   readOnly: boolean
   value: FormContentPage['elements']
   onChange: (newValue: FormContentPage['elements']) => void
+    setSelectedElementPath: (path: string) => void
+    selectedElementPath: string
 }
 
 /** UI for re-ordering a list of form elements. */
 export const PageElementList = (props: PageElementListProps) => {
-  const { readOnly, value, onChange } = props
+  const { readOnly, value, onChange, selectedElementPath, setSelectedElementPath } = props
 
   const [confirmingDeletePanel, setConfirmingDeletePanel] = useState<number>()
 
@@ -30,7 +32,7 @@ export const PageElementList = (props: PageElementListProps) => {
               className="list-group-item d-flex align-items-center"
             >
               <div className="flex-grow-1 text-truncate ms-2">
-                {getElementLabel(element)}
+                {getElementLabel(element, `${selectedElementPath}.elements[${i}]`, setSelectedElementPath)}
               </div>
               <div className="flex-shrink-0">
                 <IconButton

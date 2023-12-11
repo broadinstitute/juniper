@@ -11,7 +11,6 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
-import bio.terra.pearl.core.service.kit.KitSentEvent;
 import bio.terra.pearl.core.service.kit.KitStatusEvent;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
@@ -45,7 +44,7 @@ public class EventService {
      */
     public KitStatusEvent publishKitStatusEvent(KitRequest kitRequest, Enrollee enrollee,
                                                 PortalParticipantUser portalParticipantUser, KitRequestStatus priorStatus) {
-        KitStatusEvent event = KitSentEvent.newInstance(kitRequest, priorStatus);
+        KitStatusEvent event = KitStatusEvent.newInstance(kitRequest, priorStatus);
         event.setEnrollee(enrollee);
         event.setPortalParticipantUser(portalParticipantUser);
         populateEvent(event);

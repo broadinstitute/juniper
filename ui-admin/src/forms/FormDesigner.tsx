@@ -1,5 +1,5 @@
 import { flow, get, identity, set, update } from 'lodash/fp'
-import React, { useState } from 'react'
+import React from 'react'
 
 import { FormContent, FormContentPage, FormElement } from '@juniper/ui-core'
 
@@ -10,6 +10,7 @@ import { QuestionDesigner } from './designer/QuestionDesigner'
 import { QuestionTemplatesDesigner } from './designer/QuestionTemplatesDesigner'
 import { FormTableOfContents } from './FormTableOfContents'
 import { PageListDesigner } from './designer/PageListDesigner'
+import { useSearchParams } from 'react-router-dom'
 
 type FormDesignerProps = {
   readOnly?: boolean
@@ -20,9 +21,13 @@ type FormDesignerProps = {
 /** UI for editing forms. */
 export const FormDesigner = (props: FormDesignerProps) => {
   const { readOnly = false, value, onChange } = props
-
-  const [selectedElementPath, setSelectedElementPath] = useState<string>()
-
+  const [searchParams, setSearchParams] = useSearchParams()
+  const selectedElementPath = searchParams.get('selectedElementPath') ?? 'pages'
+  const selectedElement = getSurveyElementFromPath(selectedElementPath, value)
+  const setSelectedElementPath = (path: string) => {
+    searchParams.set('selectedElementPath', path)
+    setSearchParams(searchParams)
+  }
   return (
     <div className="overflow-hidden flex-grow-1 d-flex flex-row mh-100" style={{ flexBasis: 0 }}>
       <div className="flex-shrink-0 border-end" style={{ width: 400, overflowY: 'scroll' }}>
@@ -34,15 +39,10 @@ export const FormDesigner = (props: FormDesignerProps) => {
       </div>
       <div className="flex-grow-1 overflow-scroll py-2 px-3">
         {(() => {
-          if (selectedElementPath === undefined) {
-            return (
-              <p className="mt-5 text-center">Select an element to edit</p>
-            )
-          }
-
           if (selectedElementPath === 'pages') {
             return (
               <PageListDesigner
+                setSelectedElementPath={setSelectedElementPath}
                 formContent={value}
                 readOnly={readOnly}
                 onChange={onChange}
@@ -59,8 +59,11 @@ export const FormDesigner = (props: FormDesignerProps) => {
               />
             )
           }
-
-          const selectedElement = get(selectedElementPath, value) as FormContentPage | FormElement
+          if (selectedElement === undefined) {
+            return (
+              <p className="mt-5 text-center">Select an element to edit</p>
+            )
+          }
 
           if (!('type' in selectedElement) && !('questionTemplateName' in selectedElement)) {
             return (
@@ -71,6 +74,8 @@ export const FormDesigner = (props: FormDesignerProps) => {
                 onChange={updatedElement => {
                   onChange(set(selectedElementPath, updatedElement, value))
                 }}
+                selectedElementPath={selectedElementPath}
+                setSelectedElementPath={setSelectedElementPath}
               />
             )
           }
@@ -80,6 +85,8 @@ export const FormDesigner = (props: FormDesignerProps) => {
               <PanelDesigner
                 readOnly={readOnly}
                 value={selectedElement}
+                selectedElementPath={selectedElementPath}
+                setSelectedElementPath={setSelectedElementPath}
                 onChange={(updatedElement, removedElement) => {
                   // The path to a panel will always end in an array index since the panel will be
                   // inside an elements array. Extract the path to that elements array and the
@@ -141,3 +148,12 @@ export const FormDesigner = (props: FormDesignerProps) => {
     </div>
   )
 }
+
+const getSurveyElementFromPath = (elementPath: string, obj: object):  FormContentPage | FormElement | undefined => {
+  try {
+    return get(elementPath, obj) as FormContentPage | FormElement
+  } catch (e) {
+    return undefined
+  }
+}
+

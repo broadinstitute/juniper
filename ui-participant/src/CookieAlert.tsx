@@ -1,8 +1,6 @@
 import { faCookieBite } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
-import { Link } from 'react-router-dom'
-
-import { Alert } from './Alert'
+import { Alert } from '@juniper/ui-core'
 
 type CookieAlertProps = {
   onDismiss: () => void
@@ -16,7 +14,7 @@ export const CookieAlert = (props: CookieAlertProps) => {
     <Alert
       className="mb-1"
       icon={faCookieBite}
-      level="warning"
+      level="WARNING"
       role="alert"
       style={{
         position: 'fixed',
@@ -27,17 +25,13 @@ export const CookieAlert = (props: CookieAlertProps) => {
         maxWidth: 1122
       }}
       title="Cookies"
-      onDismiss={onDismiss}
-    >
-      <p className="mb-0">
-        This site uses internet tokens called &quot;cookies&quot; to enable the
+      detail="This site uses internet tokens called &quot;cookies&quot; to enable the
         proper functioning and security of our website, and to improve your
         experience while you use it. All of the cookies we use are strictly
         necessary cookies. This type of cookie does not collect any personally
         identifiable information about you and does not track your browsing
-        habits. To learn more,{' '}
-        <Link to="/privacy">read our Privacy Policy</Link>.
-      </p>
-    </Alert>
+        habits. To learn more, [read our Privacy Policy](/privacy)."
+      onDismiss={onDismiss}
+    />
   )
 }

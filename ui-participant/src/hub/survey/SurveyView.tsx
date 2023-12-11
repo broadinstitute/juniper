@@ -79,7 +79,7 @@ export function RawSurveyView({
       const hubUpdate: HubUpdate = {
         message: {
           title: `${form.name} completed`,
-          type: 'success'
+          type: 'SUCCESS'
         }
       }
       await updateEnrollee(response.enrollee)

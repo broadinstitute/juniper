@@ -25,13 +25,16 @@ describe('PanelElementList', () => {
     }
   ]
 
-  it('renders elements', () => {
-    // Act
-    render(<PanelElementList readOnly={false} value={elements} onChange={jest.fn()} />)
+  it('renders clickable', async () => {
+    const setSelectedElementPath = jest.fn()
+    render(<PanelElementList readOnly={false} value={elements}
+      onChange={jest.fn()} selectedElementPath={'pages[0].elements[0]'}
+      setSelectedElementPath={setSelectedElementPath}/>)
 
-    // Assert
     const listItems = screen.getAllByRole('listitem')
     expect(listItems.map(el => el.textContent)).toEqual(['foo', 'bar', 'baz'])
+    await userEvent.click(screen.getByText('bar'))
+    expect(setSelectedElementPath).toHaveBeenCalledWith('pages[0].elements[0].elements[1]')
   })
 
   it('allows reodering elements', async () => {
@@ -39,7 +42,8 @@ describe('PanelElementList', () => {
     const user = userEvent.setup()
 
     const onChange = jest.fn()
-    render(<PanelElementList readOnly={false} value={elements} onChange={onChange} />)
+    render(<PanelElementList readOnly={false} value={elements} onChange={onChange}  selectedElementPath={''}
+      setSelectedElementPath={jest.fn()}/>)
 
     // Act
     const moveBarUpButton = screen.getAllByLabelText('Move this element before the previous one')[1]
@@ -92,7 +96,8 @@ describe('PanelElementList', () => {
     const user = userEvent.setup()
 
     const onChange = jest.fn()
-    render(<PanelElementList readOnly={false} value={elements} onChange={onChange} />)
+    render(<PanelElementList readOnly={false} value={elements} onChange={onChange} selectedElementPath={''}
+      setSelectedElementPath={jest.fn()} />)
 
     // Act
     const deleteBarButton = screen.getAllByLabelText('Move this element out of panel')[1]
@@ -125,7 +130,8 @@ describe('PanelElementList', () => {
     const user = userEvent.setup()
 
     const onChange = jest.fn()
-    render(<PanelElementList readOnly={false} value={elements} onChange={onChange} />)
+    render(<PanelElementList readOnly={false} value={elements} onChange={onChange} selectedElementPath={''}
+      setSelectedElementPath={jest.fn()} />)
 
     // Act
     const deleteBarButton = screen.getAllByLabelText('Delete this element')[1]

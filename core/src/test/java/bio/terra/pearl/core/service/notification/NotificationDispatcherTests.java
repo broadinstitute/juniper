@@ -30,7 +30,7 @@ public class NotificationDispatcherTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    void testKitSendEvent(TestInfo testInfo) {
+    void testKitSentEvent(TestInfo testInfo) {
         EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory
                 .buildWithPortalUser(getTestName(testInfo));
         NotificationConfig config = createNotificationConfig(enrolleeBundle, NotificationEventType.KIT_SENT);
@@ -39,7 +39,24 @@ public class NotificationDispatcherTests extends BaseSpringBootTest {
                 .enrolleeId(enrolleeBundle.enrollee().getId())
                 .build();
 
-        eventService.publishKitStatusEvent(kitRequest, enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(), KitRequestStatus.CREATED);
+        eventService.publishKitStatusEvent(kitRequest, enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(),
+                KitRequestStatus.CREATED);
+        verifyNotification(config, enrolleeBundle);
+    }
+
+    @Test
+    @Transactional
+    void testKitReceivedEvent(TestInfo testInfo) {
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory
+                .buildWithPortalUser(getTestName(testInfo));
+        NotificationConfig config = createNotificationConfig(enrolleeBundle, NotificationEventType.KIT_RECEIVED);
+        KitRequest kitRequest = KitRequest.builder()
+                .status(KitRequestStatus.RECEIVED)
+                .enrolleeId(enrolleeBundle.enrollee().getId())
+                .build();
+
+        eventService.publishKitStatusEvent(kitRequest, enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(),
+                KitRequestStatus.SENT);
         verifyNotification(config, enrolleeBundle);
     }
 

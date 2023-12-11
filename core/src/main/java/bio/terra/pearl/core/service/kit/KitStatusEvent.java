@@ -17,12 +17,15 @@ public class KitStatusEvent extends EnrolleeEvent {
     private KitRequest kitRequest;
 
     public static KitStatusEvent newInstance(KitRequest kitRequest, KitRequestStatus priorStatus) {
-        KitStatusEvent.KitStatusEventBuilder builder = KitStatusEvent.builder();
+        KitStatusEventBuilder<?, ?> builder = KitStatusEvent.builder();
         if (KitRequestStatus.SENT.equals(kitRequest.getStatus())) {
             builder = KitSentEvent.builder();
+        } else if (KitRequestStatus.RECEIVED.equals(kitRequest.getStatus())) {
+            builder = KitReceivedEvent.builder();
         }
-        return builder.priorStatus(priorStatus)
-                .kitRequest(kitRequest)
-                .build();
+        return builder
+            .kitRequest(kitRequest)
+            .priorStatus(priorStatus)
+            .build();
     }
 }

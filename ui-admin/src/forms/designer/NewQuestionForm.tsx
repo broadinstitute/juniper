@@ -98,6 +98,7 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
             <option value="medications">Medications</option>
             <option value="radiogroup">Radio group</option>
             <option value="signaturepad">Signature</option>
+            <option value="html">Html</option>
           </select>
         </div>
 

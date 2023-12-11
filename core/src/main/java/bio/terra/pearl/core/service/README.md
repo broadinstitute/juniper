@@ -22,3 +22,10 @@ they are covered by ingress logging, DB logging, and exception handling.
    that allows setting of non-dependent entities that should be deleted if orphaned.  this cascades method 
    should be passed along to other service-delete methods called.  An enu 'AllowedCascades' can be
    provided in the service to specify which non-dependent deletes are implemented.
+
+If circular dependencies are encountered when wiring service dependencies with Spring, first consider the service design. If that is
+sound, then use the @Lazy annotation. Ideally the @Lazy annotation should be applied to services that are higher up in 
+the dependency tree, not necessarily on the usage in the new service.
+
+When wiring services dependencies with Spring via constructor arguments, do not call the services in the constructor.
+This ensures order of instantiation is not an issue.

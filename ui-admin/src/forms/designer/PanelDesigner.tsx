@@ -8,11 +8,13 @@ export type PanelDesignerProps = {
   readOnly: boolean
   value: FormPanel
   onChange: (newValue: FormPanel, removedElement?: FormElement) => void
+    setSelectedElementPath: (path: string) => void
+    selectedElementPath: string
 }
 
 /** UI for editing a panel in a form. */
 export const PanelDesigner = (props: PanelDesignerProps) => {
-  const { readOnly, value, onChange } = props
+  const { readOnly, value, onChange, setSelectedElementPath, selectedElementPath } = props
 
   return (
     <div>
@@ -23,6 +25,8 @@ export const PanelDesigner = (props: PanelDesignerProps) => {
         onChange={(newValue, removedElement) => {
           onChange({ ...value, elements: newValue }, removedElement)
         }}
+        setSelectedElementPath={setSelectedElementPath}
+        selectedElementPath={selectedElementPath}
       />
     </div>
   )

@@ -28,18 +28,23 @@ export type PageDesignerProps = {
   formContent: FormContent
   value: FormContentPage
   onChange: (newValue: FormContentPage) => void
+    selectedElementPath: string,
+    setSelectedElementPath: (path: string) => void
 }
 
 /** UI for editing a page of a form. */
 export const PageDesigner = (props: PageDesignerProps) => {
-  const { readOnly, formContent, value, onChange } = props
+  const {
+    readOnly, formContent, value, onChange,
+    selectedElementPath, setSelectedElementPath
+  } = props
 
   const [showCreatePanelModal, setShowCreatePanelModal] = useState(false)
   const [showCreateQuestionModal, setShowCreateQuestionModal] = useState(false)
-
+  const pageNum = getPageNumberFromPath(selectedElementPath)
   return (
     <div>
-      <h2>Page</h2>
+      <h2>Page {pageNum !== undefined ? pageNum + 1 : ''}</h2>
 
       <div className="mb-3">
         <Button
@@ -67,6 +72,8 @@ export const PageDesigner = (props: PageDesignerProps) => {
       <PageElementList
         readOnly={readOnly}
         value={value.elements}
+        selectedElementPath={selectedElementPath}
+        setSelectedElementPath={setSelectedElementPath}
         onChange={newValue => {
           onChange({ ...value, elements: newValue })
         }}
@@ -122,4 +129,12 @@ export const PageDesigner = (props: PageDesignerProps) => {
       )}
     </div>
   )
+}
+
+const getPageNumberFromPath = (path: string) => {
+  const matchResult = path.match('pages\\[(\\d+)\\]')
+  if (matchResult) {
+    return parseInt(matchResult[1])
+  }
+  return undefined
 }

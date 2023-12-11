@@ -25,6 +25,7 @@ import SiteContentLoader from '../portal/siteContent/SiteContentLoader'
 import AdminTaskList from './adminTasks/AdminTaskList'
 import SiteImageList from '../portal/images/SiteImageList'
 import PreRegView from './surveys/PreRegView'
+import DashboardSettings from 'dashboard/DashboardSettings'
 
 export type StudyEnvParams = {
   studyShortcode: string
@@ -87,6 +88,8 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
     </NavBreadcrumb>
     <Routes>
       <Route path="notificationContent/*" element={<NotificationContent studyEnvContext={studyEnvContext}
+        portalContext={portalContext}/>}/>
+      <Route path="alerts" element={<DashboardSettings studyEnvContext={studyEnvContext}
         portalContext={portalContext}/>}/>
       <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
       <Route path="kits/*" element={<KitsRouter studyEnvContext={studyEnvContext}/>}/>
@@ -173,6 +176,11 @@ export const studyEnvFormsPath = (portalShortcode: string, studyShortcode: strin
 /** helper for path to configure study notifications */
 export const studyEnvNotificationsPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/notificationContent`
+}
+
+/** helper for path to configure participant dashboard alerts */
+export const studyEnvAlertsPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
+  return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/alerts`
 }
 
 /** path for viewing a particular notification config path */
