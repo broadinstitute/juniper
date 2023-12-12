@@ -77,7 +77,10 @@ public class StudyService extends CrudService<Study, StudyDao> {
     public void deleteOrphans(List<UUID> studyIds, Set<CascadeProperty> cascades) {
         studyIds.stream().forEach(studyId -> {
             if (portalStudyService.findByStudyId(studyId).size() == 0) {
+                System.out.println("deleting orphaned study " + studyId);
                 delete(studyId, cascades);
+            } else {
+                System.out.println("SKIP " + studyId);
             }
         });
     }

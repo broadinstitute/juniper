@@ -69,7 +69,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
         const taskEnrollee = enrolleeForTask(task, enrollees)
         const taskUrl = getTaskPath(task, taskEnrollee.shortcode, taskStudy.shortcode)
         // Gutters seem not to work??  So I had to add margins manually
-        return <div className="col-md-4 col-sm-12">
+        return <div className="col-md-4 col-sm-12" key={task.id}>
           <Link to={taskUrl} className="text-center pt-2 d-block rounded-3"
             style={{ background: '#fff', minHeight: '6em' }} key={task.id}>
             <h3 className="h5">{task.targetName}</h3>

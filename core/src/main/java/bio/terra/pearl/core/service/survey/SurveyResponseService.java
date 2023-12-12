@@ -121,14 +121,14 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
 
         // find or create the SurveyResponse object to attach the snapshot
         SurveyResponse response = findOrCreateResponse(task, enrollee, participantUserId, responseDto);
-        createOrUpdateAnswers(responseDto.getAnswers(), response, survey, ppUser);
+        List<Answer> updatedAnswers = createOrUpdateAnswers(responseDto.getAnswers(), response, survey, ppUser);
 
         // process any answers that need to be propagated elsewhere to the data model
         answerProcessingService.processAllAnswerMappings(responseDto.getAnswers(),
                 survey.getAnswerMappings(), ppUser, participantUserId, enrollee.getId(), survey.getId());
 
         // now update the task status and response id
-        updateTaskToResponse(task, response);
+        updateTaskToResponse(task, response, updatedAnswers);
 
         EnrolleeSurveyEvent event = eventService.publishEnrolleeSurveyEvent(enrollee, response, ppUser);
         logger.info("SurveyReponse received -- enrollee: {}, surveyStabledId: {}", enrollee.getShortcode(), survey.getStableId());
@@ -167,15 +167,16 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         return response;
     }
 
-    protected ParticipantTask updateTaskToResponse(ParticipantTask task, SurveyResponse response) {
+    protected ParticipantTask updateTaskToResponse(ParticipantTask task, SurveyResponse response,
+                                                   List<Answer> updatedAnswers) {
         task.setSurveyResponseId(response.getId());
         if (task.getStatus() != TaskStatus.COMPLETE) { // task statuses shouldn't ever change from complete to not
             if (response.isComplete()) {
                 task.setStatus(TaskStatus.COMPLETE);
-            } else if (task.getStatus() == TaskStatus.NEW && response.getAnswers().size() == 0) {
+            } else if (task.getStatus() == TaskStatus.NEW && updatedAnswers.size() == 0) {
                 // if the task is new and no answers we submitted, this is just indicating the survey was viewed
                 task.setStatus(TaskStatus.VIEWED);
-            } else {
+            } else if (updatedAnswers.size() > 0) {
                 task.setStatus(TaskStatus.IN_PROGRESS);
             }
         }
