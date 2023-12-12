@@ -1,12 +1,15 @@
 import { useNavContext } from '../navbar/NavContextProvider'
-import React, { useState } from 'react'
-import { Portal, PortalStudy } from '@juniper/ui-core'
+import React, { useEffect, useState } from 'react'
+import { Portal, PortalStudy, StudyEnvironmentSurvey } from '@juniper/ui-core'
 import Modal from 'react-bootstrap/Modal'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Button } from '../components/forms/Button'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import useReactSingleSelect from '../util/react-select-utils'
+import Api from '../api/api'
+import LoadingSpinner from 'util/LoadingSpinner'
+import { doApiLoad } from 'api/api-utils'
 
 type CohortCriteriaOperator =
   'EQUALS' |
@@ -26,7 +29,6 @@ type CohortCriteria = {
   value?: string
 }
 
-
 /**
  *
  */
@@ -36,6 +38,34 @@ export default function CreateNewCohortModal({ onDismiss }: {onDismiss: () => vo
   const [selectedPortal, setSelectedPortal] = useState<Portal>()
   const [selectedStudy, setSelectedStudy] = useState<PortalStudy>()
   const [cohortCriteria, setCohortCriteria] = useState<CohortCriteria[]>([])
+  const [selectedStudySurveys, setSelectedStudySurveys] = useState<StudyEnvironmentSurvey[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+
+  const [loadedPortal, setLoadedPortal] = useState<Portal>()
+
+  //TODO: for development, this is currently hardcoded to only use sandbox environments. users will most
+  // likely want to work off the live environment when building their cohort, but survey content may differ
+  // between envs so there is some UX work to do here to make those differences obvious
+  const currentEnv = 'sandbox'
+
+  useEffect(() => {
+    if (selectedPortal) {
+      doApiLoad(async () => {
+        const portal = await Api.getPortal(selectedPortal.shortcode)
+        setCohortCriteria([])
+        setLoadedPortal(portal)
+      }, { setIsLoading })
+    }
+  }, [selectedPortal])
+
+  useEffect(() => {
+    if (selectedStudy && loadedPortal) {
+      const selectedPortalStudy = loadedPortal.portalStudies.find(pStudy =>
+        pStudy.study.shortcode === selectedStudy.study.shortcode)
+      const studyEnv = selectedPortalStudy!.study.studyEnvironments.find(env => env.environmentName === currentEnv)
+      setSelectedStudySurveys(studyEnv?.configuredSurveys || [])
+    }
+  }, [selectedStudy])
 
   const emptyCriteriaEntry = () => ({
     studyShortcode: selectedStudy?.study.shortcode,
@@ -96,24 +126,26 @@ export default function CreateNewCohortModal({ onDismiss }: {onDismiss: () => vo
         as you would like to narrow down your cohort.
       </span>
       <div className="mt-3">
-        {/*TODO: this is currently only set up for ANDs of all criteria rows,
-          but in reality these will need to support ORs and groupings of criteria*/}
+        {/*TODO: this is currently only set up to AND all of the criteria rules,
+          * but in reality these will need to support ORs and groupings of criteria*/}
         {cohortCriteria.map((criteria, i) =>
-          <CriteriaRow key={i} criteria={criteria}/>
+          <CriteriaRow key={i} selectedStudySurveys={selectedStudySurveys} criteria={criteria}/>
         )}
       </div>
       <div className="my-3">
-        <button className="btn btn-secondary" disabled={!selectedStudy} onClick={() =>
-          setCohortCriteria([...cohortCriteria, emptyCriteriaEntry()])
-        }>
-          <FontAwesomeIcon icon={faPlus}/> Add criteria
-        </button>
+        <LoadingSpinner isLoading={isLoading}>
+          <button className="btn btn-secondary" disabled={!selectedStudy} onClick={() =>
+            setCohortCriteria([...cohortCriteria, emptyCriteriaEntry()])
+          }>
+            <FontAwesomeIcon icon={faPlus}/> Add criteria
+          </button>
+        </LoadingSpinner>
       </div>
 
     </Modal.Body>
     <Modal.Footer>
       <Button variant="primary"
-        disabled={true}
+        disabled={!cohortName || !selectedStudy}
         onClick={() => alert('not yet implemented')}
       >Create</Button>
       <button className="btn btn-secondary" onClick={onDismiss}>Cancel</button>
@@ -122,11 +154,13 @@ export default function CreateNewCohortModal({ onDismiss }: {onDismiss: () => vo
 }
 
 /**
- *
+ * Returns a row of inputs for a single criteria rule
  */
-export const CriteriaRow = ({ criteria }: {
-  criteria: CohortCriteria
+export const CriteriaRow = ({ criteria, selectedStudySurveys }: {
+  criteria: CohortCriteria, selectedStudySurveys: StudyEnvironmentSurvey[]
 }) => {
+  const [selectedSurvey, setSelectedSurvey] = useState<StudyEnvironmentSurvey>()
+
   const operatorOptions: Record<string, CohortCriteriaOperator>[] = [
     { label: 'CONTAINS', value: 'CONTAINS' },
     { label: 'NOT_CONTAINS', value: 'NOT_CONTAINS' },
@@ -138,14 +172,24 @@ export const CriteriaRow = ({ criteria }: {
     { label: 'LESS_THAN_EQUAL', value: 'LESS_THAN_EQUAL' }
   ]
 
+  const {
+    options: surveyOptions, selectedOption: selectedSurveyOption
+  } =
+    useReactSingleSelect(
+      selectedStudySurveys,
+      (survey: StudyEnvironmentSurvey) => ({ label: survey.survey.name, value: survey }),
+      setSelectedSurvey,
+      selectedSurvey)
+
+  //TODO: this form is still a work in progress, and it also needs to set the criteria object
   return <div className="row">
     <div className="col">
       <label>Survey</label>
-      <Select className="mb-2" options={[]} value={criteria.surveyStableId}/>
+      <Select className="mb-2" options={surveyOptions} value={selectedSurveyOption}/>
     </div>
     <div className="col">
       <label>Question</label>
-      <Select className="mb-2" options={[]} value={criteria.questionStableId}/>
+      <Select className="mb-2" options={[]} value={undefined}/>
     </div>
     <div className="col">
       <label>Operator</label>
