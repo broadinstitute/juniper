@@ -10,9 +10,9 @@ import { questionTypeDescriptions, questionTypeLabels } from './questions/questi
 import { TextFields } from './questions/TextFields'
 import { VisibilityFields } from './questions/VisibilityFields'
 import { Textarea } from 'components/forms/Textarea'
-import {Button} from "components/forms/Button"
-import {faPlus} from "@fortawesome/free-solid-svg-icons"
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
+import { Button } from 'components/forms/Button'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export type QuestionDesignerProps = {
   question: Question
@@ -31,15 +31,14 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
 
   return (
     <div>
-        <div className="d-flex align-items-center justify-content-between">
-      {showName && <h2>{question.name}</h2>}
-            {addNextQuestion && <div>
-                <Button variant="secondary" className="ms-auto"
-                        onClick={() => addNextQuestion()}>
-                    <FontAwesomeIcon icon={faPlus}/> Add next question
-                </Button>
-            </div>}
-        </div>
+      <div className="d-flex align-items-center justify-content-between">
+        {showName && <h2>{question.name}</h2>}
+        {addNextQuestion && <div>
+          <Button variant="secondary" className="ms-auto" onClick={addNextQuestion}>
+            <FontAwesomeIcon icon={faPlus}/> Add next question
+          </Button>
+        </div>}
+      </div>
       {!isTemplated && (
         <>
           <p className="fs-4 mb-0">{questionTypeLabels[question.type]} question</p>

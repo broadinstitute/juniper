@@ -7,7 +7,6 @@ import { Button } from 'components/forms/Button'
 
 import { PageElementList } from './PageElementList'
 import { NewPanelForm } from './NewPanelForm'
-import { NewQuestionForm } from './NewQuestionForm'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
@@ -30,14 +29,14 @@ export type PageDesignerProps = {
   onChange: (newValue: FormContentPage) => void
     selectedElementPath: string,
     setSelectedElementPath: (path: string) => void
-  setShowCreateQuestionModal: (show: boolean) => void
+  addNextQuestion: () => void
 }
 
 /** UI for editing a page of a form. */
 export const PageDesigner = (props: PageDesignerProps) => {
   const {
     readOnly, formContent, value, onChange,
-    selectedElementPath, setSelectedElementPath, setShowCreateQuestionModal
+    selectedElementPath, setSelectedElementPath, addNextQuestion
   } = props
 
   const [showCreatePanelModal, setShowCreatePanelModal] = useState(false)
@@ -51,9 +50,7 @@ export const PageDesigner = (props: PageDesignerProps) => {
           disabled={readOnly}
           tooltip="Create a new question."
           variant="secondary"
-          onClick={() => {
-            setShowCreateQuestionModal(true)
-          }}
+          onClick={addNextQuestion}
         >
           <FontAwesomeIcon icon={faPlus}/> Add question
         </Button>

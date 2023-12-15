@@ -3,9 +3,9 @@ import React from 'react'
 import { FormElement, FormPanel } from '@juniper/ui-core'
 
 import { PanelElementList } from './PanelElementList'
-import {Button} from "../../components/forms/Button";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlus} from "@fortawesome/free-solid-svg-icons";
+import { Button } from '../../components/forms/Button'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
 export type PanelDesignerProps = {
   readOnly: boolean
@@ -13,25 +13,26 @@ export type PanelDesignerProps = {
   onChange: (newValue: FormPanel, removedElement?: FormElement) => void
     setSelectedElementPath: (path: string) => void
     selectedElementPath: string
-    addNextQuestion?: (show: boolean) => void
+    addNextQuestion?: () => void
 }
 
 /** UI for editing a panel in a form. */
 export const PanelDesigner = (props: PanelDesignerProps) => {
-  const { readOnly, value, onChange,
-      setSelectedElementPath, selectedElementPath, addNextQuestion } = props
+  const {
+    readOnly, value, onChange,
+    setSelectedElementPath, selectedElementPath, addNextQuestion
+  } = props
 
   return (
     <div>
-        <div className="d-flex align-items-center justify-content-between">
-            <h2>Panel</h2>
-            {addNextQuestion && <div>
-                <Button variant="secondary" className="ms-auto"
-                        onClick={() => addNextQuestion(true)}>
-                    <FontAwesomeIcon icon={faPlus}/> Add question
-                </Button>
-            </div>}
-        </div>
+      <div className="d-flex align-items-center justify-content-between">
+        <h2>Panel</h2>
+        {addNextQuestion && <div>
+          <Button variant="secondary" className="ms-auto" onClick={addNextQuestion}>
+            <FontAwesomeIcon icon={faPlus}/> Add question
+          </Button>
+        </div>}
+      </div>
       <PanelElementList
         readOnly={readOnly}
         value={value.elements}

@@ -1,7 +1,7 @@
-import { flow, get, identity, set, update } from 'lodash/fp'
-import React, {useState} from 'react'
+import { flow, identity, set, update } from 'lodash/fp'
+import React, { useState } from 'react'
 
-import {FormContent, FormContentPage, FormElement, FormPanel, HtmlElement, Question} from '@juniper/ui-core'
+import { FormContent, FormContentPage, FormPanel, HtmlElement, Question } from '@juniper/ui-core'
 
 import { HtmlDesigner } from './designer/HtmlDesigner'
 import { PageDesigner } from './designer/PageDesigner'
@@ -11,9 +11,10 @@ import { QuestionTemplatesDesigner } from './designer/QuestionTemplatesDesigner'
 import { FormTableOfContents } from './FormTableOfContents'
 import { PageListDesigner } from './designer/PageListDesigner'
 import { useSearchParams } from 'react-router-dom'
-import {Modal} from "react-bootstrap";
-import {NewQuestionForm} from "./designer/NewQuestionForm";
-import _cloneDeep from "lodash/cloneDeep";
+import { Modal } from 'react-bootstrap'
+import { NewQuestionForm } from './designer/NewQuestionForm'
+import _cloneDeep from 'lodash/cloneDeep'
+import { getContainerElementPath, getCurrentElementIndex, getSurveyElementFromPath } from './designer/designer-utils'
 
 type FormDesignerProps = {
   readOnly?: boolean
@@ -53,28 +54,34 @@ export const FormDesigner = (props: FormDesignerProps) => {
   }
 
 
-  const insertQuestion = (newQuestion: Question) => {
+  const insertQuestionAtCursor = (newQuestion: Question) => {
     if (['pages', 'questionTemplates', 'none'].includes(selectedElementType)) {
       // we don't know what to add the question to
       return
     }
     const newValue = _cloneDeep(value)
-    let elementPathToUpdate = selectedElementPath
-    if (selectedElementType === 'question') {
-
-      elementPathToUpdate = selectedElementPath.substring(0, selectedElementPath.lastIndexOf('.elements['))
-    }
-    const elementToUpdate = getSurveyElementFromPath(elementPathToUpdate, newValue) as FormContentPage
-    if (selectedElementType === 'question') {
+    const containerElementPath = getContainerElementPath(selectedElementPath, newValue)
+    const containerToUpdate = getSurveyElementFromPath(containerElementPath, newValue) as FormContentPage | FormPanel
+    let newQuestionIndex = 0
+    if (selectedElementType === 'question' || selectedElementType === 'html') {
       // add the new question after the selected question
-      const questionIndex = parseInt(selectedElementPath.substring(selectedElementPath.lastIndexOf('.elements[') + 10,
-          selectedElementPath.lastIndexOf(']')))
-      elementToUpdate.elements.splice(questionIndex + 1, 0, newQuestion)
+      const questionIndex = getCurrentElementIndex(selectedElementPath)!
+      newQuestionIndex = questionIndex + 1
+      containerToUpdate.elements.splice(newQuestionIndex, 0, newQuestion)
     } else {
       // add the new question to the end of the page/panel
-      elementToUpdate.elements.push(newQuestion)
+      newQuestionIndex = containerToUpdate.elements.length
+      containerToUpdate.elements.push(newQuestion)
     }
     onChange(newValue)
+    // we want to view the new question, but we need to wait for the state change to propagate before it will exist
+    window.setTimeout(() => {
+      setSelectedElementPath(`${containerElementPath}.elements[${newQuestionIndex}]`)
+    }, 0)
+  }
+
+  const addQuestion = () => {
+    setShowCreateQuestionModal(true)
   }
 
   return (
@@ -125,7 +132,7 @@ export const FormDesigner = (props: FormDesignerProps) => {
                 }}
                 selectedElementPath={selectedElementPath}
                 setSelectedElementPath={setSelectedElementPath}
-                setShowCreateQuestionModal={setShowCreateQuestionModal}
+                addNextQuestion={addQuestion}
               />
             )
           }
@@ -137,7 +144,7 @@ export const FormDesigner = (props: FormDesignerProps) => {
                 value={selectedElement as FormPanel}
                 selectedElementPath={selectedElementPath}
                 setSelectedElementPath={setSelectedElementPath}
-                setShowCreateQuestionModal={setShowCreateQuestionModal}
+                addNextQuestion={addQuestion}
                 onChange={(updatedElement, removedElement) => {
                   // The path to a panel will always end in an array index since the panel will be
                   // inside an elements array. Extract the path to that elements array and the
@@ -176,6 +183,7 @@ export const FormDesigner = (props: FormDesignerProps) => {
               <HtmlDesigner
                 element={selectedElement as HtmlElement}
                 readOnly={readOnly}
+                addNextQuestion={addQuestion}
                 onChange={updatedElement => {
                   onChange(set(selectedElementPath, updatedElement, value))
                 }}
@@ -189,7 +197,7 @@ export const FormDesigner = (props: FormDesignerProps) => {
               isNewQuestion={false}
               readOnly={readOnly}
               showName={true}
-              setShowCreateQuestionModal={setShowCreateQuestionModal}
+              addNextQuestion={addQuestion}
               onChange={updatedElement => {
                 onChange(set(selectedElementPath, updatedElement, value))
               }}
@@ -198,29 +206,21 @@ export const FormDesigner = (props: FormDesignerProps) => {
         })()}
       </div>
       {showCreateQuestionModal && (
-          <Modal show className="modal-lg" onHide={() => setShowCreateQuestionModal(false)}>
-            <Modal.Header closeButton>New Question</Modal.Header>
-            <Modal.Body>
-              <NewQuestionForm
-                  readOnly={readOnly}
-                  questionTemplates={value.questionTemplates || []}
-                  onCreate={newQuestion => {
-                    setShowCreateQuestionModal(false)
-                    insertQuestion(newQuestion)
-                  }}
-              />
-            </Modal.Body>
-          </Modal>
+        <Modal show className="modal-lg" onHide={() => setShowCreateQuestionModal(false)}>
+          <Modal.Header closeButton>New Question</Modal.Header>
+          <Modal.Body>
+            <NewQuestionForm
+              readOnly={readOnly}
+              questionTemplates={value.questionTemplates || []}
+              onCreate={newQuestion => {
+                setShowCreateQuestionModal(false)
+                insertQuestionAtCursor(newQuestion)
+              }}
+            />
+          </Modal.Body>
+        </Modal>
       )}
     </div>
   )
-}
-
-const getSurveyElementFromPath = (elementPath: string, obj: object):  FormContentPage | FormElement | undefined => {
-  try {
-    return get(elementPath, obj) as FormContentPage | FormElement
-  } catch (e) {
-    return undefined
-  }
 }
 

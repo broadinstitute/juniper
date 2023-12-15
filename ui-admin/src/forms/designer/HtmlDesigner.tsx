@@ -3,20 +3,31 @@ import React from 'react'
 import { HtmlElement } from '@juniper/ui-core'
 
 import { Textarea } from 'components/forms/Textarea'
+import { Button } from '../../components/forms/Button'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
 export type HtmlDesignerProps = {
   element: HtmlElement
   readOnly: boolean
   onChange: (newValue: HtmlElement) => void
+  addNextQuestion: () => void
 }
 
 /** UI for editing an HTML element in a form. */
 export const HtmlDesigner = (props: HtmlDesignerProps) => {
-  const { element, readOnly, onChange } = props
+  const { element, readOnly, onChange, addNextQuestion } = props
 
   return (
     <div className="d-flex flex-column h-100">
-      <h2>{element.name}</h2>
+      <div className="d-flex align-items-center justify-content-between">
+        <h2>{element.name} (html)</h2>
+        {addNextQuestion && <div>
+          <Button variant="secondary" className="ms-auto" onClick={addNextQuestion}>
+            <FontAwesomeIcon icon={faPlus}/> Add question
+          </Button>
+        </div>}
+      </div>
       <label className="form-label fs-4 mb-0" htmlFor="html-element-html">HTML</label>
       <Textarea
         className="w-100 flex-grow-1 font-monospace"
