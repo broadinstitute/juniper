@@ -125,7 +125,6 @@ export const FormDesigner = (props: FormDesignerProps) => {
             return (
               <PageDesigner
                 readOnly={readOnly}
-                formContent={value}
                 value={selectedElement as FormContentPage}
                 onChange={updatedElement => {
                   onChange(set(selectedElementPath, updatedElement, value))
