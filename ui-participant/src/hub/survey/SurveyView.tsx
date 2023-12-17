@@ -7,8 +7,7 @@ import Api, {
   StudyEnvironmentSurvey,
   Survey,
   SurveyResponse,
-  SurveyWithResponse,
-  ConsentForm
+  SurveyWithResponse
 } from 'api/api'
 
 import { Survey as SurveyComponent } from 'survey-react-ui'
