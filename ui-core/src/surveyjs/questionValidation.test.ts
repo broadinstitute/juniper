@@ -1,5 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Component } from 'react' // dummy import to make this a React module
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-imports
+import React from 'react'
+// dummy import to make this a React module
 
 describe('questionRegexValidation', () => {
   it('handles whole number ranges up to 500', () => {
