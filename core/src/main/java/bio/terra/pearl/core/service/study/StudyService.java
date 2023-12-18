@@ -12,11 +12,13 @@ import java.util.Set;
 import java.util.UUID;
 
 import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
+import lombok.extern.slf4j.Slf4j;
 import org.postgresql.util.PSQLException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 public class StudyService extends CrudService<Study, StudyDao> {
     private StudyEnvironmentService studyEnvironmentService;
     private PortalStudyService portalStudyService;
@@ -77,10 +79,10 @@ public class StudyService extends CrudService<Study, StudyDao> {
     public void deleteOrphans(List<UUID> studyIds, Set<CascadeProperty> cascades) {
         studyIds.stream().forEach(studyId -> {
             if (portalStudyService.findByStudyId(studyId).size() == 0) {
-                System.out.println("deleting orphaned study " + studyId);
+                log.info("Deleting orphan study {}", studyId);
                 delete(studyId, cascades);
             } else {
-                System.out.println("SKIP " + studyId);
+                log.info("Not deleting study {}, referenced in other portal", studyId);
             }
         });
     }

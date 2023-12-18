@@ -30,6 +30,7 @@ public class PopulateHeartHiveTest extends BasePopulatePortalsTest {
 
     @Test
     public void testPopulateHeartHive() {
+        // manually manage the transaction so that we can add a save point midway through for a rollback
         txTemplate.execute(status -> {
             setUpEnvironments();
             Portal portal = portalPopulator.populate(new FilePopulateContext("portals/hearthive/portal.json"), true);
