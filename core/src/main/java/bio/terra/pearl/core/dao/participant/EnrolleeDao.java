@@ -117,18 +117,27 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
     public Enrollee loadForAdminView(Enrollee enrollee) {
         enrollee.getSurveyResponses().addAll(surveyResponseDao.findByEnrolleeIdWithAnswers(enrollee.getId()));
         enrollee.getConsentResponses().addAll(consentResponseDao.findByEnrolleeId(enrollee.getId()));
-        enrollee.setProfile(profileDao.loadWithMailingAddress(enrollee.getProfileId()).get());
-        enrollee.getParticipantTasks().addAll(participantTaskDao.findByEnrolleeId(enrollee.getId()));
         if (enrollee.getPreEnrollmentResponseId() != null) {
             enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).get());
         }
+        enrollee.getParticipantNotes().addAll(participantNoteDao.findByEnrollee(enrollee.getId()));
+        return loadEnrolleeDetails(enrollee);
+    }
+
+    /**
+     * Load enrollee tasks, profile and kit requests
+     * (See loadForAdminView description for performance information
+     */
+    public Enrollee loadEnrolleeDetails(Enrollee enrollee) {
+        enrollee.getParticipantTasks().addAll(participantTaskDao.findByEnrolleeId(enrollee.getId()));
+        enrollee.setProfile(profileDao.loadWithMailingAddress(enrollee.getProfileId()).orElse(null));
         enrollee.getKitRequests().addAll(kitRequestDao.findByEnrollee(enrollee.getId()));
         var allKitTypes = kitTypeDao.findAll();
         for (KitRequest kitRequest : enrollee.getKitRequests()) {
-            var kitType = allKitTypes.stream().filter((t -> t.getId().equals(kitRequest.getKitTypeId()))).findFirst().get();
+            var kitType = allKitTypes.stream().filter((t -> t.getId().equals(kitRequest.getKitTypeId()))).findFirst()
+                    .orElseThrow(() -> new IllegalStateException("Invalid kit type ID for KitRequest " + kitRequest.getKitTypeId()));
             kitRequest.setKitType(kitType);
         }
-        enrollee.getParticipantNotes().addAll(participantNoteDao.findByEnrollee(enrollee.getId()));
         return enrollee;
     }
 

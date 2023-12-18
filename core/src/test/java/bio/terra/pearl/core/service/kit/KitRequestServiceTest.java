@@ -105,7 +105,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         var enrollee = enrolleeFactory.buildPersisted(getTestName(testInfo));
         var kitType = kitTypeFactory.buildPersisted(getTestName(testInfo));
         var kitRequest = kitRequestFactory.buildPersisted(getTestName(testInfo),
-                enrollee, kitType.getId(), adminUser.getId());
+                enrollee, PepperKitStatus.CREATED, kitType.getId(), adminUser.getId());
 
         var response = PepperKit.builder()
                 .juniperKitId(kitRequest.getId().toString())
@@ -131,7 +131,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         var enrollee = enrolleeFactory.buildPersisted(testName, studyEnvironment);
         var kitType = kitTypeFactory.buildPersisted(testName);
         var kitRequest1 = kitRequestFactory.buildPersisted(testName,
-                enrollee, kitType.getId(), adminUser.getId());
+                enrollee, PepperKitStatus.CREATED, kitType.getId(), adminUser.getId());
         var kitRequest2 = kitRequestDao.create(kitRequestFactory.builder(testName)
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee.getId())
@@ -171,9 +171,9 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         Enrollee enrollee1a = enrolleeBundle1a.enrollee();
         Enrollee enrollee1b = enrolleeBundle1b.enrollee();
         var kitRequest1a = kitRequestFactory.buildPersisted(testName,
-            enrollee1a, kitType.getId(), adminUser.getId());
+            enrollee1a, PepperKitStatus.CREATED, kitType.getId(), adminUser.getId());
         var kitRequest1b = kitRequestFactory.buildPersisted(testName,
-            enrollee1b, kitType.getId(), adminUser.getId());
+            enrollee1b, PepperKitStatus.CREATED, kitType.getId(), adminUser.getId());
 
         var studyEnvironment2 = studyEnvironmentFactory.buildPersisted(testName);
         kitTypeFactory.attachTypeToEnvironment(kitType.getId(), studyEnvironment2.getId());
@@ -181,7 +181,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         var enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnvironment2);
         Enrollee enrollee2 = enrolleeBundle2.enrollee();
         var kitRequest2 = kitRequestFactory.buildPersisted(testName,
-            enrollee2, kitType.getId(), adminUser.getId());
+            enrollee2, PepperKitStatus.CREATED, kitType.getId(), adminUser.getId());
 
         /*
          * Mock DSM to return kits by study:

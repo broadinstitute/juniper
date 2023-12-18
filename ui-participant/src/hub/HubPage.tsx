@@ -11,6 +11,9 @@ import { userHasJoinedPortalStudy } from 'util/enrolleeUtils'
 import { HubMessageAlert, HubUpdateMessage, useHubUpdate } from './hubUpdates'
 import { filterUnjoinableStudies } from '../Navbar'
 import { ParticipantDashboardAlert, alertDefaults } from '@juniper/ui-core'
+import KitSummary from './KitSummary'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faList, faSignature, faVial } from '@fortawesome/free-solid-svg-icons'
 
 
 /** renders the logged-in hub page */
@@ -96,16 +99,86 @@ type StudySectionProps = {
   portal: Portal
 }
 
+enum DisplayPage {
+  surveys,
+  forms,
+  kits
+}
+
+const selectedButtonProps = {
+  //color: '#0d6efd',
+  color: 'var(--brand-color)',
+  //borderBottom: '6px solid blue',
+  borderBottom: '6px solid var(--brand-color)',
+  width: '115px',
+  alignItems: 'center'
+}
+
+const unSelectedButtonProps = {
+  color: 'gray',
+  width: '115px',
+  alignItems: 'center'
+}
+
 const StudySection = (props: StudySectionProps) => {
   const { enrollee, portal } = props
+  const [displayPage, setDisplayPage] = useState<DisplayPage>(DisplayPage.surveys)
 
   const matchedStudy = portal.portalStudies
     .find(pStudy => pStudy.study.studyEnvironments[0].id === enrollee.studyEnvironmentId)?.study as Study
 
   return (
     <>
-      <h1 className="mb-4">{matchedStudy.name}</h1>
-      <StudyTasks enrollee={enrollee} study={matchedStudy} />
+      <button
+        type="button"
+        style={displayPage === DisplayPage.surveys ?
+          { ...selectedButtonProps } : { ...unSelectedButtonProps }}
+        className="btn btn-transparent mb-4 me-4 rounded-0"
+        onClick={() => setDisplayPage(DisplayPage.surveys)}
+      >
+        <FontAwesomeIcon icon={faList} className='fa-lg'/>
+        <br/>
+        Surveys
+      </button>
+
+      <button
+        type="button"
+        style={displayPage === DisplayPage.forms ?
+          { ...selectedButtonProps } : { ...unSelectedButtonProps }}
+        className="btn btn-transparent mb-4 me-4 rounded-0"
+        onClick={() => setDisplayPage(DisplayPage.forms)}
+      >
+        <FontAwesomeIcon icon={faSignature} className='fa-lg'/>
+        <br/>
+        Forms
+      </button>
+
+      <button
+        type="button"
+        className="btn btn-transparent mb-4 me-4 rounded-0"
+        style={displayPage === DisplayPage.kits ?
+          { ...selectedButtonProps } : { ...unSelectedButtonProps }}
+        onClick={() => setDisplayPage(DisplayPage.kits)}
+      >
+        <FontAwesomeIcon icon={faVial} className='fa-lg'/>
+        <br/>
+        Sample Kits
+      </button>
+
+      {displayPage == DisplayPage.surveys && <div>
+        <h1 className="mb-4">{matchedStudy.name}</h1>
+        <StudyTasks enrollee={enrollee} study={matchedStudy} />
+      </div>}
+
+      {displayPage == DisplayPage.forms && <div>
+        <h1 className="mb-4">{matchedStudy.name}</h1>
+        <FormTasks enrollee={enrollee} study={matchedStudy} />
+      </div>}
+
+      {displayPage == DisplayPage.kits && <div>
+        <h1 className="mb-4">{matchedStudy.name}</h1>
+        {KitView(enrollee, matchedStudy.shortcode)}
+      </div>}
     </>
   )
 }
@@ -142,7 +215,86 @@ function StudyTasks(props: StudyTasksProps) {
     .sort(taskComparator)
   const hasSurveyTasks = sortedSurveyTasks.length > 0
 
-  const nextTask = getNextTask(enrollee, [...sortedActiveConsentTasks, ...sortedSurveyTasks])
+  // const nextTask = getNextTask(enrollee, [...sortedActiveConsentTasks, ...sortedSurveyTasks])
+
+  const nextTask = getNextTask(enrollee, [...sortedSurveyTasks])
+  const numTasksOfNextTaskType = nextTask
+    ? enrollee.participantTasks.filter(task => task.taskType === nextTask.taskType).length
+    : 0
+
+/*
+  const completedConsentTasks = enrollee.participantTasks
+    .filter(task => task.status === 'COMPLETE' && task.taskType === 'CONSENT')
+  const hasCompletedConsentTasks = completedConsentTasks.length > 0
+*/
+
+  if (!hasStudyTasks) {
+    return <div className="fst-italic">No tasks for this study</div>
+  }
+
+  return (
+    <>
+      {nextTask && (
+        <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
+          <Link
+            to={getTaskPath(nextTask, enrollee.shortcode, study.shortcode)}
+            className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary"
+          >
+            {enrolleeHasStartedTaskType(enrollee, nextTask.taskType)
+              ? 'Continue'
+              : 'Start'}
+            {' '}{taskTypeDisplayMap[nextTask.taskType]}
+            {numTasksOfNextTaskType > 1 && 's'}
+          </Link>
+        </div>
+      )}
+
+{/*
+      {hasActiveConsentTasks && (
+        <TaskGrouping
+          enrollee={enrollee}
+          studyShortcode={study.shortcode}
+          tasks={sortedActiveConsentTasks}
+          title="Consent"
+        />
+      )}
+*/}
+
+      {hasSurveyTasks && (
+        <TaskGrouping
+          enrollee={enrollee}
+          tasks={sortedSurveyTasks}
+          studyShortcode={study.shortcode}
+          title="Surveys"
+        />
+      )}
+
+{/*
+      {hasCompletedConsentTasks && (
+        <TaskGrouping
+          enrollee={enrollee}
+          studyShortcode={study.shortcode}
+          tasks={completedConsentTasks}
+          title="Forms"
+        />
+      )}
+*/}
+    </>
+  )
+}
+
+/** Renders pending and completed form tasks for a given study */
+function FormTasks(props: StudyTasksProps) {
+  const { enrollee, study } = props
+
+  const hasStudyTasks = enrollee.participantTasks.length > 0
+
+  const sortedActiveConsentTasks = enrollee.participantTasks
+    .filter(task => task.taskType === 'CONSENT' && isTaskActive(task))
+    .sort(taskComparator)
+  const hasActiveConsentTasks = sortedActiveConsentTasks.length > 0
+
+  const nextTask = getNextTask(enrollee, [...sortedActiveConsentTasks])
   const numTasksOfNextTaskType = nextTask
     ? enrollee.participantTasks.filter(task => task.taskType === nextTask.taskType).length
     : 0
@@ -152,7 +304,7 @@ function StudyTasks(props: StudyTasksProps) {
   const hasCompletedConsentTasks = completedConsentTasks.length > 0
 
   if (!hasStudyTasks) {
-    return <div className="fst-italic">No tasks for this study</div>
+    return <div className="fst-italic">No forms for this study</div>
   }
 
   return (
@@ -181,15 +333,6 @@ function StudyTasks(props: StudyTasksProps) {
         />
       )}
 
-      {hasSurveyTasks && (
-        <TaskGrouping
-          enrollee={enrollee}
-          tasks={sortedSurveyTasks}
-          studyShortcode={study.shortcode}
-          title="Surveys"
-        />
-      )}
-
       {hasCompletedConsentTasks && (
         <TaskGrouping
           enrollee={enrollee}
@@ -200,6 +343,13 @@ function StudyTasks(props: StudyTasksProps) {
       )}
     </>
   )
+}
+
+function KitView(enrollee: Enrollee, studyShortcode: string) {
+  if (enrollee.kitRequests.length === 0) {
+    return <div className="fst-italic">No kits</div>
+  }
+  return <KitSummary kitRequests={enrollee.kitRequests}/>
 }
 
 /** renders a group like "CONSENTS" or "SURVEYS" */

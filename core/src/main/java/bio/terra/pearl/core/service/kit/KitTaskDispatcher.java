@@ -55,6 +55,7 @@ public class KitTaskDispatcher {
                 .blocksHub(false)
                 .taskOrder(0) // for now, no particular order among kit tasks
                 .taskType(TaskType.KIT_REQUEST)
+                .targetName("Return %s kit".formatted(kitRequest.getKitType().getName()))
                 .status(TaskStatus.NEW)
                 .kitRequestId(kitRequest.getId())
                 .build();

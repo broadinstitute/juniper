@@ -75,6 +75,24 @@ export type Profile = {
   sexAtBirth: string
 }
 
+export type KitRequest = {
+  id: string,
+  createdAt: number,
+  enrollee?: Enrollee,
+  kitType: KitType,
+  sentToAddress: string,
+  status: string,
+  sentAt: number,
+  receivedAt: number
+}
+
+export type KitType = {
+  id: string,
+  name: string,
+  displayName: string,
+  description: string
+}
+
 export type RegistrationResponse = {
   participantUser: ParticipantUser,
   portalParticipantUser: PortalParticipantUser
