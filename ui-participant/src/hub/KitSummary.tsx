@@ -156,14 +156,14 @@ export default function KitSummary({ kitRequests }: {kitRequests: KitRequest[]})
         kitNum = kitNum + 1
         return <>
           <h3 className="h4 mb-3">{kitRequest.kitType.displayName} kit</h3>
-            <div className='container'>
+          <div className='container'>
             {renderHeader()}
             {renderExceptionStatus(kitRequest)}
             {renderReceivedStatus(kitRequest)}
             {renderReturnStatus(kitRequest)}
             {renderSentStatus(kitRequest)}
             {renderRequestStatus(kitRequest)}
-              {kitRequests.length > kitNum && <div className="list-unstyled pt-4"/>}
+            {kitRequests.length > kitNum && <div className="list-unstyled pt-4"/>}
           </div>
         </>
       })}

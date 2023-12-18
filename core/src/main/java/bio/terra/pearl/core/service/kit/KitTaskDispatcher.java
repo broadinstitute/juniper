@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.kit;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import bio.terra.pearl.core.model.kit.KitRequest;
@@ -36,17 +37,27 @@ public class KitTaskDispatcher {
         }
 
         participantTaskService.create(buildTask(enrollee, kitRequest, kitSentEvent.getPortalParticipantUser().getId()));
-        log.info("Created kit task for enrollee {} kit request {}",
+        log.info("Created kit task for enrollee {} with kit request {}",
                 enrollee.getShortcode(), kitRequest.getId());
     }
 
-/*
+
     @EventListener
     @Order(DispatcherOrder.KIT_TASK)
-    public void handleEvent(KitReceivedEvent kitReceivedEvent) {
-
+    public void handleEvent(KitReceivedEvent kitEvent) {
+        Enrollee enrollee = kitEvent.getEnrollee();
+        KitRequest kitRequest = kitEvent.getKitRequest();
+        Optional<ParticipantTask> task = participantTaskService.findByKitRequestId(kitRequest.getId());
+        if (task.isEmpty()) {
+            log.warn("KitReceivedEvent: Kit task does not exist for enrollee {} with kit request {}",
+                    enrollee.getShortcode(), kitEvent.getKitRequest().getId());
+            return;
+        }
+        ParticipantTask participantTask = task.get();
+        participantTask.setStatus(TaskStatus.COMPLETE);
+        participantTaskService.update(participantTask);
     }
-*/
+
     protected ParticipantTask buildTask(Enrollee enrollee, KitRequest kitRequest, UUID portalParticipantUserId) {
         return ParticipantTask.builder()
                 .enrolleeId(enrollee.getId())
@@ -55,7 +66,7 @@ public class KitTaskDispatcher {
                 .blocksHub(false)
                 .taskOrder(0) // for now, no particular order among kit tasks
                 .taskType(TaskType.KIT_REQUEST)
-                .targetName("Return %s kit".formatted(kitRequest.getKitType().getName()))
+                .targetName("Kit Request")
                 .status(TaskStatus.NEW)
                 .kitRequestId(kitRequest.getId())
                 .build();
