@@ -88,5 +88,5 @@ test('sorts by join date by default', async () => {
   const joined = screen.getByText('Joined')
 
   // "Joined" text is two parents away from the <th> element
-  expect(joined.parentElement?.parentElement?.getAttribute("aria-sort")).toBe("descending");
+  expect(joined.parentElement?.parentElement?.getAttribute('aria-sort')).toBe('descending')
 })
