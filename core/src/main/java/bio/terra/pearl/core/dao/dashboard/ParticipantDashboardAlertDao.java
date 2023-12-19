@@ -30,4 +30,8 @@ public class ParticipantDashboardAlertDao extends BaseMutableJdbiDao<Participant
         return findByTwoProperties("portal_environment_id", portalEnvironmentId, "trigger", trigger);
     }
 
+    public void deleteByPortalEnvironmentId(UUID portalEnvironmentId) {
+        deleteByProperty("portal_environment_id", portalEnvironmentId);
+    }
+
 }

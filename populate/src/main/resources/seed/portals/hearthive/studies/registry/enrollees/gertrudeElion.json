@@ -1,0 +1,15 @@
+{
+  "linkedUsername": "gelion@test.com",
+  "shortcode": "HHGELI",
+  "simulateSubmissions": true,
+  "submittedHoursAgo": 45,
+  "consentResponseDtos": [{
+    "consentStableId": "hh_registry_consent",
+    "consentVersion": 1,
+    "consented": true,
+    "answers": [
+      {"questionStableId": "marketing_consent", "stringValue": "yes"}
+    ],
+    "currentPageNo": 1
+  }]
+}
