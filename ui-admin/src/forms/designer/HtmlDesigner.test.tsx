@@ -14,7 +14,7 @@ describe('HtmlDesigner', () => {
 
   it('renders HTML', () => {
     // Act
-    render(<HtmlDesigner element={element} readOnly={false} onChange={jest.fn()} />)
+    render(<HtmlDesigner element={element} readOnly={false} onChange={jest.fn()} addNextQuestion={jest.fn()} />)
 
     // Assert
     const htmlTextarea = screen.getByLabelText('HTML')
@@ -24,7 +24,7 @@ describe('HtmlDesigner', () => {
   it('allows editing HTML', () => {
     // Arrange
     const onChange = jest.fn()
-    render(<HtmlDesigner element={element} readOnly={false} onChange={onChange} />)
+    render(<HtmlDesigner element={element} readOnly={false} onChange={onChange} addNextQuestion={jest.fn()}/>)
 
     // Act
     const htmlTextarea = screen.getByLabelText('HTML')

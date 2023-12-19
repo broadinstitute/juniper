@@ -1,7 +1,7 @@
-import { flow, get, identity, set, update } from 'lodash/fp'
-import React from 'react'
+import { flow, identity, set, update } from 'lodash/fp'
+import React, { useState } from 'react'
 
-import { FormContent, FormContentPage, FormElement } from '@juniper/ui-core'
+import { FormContent, FormContentPage, FormPanel, HtmlElement, Question } from '@juniper/ui-core'
 
 import { HtmlDesigner } from './designer/HtmlDesigner'
 import { PageDesigner } from './designer/PageDesigner'
@@ -11,82 +11,138 @@ import { QuestionTemplatesDesigner } from './designer/QuestionTemplatesDesigner'
 import { FormTableOfContents } from './FormTableOfContents'
 import { PageListDesigner } from './designer/PageListDesigner'
 import { useSearchParams } from 'react-router-dom'
+import { Modal } from 'react-bootstrap'
+import { NewQuestionForm } from './designer/NewQuestionForm'
+import _cloneDeep from 'lodash/cloneDeep'
+import { getContainerElementPath, getCurrentElementIndex, getSurveyElementFromPath } from './designer/designer-utils'
 
 type FormDesignerProps = {
   readOnly?: boolean
-  value: FormContent
-  onChange: (editedContent: FormContent) => void
+  content: FormContent
+  onChange: (editedContent: FormContent, callback?: () => void) => void
 }
+
+type SelectedElementType = 'pages' | 'questionTemplates' | 'page' | 'panel' | 'question' | 'none' | 'html'
 
 /** UI for editing forms. */
 export const FormDesigner = (props: FormDesignerProps) => {
-  const { readOnly = false, value, onChange } = props
+  const { readOnly = false, content, onChange } = props
+  const [showCreateQuestionModal, setShowCreateQuestionModal] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
   const selectedElementPath = searchParams.get('selectedElementPath') ?? 'pages'
-  const selectedElement = getSurveyElementFromPath(selectedElementPath, value)
+  const selectedElement = getSurveyElementFromPath(selectedElementPath, content)
   const setSelectedElementPath = (path: string) => {
     searchParams.set('selectedElementPath', path)
     setSearchParams(searchParams)
   }
+
+  // selectedElementType is used to determine which designer to show and where to add a new question
+  // it's based on selectedElement.type, but we also need to handle the case where selectedElement a template or root
+  let selectedElementType: SelectedElementType = 'none'
+  if (selectedElementPath === 'pages') {
+    selectedElementType = 'pages'
+  } else if (selectedElementPath === 'questionTemplates') {
+    selectedElementType = 'questionTemplates'
+  } else if (selectedElement) {
+    if (!('type' in selectedElement) && !('questionTemplateName' in selectedElement)) {
+      selectedElementType = 'page'
+    } else if ('type' in selectedElement && selectedElement.type === 'panel') {
+      selectedElementType = 'panel'
+    } else if ('type' in selectedElement && selectedElement.type === 'html') {
+      selectedElementType = 'html'
+    } else {
+      selectedElementType = 'question'
+    }
+  }
+
+
+  const insertQuestionAtCursor = (newQuestion: Question) => {
+    if (['pages', 'questionTemplates', 'none'].includes(selectedElementType)) {
+      // we don't know what to add the question to
+      return
+    }
+    const newValue = _cloneDeep(content)
+    const containerElementPath = getContainerElementPath(selectedElementPath, newValue)
+    const containerToUpdate = getSurveyElementFromPath(containerElementPath, newValue) as FormContentPage | FormPanel
+    let newQuestionIndex = 0
+    if (selectedElementType === 'question' || selectedElementType === 'html') {
+      // add the new question after the selected question
+      const questionIndex = getCurrentElementIndex(selectedElementPath)!
+      newQuestionIndex = questionIndex + 1
+      containerToUpdate.elements.splice(newQuestionIndex, 0, newQuestion)
+    } else {
+      // add the new question to the end of the page/panel
+      newQuestionIndex = containerToUpdate.elements.length
+      containerToUpdate.elements.push(newQuestion)
+    }
+    // we want to view the new question, but we need to wait for the state change to propagate before it will exist
+    onChange(newValue, () => setSelectedElementPath(`${containerElementPath}.elements[${newQuestionIndex}]`))
+  }
+
+  const addQuestion = () => {
+    setShowCreateQuestionModal(true)
+  }
+
   return (
     <div className="overflow-hidden flex-grow-1 d-flex flex-row mh-100" style={{ flexBasis: 0 }}>
       <div className="flex-shrink-0 border-end" style={{ width: 400, overflowY: 'scroll' }}>
         <FormTableOfContents
-          formContent={value}
+          formContent={content}
           selectedElementPath={selectedElementPath}
           onSelectElement={setSelectedElementPath}
         />
       </div>
       <div className="flex-grow-1 overflow-scroll py-2 px-3">
         {(() => {
-          if (selectedElementPath === 'pages') {
+          if (selectedElementType === 'pages') {
             return (
               <PageListDesigner
                 setSelectedElementPath={setSelectedElementPath}
-                formContent={value}
+                formContent={content}
                 readOnly={readOnly}
                 onChange={onChange}
               />
             )
           }
 
-          if (selectedElementPath === 'questionTemplates') {
+          if (selectedElementType === 'questionTemplates') {
             return (
               <QuestionTemplatesDesigner
-                formContent={value}
+                formContent={content}
                 readOnly={readOnly}
                 onChange={onChange}
               />
             )
           }
-          if (selectedElement === undefined) {
+          if (selectedElementType === 'none') {
             return (
               <p className="mt-5 text-center">Select an element to edit</p>
             )
           }
 
-          if (!('type' in selectedElement) && !('questionTemplateName' in selectedElement)) {
+          if (selectedElementType === 'page') {
             return (
               <PageDesigner
                 readOnly={readOnly}
-                formContent={value}
-                value={selectedElement}
+                value={selectedElement as FormContentPage}
                 onChange={updatedElement => {
-                  onChange(set(selectedElementPath, updatedElement, value))
+                  onChange(set(selectedElementPath, updatedElement, content))
                 }}
                 selectedElementPath={selectedElementPath}
                 setSelectedElementPath={setSelectedElementPath}
+                addNextQuestion={addQuestion}
               />
             )
           }
 
-          if ('type' in selectedElement && selectedElement.type === 'panel') {
+          if (selectedElementType === 'panel') {
             return (
               <PanelDesigner
                 readOnly={readOnly}
-                value={selectedElement}
+                panel={selectedElement as FormPanel}
                 selectedElementPath={selectedElementPath}
                 setSelectedElementPath={setSelectedElementPath}
+                addNextQuestion={addQuestion}
                 onChange={(updatedElement, removedElement) => {
                   // The path to a panel will always end in an array index since the panel will be
                   // inside an elements array. Extract the path to that elements array and the
@@ -113,20 +169,21 @@ export const FormDesigner = (props: FormDesignerProps) => {
                           }
                         )
                         : identity
-                    )(value)
+                    )(content)
                   )
                 }}
               />
             )
           }
 
-          if ('type' in selectedElement && selectedElement.type === 'html') {
+          if (selectedElementType === 'html') {
             return (
               <HtmlDesigner
-                element={selectedElement}
+                element={selectedElement as HtmlElement}
                 readOnly={readOnly}
+                addNextQuestion={addQuestion}
                 onChange={updatedElement => {
-                  onChange(set(selectedElementPath, updatedElement, value))
+                  onChange(set(selectedElementPath, updatedElement, content))
                 }}
               />
             )
@@ -134,26 +191,34 @@ export const FormDesigner = (props: FormDesignerProps) => {
 
           return (
             <QuestionDesigner
-              question={selectedElement}
+              question={selectedElement as Question}
               isNewQuestion={false}
               readOnly={readOnly}
               showName={true}
+              addNextQuestion={addQuestion}
               onChange={updatedElement => {
-                onChange(set(selectedElementPath, updatedElement, value))
+                onChange(set(selectedElementPath, updatedElement, content))
               }}
             />
           )
         })()}
       </div>
+      {showCreateQuestionModal && (
+        <Modal show className="modal-lg" onHide={() => setShowCreateQuestionModal(false)}>
+          <Modal.Header closeButton>New Question</Modal.Header>
+          <Modal.Body>
+            <NewQuestionForm
+              readOnly={readOnly}
+              questionTemplates={content.questionTemplates || []}
+              onCreate={newQuestion => {
+                setShowCreateQuestionModal(false)
+                insertQuestionAtCursor(newQuestion)
+              }}
+            />
+          </Modal.Body>
+        </Modal>
+      )}
     </div>
   )
-}
-
-const getSurveyElementFromPath = (elementPath: string, obj: object):  FormContentPage | FormElement | undefined => {
-  try {
-    return get(elementPath, obj) as FormContentPage | FormElement
-  } catch (e) {
-    return undefined
-  }
 }
 
