@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: survey_type
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: survey
+            columns:
+              - column:
+                  name: survey_type
+                  type: text
+                  defaultValue: 'RESEARCH'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: blurb
+                  type: text
+        - dropDefaultValue:  # we needed the default to populate the column, but defaults are best set at the application level
+            tableName: survey
+            columnName: survey_type
