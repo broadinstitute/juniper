@@ -81,7 +81,7 @@ export default function CreatePreRegSurveyModal({ portalEnvContext, onDismiss }:
     await doApiLoad(async () => {
       const createdSurvey = await Api.createNewSurvey(portalEnvContext.portal.shortcode,
         {
-          createdAt: 0, id: '', lastUpdatedAt: 0, version: 1,
+          createdAt: 0, id: '', lastUpdatedAt: 0, version: 1, surveyType: 'RESEARCH',
           content: EXAMPLE_PREREG_TEMPLATE, name: formName, stableId: formStableId
         })
       Store.addNotification(successNotification('Survey created'))

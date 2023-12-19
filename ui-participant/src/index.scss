@@ -155,6 +155,13 @@ a {
   --bs-alert-border-color: #DB3214;
 }
 
+.survey-container-modal {
+  background: rgb(243, 243, 243);
+}
+.survey-container-modal .modal-body {
+  padding: 0px;
+}
+
 @media print {
   .environment-alert {
     display: none;

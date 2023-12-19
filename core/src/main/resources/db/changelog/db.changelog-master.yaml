@@ -159,6 +159,9 @@ databaseChangeLog:
       file: changesets/2023_11_17_participant_dashboard_alerts.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2023_12_08_survey_type.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2023_12_08_participant_task_kit.yaml
       relativeToChangelogFile: true
   - include:

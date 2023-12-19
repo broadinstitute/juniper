@@ -57,7 +57,7 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     @Autowired
     protected AdminTaskService adminTaskService;
 
-    protected void setUpEnvironments() throws IOException {
+    protected void setUpEnvironments() {
         for (String fileName : BaseSeedPopulator.ENVIRONMENTS_TO_POPULATE) {
             environmentPopulator.populate(new FilePopulateContext(fileName), true);
         }

@@ -40,7 +40,8 @@ const registrationSurveyModel: Survey = {
   version: 1,
   createdAt: now,
   lastUpdatedAt: now,
-  content: JSON.stringify(registrationSurvey)
+  content: JSON.stringify(registrationSurvey),
+  surveyType: 'RESEARCH'
 }
 
 /**

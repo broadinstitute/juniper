@@ -10,6 +10,7 @@ import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.survey.SurveyType;
 import bio.terra.pearl.core.service.export.formatters.item.AnswerItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
@@ -98,6 +99,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 .content(SOCIAL_HEALTH_EXCERPT)
                 .name("Social Health")
                 .stableId("socialHealth")
+                .surveyType(SurveyType.RESEARCH)
                 .version(1)
                 .build());
         surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
@@ -156,6 +158,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 .content(SOCIAL_HEALTH_EXCERPT)
                 .name("Social Health")
                 .stableId("socialHealth")
+                .surveyType(SurveyType.RESEARCH)
                 .version(1)
                 .build());
         surveyFactory.attachToEnv(survey, studyEnv.getId(), false);
@@ -164,6 +167,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 .content(SOCIAL_HEALTH_V2_EXCERPT)
                 .name("Social Health")
                 .stableId("socialHealth")
+                .surveyType(SurveyType.RESEARCH)
                 .version(2)
                 .build());
         surveyFactory.attachToEnv(survey2, studyEnv.getId(), true);

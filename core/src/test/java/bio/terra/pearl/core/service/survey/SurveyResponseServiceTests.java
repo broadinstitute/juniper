@@ -2,22 +2,31 @@ package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
+import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.participant.PortalParticipantUserFactory;
 import bio.terra.pearl.core.factory.survey.AnswerFactory;
+import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.DataChangeRecord;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import java.util.List;
 import java.util.Map;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +40,8 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
     @Autowired
     private SurveyService surveyService;
     @Autowired
+    private SurveyFactory surveyFactory;
+    @Autowired
     private AnswerService answerService;
     @Autowired
     private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
@@ -38,11 +49,17 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
     private PortalParticipantUserFactory portalParticipantUserFactory;
     @Autowired
     private DataChangeRecordService dataChangeRecordService;
+    @Autowired
+    private ParticipantTaskService participantTaskService;
+    @Autowired
+    private EnrolleeFactory enrolleeFactory;
+    @Autowired
+    private SurveyTaskDispatcher surveyTaskDispatcher;
 
     @Test
     @Transactional
-    public void testSurveyResponseCrud() {
-        SurveyResponse surveyResponse = surveyResponseFactory.builderWithDependencies("testSurveyResponseCrud")
+    public void testSurveyResponseCrud(TestInfo testInfo) {
+        SurveyResponse surveyResponse = surveyResponseFactory.builderWithDependencies(getTestName(testInfo))
                 .build();
         SurveyResponse savedResponse = surveyResponseService.create(surveyResponse);
         DaoTestUtils.assertGeneratedProperties(savedResponse);
@@ -51,8 +68,8 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testSurveyResponseWithAnswers() {
-        String testName = "testSurveyResponseCrud";
+    public void testSurveyResponseWithAnswers(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
         List<Answer> answers = AnswerFactory.fromMap(Map.of("foo", "bar", "test1", "ans1"));
         SurveyResponse surveyResponse = surveyResponseFactory.builderWithDependencies(testName)
                 .answers(answers)
@@ -90,8 +107,8 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testSurveyResponseUpdateAnswers() {
-        String testName = "testSurveyResponseCrud";
+    public void testSurveyResponseUpdateAnswers(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
         List<Answer> answers = AnswerFactory.fromMap(Map.of("foo", "bar", "test1", "ans1"));
         SurveyResponse surveyResponse = surveyResponseFactory.builderWithDependencies(testName)
                 .answers(answers)
@@ -131,5 +148,55 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         assertThat(changeRecords.size(), equalTo(2));
     }
 
+
+    @Test
+    @Transactional
+    public void testUpdateResponse(TestInfo testInfo) {
+        // create a survey and an enrollee with one task to complete that survey
+        String testName = getTestName(testInfo);
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
+        Survey survey = surveyFactory.buildPersisted(testName);
+        StudyEnvironmentSurvey configuredSurvey = surveyFactory.attachToEnv(survey, enrolleeBundle.enrollee().getStudyEnvironmentId(), true);
+
+        ParticipantTask task = surveyTaskDispatcher.buildTask(configuredSurvey, survey, enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser());
+        task = participantTaskService.create(task);
+        assertThat(task.getStatus(), equalTo(TaskStatus.NEW));
+
+        // create a response with no answers
+        SurveyResponse response = SurveyResponse.builder()
+                .enrolleeId(enrolleeBundle.enrollee().getId())
+                .creatingParticipantUserId(enrolleeBundle.enrollee().getParticipantUserId())
+                .surveyId(survey.getId())
+                .complete(false)
+                .answers(List.of())
+                .build();
+
+        surveyResponseService.updateResponse(response, enrolleeBundle.enrollee().getParticipantUserId(),
+                enrolleeBundle.portalParticipantUser(), enrolleeBundle.enrollee(), task.getId());
+
+        // check that the response was created and task status updated to viewed
+        task = participantTaskService.find(task.getId()).orElseThrow();
+        assertThat(task.getStatus(), equalTo(TaskStatus.VIEWED));
+
+        // now an updated response with one Answer
+        List<Answer> updatedAnswers = AnswerFactory.fromMap(Map.of("foo", "baz", "q3", "answer3"));
+        response = SurveyResponse.builder()
+                .enrolleeId(enrolleeBundle.enrollee().getId())
+                .creatingParticipantUserId(enrolleeBundle.enrollee().getParticipantUserId())
+                .surveyId(survey.getId())
+                .complete(false)
+                .answers(updatedAnswers)
+                .build();
+
+        surveyResponseService.updateResponse(response, enrolleeBundle.enrollee().getParticipantUserId(),
+                enrolleeBundle.portalParticipantUser(), enrolleeBundle.enrollee(), task.getId());
+
+        // check that the response was created and task status updated to viewed
+        task = participantTaskService.find(task.getId()).orElseThrow();
+        assertThat(task.getStatus(), equalTo(TaskStatus.IN_PROGRESS));
+        // check that the answers were created
+        SurveyResponse savedResponse = surveyResponseService.findByEnrolleeId(enrolleeBundle.enrollee().getId()).get(0);
+        assertThat(answerService.findByResponse(savedResponse.getId()), hasSize(2));
+    }
 
 }

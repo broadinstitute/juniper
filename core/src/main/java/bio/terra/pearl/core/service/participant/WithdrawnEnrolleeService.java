@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.ImmutableEntityService;
+import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -49,20 +50,23 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
    * an irreversible operation.
    */
   @Transactional
-  public WithdrawnEnrollee withdrawEnrollee(Enrollee enrollee) throws JsonProcessingException {
+  public WithdrawnEnrollee withdrawEnrollee(Enrollee enrollee) {
     dao.loadForWithdrawalPreservation(enrollee);
     ParticipantUser user = participantUserService.find(enrollee.getParticipantUserId()).get();
-    WithdrawnEnrollee withdrawnEnrollee = WithdrawnEnrollee.builder()
-        .shortcode(enrollee.getShortcode())
-        .studyEnvironmentId(enrollee.getStudyEnvironmentId())
-        .enrolleeData(objectMapper.writeValueAsString(enrollee))
-        .userData(objectMapper.writeValueAsString(user))
-        .build();
-    withdrawnEnrollee = create(withdrawnEnrollee);
+    try {
+      WithdrawnEnrollee withdrawnEnrollee = WithdrawnEnrollee.builder()
+              .shortcode(enrollee.getShortcode())
+              .studyEnvironmentId(enrollee.getStudyEnvironmentId())
+              .enrolleeData(objectMapper.writeValueAsString(enrollee))
+              .userData(objectMapper.writeValueAsString(user))
+              .build();
+      withdrawnEnrollee = create(withdrawnEnrollee);
+      enrolleeService.delete(enrollee.getId(), CascadeProperty.EMPTY_SET);
 
-    enrolleeService.delete(enrollee.getId(), CascadeProperty.EMPTY_SET);
-
-    return withdrawnEnrollee;
+      return withdrawnEnrollee;
+    } catch (JsonProcessingException e) {
+      throw new InternalServerException("Error serializing enrollee or user data", e);
+    }
   }
 
   @Transactional
