@@ -48,8 +48,11 @@ describe('FormDesigner', () => {
   })
 
   it('adds questions after a current question', async () => {
+    // dummy update function that just invokes the callback
     const updateValue = jest.fn()
-    const { RoutedComponent, router } = setupRouterTest(<FormDesigner content={formContent} onChange={updateValue}/>,
+      .mockImplementation((content: FormContent, callback?: () => void) => { callback?.() })
+    const { RoutedComponent, router } = setupRouterTest(
+      <FormDesigner content={formContent} onChange={updateValue}/>,
       ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0].elements[1]'])
     render(RoutedComponent)
     // we should be showing the editor for the second question
@@ -61,7 +64,7 @@ describe('FormDesigner', () => {
     await userEvent.type(getByLabelText(newQuestionForm, 'Question text*'), 'fave color?')
     await userEvent.click(screen.getByText('Create question'))
     await waitFor(() => expect(router.state.location.search)
-      .toContain('selectedElementPath=pages%5B0%5D.elements%5B2%5D'))
+      .toContain('?selectedElementPath=pages%5B0%5D.elements%5B2%5D'))
     expect(updateValue).toHaveBeenCalledWith({
       ...formContent,
       pages: [
@@ -76,11 +79,13 @@ describe('FormDesigner', () => {
           ]
         }
       ]
-    })
+    }, expect.anything())
   })
 
   it('adds questions to the end of a page', async () => {
+    // dummy update function that just invokes the callback
     const updateValue = jest.fn()
+      .mockImplementation((content: FormContent, callback?: () => void) => { callback?.() })
     const { RoutedComponent, router } = setupRouterTest(<FormDesigner content={formContent} onChange={updateValue}/>,
       ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0]'])
     render(RoutedComponent)
@@ -95,7 +100,7 @@ describe('FormDesigner', () => {
     await userEvent.type(getByLabelText(newQuestionForm, 'Question text*'), 'fave color?')
     await userEvent.click(screen.getByText('Create question'))
     await waitFor(() => expect(router.state.location.search)
-      .toContain('selectedElementPath=pages%5B0%5D.elements%5B2%5D'))
+      .toContain('?selectedElementPath=pages%5B0%5D.elements%5B2%5D'))
     expect(updateValue).toHaveBeenCalledWith({
       ...formContent,
       pages: [
@@ -110,6 +115,6 @@ describe('FormDesigner', () => {
           ]
         }
       ]
-    })
+    }, expect.anything())
   })
 })
