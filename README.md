@@ -64,6 +64,10 @@ In IntelliJ, File -> New -> Project from Existing Sources.  When importing the p
      * Set the default Node used by the editor at Settings > Languages & Frameworks > Typescript > Node Interpreter 
      * If you wish to run tests within the IDE, you will also need to edit the Node used by the Jest configuration
        * Run > Edit Configurations... > Edit Configuration templates (bottom left) > Jest > Node Interpreter
+   * Enable auto linting on save for Javascript files
+     * Settings > Languages & Frameworks > JavaScript > Code Quality Tools > ESLint
+       * Select `Automatic ESLint Configuration`
+       * Select `Run eslint --fix on save`
    * In Settings > Build, Execution, Deployment > Compiler > Annotation Processors, make sure annotation processing is enabled (otherwise lombok getters/setters won't work)
    * Create two Spring Boot Run/Debug Configurations (Run > Edit Configurations > + > Spring Boot). These might already exist when you clone the repository.
      * ApiAdminApp (in api-admin module)
