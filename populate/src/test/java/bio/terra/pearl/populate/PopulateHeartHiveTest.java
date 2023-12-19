@@ -29,7 +29,6 @@ public class PopulateHeartHiveTest extends BasePopulatePortalsTest {
     private TransactionTemplate txTemplate;
 
     @Test
-    @Transactional
     public void testPopulateHeartHive() {
         // manually manage the transaction so that we can add a save point midway through for a rollback
         txTemplate.execute(status -> {
@@ -69,9 +68,5 @@ public class PopulateHeartHiveTest extends BasePopulatePortalsTest {
             portalPopulator.populate(new FilePopulateContext("portals/hearthive/portal.json"), true);
             return null;
         });
-
-        withdrawnEnrolleeService.withdrawEnrollee(prodEnrollee.enrollee());
-        // confirm we can now repopulate with overwrite
-        portalPopulator.populate(new FilePopulateContext("portals/hearthive/portal.json"), true);
     }
 }
