@@ -66,6 +66,8 @@ public class PopulateHeartHiveTest extends BasePopulatePortalsTest {
             withdrawnEnrolleeService.withdrawEnrollee(prodEnrollee.enrollee());
             // confirm we can now repopulate with overwrite
             portalPopulator.populate(new FilePopulateContext("portals/hearthive/portal.json"), true);
+            // now roll back the whole transaction so that the test doesn't actually persist the changes
+            status.setRollbackOnly();
             return null;
         });
     }

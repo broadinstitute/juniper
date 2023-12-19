@@ -45,7 +45,8 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
     private SurveyFactory surveyFactory;
 
     @Test
-    public void testExportNumberLimit(TestInfo testInfo) throws Exception {
+    @Transactional
+    public void testExportNumberLimit(TestInfo testInfo) {
         String testName = getTestName(testInfo);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
         Enrollee enrollee1 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
