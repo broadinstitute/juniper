@@ -18,24 +18,26 @@ import { getContainerElementPath, getCurrentElementIndex, getSurveyElementFromPa
 
 type FormDesignerProps = {
   readOnly?: boolean
-  value: FormContent
-  onChange: (editedContent: FormContent) => void
+  content: FormContent
+  onChange: (editedContent: FormContent, callback?: () => void) => void
 }
 
 type SelectedElementType = 'pages' | 'questionTemplates' | 'page' | 'panel' | 'question' | 'none' | 'html'
 
 /** UI for editing forms. */
 export const FormDesigner = (props: FormDesignerProps) => {
-  const { readOnly = false, value, onChange } = props
+  const { readOnly = false, content, onChange } = props
   const [showCreateQuestionModal, setShowCreateQuestionModal] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
   const selectedElementPath = searchParams.get('selectedElementPath') ?? 'pages'
-  const selectedElement = getSurveyElementFromPath(selectedElementPath, value)
+  const selectedElement = getSurveyElementFromPath(selectedElementPath, content)
   const setSelectedElementPath = (path: string) => {
     searchParams.set('selectedElementPath', path)
     setSearchParams(searchParams)
   }
 
+  // selectedElementType is used to determine which designer to show and where to add a new question
+  // it's based on selectedElement.type, but we also need to handle the case where selectedElement a template or root
   let selectedElementType: SelectedElementType = 'none'
   if (selectedElementPath === 'pages') {
     selectedElementType = 'pages'
@@ -59,7 +61,7 @@ export const FormDesigner = (props: FormDesignerProps) => {
       // we don't know what to add the question to
       return
     }
-    const newValue = _cloneDeep(value)
+    const newValue = _cloneDeep(content)
     const containerElementPath = getContainerElementPath(selectedElementPath, newValue)
     const containerToUpdate = getSurveyElementFromPath(containerElementPath, newValue) as FormContentPage | FormPanel
     let newQuestionIndex = 0
@@ -73,11 +75,8 @@ export const FormDesigner = (props: FormDesignerProps) => {
       newQuestionIndex = containerToUpdate.elements.length
       containerToUpdate.elements.push(newQuestion)
     }
-    onChange(newValue)
     // we want to view the new question, but we need to wait for the state change to propagate before it will exist
-    window.setTimeout(() => {
-      setSelectedElementPath(`${containerElementPath}.elements[${newQuestionIndex}]`)
-    }, 0)
+    onChange(newValue, () => setSelectedElementPath(`${containerElementPath}.elements[${newQuestionIndex}]`))
   }
 
   const addQuestion = () => {
@@ -88,7 +87,7 @@ export const FormDesigner = (props: FormDesignerProps) => {
     <div className="overflow-hidden flex-grow-1 d-flex flex-row mh-100" style={{ flexBasis: 0 }}>
       <div className="flex-shrink-0 border-end" style={{ width: 400, overflowY: 'scroll' }}>
         <FormTableOfContents
-          formContent={value}
+          formContent={content}
           selectedElementPath={selectedElementPath}
           onSelectElement={setSelectedElementPath}
         />
@@ -99,7 +98,7 @@ export const FormDesigner = (props: FormDesignerProps) => {
             return (
               <PageListDesigner
                 setSelectedElementPath={setSelectedElementPath}
-                formContent={value}
+                formContent={content}
                 readOnly={readOnly}
                 onChange={onChange}
               />
@@ -109,7 +108,7 @@ export const FormDesigner = (props: FormDesignerProps) => {
           if (selectedElementType === 'questionTemplates') {
             return (
               <QuestionTemplatesDesigner
-                formContent={value}
+                formContent={content}
                 readOnly={readOnly}
                 onChange={onChange}
               />
@@ -127,7 +126,7 @@ export const FormDesigner = (props: FormDesignerProps) => {
                 readOnly={readOnly}
                 value={selectedElement as FormContentPage}
                 onChange={updatedElement => {
-                  onChange(set(selectedElementPath, updatedElement, value))
+                  onChange(set(selectedElementPath, updatedElement, content))
                 }}
                 selectedElementPath={selectedElementPath}
                 setSelectedElementPath={setSelectedElementPath}
@@ -140,7 +139,7 @@ export const FormDesigner = (props: FormDesignerProps) => {
             return (
               <PanelDesigner
                 readOnly={readOnly}
-                value={selectedElement as FormPanel}
+                panel={selectedElement as FormPanel}
                 selectedElementPath={selectedElementPath}
                 setSelectedElementPath={setSelectedElementPath}
                 addNextQuestion={addQuestion}
@@ -170,7 +169,7 @@ export const FormDesigner = (props: FormDesignerProps) => {
                           }
                         )
                         : identity
-                    )(value)
+                    )(content)
                   )
                 }}
               />
@@ -184,7 +183,7 @@ export const FormDesigner = (props: FormDesignerProps) => {
                 readOnly={readOnly}
                 addNextQuestion={addQuestion}
                 onChange={updatedElement => {
-                  onChange(set(selectedElementPath, updatedElement, value))
+                  onChange(set(selectedElementPath, updatedElement, content))
                 }}
               />
             )
@@ -198,7 +197,7 @@ export const FormDesigner = (props: FormDesignerProps) => {
               showName={true}
               addNextQuestion={addQuestion}
               onChange={updatedElement => {
-                onChange(set(selectedElementPath, updatedElement, value))
+                onChange(set(selectedElementPath, updatedElement, content))
               }}
             />
           )
@@ -210,7 +209,7 @@ export const FormDesigner = (props: FormDesignerProps) => {
           <Modal.Body>
             <NewQuestionForm
               readOnly={readOnly}
-              questionTemplates={value.questionTemplates || []}
+              questionTemplates={content.questionTemplates || []}
               onCreate={newQuestion => {
                 setShowCreateQuestionModal(false)
                 insertQuestionAtCursor(newQuestion)

@@ -24,7 +24,7 @@ export const HtmlDesigner = (props: HtmlDesignerProps) => {
         <h2>{element.name} (html)</h2>
         {addNextQuestion && <div>
           <Button variant="secondary" className="ms-auto" onClick={addNextQuestion}>
-            <FontAwesomeIcon icon={faPlus}/> Add question
+            <FontAwesomeIcon icon={faPlus}/> Add next question
           </Button>
         </div>}
       </div>

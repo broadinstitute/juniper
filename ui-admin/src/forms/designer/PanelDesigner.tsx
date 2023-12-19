@@ -9,17 +9,17 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
 export type PanelDesignerProps = {
   readOnly: boolean
-  value: FormPanel
+  panel: FormPanel
   onChange: (newValue: FormPanel, removedElement?: FormElement) => void
-    setSelectedElementPath: (path: string) => void
-    selectedElementPath: string
-    addNextQuestion?: () => void
+  setSelectedElementPath: (path: string) => void
+  selectedElementPath: string
+  addNextQuestion?: () => void
 }
 
 /** UI for editing a panel in a form. */
 export const PanelDesigner = (props: PanelDesignerProps) => {
   const {
-    readOnly, value, onChange,
+    readOnly, panel, onChange,
     setSelectedElementPath, selectedElementPath, addNextQuestion
   } = props
 
@@ -35,9 +35,9 @@ export const PanelDesigner = (props: PanelDesignerProps) => {
       </div>
       <PanelElementList
         readOnly={readOnly}
-        value={value.elements}
+        value={panel.elements}
         onChange={(newValue, removedElement) => {
-          onChange({ ...value, elements: newValue }, removedElement)
+          onChange({ ...panel, elements: newValue }, removedElement)
         }}
         setSelectedElementPath={setSelectedElementPath}
         selectedElementPath={selectedElementPath}

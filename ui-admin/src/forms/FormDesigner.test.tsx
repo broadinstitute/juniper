@@ -30,7 +30,7 @@ const formContent: FormContent = {
 
 describe('FormDesigner', () => {
   it('renders form', () => {
-    renderWithRouter(<FormDesigner value={formContent} onChange={jest.fn()}/>)
+    renderWithRouter(<FormDesigner content={formContent} onChange={jest.fn()}/>)
 
     expect(screen.getByLabelText('test_firstName')).toBeInTheDocument()
     expect(screen.getByLabelText('test_lastName')).toBeInTheDocument()
@@ -39,7 +39,7 @@ describe('FormDesigner', () => {
   })
 
   it('shows elements based on the path', () => {
-    renderWithRouter(<FormDesigner value={formContent} onChange={jest.fn()}/>,
+    renderWithRouter(<FormDesigner content={formContent} onChange={jest.fn()}/>,
       ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0].elements[1]'])
     // we should be showing the editor for the second question
     expect(screen.getByText('Last name')).toBeInTheDocument()
@@ -49,7 +49,7 @@ describe('FormDesigner', () => {
 
   it('adds questions after a current question', async () => {
     const updateValue = jest.fn()
-    const { RoutedComponent, router } = setupRouterTest(<FormDesigner value={formContent} onChange={updateValue}/>,
+    const { RoutedComponent, router } = setupRouterTest(<FormDesigner content={formContent} onChange={updateValue}/>,
       ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0].elements[1]'])
     render(RoutedComponent)
     // we should be showing the editor for the second question
@@ -81,7 +81,7 @@ describe('FormDesigner', () => {
 
   it('adds questions to the end of a page', async () => {
     const updateValue = jest.fn()
-    const { RoutedComponent, router } = setupRouterTest(<FormDesigner value={formContent} onChange={updateValue}/>,
+    const { RoutedComponent, router } = setupRouterTest(<FormDesigner content={formContent} onChange={updateValue}/>,
       ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0]'])
     render(RoutedComponent)
     // we should be showing the page 1 summary

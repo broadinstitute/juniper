@@ -10,6 +10,7 @@ import { FormPreview } from './FormPreview'
 import { validateFormContent } from './formContentValidation'
 import ErrorBoundary from 'util/ErrorBoundary'
 import { isEmpty } from 'lodash'
+import useStateCallback from '../util/useStateCallback'
 
 type FormContentEditorProps = {
   initialContent: string
@@ -26,7 +27,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [tabsEnabled, setTabsEnabled] = useState(true)
 
-  const [editedContent, setEditedContent] = useState(() => JSON.parse(initialContent) as FormContent)
+  const [editedContent, setEditedContent] = useStateCallback(() => JSON.parse(initialContent) as FormContent)
 
   return (
     <div className="FormContentEditor d-flex flex-column flex-grow-1">
@@ -45,9 +46,9 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           <ErrorBoundary>
             <FormDesigner
               readOnly={readOnly}
-              value={editedContent}
-              onChange={newContent => {
-                setEditedContent(newContent)
+              content={editedContent}
+              onChange={(newContent, callback?: () => void) => {
+                setEditedContent(newContent, callback)
                 try {
                   const errors = validateFormContent(newContent)
                   onChange(errors, newContent)
