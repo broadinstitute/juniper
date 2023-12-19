@@ -16,7 +16,7 @@ const contacts: MailingListContact[] = [{
   id: 'id2',
   name: 'person2',
   email: 'fake2@test.com',
-  createdAt: 0
+  createdAt: 1
 }]
 
 test('renders a mailing list', async () => {
@@ -72,4 +72,21 @@ test('delete button shows confirmation', async () => {
   await userEvent.click(selectAll)
   await userEvent.click(screen.getByText('Remove'))
   expect(screen.getByText('This operation CANNOT BE UNDONE.')).toBeInTheDocument()
+})
+
+test('sorts by join date by default', async () => {
+  jest.spyOn(Api, 'fetchMailingList').mockImplementation(() => Promise.resolve(contacts))
+  const portalContext = mockPortalContext()
+  const portalEnv = portalContext.portal.portalEnvironments[0]
+  const { RoutedComponent } =
+      setupRouterTest(<MailingListView portalContext={portalContext} portalEnv={portalEnv}/>)
+  render(RoutedComponent)
+  await waitFor(() => {
+    expect(screen.getByText('person1')).toBeInTheDocument()
+  })
+
+  const joined = screen.getByText('Joined')
+
+  // "Joined" text is two parents away from the <th> element
+  expect(joined.parentElement?.parentElement?.getAttribute("aria-sort")).toBe("descending");
 })
