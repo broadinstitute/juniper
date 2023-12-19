@@ -29,4 +29,8 @@ public class PortalDashboardConfigService extends CrudService<ParticipantDashboa
         return dao.update(participantDashboardAlert);
     }
 
+    public void deleteAlertsByPortalEnvId(UUID portalEnvId) {
+        dao.deleteByPortalEnvironmentId(portalEnvId);
+    }
+
 }

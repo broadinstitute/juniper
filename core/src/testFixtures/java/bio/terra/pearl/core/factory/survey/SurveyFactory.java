@@ -3,6 +3,7 @@ package bio.terra.pearl.core.factory.survey;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyType;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -24,6 +25,7 @@ public class SurveyFactory {
         return Survey.builder().version(1)
                 .stableId(testName + "_" + randString)
                 .content("{\"pages\":[]}")
+                .surveyType(SurveyType.RESEARCH)
                 .name("Name " + randString + " survey");
     }
 

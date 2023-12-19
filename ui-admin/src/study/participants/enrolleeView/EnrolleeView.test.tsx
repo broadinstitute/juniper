@@ -20,10 +20,28 @@ test('renders survey links for configured surveys', async () => {
   expect(surveyLink.querySelector('span')).toBeNull()
 })
 
-test('renders survey taken badges', async () => {
+test('renders survey task no response badge', async () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()
+  enrollee.participantTasks
+    .push(taskForForm(studyEnvContext.currentEnv.configuredSurveys[0].survey, enrollee.id, 'SURVEY'))
+
+  const { RoutedComponent } = setupRouterTest(
+    <LoadedEnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={jest.fn()}/>)
+  render(RoutedComponent)
+  const surveyLinkContainer = screen.getByText('Survey number one').parentElement as HTMLElement
+  // should show a badge
+  expect(within(surveyLinkContainer).getByTitle('No response')).toBeInTheDocument()
+})
+
+test('renders survey task viewed badge', async () => {
+  jest.spyOn(window, 'alert').mockImplementation(jest.fn())
+  const studyEnvContext = mockStudyEnvContext()
+  const enrollee = mockEnrollee()
+  enrollee.participantTasks
+    .push(taskForForm(studyEnvContext.currentEnv.configuredSurveys[0].survey, enrollee.id, 'SURVEY'))
+
   enrollee.surveyResponses.push({
     surveyId: studyEnvContext.currentEnv.configuredSurveys[0].surveyId,
     resumeData: '',
@@ -31,16 +49,13 @@ test('renders survey taken badges', async () => {
     complete: false,
     enrolleeId: enrollee.id
   })
-  enrollee.participantTasks
-    .push(taskForForm(studyEnvContext.currentEnv.configuredSurveys[0].survey, enrollee.id, false))
 
   const { RoutedComponent } = setupRouterTest(
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <LoadedEnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {}}/>)
+    <LoadedEnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={jest.fn()}/>)
   render(RoutedComponent)
   const surveyLinkContainer = screen.getByText('Survey number one').parentElement as HTMLElement
   // should show a badge
-  expect(within(surveyLinkContainer).getByTitle('In Progress')).toBeInTheDocument()
+  expect(within(surveyLinkContainer).getByTitle('Viewed')).toBeInTheDocument()
 })
 
 
@@ -71,7 +86,7 @@ test('renders consent taken badges', async () => {
     enrolleeId: enrollee.id
   })
   enrollee.participantTasks
-    .push(taskForForm(studyEnvContext.currentEnv.configuredConsents[0].consentForm, enrollee.id, true))
+    .push(taskForForm(studyEnvContext.currentEnv.configuredConsents[0].consentForm, enrollee.id, 'SURVEY'))
 
   const { RoutedComponent } = setupRouterTest(
     // eslint-disable-next-line @typescript-eslint/no-empty-function

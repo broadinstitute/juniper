@@ -1,0 +1,25 @@
+{
+  "name": "Foobar study",
+  "stableId": "hh_outsideAdvert",
+  "version": 1,
+  "blurb": "Check out this study from our friend",
+  "surveyType": "OUTREACH",
+  "jsonContent":
+  {
+    "logoPosition": "right",
+    "showQuestionNumbers": "off",
+    "showNavigationButtons": false,
+    "pages": [
+      {
+        "name": "page1",
+        "elements": [
+          {
+            "type": "html",
+            "name": "consentPage1",
+            "html": "<h3>NEW FOOBAR STUDY</h3> <p>Join by clicking the link below.</p> <a href=\"https://www.google.com\">https://www.google.com</a>"
+          }
+        ]
+      }
+    ]
+  }
+}
