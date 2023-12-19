@@ -2,7 +2,7 @@
 # Juniper
 
 ## Overview
-Arbor is intended to allow the collection and management of 3 distinct data types in the context of a research study: survey, genomic, and medical records.
+Juniper is intended to allow the collection and management of 3 distinct data types in the context of a research study: survey, genomic, and medical records.
 Pre-registration screeners, registration, consent forms, surveys, genomic kit testing, and medical records retrieval can all be configured from inside the admin interface.
 the participant-facing portal then displays a home page and the configured content to study participants
 
@@ -38,7 +38,7 @@ DTOs, and populate services.  the PopulateCliApp can be used to populate specifi
 ### Prerequisites
 * Java 17
 * IntelliJ
-* Node v16+
+* Node v20+ (v20.10.0 tested)
 * Docker
 * Homebrew 4+
 
@@ -50,7 +50,7 @@ This will start a Postgres container with a schema and database user configured.
 local development environment and the unit/integration tests.
 
 #### IDE Setup
-In IntelliJ, File -> New -> Protject from Existing Sources.  When importing the project, make sure it's set as a gradle project  
+In IntelliJ, File -> New -> Project from Existing Sources.  When importing the project, make sure it's set as a gradle project  
 ![image](https://github.com/broadinstitute/juniper/assets/2800795/dd2cf363-f761-47bc-9620-28e47a20feff)
 
 
@@ -58,14 +58,18 @@ In IntelliJ, File -> New -> Protject from Existing Sources.  When importing the 
 
    * Make sure IntelliJ is set to Java 17 in *two* places
       * Project Structure > Project Settings > Project > SDK
-      * Preferences > Build, Execution, Deployment > Build Tools > Gradle > Gradle Projects > \[this project\] > Gradle JVM
+      * Settings > Build, Execution, Deployment > Build Tools > Gradle > Gradle Projects > \[this project\] > Gradle JVM
          * Recommended setting for this is "Project SDK"
-   * In Preferences > Build, Execution, Deployment > Compiler > Annotation Processors, make sure annotation processing is enabled (otherwise lombok getters/setters won't work)
-   * Create two Spring Boot Run/Debug Configurations (Run > Edit Configurations > + > Spring Boot)
+   * If using `nvm` to manage Node versions, make sure the correct version is set in Intellij to match your terminal 
+     * Set the default Node used by the editor at Settings > Languages & Frameworks > Typescript > Node Interpreter 
+     * If you wish to run tests within the IDE, you will also need to edit the Node used by the Jest configuration
+       * Run > Edit Configurations... > Edit Configuration templates (bottom left) > Jest > Node Interpreter
+   * In Settings > Build, Execution, Deployment > Compiler > Annotation Processors, make sure annotation processing is enabled (otherwise lombok getters/setters won't work)
+   * Create two Spring Boot Run/Debug Configurations (Run > Edit Configurations > + > Spring Boot). These might already exist when you clone the repository.
      * ApiAdminApp (in api-admin module)
        * Set the Active profiles field to: `human-readable-logging, development`
        * Disable launch optimization by clicking `Modify options > Disable launch optimization`
-       * Render environment variables with `bash ./local-dev/render_environment_vars.sh ApiAdminApp <YOUR_EMAIL>`
+       * Render environment variables with `bash ./local-dev/render_environment_vars.sh ApiAdminApp <YOUR_EMAIL>`. 
          * The output should be a semicolon-separated list of environment variables.
          * Copy this output into the "Environment variables" field of the run configuration. (Click `Modify options > Environment variables` if this is not visible)
        * Your final Run Configuration should look similar to this:
@@ -94,9 +98,16 @@ from the root project directory, run
 ```
 
 ##### Admin UI (ui-admin module)
-From the command line:
+
+On OSX, you will need to install prerequisites:
+
   ```
+  brew install pkg-config cairo pango libpng jpeg giflib librsvg pixman
   npm install
+  ```
+
+Then, you are ready to run the UI:
+  ```
   npm -w ui-core run build
   HTTPS=true npm -w ui-admin start
   ```
@@ -109,14 +120,21 @@ In IntelliJ, you can either run ApiParticipantApp directly (use the Run menu to 
 In basic development mode, this will only serve the API, not the frontend assets.
 
 ##### Participant UI (ui-participant module)
-* Participant UI:  From the command line:
+
+Similar to the Admin UI, you will need to first install prerequisites if not done so already:
+
   ```
+  brew install pkg-config cairo pango libpng jpeg giflib librsvg pixman
   npm install
+  ```
+
+Then, you are ready to run the UI:
+
+  ```
   npm -w ui-core run build
   HTTPS=true npm -w ui-participant start
   ```
-If you encounter an error like "No package 'pixman-1' found" on npm install, you may need additional dependencies.
-If on OS X, try running `brew install pkg-config cairo pango libpng jpeg giflib librsvg pixman`
+
 (note that you can just run `npm -w ui-participant start` if you don't need to test B2C login functionality)
 Then go to `sandbox.ourhealth.localhost:3001`
 (Notice how you need the environment name and portal name as subdomains)
