@@ -103,6 +103,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
         }
     }
 
+    /** add and remove appropriate fields for the given status (i.e. sent and received dates) */
     private PepperKit addFieldsForStatus(PepperKit pepperKit, KitRequest kitRequest) {
         PepperKitStatus status = PepperKitStatus.fromCurrentStatus(pepperKit.getCurrentStatus());
         if (!List.of(PepperKitStatus.SENT, PepperKitStatus.RECEIVED).contains(status)) {

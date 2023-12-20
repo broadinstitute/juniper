@@ -125,8 +125,8 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
     }
 
     /**
-     * Load enrollee tasks, profile and kit requests
-     * (See loadForAdminView description for performance information
+     * Load enrollee tasks, profile, and kit requests
+     * (See loadForAdminView description for performance information)
      */
     public Enrollee loadEnrolleeDetails(Enrollee enrollee) {
         enrollee.getParticipantTasks().addAll(participantTaskDao.findByEnrolleeId(enrollee.getId()));

@@ -78,12 +78,11 @@ export type Profile = {
 export type KitRequest = {
   id: string,
   createdAt: number,
-  enrollee?: Enrollee,
   kitType: KitType,
-  sentToAddress: string,
+  sentToAddress?: string,
   status: string,
-  sentAt: number,
-  receivedAt: number
+  sentAt?: number,
+  receivedAt?: number
 }
 
 export type KitType = {

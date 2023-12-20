@@ -1,6 +1,8 @@
 import {
   Enrollee,
   HubResponse,
+  KitRequest,
+  KitType,
   ParticipantTask,
   ParticipantTaskStatus,
   ParticipantTaskType,
@@ -63,6 +65,30 @@ export const mockParticipantTask = (taskType: ParticipantTaskType, status: Parti
     taskType,
     taskOrder: 0,
     blocksHub: true
+  }
+}
+
+/** mock a kit request */
+export const mockKitRequest = (kitStatus: string, kitType: string): KitRequest => {
+  const now = new Date().getTime() * 1000
+  return {
+    id: 'kitRequest1',
+    kitType: mockKitType(kitType),
+    createdAt: now,
+    status: kitStatus,
+    sentToAddress: '123 Main St',
+    ...(['SENT', 'RECEIVED'].includes(kitStatus) && { sentAt: now }),
+    ...(['RECEIVED'].includes(kitStatus) && { receivedAt: now })
+  }
+}
+
+/** mock a kit type */
+export const mockKitType = (kitType: string): KitType => {
+  return {
+    id: 'kitType1',
+    name: kitType,
+    displayName: (kitType == 'SALIVA' ? 'Saliva' : 'Blood'),
+    description: `${kitType}  kit`
   }
 }
 

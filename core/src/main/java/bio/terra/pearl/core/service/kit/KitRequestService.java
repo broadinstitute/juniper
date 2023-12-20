@@ -284,9 +284,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             kitRequest.setExternalKitFetchedAt(pepperStatusFetchedAt);
             KitRequestStatus status = PepperKitStatus.mapToKitRequestStatus(pepperKit.getCurrentStatus());
             kitRequest.setStatus(status);
-            // collect this information regardless of status
-            kitRequest.setSentAt(parsePepperDateTime(pepperKit.getLabelDate()));
-            kitRequest.setReceivedAt(parsePepperDateTime(pepperKit.getReceiveDate()));
+            setKitDates(kitRequest, pepperKit);
             dao.update(kitRequest);
         } catch (JsonProcessingException e) {
             log.error("Unable to serialize status JSON for kit %s: %s".formatted(kitRequest.getId(), pepperKit.toString()), e);
@@ -296,6 +294,16 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             notifyKitStatusChange(kitRequest, priorStatus);
         } catch (Exception e) {
             log.error("Error publishing kit status event for KitRequest enrollee %s".formatted(kitRequest.getEnrolleeId()), e);
+        }
+    }
+
+    protected void setKitDates(KitRequest kitRequest, PepperKit pepperKit) {
+        try {
+            // collect this information regardless of status
+            kitRequest.setSentAt(parsePepperDateTime(pepperKit.getLabelDate()));
+            kitRequest.setReceivedAt(parsePepperDateTime(pepperKit.getReceiveDate()));
+        } catch (Exception e) {
+            log.error("Error parsing PepperKit date for kit %s: %s".formatted(kitRequest.getId(), pepperKit.toString()), e);
         }
     }
 
@@ -316,11 +324,14 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         eventService.publishKitStatusEvent(kitRequest, enrollee, ppUser, priorStatus);
     }
 
+    /**
+     * Parse a Pepper date-time string into an Instant. Returns null if the date string is null or empty.
+     * @throws java.time.format.DateTimeParseException if the string is not a valid date-time
+     */
     protected Instant parsePepperDateTime(String dateTimeString) {
         if (dateTimeString == null || dateTimeString.isEmpty()) {
             return null;
         }
-        //TODO will this work for all Pepper date formats? -DC
         return Instant.parse(dateTimeString);
     }
 
