@@ -96,7 +96,7 @@ describe('CreateSurveyModal', () => {
     expect(Api.createNewSurvey).toHaveBeenCalledWith(studyEnvContext.portal.shortcode,
       {
         blurb: 'Testing out the marketing blurb...',
-        content: '{"pages":[{"elements":[{"type":"html","name":"outreach_content"}]}]}',
+        content: expect.stringContaining('{"pages":[{"elements":[{"type":"html","name":"outreach_content_'),
         createdAt: 0,
         id: '',
         lastUpdatedAt: 0,
