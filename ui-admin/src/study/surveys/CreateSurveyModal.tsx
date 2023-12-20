@@ -29,9 +29,10 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
   // outreach defaults to a template with an HTML question. Users can edit that
   // HTML from the survey editor. Alternatively, we could allow them to design the
   // content within this modal and insert the content into the survey on their behalf.
+  const randomSuffix = Math.random().toString(36).substring(2, 15)
   const defaultTemplateJson = type === 'RESEARCH' || isOutreachScreener ?
     '{"pages":[]}' :
-    '{"pages":[{"elements":[{"type":"html","name":"outreach_content"}]}]}'
+    `{"pages":[{"elements":[{"type":"html","name":"outreach_content_${randomSuffix}"}]}]}`
 
   const createSurvey = async () => {
     doApiLoad(async () => {
@@ -102,7 +103,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
               icon={faUsersViewfinder}
               title="Screener"
               description="Screener opportunities allow you to send a questionnaire to your participants
-              so you can follow up and engage with qualified participants."
+              so you can follow up with qualified participants."
               onSelect={() => setIsOutreachScreener(true)}
               isSelected={isOutreachScreener}
             />
