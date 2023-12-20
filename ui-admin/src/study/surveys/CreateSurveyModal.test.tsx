@@ -51,6 +51,99 @@ describe('CreateSurveyModal', () => {
     expect(surveyStableIdInput).toHaveValue('testSurvey')
   })
 
+  test('outreach surveys should present a blurb input', async () => {
+    const user = userEvent.setup()
+    const studyEnvContext = mockStudyEnvContext()
+    const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
+      studyEnvContext={studyEnvContext} type={'OUTREACH'}
+      onDismiss={jest.fn()}/>)
+    render(RoutedComponent)
+
+    const surveyNameInput = screen.getByLabelText('Name')
+    const surveyStableIdInput = screen.getByLabelText('Stable ID')
+    const outreachBlurbInput = screen.getByLabelText('Blurb')
+    await user.type(surveyNameInput, 'Test Survey')
+    await user.type(surveyStableIdInput, 'test_survey_id')
+    await user.type(outreachBlurbInput, 'Test Blurb')
+
+    const createButton = screen.getByText('Create')
+    expect(createButton).toBeEnabled()
+  })
+
+  test('outreach surveys should allow creating marketing types', async () => {
+    jest.spyOn(window, 'alert').mockImplementation(jest.fn())
+    const user = userEvent.setup()
+    const studyEnvContext = mockStudyEnvContext()
+    const survey = mockSurvey()
+    jest.spyOn(Api, 'createNewSurvey').mockImplementation(() => Promise.resolve(survey))
+    jest.spyOn(Api, 'createConfiguredSurvey').mockImplementation(() => Promise.resolve(mockConfiguredSurvey()))
+    const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
+      studyEnvContext={studyEnvContext} type={'OUTREACH'}
+      onDismiss={jest.fn()}/>)
+    render(RoutedComponent)
+
+    const surveyNameInput = screen.getByLabelText('Name')
+    const outreachBlurbInput = screen.getByLabelText('Blurb')
+    const marketingCheckbox = screen.getByText('Marketing')
+    await user.type(surveyNameInput, 'Test Marketing')
+    await user.type(outreachBlurbInput, 'Testing out the marketing blurb...')
+    await user.click(marketingCheckbox)
+
+    const createButton = screen.getByText('Create')
+    expect(createButton).toBeEnabled()
+
+    await user.click(createButton)
+    expect(Api.createNewSurvey).toHaveBeenCalledWith(studyEnvContext.portal.shortcode,
+      {
+        blurb: 'Testing out the marketing blurb...',
+        content: expect.stringContaining('{"pages":[{"elements":[{"type":"html","name":"outreach_content_'),
+        createdAt: 0,
+        id: '',
+        lastUpdatedAt: 0,
+        name: 'Test Marketing',
+        stableId: 'testMarketing',
+        surveyType: 'OUTREACH',
+        version: 1
+      })
+  })
+
+  test('outreach surveys should allow creating screener types', async () => {
+    jest.spyOn(window, 'alert').mockImplementation(jest.fn())
+    const user = userEvent.setup()
+    const studyEnvContext = mockStudyEnvContext()
+    const survey = mockSurvey()
+    jest.spyOn(Api, 'createNewSurvey').mockImplementation(() => Promise.resolve(survey))
+    jest.spyOn(Api, 'createConfiguredSurvey').mockImplementation(() => Promise.resolve(mockConfiguredSurvey()))
+    const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
+      studyEnvContext={studyEnvContext} type={'OUTREACH'}
+      onDismiss={jest.fn()}/>)
+    render(RoutedComponent)
+
+    const surveyNameInput = screen.getByLabelText('Name')
+    const outreachBlurbInput = screen.getByLabelText('Blurb')
+    const screenerSelect = screen.getByText('Screener')
+    await user.type(surveyNameInput, 'Test Screener')
+    await user.type(outreachBlurbInput, 'Testing out the screener blurb...')
+    await user.click(screenerSelect)
+
+    const createButton = screen.getByText('Create')
+    expect(createButton).toBeEnabled()
+
+    await user.click(createButton)
+    expect(Api.createNewSurvey).toHaveBeenCalledWith(studyEnvContext.portal.shortcode,
+      {
+        blurb: 'Testing out the screener blurb...',
+        content: '{"pages":[]}',
+        createdAt: 0,
+        id: '',
+        lastUpdatedAt: 0,
+        name: 'Test Screener',
+        stableId: 'testScreener',
+        surveyType: 'OUTREACH',
+        version: 1
+      })
+  })
+
   test('create a required survey', async () => {
     jest.spyOn(window, 'alert').mockImplementation(jest.fn())
     const survey = mockSurvey()

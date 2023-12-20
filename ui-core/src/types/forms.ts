@@ -14,6 +14,7 @@ export type SurveyType = 'RESEARCH' | 'OUTREACH'
 
 export type Survey = VersionedForm & {
   surveyType: SurveyType
+  blurb?: string
 }
 
 export type ConsentForm = VersionedForm
