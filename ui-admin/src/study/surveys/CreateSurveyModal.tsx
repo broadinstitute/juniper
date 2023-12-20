@@ -9,6 +9,9 @@ import { ApiErrorResponse, defaultApiErrorHandle, doApiLoad } from 'api/api-util
 import Api from 'api/api'
 import { useFormCreationNameFields } from './useFormCreationNameFields'
 import { SurveyType } from '@juniper/ui-core'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { IconProp } from '@fortawesome/fontawesome-svg-core'
+import { faLightbulb, faUsersViewfinder } from '@fortawesome/free-solid-svg-icons'
 
 /** renders a modal that creates a new survey in a portal and configures it to the current study env */
 const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
@@ -19,13 +22,23 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
   const navigate = useNavigate()
   const { formName, formStableId, clearFields, nameInput, stableIdInput } = useFormCreationNameFields()
   const [formRequired, setFormRequired] = useState(false)
+  const [isOutreachScreener, setIsOutreachScreener] = useState(false)
+  const [surveyBlurb, setSurveyBlurb] = useState<string>()
+
+  //Screeners and research surveys default to an empty form, but marketing
+  // outreach defaults to a template with an HTML question. Users can edit that
+  // HTML from the survey editor. Alternatively, we could allow them to design the
+  // content within this modal and insert the content into the survey on their behalf.
+  const defaultTemplateJson = type === 'RESEARCH' || isOutreachScreener ?
+    '{"pages":[]}' :
+    '{"pages":[{"elements":[{"type":"html","name":"outreach_content"}]}]}'
 
   const createSurvey = async () => {
     doApiLoad(async () => {
       const createdSurvey = await Api.createNewSurvey(studyEnvContext.portal.shortcode,
         {
-          createdAt: 0, id: '', lastUpdatedAt: 0, version: 1, surveyType: type,
-          content: '{"pages":[]}', name: formName, stableId: formStableId
+          createdAt: 0, id: '', lastUpdatedAt: 0, version: 1, surveyType: type, blurb: surveyBlurb,
+          content: defaultTemplateJson, name: formName, stableId: formStableId
         })
       try {
         await Api.createConfiguredSurvey(studyEnvContext.portal.shortcode,
@@ -56,7 +69,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
     }, { setIsLoading })
   }
 
-  return <Modal show={true} onHide={onDismiss}>
+  return <Modal show={true} onHide={onDismiss} className={type === 'OUTREACH' ? 'modal-lg' : 'modal'}>
     <Modal.Header closeButton>
       <Modal.Title>Create New {type === 'RESEARCH' ? 'Research Survey' : 'Outreach'}</Modal.Title>
       <div className="ms-4">
@@ -75,6 +88,33 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
           <input type="checkbox" className="form-check-input" id="formRequired"
             checked={formRequired} onChange={event => setFormRequired(event.target.checked)}/>
         </div>}
+        { type === 'OUTREACH' && <>
+          <label className="form-label mt-3">Outreach Type</label>
+          <div className="row">
+            <CardButton
+              icon={faLightbulb}
+              title="Marketing"
+              description="Marketing opportunities allow you to display messages in the participant dashboard."
+              onSelect={() => setIsOutreachScreener(false)}
+              isSelected={!isOutreachScreener}
+            />
+            <CardButton
+              icon={faUsersViewfinder}
+              title="Screener"
+              description="Screener opportunities allow you to send a questionnaire to your participants
+              so you can follow up and engage with qualified participants."
+              onSelect={() => setIsOutreachScreener(true)}
+              isSelected={isOutreachScreener}
+            />
+          </div>
+          <div className="form-group mt-3">
+            <label className="form-label" htmlFor="outreachBlurb">Blurb</label>
+            <InfoPopup content={'A brief description of your outreach. ' +
+                  'This will be displayed in the participant dashboard.'}/>
+            <textarea className="form-control" id="outreachBlurb" rows={5} value={surveyBlurb}
+              onChange={event => setSurveyBlurb(event.target.value)}/>
+          </div>
+        </>}
       </form>
     </Modal.Body>
     <Modal.Footer>
@@ -91,6 +131,25 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
       </LoadingSpinner>
     </Modal.Footer>
   </Modal>
+}
+
+/**
+ * Returns a selectable card that acts as a button
+ */
+export const CardButton = ({ icon, title, description, isSelected, onSelect }: {
+  icon: IconProp, title: string, description: string, isSelected: boolean, onSelect: () => void
+}) => {
+  return (
+    <div className="card col mx-3"  style={{ backgroundColor: isSelected ? '#e9ecef' : 'white' }}
+      role="button" onClick={onSelect}>
+      <div className="card-body">
+        <h5 className="card-title"><FontAwesomeIcon icon={icon} /> {title}</h5>
+        <p className="card-text text-muted">
+          <span>{description}</span>
+        </p>
+      </div>
+    </div>
+  )
 }
 
 export default CreateSurveyModal
