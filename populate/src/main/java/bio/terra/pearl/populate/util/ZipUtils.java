@@ -1,15 +1,13 @@
-package bio.terra.pearl.api.admin.service;
+package bio.terra.pearl.populate.util;
 
 import java.io.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import org.springframework.web.multipart.MultipartFile;
 
 /** adapted from https://www.baeldung.com/java-compress-and-uncompress */
 public class ZipUtils {
-  public static void unzipFile(File destDir, MultipartFile file) throws IOException {
+  public static void unzipFile(File destDir, ZipInputStream zis) throws IOException {
     byte[] buffer = new byte[1024];
-    ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(file.getBytes()));
     ZipEntry zipEntry = zis.getNextEntry();
     while (zipEntry != null) {
       File newFile = newFile(destDir, zipEntry);

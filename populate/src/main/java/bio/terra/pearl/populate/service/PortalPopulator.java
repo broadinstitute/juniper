@@ -20,9 +20,19 @@ import bio.terra.pearl.populate.dto.PortalPopDto;
 import bio.terra.pearl.populate.dto.site.SiteImagePopDto;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.Set;
+import java.util.zip.ZipInputStream;
+
+import bio.terra.pearl.populate.util.ZipUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -201,5 +211,19 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         for (SiteImagePopDto imagePopDto : popDto.getSiteImageDtos()) {
             siteImagePopulator.populateFromDto(imagePopDto, portalPopContext, overwrite);
         }
+    }
+
+    public Portal populateFromZipFile(ZipInputStream zipInputStream, boolean overwrite) throws IOException {
+        String folderName =
+                "portal_%s_%s"
+                        .formatted(
+                                ZonedDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE),
+                                RandomStringUtils.randomAlphabetic(5));
+        String tempDirName = FilePopulateService.TMP_POPULATE_DIR + "/" + folderName;
+        File tempDir = new File(tempDirName);
+        tempDir.mkdirs();
+        ZipUtils.unzipFile(tempDir, zipInputStream);
+        return populate(
+                new FilePopulateContext(folderName + "/portal.json", true), overwrite);
     }
 }

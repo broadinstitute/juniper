@@ -46,7 +46,7 @@ public class FilePopulateService {
         if (relativePath.contains("..") || context.getBasePath().contains("..")) {
             throw new IllegalArgumentException("'..' is not permitted in paths to be read");
         }
-        if (isPopulateFromClasspath) {
+        if (isPopulateFromClasspath && !context.isFromTempDir()) {
             ClassPathResource cpr = new ClassPathResource(SEED_ROOT + context.getBasePath() + "/" + relativePath);
             return cpr.getInputStream();
         }

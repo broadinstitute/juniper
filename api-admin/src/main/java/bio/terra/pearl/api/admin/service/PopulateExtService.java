@@ -12,14 +12,11 @@ import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
 import bio.terra.pearl.populate.service.extract.PortalExtractService;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.commons.lang3.RandomStringUtils;
+import java.util.zip.ZipInputStream;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -75,19 +72,10 @@ public class PopulateExtService {
   public Portal populatePortal(MultipartFile zipFile, AdminUser user, boolean overwrite) {
     authorizeUser(user);
     try {
-      String folderName =
-          "portal_%s_%s"
-              .formatted(
-                  ZonedDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE),
-                  RandomStringUtils.randomAlphabetic(5));
-      String tempDirName = FilePopulateService.TMP_POPULATE_DIR + "/" + folderName;
-      File tempDir = new File(tempDirName);
-      tempDir.mkdirs();
-      ZipUtils.unzipFile(tempDir, zipFile);
-      return portalPopulator.populate(
-          new FilePopulateContext(folderName + "/portal.json", true), overwrite);
+      ZipInputStream zis = new ZipInputStream(zipFile.getInputStream());
+      return portalPopulator.populateFromZipFile(zis, overwrite);
     } catch (IOException e) {
-      throw new IllegalArgumentException("populate failed", e);
+      throw new IllegalArgumentException("error reading/writing zip file", e);
     }
   }
 
