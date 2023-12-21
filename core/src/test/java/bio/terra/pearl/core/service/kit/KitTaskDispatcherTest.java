@@ -36,13 +36,8 @@ class KitTaskDispatcherTest extends BaseSpringBootTest {
         String testName = getTestName(testInfo);
         EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
 
-        UUID kitRequestId = UUID.randomUUID();
-        KitRequest kitRequest = KitRequest.builder()
-                .id(kitRequestId)
-                .status(KitRequestStatus.SENT)
-                .enrolleeId(enrolleeBundle.enrollee().getId())
-                .build();
-
+        KitRequest kitRequest = buildKitRequest(enrolleeBundle);
+        UUID kitRequestId = kitRequest.getId();
         when(mockTaskService.findByKitRequestId(kitRequestId)).thenReturn(Optional.empty());
 
         when(mockTaskService.create(any(ParticipantTask.class))).thenAnswer(invocation -> {
@@ -69,15 +64,9 @@ class KitTaskDispatcherTest extends BaseSpringBootTest {
         String testName = getTestName(testInfo);
         EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
 
-        UUID kitRequestId = UUID.randomUUID();
-        KitRequest kitRequest = KitRequest.builder()
-                .id(kitRequestId)
-                .status(KitRequestStatus.SENT)
-                .enrolleeId(enrolleeBundle.enrollee().getId())
-                .build();
-
-        KitTaskDispatcher taskDispatcher = new KitTaskDispatcher(mockTaskService);
-        ParticipantTask participantTask = taskDispatcher.buildTask(enrolleeBundle.enrollee(), kitRequest,
+        KitRequest kitRequest = buildKitRequest(enrolleeBundle);
+        UUID kitRequestId = kitRequest.getId();
+        ParticipantTask participantTask = KitTaskDispatcher.buildTask(enrolleeBundle.enrollee(), kitRequest,
                 enrolleeBundle.portalParticipantUser().getId());
         when(mockTaskService.findByKitRequestId(kitRequestId)).thenReturn(Optional.of(participantTask));
 
@@ -95,8 +84,48 @@ class KitTaskDispatcherTest extends BaseSpringBootTest {
                 .kitRequest(kitRequest)
                 .portalParticipantUser(enrolleeBundle.portalParticipantUser()).build();
 
+        KitTaskDispatcher taskDispatcher = new KitTaskDispatcher(mockTaskService);
         taskDispatcher.handleEvent(kitEvent);
         verify(mockTaskService).update(any(ParticipantTask.class));
+    }
+
+    @Test
+    @Transactional
+    void testKitSentEventHandlerWithReset(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
+
+        KitRequest kitRequest = buildKitRequest(enrolleeBundle);
+        UUID kitRequestId = kitRequest.getId();
+        ParticipantTask participantTask = KitTaskDispatcher.buildTask(enrolleeBundle.enrollee(), kitRequest,
+                enrolleeBundle.portalParticipantUser().getId());
+        when(mockTaskService.findByKitRequestId(kitRequestId)).thenReturn(Optional.of(participantTask));
+
+        when(mockTaskService.update(any(ParticipantTask.class))).thenAnswer(invocation -> {
+            ParticipantTask task = (ParticipantTask) invocation.getArguments()[0];
+            assertThat(task.getStatus(), equalTo(TaskStatus.NEW));
+            verifyTask(task, enrolleeBundle, kitRequestId);
+            return null;
+        });
+
+        KitSentEvent kitEvent = KitSentEvent.builder()
+                .enrollee(enrolleeBundle.enrollee())
+                .priorStatus(KitRequestStatus.CREATED)
+                .kitRequest(kitRequest)
+                .portalParticipantUser(enrolleeBundle.portalParticipantUser()).build();
+
+        KitTaskDispatcher taskDispatcher = new KitTaskDispatcher(mockTaskService);
+        taskDispatcher.handleEvent(kitEvent);
+        verify(mockTaskService).update(any(ParticipantTask.class));
+    }
+
+    private KitRequest buildKitRequest(EnrolleeFactory.EnrolleeBundle enrolleeBundle) {
+        UUID kitRequestId = UUID.randomUUID();
+        return KitRequest.builder()
+                .id(kitRequestId)
+                .status(KitRequestStatus.SENT)
+                .enrolleeId(enrolleeBundle.enrollee().getId())
+                .build();
     }
 
     private void verifyTask(ParticipantTask task, EnrolleeFactory.EnrolleeBundle enrolleeBundle, UUID kitRequestId) {

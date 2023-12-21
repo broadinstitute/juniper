@@ -29,14 +29,15 @@ public class KitTaskDispatcher {
     @Order(DispatcherOrder.KIT_TASK)
     public void handleEvent(KitSentEvent kitSentEvent) {
         Enrollee enrollee = kitSentEvent.getEnrollee();
+        UUID portalParticipantUserId = kitSentEvent.getPortalParticipantUser().getId();
         KitRequest kitRequest = kitSentEvent.getKitRequest();
-        if (participantTaskService.findByKitRequestId(kitRequest.getId()).isPresent()) {
-            log.error("Kit task already exists for enrollee {} kit request {}",
-                    enrollee.getShortcode(), kitSentEvent.getKitRequest().getId());
+        Optional<ParticipantTask> task = participantTaskService.findByKitRequestId(kitRequest.getId());
+        if (task.isPresent()) {
+            resetTask(task.get(), enrollee, portalParticipantUserId);
             return;
         }
 
-        participantTaskService.create(buildTask(enrollee, kitRequest, kitSentEvent.getPortalParticipantUser().getId()));
+        participantTaskService.create(buildTask(enrollee, kitRequest, portalParticipantUserId));
         log.info("Created kit task for enrollee {} with kit request {}",
                 enrollee.getShortcode(), kitRequest.getId());
     }
@@ -58,7 +59,7 @@ public class KitTaskDispatcher {
         participantTaskService.update(participantTask);
     }
 
-    protected ParticipantTask buildTask(Enrollee enrollee, KitRequest kitRequest, UUID portalParticipantUserId) {
+    protected static ParticipantTask buildTask(Enrollee enrollee, KitRequest kitRequest, UUID portalParticipantUserId) {
         return ParticipantTask.builder()
                 .enrolleeId(enrollee.getId())
                 .portalParticipantUserId(portalParticipantUserId)
@@ -70,5 +71,29 @@ public class KitTaskDispatcher {
                 .status(TaskStatus.NEW)
                 .kitRequestId(kitRequest.getId())
                 .build();
+    }
+
+    /**
+     * There may be cases where an existing kit request tasks get reused. For example, if after shipping
+     * a kit request is deactivated (perhaps by mistake) and then reactivated. (Also, the current sandbox
+     * behavior may trigger multiple sent events for a single kit request.)
+     * This method will verify the kit request data that should not change, log an error if it does, but
+     * reset the task to NEW otherwise and update the DB.
+     *
+     * @param task task to reset
+     * @param enrollee enrollee associated with the event
+     * @param portalParticipantUserId portal participant user id associated with the event
+     */
+    protected void resetTask(ParticipantTask task, Enrollee enrollee, UUID portalParticipantUserId) {
+        if (!(task.getEnrolleeId().equals(enrollee.getId())
+                && task.getPortalParticipantUserId().equals(portalParticipantUserId))) {
+            log.error("Kit task already exists for enrollee {} kit request {}",
+                    enrollee.getShortcode(), task.getKitRequestId());
+            return;
+        }
+        task.setStatus(TaskStatus.NEW);
+        participantTaskService.update(task);
+        log.warn("Reset task for enrollee {} kit request {}",
+                enrollee.getShortcode(), task.getKitRequestId());
     }
 }
