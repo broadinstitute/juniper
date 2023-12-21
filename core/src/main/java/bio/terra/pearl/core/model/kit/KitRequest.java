@@ -24,6 +24,8 @@ public class KitRequest extends BaseEntity {
      */
     private String sentToAddress;
     private KitRequestStatus status;
+    private Instant sentAt;
+    private Instant receivedAt;
     /**
      * JSON blob of the request state from DSM or another sample processor, kept to make sure we capture
      * any fields that don't happen to be stored directly in our model

@@ -29,6 +29,7 @@ public class ParticipantTask extends BaseEntity {
     private UUID portalParticipantUserId;
     private UUID surveyResponseId;
     private UUID consentResponseId;
+    private UUID kitRequestId;
 }
 
 
