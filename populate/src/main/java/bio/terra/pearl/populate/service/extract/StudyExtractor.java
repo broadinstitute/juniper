@@ -7,11 +7,13 @@ import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
+import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.study.*;
 import bio.terra.pearl.core.service.study.exception.StudyEnvConfigMissing;
 import bio.terra.pearl.populate.dto.StudyEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.StudyPopDto;
 import bio.terra.pearl.populate.dto.consent.StudyEnvironmentConsentPopDto;
+import bio.terra.pearl.populate.dto.notifications.NotificationConfigPopDto;
 import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,10 +33,12 @@ public class StudyExtractor {
     private final StudyEnvironmentConfigService studyEnvironmentConfigService;
     private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     private final StudyEnvironmentConsentService studyEnvironmentConsentService;
+    private final NotificationConfigService notificationConfigService;
 
     public StudyExtractor(@Qualifier("extractionObjectMapper") ObjectMapper objectMapper, StudyService studyService,
                           PortalStudyService portalStudyService, StudyEnvironmentService studyEnvironmentService,
-                          StudyEnvironmentConfigService studyEnvironmentConfigService, StudyEnvironmentSurveyService studyEnvironmentSurveyService, StudyEnvironmentConsentService studyEnvironmentConsentService) {
+                          StudyEnvironmentConfigService studyEnvironmentConfigService, StudyEnvironmentSurveyService studyEnvironmentSurveyService,
+                          StudyEnvironmentConsentService studyEnvironmentConsentService, NotificationConfigService notificationConfigService) {
         this.studyService = studyService;
         this.portalStudyService = portalStudyService;
         this.studyEnvironmentService = studyEnvironmentService;
@@ -42,6 +46,7 @@ public class StudyExtractor {
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.objectMapper = objectMapper;
         this.studyEnvironmentConsentService = studyEnvironmentConsentService;
+        this.notificationConfigService = notificationConfigService;
         objectMapper.addMixIn(Study.class, StudyMixin.class);
         objectMapper.addMixIn(StudyEnvironment.class, StudyEnvironmentMixin.class);
     }
@@ -101,6 +106,17 @@ public class StudyExtractor {
             consentPopDto.setPopulateFileName(filename);
             studyEnvPopDto.getConfiguredConsentDtos().add(consentPopDto);
         }
+
+        List<NotificationConfig> notificationConfigs = notificationConfigService.findByStudyEnvironmentId(studyEnv.getId());
+        for (NotificationConfig config : notificationConfigs) {;
+            NotificationConfigPopDto configPopDto = new NotificationConfigPopDto();
+            BeanUtils.copyProperties(config, configPopDto, "id", "studyEnvironmentId", "portalEnvironmentId", "emailTemplateId");
+            String filename = "../../" + context.getFileNameForEntity(config.getEmailTemplateId());
+            configPopDto.setPopulateFileName(filename);
+            studyEnvPopDto.getNotificationConfigDtos().add(configPopDto);
+        }
+
+        // TODO extract dashboard configs
         return studyEnvPopDto;
     }
 

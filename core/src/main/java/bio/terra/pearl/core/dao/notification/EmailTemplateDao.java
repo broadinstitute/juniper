@@ -2,6 +2,8 @@ package bio.terra.pearl.core.dao.notification;
 
 import bio.terra.pearl.core.dao.BaseVersionedJdbiDao;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.jdbi.v3.core.Jdbi;
@@ -20,6 +22,10 @@ public class EmailTemplateDao extends BaseVersionedJdbiDao<EmailTemplate> {
 
     public Optional<EmailTemplate> findByStableId(String stableId, int version) {
         return findByTwoProperties("stable_id", stableId, "version", version);
+    }
+
+    public List<EmailTemplate> findByPortalId(UUID portalId) {
+        return findAllByProperty("portal_id", portalId);
     }
 
     public void deleteByPortalId(UUID portalId) {

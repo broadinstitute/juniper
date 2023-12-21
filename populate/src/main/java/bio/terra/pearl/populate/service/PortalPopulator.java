@@ -9,7 +9,6 @@ import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.MailingListContactService;
 import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
@@ -39,6 +38,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
     private final MailingListContactService mailingListContactService;
     private final AdminUserPopulator adminUserPopulator;
     private final ConsentFormPopulator consentFormPopulator;
+    private final EmailTemplatePopulator emailTemplatePopulator;
     private final PortalDashboardConfigService portalDashboardConfigService;
 
 
@@ -51,7 +51,9 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
                            PortalDashboardConfigService portalDashboardConfigService,
                            SiteImagePopulator siteImagePopulator, SurveyPopulator surveyPopulator,
                            AdminUserPopulator adminUserPopulator,
-                           MailingListContactService mailingListContactService, ConsentFormPopulator consentFormPopulator) {
+                           MailingListContactService mailingListContactService,
+                           ConsentFormPopulator consentFormPopulator,
+                           EmailTemplatePopulator emailTemplatePopulator) {
         this.siteContentPopulator = siteContentPopulator;
         this.portalParticipantUserPopulator = portalParticipantUserPopulator;
         this.portalEnvironmentService = portalEnvironmentService;
@@ -64,6 +66,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         this.mailingListContactService = mailingListContactService;
         this.adminUserPopulator = adminUserPopulator;
         this.consentFormPopulator = consentFormPopulator;
+        this.emailTemplatePopulator = emailTemplatePopulator;
     }
 
     private void populateStudy(String studyFileName, PortalPopulateContext context, Portal portal, boolean overwrite) throws IOException {
@@ -168,6 +171,9 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         }
         for (String consentFile : popDto.getConsentFormFiles()) {
             consentFormPopulator.populate(portalPopContext.newFrom(consentFile), overwrite);
+        }
+        for (String emailTemplateFile : popDto.getEmailTemplateFiles()) {
+            emailTemplatePopulator.populate(portalPopContext.newFrom(emailTemplateFile), overwrite);
         }
         for (String siteContentFile : popDto.getSiteContentFiles()) {
             siteContentPopulator.populate(portalPopContext.newFrom(siteContentFile), overwrite);

@@ -6,6 +6,7 @@ import lombok.Getter;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -25,10 +26,12 @@ public class ExtractPopulateContext {
         portalPopDto.setName(portal.getName());
     }
 
+    /** write a file to the zip file, but only if it hasn't already been written */
     public void writeFileForEntity(String fileName, String fileContent, UUID entityId) {
         writeFileForEntity(fileName, fileContent.getBytes(), entityId);
     }
 
+    /** write a file to the zip file, but only if it hasn't already been written */
     public void writeFileForEntity(String fileName, byte[] bytes, UUID entityId) {
         if (writtenEntities.containsKey(entityId)) {
             return;
@@ -43,6 +46,27 @@ public class ExtractPopulateContext {
         }
     }
 
+    /** write multiple files to the zip file for a single entity (e.g. an email template) */
+    public void writeFilesForEntity(List<String> fileNames, List<String> fileContents, UUID entityId) {
+        if (writtenEntities.containsKey(entityId)) {
+            return;
+        }
+        if (fileNames.size() != fileContents.size()) {
+            throw new IllegalArgumentException("Error writing files for entity: " + entityId + " - fileNames and fileContents must be the same size");
+        }
+        try {
+            for (int i = 0; i < fileNames.size(); i++) {
+                zipOut.putNextEntry(new ZipEntry(fileNames.get(i)));
+                zipOut.write(fileContents.get(i).getBytes());
+                zipOut.closeEntry();
+            }
+            writtenEntities.put(entityId, fileNames.get(0));
+        } catch (IOException e) {
+            throw new RuntimeException("Error writing file for entity: " + entityId, e);
+        }
+    }
+
+    /** get the file name for an entity that has already been written */
     public String getFileNameForEntity(UUID entityId) {
         return writtenEntities.get(entityId);
     }

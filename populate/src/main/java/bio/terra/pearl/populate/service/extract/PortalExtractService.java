@@ -33,11 +33,18 @@ public class PortalExtractService {
     private final StudyExtractor studyExtractor;
     private final ImageExtractor imageExtractor;
     private final ConsentFormExtractor consentFormExtractor;
+    private final EmailTemplateExtractor emailTemplateExtractor;
     private final ObjectMapper objectMapper;
 
     public PortalExtractService(PortalService portalService,
-                                PortalEnvironmentService portalEnvironmentService, PortalEnvironmentConfigService portalEnvironmentConfigService, SurveyExtractor surveyExtractor,
-                                SiteContentExtractor siteContentExtractor, StudyExtractor studyExtractor, ImageExtractor imageExtractor, ConsentFormExtractor consentFormExtractor,
+                                PortalEnvironmentService portalEnvironmentService,
+                                PortalEnvironmentConfigService portalEnvironmentConfigService,
+                                SurveyExtractor surveyExtractor,
+                                SiteContentExtractor siteContentExtractor,
+                                StudyExtractor studyExtractor,
+                                ImageExtractor imageExtractor,
+                                ConsentFormExtractor consentFormExtractor,
+                                EmailTemplateExtractor emailTemplateExtractor,
                                 @Qualifier("extractionObjectMapper") ObjectMapper objectMapper) {
         this.portalService = portalService;
         this.portalEnvironmentService = portalEnvironmentService;
@@ -47,6 +54,7 @@ public class PortalExtractService {
         this.studyExtractor = studyExtractor;
         this.imageExtractor = imageExtractor;
         this.consentFormExtractor = consentFormExtractor;
+        this.emailTemplateExtractor = emailTemplateExtractor;
         this.objectMapper = objectMapper;
         this.objectMapper.addMixIn(Portal.class, PortalMixin.class);
     }
@@ -60,6 +68,7 @@ public class PortalExtractService {
         siteContentExtractor.writeSiteContents(portal, context);
         consentFormExtractor.writeForms(portal, context);
         surveyExtractor.writeSurveys(portal, context);
+        emailTemplateExtractor.writeEmailTemplates(portal, context);
         studyExtractor.writeStudies(portal, context);
         extractPortalEnvs(portal, context);
         writePortal(portal, context);

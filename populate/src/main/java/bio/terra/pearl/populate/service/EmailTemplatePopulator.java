@@ -13,6 +13,8 @@ import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -56,6 +58,8 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
     protected void preProcessDto(EmailTemplatePopDto popDto, PortalPopulateContext context) throws IOException  {
         String bodyContent = filePopulateService.readFile(popDto.getBodyPopulateFile(), context);
         popDto.setBody(bodyContent);
+        UUID portalId = portalService.findOneByShortcode(context.getPortalShortcode()).orElseThrow().getId();
+        popDto.setPortalId(portalId);
     }
 
     @Override
@@ -78,6 +82,7 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
         existingObj.setBody(popDto.getBody());
         existingObj.setSubject(popDto.getSubject());
         existingObj.setName(popDto.getName());
+        existingObj.setPortalId(popDto.getPortalId());
         return emailTemplatePopulateDao.update(existingObj);
     }
 
