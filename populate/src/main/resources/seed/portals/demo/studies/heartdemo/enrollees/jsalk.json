@@ -81,8 +81,8 @@
     {
       "creatingAdminUsername": "staff@heartdemo.org",
       "kitTypeName": "SALIVA",
-      "statusName": "CREATED",
-      "dsmStatusJson": {
+      "status": "CREATED",
+      "externalKitJson": {
         "kitId": "11111111-2222-3333-4444-555555555555",
         "currentStatus": "kit without label",
         "labelDate": "2023-05-24",

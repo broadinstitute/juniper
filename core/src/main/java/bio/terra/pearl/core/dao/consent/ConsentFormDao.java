@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import bio.terra.pearl.core.model.survey.Survey;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +28,16 @@ public class ConsentFormDao extends BaseVersionedJdbiDao<ConsentForm> {
 
     public List<ConsentForm> findByPortalId(UUID portalId) {
         return findAllByProperty("portal_id", portalId);
+    }
+
+    public List<ConsentForm> findByStableIdNoContent(String stableId) {
+        List<ConsentForm> forms = jdbi.withHandle(handle ->
+                handle.createQuery("select id, name, created_at, last_updated_at, version, stable_id, portal_id from consent_form where stable_id = :stableId;")
+                        .bind("stableId", stableId)
+                        .mapTo(clazz)
+                        .list()
+        );
+        return forms;
     }
 
     public int getNextVersion(String stableId) {

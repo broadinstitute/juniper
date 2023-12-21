@@ -10,7 +10,11 @@ import { LoadedPortalContextT } from '../PortalProvider'
 import { useFileUploadButton } from 'util/uploadUtils'
 
 
-const FLE_TYPE_REGEX = /image\/(gif|ico|jpeg|jpg|png|svg|webp)/
+export const allowedImageTypes = ['gif', 'ico', 'jpeg', 'jpg', 'png', 'svg', 'webp']
+export const allowedDocumentTypes = ['pdf']
+const FILE_TYPE_REGEX = new RegExp(
+  `^(?:image\\/(?:${allowedImageTypes.join('|')}))|(?:application\\/(?:${allowedDocumentTypes.join('|')}))$`
+)
 /** Renders a modal for an admin to submit a sample collection kit request. */
 export default function SiteImageUploadModal({
   portalContext,
@@ -44,7 +48,7 @@ export default function SiteImageUploadModal({
   }
 
   const validationMessages = []
-  if (file && !file.type.match(FLE_TYPE_REGEX)) {
+  if (file && !file.type.match(FILE_TYPE_REGEX)) {
     validationMessages.push('This file extension is not supported.')
   }
   if (file && file.size > 10 * 1024 * 1024) {
@@ -54,14 +58,14 @@ export default function SiteImageUploadModal({
 
   return <Modal show={true} onHide={onDismiss}>
     <Modal.Header closeButton>
-      <Modal.Title>{existingImage ? 'Update' : 'Upload'} image</Modal.Title>
+      <Modal.Title>{existingImage ? 'Update' : 'Upload'} media</Modal.Title>
     </Modal.Header>
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
         <div>
-          <p>Supported extensions are gif, ico, jpeg, jpg, png, svg, and webp.
-                        Maximum size is 10MB</p>
-                    File:
+          <p>Supported extensions are {[...allowedImageTypes, ...allowedDocumentTypes].join(', ')}.
+            Maximum size is 10MB</p>
+          File:
           <div>
             { FileChooser }
             <span className="text-muted fst-italic ms-2">{file?.name}</span>

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
-import { Alert, AlertProps } from '../Alert'
+import { Alert, AlertProps } from '@juniper/ui-core'
 
 export type HubUpdateMessage = {
   detail?: string
@@ -34,9 +34,8 @@ export const HubMessageAlert = (props: HubMessageAlertProps) => {
       level={message.type}
       icon={message.icon}
       title={message.title}
+      detail={message.detail}
       {...otherProps}
-    >
-      {message.detail}
-    </Alert>
+    />
   )
 }

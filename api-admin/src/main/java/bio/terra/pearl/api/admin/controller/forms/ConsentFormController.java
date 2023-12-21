@@ -29,6 +29,20 @@ public class ConsentFormController implements ConsentFormApi {
   }
 
   @Override
+  public ResponseEntity<Object> get(String portalShortcode, String stableId, Integer version) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    ConsentForm form = consentFormExtService.get(portalShortcode, stableId, version, adminUser);
+    return ResponseEntity.ok(form);
+  }
+
+  @Override
+  public ResponseEntity<Object> getAllVersions(String portalShortcode, String stableId) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    return ResponseEntity.ok(
+        consentFormExtService.listVersions(portalShortcode, stableId, adminUser));
+  }
+
+  @Override
   public ResponseEntity<Object> newVersion(String portalShortcode, String stableId, Object body) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     ConsentForm consentForm = objectMapper.convertValue(body, ConsentForm.class);

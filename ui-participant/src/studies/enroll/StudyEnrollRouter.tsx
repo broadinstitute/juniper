@@ -12,6 +12,7 @@ import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { useHasProvidedStudyPassword, usePreEnrollResponseId } from 'browserPersistentState'
 
 import { StudyEnrollPasswordGate } from './StudyEnrollPasswordGate'
+import { AlertLevel, alertDefaults } from '@juniper/ui-core'
 
 export type StudyEnrollContext = {
   user: ParticipantUser,
@@ -87,7 +88,7 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
       const hubUpdate: HubUpdate = {
         message: {
           title: `You are already enrolled in ${studyName}.`,
-          type: 'info'
+          type: alertDefaults['STUDY_ALREADY_ENROLLED'].type as AlertLevel
         }
       }
       navigate('/hub', { replace: true, state: hubUpdate })
@@ -105,9 +106,9 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
           updateEnrollee(response.enrollee)
           const hubUpdate: HubUpdate = {
             message: {
-              title: `Welcome to ${studyName}.`,
-              detail: 'Please read and sign the consent form below to continue.',
-              type: 'info'
+              title: `Welcome to ${studyName}`,
+              detail: alertDefaults['WELCOME'].detail,
+              type: alertDefaults['WELCOME'].type as AlertLevel
             }
           }
           navigate('/hub', { replace: true, state: hubUpdate })

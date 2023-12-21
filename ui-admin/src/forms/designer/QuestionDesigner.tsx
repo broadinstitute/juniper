@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Question } from '@juniper/ui-core'
+import { HtmlQuestion, Question } from '@juniper/ui-core'
 
 import { BaseFields } from './questions/BaseFields'
 import { CheckboxFields } from './questions/CheckboxFields'
@@ -9,6 +9,10 @@ import { OtherOptionFields } from './questions/OtherOptionFields'
 import { questionTypeDescriptions, questionTypeLabels } from './questions/questionTypes'
 import { TextFields } from './questions/TextFields'
 import { VisibilityFields } from './questions/VisibilityFields'
+import { Textarea } from 'components/forms/Textarea'
+import { Button } from 'components/forms/Button'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export type QuestionDesignerProps = {
   question: Question
@@ -16,18 +20,25 @@ export type QuestionDesignerProps = {
   readOnly: boolean
   showName: boolean
   onChange: (newValue: Question) => void
+    addNextQuestion?: () => void
 }
 
 /** UI for editing a question in a form. */
 export const QuestionDesigner = (props: QuestionDesignerProps) => {
-  const { question, isNewQuestion, readOnly, showName, onChange } = props
+  const { question, isNewQuestion, readOnly, showName, onChange, addNextQuestion } = props
 
   const isTemplated = 'questionTemplateName' in question
 
   return (
     <div>
-      {showName && <h2>{question.name}</h2>}
-
+      <div className="d-flex align-items-center justify-content-between">
+        {showName && <h2>{question.name}</h2>}
+        {addNextQuestion && <div>
+          <Button variant="secondary" className="ms-auto" onClick={addNextQuestion}>
+            <FontAwesomeIcon icon={faPlus}/> Add next question
+          </Button>
+        </div>}
+      </div>
       {!isTemplated && (
         <>
           <p className="fs-4 mb-0">{questionTypeLabels[question.type]} question</p>
@@ -88,6 +99,19 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
               />
             )
           }
+          {
+            question.type === 'html' && <Textarea
+              disabled={readOnly}
+              label="HTML"
+              rows={5}
+              value={(question as HtmlQuestion)?.html || ''}
+              onChange={value => {
+                onChange({
+                  ...question,
+                  html: value
+                })
+              }}
+            />}
         </>
       )}
 

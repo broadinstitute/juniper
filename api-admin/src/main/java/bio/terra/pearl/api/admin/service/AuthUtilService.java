@@ -2,13 +2,16 @@ package bio.terra.pearl.api.admin.service;
 
 import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.common.iam.BearerTokenFactory;
+import bio.terra.pearl.core.model.PortalAttached;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.admin.AdminUserService;
+import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -25,12 +28,13 @@ import org.springframework.stereotype.Service;
 /** Utility service for common auth-related methods */
 @Service
 public class AuthUtilService {
-  private AdminUserService adminUserService;
-  private BearerTokenFactory bearerTokenFactory;
-  private PortalService portalService;
-  private PortalStudyService portalStudyService;
-  private EnrolleeService enrolleeService;
-  private SurveyService surveyService;
+  private final AdminUserService adminUserService;
+  private final BearerTokenFactory bearerTokenFactory;
+  private final PortalService portalService;
+  private final PortalStudyService portalStudyService;
+  private final EnrolleeService enrolleeService;
+  private final SurveyService surveyService;
+  private final ConsentFormService consentFormService;
 
   public AuthUtilService(
       AdminUserService adminUserService,
@@ -38,13 +42,15 @@ public class AuthUtilService {
       PortalService portalService,
       PortalStudyService portalStudyService,
       EnrolleeService enrolleeService,
-      SurveyService surveyService) {
+      SurveyService surveyService,
+      ConsentFormService consentFormService) {
     this.adminUserService = adminUserService;
     this.bearerTokenFactory = bearerTokenFactory;
     this.portalService = portalService;
     this.portalStudyService = portalStudyService;
     this.enrolleeService = enrolleeService;
     this.surveyService = surveyService;
+    this.consentFormService = consentFormService;
   }
 
   /** gets the user from the request, throwing an exception if not present */
@@ -113,23 +119,32 @@ public class AuthUtilService {
   /** confirms that the Survey is accessible from the given portal */
   public Survey authSurveyToPortal(Portal portal, String stableId, int version) {
     Optional<Survey> surveyOpt = surveyService.findByStableId(stableId, version);
-    return authSurveyToPortal(portal, surveyOpt);
+    return verifyObjInPortal(portal, surveyOpt);
   }
 
   /** confirms that the Survey is accessible from the given portal */
   public Survey authSurveyToPortal(Portal portal, UUID surveyId) {
     Optional<Survey> surveyOpt = surveyService.find(surveyId);
-    return authSurveyToPortal(portal, surveyOpt);
+    return verifyObjInPortal(portal, surveyOpt);
   }
 
-  protected Survey authSurveyToPortal(Portal portal, Optional<Survey> surveyOpt) {
-    if (surveyOpt.isEmpty()) {
-      throw new NotFoundException("No such survey exists in " + portal.getName());
+  public ConsentForm authConsentFormToPortal(Portal portal, String stableId, int version) {
+    Optional<ConsentForm> consentOpt = consentFormService.findByStableId(stableId, version);
+    return verifyObjInPortal(portal, consentOpt);
+  }
+
+  /** confirms the optional exists and contains an object attached to the given portal */
+  protected <T extends PortalAttached> T verifyObjInPortal(Portal portal, Optional<T> opt) {
+    T obj =
+        opt.orElseThrow(
+            () ->
+                new NotFoundException(
+                    "No such %s exists in %s"
+                        .formatted(opt.getClass().getSimpleName(), portal.getName())));
+    if (!portal.getId().equals(obj.getPortalId())) {
+      throw new NotFoundException(
+          "No such %s exists in %s".formatted(opt.getClass().getSimpleName(), portal.getName()));
     }
-    Survey survey = surveyOpt.get();
-    if (!portal.getId().equals(survey.getPortalId())) {
-      throw new NotFoundException("No such survey exists in " + portal.getName());
-    }
-    return survey;
+    return obj;
   }
 }

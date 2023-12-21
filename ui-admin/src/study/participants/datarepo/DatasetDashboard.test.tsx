@@ -30,6 +30,8 @@ jest.mock('react-router-dom', () => ({
 }))
 
 test('renders a link to TDR if the dataset successful created', async () => {
+  // avoid cluttering the console with the info messages from the table creation
+  jest.spyOn(console, 'info').mockImplementation(jest.fn())
   const studyEnvContext = mockStudyEnvContext()
 
   const { RoutedComponent } = setupRouterTest(<DatasetDashboard studyEnvContext={studyEnvContext}/>)

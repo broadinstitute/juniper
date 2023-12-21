@@ -10,6 +10,7 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +42,25 @@ public class ConsentFormExtService {
     Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
     consentForm.setPortalId(portal.getId());
     return consentFormService.create(consentForm);
+  }
+
+  public ConsentForm get(
+      String portalShortcode, String stableId, int version, AdminUser adminUser) {
+    Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
+    ConsentForm form = authUtilService.authConsentFormToPortal(portal, stableId, version);
+    return form;
+  }
+
+  public List<ConsentForm> listVersions(
+      String portalShortcode, String stableId, AdminUser adminUser) {
+    Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
+    // This is used to populate the version selector in the admin UI. It's not necessary
+    // to return the surveys with any content or answer mappings, the response will
+    // be too large. Instead, just get the individual versions as content is needed.
+    List<ConsentForm> forms = consentFormService.findByStableIdNoContent(stableId);
+    List<ConsentForm> formsInPortal =
+        forms.stream().filter(form -> portal.getId().equals(form.getPortalId())).toList();
+    return formsInPortal;
   }
 
   public StudyEnvironmentConsent updateConfiguredConsent(

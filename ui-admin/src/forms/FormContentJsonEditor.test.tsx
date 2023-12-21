@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { cloneDeep } from 'lodash'
 import React from 'react'
 
-import { FormContent, Question } from '@juniper/ui-core'
+import { FormContent, TitledQuestion } from '@juniper/ui-core'
 
 import { FormContentJsonEditor } from './FormContentJsonEditor'
 
@@ -62,7 +62,7 @@ describe('FormContentJsonEditor', () => {
 
     // Assert
     const expectedEditedContent = cloneDeep(formContent)
-    ;(expectedEditedContent.pages[0].elements[0] as Question).title = 'Given name'
+    ;(expectedEditedContent.pages[0].elements[0] as TitledQuestion).title = 'Given name'
 
     expect(onChange).toHaveBeenCalledWith([], expectedEditedContent)
   })

@@ -16,17 +16,21 @@ describe('NewQuestionForm', () => {
   })
 
   test('updates to the appropriate QuestionDesigner when a new question type is selected', async () => {
-    //Arrange
     const user = userEvent.setup()
     render(<NewQuestionForm onCreate={() => jest.fn()} questionTemplates={[]} readOnly={false}/>)
 
-    //Act
     const questionTypeSelect = screen.getByLabelText('Question type')
     await act(() => user.selectOptions(questionTypeSelect, 'checkbox'))
 
-    //Assert
     expect(questionTypeSelect).toHaveValue('checkbox')
     expect(screen.getByText(questionTypeDescriptions.checkbox)).toBeInTheDocument()
+
+    // now check we can change the type to html
+    await act(() => user.selectOptions(questionTypeSelect, 'html'))
+
+    expect(questionTypeSelect).toHaveValue('html')
+    expect(screen.getByText(questionTypeDescriptions.html)).toBeInTheDocument()
+    expect(screen.queryByLabelText('Question text')).not.toBeInTheDocument()
   })
 
   test('renders freetext input', async () => {

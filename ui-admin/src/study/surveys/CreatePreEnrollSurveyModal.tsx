@@ -23,7 +23,7 @@ export default function CreatePreEnrollSurveyModal({ studyEnvContext, onDismiss 
     await doApiLoad(async () => {
       const createdSurvey = await Api.createNewSurvey(studyEnvContext.portal.shortcode,
         {
-          createdAt: 0, id: '', lastUpdatedAt: 0, version: 1,
+          createdAt: 0, id: '', lastUpdatedAt: 0, version: 1, surveyType: 'RESEARCH',
           content: '{"pages":[]}', name: formName, stableId: formStableId
         })
       Store.addNotification(successNotification('Survey created'))

@@ -1,10 +1,12 @@
 import _pick from 'lodash/pick'
 import {
+  AlertTrigger,
   ConsentForm,
   Survey,
   ConsentResponse,
   NotificationConfig,
   ParticipantTask,
+  ParticipantDashboardAlert,
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
@@ -153,7 +155,7 @@ export type KitType = {
   description: string
 }
 
-export type PepperKitStatus = {
+export type PepperKit = {
   kitId: string,
   currentStatus: string,
   labelDate: string,
@@ -193,7 +195,7 @@ export type SiteImageMetadata = {
   version: number
 }
 
-const emptyPepperKitStatus: PepperKitStatus = {
+const emptyPepperKit: PepperKit = {
   kitId: '',
   currentStatus: '(unknown)',
   labelDate: '',
@@ -211,12 +213,12 @@ const emptyPepperKitStatus: PepperKitStatus = {
  * Therefore, this function will never raise an error and will always return an object that conforms to the
  * `PepperKitStatus` type.
  */
-function parsePepperKitStatus(json: string | undefined): PepperKitStatus {
+function parsePepperKitStatus(json: string | undefined): PepperKit {
   if (json) {
     try {
       const pepperStatus = JSON.parse(json)
       return {
-        ...emptyPepperKitStatus,
+        ...emptyPepperKit,
         ..._pick(pepperStatus,
           'juniperKitId', 'currentStatus', 'labelDate', 'scanDate', 'receiveDate', 'trackingNumber',
           'returnTrackingNumber', 'errorMessage')
@@ -225,7 +227,7 @@ function parsePepperKitStatus(json: string | undefined): PepperKitStatus {
       // ignore; fall-through to result for unexpected value
     }
   }
-  return emptyPepperKitStatus
+  return emptyPepperKit
 }
 
 export type KitRequest = {
@@ -235,8 +237,8 @@ export type KitRequest = {
   kitType: KitType,
   sentToAddress: string,
   status: string
-  dsmStatus?: string
-  pepperStatus?: PepperKitStatus
+  externalKit?: string
+  parsedExternalKit?: PepperKit
 }
 
 export type Config = {
@@ -262,6 +264,7 @@ export type PortalEnvironmentChange = {
   configChanges: ConfigChange[],
   preRegSurveyChanges: VersionedEntityChange,
   notificationConfigChanges: ListChange<NotificationConfig, VersionedConfigChange>
+  participantDashboardAlertChanges: ParticipantDashboardAlertChange[],
   studyEnvChanges: StudyEnvironmentChange[]
 }
 
@@ -301,6 +304,11 @@ export type VersionedConfigChange = {
   sourceId: string,
   configChanges: ConfigChange[],
   documentChange: VersionedEntityChange
+}
+
+export type ParticipantDashboardAlertChange = {
+  trigger: AlertTrigger,
+  changes: ConfigChange[]
 }
 
 export type ExportOptions = {
@@ -548,6 +556,31 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async getConsentForm(portalShortcode: string, stableId: string, version: number): Promise<Survey> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/consentForms/${stableId}/${version}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async getConsentFormVersions(portalShortcode: string, stableId: string): Promise<Survey[]> {
+    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/consentForms/${stableId}/metadata`,
+      this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async updateConfiguredConsent(portalShortcode: string, studyShortcode: string, environmentName: string,
+    configuredConsent: StudyEnvironmentConsent): Promise<StudyEnvironmentConsent> {
+    const url =`${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
+        `/env/${environmentName}/configuredConsents/${configuredConsent.id}`
+
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(configuredConsent)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async createNewConsentForm(portalShortcode: string, consentForm: ConsentForm): Promise<ConsentForm> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/consentForms/`
         + `${consentForm.stableId}`
@@ -607,7 +640,8 @@ export default {
   },
 
   async getSurveyVersions(portalShortcode: string, stableId: string): Promise<Survey[]> {
-    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/surveys/${stableId}`, this.getGetInit())
+    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/surveys/${stableId}/metadata`,
+      this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
@@ -648,19 +682,6 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async updateConfiguredConsent(portalShortcode: string, studyShortcode: string, environmentName: string,
-    configuredConsent: StudyEnvironmentConsent): Promise<StudyEnvironmentConsent> {
-    const url =`${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
-      `/env/${environmentName}/configuredConsents/${configuredConsent.id}`
-
-    const response = await fetch(url, {
-      method: 'PATCH',
-      headers: this.getInitHeaders(),
-      body: JSON.stringify(configuredConsent)
-    })
-    return await this.processJsonResponse(response)
-  },
-
   async getSiteContent(portalShortcode: string, stableId: string, version: number) {
     const response = await fetch(`${basePortalUrl(portalShortcode)}/siteContents/${stableId}/${version}`,
       this.getGetInit())
@@ -695,7 +716,7 @@ export default {
     const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}`
     const response = await fetch(url, this.getGetInit())
     const enrollee: Enrollee = await this.processJsonResponse(response)
-    enrollee.kitRequests?.forEach(kit => { kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus) })
+    enrollee.kitRequests?.forEach(kit => { kit.parsedExternalKit = parsePepperKitStatus(kit.externalKit) })
     return enrollee
   },
 
@@ -764,7 +785,7 @@ export default {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/kits`
     const response = await fetch(url, this.getGetInit())
     const kits: KitRequest[] = await this.processJsonResponse(response)
-    kits.forEach(kit => { kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus) })
+    kits.forEach(kit => { kit.parsedExternalKit = parsePepperKitStatus(kit.externalKit) })
     return kits
   },
 
@@ -799,7 +820,7 @@ export default {
       body: JSON.stringify(enrolleeShortcodes)
     })
     const listResponse: KitRequestListResponse = await this.processJsonResponse(response)
-    listResponse.kitRequests.forEach(kit => { kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus) })
+    listResponse.kitRequests.forEach(kit => { kit.parsedExternalKit = parsePepperKitStatus(kit.externalKit) })
     return listResponse
   },
 
@@ -1043,6 +1064,36 @@ Promise<NotificationConfig> {
       method: 'PATCH',
       headers: this.getInitHeaders(),
       body: JSON.stringify(update)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async listPortalEnvAlerts(portalShortcode: string, envName: string): Promise<ParticipantDashboardAlert[]> {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/dashboard/config/alerts`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async updatePortalEnvAlert(
+    portalShortcode: string, envName: string, triggerName: string, alertConfig: ParticipantDashboardAlert
+  ) {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/dashboard/config/alerts/${triggerName}`
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(alertConfig)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async createPortalEnvAlert(
+    portalShortcode: string, envName: string, triggerName: string, alertConfig: ParticipantDashboardAlert
+  ) {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/dashboard/config/alerts/${triggerName}`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(alertConfig)
     })
     return await this.processJsonResponse(response)
   },

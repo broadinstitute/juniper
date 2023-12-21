@@ -34,6 +34,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
     private DataChangeRecordService dataChangeRecordService;
     private SiteContentService siteContentService;
     private SurveyService surveyService;
+    private PortalDashboardConfigService portalDashboardConfigService;
 
     public PortalEnvironmentService(PortalEnvironmentDao portalEnvironmentDao,
                                     PortalEnvironmentConfigService portalEnvironmentConfigService,
@@ -42,7 +43,10 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
                                     PreregistrationResponseDao preregistrationResponseDao,
                                     NotificationConfigService notificationConfigService,
                                     MailingListContactService mailingListContactService,
-                                    DataChangeRecordService dataChangeRecordService, SiteContentService siteContentService, SurveyService surveyService) {
+                                    SiteContentService siteContentService,
+                                    DataChangeRecordService dataChangeRecordService,
+                                    PortalDashboardConfigService portalDashboardConfigService,
+                                    SurveyService surveyService) {
         super(portalEnvironmentDao);
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.portalParticipantUserService = portalParticipantUserService;
@@ -53,6 +57,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         this.dataChangeRecordService = dataChangeRecordService;
         this.siteContentService = siteContentService;
         this.surveyService = surveyService;
+        this.portalDashboardConfigService = portalDashboardConfigService;
     }
 
     public List<PortalEnvironment> findByPortal(UUID portalId) {
@@ -128,6 +133,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         notificationConfigService.deleteByPortalEnvironmentId(id);
         mailingListContactService.deleteByPortalEnvId(id);
         dataChangeRecordService.deleteByPortalEnvironmentId(id);
+        portalDashboardConfigService.deleteAlertsByPortalEnvId(id);
         dao.delete(id);
         portalEnvironmentConfigService.delete(envConfigId, cascades);
     }

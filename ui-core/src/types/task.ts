@@ -25,10 +25,12 @@ export type ParticipantTaskStatus =
   | 'IN_PROGRESS'
   | 'COMPLETE'
   | 'REJECTED'
+  | 'VIEWED'
 
 export type ParticipantTaskType =
   | 'CONSENT'
   | 'SURVEY'
+  | 'OUTREACH'
   | 'KIT_REQUEST'
 
 export {}

@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.export;
 
+import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.survey.Answer;
@@ -19,4 +20,5 @@ public class EnrolleeExportData {
     private List<Answer> answers;
     private List<ParticipantTask> tasks;
     private List<SurveyResponse> responses;
+    private List<KitRequest> kitRequests;
 }

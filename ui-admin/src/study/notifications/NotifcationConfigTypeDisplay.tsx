@@ -9,7 +9,9 @@ export const eventTypeDisplayMap: Record<string, string> = {
   PORTAL_REGISTRATION: 'Portal registration',
   SURVEY_RESPONSE: 'Survey response',
   STUDY_ENROLLMENT: 'Study enrollment',
-  STUDY_CONSENT: 'Consent form submission'
+  STUDY_CONSENT: 'Consent form submission',
+  KIT_SENT: 'Kit sent',
+  KIT_RECEIVED: 'Kit returned'
 }
 
 /** shows a summary of the notification config */

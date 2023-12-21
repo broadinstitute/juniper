@@ -35,7 +35,7 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
                         .studyEnvironmentConfig(new StudyEnvironmentConfig())
                         .build());
         var enrollee = enrolleeFactory.buildPersisted("testFetchKitStatus", studyEnvironment);
-        var kit = kitRequestFactory.buildPersisted("testFetchKitStatus", enrollee.getId());
+        var kit = kitRequestFactory.buildPersisted("testFetchKitStatus", enrollee);
 
         // Act
         var kitStatus = stubPepperDSMClient.fetchKitStatus(kit.getId());
@@ -57,7 +57,7 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
                         .studyEnvironmentConfig(new StudyEnvironmentConfig())
                         .build());
         var enrollee = enrolleeFactory.buildPersisted("testFetchKitStatusByStudy", studyEnvironment);
-        var kit = kitRequestFactory.buildPersisted("testFetchKitStatusByStudy", enrollee.getId());
+        var kit = kitRequestFactory.buildPersisted("testFetchKitStatusByStudy", enrollee);
 
         // Act
         var kitStatuses = stubPepperDSMClient.fetchKitStatusByStudy(study.getShortcode());

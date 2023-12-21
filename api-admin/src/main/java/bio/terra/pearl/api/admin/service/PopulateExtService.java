@@ -93,11 +93,7 @@ public class PopulateExtService {
 
   public Portal populatePortal(String filePathName, AdminUser user, boolean overwrite) {
     authorizeUser(user);
-    try {
-      return portalPopulator.populate(new FilePopulateContext(filePathName), overwrite);
-    } catch (IOException e) {
-      throw new IllegalArgumentException("populate failed", e);
-    }
+    return portalPopulator.populate(new FilePopulateContext(filePathName), overwrite);
   }
 
   public Survey populateSurvey(
@@ -105,11 +101,7 @@ public class PopulateExtService {
     authorizeUser(user);
     PortalPopulateContext config =
         new PortalPopulateContext(filePathName, portalShortcode, null, new HashMap<>(), false);
-    try {
-      return surveyPopulator.populate(config, overwrite);
-    } catch (IOException e) {
-      throw new IllegalArgumentException("populate failed", e);
-    }
+    return surveyPopulator.populate(config, overwrite);
   }
 
   public SiteContent populateSiteContent(
@@ -139,11 +131,7 @@ public class PopulateExtService {
     StudyPopulateContext config =
         new StudyPopulateContext(
             filePathName, portalShortcode, studyShortcode, envName, new HashMap<>(), false);
-    try {
-      return enrolleePopulator.populate(config, overwrite);
-    } catch (IOException e) {
-      throw new IllegalArgumentException("populate failed", e);
-    }
+    return enrolleePopulator.populate(config, overwrite);
   }
 
   public void bulkPopulateEnrollees(

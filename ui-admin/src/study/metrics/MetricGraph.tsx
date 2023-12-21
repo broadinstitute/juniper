@@ -1,58 +1,37 @@
-import React, { useState } from 'react'
-import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import Api, { BasicMetricDatum } from 'api/api'
-import LoadingSpinner from 'util/LoadingSpinner'
+import React from 'react'
+import { BasicMetricDatum } from 'api/api'
 import { cloneDeep } from 'lodash'
-import { MetricInfo } from './StudyEnvMetricsView'
 import Plot from 'react-plotly.js'
-import { instantToDefaultString } from 'util/timeUtils'
-import { useLoadingEffect } from 'api/api-utils'
-
-const EXPORT_DELIMITER = '\t'
+import { unixToPlotlyDateRange, MetricDateRange } from './metricUtils'
 
 /**
  * Shows a plot for a specified metric.  Handles fetching the raw metrics from the server, transforming them to
  * plotly traces, and then rendering a graph
  */
-export default function MetricGraph({ studyEnvContext, metricInfo }: {studyEnvContext: StudyEnvContextT,
-  metricInfo: MetricInfo}) {
-  const [metricData, setMetricData] = useState<BasicMetricDatum[] | null>(null)
-  const [plotlyTraces, setPlotlyTraces] = useState<PlotlyTimeTrace[] | null>(null)
-
-  const { isLoading } = useLoadingEffect(async () => {
-    const result = await Api.fetchMetric(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
-      studyEnvContext.currentEnv.environmentName, metricInfo.name)
-    setPlotlyTraces(makePlotlyTraces(result))
-    setMetricData(result)
-  }, [metricInfo.name, studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
-
-  const copyRawData = () => {
-    if (!metricData) {
-      return
-    }
-    let dataString = `${['name', 'subcategory', 'time'].join(EXPORT_DELIMITER)  }\n`
-    dataString += metricData.map(metricDatum =>
-      [metricInfo.name, metricDatum.subcategory, instantToDefaultString(metricDatum.time)].join(EXPORT_DELIMITER)
-    ).join('\n')
-    navigator.clipboard.writeText(dataString)
-  }
+export default function MetricGraph({ metricData, dateRange }: {
+  metricData?: BasicMetricDatum[], dateRange?: MetricDateRange
+}) {
+  const plotlyTraces = makePlotlyTraces(metricData || [])
   const hasDataToPlot = !!plotlyTraces?.length && plotlyTraces[0].x.length
-  return <div className="p-2">
-    <LoadingSpinner isLoading={isLoading}>
-      <div className="d-flex align-items-baseline">
-        <h2 className="h5">{metricInfo.title} <span className="text-muted">(cumulative)</span> </h2>
-        <button className="btn btn-secondary ms-3" onClick={copyRawData}>Copy raw data</button>
-      </div>
-      { hasDataToPlot && <Plot
+
+  return <>
+    { hasDataToPlot ?
+      <Plot
+        config={{ responsive: true }}
+        className="w-100"
         // eslint-disable-next-line
         data={plotlyTraces as any ?? []}
-        layout={{ height: 300, yaxis: { rangemode: 'tozero', autorange: true } }}
-      />}
-      { !hasDataToPlot && <div>
+        layout={{
+          autosize: false,
+          yaxis: { rangemode: 'tozero', autorange: true },
+          xaxis: { range: dateRange ? unixToPlotlyDateRange(dateRange) : undefined } //undefined defaults to autorange
+        }}
+      /> :
+      <div className="d-flex justify-content-center align-items-center h-100">
         <span className="text-muted fst-italic">No data</span>
-      </div>}
-    </LoadingSpinner>
-  </div>
+      </div>
+    }
+  </>
 }
 
 type PlotlyTimeTrace = {

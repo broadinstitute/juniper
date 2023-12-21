@@ -8,15 +8,19 @@ import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.kit.KitTypeFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
+import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.kit.pepper.*;
 import bio.terra.pearl.core.service.participant.ProfileService;
+import bio.terra.pearl.core.service.workflow.EventService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
-import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,12 +31,12 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 public class KitRequestServiceTest extends BaseSpringBootTest {
@@ -41,7 +45,6 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     @Test
     public void testRequestKitAssemble(TestInfo testInfo) throws Exception {
         var adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
-        var kitType = kitTypeFactory.buildPersisted(getTestName(testInfo));
         var enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(testInfo));
         var enrollee = enrolleeBundle.enrollee();
         var profile = enrollee.getProfile();
@@ -102,9 +105,9 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         var enrollee = enrolleeFactory.buildPersisted(getTestName(testInfo));
         var kitType = kitTypeFactory.buildPersisted(getTestName(testInfo));
         var kitRequest = kitRequestFactory.buildPersisted(getTestName(testInfo),
-            enrollee.getId(), kitType.getId(), adminUser.getId());
+                enrollee, kitType.getId(), adminUser.getId());
 
-        var response = PepperKitStatus.builder()
+        var response = PepperKit.builder()
                 .juniperKitId(kitRequest.getId().toString())
                 .currentStatus("SENT")
                 .build();
@@ -128,12 +131,12 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         var enrollee = enrolleeFactory.buildPersisted(testName, studyEnvironment);
         var kitType = kitTypeFactory.buildPersisted(testName);
         var kitRequest1 = kitRequestFactory.buildPersisted(testName,
-                enrollee.getId(), kitType.getId(), adminUser.getId());
+                enrollee, kitType.getId(), adminUser.getId());
         var kitRequest2 = kitRequestDao.create(kitRequestFactory.builder(testName)
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee.getId())
                 .kitTypeId(kitType.getId())
-                .dsmStatus("BOOM!")
+                .externalKit("BOOM!")
                 .build());
 
         // Act
@@ -159,38 +162,46 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         var kitType = kitTypeFactory.buildPersisted(testName);
         var adminUser = adminUserFactory.buildPersisted(testName);
         var studyEnvironment = studyEnvironmentFactory.buildPersisted(testName);
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(testName);
         kitTypeFactory.attachTypeToEnvironment(kitType.getId(), studyEnvironment.getId());
         var study = studyDao.find(studyEnvironment.getStudyId()).get();
-        var enrollee1a = enrolleeFactory.buildPersisted(testName, studyEnvironment);
-        var enrollee1b = enrolleeFactory.buildPersisted(testName, studyEnvironment);
+        var enrolleeBundle1a = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnvironment);
+        var enrolleeBundle1b = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnvironment);
+
+        Enrollee enrollee1a = enrolleeBundle1a.enrollee();
+        Enrollee enrollee1b = enrolleeBundle1b.enrollee();
         var kitRequest1a = kitRequestFactory.buildPersisted(testName,
-            enrollee1a.getId(), kitType.getId(), adminUser.getId());
+            enrollee1a, kitType.getId(), adminUser.getId());
         var kitRequest1b = kitRequestFactory.buildPersisted(testName,
-            enrollee1b.getId(), kitType.getId(), adminUser.getId());
+            enrollee1b, kitType.getId(), adminUser.getId());
 
         var studyEnvironment2 = studyEnvironmentFactory.buildPersisted(testName);
         kitTypeFactory.attachTypeToEnvironment(kitType.getId(), studyEnvironment2.getId());
         var study2 = studyDao.find(studyEnvironment2.getStudyId()).get();
-        var enrollee2 = enrolleeFactory.buildPersisted(testName, studyEnvironment2);
+        var enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnvironment2);
+        Enrollee enrollee2 = enrolleeBundle2.enrollee();
         var kitRequest2 = kitRequestFactory.buildPersisted(testName,
-            enrollee2.getId(), kitType.getId(), adminUser.getId());
+            enrollee2, kitType.getId(), adminUser.getId());
 
         /*
          * Mock DSM to return kits by study:
          *  - the first study has two kits, one in flight and one complete
          *  - the second study has one kit with an error
          */
-        var kitStatus1a = PepperKitStatus.builder()
+        var kitStatus1a = PepperKit.builder()
                 .juniperKitId(kitRequest1a.getId().toString())
-                .currentStatus(PepperKitStatus.Status.SENT.currentStatus)
+                .currentStatus(PepperKitStatus.SENT.pepperString)
+                .participantId(enrollee1a.getShortcode())
                 .build();
-        var kitStatus1b = PepperKitStatus.builder()
+        var kitStatus1b = PepperKit.builder()
                 .juniperKitId(kitRequest1b.getId().toString())
-                .currentStatus(PepperKitStatus.Status.RECEIVED.currentStatus)
+                .currentStatus(PepperKitStatus.RECEIVED.pepperString)
+                .participantId(enrollee1b.getShortcode())
                 .build();
-        var kitStatus2 = PepperKitStatus.builder()
+        var kitStatus2 = PepperKit.builder()
                 .juniperKitId(kitRequest2.getId().toString())
-                .currentStatus(PepperKitStatus.Status.ERRORED.currentStatus)
+                .currentStatus(PepperKitStatus.ERRORED.pepperString)
+                .participantId(enrollee2.getShortcode())
                 .errorMessage("Something went wrong")
                 .errorDate(DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault()).format(Instant.now()))
                 .build();
@@ -198,14 +209,46 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .thenReturn(List.of(kitStatus1a, kitStatus1b));
         when(mockPepperDSMClient.fetchKitStatusByStudy(study2.getShortcode()))
                 .thenReturn(List.of(kitStatus2));
+        when(mockEventService.publishKitStatusEvent(any(KitRequest.class), any(Enrollee.class), any(PortalParticipantUser.class), any(KitRequestStatus.class)))
+                .thenReturn(null);
 
         /* Finally, sync the kit statuses  */
         kitRequestService.syncAllKitStatusesFromPepper();
 
         /* Load and verify each kit */
-        verifyKit(kitRequest1a, kitStatus1a, KitRequestStatus.IN_PROGRESS);
-        verifyKit(kitRequest1b, kitStatus1b, KitRequestStatus.COMPLETE);
-        verifyKit(kitRequest2, kitStatus2, KitRequestStatus.FAILED);
+        verifyKit(kitRequest1a, kitStatus1a, KitRequestStatus.SENT);
+        verifyKit(kitRequest1b, kitStatus1b, KitRequestStatus.RECEIVED);
+        verifyKit(kitRequest2, kitStatus2, KitRequestStatus.ERRORED);
+    }
+
+    @Transactional
+    @Test
+    void testNotifyKitStatus(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
+
+        UUID kitRequestId = UUID.randomUUID();
+        KitRequest kitRequest = KitRequest.builder()
+                .id(kitRequestId)
+                .status(KitRequestStatus.SENT)
+                .enrolleeId(enrolleeBundle.enrollee().getId())
+                .build();
+
+        when(mockEventService.publishKitStatusEvent(any(KitRequest.class), any(Enrollee.class), any(PortalParticipantUser.class), any(KitRequestStatus.class))).thenAnswer(invocation -> {
+            KitRequest kitRequestArg = (KitRequest) invocation.getArguments()[0];
+            Enrollee enrolleeArg = (Enrollee) invocation.getArguments()[1];
+            PortalParticipantUser ppUserArg = (PortalParticipantUser) invocation.getArguments()[2];
+            KitRequestStatus priorStatusArg = (KitRequestStatus) invocation.getArguments()[3];
+
+            assertThat(kitRequestArg.getId(), equalTo(kitRequestId));
+            assertThat(kitRequestArg.getStatus(), equalTo(KitRequestStatus.SENT));
+            assertThat(ppUserArg.getProfileId(), equalTo(enrolleeBundle.portalParticipantUser().getProfileId()));
+            assertThat(enrolleeArg.getShortcode(), equalTo(enrolleeBundle.enrollee().getShortcode()));
+            assertThat(priorStatusArg, equalTo(KitRequestStatus.CREATED));
+            return null;
+        });
+
+        kitRequestService.notifyKitStatusChange(kitRequest, KitRequestStatus.CREATED);
     }
 
     @Transactional
@@ -224,20 +267,19 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         Mockito.verifyNoInteractions(mockPepperDSMClient);
     }
 
-    private void verifyKit(KitRequest kit, PepperKitStatus expectedDSMStatus, KitRequestStatus expectedStatus)
+    private void verifyKit(KitRequest kit, PepperKit expectedDSMStatus, KitRequestStatus expectedStatus)
             throws JsonProcessingException {
         var savedKit = kitRequestDao.find(kit.getId()).get();
         assertThat(savedKit.getStatus(), equalTo(expectedStatus));
-        assertThat(objectMapper.readValue(savedKit.getDsmStatus(), PepperKitStatus.class),
+        assertThat(objectMapper.readValue(savedKit.getExternalKit(), PepperKit.class),
                 equalTo(expectedDSMStatus));
     }
 
 
     @MockBean
     private PepperDSMClient mockPepperDSMClient;
-    @Autowired
-    private StubPepperDSMClient stubPepperDSMClient;
-
+    @MockBean
+    private EventService mockEventService;
     @Autowired
     private AdminUserFactory adminUserFactory;
     @Autowired
@@ -258,4 +300,6 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     private StudyDao studyDao;
     @Autowired
     private StudyEnvironmentFactory studyEnvironmentFactory;
+    @Autowired
+    private PortalEnvironmentFactory portalEnvironmentFactory;
 }

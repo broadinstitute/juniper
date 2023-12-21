@@ -3,21 +3,22 @@ import React from 'react'
 
 import { FormContent } from '@juniper/ui-core'
 
-import { IconButton } from 'components/forms/Button'
+import { IconButton, Button } from 'components/forms/Button'
 
 type PagesListProps = {
   formContent: FormContent
   readOnly: boolean
   onChange: (newValue: FormContent) => void
+  setSelectedElementPath: (path: string) => void
 }
 
 /** UI for re-ordering pages in a form. */
 export const PagesList = (props: PagesListProps) => {
-  const { formContent, readOnly, onChange } = props
+  const { formContent, readOnly, onChange, setSelectedElementPath } = props
   const { pages } = formContent
 
   return (
-    <ol className="list-group list-group-numbered">
+    <ol className="list-group list-group">
       {pages.map((page, i) => {
         return (
           <li
@@ -25,7 +26,8 @@ export const PagesList = (props: PagesListProps) => {
             className="list-group-item d-flex align-items-center"
           >
             <div className="flex-grow-1 text-truncate ms-2">
-              Page {i + 1}
+              <Button variant={'secondary'}
+                onClick={() => setSelectedElementPath(`pages[${i}]`)}>Page {i + 1}</Button>
             </div>
             <div className="flex-shrink-0">
               <IconButton

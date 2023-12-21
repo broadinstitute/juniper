@@ -1,6 +1,7 @@
 import { FormContent } from '@juniper/ui-core'
 
 import { getTableOfContentsTree } from './FormTableOfContents'
+import React from 'react'
 
 const formContent: FormContent = {
   title: 'Test Survey',
@@ -82,7 +83,7 @@ describe('getTableOfContentsTree', () => {
                   }
                 },
                 {
-                  label: 'Panel (2 elements)',
+                  label: <span>Panel <span className="fw-light fst-italic">({2} items)</span></span>,
                   data: {
                     isSelectable: true,
                     path: 'pages[0].elements[1]'

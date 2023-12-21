@@ -1,10 +1,12 @@
 package bio.terra.pearl.core.service.export;
 
 import bio.terra.pearl.core.model.survey.QuestionChoice;
+import bio.terra.pearl.core.service.exception.internal.IOInternalException;
 import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
-import bio.terra.pearl.core.service.export.formatters.SurveyFormatter;
-import bio.terra.pearl.core.service.export.instance.ItemExportInfo;
-import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
+import bio.terra.pearl.core.service.export.formatters.item.AnswerItemFormatter;
+import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
+import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
+import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -41,14 +43,12 @@ public class DataDictionaryExcelExporter extends ExcelExporter {
     private static final int DESCRIPTION_COL_NUMBER = 3;
     private static final int OPTIONS_COL_NUMBER = 4;
 
-    private SurveyFormatter surveyFormatter;
-
 
     /**
      * initializes the dictionary and internal spreadsheet
      */
-    public DataDictionaryExcelExporter(List<ModuleExportInfo> moduleInfos, ObjectMapper objectMapper) {
-        super(moduleInfos, null);
+    public DataDictionaryExcelExporter(List<ModuleFormatter> moduleFormatters, ObjectMapper objectMapper) {
+        super(moduleFormatters, null);
         wrapStyle = workbook.createCellStyle();
         wrapStyle.setWrapText(true);
         boldStyle = workbook.createCellStyle();
@@ -61,40 +61,42 @@ public class DataDictionaryExcelExporter extends ExcelExporter {
         boldUnderlineFont.setBold(true);
         boldUnderlineFont.setUnderline(Font.U_SINGLE);
         boldUnderlineStyle.setFont(boldUnderlineFont);
-
-        surveyFormatter = new SurveyFormatter(objectMapper);
     }
 
     /** writes the dictionary */
     @Override
-    public void export(OutputStream os) throws IOException {
+    public void export(OutputStream os) {
         sheet.setColumnWidth(VARIABLE_NAME_COL_NUMBER, 40 * 256);
         sheet.setColumnWidth(DATATYPE_COL_NUMBER, 10 * 256);
         sheet.setColumnWidth(QUESTION_TYPE_COL_NUMBER, 12 * 256);
         sheet.setColumnWidth(DESCRIPTION_COL_NUMBER, 60 * 256);
         sheet.setColumnWidth(OPTIONS_COL_NUMBER, 40 * 256);
 
-        for (ModuleExportInfo moduleInfo : moduleExportInfos) {
-            addModuleHeaderRows(moduleInfo);
-            for (ItemExportInfo itemInfo : moduleInfo.getItems()) {
-                addItemRows(moduleInfo, itemInfo);
+        for (ModuleFormatter<?, ? extends ItemFormatter<?>> moduleFormatter : moduleFormatters) {
+            addModuleHeaderRows(moduleFormatter);
+            for (ItemFormatter itemFormatter : moduleFormatter.getItemFormatters()) {
+                addItemRows(moduleFormatter, itemFormatter);
             }
         }
-        writeAndCloseSheet(os);
+        try {
+            writeAndCloseSheet(os);
+        } catch (IOException e) {
+            throw new IOInternalException("Error writing excel file", e);
+        }
     }
 
 
-    protected void addModuleHeaderRows(ModuleExportInfo moduleInfo) {
+    protected void addModuleHeaderRows(ModuleFormatter moduleFormatter) {
         // two blank rows
         addRowToSheet();
         addRowToSheet();
 
         SXSSFRow moduleNameRow = addRowToSheet();
         moduleNameRow.setRowStyle(boldStyle);
-        moduleNameRow.createCell(VARIABLE_NAME_COL_NUMBER).setCellValue(moduleInfo.getDisplayName().toUpperCase());
+        moduleNameRow.createCell(VARIABLE_NAME_COL_NUMBER).setCellValue(moduleFormatter.getDisplayName().toUpperCase());
 
-        if (moduleInfo.getMaxNumRepeats() > 1) {
-            addModuleRepeatDescription(moduleInfo.getModuleName(), moduleNameRow, moduleInfo);
+        if (moduleFormatter.getMaxNumRepeats() > 1) {
+            addModuleRepeatDescription(moduleFormatter.getModuleName(), moduleNameRow, moduleFormatter);
         }
         sheet.addMergedRegion(new CellRangeAddress(currentRowNum, currentRowNum, DATATYPE_COL_NUMBER, OPTIONS_COL_NUMBER));
 
@@ -103,8 +105,8 @@ public class DataDictionaryExcelExporter extends ExcelExporter {
         columnHeaders.setRowStyle(boldUnderlineStyle);
     }
 
-    private void addModuleRepeatDescription(String moduleName, SXSSFRow moduleNameRow, ModuleExportInfo moduleInfo) {
-        String repeatString = "Up to " + moduleInfo.getMaxNumRepeats() +
+    private void addModuleRepeatDescription(String moduleName, SXSSFRow moduleNameRow, ModuleFormatter moduleFormatter) {
+        String repeatString = "Up to " + moduleFormatter.getMaxNumRepeats() +
                 " entries for this module exist for each participant.\n";
         repeatString += "Entries are indicated in reverse chronological order.\n";
         repeatString += "The most recent entry has no suffix, the next-most-recent is suffixed with _2," +
@@ -114,19 +116,15 @@ public class DataDictionaryExcelExporter extends ExcelExporter {
         moduleNameRow.createCell(DATATYPE_COL_NUMBER).setCellValue(repeatString);
     }
 
-    protected void addItemRows(ModuleExportInfo moduleInfo, ItemExportInfo itemInfo) {
-        if (itemInfo.getPropertyAccessor() != null) {
-            addBeanPropertyRow(moduleInfo, itemInfo);
+    protected void addItemRows(ModuleFormatter moduleFormatter, ItemFormatter itemInfo) {
+        if (itemInfo instanceof PropertyItemFormatter) {
+            addBeanPropertyRow(moduleFormatter, (PropertyItemFormatter) itemInfo);
         } else {
-            addSurveyQuestionRows(moduleInfo, itemInfo);
+            addSurveyQuestionRows(moduleFormatter, (AnswerItemFormatter) itemInfo);
         }
     }
 
-    protected void addBeanPropertyRow(ModuleExportInfo moduleInfo, ItemExportInfo itemInfo) {
-        String questionType = itemInfo.getQuestionType();
-        if (questionType == null) {
-            questionType = "";
-        }
+    protected void addBeanPropertyRow(ModuleFormatter moduleFormatter, PropertyItemFormatter itemInfo) {
         String dataType = itemInfo.getDataType().toString().toLowerCase();
 
         String descriptionText = ExportFormatUtils.camelToWordCase(itemInfo.getBaseColumnKey());
@@ -135,11 +133,12 @@ public class DataDictionaryExcelExporter extends ExcelExporter {
             descriptionText += "\n May have up to " + itemInfo.getMaxNumRepeats() +
                     " response variables, denoted with _2, _3, etc. for each response after the first.";
         }
-        addRowToSheet(itemInfo.getBaseColumnKey(), dataType, questionType, descriptionText, "");
+        String columnKey = moduleFormatter.getColumnKey(itemInfo, false, null, 1);
+        addRowToSheet(columnKey, dataType, "", descriptionText, "");
     }
 
-    protected void addSurveyQuestionRows(ModuleExportInfo moduleInfo, ItemExportInfo itemInfo) {
-        String questionType = itemInfo.getQuestionType();
+    protected void addSurveyQuestionRows(ModuleFormatter moduleFormatter, AnswerItemFormatter itemFormatter) {
+        String questionType = itemFormatter.getQuestionType();
         if (questionType == null) {
             questionType = "";
         }
@@ -147,33 +146,33 @@ public class DataDictionaryExcelExporter extends ExcelExporter {
             // for now, exclude descriptions from the export
             return;
         }
-        String dataType = itemInfo.getDataType().toString().toLowerCase();
+        String dataType = itemFormatter.getDataType().toString().toLowerCase();
 
-        String descriptionText = itemInfo.getQuestionText();
+        String descriptionText = itemFormatter.getQuestionText();
 
-        if (itemInfo.getMaxNumRepeats() > 1) {
-            descriptionText += "\n May have up to " + itemInfo.getMaxNumRepeats() +
+        if (itemFormatter.getMaxNumRepeats() > 1) {
+            descriptionText += "\n May have up to " + itemFormatter.getMaxNumRepeats() +
                     " response variables, denoted with _2, _3, etc. for each response after the first.";
         }
         String optionText = "";
-        if (!itemInfo.getChoices().isEmpty() && !itemInfo.isSplitOptionsIntoColumns()) {
-            if (isLargeNumericDropdown(itemInfo.getChoices())) {
-                optionText = renderNumericDropdownText(itemInfo.getChoices());
+        if (!itemFormatter.getChoices().isEmpty() && !itemFormatter.isSplitOptionsIntoColumns()) {
+            if (isLargeNumericDropdown(itemFormatter.getChoices())) {
+                optionText = renderNumericDropdownText(itemFormatter.getChoices());
             } else {
-                optionText = renderChoicesText(itemInfo.getChoices());
+                optionText = renderChoicesText(itemFormatter.getChoices());
             }
         }
-        String header = surveyFormatter.getColumnHeader(moduleInfo, itemInfo, false, null);
+        String header = moduleFormatter.getColumnHeader(itemFormatter, false, null, 1);
         addRowToSheet(header, dataType, questionType, descriptionText, optionText);
 
-        if (!itemInfo.getChoices().isEmpty() && itemInfo.isSplitOptionsIntoColumns()) {
-            for (QuestionChoice choice : itemInfo.getChoices()) {
-                String choiceHeader = surveyFormatter.getColumnHeader(moduleInfo, itemInfo, false, choice);
+        if (!itemFormatter.getChoices().isEmpty() && itemFormatter.isSplitOptionsIntoColumns()) {
+            for (QuestionChoice choice : itemFormatter.getChoices()) {
+                String choiceHeader = moduleFormatter.getColumnHeader(itemFormatter, false, choice, 1);
                 addRowToSheet(choiceHeader, null, null, choice.text(), SPLIT_OPTIONS_OPT_TEXT);
             }
         }
-        if (itemInfo.isHasOtherDescription()) {
-            String otherHeader = surveyFormatter.getColumnHeader(moduleInfo, itemInfo, true, null);
+        if (itemFormatter.isHasOtherDescription()) {
+            String otherHeader = moduleFormatter.getColumnHeader(itemFormatter, true, null, 1);
             addRowToSheet(otherHeader, "text", "TEXT", "additional detail", null);
         }
     }

@@ -18,16 +18,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 /** Holds logic for building and processing consent tasks, and event listeners for triggering updates */
 @Service
+@Slf4j
 public class ConsentTaskDispatcher {
-    private static final Logger logger = LoggerFactory.getLogger(ConsentTaskDispatcher.class);
     private StudyEnvironmentConsentService studyEnvironmentConsentService;
     private ParticipantTaskService participantTaskService;
     private EnrolleeService enrolleeService;
@@ -45,13 +45,13 @@ public class ConsentTaskDispatcher {
      * for why we use two separate listening methods to accomplish that
      */
     @EventListener
-    @Order(DispatcherOrder.CONSENT)
+    @Order(DispatcherOrder.CONSENT_TASK)
     public void handleEvent(EnrolleeCreationEvent enrolleeEvent) {
         updateConsentTasks(enrolleeEvent);
     }
 
     @EventListener
-    @Order(DispatcherOrder.CONSENT)
+    @Order(DispatcherOrder.CONSENT_TASK)
     public void handleEvent(EnrolleeConsentEvent enrolleeEvent) {
         updateConsentTasks(enrolleeEvent);
     }

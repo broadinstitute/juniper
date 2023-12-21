@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Question } from '@juniper/ui-core'
+import { HtmlQuestion, InteractiveQuestion, Question } from '@juniper/ui-core'
 
 import { Checkbox } from 'components/forms/Checkbox'
 import { Textarea } from 'components/forms/Textarea'
@@ -14,7 +14,10 @@ type BaseFieldsProps = {
 /** Controls for editing base question fields. */
 export const BaseFields = (props: BaseFieldsProps) => {
   const { disabled, question, onChange } = props
-
+  if ((question as HtmlQuestion).type === 'html') {
+    return null
+  }
+  const regularQuestion = question as InteractiveQuestion
   return (
     <>
       <div className="mb-3">
@@ -23,10 +26,10 @@ export const BaseFields = (props: BaseFieldsProps) => {
           label="Question text"
           required={!Object.hasOwnProperty.call(question, 'questionTemplateName')}
           rows={2}
-          value={question.title || ''}
+          value={regularQuestion.title || ''}
           onChange={value => {
             onChange({
-              ...question,
+              ...regularQuestion,
               title: value
             })
           }}
@@ -39,10 +42,10 @@ export const BaseFields = (props: BaseFieldsProps) => {
           disabled={disabled}
           label="Description"
           rows={2}
-          value={question.description || ''}
+          value={regularQuestion.description || ''}
           onChange={value => {
             onChange({
-              ...question,
+              ...regularQuestion,
               description: value
             })
           }}
@@ -51,14 +54,14 @@ export const BaseFields = (props: BaseFieldsProps) => {
 
       <div className="mb-3">
         <Checkbox
-          checked={!!question.isRequired}
+          checked={!!regularQuestion.isRequired}
           // eslint-disable-next-line max-len
           description="If checked, participants will be required to enter a response before they can continue to the next page of the form."
           disabled={disabled}
           label="Require response"
           onChange={checked => {
             onChange({
-              ...question,
+              ...regularQuestion,
               isRequired: checked
             })
           }}

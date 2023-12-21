@@ -5,7 +5,6 @@ import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.service.kit.pepper.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -19,7 +18,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -57,7 +55,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
                 .thenReturn("secret");
 
         enrollee = enrolleeFactory.buildPersisted(info.getDisplayName());
-        kitRequest = kitRequestFactory.buildPersisted(info.getDisplayName(), enrollee.getId());
+        kitRequest = kitRequestFactory.buildPersisted(info.getDisplayName(), enrollee);
         address = PepperKitAddress.builder().build();
     }
 
@@ -143,20 +141,20 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
     @Transactional
     @Test
     public void testSendKitRequest() throws Exception {
-        PepperKitStatus kitStatus = PepperKitStatus.builder()
+        PepperKit kitStatus = PepperKit.builder()
                 .juniperKitId(kitRequest.getId().toString())
-                .currentStatus(PepperKitStatus.Status.CREATED.currentStatus)
+                .currentStatus(PepperKitStatus.CREATED.pepperString)
                 .build();
         PepperKitStatusResponse mockResponse = PepperKitStatusResponse.builder()
                         .isError(false)
-                .kits(new PepperKitStatus[]{kitStatus})
+                .kits(new PepperKit[]{kitStatus})
                 .build();
 
         mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(mockResponse));
 
-        PepperKitStatus parsedResponse = client.sendKitRequest("testStudy", enrollee, kitRequest, address);
+        PepperKit parsedResponse = client.sendKitRequest("testStudy", enrollee, kitRequest, address);
 
-        assertThat(parsedResponse.getCurrentStatus(), equalTo(PepperKitStatus.Status.CREATED.currentStatus));
+        assertThat(parsedResponse.getCurrentStatus(), equalTo(PepperKitStatus.CREATED.pepperString));
         verifyRequestForPath("/shipKit");
     }
 
@@ -164,10 +162,10 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
     @Test
     public void testFetchKitStatus() throws Exception {
         // Arrange
-        PepperKitStatus kitStatus = PepperKitStatus.builder()
+        PepperKit kitStatus = PepperKit.builder()
                 .juniperKitId("testFetchKitStatusByStudy1")
                 .build();
-        PepperKitStatus[] kits = { kitStatus };
+        PepperKit[] kits = { kitStatus };
         var pepperResponse = PepperKitStatusResponse.builder()
                 .kits(kits)
                 .isError(false)
@@ -188,13 +186,13 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
     @Test
     public void testFetchKitStatusByStudy() throws Exception {
         // Arrange
-        PepperKitStatus kitStatus1 = PepperKitStatus.builder()
+        PepperKit kitStatus1 = PepperKit.builder()
                 .juniperKitId("testFetchKitStatusByStudy_kit1")
                 .build();
-        PepperKitStatus kitStatus2 = PepperKitStatus.builder()
+        PepperKit kitStatus2 = PepperKit.builder()
                 .juniperKitId("testFetchKitStatusByStudy_kit2")
                 .build();
-        PepperKitStatus[] kits = { kitStatus1, kitStatus2 };
+        PepperKit[] kits = { kitStatus1, kitStatus2 };
         var pepperResponse = PepperKitStatusResponse.builder()
                 .kits(kits)
                 .isError(false)

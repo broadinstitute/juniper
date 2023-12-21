@@ -8,6 +8,7 @@ import { set } from 'lodash/fp'
 import { LoadedPortalContextT } from './PortalProvider'
 import { doApiLoad } from 'api/api-utils'
 import LoadingSpinner from '../util/LoadingSpinner'
+import useUpdateEffect from '../util/useUpdateEffect'
 
 
 type PortalEnvConfigViewProps = {
@@ -27,6 +28,9 @@ const PortalEnvConfigView = ({ portalContext, portalEnv }: PortalEnvConfigViewPr
   const updateConfig = (propName: string, value: string | boolean) => {
     setConfig(set(propName, value))
   }
+  useUpdateEffect(() => {
+    setConfig(portalEnv.portalEnvironmentConfig)
+  }, [portalContext.portal.shortcode, portalEnv.environmentName])
   /** saves any changes to the server */
   const save = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -48,7 +52,7 @@ const PortalEnvConfigView = ({ portalContext, portalEnv }: PortalEnvConfigViewPr
     </div>
     <div>
       <label className="form-label">
-      password <input type="text" className="form-control" value={config.password}
+      password <input type="text" className="form-control" value={config.password ?? ''}
           onChange={e => updateConfig('password', e.target.value)}/>
       </label>
     </div>
@@ -62,14 +66,14 @@ const PortalEnvConfigView = ({ portalContext, portalEnv }: PortalEnvConfigViewPr
     <div>
       <label className="form-label">
       participant hostname
-        <input type="text" className="form-control" value={config.participantHostname}
+        <input type="text" className="form-control" value={config.participantHostname ?? ''}
           onChange={e => updateConfig('participantHostname', e.target.value)}/>
       </label>
     </div>
     <div>
       <label className="form-label">
       Email source address
-        <input type="text" className="form-control" value={config.emailSourceAddress}
+        <input type="text" className="form-control" value={config.emailSourceAddress ?? ''}
           onChange={e => updateConfig('emailSourceAddress', e.target.value)}/>
       </label>
     </div>

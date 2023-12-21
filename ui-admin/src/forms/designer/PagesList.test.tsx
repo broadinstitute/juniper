@@ -40,13 +40,16 @@ describe('PagesList', () => {
     ]
   }
 
-  it('renders list of pages', () => {
-    // Act
-    render(<PagesList formContent={formContent} readOnly={false} onChange={jest.fn()} />)
+  it('renders list of clickable pages', async () => {
+    const setSelectedElementPath = jest.fn()
+    render(<PagesList formContent={formContent} readOnly={false} onChange={jest.fn()}
+      setSelectedElementPath={setSelectedElementPath}/>)
 
     // Assert
     const listItems = screen.getAllByRole('listitem')
     expect(listItems.map(el => el.textContent)).toEqual(['Page 1', 'Page 2', 'Page 3'])
+    await userEvent.click(screen.getByText('Page 2'))
+    expect(setSelectedElementPath).toHaveBeenCalledWith('pages[1]')
   })
 
   it('allows reordering pages', async () => {
@@ -54,7 +57,8 @@ describe('PagesList', () => {
     const user = userEvent.setup()
 
     const onChange = jest.fn()
-    render(<PagesList formContent={formContent} readOnly={false} onChange={onChange} />)
+    render(<PagesList formContent={formContent} readOnly={false} onChange={onChange}
+      setSelectedElementPath={jest.fn()}/>)
 
     // Act
     const listItems = screen.getAllByRole('listitem')
@@ -138,7 +142,8 @@ describe('PagesList', () => {
     const user = userEvent.setup()
 
     const onChange = jest.fn()
-    render(<PagesList formContent={formContent} readOnly={false} onChange={onChange} />)
+    render(<PagesList formContent={formContent} readOnly={false} onChange={onChange}
+      setSelectedElementPath={jest.fn()}/>)
 
     // Act
     const listItems = screen.getAllByRole('listitem')

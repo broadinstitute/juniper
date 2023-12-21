@@ -69,9 +69,14 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
     setEnrollees(enrolleeRows)
   }, [studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
-  const onSubmit = async () => {
+  const onSubmit = async (anyKitWasCreated: boolean) => {
     setShowRequestKitModal(false)
     reload()
+    if (anyKitWasCreated) {
+      /** if any kits were created, that changes the filter state of the table
+       and could result in hidden items still being selected. Clear the selections to be safe */
+      table.toggleAllRowsSelected(false)
+    }
   }
   const enrolleesSelected = Object.keys(rowSelection)
     .filter(key => rowSelection[key])
