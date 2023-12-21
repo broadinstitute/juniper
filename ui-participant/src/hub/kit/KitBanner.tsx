@@ -22,19 +22,19 @@ const iconProps = {
   fontSize: '30px'
 }
 
-const iconClass = 'col-1'
-const eventTextClass = 'col-8'
-const eventDateClass = 'col-3 text-end'
+const iconClass = 'col-xs-2 col-sm-1 col-md-1'
+const eventTextClass = 'col-xs-7 col-sm-8 col-md-8'
+const eventDateClass = 'col-xs-3 col-sm-3 col-md-3 text-end'
 const kitEventClass = 'row mb-3 pt-3'
 
 const renderHeader = () => {
   return <div className={kitEventClass} style={kitHeaderProps}>
-    <div className={iconClass}>
+    <div className='col-2'>
       STATUS
     </div>
-    <div className={eventTextClass}>
+    <div className='col-8'>
     </div>
-    <div className={eventDateClass}>
+    <div className='col-2 text-end'>
       DATE
     </div>
   </div>
