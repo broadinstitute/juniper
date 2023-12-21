@@ -2,10 +2,11 @@ import React from 'react'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen } from '@testing-library/react'
 import { mockKitRequest } from 'test-utils/test-participant-factory'
-import KitTask, { instantToDateString } from './KitTask'
+import KitBanner from './KitBanner'
+import { instantToDateString } from '../../util/timeUtils'
 
 describe('HubPageKits', () => {
-  it('renders a sent kit task', () => {
+  it('renders a sent kit banner', () => {
     const sentKitRequest = mockKitRequest('SENT', 'SALIVA')
     const sentDate = instantToDateString(sentKitRequest.sentAt)
     const kitRequests = [
@@ -13,7 +14,7 @@ describe('HubPageKits', () => {
       mockKitRequest('RECEIVED', 'BLOOD')
     ]
 
-    const { RoutedComponent } = setupRouterTest(<KitTask kitRequests={kitRequests}/>)
+    const { RoutedComponent } = setupRouterTest(<KitBanner kitRequests={kitRequests}/>)
     render(RoutedComponent)
     // with two kits, one sent and one received, we should only see the sent kit
     expect(screen.getByText('Sample collection kits')).toBeInTheDocument()

@@ -83,7 +83,7 @@ public class CurrentUserService {
     user.getPortalParticipantUsers().add(portalUser);
     List<Enrollee> enrollees = enrolleeService.findByPortalParticipantUser(portalUser);
     for (Enrollee enrollee : enrollees) {
-      enrolleeService.loadEnrolleeDetails(enrollee);
+      enrolleeService.loadForParticipantDashboard(enrollee);
     }
     return new UserWithEnrollees(user, enrollees);
   }

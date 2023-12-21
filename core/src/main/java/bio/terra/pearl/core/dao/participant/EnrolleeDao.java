@@ -121,14 +121,14 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
             enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).get());
         }
         enrollee.getParticipantNotes().addAll(participantNoteDao.findByEnrollee(enrollee.getId()));
-        return loadEnrolleeDetails(enrollee);
+        return loadForParticipantDashboard(enrollee);
     }
 
     /**
      * Load enrollee tasks, profile, and kit requests
      * (See loadForAdminView description for performance information)
      */
-    public Enrollee loadEnrolleeDetails(Enrollee enrollee) {
+    public Enrollee loadForParticipantDashboard(Enrollee enrollee) {
         enrollee.getParticipantTasks().addAll(participantTaskDao.findByEnrolleeId(enrollee.getId()));
         enrollee.setProfile(profileDao.loadWithMailingAddress(enrollee.getProfileId()).orElse(null));
         enrollee.getKitRequests().addAll(kitRequestDao.findByEnrollee(enrollee.getId()));
