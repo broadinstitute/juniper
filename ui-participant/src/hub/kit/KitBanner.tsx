@@ -71,17 +71,16 @@ export default function KitBanner({ kitRequests }: {kitRequests: KitRequest[]}) 
   }
 
   return (
-    <div>
-      {unreturnedKits.map(kitRequest => {
-        return <div key={kitRequest.id}>
-          <h2 className="fs-6 text-uppercase mb-0">Sample collection kits</h2>
-          <div className='container'>
-            {renderHeader()}
+    <>
+      <h2 className="fs-6 text-uppercase mb-0">Sample collection kits</h2>
+      {renderHeader()}
+      <ul className="list-unstyled">
+        {unreturnedKits.map(kitRequest => {
+          return <li className="container" key={kitRequest.id}>
             {renderSentStatus(kitRequest)}
-            <div className="list-unstyled pt-4"/>
-          </div>
-        </div>
-      })}
-    </div>
+          </li>
+        })}
+      </ul>
+    </>
   )
 }
