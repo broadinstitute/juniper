@@ -85,7 +85,7 @@ paths:
       responses:
         '200':
           description: list of portal objects
-          content: { application/json: { schema: {type: array, items: { $ref: '#/components/schemas/PortalShallowDto' } } } }
+          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/PortalShallowDto' } } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}:
@@ -94,11 +94,11 @@ paths:
       tags: [ portal ]
       operationId: get
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: {type: string} }
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
       responses:
         '200':
           description: portal object
-          content: { application/json: { schema: { type: object }}}
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/adminUsers:
@@ -111,7 +111,7 @@ paths:
       responses:
         '200':
           description: List of admin users
-          content: { application/json: { schema: {type: object} } }
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
 
@@ -156,7 +156,7 @@ paths:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: id, in: path, required: true, schema: { type: string, format: uuid} }
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
       requestBody:
         required: true
         content: { application/json: { schema: { type: object } } }
@@ -178,7 +178,7 @@ paths:
       responses:
         '200':
           description: survey object
-          content: { application/json: { schema: {type: object} } }
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/surveys/{stableId}:
@@ -217,7 +217,7 @@ paths:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
       requestBody:
         required: true
-        content: { application/json: { schema: {type: object} } }
+        content: { application/json: { schema: { type: object } } }
       responses:
         '200':
           description: saved survey object
@@ -234,11 +234,11 @@ paths:
         - { name: stableId, in: path, required: true, schema: { type: string } }
       requestBody:
         required: true
-        content: { application/json: { schema: {type: object} } }
+        content: { application/json: { schema: { type: object } } }
       responses:
         '200':
           description: saved survey object
-          content: { application/json: { schema: {type: object} } }
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys:
@@ -519,11 +519,11 @@ paths:
         - { name: envName, in: path, required: true, schema: { type: string } }
       requestBody:
         required: true
-        content: { application/json: { schema: {type: object} } }
+        content: { application/json: { schema: { type: object } } }
       responses:
         '200':
           description: saved studyEnvironment object
-          content: { application/json: { schema:  {type: object} } }
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/stats:
@@ -538,7 +538,7 @@ paths:
       responses:
         '200':
           description: saved studyEnvironment object
-          content: { application/json: { schema: {type: object} } }
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees:
@@ -554,7 +554,7 @@ paths:
       responses:
         '200':
           description: EnrolleeSearchResult objects
-          content: { application/json: { schema: {type: object} } }
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/metrics/{metricName}:
@@ -634,6 +634,22 @@ paths:
       responses:
         '200':
           description: List of DataChangeRecords
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/events:
+    get:
+      summary: List of events created by enrollee
+      tags: [ event ]
+      operationId: getEventsByEnrollee
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Events
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
@@ -746,7 +762,7 @@ paths:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: configId, in: path, required: true, schema: { type: string, format: uuid} }
+        - { name: configId, in: path, required: true, schema: { type: string, format: uuid } }
       responses:
         '200':
           description: The notification config
@@ -761,7 +777,7 @@ paths:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: configId, in: path, required: true, schema: { type: string, format: uuid} }
+        - { name: configId, in: path, required: true, schema: { type: string, format: uuid } }
       requestBody:
         required: true
         content: { application/json: { schema: { type: object } } }
@@ -884,7 +900,7 @@ paths:
       responses:
         '200':
           description: portal object
-          content: { application/json: { schema: {type: object} } }
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/current-user/v1/unauthed/refresh:
@@ -910,7 +926,7 @@ paths:
       operationId: login
       requestBody:
         required: true
-        content: { application/json: { schema: {$ref: '#/components/schemas/TokenLoginInfo' } } }
+        content: { application/json: { schema: { $ref: '#/components/schemas/TokenLoginInfo' } } }
       responses:
         '200':
           description: user object
@@ -969,7 +985,7 @@ paths:
       responses:
         '200':
           description: admin user object
-          content: { application/json: { schema: {$ref: '#/components/schemas/AdminUserDto' }}}
+          content: { application/json: { schema: { $ref: '#/components/schemas/AdminUserDto' } } }
         '404':
           description: admin user not found
         '500':
@@ -1447,7 +1463,7 @@ components:
     TokenLoginInfo:
       type: object
       properties:
-        token: {type: string}
+        token: { type: string }
     StudyEnvironmentDto:
       type: object
       properties:
@@ -1473,10 +1489,10 @@ components:
     PortalShallowDto:
       type: object
       properties:
-        id: {type: string, format: uuid}
-        shortcode: {type: string}
-        name: {type: string}
-        portalStudies: {type: array}
+        id: { type: string, format: uuid }
+        shortcode: { type: string }
+        name: { type: string }
+        portalStudies: { type: array }
     RoleList:
       type: object
       properties:
