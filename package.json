@@ -19,6 +19,7 @@
     "eslint-import-resolver-typescript": "^3.5.5",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsdoc": "^46.2.6",
+    "eslint-plugin-unused-imports": "^2.0.0",
     "prettier": "^1.19.1",
     "prettier-eslint": "^11.0.0",
     "react-scripts": "5.0.1",

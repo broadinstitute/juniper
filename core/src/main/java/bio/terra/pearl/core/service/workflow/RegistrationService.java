@@ -23,14 +23,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 public class RegistrationService {
-    private static final Logger logger = LoggerFactory.getLogger(RegistrationService.class);
     private SurveyService surveyService;
     private PortalEnvironmentService portalEnvService;
     private PreregistrationResponseDao preregistrationResponseDao;
@@ -122,7 +121,7 @@ public class RegistrationService {
             preregistrationResponseDao.update(preRegResponse);
         }
         eventService.publishPortalRegistrationEvent(user, ppUser, portalEnv);
-        logger.info("Portal registration: userId: {}, portal: {}", user.getId(), portalShortcode);
+        log.info("Portal registration: userId: {}, portal: {}", user.getId(), portalShortcode);
         return new RegistrationResult(user, ppUser);
     }
 

@@ -12,11 +12,12 @@ type PageListDesignerProps = {
     formContent: FormContent
     readOnly: boolean
     onChange: (newValue: FormContent) => void
+    setSelectedElementPath: (path: string) => void
 }
 
 /** UI for editing pages in a form. */
 export const PageListDesigner = (props: PageListDesignerProps) => {
-  const { formContent, readOnly, onChange } = props
+  const { formContent, readOnly, onChange, setSelectedElementPath } = props
   const { pages = [] } = formContent
 
   const newPage = () => ({ elements: [] })
@@ -45,6 +46,7 @@ export const PageListDesigner = (props: PageListDesignerProps) => {
           <p>This form does not contain any pages.</p>
         ) : (
           <PagesList
+            setSelectedElementPath={setSelectedElementPath}
             formContent={formContent}
             readOnly={readOnly}
             onChange={onChange}

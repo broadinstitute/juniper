@@ -9,13 +9,12 @@ import {
   KitRequest,
   KitType,
   NotificationConfig,
-  ParticipantNote,
+  ParticipantNote, PepperKit,
   Portal,
   PortalStudy, SiteImageMetadata,
   StudyEnvironmentConsent, SurveyResponse
 } from 'api/api'
-import { Survey } from '@juniper/ui-core/build/types/forms'
-import { ParticipantTask } from '@juniper/ui-core/build/types/task'
+import { Survey, ParticipantTask, ParticipantTaskType } from '@juniper/ui-core'
 
 import _times from 'lodash/times'
 import _random from 'lodash/random'
@@ -78,7 +77,8 @@ export const mockSurvey: () => Survey = () => ({
   content: '{}',
   name: 'Survey number one',
   lastUpdatedAt: 0,
-  createdAt: 0
+  createdAt: 0,
+  surveyType: 'RESEARCH'
 })
 
 /** returns a mock portal study */
@@ -207,11 +207,25 @@ export const mockKitType: () => KitType = () => ({
   description: 'Test sample collection kit'
 })
 
+/** returns a mock PepperKitStatus */
+export const mockExternalKitRequest = (): PepperKit => {
+  return {
+    kitId: '',
+    currentStatus: 'Kit Without Label',
+    labelDate: '',
+    scanDate: '',
+    receiveDate: '',
+    trackingNumber: '',
+    returnTrackingNumber: '',
+    errorMessage: ''
+  }
+}
+
 /** returns a mock kit request */
 export const mockKitRequest: (args?: {
   enrollee?: Enrollee,
-  dsmStatus?: string
-}) => KitRequest = ({ enrollee, dsmStatus } = {}) => ({
+  status?: string
+}) => KitRequest = ({ enrollee, status } = {}) => ({
   id: 'kitRequestId',
   createdAt: 1,
   enrollee,
@@ -227,18 +241,9 @@ export const mockKitRequest: (args?: {
     postalCode: '02138',
     country: 'US'
   }),
-  status: 'CREATED',
-  dsmStatus,
-  pepperStatus: {
-    kitId: '',
-    currentStatus: 'Kit Without Label',
-    labelDate: '',
-    scanDate: '',
-    receiveDate: '',
-    trackingNumber: '',
-    returnTrackingNumber: '',
-    errorMessage: ''
-  }
+  status: status || 'CREATED',
+  externalKit: JSON.stringify(mockExternalKitRequest()),
+  parsedExternalKit: mockExternalKitRequest()
 })
 
 /** returns a simple mock enrollee loosely based on the jsalk.json synthetic enrollee */
@@ -289,8 +294,8 @@ export const mockEnrolleeSearchResult: () => EnrolleeSearchResult = () => {
 }
 
 /** helper function to generate a ParticipantTask object for a survey and enrollee */
-export const taskForForm = (form: Survey | ConsentForm, enrolleeId: string,
-  isConsent: boolean): ParticipantTask => {
+export const taskForForm = (form: Survey | ConsentForm, enrolleeId: string, taskType: ParticipantTaskType):
+    ParticipantTask => {
   return {
     id: randomString(10),
     blocksHub: false,
@@ -299,7 +304,7 @@ export const taskForForm = (form: Survey | ConsentForm, enrolleeId: string,
     portalParticipantUserId: randomString(10),
     status: 'NEW',
     studyEnvironmentId: randomString(10),
-    taskType: isConsent ? 'CONSENT' : 'SURVEY',
+    taskType,
     targetName: form.name,
     targetStableId: form.stableId,
     targetAssignedVersion: form.version,

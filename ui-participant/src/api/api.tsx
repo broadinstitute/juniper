@@ -1,5 +1,6 @@
 import {
   ConsentResponse,
+  ParticipantDashboardAlert,
   ParticipantTask,
   Portal,
   PreEnrollmentResponse,
@@ -72,6 +73,23 @@ export type Enrollee = {
 
 export type Profile = {
   sexAtBirth: string
+}
+
+export type KitRequest = {
+  id: string,
+  createdAt: number,
+  kitType: KitType,
+  sentToAddress?: string,
+  status: string,
+  sentAt?: number,
+  receivedAt?: number
+}
+
+export type KitType = {
+  id: string,
+  name: string,
+  displayName: string,
+  description: string
 }
 
 export type RegistrationResponse = {
@@ -170,6 +188,12 @@ export default {
     const parsedResponse: Portal = await this.processJsonResponse(response)
     updateEnvSpec(parsedResponse.shortcode)
     return parsedResponse
+  },
+
+  async getPortalEnvDashboardAlerts(portalShortcode: string, envName: string): Promise<ParticipantDashboardAlert[]> {
+    const url = `${API_ROOT}/public/portals/v1/${portalShortcode}/env/${envName}/dashboard/config/alerts`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
   },
 
   /** submit portal preregistration survey data */

@@ -32,13 +32,22 @@ import { DocumentTitle } from 'util/DocumentTitle'
 const TASK_ID_PARAM = 'taskId'
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
 
+/** gets the task ID from the URL */
+export const useTaskIdParam = (): string | null => {
+  const [searchParams] = useSearchParams()
+  return searchParams.get(TASK_ID_PARAM)
+}
+
 /**
  * display a single survey form to a participant.
  */
-export function RawSurveyView({ form, enrollee, resumableData, pager, studyShortcode, taskId, activeResponse }:
+export function RawSurveyView({
+  form, enrollee, resumableData, pager, studyShortcode,
+  taskId, activeResponse, showHeaders=true
+}:
 {
   form: Survey, enrollee: Enrollee, taskId: string, activeResponse?: SurveyResponse,
-  resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string
+  resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string, showHeaders?: boolean
 }) {
   const navigate = useNavigate()
   const { updateEnrollee } = useUser()
@@ -70,11 +79,11 @@ export function RawSurveyView({ form, enrollee, resumableData, pager, studyShort
       const hubUpdate: HubUpdate = {
         message: {
           title: `${form.name} completed`,
-          type: 'success'
+          type: 'SUCCESS'
         }
       }
       await updateEnrollee(response.enrollee)
-      navigate('/hub', { state: hubUpdate })
+      navigate('/hub', { state: showHeaders ? hubUpdate : undefined })
     } catch {
       refreshSurvey(surveyModel, null)
     }
@@ -138,8 +147,8 @@ export function RawSurveyView({ form, enrollee, resumableData, pager, studyShort
       <DocumentTitle title={form.name} />
       {/* f3f3f3 background is to match surveyJs "modern" theme */}
       <div style={{ background: '#f3f3f3' }} className="flex-grow-1">
-        <SurveyReviewModeButton surveyModel={surveyModel}/>
-        <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">{form.name}</h1>
+        { showHeaders && <SurveyReviewModeButton surveyModel={surveyModel}/> }
+        { showHeaders && <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">{form.name}</h1> }
         <SurveyComponent model={surveyModel}/>
         <SurveyFooter survey={form} surveyModel={surveyModel}/>
       </div>
@@ -163,11 +172,11 @@ export function SurveyFooter({ survey, surveyModel }: { survey: Survey, surveyMo
 
 /** handles paging the form */
 export function PagedSurveyView({
-  form, activeResponse, enrollee, studyShortcode, taskId
+  form, activeResponse, enrollee, studyShortcode, taskId, showHeaders=true
 }:
 {
   form: StudyEnvironmentSurvey, activeResponse?: SurveyResponse, enrollee: Enrollee,
-  studyShortcode: string, taskId: string, autoSaveInterval?: number
+  studyShortcode: string, taskId: string, autoSaveInterval?: number, showHeaders?: boolean
 }) {
   const resumableData = makeSurveyJsData(activeResponse?.resumeData,
     activeResponse?.answers, enrollee.participantUserId)
@@ -175,11 +184,11 @@ export function PagedSurveyView({
   const pager = useRoutablePageNumber()
 
   return <RawSurveyView enrollee={enrollee} form={form.survey} taskId={taskId} activeResponse={activeResponse}
-    resumableData={resumableData} pager={pager} studyShortcode={studyShortcode}/>
+    resumableData={resumableData} pager={pager} studyShortcode={studyShortcode} showHeaders={showHeaders}/>
 }
 
 /** handles loading the survey form and responses from the server */
-function SurveyView() {
+function SurveyView({ showHeaders=true }: {showHeaders?: boolean}) {
   const { portal } = usePortalEnv()
   const { enrollees } = useUser()
   const [formAndResponses, setFormAndResponse] = useState<SurveyWithResponse | null>(null)
@@ -188,8 +197,7 @@ function SurveyView() {
   const version = parseInt(params.version ?? '')
   const studyShortcode = params.studyShortcode
 
-  const [searchParams] = useSearchParams()
-  const taskId = searchParams.get(TASK_ID_PARAM) ?? ''
+  const taskId = useTaskIdParam() ?? ''
   const navigate = useNavigate()
 
   if (!stableId || !version || !studyShortcode) {
@@ -220,6 +228,7 @@ function SurveyView() {
       activeResponse={formAndResponses.surveyResponse}
       studyShortcode={studyShortcode}
       taskId={taskId}
+      showHeaders={showHeaders}
     />
   )
 }

@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: portal_participant_user
+      author: cunningh
+      changes:
+        - addUniqueConstraint:
+            tableName: portal_participant_user
+            constraintName: uc_pp_user_profile_id
+            columnNames: profile_id

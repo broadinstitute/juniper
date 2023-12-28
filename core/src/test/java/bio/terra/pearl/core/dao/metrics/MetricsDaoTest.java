@@ -97,11 +97,11 @@ public class MetricsDaoTest extends BaseSpringBootTest {
     Enrollee enrollee3 = enrolleeFactory.buildPersisted("testStudySurveyMetric", studyEnv);
     var ppUser3 = portalParticipantUserFactory.buildPersisted("testStudySurveyMetric", enrollee3, portalEnv);
 
-    var task = surveyTaskDispatcher.buildTask(studyEnvSurvey, enrollee1, ppUser1);
+    var task = surveyTaskDispatcher.buildTask(studyEnvSurvey, studyEnvSurvey.getSurvey(), enrollee1, ppUser1);
     task.setStatus(TaskStatus.COMPLETE);
     participantTaskService.create(task);
-    participantTaskService.create(surveyTaskDispatcher.buildTask(studyEnvSurvey, enrollee2, ppUser2));
-    var taskToUpdate = participantTaskService.create(surveyTaskDispatcher.buildTask(studyEnvSurvey, enrollee3, ppUser3));
+    participantTaskService.create(surveyTaskDispatcher.buildTask(studyEnvSurvey, studyEnvSurvey.getSurvey(), enrollee2, ppUser2));
+    var taskToUpdate = participantTaskService.create(surveyTaskDispatcher.buildTask(studyEnvSurvey, studyEnvSurvey.getSurvey(), enrollee3, ppUser3));
 
     var rangeMetrics = metricsDao.studyRequiredSurveyCompletions(studyEnv.getId(), new TimeRange(null, null));
     assertThat(rangeMetrics, hasSize(1));

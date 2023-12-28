@@ -1,4 +1,14 @@
-import { Enrollee, HubResponse, ParticipantUser, Profile } from 'api/api'
+import {
+  Enrollee,
+  HubResponse,
+  KitRequest,
+  KitType,
+  ParticipantTask,
+  ParticipantTaskStatus,
+  ParticipantTaskType,
+  ParticipantUser,
+  Profile
+} from 'api/api'
 
 
 /** gets a mock ParticipantUser */
@@ -39,6 +49,49 @@ export const mockProfile = (): Profile => {
   }
 }
 
+/** mock research survey task */
+export const mockParticipantTask = (taskType: ParticipantTaskType, status: ParticipantTaskStatus): ParticipantTask => {
+  return {
+    id: randomId('task'),
+    enrolleeId: randomId('enrollee'),
+    portalParticipantUserId: randomId('ppUser'),
+    targetName: 'Survey 1',
+    targetStableId: 'researchSurvey1',
+    targetAssignedVersion: 1,
+    studyEnvironmentId: randomId('studyEnv'),
+    createdAt: 0,
+    lastUpdatedAt: 0,
+    status,
+    taskType,
+    taskOrder: 0,
+    blocksHub: true
+  }
+}
+
+/** mock a kit request */
+export const mockKitRequest = (kitStatus: string, kitType: string): KitRequest => {
+  const now = new Date().getTime() * 1000
+  return {
+    id: 'kitRequest1',
+    kitType: mockKitType(kitType),
+    createdAt: now,
+    status: kitStatus,
+    sentToAddress: '123 Main St',
+    ...(['SENT', 'RECEIVED'].includes(kitStatus) && { sentAt: now }),
+    ...(['RECEIVED'].includes(kitStatus) && { receivedAt: now })
+  }
+}
+
+/** mock a kit type */
+export const mockKitType = (kitType: string): KitType => {
+  return {
+    id: 'kitType1',
+    name: kitType,
+    displayName: (kitType == 'SALIVA' ? 'Saliva' : 'Blood'),
+    description: `${kitType}  kit`
+  }
+}
+
 /** mock hub response including no tasks and a mock enrollee */
 export const mockHubResponse = (): HubResponse => {
   return {
@@ -47,4 +100,9 @@ export const mockHubResponse = (): HubResponse => {
     response: {},
     profile: mockProfile()
   }
+}
+
+/** random ids to be used in place of guids */
+export const randomId = (prefix: string): string => {
+  return `${prefix}${Math.floor(Math.random() * 1000)}`
 }

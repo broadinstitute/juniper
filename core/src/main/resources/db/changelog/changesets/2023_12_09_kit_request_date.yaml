@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: kit_request_date
+      author: cunningh
+      changes:
+        - addColumn:
+            tableName: kit_request
+            columns:
+              - column: { name: sent_at, type: datetime }
+              - column: { name: received_at, type: datetime }

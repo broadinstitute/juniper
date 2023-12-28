@@ -34,12 +34,7 @@
         "eventType": "STUDY_ENROLLMENT",
         "emailTemplateStableId": "hh_cymop_studyEnroll",
         "emailTemplateVersion": 1
-      }],
-      "enrolleeFiles": [
-        "enrollees/gertrudeElion.json",
-        "enrollees/newEnrollee.json",
-        "enrollees/consentedEnrollee.json"
-      ]
+      }]
     },
     {
       "environmentName": "irb",

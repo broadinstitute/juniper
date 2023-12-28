@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service.datarepo;
 
 import bio.terra.datarepo.model.TableDataType;
-import bio.terra.pearl.core.service.export.formatters.DataValueExportType;
+import bio.terra.pearl.core.service.export.DataValueExportType;
 
 public class DataRepoExportUtils {
 

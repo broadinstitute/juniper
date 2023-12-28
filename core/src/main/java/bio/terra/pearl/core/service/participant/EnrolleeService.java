@@ -114,6 +114,10 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.loadForAdminView(enrollee);
     }
 
+    public Enrollee loadForParticipantDashboard(Enrollee enrollee) {
+        return dao.loadForParticipantDashboard(enrollee);
+    }
+
     public Optional<Enrollee> findByPreEnrollResponseId(UUID preEnrollResponseId) {
         return dao.findByPreEnrollResponseId(preEnrollResponseId);
     }

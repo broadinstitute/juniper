@@ -4,6 +4,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyType;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -19,16 +20,16 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 /** listens for events and updates enrollee survey tasks accordingly */
 @Service
+@Slf4j
 public class SurveyTaskDispatcher {
-    private static final Logger logger = LoggerFactory.getLogger(SurveyTaskDispatcher.class);
     private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     private ParticipantTaskService participantTaskService;
 
@@ -40,7 +41,7 @@ public class SurveyTaskDispatcher {
 
     /** survey tasks could be triggered by just about anything, so listen to all enrollee events */
     @EventListener
-    @Order(DispatcherOrder.SURVEY)
+    @Order(DispatcherOrder.SURVEY_TASK)
     public void createSurveyTasks(EnrolleeEvent enrolleeEvent) {
         List<StudyEnvironmentSurvey> studyEnvSurveys = studyEnvironmentSurveyService
                 .findAllByStudyEnvIdWithSurvey(enrolleeEvent.getEnrollee().getStudyEnvironmentId());
@@ -49,14 +50,15 @@ public class SurveyTaskDispatcher {
                 enrolleeEvent.getEnrolleeRuleData(),
                 studyEnvSurveys);
         for (ParticipantTask task : tasksToAdd) {
-            logger.info("Task creation: enrollee {}  -- task {}, target {}", enrolleeEvent.getEnrollee().getShortcode(),
+            log.info("Task creation: enrollee {}  -- task {}, target {}", enrolleeEvent.getEnrollee().getShortcode(),
                     task.getTaskType(), task.getTargetStableId());
             task = participantTaskService.create(task);
             enrolleeEvent.getEnrollee().getParticipantTasks().add(task);
         }
     }
 
-    /** builds the consent tasks, does not add them to the event or persist them */
+    /** builds the survey tasks, does not add them to the event or persist them,
+     * studyEnvSurveys must each have the Survey attached */
     public List<ParticipantTask> buildTasks(Enrollee enrollee,
                                             PortalParticipantUser portalParticipantUser,
                                             EnrolleeRuleData enrolleeRuleData,
@@ -64,7 +66,7 @@ public class SurveyTaskDispatcher {
         List<ParticipantTask> tasks = new ArrayList<>();
         for (StudyEnvironmentSurvey studySurvey : studyEnvSurveys) {
             if (isEligibleForSurvey(studySurvey.getEligibilityRule(), enrolleeRuleData)) {
-                ParticipantTask task = buildTask(studySurvey, enrollee, portalParticipantUser);
+                ParticipantTask task = buildTask(studySurvey, studySurvey.getSurvey(), enrollee, portalParticipantUser);
                 if (!isDuplicateTask(studySurvey, task, enrollee.getParticipantTasks())) {
                     tasks.add(task);
                 }
@@ -78,9 +80,10 @@ public class SurveyTaskDispatcher {
     }
 
     /** builds a task for the given survey -- does NOT evaluate the rule */
-    public ParticipantTask buildTask(StudyEnvironmentSurvey studySurvey,
+    public ParticipantTask buildTask(StudyEnvironmentSurvey studySurvey, Survey survey,
                                      Enrollee enrollee, PortalParticipantUser portalParticipantUser) {
-        Survey survey = studySurvey.getSurvey();
+        TaskType taskType = SurveyType.OUTREACH.equals(survey.getSurveyType()) ?
+                TaskType.OUTREACH : TaskType.SURVEY;
         ParticipantTask task = ParticipantTask.builder()
                 .enrolleeId(enrollee.getId())
                 .portalParticipantUserId(portalParticipantUser.getId())
@@ -89,7 +92,7 @@ public class SurveyTaskDispatcher {
                 .taskOrder(studySurvey.getSurveyOrder())
                 .targetStableId(survey.getStableId())
                 .targetAssignedVersion(survey.getVersion())
-                .taskType(TaskType.SURVEY)
+                .taskType(taskType)
                 .targetName(survey.getName())
                 .status(TaskStatus.NEW)
                 .build();
@@ -103,13 +106,12 @@ public class SurveyTaskDispatcher {
      */
     public static boolean isDuplicateTask(StudyEnvironmentSurvey studySurvey, ParticipantTask task,
                                    Set<ParticipantTask> allTasks) {
-        return !allTasks.stream().filter(existingTask ->
-                existingTask.getTargetStableId().equals(task.getTargetStableId()) &&
+        return !allTasks.stream()
+                .filter(existingTask -> (existingTask.getTaskType() == TaskType.SURVEY) &&
+                        existingTask.getTargetStableId().equals(task.getTargetStableId()) &&
                         !isRecurrenceWindowOpen(studySurvey, existingTask))
                 .toList().isEmpty();
     }
-
-
 
     /**
      * whether or not sufficient time has passed since a previous instance of a survey being assigned to assign

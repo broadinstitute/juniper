@@ -23,7 +23,7 @@ public class PublishingUtils {
                                     EnvironmentName destEnvName) throws Exception {
         C destConfig = configService.find(versionedConfigChange.destId()).get();
         for (ConfigChange change : versionedConfigChange.configChanges()) {
-            PropertyUtils.setProperty(destConfig, change.propertyName(), change.newValue());
+            setPropertyEnumSafe(destConfig, change.propertyName(), change.newValue());
         }
         if (versionedConfigChange.documentChange().isChanged()) {
             VersionedEntityChange<T> docChange = versionedConfigChange.documentChange();
@@ -56,5 +56,17 @@ public class PublishingUtils {
             T entity = service.find(newConfig.versionedEntityId()).get();
             service.assignPublishedVersion(entity.getId());
         }
+    }
+
+    public static void setPropertyEnumSafe(Object object, String propertyName, Object newValue) throws Exception {
+        if(object.getClass().getDeclaredField(propertyName).getType().isEnum()) {
+            PropertyUtils.setProperty(object, propertyName, stringToEnum((Class<Enum>) PropertyUtils.getPropertyType(object, propertyName), newValue.toString()));
+        } else {
+            PropertyUtils.setProperty(object, propertyName, newValue);
+        }
+    }
+
+    public static <T extends Enum<T>> T stringToEnum(Class<T> enumType, String value) {
+        return Enum.valueOf(enumType, value);
     }
 }

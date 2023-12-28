@@ -26,7 +26,7 @@ import { renderPageHeader } from 'util/pageUtils'
 export default function MailingListView({ portalContext, portalEnv }:
 {portalContext: LoadedPortalContextT, portalEnv: PortalEnvironment}) {
   const [contacts, setContacts] = useState<MailingListContact[]>([])
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
   const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const columns: ColumnDef<MailingListContact>[] = [{

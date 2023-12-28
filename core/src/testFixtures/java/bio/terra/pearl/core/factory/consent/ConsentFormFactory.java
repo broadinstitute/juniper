@@ -28,6 +28,10 @@ public class ConsentFormFactory {
         return builder(testName);
     }
 
+    public ConsentForm buildPersisted(ConsentForm.ConsentFormBuilder builder) {
+        return consentFormService.create(builder.build());
+    }
+
     public ConsentForm buildPersisted(String testName) {
         return consentFormService.create(builderWithDependencies(testName).build());
     }

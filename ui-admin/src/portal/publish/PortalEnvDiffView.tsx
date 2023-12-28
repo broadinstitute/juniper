@@ -16,10 +16,11 @@ export const emptyChangeSet: PortalEnvironmentChange = {
   configChanges: [],
   preRegSurveyChanges: { changed: false },
   notificationConfigChanges: { addedItems: [], removedItems: [], changedItems: [] },
+  participantDashboardAlertChanges: [],
   studyEnvChanges: []
 }
 
-const emptyStudyEnvChange: StudyEnvironmentChange = {
+export const emptyStudyEnvChange: StudyEnvironmentChange = {
   studyShortcode: '',
   configChanges: [],
   preEnrollSurveyChanges: { changed: false },
@@ -44,6 +45,12 @@ const getDefaultPortalEnvChanges = (changes: PortalEnvironmentChange) => {
   }
   return {
     ...emptyChangeSet,
+    participantDashboardAlertChanges: changes.participantDashboardAlertChanges.map(alertChange => (
+      {
+        trigger: alertChange.trigger,
+        changes: []
+      }
+    )),
     studyEnvChanges: changes.studyEnvChanges.map(studyEnvChange => (
       {
         ...getDefaultStudyEnvChanges(studyEnvChange),
@@ -81,7 +88,7 @@ type EnvironmentDiffProps = {
  * loads and displays the differences between two portal environments
  * */
 export default function PortalEnvDiffView(
-  { changeSet, destEnvName, applyChanges, sourceEnvName }: EnvironmentDiffProps) {
+  { changeSet, destEnvName, applyChanges, sourceEnvName, portal }: EnvironmentDiffProps) {
   const [selectedChanges, setSelectedChanges] = useState<PortalEnvironmentChange>(getDefaultPortalEnvChanges(changeSet))
 
   const updateSelectedStudyEnvChanges = (update: StudyEnvironmentChange) => {
@@ -134,6 +141,38 @@ export default function PortalEnvDiffView(
       </div>
       <div className="my-2">
         <h2 className="h6">
+          Participant dashboard alerts</h2>
+        <div className="ms-4">
+          { changeSet.participantDashboardAlertChanges.length > 0 ?
+            changeSet.participantDashboardAlertChanges.map(alertChange => (
+              <div key={alertChange.trigger} className="px-3 my-2 py-2" style={{ backgroundColor: '#ededed' }}>
+                <h2 className="h5 pb-2">{alertChange.trigger}</h2>
+                <ConfigChanges configChanges={alertChange.changes}
+                  selectedChanges={selectedChanges.participantDashboardAlertChanges.find(change =>
+                    change.trigger === alertChange.trigger)?.changes || []
+                  }
+                  updateSelectedChanges={(updatedConfigChanges: ConfigChange[]) => {
+                    const updatedAlertChanges = selectedChanges.participantDashboardAlertChanges
+                    const alertIndex = updatedAlertChanges.findIndex(change =>
+                      change.trigger === alertChange.trigger)
+                    updatedAlertChanges[alertIndex] = {
+                      trigger: alertChange.trigger,
+                      changes: updatedConfigChanges
+                    }
+                    setSelectedChanges({
+                      ...selectedChanges,
+                      participantDashboardAlertChanges: updatedAlertChanges
+                    })
+                  }}
+                />
+              </div>
+            )) :
+            <span className="fst-italic text-muted">no changes</span>
+          }
+        </div>
+      </div>
+      <div className="my-2">
+        <h2 className="h6">
           Prereg survey
           <span className="fst-italic text-muted fs-6 ms-3">
             (Note this is pre-registration for the Portal as a whole, not a
@@ -160,7 +199,9 @@ export default function PortalEnvDiffView(
         {changeSet.studyEnvChanges.map(studyEnvChange => {
           const matchedChange = selectedChanges.studyEnvChanges
             .find(change => change.studyShortcode === studyEnvChange.studyShortcode) as StudyEnvironmentChange
-          return <StudyEnvDiff key={studyEnvChange.studyShortcode} studyEnvChange={studyEnvChange}
+          const studyName = portal.portalStudies.find(portalStudy =>
+            portalStudy.study.shortcode === studyEnvChange.studyShortcode)?.study.name || studyEnvChange.studyShortcode
+          return <StudyEnvDiff key={studyEnvChange.studyShortcode} studyName={studyName} studyEnvChange={studyEnvChange}
             selectedChanges={matchedChange} setSelectedChanges={updateSelectedStudyEnvChanges}/>
         })}
       </div>

@@ -13,17 +13,15 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
-import bio.terra.pearl.core.model.workflow.AdminTask;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
-import bio.terra.pearl.core.service.export.instance.ExportOptions;
-import bio.terra.pearl.core.service.export.instance.ModuleExportInfo;
+import bio.terra.pearl.core.service.export.ExportOptions;
+import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -66,7 +64,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
         portalPopulator.populate(new FilePopulateContext("portals/ourhealth/portal.json"), true);
     }
 
-    private void checkOurhealthSurveys(List<Enrollee> enrollees) throws IOException {
+    private void checkOurhealthSurveys(List<Enrollee> enrollees) {
         Enrollee jonas = getJonasSalk(enrollees);
         Survey cardioHistorySurvey = surveyService.findByStableId("oh_oh_cardioHx", 1).get();
 
@@ -78,7 +76,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
         SurveyResponse fetchedResponse = surveyResponseService.findOneWithAnswers(cardioHistoryResp.getId()).get();
         Answer heartHealthAns = fetchedResponse.getAnswers().stream()
                 .filter(ans -> ans.getQuestionStableId().equals("oh_oh_cardioHx_worriedHeartHealth")).findFirst().get();
-        Assertions.assertEquals("yesSpecificallyAboutMyHeart", heartHealthAns.getStringValue());
+        Assertions.assertEquals("yes", heartHealthAns.getStringValue());
     }
 
     private void checkOurhealthSiteContent(UUID portalId) {
@@ -111,10 +109,10 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
         assertThat(taskInfo.participantNotes(), hasSize(3));
     }
 
-    private void checkExportContent(UUID sandboxEnvironmentId) throws Exception {
+    private void checkExportContent(UUID sandboxEnvironmentId) {
         // test the analysis-friendly export as that is the most important for data integrity, and the least visible via admin tool
         ExportOptions options = new ExportOptions(true, true, true, ExportFileFormat.TSV, null);
-        List<ModuleExportInfo> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
+        List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
         List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, options.limit());
 
         assertThat(exportData, hasSize(6));
@@ -122,7 +120,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
                 .findFirst().get();
         assertThat(jsalkMap.get("profile.mailingAddress.street1"), equalTo("415 Main Street"));
         assertThat(jsalkMap.get("oh_oh_cardioHx.oh_oh_cardioHx_worriedHeartHealth"),
-                equalTo("yesSpecificallyAboutMyHeart"));
+                equalTo("yes"));
         assertThat(jsalkMap.get("oh_oh_cardioHx.oh_oh_cardioHx_diagnosedHeartConditions.bleedingDisorder"), equalTo("1"));
         assertThat(jsalkMap.get("oh_oh_cardioHx.oh_oh_cardioHx_diagnosedHeartConditions.anemia"), equalTo("1"));
         assertThat(jsalkMap.get("oh_oh_cardioHx.oh_oh_cardioHx_diagnosedHeartConditions.cardiacArrest"), equalTo(null));

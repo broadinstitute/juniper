@@ -105,6 +105,10 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
         );
     }
 
+    public Optional<ParticipantTask> findByKitRequestId(UUID kitRequestId) {
+        return findByProperty("kit_request_id", kitRequestId);
+    }
+
     @Getter
     @Setter @NoArgsConstructor
     public static class EnrolleeWithTasks {

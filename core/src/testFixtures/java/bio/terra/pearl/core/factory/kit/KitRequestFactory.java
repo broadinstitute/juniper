@@ -6,8 +6,10 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
-import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
+import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.service.kit.pepper.PepperKit;
 import bio.terra.pearl.core.service.kit.pepper.PepperKitAddress;
+import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
@@ -36,32 +38,43 @@ public class KitRequestFactory {
                 .status(KitRequestStatus.CREATED);
     }
 
-    public KitRequest buildPersisted(String testName, UUID enrolleeId) throws JsonProcessingException {
+    public KitRequest buildPersisted(String testName, Enrollee enrollee) throws JsonProcessingException {
         KitType kitType = kitTypeFactory.buildPersisted(testName);
-        var kitRequest = buildPersisted(testName, enrolleeId, kitType.getId());
+        var kitRequest = buildPersisted(testName, enrollee, PepperKitStatus.CREATED, kitType.getId());
         kitRequest.setKitType(kitType);
         return kitRequest;
     }
 
-    public KitRequest buildPersisted(String testName, UUID enrolleeId, UUID kitTypeId) throws JsonProcessingException {
-        AdminUser adminUser = adminUserFactory.buildPersisted(testName);
-        return buildPersisted(testName, enrolleeId, kitTypeId, adminUser.getId());
+    public KitRequest buildPersisted(String testName, Enrollee enrollee, PepperKitStatus pepperKitStatus) throws JsonProcessingException {
+        KitType kitType = kitTypeFactory.buildPersisted(testName);
+        var kitRequest = buildPersisted(testName, enrollee, pepperKitStatus, kitType.getId());
+        kitRequest.setKitType(kitType);
+        return kitRequest;
     }
 
-    public KitRequest buildPersisted(String testName, UUID enrolleeId, UUID kitTypeId, UUID adminUserId)
+    public KitRequest buildPersisted(String testName, Enrollee enrollee, PepperKitStatus pepperKitStatus,
+                                     UUID kitTypeId) throws JsonProcessingException {
+        AdminUser adminUser = adminUserFactory.buildPersisted(testName);
+        return buildPersisted(testName, enrollee, pepperKitStatus, kitTypeId, adminUser.getId());
+    }
+
+    public KitRequest buildPersisted(String testName, Enrollee enrollee, PepperKitStatus pepperKitStatus,
+                                     UUID kitTypeId, UUID adminUserId)
             throws JsonProcessingException {
         var kitRequest = builder(testName)
                 .creatingAdminUserId(adminUserId)
-                .enrolleeId(enrolleeId)
+                .enrolleeId(enrollee.getId())
                 .kitTypeId(kitTypeId)
+                .status(PepperKitStatus.mapToKitRequestStatus(pepperKitStatus.pepperString))
                 .build();
         var savedKitRequest = kitRequestDao.create(kitRequest);
-        var dsmStatus = PepperKitStatus.builder()
-                .currentStatus("kit without label")
+        var dsmStatus = PepperKit.builder()
+                .currentStatus(pepperKitStatus.pepperString)
                 .juniperKitId(savedKitRequest.getId().toString())
+                .participantId(enrollee.getShortcode())
                 .build();
-        savedKitRequest.setDsmStatus(objectMapper.writeValueAsString(dsmStatus));
-        savedKitRequest.setDsmStatusFetchedAt(Instant.now());
+        savedKitRequest.setExternalKit(objectMapper.writeValueAsString(dsmStatus));
+        savedKitRequest.setExternalKitFetchedAt(Instant.now());
         return kitRequestDao.update(savedKitRequest);
     }
 }

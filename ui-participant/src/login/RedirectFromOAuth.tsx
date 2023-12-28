@@ -8,6 +8,7 @@ import { HubUpdate } from 'hub/hubUpdates'
 import { usePreEnrollResponseId, usePreRegResponseId, useReturnToStudy } from 'browserPersistentState'
 import { userHasJoinedPortalStudy } from 'util/enrolleeUtils'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
+import { AlertLevel, alertDefaults } from '@juniper/ui-core'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -75,8 +76,8 @@ export const RedirectFromOAuth = () => {
               const hubUpdate: HubUpdate = {
                 message: {
                   title: `Welcome to ${portalStudy.study.name}`,
-                  detail: 'Please read and sign the consent form below to continue.',
-                  type: 'info'
+                  detail: alertDefaults['WELCOME'].detail,
+                  type: alertDefaults['WELCOME'].type as AlertLevel
                 }
               }
               updateEnrollee(response.enrollee).then(() => {

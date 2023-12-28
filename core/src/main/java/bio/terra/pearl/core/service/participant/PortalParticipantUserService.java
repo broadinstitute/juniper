@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.participant;
 import bio.terra.pearl.core.dao.participant.PortalParticipantUserDao;
 import bio.terra.pearl.core.dao.survey.PreregistrationResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.CascadeProperty;
@@ -69,8 +70,14 @@ public class PortalParticipantUserService extends ImmutableEntityService<PortalP
         return dao.findByPortalEnvironmentId(portalId);
     }
 
-    public List<PortalParticipantUser> findbyProfileId(UUID profileId) {
+    public Optional<PortalParticipantUser> findByProfileId(UUID profileId) {
         return dao.findByProfileId(profileId);
+    }
+
+    public PortalParticipantUser findForEnrollee(Enrollee enrollee) {
+        Optional<PortalParticipantUser> ppUser = dao.findByProfileId(enrollee.getProfileId());
+        return ppUser.orElseThrow(() ->
+                new IllegalStateException("No portal participant user found for enrollee %s".formatted(enrollee.getShortcode())));
     }
 
     @Override @Transactional

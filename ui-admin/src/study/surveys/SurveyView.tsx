@@ -66,7 +66,7 @@ function RawSurveyView({ studyEnvContext, survey, readOnly = false }:
 
 /** loads a survey and associated data (e.g. answer mappings) */
 export const useLoadedSurvey = (portalShortcode: string, stableId: string, version: number) => {
-  const [survey, setSurvey] = useState<Survey | undefined>()
+  const [survey, setSurvey] = useState<Survey>()
 
   /** load the survey from the server to get answer mappings and ensure we've got the latest content */
   const { isLoading } = useLoadingEffect(async () => {

@@ -7,16 +7,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 public abstract class ImmutableEntityService<M extends BaseEntity, D extends BaseJdbiDao<M>> {
     protected D dao;
     protected final Logger logger;
 
     public ImmutableEntityService(D dao) {
-        logger = LoggerFactory.getLogger(this.getClass());
+        logger = log;
         this.dao = dao;
     }
 

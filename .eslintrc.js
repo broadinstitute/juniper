@@ -28,7 +28,7 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module'
   },
-  plugins: ['react', 'jsx-a11y', 'import', 'jest', 'jsdoc'],
+  plugins: ['react', 'jsx-a11y', 'import', 'jest', 'jsdoc', 'unused-imports'],
   rules: {
     'array-bracket-newline': ['warn', 'consistent'],
     'array-bracket-spacing': 'warn',
@@ -63,6 +63,7 @@ module.exports = {
     'no-multiple-empty-lines': 'warn',
     'no-trailing-spaces': 'warn',
     'no-unneeded-ternary': 'warn',
+    'unused-imports/no-unused-imports': 'error',
     'no-whitespace-before-property': 'warn',
     'nonblock-statement-body-position': 'warn',
     'object-curly-newline': ['warn', { multiline: true, consistent: true }],

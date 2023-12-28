@@ -37,3 +37,10 @@ export function isoToInstant(isoDate?: string): number | undefined {
   }
   return Date.parse(isoDate) / 1000
 }
+
+/**
+ * Returns the specified date minus the specified number of days.
+ */
+export function dateMinusDays(date: Date, daysAgo: number) {
+  return new Date(date.getTime() - daysAgo * 24 * 60 * 60 * 1000)
+}

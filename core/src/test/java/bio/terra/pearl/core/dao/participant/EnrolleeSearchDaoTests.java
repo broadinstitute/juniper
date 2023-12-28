@@ -77,7 +77,7 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
     var enrollee = enrolleeFactory.buildPersisted("testKitRequestStatusSearch", studyEnv);
     var kitEnrollee = enrolleeFactory.buildPersisted("testKitRequestStatusSearch", studyEnv);
 
-    kitRequestFactory.buildPersisted("testKitRequestStatusSearch", kitEnrollee.getId());
+    kitRequestFactory.buildPersisted("testKitRequestStatusSearch", kitEnrollee);
 
     var result = enrolleeSearchDao.search(studyEnv.getId(), List.of());
     assertThat(result, hasSize(2));

@@ -1,6 +1,7 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import bio.terra.pearl.core.service.exception.internal.IOInternalException;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -18,9 +19,14 @@ public abstract class BasePopulator<T extends BaseEntity, D extends T, P extends
     protected ObjectMapper objectMapper;
 
     @Transactional
-    public T populate(P context, boolean overwrite) throws IOException {
-        String fileString = filePopulateService.readFile(context.getRootFileName(), context);
-        return populateFromString(fileString, context, overwrite);
+    public T populate(P context, boolean overwrite) {
+        try {
+            String fileString = filePopulateService.readFile(context.getRootFileName(), context);
+            return populateFromString(fileString, context, overwrite);
+        } catch (IOException e) {
+            throw new IOInternalException("Error populating " + context.getRootFileName(), e);
+        }
+
     }
 
     public T populateFromString(String fileString, P context, boolean overwrite) throws IOException {

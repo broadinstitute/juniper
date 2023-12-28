@@ -48,7 +48,7 @@ function mockFetchKits() {
   jest.spyOn(Api, 'fetchKitsByStudyEnvironment').mockImplementation(() => {
     return Promise.resolve([mockKitRequest({
       enrollee: mockEnrollee(),
-      dsmStatus: '{"unexpected": "boom"}'
+      status: 'CREATED'
     })])
   })
 }
