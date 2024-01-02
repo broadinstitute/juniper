@@ -1,9 +1,11 @@
 package bio.terra.pearl.core.service.notification;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.kit.KitTypeFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
+import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.notification.*;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.service.workflow.EventService;
@@ -31,12 +33,14 @@ public class NotificationDispatcherTests extends BaseSpringBootTest {
     @Test
     @Transactional
     void testKitSentEvent(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
         EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory
-                .buildWithPortalUser(getTestName(testInfo));
+                .buildWithPortalUser(testName);
         NotificationConfig config = createNotificationConfig(enrolleeBundle, NotificationEventType.KIT_SENT);
         KitRequest kitRequest = KitRequest.builder()
                 .status(KitRequestStatus.SENT)
                 .enrolleeId(enrolleeBundle.enrollee().getId())
+                .kitType(kitTypeFactory.buildPersisted(testName))
                 .build();
 
         eventService.publishKitStatusEvent(kitRequest, enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(),
@@ -47,12 +51,14 @@ public class NotificationDispatcherTests extends BaseSpringBootTest {
     @Test
     @Transactional
     void testKitReceivedEvent(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
         EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory
-                .buildWithPortalUser(getTestName(testInfo));
+                .buildWithPortalUser(testName);
         NotificationConfig config = createNotificationConfig(enrolleeBundle, NotificationEventType.KIT_RECEIVED);
         KitRequest kitRequest = KitRequest.builder()
                 .status(KitRequestStatus.RECEIVED)
                 .enrolleeId(enrolleeBundle.enrollee().getId())
+                .kitType(kitTypeFactory.buildPersisted(testName))
                 .build();
 
         eventService.publishKitStatusEvent(kitRequest, enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(),
@@ -97,6 +103,8 @@ public class NotificationDispatcherTests extends BaseSpringBootTest {
     private EventService eventService;
     @Autowired
     private EnrolleeFactory enrolleeFactory;
+    @Autowired
+    private KitTypeFactory kitTypeFactory;
     @Autowired
     private NotificationConfigService notificationConfigService;
 }

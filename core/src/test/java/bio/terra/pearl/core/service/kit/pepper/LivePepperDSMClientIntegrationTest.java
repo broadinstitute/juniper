@@ -36,7 +36,8 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
     public void testSendKitRequest() throws Exception {
         var enrollee = enrolleeFactory.buildPersisted("testSendKitRequest");
         var kitType = kitTypeDao.findByName("SALIVA").get();
-        var kitRequest = kitRequestFactory.buildPersisted("testSendKitRequest", enrollee, kitType.getId());
+        var kitRequest = kitRequestFactory.buildPersisted("testSendKitRequest", enrollee, PepperKitStatus.CREATED,
+                kitType.getId());
         kitRequest.setKitType(kitType);
         var address = PepperKitAddress.builder()
                 .firstName("Juniper")

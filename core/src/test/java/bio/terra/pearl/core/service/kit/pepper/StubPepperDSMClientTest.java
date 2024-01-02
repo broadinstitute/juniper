@@ -7,16 +7,21 @@ import bio.terra.pearl.core.factory.StudyFactory;
 import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.kit.pepper.StubPepperDSMClient;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.notNullValue;
+
+import java.util.Collection;
 
 class StubPepperDSMClientTest extends BaseSpringBootTest {
     @Autowired
@@ -46,27 +51,31 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testFetchKitStatusByStudy() throws Exception {
-        // Arrange
-        var study = studyFactory.buildPersisted("testFetchKitStatusByStudy");
-        environmentFactory.buildPersisted("testFetchKitStatusByStudy", EnvironmentName.sandbox);
+    public void testFetchKitStatusByStudy(TestInfo testInfo) throws Exception {
+        String testName = getTestName(testInfo);
+        var study = studyFactory.buildPersisted(testName);
+        environmentFactory.buildPersisted(testName, EnvironmentName.sandbox);
         var studyEnvironment = studyEnvironmentService.create(
-                studyEnvironmentFactory.builder("testFetchKitStatusByStudy")
+                studyEnvironmentFactory.builder(testName)
                         .studyId(study.getId())
                         .environmentName(EnvironmentName.sandbox)
                         .studyEnvironmentConfig(new StudyEnvironmentConfig())
                         .build());
-        var enrollee = enrolleeFactory.buildPersisted("testFetchKitStatusByStudy", studyEnvironment);
-        var kit = kitRequestFactory.buildPersisted("testFetchKitStatusByStudy", enrollee);
+        var enrollee = enrolleeFactory.buildPersisted(testName, studyEnvironment);
+        // when current request status is SENT, the stub client bumps that to RECEIVED
+        KitRequest kitRequest = kitRequestFactory.buildPersisted(testName, enrollee, PepperKitStatus.SENT);
 
         // Act
-        var kitStatuses = stubPepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
+        Collection<PepperKit> kitStatuses = stubPepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
 
         // Assert
         assertThat(kitStatuses.size(), equalTo(1));
-        var kitStatus = kitStatuses.stream().findFirst().get();
-        assertThat(kitStatus.getJuniperKitId(), equalTo(kit.getId().toString()));
-        assertThat(kitStatus.getCurrentStatus(), equalTo("queue"));
+        PepperKit pepperKit = kitStatuses.stream().findFirst().get();
+        assertThat(pepperKit.getJuniperKitId(), equalTo(kitRequest.getId().toString()));
+        assertThat(PepperKitStatus.fromCurrentStatus(pepperKit.getCurrentStatus()), equalTo(PepperKitStatus.RECEIVED));
+        assertThat(pepperKit.getLabelDate(), notNullValue());
+        assertThat(pepperKit.getScanDate(), notNullValue());
+        assertThat(pepperKit.getReceiveDate(), notNullValue());
     }
 
     @Autowired

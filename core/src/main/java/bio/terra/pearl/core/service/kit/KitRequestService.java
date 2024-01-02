@@ -277,20 +277,33 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      * Saves updated kit status. This is called from a batch job, so exceptions are caught and logged instead of thrown
      * to allow the rest of the batch to be processed.
      */
-    private void saveKitStatus(KitRequest kit, PepperKit pepperKit, Instant pepperStatusFetchedAt) {
-        KitRequestStatus priorStatus = kit.getStatus();
+    private void saveKitStatus(KitRequest kitRequest, PepperKit pepperKit, Instant pepperStatusFetchedAt) {
+        KitRequestStatus priorStatus = kitRequest.getStatus();
         try {
-            kit.setExternalKit(objectMapper.writeValueAsString(pepperKit));
-            kit.setExternalKitFetchedAt(pepperStatusFetchedAt);
-            kit.setStatus(PepperKitStatus.mapToKitRequestStatus(pepperKit.getCurrentStatus()));
-            dao.update(kit);
+            kitRequest.setExternalKit(objectMapper.writeValueAsString(pepperKit));
+            kitRequest.setExternalKitFetchedAt(pepperStatusFetchedAt);
+            KitRequestStatus status = PepperKitStatus.mapToKitRequestStatus(pepperKit.getCurrentStatus());
+            kitRequest.setStatus(status);
+            setKitDates(kitRequest, pepperKit);
+            dao.update(kitRequest);
         } catch (JsonProcessingException e) {
-            log.error("Unable to serialize status JSON for kit %s: %s".formatted(kit.getId(), pepperKit.toString()), e);
+            log.error("Unable to serialize status JSON for kit %s: %s".formatted(kitRequest.getId(), pepperKit.toString()), e);
         }
+
         try {
-            notifyKitStatusChange(kit, priorStatus);
+            notifyKitStatusChange(kitRequest, priorStatus);
         } catch (Exception e) {
-            log.error("Error publishing kit status event for KitRequest enrollee %s".formatted(kit.getEnrolleeId()), e);
+            log.error("Error publishing kit status event for KitRequest enrollee %s".formatted(kitRequest.getEnrolleeId()), e);
+        }
+    }
+
+    protected void setKitDates(KitRequest kitRequest, PepperKit pepperKit) {
+        try {
+            // collect this information regardless of status
+            kitRequest.setSentAt(parsePepperDateTime(pepperKit.getLabelDate()));
+            kitRequest.setReceivedAt(parsePepperDateTime(pepperKit.getReceiveDate()));
+        } catch (Exception e) {
+            log.error("Error parsing PepperKit date for kit %s: %s".formatted(kitRequest.getId(), pepperKit.toString()), e);
         }
     }
 
@@ -309,6 +322,17 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         PortalParticipantUser ppUser = portalParticipantUserService.findForEnrollee(enrollee);
 
         eventService.publishKitStatusEvent(kitRequest, enrollee, ppUser, priorStatus);
+    }
+
+    /**
+     * Parse a Pepper date-time string into an Instant. Returns null if the date string is null or empty.
+     * @throws java.time.format.DateTimeParseException if the string is not a valid date-time
+     */
+    protected Instant parsePepperDateTime(String dateTimeString) {
+        if (dateTimeString == null || dateTimeString.isEmpty()) {
+            return null;
+        }
+        return Instant.parse(dateTimeString);
     }
 
     private final EnrolleeService enrolleeService;

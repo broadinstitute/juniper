@@ -8,6 +8,7 @@ import { DocumentTitle } from 'util/DocumentTitle'
 
 import { HubMessageAlert, HubUpdateMessage, useHubUpdate } from './hubUpdates'
 import { ParticipantDashboardAlert, alertDefaults } from '@juniper/ui-core'
+import KitBanner from './kit/KitBanner'
 import StudyResearchTasks from './StudyResearchTasks'
 import OutreachTasks from './OutreachTasks'
 
@@ -93,6 +94,7 @@ const StudySection = (props: StudySectionProps) => {
   return (
     <>
       <h1 className="mb-4">{matchedStudy.name}</h1>
+      {enrollee.kitRequests.length > 0 && <KitBanner kitRequests={enrollee.kitRequests} />}
       <StudyResearchTasks enrollee={enrollee} studyShortcode={matchedStudy.shortcode}
         participantTasks={enrollee.participantTasks} />
     </>

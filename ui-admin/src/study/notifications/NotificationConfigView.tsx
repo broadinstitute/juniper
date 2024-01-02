@@ -17,7 +17,8 @@ const deliveryTypeOptions = [{ label: 'Email', value: 'EMAIL' }]
 const eventTypeOptions = [{ label: 'Study Enrollment', value: 'STUDY_ENROLLMENT' },
   { label: 'Study Consent', value: 'STUDY_CONSENT' }, { label: 'Survey Response', value: 'SURVEY_RESPONSE' },
   { label: 'Kit Sent', value: 'KIT_SENT' }, { label: 'Kit Returned', value: 'KIT_RECEIVED' }]
-const taskTypeOptions = [{ label: 'Survey', value: 'SURVEY' }, { label: 'Consent', value: 'CONSENT' }]
+const taskTypeOptions = [{ label: 'Survey', value: 'SURVEY' }, { label: 'Consent', value: 'CONSENT' },
+  { label: 'Kit request', value: 'KIT_REQUEST' }]
 
 
 /** for viewing and editing a notification config.  saving not yet implemented */

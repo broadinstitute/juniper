@@ -50,7 +50,8 @@ jest.mock('../providers/UserProvider', () => {
           targetStableId: 'test_survey_id',
           targetAssignedVersion: 0,
           taskOrder: 0
-        }]
+        }],
+        kitRequests: []
       }]
     })
   }
