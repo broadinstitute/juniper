@@ -7,11 +7,13 @@ import NotificationConfigTypeDisplay from '../../notifications/NotifcationConfig
 import { Link } from 'react-router-dom'
 
 const eventClassToHumanReadable = (eventClass: string): string => {
-  return eventClass
+  const output = eventClass
     .split('_')
     .map(str => str.toLowerCase())
-    .map(str => str[0].toUpperCase() + str.substring(1))
     .join(' ')
+
+  // capitalize first letter of output
+  return output[0].toUpperCase() + output.substring(1)
 }
 
 type EventNotificationTableEntry = {
@@ -103,7 +105,6 @@ export default function EnrolleeNotifications({ enrollee, studyEnvContext }:
         <thead>
           <tr>
             <th>notification</th>
-            <th>event</th>
             <th>method</th>
             <th>status</th>
             <th>time</th>
