@@ -92,7 +92,7 @@ export class StableIdStringArrayFacetValue implements IFacetValue {
 export type FacetValue =  StringOptionsFacetValue | IntRangeFacetValue |
     StableIdStringArrayFacetValue | StringFacetValue
 
-export type FacetType = | 'INT_RANGE' | 'STRING' | 'STRING_OPTIONS' | 'STABLEID_STRING'
+export type FacetType = | 'INT_RANGE' | 'STRING' | 'STRING_OPTIONS' | 'ENTITY_OPTIONS'
 
 export type BaseFacet = {
   keyName: string,
@@ -123,49 +123,36 @@ export type StringOptionsFacet = BaseFacet & {
 }
 
 export type StableIdStringArrayFacet = BaseFacet & {
-  facetType: 'STABLEID_STRING',
+  facetType: 'ENTITY_OPTIONS',
   options: FacetOption[]
   entities: FacetOption[]
 }
 
 export type Facet = StringFacet | StringOptionsFacet | StableIdStringArrayFacet | IntRangeFacet
 
-export const ADVANCED_FACETS: Facet[] = [{
+export const SEX_FACET: StringOptionsFacet = {
+  category: 'profile',
+  keyName: 'sexAtBirth',
+  label: 'Sex at birth',
+  facetType: 'STRING_OPTIONS',
+  options: [
+    { value: 'male', label: 'Male' },
+    { value: 'female', label: 'Female' },
+    { value: 'other', label: 'Other' },
+    { value: 'unknown', label: 'Unknown' }
+  ]
+}
+
+export const AGE_FACET: IntRangeFacet = {
   category: 'profile',
   keyName: 'age',
   label: 'Age',
   facetType: 'INT_RANGE',
   max: 150,
   min: 0
-}, {
-  category: 'profile',
-  keyName: 'sexAtBirth',
-  label: 'Sex at birth',
-  facetType: 'STRING_OPTIONS',
-  options: [
-    { value: 'male', label: 'male' },
-    { value: 'female', label: 'female' },
-    { value: 'other', label: 'other' },
-    { value: 'unknown', label: 'unknown' }
-  ]
-/*}, {
-  category: 'participantTask',
-  keyName: 'status',
-  label: 'Task status',
-  facetType: 'STABLEID_STRING',
-  options: [
-    { value: 'COMPLETE', label: 'Complete' },
-    { value: 'IN_PROGRESS', label: 'In progress' },
-    { value: 'NEW', label: 'New' }
-  ],
-  entities: [
-    { value: 'oh_oh_consent', label: 'Consent' },
-    { value: 'oh_oh_basicInfo', label: 'Basics' },
-    { value: 'oh_oh_cardioHx', label: 'Cardio History' }
-  ]*/
-}]
+}
 
-export const KEYWORD_FACET: Facet = {
+export const KEYWORD_FACET: StringFacet = {
   category: 'keyword',
   keyName: 'keyword',
   label: 'Keyword',
@@ -175,8 +162,9 @@ export const KEYWORD_FACET: Facet = {
 }
 
 export const ALL_FACETS = [
-  ...ADVANCED_FACETS,
-  KEYWORD_FACET
+  KEYWORD_FACET,
+  AGE_FACET,
+  SEX_FACET
 ]
 
 /** helper function for making sure a function addresses all facet types.
@@ -193,7 +181,7 @@ export const newFacetValue = (facet: Facet, facetValue?: object): FacetValue => 
   const facetType = facet.facetType
   if (facetType === 'INT_RANGE') {
     return new IntRangeFacetValue(facet, facetValue as IntRangeFacetValueFields)
-  } else if (facetType === 'STABLEID_STRING') {
+  } else if (facetType === 'ENTITY_OPTIONS') {
     const newValues = facetValue ? (facetValue as StableIdStringArrayFacetValueFields).values.map(stableIdVal =>
       new StableIdStringValue(stableIdVal.stableId, stableIdVal.values)
     ) : []
@@ -258,7 +246,7 @@ export const facetNameAndValueString = (facetValue: FacetValue): string => {
   if (facetType === 'INT_RANGE') {
     const intValue = facetValue as IntRangeFacetValueFields
     value = `${intValue.min ?? '0'} to ${intValue.max ?? ''}`
-  } else if (facetType === 'STABLEID_STRING') {
+  } else if (facetType === 'ENTITY_OPTIONS') {
     if (facetValue) {
       value = (facetValue as StableIdStringArrayFacetValueFields).values.map(entityToValues => {
         const entityLabel = facet.entities.find(entity => entity.value === entityToValues.stableId)?.label ?? ''

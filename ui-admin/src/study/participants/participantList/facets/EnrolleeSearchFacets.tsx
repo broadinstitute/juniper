@@ -97,7 +97,7 @@ export const FacetView = ({ facet, facetValue, updateValue }: FacetViewProps) =>
   } else if (facetType === 'STRING_OPTIONS') {
     return <StringOptionsFacetView facetValue={facetValue as StringOptionsFacetValue}
       updateValue={updateValue}/>
-  } else if (facetType === 'STABLEID_STRING') {
+  } else if (facetType === 'ENTITY_OPTIONS') {
     return <StableIdStringFacetView facetValue={facetValue as StableIdStringArrayFacetValue}
       updateValue={updateValue}/>
   }

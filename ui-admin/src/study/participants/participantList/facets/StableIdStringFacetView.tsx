@@ -44,7 +44,8 @@ const StableIdStringArrayFacetView = ({ facetValue, updateValue }: {facetValue: 
     {facet.entities.map((stableIdOption, index) => {
       const stringValues = facetValue.values.find(val => val.stableId === stableIdOption.value)?.values ?? []
       const optValues = stringValues.map(stringVal => facet.options.find(opt => opt.value === stringVal))
-      return <div key={index}><label>
+      const testId = `select-${stableIdOption.value}`
+      return <div key={index}> <label data-testid={testId}>
         { stableIdOption.label }
         <Select options={facet.options} value={optValues} isMulti={true}
           onChange={newValue => updateValues(stableIdOption.value, newValue)}/>

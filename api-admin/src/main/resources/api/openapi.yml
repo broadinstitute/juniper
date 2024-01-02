@@ -558,25 +558,6 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/search:
-    post:
-      summary: Searches for enrollees in an environment
-      tags: [ enrolleeSearch ]
-      operationId: facetSearch
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-      requestBody:
-        required: true
-        content: { application/json: { schema: {type: object} } }
-      responses:
-        '200':
-          description: EnrolleeSearchResult objects
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
-
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/search/facets:
     get:
       summary: Gets enrollee search facets for a study and  environment

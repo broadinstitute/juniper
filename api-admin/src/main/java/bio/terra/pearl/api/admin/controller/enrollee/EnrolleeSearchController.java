@@ -58,24 +58,6 @@ public class EnrolleeSearchController implements EnrolleeSearchApi {
   }
 
   @Override
-  public ResponseEntity<Object> facetSearch(
-      String portalShortcode, String studyShortcode, String envName, Object body) {
-    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    AdminUser adminUser = authUtilService.requireAdminUser(request);
-
-    List<SqlSearchableFacet> facetValues;
-    try {
-      facetValues = facetsFromJsonString(body.toString());
-    } catch (Exception e) {
-      return ResponseEntity.unprocessableEntity().body(e.getMessage());
-    }
-    var results =
-        enrolleeExtService.search(
-            adminUser, portalShortcode, studyShortcode, environmentName, facetValues);
-    return ResponseEntity.ok(results);
-  }
-
-  @Override
   public ResponseEntity<Object> getSearchFacets(
       String portalShortcode, String studyShortcode, String envName) {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);

@@ -32,7 +32,7 @@ const stableIdFacet: Facet  = {
   category: 'participantTask',
   keyName: 'status',
   label: 'Task status',
-  facetType: 'STABLEID_STRING',
+  facetType: 'ENTITY_OPTIONS',
   options: [
     { value: 'COMPLETE', label: 'Complete' },
     { value: 'IN_PROGRESS', label: 'In progress' },

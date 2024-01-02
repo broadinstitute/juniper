@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import Api, {EnrolleeSearchFacet, EnrolleeSearchResult} from 'api/api'
+import Api, { EnrolleeSearchFacet, EnrolleeSearchResult } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { Link, useSearchParams } from 'react-router-dom'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
@@ -23,13 +23,14 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import AdHocEmailModal from '../AdHocEmailModal'
-import {ALL_FACETS, Facet, facetValuesFromString} from 'api/enrolleeSearch'
+import { ALL_FACETS, Facet, facetValuesFromString } from 'api/enrolleeSearch'
 import { currentIsoDate, instantToDefaultString } from 'util/timeUtils'
 import { useLoadingEffect } from 'api/api-utils'
 import TableClientPagination from 'util/TablePagination'
 import { Button } from 'components/forms/Button'
 import { renderPageHeader } from 'util/pageUtils'
 import ParticipantSearch from './search/ParticipantSearch'
+import _cloneDeep from "lodash/cloneDeep";
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -46,7 +47,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     'familyName': false,
     'contactEmail': false
   })
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
 
   const facetValues = facetValuesFromString(searchParams.get('facets') ?? '{}', facets)
   const { paginationState, preferredNumRowsKey } = useRoutableTablePaging('participantList')
@@ -152,7 +153,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   })
 
   const updateSearchCriteria = (searchFacets: EnrolleeSearchFacet[]) => {
-    const criteria: Facet[] = structuredClone(ALL_FACETS)
+    const criteria: Facet[] = _cloneDeep(ALL_FACETS)
     criteria.push(...searchFacets as Facet[])
     setFacets(criteria)
   }

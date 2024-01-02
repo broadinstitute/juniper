@@ -8,6 +8,8 @@ import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
+
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,17 +38,29 @@ public class EnrolleeSearchService {
     public List<EnrolleeSearchFacet> getFacets(String studyShortcode, EnvironmentName envName) {
         StudyEnvironment studyEnvironment = studyEnvironmentService
                 .findByStudy(studyShortcode, envName).orElseThrow(StudyEnvironmentMissing::new);
+
+        // currently only returns task facets
+        return List.of(getTaskFacet(studyEnvironment));
+    }
+
+    protected EnrolleeSearchFacet getTaskFacet(StudyEnvironment studyEnvironment) {
         List<ParticipantTaskDao.EnrolleeTasks> tasks = participantTaskDao.findTasksByStudy(studyEnvironment.getId());
 
-        EnrolleeSearchFacet tasksFacet = new EnrolleeSearchFacet("status", EnrolleeSearchFacet.FacetType.STABLEID_STRING, "participantTask", "Task status");
+        EnrolleeSearchFacet tasksFacet = new EnrolleeSearchFacet("status",
+                EnrolleeSearchFacet.FacetType.ENTITY_OPTIONS, "participantTask", "Task status");
         tasks.forEach(task -> tasksFacet.addEntity(task.getTargetStableId(), task.getTargetName()));
 
-        Map<String, String> status = Map.of(
-                "NEW", "Not started",
-                "IN_PROGRESS", "In progress",
-                "COMPLETED", "Completed"
-        );
+        // These mirror the values in TaskStatus, but it does not seem appropriate to add
+        // this map alongside TaskStatus enum since the text may not be universally applicable.
+        // These values are verified in sync via an automated test
+        Map<String, String> status = new LinkedHashMap<>();
+        status.put("NEW", "Not started");
+        status.put("VIEWED", "Viewed");
+        status.put("IN_PROGRESS", "In progress");
+        status.put("COMPLETE", "Completed");
+        status.put("REJECTED", "Rejected");
+
         tasksFacet.addOptions(status);
-        return List.of(tasksFacet);
+        return tasksFacet;
     }
 }

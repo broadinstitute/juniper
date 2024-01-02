@@ -1,26 +1,19 @@
 import React, { useState } from 'react'
-
 import { useSearchParams } from 'react-router-dom'
 import { getUpdatedFacetValues } from '../facets/EnrolleeSearchFacets'
 import {
-  ALL_FACETS, Facet,
+  Facet,
   FacetValue,
-  facetValuesFromString, facetValuesToString,
+  facetValuesToString,
   StringFacetValue
 } from '../../../../api/enrolleeSearch'
 import { Button } from '../../../../components/forms/Button'
 import AdvancedSearchModal from './AdvancedSearchModal'
 import SearchCriteriaView from './SearchCriteriaView'
 import BasicSearch from './BasicSearch'
-import { useLoadingEffect } from '../../../../api/api-utils'
-import Api, { EnrolleeSearchFacet } from '../../../../api/api'
-import { StudyEnvContextT } from '../../../StudyEnvironmentRouter'
-import LoadingSpinner from '../../../../util/LoadingSpinner'
 
 
-/**
- *
- */
+/** Participant search component for participant list page */
 function ParticipantSearch({ facets, facetValues }: {facets: Facet[], facetValues: FacetValue[]}) {
   const [searchParams, setSearchParams] = useSearchParams()
   const [advancedSearch, setAdvancedSearch] = useState(false)
@@ -33,7 +26,7 @@ function ParticipantSearch({ facets, facetValues }: {facets: Facet[], facetValue
     setSearchParams(searchParams)
   }
 
-  const updateKeywordFacet = (facetValue: FacetValue | null) => {
+  const updateKeywordFacetValue = (facetValue: StringFacetValue | null) => {
     updateFacetValues(getUpdatedFacetValues(facetValue ?? null, keywordFacetIndex, facetValues))
   }
 
@@ -46,7 +39,7 @@ function ParticipantSearch({ facets, facetValues }: {facets: Facet[], facetValue
       {advancedSearch && <AdvancedSearchModal onDismiss={() => setAdvancedSearch(false)} facetValues={facetValues}
         updateFacetValues={updateFacetValues} searchCriteria={facets}/>}
       {!advancedSearch && <div className="mb-2">
-        <BasicSearch facetValue={keywordFacetValue as StringFacetValue} updateValue={updateKeywordFacet}/>
+        <BasicSearch facetValue={keywordFacetValue as StringFacetValue} updateValue={updateKeywordFacetValue}/>
       </div>}
       <div className="ms-2">
         <Button variant="light" className="border btn-sm"

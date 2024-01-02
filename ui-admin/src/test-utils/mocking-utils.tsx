@@ -4,7 +4,7 @@ import {
   Answer,
   ConsentForm,
   DatasetDetails,
-  Enrollee,
+  Enrollee, EnrolleeSearchFacet,
   EnrolleeSearchResult,
   KitRequest,
   KitType,
@@ -22,6 +22,14 @@ import { EmailTemplate, StudyEnvironmentSurvey } from '@juniper/ui-core/build/ty
 import { LoadedPortalContextT } from '../portal/PortalProvider'
 import { PortalEnvironment } from '@juniper/ui-core/build/types/portal'
 import { PortalEnvContext } from '../portal/PortalRouter'
+import {
+  FacetValue,
+  StableIdStringArrayFacet,
+  StableIdStringArrayFacetValue,
+  StableIdStringValue,
+  StringOptionsFacet,
+  StringOptionsFacetValue
+} from '../api/enrolleeSearch'
 
 const randomString = (length: number) => {
   return _times(length, () => _random(35).toString(36)).join('')
@@ -292,6 +300,44 @@ export const mockEnrolleeSearchResult: () => EnrolleeSearchResult = () => {
     }
   }
 }
+
+/** returns a mock enrollee task search facet */
+export const mockTaskSearchFacet: () => EnrolleeSearchFacet = () => {
+  const entities = [
+    { value: 'consent', label: 'Consent' },
+    { value: 'basicInfo', label: 'Basics' },
+    { value: 'cardioHistory', label: 'Cardio History' }
+  ]
+  const options = [
+    { value: 'COMPLETE', label: 'Complete' },
+    { value: 'IN_PROGRESS', label: 'In progress' },
+    { value: 'NEW', label: 'New' }
+  ]
+
+  return {
+    keyName: 'status',
+    category: 'participantTask',
+    label: 'Task status',
+    facetType: 'ENTITY_OPTIONS',
+    entities,
+    options
+  }
+}
+
+/** returns a mock enrollee task search facet value */
+export const mockTaskFacetValue: (facet: StableIdStringArrayFacet, optionValue: string) =>
+  FacetValue = (facet: StableIdStringArrayFacet, optionValue: string) => {
+    const optionValues: string[] = [optionValue]
+    const facetValues = facet.entities.map(entity => new StableIdStringValue(entity.value, optionValues))
+    return new StableIdStringArrayFacetValue(facet, { values: facetValues })
+  }
+
+/** returns a mock enrollee options search facet value */
+export const mockOptionsFacetValue: (facet: StringOptionsFacet, optionValue: string) =>
+  FacetValue = (facet: StringOptionsFacet, optionValue: string) => {
+    const optionValues: string[] = [optionValue]
+    return new StringOptionsFacetValue(facet, { values: optionValues })
+  }
 
 /** helper function to generate a ParticipantTask object for a survey and enrollee */
 export const taskForForm = (form: Survey | ConsentForm, enrolleeId: string, taskType: ParticipantTaskType):

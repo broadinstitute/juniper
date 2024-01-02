@@ -9,11 +9,22 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+/**
+ * Facet for participant search. This consists of:
+ *   keyName: unique name for facet within category
+ *   facetType: the type of facet (currently the service only supports ENTITY_OPTIONS and STRING_OPTIONS)
+ *   category: the category of the facet (for instance: profile, participantTask, etc.)
+ *   label: the label to display for the facet
+ *   entities: the list of entities for the facet, if more than one. A facet with multiple entities means a user
+ *      can search on one or more entities of the same type (keyname, category), and the facet values are ANDed to
+ *      produce a search result
+ *   options: the list of options for the facet, if any. If there is an entity list the options apply to each entity.
+ */
 @Getter @Setter
 @SuperBuilder
 public class EnrolleeSearchFacet {
     public enum  FacetType {
-        STABLEID_STRING,
+        ENTITY_OPTIONS,
         STRING_OPTIONS
     }
 

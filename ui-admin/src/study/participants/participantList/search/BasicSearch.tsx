@@ -1,15 +1,15 @@
-import {FacetValue, KEYWORD_FACET, newFacetValue, StringFacetValue} from 'api/enrolleeSearch'
+import { KEYWORD_FACET, newFacetValue, StringFacetValue } from 'api/enrolleeSearch'
 import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
 
 /**
- * renders a facet which is a single or set of string values as a text field
- * This manages its own state so that the facet will not be live-updated, but rather wait for submit
+ * renders and manages updates to a string search facet
  * */
 const BasicSearch = ({ facetValue, updateValue }:
-                           {facetValue: StringFacetValue,
-                             updateValue: (facetValue: FacetValue | null) => void}) => {
+                           { facetValue: StringFacetValue,
+                             updateValue: (facetValue: StringFacetValue | null) => void
+                           }) => {
   if (!facetValue) {
     facetValue = newFacetValue(KEYWORD_FACET) as StringFacetValue
   }
@@ -19,11 +19,12 @@ const BasicSearch = ({ facetValue, updateValue }:
   useEffect(() => {
     setKeywordFieldValue(valueString)
   }, [valueString])
-  /* updates whether a given value is checked */
+
   const updateKeyword = (keyword: string) => {
     const newValues = keyword?.split(/[ ,]+/) ?? []
     updateValue(new StringFacetValue(facetValue.facet, { values: newValues }))
   }
+
   return <form className="rounded-5" onSubmit={e => {
     e.preventDefault()
     updateKeyword(keywordFieldValue)
