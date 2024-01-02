@@ -52,6 +52,11 @@ logging.pattern.level: '%X{requestId} %5p'
 otel:
   sdk:
     disabled: true
+  instrumentation:
+    spring-webflux:
+      enabled: false
+    spring-web:
+      enabled: false
 
 
 server:
