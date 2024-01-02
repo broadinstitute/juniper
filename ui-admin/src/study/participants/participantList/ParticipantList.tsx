@@ -30,7 +30,7 @@ import TableClientPagination from 'util/TablePagination'
 import { Button } from 'components/forms/Button'
 import { renderPageHeader } from 'util/pageUtils'
 import ParticipantSearch from './search/ParticipantSearch'
-import _cloneDeep from "lodash/cloneDeep";
+import _cloneDeep from 'lodash/cloneDeep'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
