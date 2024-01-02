@@ -55,154 +55,154 @@ export type {
 } from '@juniper/ui-core'
 
 export type AdminUser = {
-    id: string,
-    username: string,
-    token: string,
-    superuser: boolean,
-    portalPermissions: Record<string, string[]>,
-    isAnonymous: boolean,
-    portalAdminUsers?: PortalAdminUser[]
+  id: string,
+  username: string,
+  token: string,
+  superuser: boolean,
+  portalPermissions: Record<string, string[]>,
+  isAnonymous: boolean,
+  portalAdminUsers?: PortalAdminUser[]
 };
 
 export type NewAdminUser = {
-    username: string,
-    superuser: boolean,
-    portalShortcode: string | null
+  username: string,
+  superuser: boolean,
+  portalShortcode: string | null
 }
 
 export type PortalAdminUser = {
-    portalId: string
+  portalId: string
 }
 
 export type StudyEnvironmentUpdate = {
-    id: string,
-    preEnrollSurveyId: string
+  id: string,
+  preEnrollSurveyId: string
 }
 
 export type EnrolleeSearchResult = {
-    enrollee: Enrollee,
-    profile: Profile,
-    participantUser: {
-        lastLogin: number,
-        username: string
-    }
-    mostRecentKitStatus: string | null
+  enrollee: Enrollee,
+  profile: Profile,
+  participantUser: {
+    lastLogin: number,
+    username: string
+  }
+  mostRecentKitStatus: string | null
 }
 
 export type Enrollee = {
-    id: string,
-    shortcode: string,
-    createdAt: number,
-    participantUserId: string,
-    surveyResponses: SurveyResponse[],
-    consentResponses: ConsentResponse[],
-    preRegResponse?: PreregistrationResponse,
-    preEnrollmentResponse?: PreregistrationResponse,
-    participantTasks: ParticipantTask[],
-    participantNotes: ParticipantNote[],
-    kitRequests: KitRequest[],
-    consented: boolean,
-    profile: Profile
+  id: string,
+  shortcode: string,
+  createdAt: number,
+  participantUserId: string,
+  surveyResponses: SurveyResponse[],
+  consentResponses: ConsentResponse[],
+  preRegResponse?: PreregistrationResponse,
+  preEnrollmentResponse?: PreregistrationResponse,
+  participantTasks: ParticipantTask[],
+  participantNotes: ParticipantNote[],
+  kitRequests: KitRequest[],
+  consented: boolean,
+  profile: Profile
 }
 
 export type Profile = {
-    givenName: string,
-    familyName: string,
-    contactEmail: string,
-    doNotEmail: boolean,
-    doNotEmailSolicit: boolean,
-    mailingAddress: MailingAddress,
-    phoneNumber: string,
-    birthDate: number[]
+  givenName: string,
+  familyName: string,
+  contactEmail: string,
+  doNotEmail: boolean,
+  doNotEmailSolicit: boolean,
+  mailingAddress: MailingAddress,
+  phoneNumber: string,
+  birthDate: number[]
 }
 
 export type MailingAddress = {
-    street1: string,
-    street2: string,
-    city: string,
-    state: string,
-    country: string,
-    postalCode: string
+  street1: string,
+  street2: string,
+  city: string,
+  state: string,
+  country: string,
+  postalCode: string
 }
 
 export type Notification = {
-    id: string,
-    notificationConfigId: string,
-    deliveryStatus: string,
-    deliveryType: string,
-    sentTo: string,
-    createdAt: number,
-    lastUpdatedAt: number,
-    retries: number,
-    notificationConfig?: NotificationConfig
+  id: string,
+  notificationConfigId: string,
+  deliveryStatus: string,
+  deliveryType: string,
+  sentTo: string,
+  createdAt: number,
+  lastUpdatedAt: number,
+  retries: number,
+  notificationConfig?: NotificationConfig
 }
 
 export type Event = {
-    id: string,
-    createdAt: number,
-    lastUpdatedAt: number,
-    eventClass: string,
-    studyEnvironmentId: string,
-    portalEnvironmentId: string,
-    enrolleeId: string
+  id: string,
+  createdAt: number,
+  lastUpdatedAt: number,
+  eventClass: string,
+  studyEnvironmentId: string,
+  portalEnvironmentId: string,
+  enrolleeId: string
 }
 
 export type DataChangeRecord = {
-    id: string,
-    createdAt: number,
-    modelName: string,
-    fieldName: string,
-    oldValue: string,
-    newValue: string,
-    responsibleUserId: string,
-    responsibleAdminUserId: string
+  id: string,
+  createdAt: number,
+  modelName: string,
+  fieldName: string,
+  oldValue: string,
+  newValue: string,
+  responsibleUserId: string,
+  responsibleAdminUserId: string
 }
 
 export type KitType = {
-    id: string,
-    name: string,
-    displayName: string,
-    description: string
+  id: string,
+  name: string,
+  displayName: string,
+  description: string
 }
 
 export type PepperKit = {
-    kitId: string,
-    currentStatus: string,
-    labelDate: string,
-    scanDate: string,
-    receiveDate: string,
-    trackingNumber: string,
-    returnTrackingNumber: string,
-    errorMessage: string
+  kitId: string,
+  currentStatus: string,
+  labelDate: string,
+  scanDate: string,
+  receiveDate: string,
+  trackingNumber: string,
+  returnTrackingNumber: string,
+  errorMessage: string
 }
 
 export type AdminTaskListDto = {
-    tasks: AdminTask[]
-    enrollees: Enrollee[]
-    participantNotes: ParticipantNote[]
+  tasks: AdminTask[]
+  enrollees: Enrollee[]
+  participantNotes: ParticipantNote[]
 }
 
 export type AdminTaskStatus = 'NEW' | 'COMPLETE' | 'REJECTED'
 
 export type AdminTask = {
-    id: string
-    createdAt: number
-    completedAt?: number
-    status: AdminTaskStatus
-    studyEnvironmentId: string
-    enrolleeId?: string
-    participantNoteId?: string
-    creatingAdminUserId?: string
-    assignedAdminUserId?: string
-    description?: string
-    dispositionNote?: string
+  id: string
+  createdAt: number
+  completedAt?: number
+  status: AdminTaskStatus
+  studyEnvironmentId: string
+  enrolleeId?: string
+  participantNoteId?: string
+  creatingAdminUserId?: string
+  assignedAdminUserId?: string
+  description?: string
+  dispositionNote?: string
 }
 
 export type SiteImageMetadata = {
-    id: string,
-    createdAt: number,
-    cleanFileName: string,
-    version: number
+  id: string,
+  createdAt: number,
+  cleanFileName: string,
+  version: number
 }
 
 const emptyPepperKit: PepperKit = {
@@ -241,149 +241,149 @@ function parsePepperKitStatus(json: string | undefined): PepperKit {
 }
 
 export type KitRequest = {
-    id: string,
-    createdAt: number,
-    enrollee?: Enrollee,
-    kitType: KitType,
-    sentToAddress: string,
-    status: string
-    externalKit?: string
-    parsedExternalKit?: PepperKit
+  id: string,
+  createdAt: number,
+  enrollee?: Enrollee,
+  kitType: KitType,
+  sentToAddress: string,
+  status: string
+  externalKit?: string
+  parsedExternalKit?: PepperKit
 }
 
 export type Config = {
-    b2cTenantName: string,
-    b2cClientId: string,
-    b2cPolicyName: string,
-    participantUiHostname: string,
-    participantApiHostname: string,
-    adminUiHostname: string,
-    adminApiHostname: string
+  b2cTenantName: string,
+  b2cClientId: string,
+  b2cPolicyName: string,
+  participantUiHostname: string,
+  participantApiHostname: string,
+  adminUiHostname: string,
+  adminApiHostname: string
 }
 
 export type MailingListContact = {
-    id: string,
-    name: string,
-    email: string,
-    createdAt: number
+  id: string,
+  name: string,
+  email: string,
+  createdAt: number
 }
 
 
 export type PortalEnvironmentChange = {
-    siteContentChange: VersionedEntityChange,
-    configChanges: ConfigChange[],
-    preRegSurveyChanges: VersionedEntityChange,
-    notificationConfigChanges: ListChange<NotificationConfig, VersionedConfigChange>
-    participantDashboardAlertChanges: ParticipantDashboardAlertChange[],
-    studyEnvChanges: StudyEnvironmentChange[]
+  siteContentChange: VersionedEntityChange,
+  configChanges: ConfigChange[],
+  preRegSurveyChanges: VersionedEntityChange,
+  notificationConfigChanges: ListChange<NotificationConfig, VersionedConfigChange>
+  participantDashboardAlertChanges: ParticipantDashboardAlertChange[],
+  studyEnvChanges: StudyEnvironmentChange[]
 }
 
 export type StudyEnvironmentChange = {
-    studyShortcode: string,
-    configChanges: ConfigChange[],
-    preEnrollSurveyChanges: VersionedEntityChange,
-    consentChanges: ListChange<StudyEnvironmentConsent, VersionedConfigChange>,
-    surveyChanges: ListChange<StudyEnvironmentSurvey, VersionedConfigChange>,
-    notificationConfigChanges: ListChange<NotificationConfig, VersionedConfigChange>
+  studyShortcode: string,
+  configChanges: ConfigChange[],
+  preEnrollSurveyChanges: VersionedEntityChange,
+  consentChanges: ListChange<StudyEnvironmentConsent, VersionedConfigChange>,
+  surveyChanges: ListChange<StudyEnvironmentSurvey, VersionedConfigChange>,
+  notificationConfigChanges: ListChange<NotificationConfig, VersionedConfigChange>
 }
 
 export type VersionedEntityChange = {
-    changed: true,
-    oldStableId: string,
-    newStableId: string,
-    oldVersion: number,
-    newVersion: number
+  changed: true,
+  oldStableId: string,
+  newStableId: string,
+  oldVersion: number,
+  newVersion: number
 } | {
-    changed: false
+  changed: false
 }
 
 type ConfigChangeValue = object | string | boolean
 export type ConfigChange = {
-    propertyName: string,
-    oldValue: ConfigChangeValue,
-    newValue: ConfigChangeValue
+  propertyName: string,
+  oldValue: ConfigChangeValue,
+  newValue: ConfigChangeValue
 }
 
 export type ListChange<T, CT> = {
-    addedItems: T[],
-    removedItems: T[],
-    changedItems: CT[]
+  addedItems: T[],
+  removedItems: T[],
+  changedItems: CT[]
 }
 
 export type VersionedConfigChange = {
-    sourceId: string,
-    configChanges: ConfigChange[],
-    documentChange: VersionedEntityChange
+  sourceId: string,
+  configChanges: ConfigChange[],
+  documentChange: VersionedEntityChange
 }
 
 export type ParticipantDashboardAlertChange = {
-    trigger: AlertTrigger,
-    changes: ConfigChange[]
+  trigger: AlertTrigger,
+  changes: ConfigChange[]
 }
 
 export type ExportOptions = {
-    fileFormat: string,
-    splitOptionsIntoColumns?: boolean,
-    stableIdsForOptions?: boolean,
-    onlyIncludeMostRecent?: boolean,
-    limit?: number
+  fileFormat: string,
+  splitOptionsIntoColumns?: boolean,
+  stableIdsForOptions?: boolean,
+  onlyIncludeMostRecent?: boolean,
+  limit?: number
 }
 
 export type ExportData = {
-    columnKeys: string[],
-    headerRowValues: string[],
-    subHeaderRowValues: string[],
-    valueMaps: Record<string, string>[]
+  columnKeys: string[],
+  headerRowValues: string[],
+  subHeaderRowValues: string[],
+  valueMaps: Record<string, string>[]
 }
 
 export type BasicMetricDatum = {
-    time: number,
-    name: string,
-    subcategory?: string
+  time: number,
+  name: string,
+  subcategory?: string
 }
 
 export type DatasetDetails = {
-    id: string,
-    createdAt: number,
-    createdBy: string,
-    lastUpdatedAt: number,
-    studyEnvironmentId: string,
-    tdrDatasetId: string,
-    datasetName: string,
-    description: string,
-    status: string,
-    lastExported: number
+  id: string,
+  createdAt: number,
+  createdBy: string,
+  lastUpdatedAt: number,
+  studyEnvironmentId: string,
+  tdrDatasetId: string,
+  datasetName: string,
+  description: string,
+  status: string,
+  lastExported: number
 }
 
 export type DatasetJobHistory = {
-    id: string,
-    createdAt: number,
-    lastUpdatedAt: number,
-    studyEnvironmentId: string,
-    tdrJobId: string,
-    datasetName: string,
-    datasetId: string,
-    status: string
-    jobType: string
+  id: string,
+  createdAt: number,
+  lastUpdatedAt: number,
+  studyEnvironmentId: string,
+  tdrJobId: string,
+  datasetName: string,
+  datasetId: string,
+  status: string
+  jobType: string
 }
 
 export type ParticipantNote = {
-    id: string,
-    createdAt: number,
-    lastUpdatedAt: number,
-    enrolleeId: string,
-    text: string,
-    kitRequestId?: string,
-    creatingAdminUserId: string
+  id: string,
+  createdAt: number,
+  lastUpdatedAt: number,
+  enrolleeId: string,
+  text: string,
+  kitRequestId?: string,
+  creatingAdminUserId: string
 }
 
 export type KitRequestListResponse = {
-    kitRequests: KitRequest[]
-    exceptions: { message: string }[]
+  kitRequests: KitRequest[]
+  exceptions: { message: string }[]
 }
 
 export type InternalConfig = {
-    pepperDsmConfig: Record<string, string>
+  pepperDsmConfig: Record<string, string>
 }
 
 let bearerToken: string | null = null
@@ -515,7 +515,7 @@ export default {
   },
 
   async uploadPortalImage(portalShortcode: string, uploadFileName: string, version: number, file: File):
-        Promise<SiteImageMetadata> {
+    Promise<SiteImageMetadata> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/siteImages/upload/${uploadFileName}/${version}`
     const headers = this.getInitHeaders()
     delete headers['Content-Type'] // browsers will auto-add the correct type for the multipart file
@@ -581,7 +581,7 @@ export default {
   async updateConfiguredConsent(portalShortcode: string, studyShortcode: string, environmentName: string,
     configuredConsent: StudyEnvironmentConsent): Promise<StudyEnvironmentConsent> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
-            `/env/${environmentName}/configuredConsents/${configuredConsent.id}`
+      `/env/${environmentName}/configuredConsents/${configuredConsent.id}`
 
     const response = await fetch(url, {
       method: 'PATCH',
@@ -593,7 +593,7 @@ export default {
 
   async createNewConsentForm(portalShortcode: string, consentForm: ConsentForm): Promise<ConsentForm> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/consentForms/`
-            + `${consentForm.stableId}`
+      + `${consentForm.stableId}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
@@ -604,7 +604,7 @@ export default {
 
   async createNewConsentVersion(portalShortcode: string, consentForm: ConsentForm): Promise<ConsentForm> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/consentForms/`
-            + `${consentForm.stableId}/${consentForm.version}/newVersion`
+      + `${consentForm.stableId}/${consentForm.version}/newVersion`
 
     const response = await fetch(url, {
       method: 'POST',
@@ -617,7 +617,7 @@ export default {
   async createConfiguredConsent(portalShortcode: string, studyShortcode: string, environmentName: string,
     configuredConsent: StudyEnvironmentConsent): Promise<StudyEnvironmentConsent> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
-            `/env/${environmentName}/configuredConsents`
+      `/env/${environmentName}/configuredConsents`
 
     const response = await fetch(url, {
       method: 'POST',
@@ -658,7 +658,7 @@ export default {
   async createConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string,
     configuredSurvey: StudyEnvironmentSurvey): Promise<StudyEnvironmentSurvey> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
-            `/env/${environmentName}/configuredSurveys`
+      `/env/${environmentName}/configuredSurveys`
 
     const response = await fetch(url, {
       method: 'POST',
@@ -671,7 +671,7 @@ export default {
   async removeConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string,
     configuredSurveyId: string): Promise<Response> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
-            `/env/${environmentName}/configuredSurveys/${configuredSurveyId}`
+      `/env/${environmentName}/configuredSurveys/${configuredSurveyId}`
     const response = await fetch(url, {
       method: 'DELETE',
       headers: this.getInitHeaders()
@@ -682,7 +682,7 @@ export default {
   async updateConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string,
     configuredSurvey: StudyEnvironmentSurvey): Promise<StudyEnvironmentSurvey> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
-            `/env/${environmentName}/configuredSurveys/${configuredSurvey.id}`
+      `/env/${environmentName}/configuredSurveys/${configuredSurvey.id}`
 
     const response = await fetch(url, {
       method: 'PATCH',
@@ -714,7 +714,7 @@ export default {
   },
 
   async searchEnrollees(portalShortcode: string, studyShortcode: string, envName: string, facetValues: FacetValue[]):
-        Promise<EnrolleeSearchResult[]> {
+    Promise<EnrolleeSearchResult[]> {
     const facetString = encodeURIComponent(facetValuesToString(facetValues))
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees?facets=${facetString}`
     const response = await fetch(url, this.getGetInit())
@@ -722,7 +722,7 @@ export default {
   },
 
   async getEnrollee(portalShortcode: string, studyShortcode: string, envName: string, enrolleeShortcode: string):
-        Promise<Enrollee> {
+    Promise<Enrollee> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}`
     const response = await fetch(url, this.getGetInit())
     const enrollee: Enrollee = await this.processJsonResponse(response)
@@ -735,7 +735,7 @@ export default {
   async fetchEnrolleeNotifications(portalShortcode: string, studyShortcode: string, envName: string,
     enrolleeShortcode: string): Promise<Notification[]> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
-        }/enrollees/${enrolleeShortcode}/notifications`
+    }/enrollees/${enrolleeShortcode}/notifications`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -749,7 +749,7 @@ export default {
   async withdrawEnrollee(portalShortcode: string, studyShortcode: string, envName: string,
     enrolleeShortcode: string): Promise<object> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
-        }/enrollees/${enrolleeShortcode}/withdraw`
+    }/enrollees/${enrolleeShortcode}/withdraw`
     const response = await fetch(url, { method: 'POST', headers: this.getInitHeaders() })
     return await this.processJsonResponse(response)
   },
@@ -757,7 +757,7 @@ export default {
   async fetchEnrolleeChangeRecords(portalShortcode: string, studyShortcode: string, envName: string,
     enrolleeShortcode: string): Promise<DataChangeRecord[]> {
     const url =
-            `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/changeRecords`
+      `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/changeRecords`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -765,7 +765,7 @@ export default {
   async fetchEnrolleeAdminTasks(portalShortcode: string, studyShortcode: string, envName: string,
     enrolleeShortcode: string): Promise<AdminTask[]> {
     const url =
-            `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/adminTasks`
+      `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/adminTasks`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -776,7 +776,7 @@ export default {
     enrolleeShortcode: string,
     note: { text: string, assignedAdminUserId?: string }): Promise<ParticipantNote> {
     const url =
-            `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/participantNote`
+      `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/participantNote`
     const response = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(note),
@@ -818,7 +818,7 @@ export default {
   ): Promise<string> {
     const params = new URLSearchParams({ kitType })
     const url =
-            `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit?${params}`
+      `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit?${params}`
     const response = await fetch(url, { method: 'POST', headers: this.getInitHeaders() })
     const kit = await this.processJsonResponse(response)
     kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus)
@@ -864,7 +864,7 @@ export default {
     enrolleeShortcode: string
   ): Promise<KitRequest[]> {
     const url =
-            `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/kitRequests`
+      `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/kitRequests`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -900,7 +900,7 @@ export default {
   async testNotification(portalShortcode: string, envName: string,
     notificationConfigId: string, enrolleeRuleData: object): Promise<NotificationConfig> {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/notificationConfigs/${notificationConfigId}`
-            + `/test`
+      + `/test`
 
     const response = await fetch(url, {
       method: 'POST',
@@ -911,7 +911,7 @@ export default {
   },
 
   async fetchMetric(portalShortcode: string, studyShortcode: string, envName: string, metricName: string):
-        Promise<BasicMetricDatum[]> {
+    Promise<BasicMetricDatum[]> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/metrics/${metricName}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
@@ -919,7 +919,7 @@ export default {
 
   exportEnrollees(portalShortcode: string, studyShortcode: string,
     envName: string, exportOptions: ExportOptions):
-        Promise<Response> {
+    Promise<Response> {
     const exportOptionsParams = exportOptions as Record<string, unknown>
     let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/data?`
     const searchParams = new URLSearchParams()
@@ -932,7 +932,7 @@ export default {
 
   exportDictionary(portalShortcode: string, studyShortcode: string,
     envName: string, exportOptions: ExportOptions):
-        Promise<Response> {
+    Promise<Response> {
     const exportOptionsParams = exportOptions as Record<string, unknown>
     let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/export/dictionary?`
     const searchParams = new URLSearchParams()
@@ -944,14 +944,14 @@ export default {
   },
 
   async findNotificationConfig(portalShortcode: string, studyShortcode: string, envName: string, id: string):
-        Promise<NotificationConfig> {
+    Promise<NotificationConfig> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/notificationConfigs/${id}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
   async findNotificationConfigsForStudyEnv(portalShortcode: string, studyShortcode: string, envName: string):
-        Promise<NotificationConfig[]> {
+    Promise<NotificationConfig[]> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/notificationConfigs`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
@@ -961,11 +961,11 @@ export default {
     portalShortcode, studyShortcode, envName, enrolleeShortcodes,
     customMessages, notificationConfigId
   }:
-                                    {
-                                        portalShortcode: string, studyShortcode: string, envName: string,
-                                        enrolleeShortcodes: string[], customMessages: Record<string, string>,
-                                        notificationConfigId: string
-                                    }): Promise<Response> {
+                                {
+                                  portalShortcode: string, studyShortcode: string, envName: string,
+                                  enrolleeShortcodes: string[], customMessages: Record<string, string>,
+                                  notificationConfigId: string
+                                }): Promise<Response> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/notifications/adhoc`
     return await fetch(url, {
       method: 'POST',
@@ -980,7 +980,7 @@ export default {
 
   async listDatasetsForStudyEnvironment(portalShortcode: string, studyShortcode: string,
     envName: string):
-        Promise<DatasetDetails[]> {
+    Promise<DatasetDetails[]> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
@@ -988,7 +988,7 @@ export default {
 
   async getJobHistoryForDataset(portalShortcode: string, studyShortcode: string,
     envName: string, datasetName: string):
-        Promise<DatasetJobHistory[]> {
+    Promise<DatasetJobHistory[]> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets/${datasetName}/jobs`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
@@ -996,7 +996,7 @@ export default {
 
   async createDatasetForStudyEnvironment(portalShortcode: string, studyShortcode: string,
     envName: string, createDataset: { name: string, description: string }):
-        Promise<Response> {
+    Promise<Response> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets`
     return await fetch(url, {
       method: 'POST',
@@ -1007,7 +1007,7 @@ export default {
 
   async deleteDatasetForStudyEnvironment(portalShortcode: string, studyShortcode: string,
     envName: string, datasetName: string):
-        Promise<Response> {
+    Promise<Response> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/datarepo/datasets/${datasetName}`
     return await fetch(url, {
       method: 'DELETE',
@@ -1123,14 +1123,14 @@ export default {
   },
 
   async fetchEnvDiff(portalShortcode: string, sourceEnvName: string, destEnvName: string):
-        Promise<PortalEnvironmentChange> {
+    Promise<PortalEnvironmentChange> {
     const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/diff?sourceEnv=${sourceEnvName}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
   async applyEnvChanges(portalShortcode: string, destEnvName: string, changes: PortalEnvironmentChange):
-        Promise<PortalEnvironment> {
+    Promise<PortalEnvironment> {
     const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/diff/apply`
     const response = await fetch(url, {
       method: 'POST',
