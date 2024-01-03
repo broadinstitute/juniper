@@ -60,7 +60,7 @@ public class EventDaoTests extends BaseSpringBootTest {
                 .eventClass(EventClass.ENROLLEE_SURVEY_EVENT)
                 .studyEnvironmentId(UUID.randomUUID())
                 .build();
-        
+
         assertThrows(Exception.class,
                 () -> eventDao.create(eventRandomEnrolleeId));
         assertThrows(Exception.class,
