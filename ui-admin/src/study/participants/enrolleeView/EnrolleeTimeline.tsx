@@ -28,9 +28,9 @@ type EventNotificationTableEntry = {
 }
 
 
-/** loads the list of notifications for a given enrollee and displays them in the UI */
-export default function EnrolleeNotifications({ enrollee, studyEnvContext }:
-                                                { enrollee: Enrollee, studyEnvContext: StudyEnvContextT }) {
+/** loads the list of notifications and events for a given enrollee and displays them in the UI */
+export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
+                                           { enrollee: Enrollee, studyEnvContext: StudyEnvContextT }) {
   const { currentEnv, study, portal, currentEnvPath } = studyEnvContext
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [events, setEvents] = useState<Event[]>([])
@@ -99,12 +99,12 @@ export default function EnrolleeNotifications({ enrollee, studyEnvContext }:
   }, [events, notifications])
 
   return <div>
-    <h5>Notifications</h5>
+    <h5>Timeline</h5>
     <LoadingSpinner isLoading={isLoading}>
       <table className="table table-striped">
         <thead>
           <tr>
-            <th>notification</th>
+            <th>notification/event</th>
             <th>method</th>
             <th>status</th>
             <th>time</th>
