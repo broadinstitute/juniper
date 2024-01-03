@@ -46,6 +46,18 @@ public class SendgridClient {
     request.setBody(mail.build());
     Response response = sg.api(request);
 
+    //The X-Message-Id that's returned by SendGrid here is not the same as the Message-Id. The X-Message-Id is a unique
+    //identifier that corresponds to the API request, which could have been for a batch of emails (thus, the X-Message-Id
+    //could correspond to multiple emails in our system). The Message-Id is a unique identifier for the email itself, after
+    //SendGrid has broken up the batch and processed the messages individually. Since we don't have that information until
+    //after the email has been captured in our activity logs, the X-Message-Id is the only way to tie an API request to a
+    //specific email in the system. Fortunately, the X-Message-Id is the prefix of the Message-Id (see example below).
+
+    //We only send emails in batches of 1, so the ambiguity is not an issue for us right now. We also key off of the recipient
+    //email address when utilizing this information, to try to make it a bit more airtight.
+
+    //For example: the Message-Id XBg2anf2TqCy6WXKQFhieQ.filter0905p1mdw1-4434-59E0C6FF-3.0 would correspond
+    // to X-Message-Id XBg2anf2TqCy6WXKQFhieQ
     return response.getHeaders().get("X-Message-Id");
   }
 
