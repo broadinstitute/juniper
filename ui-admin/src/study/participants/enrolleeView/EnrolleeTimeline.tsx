@@ -84,11 +84,13 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
     newTableData.push(...events.map(eventToTableEntry))
 
     const sorted = newTableData.sort((obj1, obj2) => {
-      if (obj1.createdAt > obj2.createdAt) {
+      // sort function is "backwards" so it sorts descending
+      // (most recent event is on top)
+      if (obj1.createdAt < obj2.createdAt) {
         return 1
       }
 
-      if (obj1.createdAt < obj2.createdAt) {
+      if (obj1.createdAt > obj2.createdAt) {
         return -1
       }
 
