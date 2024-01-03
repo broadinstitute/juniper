@@ -43,6 +43,10 @@ public class SendgridEventService {
     bulkUpsert(events);
   }
 
+  public Optional<SendgridEvent> findByMessageIdAndToEmail(String messageId, String toEmail) {
+    return sendgridEventDao.find(messageId, toEmail);
+  }
+
   @Transactional
   public void bulkUpsert(List<SendgridEvent> events) {
     sendgridEventDao.bulkUpsert(events);

@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "add_sendgrid_email_id"
+      author: mbemis
+      changes:
+        - addColumn:
+            tableName: notification
+            columns:
+              - column: { name: sendgrid_batch_id, type: text }

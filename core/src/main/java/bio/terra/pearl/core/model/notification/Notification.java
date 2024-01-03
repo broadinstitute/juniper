@@ -18,7 +18,10 @@ public class Notification extends BaseEntity {
     private UUID portalEnvironmentId;
     private UUID studyEnvironmentId;
     private UUID notificationConfigId;
+    private String sendgridBatchId;
     private NotificationDeliveryStatus deliveryStatus;
+    @Builder.Default
+    private boolean opened = false;
     private NotificationDeliveryType deliveryType;
     private String sentTo;
     private String customMessages;

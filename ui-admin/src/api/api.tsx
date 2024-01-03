@@ -129,6 +129,7 @@ export type Notification = {
   id: string,
   notificationConfigId: string,
   deliveryStatus: string,
+  opened: boolean,
   deliveryType: string,
   sentTo: string,
   createdAt: number,

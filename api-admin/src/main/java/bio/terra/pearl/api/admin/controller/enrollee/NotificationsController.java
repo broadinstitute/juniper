@@ -3,10 +3,14 @@ package bio.terra.pearl.api.admin.controller.enrollee;
 import bio.terra.pearl.api.admin.api.NotificationsApi;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.notifications.NotificationExtService;
+import bio.terra.pearl.api.admin.service.notifications.SendgridEventService;
+import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.notification.Notification;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
+import bio.terra.pearl.core.model.notification.SendgridEvent;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.notification.NotificationDispatcher;
@@ -17,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,9 +30,11 @@ import org.springframework.stereotype.Controller;
 public class NotificationsController implements NotificationsApi {
   private AuthUtilService authUtilService;
   private NotificationService notificationService;
+  private SendgridEventService sendgridEventService;
   private NotificationConfigService notificationConfigService;
   private NotificationDispatcher notificationDispatcher;
   private NotificationExtService notificationExtService;
+  private ProfileDao profileDao; // todo
   private EnrolleeService enrolleeService;
   private ObjectMapper objectMapper;
   private HttpServletRequest request;
@@ -35,17 +42,21 @@ public class NotificationsController implements NotificationsApi {
   public NotificationsController(
       AuthUtilService authUtilService,
       NotificationService notificationService,
+      SendgridEventService sendgridEventService,
       NotificationConfigService notificationConfigService,
       NotificationDispatcher notificationDispatcher,
       NotificationExtService notificationExtService,
+      ProfileDao profileDao,
       EnrolleeService enrolleeService,
       ObjectMapper objectMapper,
       HttpServletRequest request) {
     this.authUtilService = authUtilService;
     this.notificationService = notificationService;
+    this.sendgridEventService = sendgridEventService;
     this.notificationConfigService = notificationConfigService;
     this.notificationDispatcher = notificationDispatcher;
     this.notificationExtService = notificationExtService;
+    this.profileDao = profileDao;
     this.enrolleeService = enrolleeService;
     this.objectMapper = objectMapper;
     this.request = request;
@@ -58,6 +69,30 @@ public class NotificationsController implements NotificationsApi {
     authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
     Enrollee enrollee = enrolleeService.findOneByShortcode(enrolleeShortcode).get();
     List<Notification> notifications = notificationService.findByEnrolleeId(enrollee.getId());
+    enrollee.setProfile(profileDao.loadWithMailingAddress(enrollee.getProfileId()).get());
+
+    System.out.println("email: " + enrollee.getProfile().getContactEmail());
+
+    // todo: just query all the sendgrid events for the enrollee and set the opened flag. might also
+    // want
+    // to partition by study?
+    notifications.forEach(
+        notification -> {
+          if (notification.getSendgridBatchId() != null && enrollee.getProfile() != null) {
+            Optional<SendgridEvent> sendgridEvent =
+                sendgridEventService.findByMessageIdAndToEmail(
+                    notification.getSendgridBatchId(), enrollee.getProfile().getContactEmail());
+
+            if (sendgridEvent.isPresent()) {
+              System.out.println("sendgrid event: " + sendgridEvent.get().getOpensCount());
+              notification.setOpened(sendgridEvent.get().getOpensCount() > 0);
+              if (sendgridEvent.get().getStatus().equalsIgnoreCase("not delivered")) {
+                notification.setDeliveryStatus(NotificationDeliveryStatus.NOT_DELIVERED);
+              }
+            }
+          }
+        });
+
     return ResponseEntity.ok(notifications);
   }
 

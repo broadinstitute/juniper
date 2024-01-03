@@ -32,7 +32,7 @@ public class SendgridClient {
   }
 
 
-  public void sendEmail(Mail mail) throws Exception {
+  public String sendEmail(Mail mail) throws Exception {
     if (StringUtils.isEmpty(sendGridApiKey)) {
       // if there's no API key, (likely because we're in a CI environment), don't even attempt to send an email
       log.info("Email send skipped: no sendgrid api provided");
@@ -44,7 +44,9 @@ public class SendgridClient {
     request.setMethod(Method.POST);
     request.setEndpoint("mail/send");
     request.setBody(mail.build());
-    sg.api(request);
+    Response response = sg.api(request);
+
+    return response.getHeaders().get("X-Message-Id");
   }
 
   public List<SendgridEvent> getEvents(Instant startDate, Instant endDate, int queryLimit) throws Exception {

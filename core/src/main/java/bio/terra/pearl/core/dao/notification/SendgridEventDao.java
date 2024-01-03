@@ -24,6 +24,17 @@ public class SendgridEventDao extends BaseMutableJdbiDao<SendgridEvent> {
         bulkUpsert(activityLogs, "msg_id");
     }
 
+    public Optional<SendgridEvent> find(String messageId, String toEmail) {
+        //finds the sendgrid events that start with messageId and were toEmail
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from " + tableName + " where msg_id like :messageId and to_email = :toEmail")
+                        .bind("messageId", messageId + "%")
+                        .bind("toEmail", toEmail)
+                        .mapTo(clazz)
+                        .findOne()
+        );
+    }
+
     public Optional<SendgridEvent> findMostRecentEvent() {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select * from " + tableName + " order by last_event_time desc limit 1")

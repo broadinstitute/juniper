@@ -61,10 +61,11 @@ public class EnrolleeEmailService implements NotificationSender {
         } else {
             notification.setSentTo(ruleData.profile().getContactEmail());
             try {
-                buildAndSendEmail(contextInfo, ruleData, notification);
+                String messageId = buildAndSendEmail(contextInfo, ruleData, notification);
                 log.info("Email sent: config: {}, enrollee: {}", config.getId(),
                         ruleData.enrollee().getShortcode());
                 notification.setDeliveryStatus(NotificationDeliveryStatus.SENT);
+                notification.setSendgridBatchId(messageId);
             } catch (Exception e) {
                 notification.setDeliveryStatus(NotificationDeliveryStatus.FAILED);
                 // don't log the exception itself since the trace might have PII in it.
@@ -95,11 +96,10 @@ public class EnrolleeEmailService implements NotificationSender {
         buildAndSendEmail(contextInfo, ruleData, new Notification());
     }
 
-    protected Mail buildAndSendEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData,
+    protected String buildAndSendEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData,
                                      Notification notification) throws Exception {
         Mail mail = buildEmail(contextInfo, ruleData, notification);
-        sendgridClient.sendEmail(mail);
-        return mail;
+        return sendgridClient.sendEmail(mail);
     }
 
     protected Mail buildEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData, Notification notification) {
