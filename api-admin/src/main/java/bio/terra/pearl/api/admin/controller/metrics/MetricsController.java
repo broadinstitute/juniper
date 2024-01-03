@@ -6,7 +6,7 @@ import bio.terra.pearl.api.admin.service.MetricsExtService;
 import bio.terra.pearl.core.dao.metrics.MetricName;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
