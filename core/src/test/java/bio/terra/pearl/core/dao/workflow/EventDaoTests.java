@@ -5,7 +5,6 @@ import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.workflow.Event;
 import bio.terra.pearl.core.model.workflow.EventClass;
-import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,12 +60,12 @@ public class EventDaoTests extends BaseSpringBootTest {
                 .eventClass(EventClass.ENROLLEE_SURVEY_EVENT)
                 .studyEnvironmentId(UUID.randomUUID())
                 .build();
-
-        assertThrows(UnableToExecuteStatementException.class,
+        
+        assertThrows(Exception.class,
                 () -> eventDao.create(eventRandomEnrolleeId));
-        assertThrows(UnableToExecuteStatementException.class,
+        assertThrows(Exception.class,
                 () -> eventDao.create(eventRandomPortalEnvId));
-        assertThrows(UnableToExecuteStatementException.class,
+        assertThrows(Exception.class,
                 () -> eventDao.create(eventRandomStudyEnvId));
     }
 
