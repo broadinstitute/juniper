@@ -2,23 +2,23 @@ import _pick from 'lodash/pick'
 import {
   AlertTrigger,
   ConsentForm,
-  Survey,
   ConsentResponse,
   NotificationConfig,
-  ParticipantTask,
   ParticipantDashboardAlert,
+  ParticipantTask,
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
+  PreregistrationResponse,
   SiteContent,
   Study,
   StudyEnvironmentConfig,
   StudyEnvironmentConsent,
   StudyEnvironmentSurvey,
-  SurveyResponse,
-  PreregistrationResponse
+  Survey,
+  SurveyResponse
 } from '@juniper/ui-core'
-import { facetValuesToString, FacetValue } from './enrolleeSearch'
+import { FacetValue, facetValuesToString } from './enrolleeSearch'
 import { StudyEnvParams } from '../study/StudyEnvironmentRouter'
 
 export type {
@@ -873,6 +873,15 @@ export default {
       body: JSON.stringify(config)
     })
     return await this.processJsonResponse(response)
+  },
+
+  async deleteNotificationConfig(portalShortcode: string, studyShortcode: string, envName: string,
+    configId: string): Promise<Response> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/notificationConfigs/${configId}`
+    return await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
   },
 
   async testNotification(portalShortcode: string, envName: string,

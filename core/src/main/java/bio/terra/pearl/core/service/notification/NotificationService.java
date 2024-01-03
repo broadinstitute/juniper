@@ -4,9 +4,10 @@ import bio.terra.pearl.core.dao.notification.NotificationDao;
 import bio.terra.pearl.core.model.notification.Notification;
 import bio.terra.pearl.core.service.CrudService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
 
 @Service
 public class NotificationService extends CrudService<Notification, NotificationDao> {
@@ -21,5 +22,9 @@ public class NotificationService extends CrudService<Notification, NotificationD
     }
     public void deleteByEnrolleeId(UUID enrolleeId) {
         dao.deleteByEnrolleeId(enrolleeId);
+    }
+
+    public void deleteByNotificationConfigId(UUID configId) {
+        dao.deleteByNotificationConfigId(configId);
     }
 }
