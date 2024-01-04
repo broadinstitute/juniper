@@ -8,7 +8,6 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -32,6 +31,10 @@ public class SiteImageService extends ImmutableEntityService<SiteImage, SiteImag
 
     public Optional<SiteImage> findOneLatestVersion(String portalShortcode, String cleanFileName) {
         return dao.findOneLatestVersion(portalShortcode, cleanFileName);
+    }
+
+    public List<SiteImage> findByPortal(String portalShortcode) {
+        return dao.findByPortal(portalShortcode);
     }
 
     public List<SiteImageMetadata> findMetadataByPortal(String portalShortcode) {

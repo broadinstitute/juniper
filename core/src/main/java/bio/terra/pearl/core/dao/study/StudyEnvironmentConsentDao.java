@@ -28,11 +28,11 @@ public class StudyEnvironmentConsentDao extends BaseMutableJdbiDao<StudyEnvironm
         return findAllByProperty("study_environment_id", studyEnvId);
     }
 
-    /** gets all the study environment surveys and attaches the relevant survey objects in a batch */
+    /** gets all the study environment consents and attaches the relevant survey objects in a batch */
     public List<StudyEnvironmentConsent> findAllByStudyEnvIdWithConsent(UUID studyEnvId) {
         List<StudyEnvironmentConsent> studyEnvConsents = findAllByStudyEnvironmentId(studyEnvId);
         List<UUID> consentIds = studyEnvConsents.stream().map(ses -> ses.getConsentFormId()).toList();
-        List<ConsentForm> consents = consentFormDao.findAllById(consentIds);
+        List<ConsentForm> consents = consentFormDao.findAll(consentIds);
         for (StudyEnvironmentConsent sec : studyEnvConsents) {
             sec.setConsentForm(consents.stream().filter(survey -> survey.getId().equals(sec.getConsentFormId()))
                     .findFirst().get());

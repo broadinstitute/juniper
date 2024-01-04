@@ -11,20 +11,25 @@ import bio.terra.pearl.populate.service.*;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
+import bio.terra.pearl.populate.service.extract.PortalExtractService;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
+import java.util.zip.ZipInputStream;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class PopulateExtService {
-  private BaseSeedPopulator baseSeedPopulator;
-  private EnrolleePopulator enrolleePopulator;
-  private SurveyPopulator surveyPopulator;
-  private PortalPopulator portalPopulator;
-  private SiteContentPopulator siteContentPopulator;
-  private PortalParticipantUserPopulator portalParticipantUserPopulator;
-  private AdminConfigPopulator adminConfigPopulator;
+  private final BaseSeedPopulator baseSeedPopulator;
+  private final EnrolleePopulator enrolleePopulator;
+  private final SurveyPopulator surveyPopulator;
+  private final PortalPopulator portalPopulator;
+  private final SiteContentPopulator siteContentPopulator;
+  private final PortalParticipantUserPopulator portalParticipantUserPopulator;
+  private final AdminConfigPopulator adminConfigPopulator;
+  private final PortalExtractService portalExtractService;
 
   public PopulateExtService(
       BaseSeedPopulator baseSeedPopulator,
@@ -33,7 +38,8 @@ public class PopulateExtService {
       PortalPopulator portalPopulator,
       SiteContentPopulator siteContentPopulator,
       PortalParticipantUserPopulator portalParticipantUserPopulator,
-      AdminConfigPopulator adminConfigPopulator) {
+      AdminConfigPopulator adminConfigPopulator,
+      PortalExtractService portalExtractService) {
     this.baseSeedPopulator = baseSeedPopulator;
     this.enrolleePopulator = enrolleePopulator;
     this.surveyPopulator = surveyPopulator;
@@ -41,6 +47,7 @@ public class PopulateExtService {
     this.siteContentPopulator = siteContentPopulator;
     this.portalParticipantUserPopulator = portalParticipantUserPopulator;
     this.adminConfigPopulator = adminConfigPopulator;
+    this.portalExtractService = portalExtractService;
   }
 
   public BaseSeedPopulator.SetupStats populateBaseSeed(AdminUser user) {
@@ -62,6 +69,16 @@ public class PopulateExtService {
     }
   }
 
+  public Portal populatePortal(MultipartFile zipFile, AdminUser user, boolean overwrite) {
+    authorizeUser(user);
+    try {
+      ZipInputStream zis = new ZipInputStream(zipFile.getInputStream());
+      return portalPopulator.populateFromZipFile(zis, overwrite);
+    } catch (IOException e) {
+      throw new IllegalArgumentException("error reading/writing zip file", e);
+    }
+  }
+
   public Portal populatePortal(String filePathName, AdminUser user, boolean overwrite) {
     authorizeUser(user);
     return portalPopulator.populate(new FilePopulateContext(filePathName), overwrite);
@@ -71,7 +88,7 @@ public class PopulateExtService {
       String portalShortcode, String filePathName, AdminUser user, boolean overwrite) {
     authorizeUser(user);
     PortalPopulateContext config =
-        new PortalPopulateContext(filePathName, portalShortcode, null, new HashMap<>());
+        new PortalPopulateContext(filePathName, portalShortcode, null, new HashMap<>(), false);
     return surveyPopulator.populate(config, overwrite);
   }
 
@@ -79,7 +96,7 @@ public class PopulateExtService {
       String portalShortcode, String filePathName, AdminUser user, boolean overwrite) {
     authorizeUser(user);
     PortalPopulateContext config =
-        new PortalPopulateContext(filePathName, portalShortcode, null, new HashMap<>());
+        new PortalPopulateContext(filePathName, portalShortcode, null, new HashMap<>(), false);
     try {
       // first, repopulate images to cove any new/changed images.
       String portalFilePath = "portals/%s/portal.json".formatted(portalShortcode);
@@ -101,7 +118,7 @@ public class PopulateExtService {
     authorizeUser(user);
     StudyPopulateContext config =
         new StudyPopulateContext(
-            filePathName, portalShortcode, studyShortcode, envName, new HashMap<>());
+            filePathName, portalShortcode, studyShortcode, envName, new HashMap<>(), false);
     return enrolleePopulator.populate(config, overwrite);
   }
 
@@ -118,6 +135,12 @@ public class PopulateExtService {
             portalShortcode, envName, studyShortcode, numEnrollees);
     enrolleePopulator.bulkPopulateEnrollees(
         portalShortcode, envName, studyShortcode, usernamesToLink);
+  }
+
+  public void extractPortal(String portalShortcode, OutputStream os, AdminUser user)
+      throws IOException {
+    authorizeUser(user);
+    portalExtractService.extract(portalShortcode, os);
   }
 
   protected void authorizeUser(AdminUser user) {

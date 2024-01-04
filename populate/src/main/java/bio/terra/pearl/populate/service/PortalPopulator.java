@@ -9,7 +9,6 @@ import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.MailingListContactService;
 import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
@@ -21,27 +20,36 @@ import bio.terra.pearl.populate.dto.PortalPopDto;
 import bio.terra.pearl.populate.dto.site.SiteImagePopDto;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.Set;
+import java.util.zip.ZipInputStream;
+
+import bio.terra.pearl.populate.util.ZipUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePopulateContext> {
-
-    private PortalService portalService;
-
-    private PortalEnvironmentService portalEnvironmentService;
-    private PortalDashboardConfigService portalDashboardConfigService;
-    private SiteImagePopulator siteImagePopulator;
-    private StudyPopulator studyPopulator;
-    private SurveyPopulator surveyPopulator;
-    private SiteContentPopulator siteContentPopulator;
-    private PortalStudyService portalStudyService;
-    private PortalParticipantUserPopulator portalParticipantUserPopulator;
-    private MailingListContactService mailingListContactService;
-    private AdminUserPopulator adminUserPopulator;
-
+    private final PortalService portalService;
+    private final PortalEnvironmentService portalEnvironmentService;
+    private final SiteImagePopulator siteImagePopulator;
+    private final StudyPopulator studyPopulator;
+    private final SurveyPopulator surveyPopulator;
+    private final SiteContentPopulator siteContentPopulator;
+    private final PortalStudyService portalStudyService;
+    private final PortalParticipantUserPopulator portalParticipantUserPopulator;
+    private final MailingListContactService mailingListContactService;
+    private final AdminUserPopulator adminUserPopulator;
+    private final ConsentFormPopulator consentFormPopulator;
+    private final EmailTemplatePopulator emailTemplatePopulator;
+    private final PortalDashboardConfigService portalDashboardConfigService;
 
 
     public PortalPopulator(PortalService portalService,
@@ -49,12 +57,13 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
                            PortalStudyService portalStudyService,
                            SiteContentPopulator siteContentPopulator,
                            PortalParticipantUserPopulator portalParticipantUserPopulator,
-                           PortalParticipantUserService ppUserService,
                            PortalEnvironmentService portalEnvironmentService,
                            PortalDashboardConfigService portalDashboardConfigService,
                            SiteImagePopulator siteImagePopulator, SurveyPopulator surveyPopulator,
                            AdminUserPopulator adminUserPopulator,
-                           MailingListContactService mailingListContactService) {
+                           MailingListContactService mailingListContactService,
+                           ConsentFormPopulator consentFormPopulator,
+                           EmailTemplatePopulator emailTemplatePopulator) {
         this.siteContentPopulator = siteContentPopulator;
         this.portalParticipantUserPopulator = portalParticipantUserPopulator;
         this.portalEnvironmentService = portalEnvironmentService;
@@ -66,6 +75,8 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         this.portalStudyService = portalStudyService;
         this.mailingListContactService = mailingListContactService;
         this.adminUserPopulator = adminUserPopulator;
+        this.consentFormPopulator = consentFormPopulator;
+        this.emailTemplatePopulator = emailTemplatePopulator;
     }
 
     private void populateStudy(String studyFileName, PortalPopulateContext context, Portal portal, boolean overwrite) throws IOException {
@@ -168,6 +179,12 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         for (String surveyFile : popDto.getSurveyFiles()) {
             surveyPopulator.populate(portalPopContext.newFrom(surveyFile), overwrite);
         }
+        for (String consentFile : popDto.getConsentFormFiles()) {
+            consentFormPopulator.populate(portalPopContext.newFrom(consentFile), overwrite);
+        }
+        for (String emailTemplateFile : popDto.getEmailTemplateFiles()) {
+            emailTemplatePopulator.populate(portalPopContext.newFrom(emailTemplateFile), overwrite);
+        }
         for (String siteContentFile : popDto.getSiteContentFiles()) {
             siteContentPopulator.populate(portalPopContext.newFrom(siteContentFile), overwrite);
         }
@@ -194,5 +211,19 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         for (SiteImagePopDto imagePopDto : popDto.getSiteImageDtos()) {
             siteImagePopulator.populateFromDto(imagePopDto, portalPopContext, overwrite);
         }
+    }
+
+    public Portal populateFromZipFile(ZipInputStream zipInputStream, boolean overwrite) throws IOException {
+        String folderName =
+                "portal_%s_%s"
+                        .formatted(
+                                ZonedDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE),
+                                RandomStringUtils.randomAlphabetic(5));
+        String tempDirName = FilePopulateService.TMP_POPULATE_DIR + "/" + folderName;
+        File tempDir = new File(tempDirName);
+        tempDir.mkdirs();
+        ZipUtils.unzipFile(tempDir, zipInputStream);
+        return populate(
+                new FilePopulateContext(folderName + "/portal.json", true), overwrite);
     }
 }

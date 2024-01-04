@@ -28,10 +28,6 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
         deleteByProperty("study_environment_id", studyEnvId);
     }
 
-    public List<StudyEnvironmentSurvey> findAllByStudyEnvironmentId(UUID studyEnvId) {
-        return findAllByStudyEnvironmentId(studyEnvId, true);
-    }
-
     public List<StudyEnvironmentSurvey> findAllByStudyEnvironmentId(UUID studyEnvId, Boolean active) {
         if (active != null) {
             return findAllByTwoPropertiesSorted("study_environment_id", studyEnvId,

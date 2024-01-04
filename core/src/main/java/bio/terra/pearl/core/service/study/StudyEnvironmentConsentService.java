@@ -18,6 +18,10 @@ public class StudyEnvironmentConsentService extends CrudService<StudyEnvironment
         return dao.findAllByStudyEnvIdWithConsent(studyEnvId);
     }
 
+    public List<StudyEnvironmentConsent> findAllByStudyEnvironmentId(UUID studyEnvId) {
+        return dao.findAllByStudyEnvironmentId(studyEnvId);
+    }
+
     public Optional<StudyEnvironmentConsent> findByConsentForm(UUID studyEnvId, UUID consentFormId) {
         return dao.findByConsentForm(studyEnvId, consentFormId);
     }

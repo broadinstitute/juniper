@@ -1158,7 +1158,7 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/internal/v1/populate/portal:
     post:
-      summary: Populates
+      summary: Populates a portal from a flat file that is already on the server
       tags: [ populate ]
       operationId: populatePortal
       parameters:
@@ -1171,6 +1171,41 @@ paths:
             application/json:
               schema:
                 type: object
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/internal/v1/populate/portal/upload:
+    post:
+      summary: upload a zip file of a portal (typically generated from the extract endpoint)
+      tags: [ populate ]
+      operationId: uploadPortal
+      parameters:
+        - { name: overwrite, in: query, required: false, schema: { type: boolean } }
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: portal object (abbreviated)
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/internal/v1/populate/portal/{portalShortcode}/extract:
+    get:
+      summary: Extract portal configs as a zip file
+      tags: [ populate ]
+      operationId: extractPortal
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: zip file of portal configs
+          content: { text/plain: { schema: { type: string, format: binary } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/internal/v1/populate/siteContent/{portalShortcode}:

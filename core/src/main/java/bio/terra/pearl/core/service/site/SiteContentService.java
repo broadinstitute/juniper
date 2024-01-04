@@ -62,6 +62,10 @@ public class SiteContentService extends VersionedEntityService<SiteContent, Site
         dao.delete(siteContentId);
     }
 
+    public List<SiteContent> findByPortalId(UUID portalId) {
+        return dao.findByPortalId(portalId);
+    }
+
     public void deleteByPortalId(UUID portalId) {
         List<SiteContent> siteContents = dao.findByPortalId(portalId);
         for (SiteContent siteContent : siteContents) {
