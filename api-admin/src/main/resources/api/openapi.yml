@@ -639,7 +639,7 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/events:
     get:
-      summary: List of events created by enrollee
+      summary: List of events relating to the specified enrollee
       tags: [ event ]
       operationId: getEventsByEnrollee
       parameters:

@@ -9,7 +9,11 @@ import lombok.experimental.SuperBuilder;
 import java.util.UUID;
 
 /**
- * Simple record of an event occurring, primarily for debugging and customer support.
+ * Simple record of an application event occurring, used primarily for debugging and customer support.
+ * Note that these records of application events (e.g., participant signup, kit received, etc..) are separate
+ * from LogEvent's records, which log warnings and errors, and are essentially a store of the console log in the
+ * database.
+ * It might be the case that a single incident could trigger both an "Event" and a "LogEvent."
  */
 @Getter
 @Setter

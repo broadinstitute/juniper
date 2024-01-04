@@ -40,10 +40,7 @@ public class EventServiceTests extends BaseSpringBootTest {
         Assertions.assertEquals(1, createdEvents.size());
 
         Event createdEvent = createdEvents.get(0);
-        Assertions.assertNotNull(createdEvent.getCreatedAt());
-        Assertions.assertEquals(EventClass.ENROLLEE_CONSENT_EVENT, createdEvent.getEventClass());
-        Assertions.assertEquals(bundle.enrollee().getId(), createdEvent.getEnrolleeId());
-        Assertions.assertEquals(bundle.portalParticipantUser().getPortalEnvironmentId(), createdEvent.getPortalEnvironmentId());
+        assertValidCreatedEventForEnrollee(createdEvent, EventClass.ENROLLEE_CONSENT_EVENT, bundle);
     }
 
     @Test
@@ -60,10 +57,7 @@ public class EventServiceTests extends BaseSpringBootTest {
         Assertions.assertEquals(1, createdEvents.size());
 
         Event createdEvent = createdEvents.get(0);
-        Assertions.assertNotNull(createdEvent.getCreatedAt());
-        Assertions.assertEquals(EventClass.ENROLLEE_CREATION_EVENT, createdEvent.getEventClass());
-        Assertions.assertEquals(bundle.enrollee().getId(), createdEvent.getEnrolleeId());
-        Assertions.assertEquals(bundle.portalParticipantUser().getPortalEnvironmentId(), createdEvent.getPortalEnvironmentId());
+        assertValidCreatedEventForEnrollee(createdEvent, EventClass.ENROLLEE_CREATION_EVENT, bundle);
     }
 
     @Test
@@ -81,10 +75,7 @@ public class EventServiceTests extends BaseSpringBootTest {
         Assertions.assertEquals(1, createdEvents.size());
 
         Event createdEvent = createdEvents.get(0);
-        Assertions.assertNotNull(createdEvent.getCreatedAt());
-        Assertions.assertEquals(EventClass.ENROLLEE_SURVEY_EVENT, createdEvent.getEventClass());
-        Assertions.assertEquals(bundle.enrollee().getId(), createdEvent.getEnrolleeId());
-        Assertions.assertEquals(bundle.portalParticipantUser().getPortalEnvironmentId(), createdEvent.getPortalEnvironmentId());
+        assertValidCreatedEventForEnrollee(createdEvent, EventClass.ENROLLEE_SURVEY_EVENT, bundle);
     }
 
     @Test
@@ -103,10 +94,7 @@ public class EventServiceTests extends BaseSpringBootTest {
         Assertions.assertEquals(1, createdEvents.size());
 
         Event createdEvent = createdEvents.get(0);
-        Assertions.assertNotNull(createdEvent.getCreatedAt());
-        Assertions.assertEquals(EventClass.KIT_STATUS_EVENT, createdEvent.getEventClass());
-        Assertions.assertEquals(bundle.enrollee().getId(), createdEvent.getEnrolleeId());
-        Assertions.assertEquals(bundle.portalParticipantUser().getPortalEnvironmentId(), createdEvent.getPortalEnvironmentId());
+        assertValidCreatedEventForEnrollee(createdEvent, EventClass.KIT_STATUS_EVENT, bundle);
     }
 
     @Test
@@ -130,5 +118,12 @@ public class EventServiceTests extends BaseSpringBootTest {
         Assertions.assertEquals(EventClass.PORTAL_REGISTRATION_EVENT, createdEvent.getEventClass());
         Assertions.assertNull(createdEvent.getEnrolleeId());
         Assertions.assertEquals(portalEnv.getId(), createdEvent.getPortalEnvironmentId());
+    }
+
+    private void assertValidCreatedEventForEnrollee(Event created, EventClass eventClass, EnrolleeFactory.EnrolleeBundle bundle) {
+        Assertions.assertNotNull(created.getCreatedAt());
+        Assertions.assertEquals(eventClass, created.getEventClass());
+        Assertions.assertEquals(bundle.enrollee().getId(), created.getEnrolleeId());
+        Assertions.assertEquals(bundle.portalParticipantUser().getPortalEnvironmentId(), created.getPortalEnvironmentId());
     }
 }

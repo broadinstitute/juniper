@@ -5,28 +5,19 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { instantToDefaultString } from 'util/timeUtils'
 import NotificationConfigTypeDisplay from '../../notifications/NotifcationConfigTypeDisplay'
 import { Link } from 'react-router-dom'
+import _capitalize from 'lodash/capitalize'
+import _startCase from 'lodash/startCase'
+import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
+import { basicTableLayout } from '../../../util/tableUtils'
 
-const eventClassToHumanReadable = (eventClass: string): string => {
-  const output = eventClass
-    .split('_')
-    .map(str => str.toLowerCase())
-    .join(' ')
 
-  // capitalize first letter of output
-  return output[0].toUpperCase() + output.substring(1)
+const isEvent = (val: Event | Notification): val is Event => {
+  return Object.keys(val).includes('eventClass')
 }
 
-type EventNotificationTableEntry = {
-  id: string,
-  createdAt: number,
-  deliveryStatus?: string,
-  deliveryType?: string,
-  notificationConfig?: NotificationConfig,
-  notificationConfigId?: string,
-  sentTo?: string,
-  eventClass?: string,
+const isNotification = (val: Event | Notification): val is Notification => {
+  return Object.keys(val).includes('notificationConfigId')
 }
-
 
 /** loads the list of notifications and events for a given enrollee and displays them in the UI */
 export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
@@ -34,8 +25,41 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
   const { currentEnv, study, portal, currentEnvPath } = studyEnvContext
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [events, setEvents] = useState<Event[]>([])
-  const [tableData, setTableData] = useState<EventNotificationTableEntry[]>([])
+  const [tableData, setTableData] = useState<(Event | Notification)[]>([])
+  const [sorting, setSorting] = React.useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
   const [isLoading, setIsLoading] = useState(true)
+
+  const columns: ColumnDef<Event | Notification>[] = [
+    {
+      id: 'name',
+      header: 'notification/event',
+      cell: ({ row }) => {
+        return <div>
+          {isNotification(row.original) && <NotificationConfigTypeDisplay config={row.original.notificationConfig}/>}
+          {isEvent(row.original) && _capitalize(_startCase(row.original.eventClass))}
+        </div>
+      }
+    },
+    {
+      header: 'delivery type',
+      accessorKey: 'deliveryType'
+    },
+    {
+      header: 'delivery status',
+      accessorKey: 'deliveryStatus'
+    },
+    {
+      header: 'time',
+      accessorKey: 'createdAt',
+      cell: info => instantToDefaultString(info.getValue() as number)
+    },
+    {
+      header: 'config',
+      accessorKey: 'notificationConfig',
+      cell: info => info.getValue() && <Link
+        to={notificationConfigPath(info.getValue() as NotificationConfig, currentEnvPath)}> config </Link>
+    }
+  ]
 
   /** matches each notification to a corresponding config by id */
   function attachConfigsToNotifications(rawNotifications: Notification[]) {
@@ -43,25 +67,6 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
       notification.notificationConfig = currentEnv.notificationConfigs
         .find(config => config.id === notification.notificationConfigId)
     })
-  }
-
-  const notificationToTableEntry = (val: Notification): EventNotificationTableEntry => {
-    return {
-      id: val.id,
-      deliveryType: val.deliveryType,
-      deliveryStatus: val.deliveryStatus,
-      notificationConfig: val.notificationConfig,
-      notificationConfigId: val.notificationConfigId,
-      createdAt: val.createdAt
-    }
-  }
-
-  const eventToTableEntry = (val: Event): EventNotificationTableEntry => {
-    return {
-      id: val.id,
-      createdAt: val.createdAt,
-      eventClass: val.eventClass
-    }
   }
 
   useEffect(() => {
@@ -78,69 +83,29 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
   }, [enrollee.shortcode])
 
   useEffect(() => {
-    const newTableData: EventNotificationTableEntry[] = []
+    const newTableData: (Event | Notification)[] = []
 
-    newTableData.push(...notifications.map(notificationToTableEntry))
-    newTableData.push(...events.map(eventToTableEntry))
+    newTableData.push(...notifications)
+    newTableData.push(...events)
 
-    const sorted = newTableData.sort((obj1, obj2) => {
-      // sort function is "backwards" so it sorts descending
-      // (most recent event is on top)
-      if (obj1.createdAt < obj2.createdAt) {
-        return 1
-      }
-
-      if (obj1.createdAt > obj2.createdAt) {
-        return -1
-      }
-
-      return 0
-    })
-
-    setTableData(sorted)
+    setTableData(newTableData)
   }, [events, notifications])
+
+  const table = useReactTable({
+    data: tableData,
+    columns,
+    state: {
+      sorting
+    },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel()
+  })
 
   return <div>
     <h5>Timeline</h5>
     <LoadingSpinner isLoading={isLoading}>
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th>notification/event</th>
-            <th>method</th>
-            <th>status</th>
-            <th>time</th>
-            <th>config</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tableData.map(row => {
-            const matchedConfig = currentEnv.notificationConfigs
-              .find(cfg => cfg.id === row.notificationConfigId)
-            return <tr key={row.id}>
-              <td>
-                {row.notificationConfig && <NotificationConfigTypeDisplay config={row.notificationConfig}/>}
-                {row.eventClass && eventClassToHumanReadable(row.eventClass)}
-              </td>
-
-              <td>
-                {row.deliveryType && row.deliveryType}
-              </td>
-              <td>
-                {row.deliveryStatus && row.deliveryStatus}
-              </td>
-              <td>
-                {instantToDefaultString(row.createdAt)}
-              </td>
-              <td>
-                {matchedConfig &&
-                  <Link to={notificationConfigPath(matchedConfig, currentEnvPath)}>config</Link>}
-              </td>
-            </tr>
-          })}
-        </tbody>
-      </table>
-
+      {basicTableLayout(table)}
     </LoadingSpinner>
   </div>
 }
