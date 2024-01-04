@@ -8,10 +8,10 @@ import bio.terra.pearl.core.factory.notification.NotificationFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.notification.TriggeredAction;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
-import bio.terra.pearl.core.model.notification.NotificationType;
+import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
@@ -54,9 +54,9 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
 
 
         // Now check that it filters out tasks if there is a recent notification
-        var notificationConfig = notificationConfigFactory.buildPersisted(NotificationConfig.builder()
+        var notificationConfig = notificationConfigFactory.buildPersisted(TriggeredAction.builder()
                 .deliveryType(NotificationDeliveryType.EMAIL)
-                .notificationType(NotificationType.TASK_REMINDER),
+                .triggerType(TriggerType.TASK_REMINDER),
                                 studyEnv.getId(), portalEnv.getId());
         notificationFactory.buildPersisted(
                 notificationFactory.builder(enrolleeBundle, notificationConfig).deliveryStatus(NotificationDeliveryStatus.SENT)
@@ -93,9 +93,9 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
         assertThat(enrollee1tasks.getTaskTargetNames(), contains(task1_1.getTargetName(), task1_2.getTargetName()));
 
         // Now check that it filters out tasks if there is a recent notification
-        var notificationConfig = notificationConfigFactory.buildPersisted(NotificationConfig.builder()
+        var notificationConfig = notificationConfigFactory.buildPersisted(TriggeredAction.builder()
                         .deliveryType(NotificationDeliveryType.EMAIL)
-                        .notificationType(NotificationType.TASK_REMINDER),
+                        .triggerType(TriggerType.TASK_REMINDER),
                 studyEnv.getId(), portalEnv.getId());
         notificationFactory.buildPersisted(
                 notificationFactory.builder(enrolleeBundle, notificationConfig).deliveryStatus(NotificationDeliveryStatus.SENT)

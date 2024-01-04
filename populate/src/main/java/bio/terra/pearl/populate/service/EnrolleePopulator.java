@@ -9,7 +9,7 @@ import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.consent.ConsentResponseDto;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.notification.TriggeredAction;
 import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Answer;
@@ -22,7 +22,7 @@ import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.kit.pepper.PepperKit;
-import bio.terra.pearl.core.service.notification.NotificationConfigService;
+import bio.terra.pearl.core.service.notification.TriggeredActionService;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.participant.*;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
@@ -67,7 +67,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     private ConsentFormService consentFormService;
     private ConsentResponseService consentResponseService;
     private ParticipantTaskService participantTaskService;
-    private NotificationConfigService notificationConfigService;
+    private TriggeredActionService triggeredActionService;
     private NotificationService notificationService;
     private AnswerProcessingService answerProcessingService;
     private EnrollmentService enrollmentService;
@@ -88,7 +88,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                              SurveyResponseService surveyResponseService, ConsentFormService consentFormService,
                              ConsentResponseService consentResponseService,
                              ParticipantTaskService participantTaskService,
-                             NotificationConfigService notificationConfigService,
+                             TriggeredActionService triggeredActionService,
                              NotificationService notificationService, AnswerProcessingService answerProcessingService,
                              EnrollmentService enrollmentService, ProfileService profileService,
                              WithdrawnEnrolleeService withdrawnEnrolleeService,
@@ -102,7 +102,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         this.consentFormService = consentFormService;
         this.consentResponseService = consentResponseService;
         this.participantTaskService = participantTaskService;
-        this.notificationConfigService = notificationConfigService;
+        this.triggeredActionService = triggeredActionService;
         this.notificationService = notificationService;
         this.enrolleeService = enrolleeService;
         this.studyEnvironmentService = studyEnvironmentService;
@@ -270,9 +270,9 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
 
     private void populateNotifications(Enrollee enrollee, EnrolleePopDto enrolleeDto, UUID studyEnvironmentId,
     PortalParticipantUser ppUser) {
-        List<NotificationConfig> notificationConfigs = notificationConfigService.findByStudyEnvironmentId(studyEnvironmentId);
+        List<TriggeredAction> triggeredActions = triggeredActionService.findByStudyEnvironmentId(studyEnvironmentId);
         for (NotificationPopDto notificationPopDto : enrolleeDto.getNotifications()) {
-            NotificationConfig matchedConfig = matchConfigToNotification(notificationConfigs, notificationPopDto);
+            TriggeredAction matchedConfig = matchConfigToNotification(triggeredActions, notificationPopDto);
             notificationPopDto.setNotificationConfigId(matchedConfig.getId());
             notificationPopDto.setStudyEnvironmentId(enrollee.getStudyEnvironmentId());
             notificationPopDto.setEnrolleeId(enrollee.getId());
@@ -283,11 +283,11 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     }
 
     /** quick-and-dirty match based on types -- this is not robust but it's sufficient for our current testing needs */
-    private NotificationConfig matchConfigToNotification(List<NotificationConfig> notificationConfigs,
-                                                         NotificationPopDto notification) {
-        return notificationConfigs.stream().filter(config ->
+    private TriggeredAction matchConfigToNotification(List<TriggeredAction> triggeredActions,
+                                                      NotificationPopDto notification) {
+        return triggeredActions.stream().filter(config ->
                 config.getEventType().equals(notification.getNotificationConfigEventType()) &&
-                config.getNotificationType().equals(notification.getNotificationConfigType()) &&
+                config.getTriggerType().equals(notification.getNotificationConfigType()) &&
                 config.getDeliveryType().equals(notification.getDeliveryType()))
                 .findFirst().orElse(null);
     }

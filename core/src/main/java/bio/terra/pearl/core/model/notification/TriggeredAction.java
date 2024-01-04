@@ -21,13 +21,13 @@ import lombok.experimental.SuperBuilder;
  * originating configuration. To make changes, the previous config should be deactivated, and a new one created
  */
 @Getter @Setter @SuperBuilder @NoArgsConstructor
-public class NotificationConfig extends BaseEntity implements VersionedEntityConfig {
+public class TriggeredAction extends BaseEntity implements VersionedEntityConfig {
     private UUID studyEnvironmentId;
     private UUID portalEnvironmentId;
     @Builder.Default
     private boolean active = true;
 
-    private NotificationType notificationType;
+    private TriggerType triggerType;
     @Builder.Default
     private NotificationDeliveryType deliveryType = NotificationDeliveryType.EMAIL;
     private UUID emailTemplateId;

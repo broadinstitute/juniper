@@ -4,7 +4,7 @@ import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.notification.NotificationConfigFactory;
 import bio.terra.pearl.core.model.notification.Notification;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.notification.TriggeredAction;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
@@ -25,10 +25,10 @@ public class NotificationDaoTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testBasicCrud() {
-    NotificationConfig notificationConfig = notificationConfigFactory.buildPersisted("testBasicConfigCrud");
+    TriggeredAction triggeredAction = notificationConfigFactory.buildPersisted("testBasicConfigCrud");
     Notification notification = Notification.builder()
-        .deliveryType(notificationConfig.getDeliveryType())
-        .notificationConfigId(notificationConfig.getId())
+        .deliveryType(triggeredAction.getDeliveryType())
+        .notificationConfigId(triggeredAction.getId())
         .deliveryStatus(NotificationDeliveryStatus.READY)
         .build();
     Notification savedNotification = notificationDao.create(notification);
@@ -38,11 +38,11 @@ public class NotificationDaoTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testSavesCustomMessages() throws Exception {
-    NotificationConfig notificationConfig = notificationConfigFactory.buildPersisted("testSavesMessagesCrud");
+    TriggeredAction triggeredAction = notificationConfigFactory.buildPersisted("testSavesMessagesCrud");
     var messageMap = Map.of("foo", "bar", "baz", "boo");
     Notification notification = Notification.builder()
-        .deliveryType(notificationConfig.getDeliveryType())
-        .notificationConfigId(notificationConfig.getId())
+        .deliveryType(triggeredAction.getDeliveryType())
+        .notificationConfigId(triggeredAction.getId())
         .deliveryStatus(NotificationDeliveryStatus.READY)
         .customMessagesMap(messageMap)
         .build();

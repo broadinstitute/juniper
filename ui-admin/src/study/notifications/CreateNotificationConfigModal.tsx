@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react'
 import { StudyEnvParams } from '../StudyEnvironmentRouter'
-import { NotificationConfig } from '@juniper/ui-core'
+import { TriggeredAction } from '@juniper/ui-core'
 import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { Button } from 'components/forms/Button'
@@ -13,10 +13,10 @@ import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 
 /** gets a default config -- eventually we'll want this to load from a template study instead of being in source code */
-const getDefaultConfig = (): NotificationConfig => {
+const getDefaultConfig = (): TriggeredAction => {
   return {
     id: '',
-    notificationType: 'EVENT',
+    triggerType: 'EVENT',
     deliveryType: 'EMAIL',
     eventType: 'STUDY_ENROLLMENT',
     active: true,
@@ -38,13 +38,13 @@ const getDefaultConfig = (): NotificationConfig => {
 
 /** Modal for a new notification config -- only specifies the basic attributes */
 export default function CreateNotificationConfigModal({ studyEnvParams, onDismiss, onCreate }:
-{studyEnvParams: StudyEnvParams, onDismiss: () => void, onCreate: (config: NotificationConfig) => void}) {
-  const [config, setConfig] = React.useState<NotificationConfig>(getDefaultConfig())
+{studyEnvParams: StudyEnvParams, onDismiss: () => void, onCreate: (config: TriggeredAction) => void}) {
+  const [config, setConfig] = React.useState<TriggeredAction>(getDefaultConfig())
   const [isLoading, setIsLoading] = useState(false)
 
   const createConfig = async () => {
     doApiLoad(async () => {
-      const savedConfig = await Api.createNotificationConfig(studyEnvParams, config)
+      const savedConfig = await Api.createTriggeredAction(studyEnvParams, config)
       Store.addNotification(successNotification('Notification created'))
       onCreate(savedConfig)
     }, { setIsLoading })

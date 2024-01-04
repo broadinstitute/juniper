@@ -3,21 +3,16 @@ package bio.terra.pearl.api.admin.controller.enrollee;
 import bio.terra.pearl.api.admin.api.NotificationsApi;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.notifications.NotificationExtService;
-import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.notification.Notification;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.notification.NotificationDispatcher;
 import bio.terra.pearl.core.service.notification.NotificationService;
+import bio.terra.pearl.core.service.notification.TriggeredActionService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -25,7 +20,7 @@ import org.springframework.stereotype.Controller;
 public class NotificationsController implements NotificationsApi {
   private AuthUtilService authUtilService;
   private NotificationService notificationService;
-  private NotificationConfigService notificationConfigService;
+  private TriggeredActionService triggeredActionService;
   private NotificationDispatcher notificationDispatcher;
   private NotificationExtService notificationExtService;
   private EnrolleeService enrolleeService;
@@ -35,7 +30,7 @@ public class NotificationsController implements NotificationsApi {
   public NotificationsController(
       AuthUtilService authUtilService,
       NotificationService notificationService,
-      NotificationConfigService notificationConfigService,
+      TriggeredActionService triggeredActionService,
       NotificationDispatcher notificationDispatcher,
       NotificationExtService notificationExtService,
       EnrolleeService enrolleeService,
@@ -43,7 +38,7 @@ public class NotificationsController implements NotificationsApi {
       HttpServletRequest request) {
     this.authUtilService = authUtilService;
     this.notificationService = notificationService;
-    this.notificationConfigService = notificationConfigService;
+    this.triggeredActionService = triggeredActionService;
     this.notificationDispatcher = notificationDispatcher;
     this.notificationExtService = notificationExtService;
     this.enrolleeService = enrolleeService;
@@ -60,44 +55,4 @@ public class NotificationsController implements NotificationsApi {
     List<Notification> notifications = notificationService.findByEnrolleeId(enrollee.getId());
     return ResponseEntity.ok(notifications);
   }
-
-  @Override
-  public ResponseEntity<Object> test(
-      String portalShortcode, String envName, UUID configId, Object body) {
-    AdminUser adminUser = authUtilService.requireAdminUser(request);
-    authUtilService.authUserToPortal(adminUser, portalShortcode);
-    EnrolleeRuleData enrolleeRuleData = objectMapper.convertValue(body, EnrolleeRuleData.class);
-    NotificationConfig config = notificationConfigService.find(configId).get();
-    try {
-      notificationDispatcher.dispatchTestNotification(config, enrolleeRuleData);
-      return ResponseEntity.ok(config);
-    } catch (Exception e) {
-      return ResponseEntity.internalServerError().body(e);
-    }
-  }
-
-  /** send a one-off notification. */
-  @Override
-  public ResponseEntity<Object> adHoc(
-      String portalShortcode, String studyShortcode, String envName, Object body) {
-    AdminUser adminUser = authUtilService.requireAdminUser(request);
-    AdHocNotification adHoc = objectMapper.convertValue(body, AdHocNotification.class);
-    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    NotificationConfig configUsed =
-        notificationExtService.sendAdHoc(
-            adminUser,
-            portalShortcode,
-            studyShortcode,
-            environmentName,
-            adHoc.enrolleeShortcodes,
-            adHoc.customMessages,
-            adHoc.notificationConfigId);
-    return ResponseEntity.ok(configUsed);
-  }
-
-  /** object for specifying an adhoc notification. */
-  public record AdHocNotification(
-      List<String> enrolleeShortcodes,
-      UUID notificationConfigId,
-      Map<String, String> customMessages) {}
 }

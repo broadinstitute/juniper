@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: "rename_notification_config"
+      author: dbush
+      changes:
+        - renameTable:
+            newTableName:  triggered_action
+            oldTableName:  notification_config
+        - renameColumn:
+            tableName: triggered_action
+            oldColumnName: notification_type
+            newColumnName: trigger_type

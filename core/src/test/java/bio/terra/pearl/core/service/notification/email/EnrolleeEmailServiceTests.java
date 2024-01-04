@@ -78,17 +78,17 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
     public void testEmailSendOrSkip() {
         EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser("testShouldNotSendEmail");
         EmailTemplate emailTemplate = emailTemplateFactory.buildPersisted("testShouldNotSendEmail", enrolleeBundle.portalId());
-        NotificationConfig config = notificationConfigFactory.buildPersisted(NotificationConfig.builder()
+        TriggeredAction config = notificationConfigFactory.buildPersisted(TriggeredAction.builder()
                 .emailTemplateId(emailTemplate.getId())
                 .deliveryType(NotificationDeliveryType.EMAIL)
-                .notificationType(NotificationType.EVENT),
+                .triggerType(TriggerType.EVENT),
                 enrolleeBundle.enrollee().getStudyEnvironmentId(), enrolleeBundle.portalParticipantUser().getPortalEnvironmentId());
 
         testSendProfile(enrolleeEmailService, enrolleeBundle, config);
         testDoNotSendProfile(enrolleeEmailService, enrolleeBundle, config);
     }
 
-    private void testSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, NotificationConfig config) {
+    private void testSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, TriggeredAction config) {
         var notification = notificationFactory.buildPersisted(enrolleeBundle, config);
         var ruleData = new EnrolleeRuleData(enrolleeBundle.enrollee(), Profile.builder().build());
         var contextInfo = new NotificationContextInfo(null, null, null, null, null);
@@ -98,7 +98,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
         assertThat(updatedNotification.getDeliveryStatus(), equalTo(NotificationDeliveryStatus.FAILED));
     }
 
-    private void testDoNotSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, NotificationConfig config) {
+    private void testDoNotSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, TriggeredAction config) {
         Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
         EnrolleeRuleData ruleData = new EnrolleeRuleData(enrolleeBundle.enrollee(), Profile.builder().doNotEmail(true).build());
         var contextInfo = new NotificationContextInfo(null, null, null,null, null);

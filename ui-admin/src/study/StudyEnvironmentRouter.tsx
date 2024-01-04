@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { NotificationConfig, Portal, PortalEnvironment, Study, StudyEnvironment } from 'api/api'
+import { TriggeredAction, Portal, PortalEnvironment, Study, StudyEnvironment } from 'api/api'
 import { StudyParams } from 'study/StudyRouter'
 
 import { Route, Routes, useNavigate, useParams } from 'react-router-dom'
@@ -184,7 +184,7 @@ export const studyEnvAlertsPath = (portalShortcode: string, studyShortcode: stri
 }
 
 /** path for viewing a particular notification config path */
-export const notificationConfigPath = (config: NotificationConfig, currentEnvPath: string) => {
+export const notificationConfigPath = (config: TriggeredAction, currentEnvPath: string) => {
   return `${currentEnvPath}/notificationContent/configs/${config.id}`
 }
 

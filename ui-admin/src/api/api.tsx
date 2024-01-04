@@ -4,7 +4,7 @@ import {
   ConsentForm,
   Survey,
   ConsentResponse,
-  NotificationConfig,
+  TriggeredAction,
   ParticipantTask,
   ParticipantDashboardAlert,
   Portal,
@@ -33,7 +33,7 @@ export type {
   NavbarItemInternalAnchor,
   NavbarItemMailingList,
   NavbarItemExternal,
-  NotificationConfig,
+  TriggeredAction,
   ParticipantTask,
   Portal,
   PortalEnvironment,
@@ -134,7 +134,7 @@ export type Notification = {
   createdAt: number,
   lastUpdatedAt: number,
   retries: number,
-  notificationConfig?: NotificationConfig
+  notificationConfig?: TriggeredAction
 }
 
 export type DataChangeRecord = {
@@ -263,7 +263,7 @@ export type PortalEnvironmentChange = {
   siteContentChange: VersionedEntityChange,
   configChanges: ConfigChange[],
   preRegSurveyChanges: VersionedEntityChange,
-  notificationConfigChanges: ListChange<NotificationConfig, VersionedConfigChange>
+  notificationConfigChanges: ListChange<TriggeredAction, VersionedConfigChange>
   participantDashboardAlertChanges: ParticipantDashboardAlertChange[],
   studyEnvChanges: StudyEnvironmentChange[]
 }
@@ -274,7 +274,7 @@ export type StudyEnvironmentChange = {
   preEnrollSurveyChanges: VersionedEntityChange,
   consentChanges: ListChange<StudyEnvironmentConsent, VersionedConfigChange>,
   surveyChanges: ListChange<StudyEnvironmentSurvey, VersionedConfigChange>,
-  notificationConfigChanges: ListChange<NotificationConfig, VersionedConfigChange>
+  notificationConfigChanges: ListChange<TriggeredAction, VersionedConfigChange>
 }
 
 export type VersionedEntityChange = {
@@ -853,9 +853,9 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async updateNotificationConfig(portalShortcode: string, envName: string, studyShortcode: string,
-    oldConfigId: string, updatedConfig: NotificationConfig): Promise<NotificationConfig> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/notificationConfigs/${oldConfigId}`
+  async updateTriggeredAction(portalShortcode: string, envName: string, studyShortcode: string,
+    oldConfigId: string, updatedConfig: TriggeredAction): Promise<TriggeredAction> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/triggeredActions/${oldConfigId}`
     const response = await fetch(url, {
       method: 'PATCH',
       headers: this.getInitHeaders(),
@@ -864,9 +864,9 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async createNotificationConfig(studyEnvParams: StudyEnvParams,
-    config: NotificationConfig): Promise<NotificationConfig> {
-    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/notificationConfigs`
+  async createTriggeredAction(studyEnvParams: StudyEnvParams,
+    config: TriggeredAction): Promise<TriggeredAction> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/triggeredActions`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
@@ -875,9 +875,9 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async testNotification(portalShortcode: string, envName: string,
-    notificationConfigId: string, enrolleeRuleData: object): Promise<NotificationConfig> {
-    const url = `${basePortalEnvUrl(portalShortcode, envName)}/notificationConfigs/${notificationConfigId}`
+  async testTriggeredAction(portalShortcode: string, studyShortcode: string, envName: string,
+    notificationConfigId: string, enrolleeRuleData: object): Promise<TriggeredAction> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/triggeredActions/${notificationConfigId}`
       + `/test`
 
     const response = await fetch(url, {
@@ -921,16 +921,16 @@ export default {
     return fetch(url,  this.getGetInit())
   },
 
-  async findNotificationConfig(portalShortcode: string, studyShortcode: string, envName: string, id: string):
-Promise<NotificationConfig> {
-    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/notificationConfigs/${id}`
+  async findTriggeredAction(portalShortcode: string, studyShortcode: string, envName: string, id: string):
+Promise<TriggeredAction> {
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/triggeredActions/${id}`
     const response = await fetch(url,  this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
-  async findNotificationConfigsForStudyEnv(portalShortcode: string, studyShortcode: string, envName: string):
-    Promise<NotificationConfig[]> {
-    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/notificationConfigs`
+  async findTriggeredActionsForStudyEnv(portalShortcode: string, studyShortcode: string, envName: string):
+    Promise<TriggeredAction[]> {
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/triggeredActions`
     const response = await fetch(url,  this.getGetInit())
     return await this.processJsonResponse(response)
   },

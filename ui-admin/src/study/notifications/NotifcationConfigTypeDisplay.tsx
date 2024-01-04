@@ -1,5 +1,5 @@
 import React from 'react'
-import { NotificationConfig } from 'api/api'
+import { TriggeredAction } from 'api/api'
 
 export const deliveryTypeDisplayMap: Record<string, string> = {
   EMAIL: 'email'
@@ -15,17 +15,17 @@ export const eventTypeDisplayMap: Record<string, string> = {
 }
 
 /** shows a summary of the notification config */
-export default function NotificationConfigTypeDisplay({ config }: {config?: NotificationConfig}) {
+export default function NotificationConfigTypeDisplay({ config }: {config?: TriggeredAction}) {
   if (!config) {
     return <></>
   }
-  if (config.notificationType === 'EVENT') {
+  if (config.triggerType === 'EVENT') {
     return <span>{eventTypeDisplayMap[config.eventType]}</span>
-  } else if (config.notificationType === 'TASK_REMINDER') {
+  } else if (config.triggerType === 'TASK_REMINDER') {
     return <span>
       Reminder: {config.taskType} {config.taskTargetStableId}
     </span>
-  } else if (config.notificationType === 'AD_HOC') {
+  } else if (config.triggerType === 'AD_HOC') {
     return <span>Ad-Hoc</span>
   }
   return <span>{config.taskType}</span>

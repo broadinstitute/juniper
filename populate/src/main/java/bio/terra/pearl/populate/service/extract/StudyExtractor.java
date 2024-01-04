@@ -1,19 +1,19 @@
 package bio.terra.pearl.populate.service.extract;
 
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.notification.TriggeredAction;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
-import bio.terra.pearl.core.service.notification.NotificationConfigService;
+import bio.terra.pearl.core.service.notification.TriggeredActionService;
 import bio.terra.pearl.core.service.study.*;
 import bio.terra.pearl.core.service.study.exception.StudyEnvConfigMissing;
 import bio.terra.pearl.populate.dto.StudyEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.StudyPopDto;
 import bio.terra.pearl.populate.dto.consent.StudyEnvironmentConsentPopDto;
-import bio.terra.pearl.populate.dto.notifications.NotificationConfigPopDto;
+import bio.terra.pearl.populate.dto.notifications.TriggeredActionPopDto;
 import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,12 +33,12 @@ public class StudyExtractor {
     private final StudyEnvironmentConfigService studyEnvironmentConfigService;
     private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     private final StudyEnvironmentConsentService studyEnvironmentConsentService;
-    private final NotificationConfigService notificationConfigService;
+    private final TriggeredActionService triggeredActionService;
 
     public StudyExtractor(@Qualifier("extractionObjectMapper") ObjectMapper objectMapper, StudyService studyService,
                           PortalStudyService portalStudyService, StudyEnvironmentService studyEnvironmentService,
                           StudyEnvironmentConfigService studyEnvironmentConfigService, StudyEnvironmentSurveyService studyEnvironmentSurveyService,
-                          StudyEnvironmentConsentService studyEnvironmentConsentService, NotificationConfigService notificationConfigService) {
+                          StudyEnvironmentConsentService studyEnvironmentConsentService, TriggeredActionService triggeredActionService) {
         this.studyService = studyService;
         this.portalStudyService = portalStudyService;
         this.studyEnvironmentService = studyEnvironmentService;
@@ -46,7 +46,7 @@ public class StudyExtractor {
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.objectMapper = objectMapper;
         this.studyEnvironmentConsentService = studyEnvironmentConsentService;
-        this.notificationConfigService = notificationConfigService;
+        this.triggeredActionService = triggeredActionService;
         objectMapper.addMixIn(Study.class, StudyMixin.class);
         objectMapper.addMixIn(StudyEnvironment.class, StudyEnvironmentMixin.class);
     }
@@ -107,9 +107,9 @@ public class StudyExtractor {
             studyEnvPopDto.getConfiguredConsentDtos().add(consentPopDto);
         }
 
-        List<NotificationConfig> notificationConfigs = notificationConfigService.findByStudyEnvironmentId(studyEnv.getId());
-        for (NotificationConfig config : notificationConfigs) {;
-            NotificationConfigPopDto configPopDto = new NotificationConfigPopDto();
+        List<TriggeredAction> triggeredActions = triggeredActionService.findByStudyEnvironmentId(studyEnv.getId());
+        for (TriggeredAction config : triggeredActions) {;
+            TriggeredActionPopDto configPopDto = new TriggeredActionPopDto();
             BeanUtils.copyProperties(config, configPopDto, "id", "studyEnvironmentId", "portalEnvironmentId", "emailTemplateId");
             String filename = "../../" + context.getFileNameForEntity(config.getEmailTemplateId());
             configPopDto.setPopulateFileName(filename);
@@ -130,7 +130,7 @@ public class StudyExtractor {
         @JsonIgnore
         public List<StudyEnvironmentSurvey> getStudyEnvironmentSurveys() { return null; }
         @JsonIgnore
-        public List<NotificationConfig> getNotificationConfigs() { return null; }
+        public List<TriggeredAction> getNotificationConfigs() { return null; }
         @JsonIgnore
         public List<StudyEnvironmentConsent> getConfiguredConsents() { return null; }
         @JsonIgnore

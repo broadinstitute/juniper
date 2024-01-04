@@ -3,7 +3,7 @@ package bio.terra.pearl.core.model.study;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.notification.TriggeredAction;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import java.util.ArrayList;
@@ -31,5 +31,5 @@ public class StudyEnvironment extends BaseEntity {
     @Builder.Default
     private List<StudyEnvironmentConsent> configuredConsents = new ArrayList<>();
     @Builder.Default
-    private List<NotificationConfig> notificationConfigs = new ArrayList<>();
+    private List<TriggeredAction> triggeredActions = new ArrayList<>();
 }

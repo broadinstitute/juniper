@@ -3,7 +3,7 @@ package bio.terra.pearl.core.service.publishing;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.notification.TriggeredAction;
 import bio.terra.pearl.core.model.publishing.*;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
@@ -12,7 +12,7 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
-import bio.terra.pearl.core.service.notification.NotificationConfigService;
+import bio.terra.pearl.core.service.notification.TriggeredActionService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
@@ -32,14 +32,14 @@ public class StudyPublishingService {
     private ConsentFormService consentFormService;
     private StudyEnvironmentConsentService studyEnvironmentConsentService;
     private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
-    private NotificationConfigService notificationConfigService;
+    private TriggeredActionService triggeredActionService;
     private EmailTemplateService emailTemplateService;
 
     public StudyPublishingService(StudyEnvironmentConfigService studyEnvironmentConfigService,
                                   StudyEnvironmentService studyEnvironmentService, SurveyService surveyService,
                                   ConsentFormService consentFormService, StudyEnvironmentConsentService studyEnvironmentConsentService,
                                   StudyEnvironmentSurveyService studyEnvironmentSurveyService,
-                                  NotificationConfigService notificationConfigService,
+                                  TriggeredActionService triggeredActionService,
                                   EmailTemplateService emailTemplateService) {
         this.studyEnvironmentConfigService = studyEnvironmentConfigService;
         this.studyEnvironmentService = studyEnvironmentService;
@@ -47,7 +47,7 @@ public class StudyPublishingService {
         this.consentFormService = consentFormService;
         this.studyEnvironmentConsentService = studyEnvironmentConsentService;
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
-        this.notificationConfigService = notificationConfigService;
+        this.triggeredActionService = triggeredActionService;
         this.emailTemplateService = emailTemplateService;
     }
 
@@ -122,23 +122,23 @@ public class StudyPublishingService {
         return destEnv.getConfiguredSurveys();
     }
 
-    protected void applyChangesToNotificationConfigs(StudyEnvironment destEnv, ListChange<NotificationConfig,
+    protected void applyChangesToNotificationConfigs(StudyEnvironment destEnv, ListChange<TriggeredAction,
             VersionedConfigChange<EmailTemplate>> listChange, UUID destPortalEnvId) throws Exception {
-        for(NotificationConfig config : listChange.addedItems()) {
+        for(TriggeredAction config : listChange.addedItems()) {
             config.setStudyEnvironmentId(destEnv.getId());
             config.setPortalEnvironmentId(destPortalEnvId);
-            notificationConfigService.create(config.cleanForCopying());
-            destEnv.getNotificationConfigs().add(config);
+            triggeredActionService.create(config.cleanForCopying());
+            destEnv.getTriggeredActions().add(config);
             PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), config, emailTemplateService);
         }
-        for(NotificationConfig config : listChange.removedItems()) {
+        for(TriggeredAction config : listChange.removedItems()) {
             // don't delete notification configs since they may be referenced by already-sent emails
             config.setActive(false);
-            notificationConfigService.update(config);
-            destEnv.getNotificationConfigs().remove(config);
+            triggeredActionService.update(config);
+            destEnv.getTriggeredActions().remove(config);
         }
         for(VersionedConfigChange<EmailTemplate> change : listChange.changedItems()) {
-            PublishingUtils.applyChangesToVersionedConfig(change, notificationConfigService, emailTemplateService, destEnv.getEnvironmentName());
+            PublishingUtils.applyChangesToVersionedConfig(change, triggeredActionService, emailTemplateService, destEnv.getEnvironmentName());
         }
     }
 

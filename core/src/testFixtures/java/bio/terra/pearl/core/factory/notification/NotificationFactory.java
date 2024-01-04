@@ -2,7 +2,7 @@ package bio.terra.pearl.core.factory.notification;
 
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.notification.Notification;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.notification.TriggeredAction;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.service.notification.NotificationService;
@@ -14,7 +14,7 @@ public class NotificationFactory {
     @Autowired
     private NotificationService notificationService;
     public Notification.NotificationBuilder builder(EnrolleeFactory.EnrolleeBundle enrolleeBundle,
-                                                    NotificationConfig config) {
+                                                    TriggeredAction config) {
         Enrollee enrollee = enrolleeBundle.enrollee();
         return Notification.builder()
                 .enrolleeId(enrollee.getId())
@@ -28,7 +28,7 @@ public class NotificationFactory {
     }
 
     public Notification buildPersisted(EnrolleeFactory.EnrolleeBundle enrolleeBundle,
-                                       NotificationConfig config) {
+                                       TriggeredAction config) {
         return notificationService.create(builder(enrolleeBundle, config).build());
     }
 

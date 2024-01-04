@@ -47,11 +47,11 @@ public class NotificationExtServiceTests extends BaseSpringBootTest {
     StudyEnvironment studyEnv =
         studyEnvironmentService.find(enrolleeBundle.enrollee().getStudyEnvironmentId()).get();
     EnvironmentName environmentName = studyEnv.getEnvironmentName();
-    NotificationConfig config =
+    TriggeredAction config =
         notificationConfigFactory.buildPersisted(
-            NotificationConfig.builder()
+            TriggeredAction.builder()
                 .deliveryType(NotificationDeliveryType.EMAIL)
-                .notificationType(NotificationType.AD_HOC),
+                .triggerType(TriggerType.AD_HOC),
             studyEnv.getId(),
             enrolleeBundle.portalParticipantUser().getPortalEnvironmentId());
     var customMessages = Map.of("adHocMessage", "hello!");

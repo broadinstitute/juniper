@@ -7,7 +7,7 @@ import { paramsFromContext, StudyEnvContextT } from '../StudyEnvironmentRouter'
 import NotificationConfigView from './NotificationConfigView'
 import { renderPageHeader } from 'util/pageUtils'
 import { LoadedPortalContextT } from '../../portal/PortalProvider'
-import { NotificationConfig } from '@juniper/ui-core'
+import { TriggeredAction } from '@juniper/ui-core'
 import Api from 'api/api'
 import { useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
@@ -26,12 +26,12 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
   {studyEnvContext: StudyEnvContextT, portalContext: LoadedPortalContextT}) {
   const currentEnv = studyEnvContext.currentEnv
   const navigate = useNavigate()
-  const [configList, setConfigList] = useState<NotificationConfig[]>([])
+  const [configList, setConfigList] = useState<TriggeredAction[]>([])
   const [previousEnv, setPreviousEnv] = useState<string>(currentEnv.environmentName)
   const [showCreateModal, setShowCreateModal] = useState(false)
 
   const { isLoading, reload } = useLoadingEffect(async () => {
-    const configList = await Api.findNotificationConfigsForStudyEnv(portalContext.portal.shortcode,
+    const configList = await Api.findTriggeredActionsForStudyEnv(portalContext.portal.shortcode,
       studyEnvContext.study.shortcode, currentEnv.environmentName)
     setConfigList(configList)
   }, [currentEnv.environmentName, studyEnvContext.study.shortcode])
@@ -44,7 +44,7 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
     }
   }, [currentEnv.environmentName])
 
-  const onCreate = (createdConfig: NotificationConfig) => {
+  const onCreate = (createdConfig: TriggeredAction) => {
     reload()
     navigate(`configs/${createdConfig.id}`)
     setShowCreateModal(false)
@@ -60,7 +60,7 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
             <CollapsableMenu header={group.title} headerClass="text-black" content={
               <ul className="list-unstyled p-2">
                 { configList
-                  .filter(config => config.notificationType === group.type)
+                  .filter(config => config.triggerType === group.type)
                   .map(config => <li key={config.id} className="mb-2">
                     <div className="d-flex">
                       <NavLink to={`configs/${config.id}`} style={navLinkStyleFunc}>

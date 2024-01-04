@@ -16,7 +16,7 @@ export default function EnrolleeNotifications({ enrollee, studyEnvContext }:
   /** matches each notification to a corresponding config by id */
   function attachConfigsToNotifications(rawNotifications: Notification[]) {
     rawNotifications.forEach(notification => {
-      notification.notificationConfig = currentEnv.notificationConfigs
+      notification.notificationConfig = currentEnv.triggeredActions
         .find(config => config.id === notification.notificationConfigId)
     })
   }
@@ -44,7 +44,7 @@ export default function EnrolleeNotifications({ enrollee, studyEnvContext }:
         </thead>
         <tbody>
           {notifications.map(notification => {
-            const matchedConfig = currentEnv.notificationConfigs
+            const matchedConfig = currentEnv.triggeredActions
               .find(cfg => cfg.id === notification.notificationConfigId)
             return <tr key={notification.id}>
               <td>

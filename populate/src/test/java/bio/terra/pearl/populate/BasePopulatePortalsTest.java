@@ -4,7 +4,7 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.export.DictionaryExportService;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
-import bio.terra.pearl.core.service.notification.NotificationConfigService;
+import bio.terra.pearl.core.service.notification.TriggeredActionService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantNoteService;
@@ -22,7 +22,6 @@ import bio.terra.pearl.populate.service.EnvironmentPopulator;
 import bio.terra.pearl.populate.service.KitTypePopulator;
 import bio.terra.pearl.populate.service.PortalPopulator;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
-import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -66,7 +65,7 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     @Autowired
     protected StudyService studyService;
     @Autowired
-    protected NotificationConfigService notificationConfigService;
+    protected TriggeredActionService triggeredActionService;
     @Autowired
     protected EmailTemplateService emailTemplateService;
     @Autowired

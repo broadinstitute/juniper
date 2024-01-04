@@ -31,9 +31,9 @@ test('renders routable config list', async () => {
       taskType: 'SURVEY'
     }
   ]
-  jest.spyOn(Api, 'findNotificationConfigsForStudyEnv')
+  jest.spyOn(Api, 'findTriggeredActionsForStudyEnv')
     .mockImplementation(() => Promise.resolve(notificationConfigs))
-  jest.spyOn(Api, 'findNotificationConfig')
+  jest.spyOn(Api, 'findTriggeredAction')
     .mockImplementation(jest.fn())
 
   const { RoutedComponent, router } =
