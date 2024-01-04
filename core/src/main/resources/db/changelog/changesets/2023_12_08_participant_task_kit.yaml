@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: participant_task_kit
+      author: cunningh
+      changes:
+        - addColumn:
+            tableName: participant_task
+            columns:
+              - column: { name: kit_request_id, type: uuid, constraints: {
+                nullable: true, unique: true, foreignKeyName: fk_task_kit_request, references: kit_request(id)
+              } }

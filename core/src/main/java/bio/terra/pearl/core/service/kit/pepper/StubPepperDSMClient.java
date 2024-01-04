@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -70,11 +72,11 @@ public class StubPepperDSMClient implements PepperDSMClient {
         log.info("STUB fetching status by study");
         var studyEnvironment = studyEnvironmentDao.findByStudy(studyShortcode, EnvironmentName.sandbox).get();
         return kitRequestService.findByStudyEnvironment(studyEnvironment.getId()).stream().map(kit -> {
-            PepperKit status = PepperKit.builder()
+            PepperKit pepperKit = PepperKit.builder()
                     .juniperKitId(kit.getId().toString())
                     .currentStatus(getNextStatus(kit))
                     .build();
-            return status;
+            return addFieldsForStatus(pepperKit, kit);
         }).toList();
     }
 
@@ -99,5 +101,31 @@ public class StubPepperDSMClient implements PepperDSMClient {
         } catch (Exception e) {
             return "error";
         }
+    }
+
+    /** add and remove appropriate fields for the given status (i.e. sent and received dates) */
+    private PepperKit addFieldsForStatus(PepperKit pepperKit, KitRequest kitRequest) {
+        PepperKitStatus status = PepperKitStatus.fromCurrentStatus(pepperKit.getCurrentStatus());
+        if (!List.of(PepperKitStatus.SENT, PepperKitStatus.RECEIVED).contains(status)) {
+            // remove leftover fields from previous status
+            if (List.of(PepperKitStatus.CREATED, PepperKitStatus.QUEUED).contains(status)) {
+                pepperKit.setLabelDate(null);
+                pepperKit.setScanDate(null);
+                pepperKit.setReceiveDate(null);
+            }
+            return pepperKit;
+        }
+        Instant createdTime = kitRequest.getCreatedAt();
+        Instant labelTime = createdTime.plus(2, ChronoUnit.DAYS);
+        Instant scanTime = labelTime.plus(5, ChronoUnit.MINUTES);
+
+        pepperKit.setLabelDate(labelTime.toString());
+        pepperKit.setScanDate(scanTime.toString());
+
+        if (status == PepperKitStatus.RECEIVED) {
+            Instant receivedTime = scanTime.plus(7, ChronoUnit.DAYS);
+            pepperKit.setReceiveDate(receivedTime.toString());
+        }
+        return pepperKit;
     }
 }

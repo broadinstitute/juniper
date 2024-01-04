@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service.kit.pepper;
 
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 
 /**
  *  Class for 400-500 responses returned from Pepper.  This intentionally extends
@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public class PepperApiException extends RuntimeException {
     private PepperErrorResponse errorResponse;
-    private HttpStatus httpStatus;
+    private HttpStatusCode httpStatusCode;
 
     public PepperApiException(String message) {
         super(message);
@@ -21,15 +21,15 @@ public class PepperApiException extends RuntimeException {
         super(message, cause);
     }
 
-    public PepperApiException(String message, PepperErrorResponse errorResponse, HttpStatus httpStatus) {
+    public PepperApiException(String message, PepperErrorResponse errorResponse, HttpStatusCode httpStatusCode) {
         super(message);
-        this.httpStatus = httpStatus;
+        this.httpStatusCode = httpStatusCode;
         this.errorResponse = errorResponse;
     }
 
-    public PepperApiException(String message, HttpStatus httpStatus) {
+    public PepperApiException(String message, HttpStatusCode httpStatusCode) {
         super(message);
-        this.httpStatus = httpStatus;
+        this.httpStatusCode = httpStatusCode;
         this.errorResponse = null;
     }
 }

@@ -28,8 +28,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
       "bio.terra.common.migrate",
       // Transaction management and DB retry configuration
       "bio.terra.common.retry.transaction",
-      // Scan for tracing-related components & configs
-      "bio.terra.common.tracing",
       "bio.terra.pearl.core",
       "bio.terra.pearl.populate",
       // Scan all service-specific packages beneath the current package
