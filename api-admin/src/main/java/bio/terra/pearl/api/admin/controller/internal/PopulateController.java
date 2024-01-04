@@ -1,13 +1,19 @@
 package bio.terra.pearl.api.admin.controller.internal;
 
+import bio.terra.common.exception.InternalServerErrorException;
 import bio.terra.pearl.api.admin.api.PopulateApi;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.PopulateExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Note this controller does not explicitly validate the safety of the passed-in filenames. Rather,
@@ -48,6 +54,14 @@ public class PopulateController implements PopulateApi {
     AdminUser user = authUtilService.requireAdminUser(request);
     var populatedObj =
         populateExtService.populatePortal(filePathName, user, Boolean.TRUE.equals(overwrite));
+    return ResponseEntity.ok(populatedObj);
+  }
+
+  @Override
+  public ResponseEntity<Object> uploadPortal(Boolean overwrite, MultipartFile portalZip) {
+    AdminUser user = authUtilService.requireAdminUser(request);
+    var populatedObj =
+        populateExtService.populatePortal(portalZip, user, Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
   }
 
@@ -99,5 +113,17 @@ public class PopulateController implements PopulateApi {
     populateExtService.bulkPopulateEnrollees(
         portalShortcode, environmentName, studyShortcode, numEnrollees, user);
     return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Resource> extractPortal(String portalShortcode) {
+    AdminUser user = authUtilService.requireAdminUser(request);
+    try {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      populateExtService.extractPortal(portalShortcode, baos, user);
+      return ResponseEntity.ok().body(new ByteArrayResource(baos.toByteArray()));
+    } catch (IOException e) {
+      throw new InternalServerErrorException("Error exporting portal", e);
+    }
   }
 }

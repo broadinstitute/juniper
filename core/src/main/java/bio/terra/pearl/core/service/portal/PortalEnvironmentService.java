@@ -5,6 +5,7 @@ import bio.terra.pearl.core.dao.survey.PreregistrationResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
+import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
@@ -16,20 +17,24 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import bio.terra.pearl.core.service.site.SiteContentService;
+import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PortalEnvironmentService extends CrudService<PortalEnvironment, PortalEnvironmentDao> {
-    private final PortalEnvironmentConfigService portalEnvironmentConfigService;
-    private final PortalParticipantUserService portalParticipantUserService;
-    private final ParticipantUserService participantUserService;
-    private final PreregistrationResponseDao preregistrationResponseDao;
-    private final NotificationConfigService notificationConfigService;
-    private final MailingListContactService mailingListContactService;
-    private final DataChangeRecordService dataChangeRecordService;
-    private final PortalDashboardConfigService portalDashboardConfigService;
+    private PortalEnvironmentConfigService portalEnvironmentConfigService;
+    private PortalParticipantUserService portalParticipantUserService;
+    private ParticipantUserService participantUserService;
+    private PreregistrationResponseDao preregistrationResponseDao;
+    private NotificationConfigService notificationConfigService;
+    private MailingListContactService mailingListContactService;
+    private DataChangeRecordService dataChangeRecordService;
+    private SiteContentService siteContentService;
+    private SurveyService surveyService;
+    private PortalDashboardConfigService portalDashboardConfigService;
 
     public PortalEnvironmentService(PortalEnvironmentDao portalEnvironmentDao,
                                     PortalEnvironmentConfigService portalEnvironmentConfigService,
@@ -38,8 +43,10 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
                                     PreregistrationResponseDao preregistrationResponseDao,
                                     NotificationConfigService notificationConfigService,
                                     MailingListContactService mailingListContactService,
+                                    SiteContentService siteContentService,
                                     DataChangeRecordService dataChangeRecordService,
-                                    PortalDashboardConfigService portalDashboardConfigService) {
+                                    PortalDashboardConfigService portalDashboardConfigService,
+                                    SurveyService surveyService) {
         super(portalEnvironmentDao);
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.portalParticipantUserService = portalParticipantUserService;
@@ -48,6 +55,8 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         this.notificationConfigService = notificationConfigService;
         this.mailingListContactService = mailingListContactService;
         this.dataChangeRecordService = dataChangeRecordService;
+        this.siteContentService = siteContentService;
+        this.surveyService = surveyService;
         this.portalDashboardConfigService = portalDashboardConfigService;
     }
 
@@ -82,6 +91,29 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         PortalEnvironment newEnv = dao.create(portalEnvironment);
         newEnv.setPortalEnvironmentConfig(envConfig);
         return newEnv;
+    }
+
+    /** gets all configuration content for the environment. */
+    public PortalEnvironment attachAllContent(PortalEnvironment portalEnv) {
+        if (portalEnv.getPortalEnvironmentConfigId() != null) {
+            portalEnv.setPortalEnvironmentConfig(portalEnvironmentConfigService
+                    .find(portalEnv.getPortalEnvironmentConfigId()).get());
+        }
+        if (portalEnv.getSiteContentId() != null) {
+            SiteContent siteContent = siteContentService.find(portalEnv.getSiteContentId()).orElseThrow();
+            // for now, only include english content
+            siteContentService.attachChildContent(siteContent, "en");
+            portalEnv.setSiteContent(siteContentService.find(portalEnv.getSiteContentId()).get());
+
+        }
+        if (portalEnv.getPreRegSurveyId() != null) {
+            portalEnv.setPreRegSurvey(surveyService.find(portalEnv.getPreRegSurveyId()).get());
+        }
+        var notificationConfigs = notificationConfigService.findByPortalEnvironmentId(portalEnv.getId());
+        notificationConfigService.attachTemplates(notificationConfigs);
+        portalEnv.setNotificationConfigs(notificationConfigs);
+
+        return portalEnv;
     }
 
     @Transactional
