@@ -25,7 +25,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SurveyPopulatorTests extends BaseSpringBootTest {
     @Autowired
     SurveyPopulator surveyPopulator;
@@ -41,15 +40,6 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
     PortalFactory portalFactory;
     @Autowired
     ObjectMapper objectMapper;
-
-    private List<String> tablesToTruncate = Arrays.asList("survey", "survey_question_definition", "answer_mapping");
-
-    @BeforeAll
-    public void cleanTables() {
-        jdbi.withHandle(handle ->
-                handle.execute("TRUNCATE " + String.join(",", tablesToTruncate) + " CASCADE")
-        );
-    }
 
     @Test
     @Transactional
