@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import Api, { Enrollee, Event, Notification, NotificationConfig } from 'api/api'
 import { notificationConfigPath, StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
@@ -9,6 +9,7 @@ import _capitalize from 'lodash/capitalize'
 import _startCase from 'lodash/startCase'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
 import { basicTableLayout } from '../../../util/tableUtils'
+import { useLoadingEffect } from '../../../api/api-utils'
 
 
 const isEvent = (val: Event | Notification): val is Event => {
@@ -23,11 +24,8 @@ const isNotification = (val: Event | Notification): val is Notification => {
 export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
                                            { enrollee: Enrollee, studyEnvContext: StudyEnvContextT }) {
   const { currentEnv, study, portal, currentEnvPath } = studyEnvContext
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [events, setEvents] = useState<Event[]>([])
   const [tableData, setTableData] = useState<(Event | Notification)[]>([])
   const [sorting, setSorting] = React.useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
-  const [isLoading, setIsLoading] = useState(true)
 
   const columns: ColumnDef<Event | Notification>[] = [
     {
@@ -69,27 +67,16 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
     })
   }
 
-  useEffect(() => {
-    Api.fetchEnrolleeNotifications(portal.shortcode, study.shortcode, currentEnv.environmentName, enrollee.shortcode)
-      .then(response => {
-        attachConfigsToNotifications(response)
-        setNotifications(response)
-        Api.fetchEnrolleeEvents(portal.shortcode, study.shortcode, currentEnv.environmentName, enrollee.shortcode)
-          .then(response => {
-            setEvents(response)
-            setIsLoading(false)
-          })
-      })
+  const { isLoading } = useLoadingEffect(async () => {
+    await Promise.all([
+      Api.fetchEnrolleeNotifications(portal.shortcode, study.shortcode, currentEnv.environmentName, enrollee.shortcode),
+      Api.fetchEnrolleeEvents(portal.shortcode, study.shortcode, currentEnv.environmentName, enrollee.shortcode)
+    ]).then(([notifications, events]) => {
+      attachConfigsToNotifications(notifications)
+      setTableData(tableData.concat(...notifications, ...events))
+    })
   }, [enrollee.shortcode])
 
-  useEffect(() => {
-    const newTableData: (Event | Notification)[] = []
-
-    newTableData.push(...notifications)
-    newTableData.push(...events)
-
-    setTableData(newTableData)
-  }, [events, notifications])
 
   const table = useReactTable({
     data: tableData,
