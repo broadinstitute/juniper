@@ -52,7 +52,7 @@ export default function EnrolleeSearchFacets({ facets, facetValues, updateFacetV
   /** clear all resets everything to defaults */
   const clearAll = () => {
     updateFacetValues(facets.map(facet => newFacetValue(facet)))
-  }
+  }``
   return <div>
     <button className="btn btn-secondary float-end" onClick={clearAll}>Clear all</button>
     <Accordion defaultActiveKey={['0']} alwaysOpen flush>

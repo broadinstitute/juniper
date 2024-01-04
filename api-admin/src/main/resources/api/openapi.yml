@@ -1158,7 +1158,7 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/internal/v1/populate/portal:
     post:
-      summary: Populates
+      summary: Populates a portal from a flat file that is already on the server
       tags: [ populate ]
       operationId: populatePortal
       parameters:
