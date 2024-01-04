@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
@@ -161,6 +162,10 @@ public class NotificationConfigExtService {
 
     // make sure it exists/has the appropriate props
     Optional<NotificationConfig> configOpt = notificationConfigService.find(configId);
+    if (configOpt.isEmpty()) {
+      throw new NotFoundException("Could not find notification config.");
+    }
+
     configOpt.ifPresent(
         config -> {
           // check if it's in the right portal/study env
