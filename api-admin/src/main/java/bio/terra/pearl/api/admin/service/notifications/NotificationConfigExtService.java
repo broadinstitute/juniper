@@ -6,10 +6,8 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
-import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.exception.PortalEnvironmentMissing;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
@@ -26,28 +24,25 @@ public class NotificationConfigExtService {
   private AuthUtilService authUtilService;
   private StudyEnvironmentService studyEnvironmentService;
   private PortalEnvironmentService portalEnvironmentService;
-  private NotificationService notificationService;
 
   public NotificationConfigExtService(
       NotificationConfigService notificationConfigService,
       AuthUtilService authUtilService,
       StudyEnvironmentService studyEnvironmentService,
-      PortalEnvironmentService portalEnvironmentService,
-      NotificationService notificationService) {
+      PortalEnvironmentService portalEnvironmentService) {
     this.notificationConfigService = notificationConfigService;
     this.authUtilService = authUtilService;
     this.studyEnvironmentService = studyEnvironmentService;
     this.portalEnvironmentService = portalEnvironmentService;
-    this.notificationService = notificationService;
   }
 
   public List<NotificationConfig> findForStudy(
-      AdminUser user,
+      AdminUser operator,
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName) {
-    authUtilService.authUserToPortal(user, portalShortcode);
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    authUtilService.authUserToPortal(operator, portalShortcode);
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     StudyEnvironment studyEnvironment =
         studyEnvironmentService
             .findByStudy(studyShortcode, environmentName)
@@ -60,13 +55,13 @@ public class NotificationConfigExtService {
 
   /** Gets the config specified by id, and confirms it belongs to the given portal and study */
   public Optional<NotificationConfig> find(
-      AdminUser user,
+      AdminUser operator,
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
       UUID configId) {
-    authUtilService.authUserToPortal(user, portalShortcode);
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    authUtilService.authUserToPortal(operator, portalShortcode);
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     PortalEnvironment portalEnvironment =
         portalEnvironmentService
             .findOne(portalShortcode, environmentName)
@@ -97,11 +92,11 @@ public class NotificationConfigExtService {
       EnvironmentName environmentName,
       UUID configId,
       NotificationConfig update,
-      AdminUser user) {
-    authUtilService.authUserToPortal(user, portalShortcode);
+      AdminUser operator) {
+    authUtilService.authUserToPortal(operator, portalShortcode);
     PortalEnvironment portalEnvironment =
         portalEnvironmentService.findOne(portalShortcode, environmentName).get();
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     StudyEnvironment studyEnvironment =
         studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
     NotificationConfig existing = notificationConfigService.find(configId).get();
@@ -124,13 +119,13 @@ public class NotificationConfigExtService {
       String studyShortcode,
       EnvironmentName environmentName,
       NotificationConfig newConfig,
-      AdminUser user) {
-    authUtilService.authUserToPortal(user, portalShortcode);
+      AdminUser operator) {
+    authUtilService.authUserToPortal(operator, portalShortcode);
     PortalEnvironment portalEnvironment =
         portalEnvironmentService
             .findOne(portalShortcode, environmentName)
             .orElseThrow(PortalEnvironmentMissing::new);
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     StudyEnvironment studyEnvironment =
         studyEnvironmentService
             .findByStudy(studyShortcode, environmentName)
@@ -140,43 +135,26 @@ public class NotificationConfigExtService {
   }
 
   /**
-   * Deletes the config specified by id, ensuring it belongs the appropriate study and environment
+   * Deletes the config specified by id, ensuring it belongs the appropriate study and environment.
+   * Delete is "soft" - the entity stays in the database in order to keep records of notifications,
+   * but deactivated by setting `active = false`.
    */
   @Transactional
   public void delete(
-      AdminUser user,
+      AdminUser operator,
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
       UUID configId) {
-    authUtilService.authUserToPortal(user, portalShortcode);
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
-    PortalEnvironment portalEnvironment =
-        portalEnvironmentService
-            .findOne(portalShortcode, environmentName)
-            .orElseThrow(PortalEnvironmentMissing::new);
-    StudyEnvironment studyEnvironment =
-        studyEnvironmentService
-            .findByStudy(studyShortcode, environmentName)
-            .orElseThrow(StudyEnvironmentMissing::new);
-
-    // make sure it exists/has the appropriate props
-    Optional<NotificationConfig> configOpt = notificationConfigService.find(configId);
+    Optional<NotificationConfig> configOpt =
+        this.find(operator, portalShortcode, studyShortcode, environmentName, configId);
     if (configOpt.isEmpty()) {
       throw new NotFoundException("Could not find notification config.");
     }
+    NotificationConfig config = configOpt.get();
 
-    configOpt.ifPresent(
-        config -> {
-          // check if it's in the right portal/study env
-          verifyNotificationConfig(config, portalEnvironment, studyEnvironment);
-          notificationConfigService.attachTemplates(List.of(config));
-
-          // finally, delete the notification config; however, notifications
-          // must be deleted first, as they have a foreign key constraint.
-          notificationService.deleteByNotificationConfigId(configId);
-          notificationConfigService.delete(configId, CascadeProperty.EMPTY_SET);
-        });
+    config.setActive(false);
+    notificationConfigService.update(config);
   }
 
   /** confirms the given config is associated with the given study and portal environments */

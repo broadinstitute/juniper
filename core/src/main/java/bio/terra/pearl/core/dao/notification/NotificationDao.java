@@ -43,8 +43,4 @@ public class NotificationDao extends BaseMutableJdbiDao<Notification> {
     public void deleteByEnrolleeId(UUID enrolleeId) {
         deleteByProperty("enrollee_id", enrolleeId);
     }
-
-    public void deleteByNotificationConfigId(UUID configId) {
-        deleteByProperty("notification_config_id", configId);
-    }
 }
