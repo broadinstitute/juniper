@@ -36,7 +36,7 @@ public class NotificationExtServiceAuthTests {
 
   @MockBean private AuthUtilService mockAuthUtilService;
   @MockBean private EnrolleeService mockEnrolleeService;
-  @MockBean private NotificationService notificationService;
+  @MockBean private NotificationService mockNotificationService;
   @MockBean private NotificationConfigService mockNotificationConfigService;
   @MockBean private NotificationDispatcher mockNotificationDispatcher;
   @MockBean private EnrolleeRuleService mockEnrolleeRuleService;

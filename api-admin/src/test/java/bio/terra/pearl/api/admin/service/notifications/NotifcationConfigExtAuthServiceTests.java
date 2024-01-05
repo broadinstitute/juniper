@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
+import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import java.util.UUID;
@@ -28,6 +29,7 @@ public class NotifcationConfigExtAuthServiceTests {
   @MockBean private AuthUtilService mockAuthUtilService;
 
   @MockBean private NotificationConfigService notificationConfigService;
+  @MockBean private NotificationService notificationService;
   @MockBean private StudyEnvironmentService studyEnvironmentService;
   @MockBean private PortalEnvironmentService portalEnvironmentService;
   @MockBean private PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao;
