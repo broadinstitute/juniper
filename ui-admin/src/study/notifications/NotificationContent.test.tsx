@@ -16,7 +16,7 @@ test('renders routable config list', async () => {
     notificationType: 'EVENT',
     eventType: 'STUDY_ENROLLMENT'
   }
-  const notificationConfigs = [
+  const triggers = [
     enrollEmailConfig,
     {
       ...mockNotificationConfig(),
@@ -31,9 +31,9 @@ test('renders routable config list', async () => {
       taskType: 'SURVEY'
     }
   ]
-  jest.spyOn(Api, 'findTriggeredActionsForStudyEnv')
-    .mockImplementation(() => Promise.resolve(notificationConfigs))
-  jest.spyOn(Api, 'findTriggeredAction')
+  jest.spyOn(Api, 'findTriggersForStudyEnv')
+    .mockImplementation(() => Promise.resolve(triggers))
+  jest.spyOn(Api, 'findTrigger')
     .mockImplementation(jest.fn())
 
   const { RoutedComponent, router } =

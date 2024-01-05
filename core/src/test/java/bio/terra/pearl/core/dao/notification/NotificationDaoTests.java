@@ -2,9 +2,9 @@ package bio.terra.pearl.core.dao.notification;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
-import bio.terra.pearl.core.factory.notification.NotificationConfigFactory;
+import bio.terra.pearl.core.factory.notification.TriggerFactory;
 import bio.terra.pearl.core.model.notification.Notification;
-import bio.terra.pearl.core.model.notification.TriggeredAction;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
@@ -18,17 +18,17 @@ public class NotificationDaoTests extends BaseSpringBootTest {
   @Autowired
   private NotificationDao notificationDao;
   @Autowired
-  private NotificationConfigFactory notificationConfigFactory;
+  private TriggerFactory triggerFactory;
   @Autowired
   private ObjectMapper objectMapper;
 
   @Test
   @Transactional
   public void testBasicCrud() {
-    TriggeredAction triggeredAction = notificationConfigFactory.buildPersisted("testBasicConfigCrud");
+    Trigger trigger = triggerFactory.buildPersisted("testBasicConfigCrud");
     Notification notification = Notification.builder()
-        .deliveryType(triggeredAction.getDeliveryType())
-        .notificationConfigId(triggeredAction.getId())
+        .deliveryType(trigger.getDeliveryType())
+        .triggerId(trigger.getId())
         .deliveryStatus(NotificationDeliveryStatus.READY)
         .build();
     Notification savedNotification = notificationDao.create(notification);
@@ -38,11 +38,11 @@ public class NotificationDaoTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testSavesCustomMessages() throws Exception {
-    TriggeredAction triggeredAction = notificationConfigFactory.buildPersisted("testSavesMessagesCrud");
+    Trigger trigger = triggerFactory.buildPersisted("testSavesMessagesCrud");
     var messageMap = Map.of("foo", "bar", "baz", "boo");
     Notification notification = Notification.builder()
-        .deliveryType(triggeredAction.getDeliveryType())
-        .notificationConfigId(triggeredAction.getId())
+        .deliveryType(trigger.getDeliveryType())
+        .triggerId(trigger.getId())
         .deliveryStatus(NotificationDeliveryStatus.READY)
         .customMessagesMap(messageMap)
         .build();

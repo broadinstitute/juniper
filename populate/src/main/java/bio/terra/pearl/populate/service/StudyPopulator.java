@@ -6,7 +6,7 @@ import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.kit.StudyEnvironmentKitType;
-import bio.terra.pearl.core.model.notification.TriggeredAction;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -23,7 +23,7 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dto.StudyEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.StudyPopDto;
 import bio.terra.pearl.populate.dto.consent.StudyEnvironmentConsentPopDto;
-import bio.terra.pearl.populate.dto.notifications.TriggeredActionPopDto;
+import bio.terra.pearl.populate.dto.notifications.TriggerPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
@@ -89,9 +89,9 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
             StudyEnvironmentConsent configConsent = consentFormPopulator.convertConfiguredConsent(configConsentDto, i, context);
             studyEnv.getConfiguredConsents().add(configConsent);
         }
-        for (TriggeredActionPopDto configPopDto : studyEnv.getNotificationConfigDtos()) {
-            TriggeredAction triggeredAction = emailTemplatePopulator.convertNotificationConfig(configPopDto, context);
-            studyEnv.getTriggeredActions().add(triggeredAction);
+        for (TriggerPopDto configPopDto : studyEnv.getTriggerDtos()) {
+            Trigger trigger = emailTemplatePopulator.convertTrigger(configPopDto, context);
+            studyEnv.getTriggers().add(trigger);
         }
     }
 

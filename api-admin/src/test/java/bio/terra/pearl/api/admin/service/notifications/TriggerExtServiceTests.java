@@ -5,48 +5,48 @@ import static org.hamcrest.Matchers.equalTo;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
-import bio.terra.pearl.core.factory.notification.NotificationConfigFactory;
+import bio.terra.pearl.core.factory.notification.TriggerFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
-import bio.terra.pearl.core.model.notification.NotificationEventType;
+import bio.terra.pearl.core.model.notification.Trigger;
+import bio.terra.pearl.core.model.notification.TriggerEventType;
 import bio.terra.pearl.core.model.notification.TriggerType;
-import bio.terra.pearl.core.model.notification.TriggeredAction;
-import bio.terra.pearl.core.service.notification.TriggeredActionService;
+import bio.terra.pearl.core.service.notification.TriggerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-public class TriggeredActionExtServiceTests extends BaseSpringBootTest {
+public class TriggerExtServiceTests extends BaseSpringBootTest {
   @Autowired StudyEnvironmentFactory studyEnvironmentFactory;
-  @Autowired NotificationConfigFactory notificationConfigFactory;
-  @Autowired TriggeredActionExtService triggeredActionExtService;
-  @Autowired TriggeredActionService triggeredActionService;
+  @Autowired TriggerFactory triggerFactory;
+  @Autowired TriggerExtService triggerExtService;
+  @Autowired TriggerService triggerService;
 
   @Test
   @Transactional
   public void testNotificationConfigReplace(TestInfo testInfo) {
     StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
-    TriggeredAction oldConfig =
-        notificationConfigFactory.buildPersisted(
-            TriggeredAction.builder()
+    Trigger oldConfig =
+        triggerFactory.buildPersisted(
+            Trigger.builder()
                 .triggerType(TriggerType.EVENT)
-                .eventType(NotificationEventType.STUDY_CONSENT)
+                .eventType(TriggerEventType.STUDY_CONSENT)
                 .deliveryType(NotificationDeliveryType.EMAIL),
             bundle.getStudyEnv().getId(),
             bundle.getPortalEnv().getId());
     AdminUser user = AdminUser.builder().superuser(true).build();
-    TriggeredAction update =
-        TriggeredAction.builder()
+    Trigger update =
+        Trigger.builder()
             .triggerType(TriggerType.EVENT)
-            .eventType(NotificationEventType.STUDY_ENROLLMENT)
+            .eventType(TriggerEventType.STUDY_ENROLLMENT)
             .deliveryType(NotificationDeliveryType.EMAIL)
             .build();
 
-    TriggeredAction savedConfig =
-        triggeredActionExtService.replace(
+    Trigger savedConfig =
+        triggerExtService.replace(
             bundle.getPortal().getShortcode(),
             bundle.getStudy().getShortcode(),
             bundle.getStudyEnv().getEnvironmentName(),
@@ -56,9 +56,9 @@ public class TriggeredActionExtServiceTests extends BaseSpringBootTest {
     assertThat(savedConfig.isActive(), equalTo(true));
     assertThat(savedConfig.getStudyEnvironmentId(), equalTo(bundle.getStudyEnv().getId()));
     assertThat(savedConfig.getPortalEnvironmentId(), equalTo(bundle.getPortalEnv().getId()));
-    assertThat(savedConfig.getEventType(), equalTo(NotificationEventType.STUDY_ENROLLMENT));
+    assertThat(savedConfig.getEventType(), equalTo(TriggerEventType.STUDY_ENROLLMENT));
 
-    TriggeredAction updatedOldConfig = triggeredActionService.find(oldConfig.getId()).orElseThrow();
+    Trigger updatedOldConfig = triggerService.find(oldConfig.getId()).orElseThrow();
     assertThat(updatedOldConfig.isActive(), equalTo(false));
   }
 }

@@ -1,32 +1,32 @@
 package bio.terra.pearl.core.factory.notification;
 
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
-import bio.terra.pearl.core.model.notification.TriggeredAction;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
 import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
-import bio.terra.pearl.core.service.notification.TriggeredActionService;
+import bio.terra.pearl.core.service.notification.TriggerService;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class NotificationConfigFactory {
+public class TriggerFactory {
     @Autowired
-    private TriggeredActionService triggeredActionService;
+    private TriggerService triggerService;
     @Autowired
     private PortalEnvironmentFactory portalEnvironmentFactory;
 
-    public TriggeredAction buildPersisted(TriggeredAction.NotificationConfigBuilder builder, UUID studyEnvId, UUID portalEnvId) {
-        TriggeredAction config = builder.studyEnvironmentId(studyEnvId)
+    public Trigger buildPersisted(Trigger.TriggerBuilder builder, UUID studyEnvId, UUID portalEnvId) {
+        Trigger config = builder.studyEnvironmentId(studyEnvId)
                 .portalEnvironmentId(portalEnvId)
                 .build();
-        return triggeredActionService.create(config);
+        return triggerService.create(config);
     }
 
-    public TriggeredAction buildPersisted(String testName) {
+    public Trigger buildPersisted(String testName) {
         PortalEnvironment portalEnvironment = portalEnvironmentFactory.buildPersisted(testName);
-        var builder = TriggeredAction.builder()
+        var builder = Trigger.builder()
             .portalEnvironmentId(portalEnvironment.getId())
             .triggerType(TriggerType.EVENT)
             .deliveryType(NotificationDeliveryType.EMAIL);

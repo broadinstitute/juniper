@@ -705,10 +705,10 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/triggeredActions:
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/triggers:
     get:
       summary: gets all the active triggered actions for the environment
-      tags: [ triggeredAction ]
+      tags: [ trigger ]
       operationId: findByStudy
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
@@ -722,7 +722,7 @@ paths:
           $ref: '#/components/responses/ServerError'
     post:
       summary: create a new triggered action for the environment
-      tags: [ triggeredAction ]
+      tags: [ trigger ]
       operationId: create
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
@@ -737,10 +737,10 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/triggeredActions/{configId}:
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/triggers/{configId}:
     get:
-      summary: gets the triggeredAction by id
-      tags: [ triggeredAction ]
+      summary: gets the trigger by id
+      tags: [ trigger ]
       operationId: get
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
@@ -749,13 +749,13 @@ paths:
         - { name: configId, in: path, required: true, schema: { type: string, format: uuid} }
       responses:
         '200':
-          description: The triggeredAction
+          description: The trigger
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
     patch:
-      summary: Since triggeredActions are immutable, a new config is made and the current one is deactivated.  The new triggeredAction is attached to the study and is returned
-      tags: [ triggeredAction ]
+      summary: Since triggers are immutable, a new config is made and the current one is deactivated.  The new trigger is attached to the study and is returned
+      tags: [ trigger ]
       operationId: replace
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
@@ -767,14 +767,14 @@ paths:
         content: { application/json: { schema: { type: object } } }
       responses:
         '200':
-          description: The new triggeredAction
+          description: The new trigger
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/notifications/adhoc:
     post:
-      summary: Send a one-off notification/message to one or more enrollees with a specified triggeredAction
-      tags: [ triggeredAction ]
+      summary: Send a one-off notification/message to one or more enrollees with a specified trigger
+      tags: [ trigger ]
       operationId: adHoc
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
@@ -785,14 +785,14 @@ paths:
         content: { application/json: { schema: { type: object } } }
       responses:
         '200':
-          description: The triggeredAction created/used for the notification
+          description: The trigger created/used for the notification
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/triggeredActions/{configId}/test:
+  /api/portals/v1/{portalShortcode}/env/{envName}/triggers/{configId}/test:
     post:
-      summary: Sends a test action for the given triggeredAction and enrolleeRuleData
-      tags: [ triggeredAction ]
+      summary: Sends a test action for the given trigger and enrolleeRuleData
+      tags: [ trigger ]
       operationId: test
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }

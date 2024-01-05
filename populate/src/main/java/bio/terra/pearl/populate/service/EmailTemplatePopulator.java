@@ -1,7 +1,7 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.model.notification.TriggeredAction;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
@@ -9,7 +9,7 @@ import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.populate.dao.EmailTemplatePopulateDao;
 import bio.terra.pearl.populate.dto.notifications.EmailTemplatePopDto;
-import bio.terra.pearl.populate.dto.notifications.TriggeredActionPopDto;
+import bio.terra.pearl.populate.dto.notifications.TriggerPopDto;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import java.io.IOException;
 import java.util.Objects;
@@ -36,8 +36,8 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
         this.portalEnvironmentService = portalEnvironmentService;
     }
 
-    public TriggeredAction convertNotificationConfig(TriggeredActionPopDto configPopDto, PortalPopulateContext context) {
-        TriggeredAction config = new TriggeredAction();
+    public Trigger convertTrigger(TriggerPopDto configPopDto, PortalPopulateContext context) {
+        Trigger config = new Trigger();
         BeanUtils.copyProperties(configPopDto, config);
         PortalEnvironment portalEnv = portalEnvironmentService
                 .findOne(context.getPortalShortcode(), context.getEnvironmentName()).get();

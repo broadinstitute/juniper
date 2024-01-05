@@ -4,14 +4,14 @@ import NotificationConfigTypeDisplay, { deliveryTypeDisplayMap } from './Notifca
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
 import { paramsFromContext, StudyEnvContextT } from '../StudyEnvironmentRouter'
-import NotificationConfigView from './NotificationConfigView'
+import TriggerView from './TriggerView'
 import { renderPageHeader } from 'util/pageUtils'
 import { LoadedPortalContextT } from '../../portal/PortalProvider'
-import { TriggeredAction } from '@juniper/ui-core'
+import { Trigger } from '@juniper/ui-core'
 import Api from 'api/api'
 import { useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
-import CreateNotificationConfigModal from './CreateNotificationConfigModal'
+import CreateTriggerModal from './CreateTriggerModal'
 import { navDivStyle, navLinkStyleFunc, navListItemStyle } from 'util/subNavStyles'
 import CollapsableMenu from 'navbar/CollapsableMenu'
 
@@ -26,12 +26,12 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
   {studyEnvContext: StudyEnvContextT, portalContext: LoadedPortalContextT}) {
   const currentEnv = studyEnvContext.currentEnv
   const navigate = useNavigate()
-  const [configList, setConfigList] = useState<TriggeredAction[]>([])
+  const [configList, setConfigList] = useState<Trigger[]>([])
   const [previousEnv, setPreviousEnv] = useState<string>(currentEnv.environmentName)
   const [showCreateModal, setShowCreateModal] = useState(false)
 
   const { isLoading, reload } = useLoadingEffect(async () => {
-    const configList = await Api.findTriggeredActionsForStudyEnv(portalContext.portal.shortcode,
+    const configList = await Api.findTriggersForStudyEnv(portalContext.portal.shortcode,
       studyEnvContext.study.shortcode, currentEnv.environmentName)
     setConfigList(configList)
   }, [currentEnv.environmentName, studyEnvContext.study.shortcode])
@@ -44,7 +44,7 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
     }
   }, [currentEnv.environmentName])
 
-  const onCreate = (createdConfig: TriggeredAction) => {
+  const onCreate = (createdConfig: Trigger) => {
     reload()
     navigate(`configs/${createdConfig.id}`)
     setShowCreateModal(false)
@@ -84,11 +84,11 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
       <div className="flex-grow-1 bg-white p-3">
         <Routes>
           <Route path="configs/:configId"
-            element={<NotificationConfigView studyEnvContext={studyEnvContext} portalContext={portalContext}/>}/>
+            element={<TriggerView studyEnvContext={studyEnvContext} portalContext={portalContext}/>}/>
         </Routes>
         <Outlet/>
       </div>
-      { showCreateModal && <CreateNotificationConfigModal studyEnvParams={paramsFromContext(studyEnvContext)}
+      { showCreateModal && <CreateTriggerModal studyEnvParams={paramsFromContext(studyEnvContext)}
         onDismiss={() => setShowCreateModal(false)} onCreate={onCreate}
       /> }
     </div>

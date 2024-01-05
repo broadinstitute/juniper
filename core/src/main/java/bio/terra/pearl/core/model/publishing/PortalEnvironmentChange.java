@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.model.publishing;
 
 import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.model.notification.TriggeredAction;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.survey.Survey;
 
@@ -14,7 +14,7 @@ import java.util.List;
 public record PortalEnvironmentChange(VersionedEntityChange<SiteContent> siteContentChange,
                                       List<ConfigChange> configChanges,
                                       VersionedEntityChange<Survey> preRegSurveyChanges,
-                                      ListChange<TriggeredAction, VersionedConfigChange<EmailTemplate>> notificationConfigChanges,
+                                      ListChange<Trigger, VersionedConfigChange<EmailTemplate>> triggerChanges,
                                       List<ParticipantDashboardAlertChange> participantDashboardAlertChanges,
                                       List<StudyEnvironmentChange> studyEnvChanges)
 {}

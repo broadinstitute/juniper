@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Api, { TriggeredAction } from 'api/api'
+import Api, { Trigger } from 'api/api'
 import Modal from 'react-bootstrap/Modal'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
@@ -22,9 +22,9 @@ export const EXAMPLE_RULE_DATA = {
 }
 
 /** Sends test emails based on a configurable profile */
-export default function TestEmailSender({ studyEnvParams, notificationConfig, onDismiss }:
+export default function TestEmailSender({ studyEnvParams, trigger, onDismiss }:
                                           {studyEnvParams: StudyEnvParams, onDismiss: () => void,
-                                            notificationConfig: TriggeredAction}) {
+                                            trigger: Trigger}) {
   const { user } = useUser()
   const { portalShortcode, envName, studyShortcode } = studyEnvParams
   const [isLoading, setIsLoading] = useState(false)
@@ -38,7 +38,7 @@ export default function TestEmailSender({ studyEnvParams, notificationConfig, on
   /** sends a test email with the given (saved) notification.  does not currently reflect unsaved changes */
   function sendTestEmail() {
     doApiLoad(async () => {
-      await Api.testTriggeredAction(portalShortcode, studyShortcode, envName, notificationConfig.id, ruleData)
+      await Api.testTrigger(portalShortcode, studyShortcode, envName, trigger.id, ruleData)
       Store.addNotification(successNotification('Sent test email'))
     }, { setIsLoading })
   }

@@ -1,12 +1,12 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
-import CreateNotificationConfigModal from './CreateNotificationConfigModal'
+import CreateTriggerModal from './CreateTriggerModal'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { select } from 'react-select-event'
 
-describe('CreateNotificationConfigModal', () => {
+describe('CreateTriggerModal', () => {
   test('renders type and event options', async () => {
-    const { RoutedComponent } = setupRouterTest(<CreateNotificationConfigModal
+    const { RoutedComponent } = setupRouterTest(<CreateTriggerModal
       studyEnvParams={{ studyShortcode: 'testStudy', envName: 'irb', portalShortcode: 'testPortal' }}
       onDismiss={jest.fn()} onCreate={jest.fn()}/>)
     render(RoutedComponent)

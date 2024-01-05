@@ -7,7 +7,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
-import { TriggeredAction, StudyEnvironmentConsent, StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
+import { Trigger, StudyEnvironmentConsent, StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
 
 /**
  * returns html for displaying the differences in versions.  this does not yet include support
@@ -101,7 +101,7 @@ export const versionDisplay = (stableId: string, version: number) => {
   return <span>{stableId} v{version}</span>
 }
 
-export type Configable = StudyEnvironmentConsent | StudyEnvironmentSurvey | TriggeredAction
+export type Configable = StudyEnvironmentConsent | StudyEnvironmentSurvey | Trigger
 type ConfigChangeListViewProps<T extends Configable> = {
   configChangeList: ListChange<T, VersionedConfigChange>,
   selectedChanges: ListChange<T, VersionedConfigChange>,
@@ -212,7 +212,7 @@ export const renderStudyEnvironmentConsent = (change: StudyEnvironmentConsent) =
 }
 
 /** summarizes a notification config */
-export const renderNotificationConfig = (change: TriggeredAction) => {
+export const renderNotificationConfig = (change: Trigger) => {
   return <span>{change.emailTemplate.name} - {change.triggerType}<span className="text-muted fst-italic ms-2">
     ({change.emailTemplate.stableId} v{change.emailTemplate.version})
   </span></span>

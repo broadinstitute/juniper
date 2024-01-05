@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
-import bio.terra.pearl.core.factory.notification.NotificationConfigFactory;
+import bio.terra.pearl.core.factory.notification.TriggerFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -30,7 +30,7 @@ public class NotificationExtServiceTests extends BaseSpringBootTest {
   @Autowired private PortalService portalService;
   @Autowired private StudyService studyService;
   @Autowired private StudyEnvironmentService studyEnvironmentService;
-  @Autowired private NotificationConfigFactory notificationConfigFactory;
+  @Autowired private TriggerFactory triggerFactory;
   @Autowired private NotificationService notificationService;
   @Autowired private ObjectMapper objectMapper;
 
@@ -47,9 +47,9 @@ public class NotificationExtServiceTests extends BaseSpringBootTest {
     StudyEnvironment studyEnv =
         studyEnvironmentService.find(enrolleeBundle.enrollee().getStudyEnvironmentId()).get();
     EnvironmentName environmentName = studyEnv.getEnvironmentName();
-    TriggeredAction config =
-        notificationConfigFactory.buildPersisted(
-            TriggeredAction.builder()
+    Trigger config =
+        triggerFactory.buildPersisted(
+            Trigger.builder()
                 .deliveryType(NotificationDeliveryType.EMAIL)
                 .triggerType(TriggerType.AD_HOC),
             studyEnv.getId(),
@@ -70,7 +70,7 @@ public class NotificationExtServiceTests extends BaseSpringBootTest {
         notifications.get(0),
         samePropertyValuesAs(
             Notification.builder()
-                .notificationConfigId(config.getId())
+                .triggerId(config.getId())
                 .deliveryStatus(NotificationDeliveryStatus.SKIPPED)
                 .customMessages(objectMapper.writeValueAsString(customMessages))
                 .studyEnvironmentId(studyEnv.getId())

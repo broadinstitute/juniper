@@ -55,7 +55,7 @@ public class PortalExtractTest extends BasePopulatePortalsTest {
         // confirm the sandbox got configured
         Study study = studyService.findByPortalId(restoredPortal.getId()).get(0);
         StudyEnvironment sandboxEnv = studyEnvironmentService.findByStudy(study.getShortcode(), EnvironmentName.sandbox).orElseThrow();
-        assertThat(triggeredActionService.findByStudyEnvironmentId(sandboxEnv.getId()), hasSize(5));
+        assertThat(triggerService.findByStudyEnvironmentId(sandboxEnv.getId()), hasSize(5));
     }
 
 

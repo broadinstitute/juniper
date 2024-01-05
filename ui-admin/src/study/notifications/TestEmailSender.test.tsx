@@ -12,7 +12,7 @@ test('replaces the email with the username', async () => {
           <MockUserProvider user={{ ...mockAdminUser(false), username: 'admin@user.com' }}>
             <TestEmailSender studyEnvParams={{ portalShortcode: 'portal', envName: 'irb', studyShortcode: 'study' }}
               onDismiss={jest.fn()}
-              notificationConfig={mockNotificationConfig()}/>
+              trigger={mockNotificationConfig()}/>
           </MockUserProvider>
         )
   render(RoutedComponent)

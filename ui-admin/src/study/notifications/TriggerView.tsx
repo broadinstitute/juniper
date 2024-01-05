@@ -3,7 +3,7 @@ import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { useNavigate, useParams } from 'react-router-dom'
 import Select from 'react-select'
 import TestEmailSender from './TestEmailSender'
-import Api, { TriggeredAction } from 'api/api'
+import Api, { Trigger } from 'api/api'
 import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { doApiLoad, useLoadingEffect } from 'api/api-utils'
@@ -22,20 +22,20 @@ const taskTypeOptions = [{ label: 'Survey', value: 'SURVEY' }, { label: 'Consent
 
 
 /** for viewing and editing a notification config.  saving not yet implemented */
-export default function NotificationConfigView({ studyEnvContext, portalContext }:
+export default function TriggerView({ studyEnvContext, portalContext }:
 {studyEnvContext: StudyEnvContextT, portalContext: LoadedPortalContextT}) {
   const { currentEnv, portal, study, currentEnvPath } = studyEnvContext
   const [showSendModal, setShowSendModal] = useState(false)
   const navigate = useNavigate()
 
   const configId = useParams().configId
-  const [config, setConfig] = useState<TriggeredAction>()
-  const [workingConfig, setWorkingConfig] = useState<TriggeredAction>()
+  const [config, setConfig] = useState<Trigger>()
+  const [workingConfig, setWorkingConfig] = useState<Trigger>()
   const hasTemplate = !!workingConfig?.emailTemplate
 
   const { isLoading, setIsLoading } = useLoadingEffect(async () => {
     if (!configId) { return }
-    const loadedConfig = await Api.findTriggeredAction(portal.shortcode, study.shortcode, currentEnv.environmentName,
+    const loadedConfig = await Api.findTrigger(portal.shortcode, study.shortcode, currentEnv.environmentName,
       configId)
     setConfig(loadedConfig)
     setWorkingConfig(loadedConfig)
@@ -44,7 +44,7 @@ export default function NotificationConfigView({ studyEnvContext, portalContext 
   const saveConfig = async () => {
     if (!workingConfig) { return }
     doApiLoad(async () => {
-      const savedConfig = await Api.updateTriggeredAction(portal.shortcode,
+      const savedConfig = await Api.updateTrigger(portal.shortcode,
         currentEnv.environmentName, study.shortcode, workingConfig.id, workingConfig)
       Store.addNotification(successNotification('Notification saved'))
       await portalContext.reloadPortal(portal.shortcode)
@@ -54,7 +54,7 @@ export default function NotificationConfigView({ studyEnvContext, portalContext 
 
   return <div>
     {!isLoading && !!workingConfig && <form className="bg-white p-3 my-2">
-      <NotificationConfigBaseForm config={workingConfig} setConfig={setWorkingConfig}/>
+      <TriggerBaseForm config={workingConfig} setConfig={setWorkingConfig}/>
       { isTaskReminder(workingConfig) && <div>
         <div>
           <label className="form-label mt-3">Remind after
@@ -119,7 +119,7 @@ export default function NotificationConfigView({ studyEnvContext, portalContext 
         portalShortcode: portal.shortcode,
         envName: currentEnv.environmentName, studyShortcode: study.shortcode
       }}
-      onDismiss={() => setShowSendModal(false)} notificationConfig={workingConfig}/> }
+      onDismiss={() => setShowSendModal(false)} trigger={workingConfig}/> }
     </form> }
     <div>
       Note the preview above does not guarantee how the email will appear in all browsers and clients.  To test this,
@@ -130,8 +130,8 @@ export default function NotificationConfigView({ studyEnvContext, portalContext 
 }
 
 /** configures the notification type and event/task type */
-export const NotificationConfigBaseForm = ({ config, setConfig }:
-                     {config: TriggeredAction, setConfig: (config: TriggeredAction) => void}) => {
+export const TriggerBaseForm = ({ config, setConfig }:
+                     {config: Trigger, setConfig: (config: Trigger) => void}) => {
   return <>
     <div>
       <label className="form-label" htmlFor="notificationType">Trigger</label>
@@ -159,5 +159,5 @@ export const NotificationConfigBaseForm = ({ config, setConfig }:
   </>
 }
 
-const isTaskReminder = (config?: TriggeredAction) => config?.triggerType === 'TASK_REMINDER'
-const isEventConfig = (config?: TriggeredAction) => config?.triggerType === 'EVENT'
+const isTaskReminder = (config?: Trigger) => config?.triggerType === 'TASK_REMINDER'
+const isEventConfig = (config?: Trigger) => config?.triggerType === 'EVENT'

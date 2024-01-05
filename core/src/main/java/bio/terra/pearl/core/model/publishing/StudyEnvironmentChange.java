@@ -3,7 +3,7 @@ package bio.terra.pearl.core.model.publishing;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.model.notification.TriggeredAction;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 
@@ -15,5 +15,5 @@ public record StudyEnvironmentChange(
         VersionedEntityChange<Survey> preEnrollSurveyChanges,
         ListChange<StudyEnvironmentConsent, VersionedConfigChange<ConsentForm>> consentChanges,
         ListChange<StudyEnvironmentSurvey, VersionedConfigChange<Survey>> surveyChanges,
-        ListChange<TriggeredAction, VersionedConfigChange<EmailTemplate>> notificationConfigChanges
+        ListChange<Trigger, VersionedConfigChange<EmailTemplate>> triggerChanges
 ){}

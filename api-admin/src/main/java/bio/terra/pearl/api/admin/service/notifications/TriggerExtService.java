@@ -3,11 +3,11 @@ package bio.terra.pearl.api.admin.service.notifications;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.notification.TriggeredAction;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.notification.NotificationDispatcher;
-import bio.terra.pearl.core.service.notification.TriggeredActionService;
+import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.exception.PortalEnvironmentMissing;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
@@ -21,27 +21,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class TriggeredActionExtService {
-  private TriggeredActionService triggeredActionService;
+public class TriggerExtService {
+  private TriggerService triggerService;
   private AuthUtilService authUtilService;
   private StudyEnvironmentService studyEnvironmentService;
   private PortalEnvironmentService portalEnvironmentService;
   private NotificationDispatcher notificationDispatcher;
 
-  public TriggeredActionExtService(
-      TriggeredActionService triggeredActionService,
+  public TriggerExtService(
+      TriggerService triggerService,
       AuthUtilService authUtilService,
       StudyEnvironmentService studyEnvironmentService,
       PortalEnvironmentService portalEnvironmentService,
       NotificationDispatcher notificationDispatcher) {
-    this.triggeredActionService = triggeredActionService;
+    this.triggerService = triggerService;
     this.authUtilService = authUtilService;
     this.studyEnvironmentService = studyEnvironmentService;
     this.portalEnvironmentService = portalEnvironmentService;
     this.notificationDispatcher = notificationDispatcher;
   }
 
-  public List<TriggeredAction> findForStudy(
+  public List<Trigger> findForStudy(
       AdminUser user,
       String portalShortcode,
       String studyShortcode,
@@ -52,14 +52,13 @@ public class TriggeredActionExtService {
         studyEnvironmentService
             .findByStudy(studyShortcode, environmentName)
             .orElseThrow(StudyEnvironmentMissing::new);
-    List<TriggeredAction> configs =
-        triggeredActionService.findByStudyEnvironmentId(studyEnvironment.getId(), true);
-    triggeredActionService.attachTemplates(configs);
+    List<Trigger> configs = triggerService.findByStudyEnvironmentId(studyEnvironment.getId(), true);
+    triggerService.attachTemplates(configs);
     return configs;
   }
 
   /** Gets the config specified by id, and confirms it belongs to the given portal and study */
-  public Optional<TriggeredAction> find(
+  public Optional<Trigger> find(
       AdminUser user,
       String portalShortcode,
       String studyShortcode,
@@ -75,11 +74,11 @@ public class TriggeredActionExtService {
         studyEnvironmentService
             .findByStudy(studyShortcode, environmentName)
             .orElseThrow(StudyEnvironmentMissing::new);
-    Optional<TriggeredAction> configOpt = triggeredActionService.find(configId);
+    Optional<Trigger> configOpt = triggerService.find(configId);
     configOpt.ifPresent(
         config -> {
           verifyNotificationConfig(config, portalEnvironment, studyEnvironment);
-          triggeredActionService.attachTemplates(List.of(config));
+          triggerService.attachTemplates(List.of(config));
         });
     return configOpt;
   }
@@ -95,7 +94,7 @@ public class TriggeredActionExtService {
       UUID actionId,
       EnrolleeRuleData enrolleeRuleData) {
     /** find takes care of auth */
-    TriggeredAction action =
+    Trigger action =
         find(operator, portalShortcode, studyShortcode, environmentName, actionId)
             .orElseThrow(NotFoundException::new);
     /** for now, the only type of action this supports is sending email */
@@ -109,12 +108,12 @@ public class TriggeredActionExtService {
    * that template will be created as well.
    */
   @Transactional
-  public TriggeredAction replace(
+  public Trigger replace(
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
       UUID configId,
-      TriggeredAction update,
+      Trigger update,
       AdminUser user) {
     authUtilService.authUserToPortal(user, portalShortcode);
     PortalEnvironment portalEnvironment =
@@ -122,12 +121,12 @@ public class TriggeredActionExtService {
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
     StudyEnvironment studyEnvironment =
         studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
-    TriggeredAction existing = triggeredActionService.find(configId).get();
+    Trigger existing = triggerService.find(configId).get();
     verifyNotificationConfig(existing, portalEnvironment, studyEnvironment);
-    TriggeredAction newConfig = create(update, studyEnvironment, portalEnvironment);
+    Trigger newConfig = create(update, studyEnvironment, portalEnvironment);
     // after creating the new config, deactivate the old config
     existing.setActive(false);
-    triggeredActionService.update(existing);
+    triggerService.update(existing);
     return newConfig;
   }
 
@@ -137,11 +136,11 @@ public class TriggeredActionExtService {
    * update contains a new email template, that template will be created as well.
    */
   @Transactional
-  public TriggeredAction create(
+  public Trigger create(
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
-      TriggeredAction newConfig,
+      Trigger newConfig,
       AdminUser user) {
     authUtilService.authUserToPortal(user, portalShortcode);
     PortalEnvironment portalEnvironment =
@@ -159,19 +158,15 @@ public class TriggeredActionExtService {
 
   /** confirms the given config is associated with the given study and portal environments */
   private void verifyNotificationConfig(
-      TriggeredAction config,
-      PortalEnvironment portalEnvironment,
-      StudyEnvironment studyEnvironment) {
+      Trigger config, PortalEnvironment portalEnvironment, StudyEnvironment studyEnvironment) {
     if (!studyEnvironment.getId().equals(config.getStudyEnvironmentId())
         || !portalEnvironment.getId().equals(config.getPortalEnvironmentId())) {
       throw new IllegalArgumentException("config does not match the study and portal environment");
     }
   }
 
-  private TriggeredAction create(
-      TriggeredAction newConfig,
-      StudyEnvironment studyEnvironment,
-      PortalEnvironment portalEnvironment) {
+  private Trigger create(
+      Trigger newConfig, StudyEnvironment studyEnvironment, PortalEnvironment portalEnvironment) {
     newConfig.cleanForCopying();
     newConfig.setStudyEnvironmentId(studyEnvironment.getId());
     newConfig.setPortalEnvironmentId(portalEnvironment.getId());
@@ -179,7 +174,7 @@ public class TriggeredActionExtService {
       // this is a new email template, set the portal appropriately
       newConfig.getEmailTemplate().setPortalId(portalEnvironment.getPortalId());
     }
-    TriggeredAction savedConfig = triggeredActionService.create(newConfig);
+    Trigger savedConfig = triggerService.create(newConfig);
     return savedConfig;
   }
 }

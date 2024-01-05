@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Api, { Enrollee, Notification } from 'api/api'
-import { StudyEnvContextT, notificationConfigPath } from '../../StudyEnvironmentRouter'
+import { StudyEnvContextT, triggerPath } from '../../StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { instantToDefaultString } from 'util/timeUtils'
 import NotificationConfigTypeDisplay from '../../notifications/NotifcationConfigTypeDisplay'
@@ -16,8 +16,8 @@ export default function EnrolleeNotifications({ enrollee, studyEnvContext }:
   /** matches each notification to a corresponding config by id */
   function attachConfigsToNotifications(rawNotifications: Notification[]) {
     rawNotifications.forEach(notification => {
-      notification.notificationConfig = currentEnv.triggeredActions
-        .find(config => config.id === notification.notificationConfigId)
+      notification.trigger = currentEnv.triggers
+        .find(config => config.id === notification.triggerId)
     })
   }
 
@@ -44,11 +44,11 @@ export default function EnrolleeNotifications({ enrollee, studyEnvContext }:
         </thead>
         <tbody>
           {notifications.map(notification => {
-            const matchedConfig = currentEnv.triggeredActions
-              .find(cfg => cfg.id === notification.notificationConfigId)
+            const matchedConfig = currentEnv.triggers
+              .find(cfg => cfg.id === notification.triggerId)
             return <tr key={notification.id}>
               <td>
-                <NotificationConfigTypeDisplay config={notification.notificationConfig}/>
+                <NotificationConfigTypeDisplay config={notification.trigger}/>
               </td>
               <td>
                 {notification.deliveryType}
@@ -60,7 +60,7 @@ export default function EnrolleeNotifications({ enrollee, studyEnvContext }:
                 {instantToDefaultString(notification.createdAt)}
               </td>
               <td>
-                {matchedConfig && <Link to={notificationConfigPath(matchedConfig, currentEnvPath)}>config</Link> }
+                {matchedConfig && <Link to={triggerPath(matchedConfig, currentEnvPath)}>config</Link> }
               </td>
             </tr>
           })}

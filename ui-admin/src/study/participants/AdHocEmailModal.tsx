@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
-import Api, { TriggeredAction } from 'api/api'
+import Api, { Trigger } from 'api/api'
 import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import Select from 'react-select'
@@ -11,12 +11,12 @@ import Select from 'react-select'
 export default function AdHocEmailModal({ enrolleeShortcodes, onDismiss, studyEnvContext }:
 {enrolleeShortcodes: string[], studyEnvContext: StudyEnvContextT, onDismiss: () => void}) {
   const [isLoading, setIsLoading] = useState(true)
-  const [configs, setConfigs] = useState<TriggeredAction[]>([])
-  const [selectedConfig, setSelectedConfig] = useState<TriggeredAction | null>(null)
+  const [configs, setConfigs] = useState<Trigger[]>([])
+  const [selectedConfig, setSelectedConfig] = useState<Trigger | null>(null)
   const [adHocMessage, setAdHocMessage] = useState('')
   const [adHocSubject, setAdHocSubject] = useState('')
   useEffect(() => {
-    Api.findTriggeredActionsForStudyEnv(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
+    Api.findTriggersForStudyEnv(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
       studyEnvContext.currentEnv.environmentName).then(result => {
       setConfigs(result)
       setIsLoading(false)
@@ -36,7 +36,7 @@ export default function AdHocEmailModal({ enrolleeShortcodes, onDismiss, studyEn
         envName: studyEnvContext.currentEnv.environmentName,
         enrolleeShortcodes,
         customMessages: { adHocMessage, adHocSubject },
-        notificationConfigId: selectedConfig.id
+        triggerId: selectedConfig.id
       })
       Store.addNotification(successNotification('email sent'))
     } catch (e) {

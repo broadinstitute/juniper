@@ -7,7 +7,7 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.notification.Notification;
-import bio.terra.pearl.core.model.notification.TriggeredAction;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
 import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -36,7 +36,7 @@ public class EnrolleeReminderServiceTests extends BaseSpringBootTest {
     var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testConsentReminders", portalEnv, studyEnv);
     ParticipantTask newTask1 = participantTaskFactory.buildPersisted(enrolleeBundle, TaskStatus.NEW, TaskType.CONSENT);
 
-    TriggeredAction config = TriggeredAction.builder()
+    Trigger config = Trigger.builder()
         .triggerType(TriggerType.TASK_REMINDER)
         .taskType(TaskType.CONSENT)
         .afterMinutesIncomplete(0)
@@ -44,12 +44,12 @@ public class EnrolleeReminderServiceTests extends BaseSpringBootTest {
         .studyEnvironmentId(studyEnv.getId())
         .portalEnvironmentId(portalEnv.getId())
         .build();
-    TriggeredAction savedConfig = triggeredActionService.create(config);
+    Trigger savedConfig = triggerService.create(config);
     enrolleeReminderService.sendTaskReminders(studyEnv);
 
     List<Notification> notificationList = notificationDao.findByEnrolleeId(enrolleeBundle.enrollee().getId());
     assertThat(notificationList, hasSize(1));
-    assertThat(notificationList.get(0).getNotificationConfigId(), equalTo(savedConfig.getId()));
+    assertThat(notificationList.get(0).getTriggerId(), equalTo(savedConfig.getId()));
   }
   @Autowired
   private ParticipantTaskFactory participantTaskFactory;
@@ -62,7 +62,7 @@ public class EnrolleeReminderServiceTests extends BaseSpringBootTest {
   @Autowired
   private NotificationDao notificationDao;
   @Autowired
-  private TriggeredActionService triggeredActionService;
+  private TriggerService triggerService;
   @Autowired
   private EnrolleeFactory enrolleeFactory;
 }

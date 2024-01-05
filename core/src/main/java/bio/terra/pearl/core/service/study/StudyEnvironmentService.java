@@ -6,7 +6,7 @@ import bio.terra.pearl.core.dao.study.StudyEnvironmentSurveyDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
-import bio.terra.pearl.core.model.notification.TriggeredAction;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
@@ -15,7 +15,7 @@ import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.datarepo.DataRepoJobService;
 import bio.terra.pearl.core.service.datarepo.DatasetService;
 import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
-import bio.terra.pearl.core.service.notification.TriggeredActionService;
+import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import java.util.*;
@@ -31,7 +31,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     private EnrolleeService enrolleeService;
     private StudyEnvironmentConsentDao studyEnvironmentConsentDao;
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
-    private TriggeredActionService triggeredActionService;
+    private TriggerService triggerService;
     private DatasetService datasetService;
     private DataRepoJobService dataRepoJobService;
     private WithdrawnEnrolleeService withdrawnEnrolleeService;
@@ -45,7 +45,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
                                    EnrolleeService enrolleeService,
                                    StudyEnvironmentConsentDao studyEnvironmentConsentDao,
                                    PreEnrollmentResponseDao preEnrollmentResponseDao,
-                                   TriggeredActionService triggeredActionService,
+                                   TriggerService triggerService,
                                    DatasetService datasetService,
                                    DataRepoJobService dataRepoJobService,
                                    WithdrawnEnrolleeService withdrawnEnrolleeService,
@@ -56,7 +56,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         this.enrolleeService = enrolleeService;
         this.studyEnvironmentConsentDao = studyEnvironmentConsentDao;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
-        this.triggeredActionService = triggeredActionService;
+        this.triggerService = triggerService;
         this.datasetService = datasetService;
         this.dataRepoJobService = dataRepoJobService;
         this.withdrawnEnrolleeService = withdrawnEnrolleeService;
@@ -93,9 +93,9 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
             studyEnvironmentConsent.setStudyEnvironmentId(newEnv.getId());
             studyEnvironmentConsentDao.create(studyEnvironmentConsent);
         }
-        for (TriggeredAction config : studyEnv.getTriggeredActions()) {
+        for (Trigger config : studyEnv.getTriggers()) {
             config.setStudyEnvironmentId(newEnv.getId());
-            triggeredActionService.create(config);
+            triggerService.create(config);
         }
         newEnv.setStudyEnvironmentConfig(envConfig);
         return newEnv;
@@ -108,7 +108,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         enrolleeService.deleteByStudyEnvironmentId(studyEnv.getId(), cascade);
         studyEnvironmentSurveyDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         studyEnvironmentConsentDao.deleteByStudyEnvironmentId(studyEnvironmentId);
-        triggeredActionService.deleteByStudyEnvironmentId(studyEnvironmentId);
+        triggerService.deleteByStudyEnvironmentId(studyEnvironmentId);
         preEnrollmentResponseDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         dataRepoJobService.deleteByStudyEnvironmentId(studyEnvironmentId);
         datasetService.deleteByStudyEnvironmentId(studyEnvironmentId);

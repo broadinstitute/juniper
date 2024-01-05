@@ -4,9 +4,13 @@ databaseChangeLog:
       author: dbush
       changes:
         - renameTable:
-            newTableName:  triggered_action
+            newTableName:  trigger
             oldTableName:  notification_config
         - renameColumn:
-            tableName: triggered_action
+            tableName: trigger
             oldColumnName: notification_type
             newColumnName: trigger_type
+        - renameColumn:
+            tableName: notification
+            oldColumnName: notification_config_id
+            newColumnName: trigger_id

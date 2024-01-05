@@ -10,7 +10,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.notification.NotificationDispatcher;
-import bio.terra.pearl.core.service.notification.TriggeredActionService;
+import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
@@ -35,7 +35,7 @@ public class NotificationExtServiceAuthTests {
 
   @MockBean private AuthUtilService mockAuthUtilService;
   @MockBean private EnrolleeService mockEnrolleeService;
-  @MockBean private TriggeredActionService mockTriggeredActionService;
+  @MockBean private TriggerService mockTriggerService;
   @MockBean private NotificationDispatcher mockNotificationDispatcher;
   @MockBean private EnrolleeRuleService mockEnrolleeRuleService;
   @MockBean private StudyEnvironmentService mockStudyEnvironmentService;

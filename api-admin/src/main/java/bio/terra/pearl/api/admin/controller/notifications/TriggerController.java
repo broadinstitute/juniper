@@ -1,12 +1,12 @@
 package bio.terra.pearl.api.admin.controller.notifications;
 
-import bio.terra.pearl.api.admin.api.TriggeredActionApi;
+import bio.terra.pearl.api.admin.api.TriggerApi;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.notifications.NotificationExtService;
-import bio.terra.pearl.api.admin.service.notifications.TriggeredActionExtService;
+import bio.terra.pearl.api.admin.service.notifications.TriggerExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.notification.TriggeredAction;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,22 +19,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class TriggeredActionController implements TriggeredActionApi {
+public class TriggerController implements TriggerApi {
   private AuthUtilService authUtilService;
   private HttpServletRequest request;
-  private TriggeredActionExtService triggeredActionExtService;
+  private TriggerExtService triggerExtService;
   private ObjectMapper objectMapper;
   private NotificationExtService notificationExtService;
 
-  public TriggeredActionController(
+  public TriggerController(
       AuthUtilService authUtilService,
       HttpServletRequest request,
-      TriggeredActionExtService triggeredActionExtService,
+      TriggerExtService triggerExtService,
       ObjectMapper objectMapper,
       NotificationExtService notificationExtService) {
     this.authUtilService = authUtilService;
     this.request = request;
-    this.triggeredActionExtService = triggeredActionExtService;
+    this.triggerExtService = triggerExtService;
     this.objectMapper = objectMapper;
     this.notificationExtService = notificationExtService;
   }
@@ -45,8 +45,7 @@ public class TriggeredActionController implements TriggeredActionApi {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     var configs =
-        triggeredActionExtService.findForStudy(
-            adminUser, portalShortcode, studyShortcode, environmentName);
+        triggerExtService.findForStudy(adminUser, portalShortcode, studyShortcode, environmentName);
     return ResponseEntity.ok(configs);
   }
 
@@ -55,8 +54,8 @@ public class TriggeredActionController implements TriggeredActionApi {
       String portalShortcode, String studyShortcode, String envName, UUID configId) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    Optional<TriggeredAction> configOpt =
-        triggeredActionExtService.find(
+    Optional<Trigger> configOpt =
+        triggerExtService.find(
             operator, portalShortcode, studyShortcode, environmentName, configId);
     return ResponseEntity.ok(
         configOpt.orElseThrow(
@@ -68,9 +67,9 @@ public class TriggeredActionController implements TriggeredActionApi {
       String portalShortcode, String studyShortcode, String envName, UUID configId, Object body) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    TriggeredAction config = objectMapper.convertValue(body, TriggeredAction.class);
-    TriggeredAction newConfig =
-        triggeredActionExtService.replace(
+    Trigger config = objectMapper.convertValue(body, Trigger.class);
+    Trigger newConfig =
+        triggerExtService.replace(
             portalShortcode, studyShortcode, environmentName, configId, config, operator);
     return ResponseEntity.ok(newConfig);
   }
@@ -80,7 +79,7 @@ public class TriggeredActionController implements TriggeredActionApi {
       String portalShortcode, String studyShortcode, String envName, UUID configId, Object body) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     EnrolleeRuleData enrolleeRuleData = objectMapper.convertValue(body, EnrolleeRuleData.class);
-    triggeredActionExtService.test(
+    triggerExtService.test(
         operator,
         portalShortcode,
         studyShortcode,
@@ -97,7 +96,7 @@ public class TriggeredActionController implements TriggeredActionApi {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     AdHocNotification adHoc = objectMapper.convertValue(body, AdHocNotification.class);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    TriggeredAction configUsed =
+    Trigger configUsed =
         notificationExtService.sendAdHoc(
             adminUser,
             portalShortcode,
@@ -105,7 +104,7 @@ public class TriggeredActionController implements TriggeredActionApi {
             environmentName,
             adHoc.enrolleeShortcodes,
             adHoc.customMessages,
-            adHoc.notificationConfigId);
+            adHoc.triggerId);
     return ResponseEntity.ok(configUsed);
   }
 
@@ -114,16 +113,14 @@ public class TriggeredActionController implements TriggeredActionApi {
       String portalShortcode, String studyShortcode, String envName, Object body) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    TriggeredAction config = objectMapper.convertValue(body, TriggeredAction.class);
-    TriggeredAction newConfig =
-        triggeredActionExtService.create(
+    Trigger config = objectMapper.convertValue(body, Trigger.class);
+    Trigger newConfig =
+        triggerExtService.create(
             portalShortcode, studyShortcode, environmentName, config, adminUser);
     return ResponseEntity.ok(newConfig);
   }
 
   /** object for specifying an adhoc notification. */
   public record AdHocNotification(
-      List<String> enrolleeShortcodes,
-      UUID notificationConfigId,
-      Map<String, String> customMessages) {}
+      List<String> enrolleeShortcodes, UUID triggerId, Map<String, String> customMessages) {}
 }

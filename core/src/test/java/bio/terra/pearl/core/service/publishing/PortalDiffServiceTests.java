@@ -2,8 +2,8 @@ package bio.terra.pearl.core.service.publishing;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.model.notification.TriggeredAction;
-import bio.terra.pearl.core.model.notification.NotificationEventType;
+import bio.terra.pearl.core.model.notification.Trigger;
+import bio.terra.pearl.core.model.notification.TriggerEventType;
 import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
@@ -24,36 +24,36 @@ public class PortalDiffServiceTests extends BaseSpringBootTest {
     @Test
     public void testIsVersionedConfigMatch() {
         // configs match if stableID of template is the same
-        var config = TriggeredAction.builder()
+        var config = Trigger.builder()
                 .triggerType(TriggerType.EVENT)
-                .eventType(NotificationEventType.STUDY_CONSENT)
+                .eventType(TriggerEventType.STUDY_CONSENT)
                 .emailTemplate(EmailTemplate.builder().stableId("foo").build()).build();
 
-        var configWithDifferentTemplate  = TriggeredAction.builder()
+        var configWithDifferentTemplate  = Trigger.builder()
                 .triggerType(TriggerType.EVENT)
-                .eventType(NotificationEventType.STUDY_ENROLLMENT)
+                .eventType(TriggerEventType.STUDY_ENROLLMENT)
                 .emailTemplate(EmailTemplate.builder().stableId("foo").build()).build();
         assertThat(PortalDiffService.isVersionedConfigMatch(config, configWithDifferentTemplate), equalTo(true));
     }
 
     @Test
     public void testIsVersionedConfigMatchDifferent() {
-        var config = TriggeredAction.builder()
+        var config = Trigger.builder()
                 .triggerType(TriggerType.EVENT)
-                .eventType(NotificationEventType.STUDY_CONSENT)
+                .eventType(TriggerEventType.STUDY_CONSENT)
                 .emailTemplate(EmailTemplate.builder().stableId("foo").build()).build();
 
-        var configWithDifferentTemplate  = TriggeredAction.builder()
+        var configWithDifferentTemplate  = Trigger.builder()
                 .triggerType(TriggerType.EVENT)
-                .eventType(NotificationEventType.STUDY_CONSENT)
+                .eventType(TriggerEventType.STUDY_CONSENT)
                 .emailTemplate(EmailTemplate.builder().stableId("bar").build()).build();
         assertThat(PortalDiffService.isVersionedConfigMatch(config, configWithDifferentTemplate), equalTo(false));
     }
 
     @Test
     public void testDiffNotificationsNoEvents() throws Exception {
-        List<TriggeredAction> sourceList = List.of();
-        List<TriggeredAction> destList = List.of();
+        List<Trigger> sourceList = List.of();
+        List<Trigger> destList = List.of();
         var diffs = PortalDiffService
                 .diffConfigLists(sourceList, destList, PortalDiffService.CONFIG_IGNORE_PROPS);
         assertThat(diffs.addedItems(), hasSize(0));
@@ -63,16 +63,16 @@ public class PortalDiffServiceTests extends BaseSpringBootTest {
 
     @Test
     public void testDiffNotificationsOneEventMatched() throws Exception {
-        List<TriggeredAction> sourceList = List.of(
-                TriggeredAction.builder().id(UUID.randomUUID())
+        List<Trigger> sourceList = List.of(
+                Trigger.builder().id(UUID.randomUUID())
                         .triggerType(TriggerType.EVENT)
-                        .eventType(NotificationEventType.STUDY_CONSENT)
+                        .eventType(TriggerEventType.STUDY_CONSENT)
                         .emailTemplate(EmailTemplate.builder().stableId("t1").build())
                         .build());
-        List<TriggeredAction> destList = List.of(
-                TriggeredAction.builder().id(UUID.randomUUID())
+        List<Trigger> destList = List.of(
+                Trigger.builder().id(UUID.randomUUID())
                         .triggerType(TriggerType.EVENT)
-                        .eventType(NotificationEventType.STUDY_CONSENT)
+                        .eventType(TriggerEventType.STUDY_CONSENT)
                         .emailTemplate(EmailTemplate.builder().stableId("t1").build())
                         .build());
         var diffs = PortalDiffService
@@ -84,15 +84,15 @@ public class PortalDiffServiceTests extends BaseSpringBootTest {
 
     @Test
     public void testDiffNotificationsOneEventChanged() throws Exception {
-        List<TriggeredAction> sourceList = List.of(
-                TriggeredAction.builder().id(UUID.randomUUID())
+        List<Trigger> sourceList = List.of(
+                Trigger.builder().id(UUID.randomUUID())
                         .triggerType(TriggerType.TASK_REMINDER)
                         .taskType(TaskType.CONSENT)
                         .emailTemplate(EmailTemplate.builder().stableId("t1").build())
                         .afterMinutesIncomplete(3000)
                         .build());
-        List<TriggeredAction> destList = List.of(
-                TriggeredAction.builder().id(UUID.randomUUID())
+        List<Trigger> destList = List.of(
+                Trigger.builder().id(UUID.randomUUID())
                         .triggerType(TriggerType.TASK_REMINDER)
                         .taskType(TaskType.CONSENT)
                         .emailTemplate(EmailTemplate.builder().stableId("t1").build())
@@ -111,13 +111,13 @@ public class PortalDiffServiceTests extends BaseSpringBootTest {
 
     @Test
     public void testDiffNotificationsOneEventAdded() throws Exception {
-        var addedConfig = TriggeredAction.builder().id(UUID.randomUUID())
+        var addedConfig = Trigger.builder().id(UUID.randomUUID())
                 .triggerType(TriggerType.TASK_REMINDER)
                 .taskType(TaskType.CONSENT)
                 .afterMinutesIncomplete(3000)
                 .build();
-        List<TriggeredAction> sourceList = List.of(addedConfig);
-        List<TriggeredAction> destList = List.of();
+        List<Trigger> sourceList = List.of(addedConfig);
+        List<Trigger> destList = List.of();
         var diffs = PortalDiffService
                 .diffConfigLists(sourceList, destList, PortalDiffService.CONFIG_IGNORE_PROPS);
         assertThat(diffs.addedItems(), hasSize(1));
@@ -128,13 +128,13 @@ public class PortalDiffServiceTests extends BaseSpringBootTest {
 
     @Test
     public void testDiffNotificationsOneEventRemoved() throws Exception {
-        var removedConfig = TriggeredAction.builder().id(UUID.randomUUID())
+        var removedConfig = Trigger.builder().id(UUID.randomUUID())
                 .triggerType(TriggerType.TASK_REMINDER)
                 .taskType(TaskType.CONSENT)
                 .afterMinutesIncomplete(3000)
                 .build();
-        List<TriggeredAction> sourceList = List.of();
-        List<TriggeredAction> destList = List.of(removedConfig);
+        List<Trigger> sourceList = List.of();
+        List<Trigger> destList = List.of(removedConfig);
         var diffs = PortalDiffService
                 .diffConfigLists(sourceList, destList, PortalDiffService.CONFIG_IGNORE_PROPS);
         assertThat(diffs.addedItems(), hasSize(0));

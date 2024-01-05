@@ -8,7 +8,7 @@ import bio.terra.pearl.core.model.notification.Notification;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.service.notification.NotificationDispatcher;
 import bio.terra.pearl.core.service.notification.NotificationService;
-import bio.terra.pearl.core.service.notification.TriggeredActionService;
+import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Controller;
 public class NotificationsController implements NotificationsApi {
   private AuthUtilService authUtilService;
   private NotificationService notificationService;
-  private TriggeredActionService triggeredActionService;
+  private TriggerService triggerService;
   private NotificationDispatcher notificationDispatcher;
   private NotificationExtService notificationExtService;
   private EnrolleeService enrolleeService;
@@ -30,7 +30,7 @@ public class NotificationsController implements NotificationsApi {
   public NotificationsController(
       AuthUtilService authUtilService,
       NotificationService notificationService,
-      TriggeredActionService triggeredActionService,
+      TriggerService triggerService,
       NotificationDispatcher notificationDispatcher,
       NotificationExtService notificationExtService,
       EnrolleeService enrolleeService,
@@ -38,7 +38,7 @@ public class NotificationsController implements NotificationsApi {
       HttpServletRequest request) {
     this.authUtilService = authUtilService;
     this.notificationService = notificationService;
-    this.triggeredActionService = triggeredActionService;
+    this.triggerService = triggerService;
     this.notificationDispatcher = notificationDispatcher;
     this.notificationExtService = notificationExtService;
     this.enrolleeService = enrolleeService;

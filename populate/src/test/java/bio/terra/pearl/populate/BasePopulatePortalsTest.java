@@ -4,7 +4,7 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.export.DictionaryExportService;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
-import bio.terra.pearl.core.service.notification.TriggeredActionService;
+import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantNoteService;
@@ -65,7 +65,7 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     @Autowired
     protected StudyService studyService;
     @Autowired
-    protected TriggeredActionService triggeredActionService;
+    protected TriggerService triggerService;
     @Autowired
     protected EmailTemplateService emailTemplateService;
     @Autowired
