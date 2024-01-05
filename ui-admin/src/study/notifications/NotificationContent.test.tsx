@@ -80,7 +80,7 @@ test('allows deletion of notification config', async () => {
     .mockImplementation(() => Promise.resolve(consentConfig))
   jest.spyOn(Api, 'deleteNotificationConfig').mockImplementation(() => Promise.resolve(new Response()))
 
-  const { RoutedComponent, router } =
+  const { RoutedComponent } =
     setupRouterTest(<>
       <ReactNotifications/>
       <NotificationContent studyEnvContext={studyEnvContext} portalContext={mockPortalContext()}/>
