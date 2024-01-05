@@ -7,3 +7,9 @@ should be as close as possible to the original files that were used to populate 
 
 Most importantly, the files produced by extraction should be easily human readable and editable.  this will facilitate using
 these files as a starting point for test cases.
+
+Roughly speaking, the extraction process is:
+1. go to the populate UX and go to "extract"
+2. type the shortcode of a portal (e.g. 'ourhealth')
+3. observe a zip file is downloaded.
+4. The zip file can then be inspected or modified, or uploaded via the populate UI
