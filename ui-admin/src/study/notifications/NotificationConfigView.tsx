@@ -127,7 +127,7 @@ export default function NotificationConfigView({ studyEnvContext, portalContext,
         <button type="button" className="btn btn-primary" onClick={saveConfig}>Save</button>
         <button type="button" className="btn btn-secondary ms-4"
           onClick={() => setShowSendModal(true)}>Send test email</button>
-        <button type="button" className="btn btn-danger" onClick={() => setShowDeleteModal(true)}>Delete</button>
+        <button type="button" className="btn btn-danger ms-4" onClick={() => setShowDeleteModal(true)}>Delete</button>
       </div>
       {showSendModal && <TestEmailSender portalShortcode={portal.shortcode} environmentName={currentEnv.environmentName}
         onDismiss={() => setShowSendModal(false)} notificationConfig={workingConfig}/> }
