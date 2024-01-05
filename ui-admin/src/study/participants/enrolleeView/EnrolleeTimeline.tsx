@@ -68,13 +68,12 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
   }
 
   const { isLoading } = useLoadingEffect(async () => {
-    await Promise.all([
+    const [notifications, events] = await Promise.all([
       Api.fetchEnrolleeNotifications(portal.shortcode, study.shortcode, currentEnv.environmentName, enrollee.shortcode),
       Api.fetchEnrolleeEvents(portal.shortcode, study.shortcode, currentEnv.environmentName, enrollee.shortcode)
-    ]).then(([notifications, events]) => {
-      attachConfigsToNotifications(notifications)
-      setTableData(tableData.concat(...notifications, ...events))
-    })
+    ])
+    attachConfigsToNotifications(notifications)
+    setTableData([...notifications, ...events])
   }, [enrollee.shortcode])
 
 
