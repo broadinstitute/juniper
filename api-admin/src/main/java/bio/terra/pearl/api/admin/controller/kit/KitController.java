@@ -7,10 +7,11 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.kit.KitExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.kit.KitRequest;
+import bio.terra.pearl.core.service.kit.KitRequestDetails;
 import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
+import java.util.Collection;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -40,7 +41,7 @@ public class KitController implements KitApi {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
-    var kits =
+    Collection<KitRequestDetails> kits =
         kitExtService.getKitRequestsByStudyEnvironment(
             adminUser, portalShortcode, studyShortcode, environmentName);
 
@@ -60,7 +61,7 @@ public class KitController implements KitApi {
       String enrolleeShortcode,
       String kitType) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
-    KitRequest sampleKit =
+    KitRequestDetails sampleKit =
         kitExtService.requestKit(adminUser, studyShortcode, enrolleeShortcode, kitType);
     return ResponseEntity.ok(sampleKit);
   }
@@ -69,7 +70,8 @@ public class KitController implements KitApi {
   public ResponseEntity<Object> getKitRequests(
       String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
-    var kitRequests = kitExtService.getKitRequests(adminUser, enrolleeShortcode);
+    Collection<KitRequestDetails> kitRequests =
+        kitExtService.getKitRequests(adminUser, enrolleeShortcode);
     return ResponseEntity.ok(kitRequests);
   }
 

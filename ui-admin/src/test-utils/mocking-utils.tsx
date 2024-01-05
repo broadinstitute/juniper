@@ -223,13 +223,13 @@ export const mockExternalKitRequest = (): PepperKit => {
 
 /** returns a mock kit request */
 export const mockKitRequest: (args?: {
-  enrollee?: Enrollee,
+  enrolleeShortcode?: string,
   status?: string
-}) => KitRequest = ({ enrollee, status } = {}) => ({
+}) => KitRequest = ({ enrolleeShortcode, status } = {}) => ({
   id: 'kitRequestId',
-  createdAt: 1,
-  enrollee,
+  createdAt: 1704393045,
   kitType: mockKitType(),
+  status: status || 'CREATED',
   // This is intentionally a little different from the enrollee's current mailing address to show that sentToAddress
   // is a capture of the mailing address at the time the kit was sent.
   sentToAddress: JSON.stringify({
@@ -241,10 +241,24 @@ export const mockKitRequest: (args?: {
     postalCode: '02138',
     country: 'US'
   }),
-  status: status || 'CREATED',
-  externalKit: JSON.stringify(mockExternalKitRequest()),
-  parsedExternalKit: mockExternalKitRequest()
+  labeledAt: 1704393046,
+  sentAt: 1704393046,
+  trackingNumber: "ABC123",
+  details: '{"shippingId": "1234"}',
+  enrolleeShortcode: enrolleeShortcode || 'JOSALK'
 })
+/*
+  createdAt: number,
+  kitType: KitType,
+  sentToAddress: string,
+  status: string,
+  labeledAt?: number,
+  sentAt?: number,
+  receivedAt?: number,
+  trackingNumber?: string,
+  returnTrackingNumber?: string,
+  errorMessage?: string,
+ */
 
 /** returns a simple mock enrollee loosely based on the jsalk.json synthetic enrollee */
 export const mockEnrollee: () => Enrollee = () => {

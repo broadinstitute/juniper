@@ -11,6 +11,7 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
+import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -19,6 +20,8 @@ import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.EventService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.mockito.Mockito;
@@ -30,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -129,10 +133,11 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         var adminUser = adminUserFactory.buildPersisted(testName);
         var studyEnvironment = studyEnvironmentFactory.buildPersisted(testName);
         var enrollee = enrolleeFactory.buildPersisted(testName, studyEnvironment);
-        var kitType = kitTypeFactory.buildPersisted(testName);
-        var kitRequest1 = kitRequestFactory.buildPersisted(testName,
+        KitType kitType = kitTypeFactory.buildPersisted(testName);
+        KitRequest kitRequest1 = kitRequestFactory.buildPersisted(testName,
                 enrollee, PepperKitStatus.CREATED, kitType.getId(), adminUser.getId());
-        var kitRequest2 = kitRequestDao.create(kitRequestFactory.builder(testName)
+        KitRequest kitRequest2 = kitRequestDao.create(
+            kitRequestFactory.builder(testName)
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee.getId())
                 .kitTypeId(kitType.getId())
@@ -140,10 +145,28 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .build());
 
         // Act
-        var kits = kitRequestService.getSampleKitsByStudyEnvironment(studyEnvironment);
+        Collection<KitRequestDetails> kits = kitRequestService.getKitsByStudyEnvironment(studyEnvironment);
 
-        // Assert
-        assertThat(kits, contains(kitRequest1, kitRequest2));
+        PepperKit pepperKit = objectMapper.readValue(kitRequest1.getExternalKit(), PepperKit.class);
+        ObjectNode detailsJson = objectMapper.createObjectNode();
+        detailsJson.put("requestId", kitRequest1.getId().toString());
+        detailsJson.put("shippingId", pepperKit.getDsmShippingLabel());
+
+        for (KitRequestDetails kit : kits) {
+            if (kit.getId().equals(kitRequest1.getId())) {
+                assertThat(kit.getStatus(), equalTo(KitRequestStatus.CREATED));
+                assertThat(kit.getEnrolleeShortcode(), equalTo(enrollee.getShortcode()));
+                assertThat(kit.getKitType().getName(), equalTo(kitType.getName()));
+                assertThat(kit.getDetails(), equalTo(objectMapper.writeValueAsString(detailsJson)));
+            } else if (kit.getId().equals(kitRequest2.getId())) {
+                assertThat(kit.getStatus(), equalTo(KitRequestStatus.CREATED));
+                assertThat(kit.getKitType().getName(), equalTo(kitType.getName()));
+                assertThat(kit.getEnrolleeShortcode(), equalTo(enrollee.getShortcode()));
+                assertThat(kit.getDetails(), nullValue());
+            } else {
+                Assertions.fail("Unexpected kit ID: " + kit.getId());
+            }
+        }
     }
 
     @Transactional

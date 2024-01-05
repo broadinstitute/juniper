@@ -2,7 +2,6 @@ package bio.terra.pearl.core.service.export.formatters.item;
 
 import bio.terra.pearl.core.service.export.DataValueExportType;
 import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
-import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;

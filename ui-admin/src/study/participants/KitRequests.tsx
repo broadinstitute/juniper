@@ -37,9 +37,9 @@ const columns: ColumnDef<KitRequest, string>[] = [{
   header: 'Address',
   cell: ({ row }) => <KitRequestAddress sentToAddressJson={row.original.sentToAddress}/>
 }, {
-  header: 'DSM Status',
-  accessorKey: 'externalKit',
-  cell: ({ row }) => <InfoPopup content={row.original.externalKit} placement='left'/>
+  header: 'Details',
+  accessorKey: 'details',
+  cell: ({ row }) => <InfoPopup content={row.original.details || ''} placement='left'/>
 }]
 
 /** Shows a list of all kit requests for an enrollee. */

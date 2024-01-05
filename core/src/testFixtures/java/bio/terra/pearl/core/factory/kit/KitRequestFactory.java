@@ -60,19 +60,20 @@ public class KitRequestFactory {
 
     public KitRequest buildPersisted(String testName, Enrollee enrollee, PepperKitStatus pepperKitStatus,
                                      UUID kitTypeId, UUID adminUserId)
-            throws JsonProcessingException {
+        throws JsonProcessingException {
         var kitRequest = builder(testName)
-                .creatingAdminUserId(adminUserId)
-                .enrolleeId(enrollee.getId())
-                .kitTypeId(kitTypeId)
-                .status(PepperKitStatus.mapToKitRequestStatus(pepperKitStatus.pepperString))
-                .build();
-        var savedKitRequest = kitRequestDao.create(kitRequest);
-        var dsmStatus = PepperKit.builder()
-                .currentStatus(pepperKitStatus.pepperString)
-                .juniperKitId(savedKitRequest.getId().toString())
-                .participantId(enrollee.getShortcode())
-                .build();
+            .creatingAdminUserId(adminUserId)
+            .enrolleeId(enrollee.getId())
+            .kitTypeId(kitTypeId)
+            .status(PepperKitStatus.mapToKitRequestStatus(pepperKitStatus.pepperString))
+            .build();
+        KitRequest savedKitRequest = kitRequestDao.create(kitRequest);
+        PepperKit dsmStatus = PepperKit.builder()
+            .dsmShippingLabel(UUID.randomUUID().toString())
+            .currentStatus(pepperKitStatus.pepperString)
+            .juniperKitId(savedKitRequest.getId().toString())
+            .participantId(enrollee.getShortcode())
+            .build();
         savedKitRequest.setExternalKit(objectMapper.writeValueAsString(dsmStatus));
         savedKitRequest.setExternalKitFetchedAt(Instant.now());
         return kitRequestDao.update(savedKitRequest);

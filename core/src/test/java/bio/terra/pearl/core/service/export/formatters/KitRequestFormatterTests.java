@@ -1,13 +1,10 @@
 package bio.terra.pearl.core.service.export.formatters;
 
-import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
-import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
-import bio.terra.pearl.core.service.export.ExportOptions;
-import bio.terra.pearl.core.service.export.formatters.module.EnrolleeFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.KitRequestFormatter;
+import bio.terra.pearl.core.service.kit.KitRequestDetails;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -25,17 +22,18 @@ public class KitRequestFormatterTests {
                 KitType.builder().id(UUID.randomUUID()).name("type1").build(),
                 KitType.builder().id(UUID.randomUUID()).name("type2").build()
         );
-        KitRequestFormatter moduleFormatter = new KitRequestFormatter(kitTypeList);
-        List<KitRequest> kitRequests = List.of(
-                KitRequest.builder()
-                        .kitTypeId(kitTypeList.get(0).getId())
-                        .status(KitRequestStatus.CREATED)
-                        .build(),
-                KitRequest.builder()
-                        .kitTypeId(kitTypeList.get(1).getId())
-                        .status(KitRequestStatus.DEACTIVATED)
-                        .createdAt(Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS))
-                        .build()
+        KitRequestFormatter moduleFormatter = new KitRequestFormatter();
+        List<KitRequestDetails> kitRequests = List.of(
+            KitRequestDetails.builder()
+                .kitType(kitTypeList.get(0))
+                .status(KitRequestStatus.CREATED)
+                .createdAt(Instant.now())
+                .build(),
+            KitRequestDetails.builder()
+                .kitType(kitTypeList.get(1))
+                .status(KitRequestStatus.DEACTIVATED)
+                .createdAt(Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS))
+                .build()
         );
         EnrolleeExportData exportData = new EnrolleeExportData(null, null, null, null, null, kitRequests);
         Map<String, String> valueMap = moduleFormatter.toStringMap(exportData);

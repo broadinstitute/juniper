@@ -12,9 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Component
@@ -24,8 +24,8 @@ public class StubPepperDSMClient implements PepperDSMClient {
     private final StudyEnvironmentDao studyEnvironmentDao;
     private final ObjectMapper objectMapper;
 
-    private final static String BAD_ADDRESS_PREFIX = "BAD";
-    private final static String PEPPER_ADDRESS_VALIDATION_MSG = "ADDRESS_VALIDATION_ERROR";
+    private static final String BAD_ADDRESS_PREFIX = "BAD";
+    private static final String PEPPER_ADDRESS_VALIDATION_MSG = "ADDRESS_VALIDATION_ERROR";
 
     public StubPepperDSMClient(@Lazy KitRequestService kitRequestService,
                                StudyEnvironmentDao studyEnvironmentDao,
@@ -73,9 +73,10 @@ public class StubPepperDSMClient implements PepperDSMClient {
         var studyEnvironment = studyEnvironmentDao.findByStudy(studyShortcode, EnvironmentName.sandbox).get();
         return kitRequestService.findByStudyEnvironment(studyEnvironment.getId()).stream().map(kit -> {
             PepperKit pepperKit = PepperKit.builder()
-                    .juniperKitId(kit.getId().toString())
-                    .currentStatus(getNextStatus(kit))
-                    .build();
+                .juniperKitId(kit.getId().toString())
+                .currentStatus(getNextStatus(kit))
+                .dsmShippingLabel(createLabel())
+                .build();
             return addFieldsForStatus(pepperKit, kit);
         }).toList();
     }
@@ -106,26 +107,70 @@ public class StubPepperDSMClient implements PepperDSMClient {
     /** add and remove appropriate fields for the given status (i.e. sent and received dates) */
     private PepperKit addFieldsForStatus(PepperKit pepperKit, KitRequest kitRequest) {
         PepperKitStatus status = PepperKitStatus.fromCurrentStatus(pepperKit.getCurrentStatus());
-        if (!List.of(PepperKitStatus.SENT, PepperKitStatus.RECEIVED).contains(status)) {
+        if (!List.of(PepperKitStatus.QUEUED, PepperKitStatus.SENT, PepperKitStatus.RECEIVED).contains(status)) {
             // remove leftover fields from previous status
-            if (List.of(PepperKitStatus.CREATED, PepperKitStatus.QUEUED).contains(status)) {
+            if (PepperKitStatus.CREATED.equals(status)) {
                 pepperKit.setLabelDate(null);
                 pepperKit.setScanDate(null);
                 pepperKit.setReceiveDate(null);
             }
+            if (PepperKitStatus.ERRORED.equals(status)) {
+                pepperKit.setErrorMessage("There was an error");
+            } else {
+                pepperKit.setErrorMessage(null);
+            }
             return pepperKit;
         }
+
+        // status is QUEUED, SENT or RECEIVED
         Instant createdTime = kitRequest.getCreatedAt();
-        Instant labelTime = createdTime.plus(2, ChronoUnit.DAYS);
-        Instant scanTime = labelTime.plus(5, ChronoUnit.MINUTES);
+        // uncomment these to test with more realistic dates
+        // Instant labelTime = createdTime.plus(2, ChronoUnit.DAYS);
+        // Instant scanTime = labelTime.plus(5, ChronoUnit.MINUTES);
+        // Instant receivedTime = scanTime.plus(7, ChronoUnit.DAYS);
 
-        pepperKit.setLabelDate(labelTime.toString());
-        pepperKit.setScanDate(scanTime.toString());
+        if (status == PepperKitStatus.QUEUED) {
+            Instant labelTime = Instant.now();
+            assureLabelInfo(pepperKit, labelTime);
+        } else if (status == PepperKitStatus.SENT) {
+            // in case we skipped QUEUED
+            assureLabelInfo(pepperKit, createdTime);
 
-        if (status == PepperKitStatus.RECEIVED) {
-            Instant receivedTime = scanTime.plus(7, ChronoUnit.DAYS);
+            Instant scanTime = Instant.now();
+            assureScanInfo(pepperKit, scanTime);
+        } else if (status == PepperKitStatus.RECEIVED) {
+            // in case we skipped QUEUED
+            assureLabelInfo(pepperKit, createdTime);
+            // in case we skipped SENT
+            assureScanInfo(pepperKit, createdTime);
+
+            Instant receivedTime = Instant.now();
             pepperKit.setReceiveDate(receivedTime.toString());
+            String returnTracking = pepperKit.getReturnTrackingNumber();
+            if (returnTracking == null || returnTracking.isBlank()) {
+                pepperKit.setReturnTrackingNumber(createLabel());
+            }
         }
         return pepperKit;
+    }
+
+    private void assureLabelInfo(PepperKit pepperKit, Instant labelTime) {
+        if (pepperKit.getLabelDate() == null) {
+            pepperKit.setLabelDate(labelTime.toString());
+        }
+    }
+
+    private void assureScanInfo(PepperKit pepperKit, Instant requestCreateTime) {
+        if (pepperKit.getScanDate() == null) {
+            pepperKit.setScanDate(requestCreateTime.toString());
+        }
+        String trackingNumber = pepperKit.getTrackingNumber();
+        if (trackingNumber == null || trackingNumber.isBlank()) {
+            pepperKit.setTrackingNumber(createLabel());
+        }
+    }
+
+    private String createLabel() {
+        return UUID.randomUUID().toString().substring(0, 8);
     }
 }

@@ -76,6 +76,8 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
         assertThat(pepperKit.getLabelDate(), notNullValue());
         assertThat(pepperKit.getScanDate(), notNullValue());
         assertThat(pepperKit.getReceiveDate(), notNullValue());
+        assertThat(pepperKit.getTrackingNumber(), notNullValue());
+        assertThat(pepperKit.getReturnTrackingNumber(), notNullValue());
     }
 
     @Autowired
