@@ -13,7 +13,8 @@ import java.util.stream.Collectors;
 
 public class KitRequestFormatter extends ModuleFormatter<KitRequestDetails, PropertyItemFormatter<KitRequestDetails>> {
     private static final String KIT_REQUEST_MODULE_NAME = "sample_kit";
-    private static final List<String> KIT_REQUEST_INCLUDED_PROPERTIES = List.of("status", "sentToAddress", "externalKit");
+    private static final List<String> KIT_REQUEST_INCLUDED_PROPERTIES =
+        List.of("status", "sentToAddress", "sentAt", "receivedAt");
 
     public KitRequestFormatter() {
         itemFormatters = KIT_REQUEST_INCLUDED_PROPERTIES.stream()

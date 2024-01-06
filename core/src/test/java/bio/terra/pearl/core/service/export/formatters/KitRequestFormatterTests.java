@@ -8,10 +8,13 @@ import bio.terra.pearl.core.service.kit.KitRequestDetails;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -19,15 +22,17 @@ public class KitRequestFormatterTests {
     @Test
     public void testToStringMap() {
         List<KitType> kitTypeList = List.of(
-                KitType.builder().id(UUID.randomUUID()).name("type1").build(),
-                KitType.builder().id(UUID.randomUUID()).name("type2").build()
+            KitType.builder().id(UUID.randomUUID()).name("type1").build(),
+            KitType.builder().id(UUID.randomUUID()).name("type2").build()
         );
         KitRequestFormatter moduleFormatter = new KitRequestFormatter();
+        String sentDate = "2023-11-17T14:57:59.548Z";
         List<KitRequestDetails> kitRequests = List.of(
             KitRequestDetails.builder()
                 .kitType(kitTypeList.get(0))
-                .status(KitRequestStatus.CREATED)
+                .status(KitRequestStatus.SENT)
                 .createdAt(Instant.now())
+                .sentAt(Instant.parse(sentDate))
                 .build(),
             KitRequestDetails.builder()
                 .kitType(kitTypeList.get(1))
@@ -41,7 +46,8 @@ public class KitRequestFormatterTests {
         // the older kit should be first
         assertThat(valueMap.get("sample_kit.status"), equalTo("DEACTIVATED"));
         assertThat(valueMap.get("sample_kit.kitType"), equalTo("type2"));
-        assertThat(valueMap.get("sample_kit.2.status"), equalTo("CREATED"));
+        assertThat(valueMap.get("sample_kit.2.status"), equalTo("SENT"));
         assertThat(valueMap.get("sample_kit.2.kitType"), equalTo("type1"));
+        assertThat(valueMap.get("sample_kit.2.sentAt"), containsString("2023-11-17"));
     }
 }

@@ -115,10 +115,11 @@ public class StubPepperDSMClient implements PepperDSMClient {
                 pepperKit.setReceiveDate(null);
             }
             if (PepperKitStatus.ERRORED.equals(status)) {
-                pepperKit.setErrorMessage("There was an error");
+                pepperKit.setErrorMessage("Error processing request");
+                pepperKit.setErrorDate(Instant.now().toString());
             } else {
                 pepperKit.setErrorMessage(null);
-            }
+                pepperKit.setErrorDate(null);           }
             return pepperKit;
         }
 

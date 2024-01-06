@@ -149,9 +149,8 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      * Fetch all kits for a study environment.
      */
     public Collection<KitRequestDetails> getKitsByStudyEnvironment(StudyEnvironment studyEnvironment) {
-        Map<UUID, KitType> kitTypeMap = getKitTypeMap();
         List<KitRequest> kits = dao.findByStudyEnvironment(studyEnvironment.getId());
-        return createKitRequestDetails(kits, kitTypeMap, getEnrollees(kits));
+        return createKitRequestDetails(kits, getKitTypeMap(), getEnrollees(kits));
     }
 
     protected List<KitRequestDetails> createKitRequestDetails(List<KitRequest> kitRequests,
