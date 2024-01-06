@@ -41,7 +41,6 @@ public class KitRequestDetails {
    * JSON blob for additional kit request details
    */
   private String details;
-
   private String enrolleeShortcode;
 
   public KitRequestDetails(KitRequest kitRequest, KitType kitType, String enrolleeShortcode,

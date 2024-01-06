@@ -243,22 +243,10 @@ export const mockKitRequest: (args?: {
   }),
   labeledAt: 1704393046,
   sentAt: 1704393046,
-  trackingNumber: "ABC123",
+  trackingNumber: 'ABC123',
   details: '{"shippingId": "1234"}',
   enrolleeShortcode: enrolleeShortcode || 'JOSALK'
 })
-/*
-  createdAt: number,
-  kitType: KitType,
-  sentToAddress: string,
-  status: string,
-  labeledAt?: number,
-  sentAt?: number,
-  receivedAt?: number,
-  trackingNumber?: string,
-  returnTrackingNumber?: string,
-  errorMessage?: string,
- */
 
 /** returns a simple mock enrollee loosely based on the jsalk.json synthetic enrollee */
 export const mockEnrollee: () => Enrollee = () => {
