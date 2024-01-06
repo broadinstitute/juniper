@@ -42,18 +42,22 @@ repositories {
 dependencies {
     compileOnly 'com.github.spotbugs:spotbugs-annotations:4.7.2'
     implementation 'io.swagger.core.v3:swagger-annotations:2.2.0'
+    implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
     swaggerCodegen 'io.swagger.codegen.v3:swagger-codegen-cli:3.0.31'
 
     implementation 'org.slf4j:slf4j-api'
 
     testImplementation 'org.hamcrest:hamcrest:2.2'
 
-    implementation 'bio.terra:terra-common-lib:0.0.91-SNAPSHOT'
+    implementation 'bio.terra:terra-common-lib:0.1.2-SNAPSHOT'
     //terra-common-lib pulls in google-oauth-client v1.33.2, which contains vuln CVE-2021-22573
     //This pulls in a patched version of google-oauth-client that supersedes the vulnerable version
     //This is a workaround until TCL adopts a patched version
     implementation 'com.google.oauth-client:google-oauth-client:1.33.3'
-    implementation 'bio.terra:datarepo-client:1.349.0-SNAPSHOT'
+    implementation 'bio.terra:datarepo-jakarta-client:1.565.0-SNAPSHOT'
+
+    implementation 'io.opentelemetry:opentelemetry-api:1.31.0'
+    implementation 'org.springframework:spring-aspects:6.0.11'
 }
 
 tasks.named('test') {

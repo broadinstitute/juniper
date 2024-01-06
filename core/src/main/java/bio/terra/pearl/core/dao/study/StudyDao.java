@@ -72,7 +72,7 @@ public class StudyDao  extends BaseMutableJdbiDao<Study> {
              * but since it's used only by the admin UI, speed isn't as important yet.
              */
             for (StudyEnvironment studyEnv: studyEnvs) {
-                studyEnv = studyEnvironmentDao.loadWithAllContent(studyEnv);
+                studyEnv = studyEnvironmentDao.attachAllContent(studyEnv);
                 study.getStudyEnvironments().add(studyEnv);
             }
         });

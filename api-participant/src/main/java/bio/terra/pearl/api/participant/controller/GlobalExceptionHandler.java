@@ -7,7 +7,7 @@ import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.common.exception.ValidationException;
 import bio.terra.pearl.api.participant.model.ErrorReport;
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

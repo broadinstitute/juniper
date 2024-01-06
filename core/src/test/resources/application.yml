@@ -12,9 +12,6 @@ env:
     basePath: ${DSM_ADDRESS:https://dsm-dev.datadonationplatform.org/dsm}
     issuerClaim: ${DSM_JWT_ISSUER:admin-d2p.ddp-dev.envs.broadinstitute.org}
     secret: ${DSM_JWT_SIGNING_SECRET:}
-  tracing:
-    exportEnabled: ${CLOUD_TRACE_ENABLED:false}
-    samplingRate: ${SAMPLING_PROBABILITY:0}
   hostnames:
     participantUi: ${PARTICIPANT_UI_HOSTNAME:localhost:3001}
     participantApi: ${PARTICIPANT_API_HOSTNAME:localhost:8081}
@@ -51,9 +48,5 @@ liquibase:
 terra.common:
   kubernetes:
     inKubernetes: false
-
-  tracing:
-    stackdriverExportEnabled: ${env.tracing.exportEnabled}
-    samplingRate: ${env.tracing.samplingRate}
 
 

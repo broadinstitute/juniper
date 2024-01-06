@@ -168,6 +168,9 @@ databaseChangeLog:
       file: changesets/2023_12_09_kit_request_date.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2023_12_21_event.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2024_01_02_kit_request_fields.yaml
       relativeToChangelogFile: true
 

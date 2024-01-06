@@ -1,18 +1,12 @@
 import React from 'react'
-import {
-  ConsentResponse,
-  Enrollee,
-  StudyEnvironmentConsent,
-  StudyEnvironmentSurvey,
-  SurveyResponse
-} from 'api/api'
+import { ConsentResponse, Enrollee, StudyEnvironmentConsent, StudyEnvironmentSurvey, SurveyResponse } from 'api/api'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { Link, NavLink, Route, Routes } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import EnrolleeSurveyView from '../survey/EnrolleeSurveyView'
 import EnrolleeConsentView from '../consent/EnrolleeConsentView'
 import PreEnrollmentView from '../survey/PreEnrollmentView'
-import EnrolleeNotifications from './EnrolleeNotifications'
+import EnrolleeTimeline from './EnrolleeTimeline'
 import DataChangeRecords from '../DataChangeRecords'
 import EnrolleeProfile from './EnrolleeProfile'
 import ParticipantTaskView from './ParticipantTaskView'
@@ -34,17 +28,17 @@ export type SurveyWithResponsesT = {
   survey: StudyEnvironmentSurvey,
   responses: SurveyResponse[]
 }
-export type ResponseMapT = {[stableId: string] : SurveyWithResponsesT}
+export type ResponseMapT = { [stableId: string]: SurveyWithResponsesT }
 
 
 export type ConsentWithResponsesT = {
   consent: StudyEnvironmentConsent,
   responses: ConsentResponse[]
 }
-export type ConsentResponseMapT = {[stableId: string] : ConsentWithResponsesT}
+export type ConsentResponseMapT = { [stableId: string]: ConsentWithResponsesT }
 
 /** loads an enrollee and renders the view for it */
-export default function EnrolleeView({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
+export default function EnrolleeView({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) {
   const { isLoading, enrollee, reload } = useRoutedEnrollee(studyEnvContext)
   return <>
     {isLoading && <LoadingSpinner/>}
@@ -55,10 +49,11 @@ export default function EnrolleeView({ studyEnvContext }: {studyEnvContext: Stud
 
 /** shows a master-detail view for an enrollee with sub views on surveys, tasks, etc... */
 export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
-{ enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void}) {
+                                     { enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void }) {
   const { currentEnv, currentEnvPath } = studyEnvContext
+
   /** gets classes to apply to nav links */
-  function getLinkCssClasses({ isActive }: {isActive: boolean}) {
+  function getLinkCssClasses({ isActive }: { isActive: boolean }) {
     return `${isActive ? 'fw-bold' : ''} d-flex align-items-center`
   }
 
@@ -120,22 +115,22 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
               <li style={navListItemStyle}>
                 <CollapsableMenu header={'Forms'} headerClass="text-black" content={
                   <ul className="list-unstyled">
-                    { currentEnv.preEnrollSurvey && <li className="mb-2">
+                    {currentEnv.preEnrollSurvey && <li className="mb-2">
                       <NavLink to="preRegistration" className={getLinkCssClasses}>
-                        PreEnrollment
+                            PreEnrollment
                       </NavLink>
-                    </li> }
-                    { consents.map(consent => {
+                    </li>}
+                    {consents.map(consent => {
                       const stableId = consent.consentForm.stableId
                       return <li className="mb-2 d-flex justify-content-between align-items-center" key={stableId}>
                         <NavLink to={`consents/${stableId}`} className={getLinkCssClasses}>
-                          { consent.consentForm.name }
+                          {consent.consentForm.name}
                         </NavLink>
-                        { isConsented(consentMap[stableId].responses) &&
-                            statusDisplayMap['COMPLETE']
+                        {isConsented(consentMap[stableId].responses) &&
+                          statusDisplayMap['COMPLETE']
                         }
                       </li>
-                    }) }
+                    })}
                   </ul>}/>
               </li>
               <li style={navListItemStyle}>
@@ -146,7 +141,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                       return <li className="mb-2 d-flex justify-content-between
                         align-items-center" key={stableId}>
                         <NavLink to={`surveys/${stableId}`} className={getLinkCssClasses}>
-                          { survey.survey.name }
+                          {survey.survey.name}
                         </NavLink>
                         {badgeForResponses(responseMap[stableId].responses)}
                       </li>
@@ -162,7 +157,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                       return <li className="mb-2 d-flex justify-content-between
                         align-items-center" key={stableId}>
                         <NavLink to={`surveys/${stableId}`} className={getLinkCssClasses}>
-                          { survey.survey.name }
+                          {survey.survey.name}
                         </NavLink>
                         {badgeForResponses(responseMap[stableId].responses)}
                       </li>
@@ -185,7 +180,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                 <CollapsableMenu header={'History & Advanced'} headerClass="text-black" content={
                   <ul className="list-unstyled">
                     <li className="mb-2">
-                      <NavLink to="notifications" className={getLinkCssClasses}>Notifications</NavLink>
+                      <NavLink to="timeline" className={getLinkCssClasses}>Timeline</NavLink>
                     </li>
                     <li className="mb-2">
                       <NavLink to="tasks" className={getLinkCssClasses}>Task list</NavLink>
@@ -207,10 +202,10 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                 <Route path="profile" element={<EnrolleeProfile enrollee={enrollee}
                   studyEnvContext={studyEnvContext}
                   onUpdate={onUpdate}/>}/>
-                { currentEnv.preEnrollSurvey && <Route path="preRegistration/*" element={
+                {currentEnv.preEnrollSurvey && <Route path="preRegistration/*" element={
                   <PreEnrollmentView preEnrollSurvey={currentEnv.preEnrollSurvey}
                     preEnrollResponse={enrollee.preEnrollmentResponse}/>
-                }/> }
+                }/>}
                 <Route path="surveys">
                   <Route path=":surveyStableId/*" element={<EnrolleeSurveyView enrollee={enrollee}
                     responseMap={responseMap}/>}/>
@@ -222,8 +217,8 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                     responseMap={consentMap}/>}/>
                   <Route path="*" element={<div>Unknown participant survey page</div>}/>
                 </Route>
-                <Route path="notifications" element={
-                  <EnrolleeNotifications enrollee={enrollee} studyEnvContext={studyEnvContext}/>
+                <Route path="timeline" element={
+                  <EnrolleeTimeline enrollee={enrollee} studyEnvContext={studyEnvContext}/>
                 }/>
                 <Route path="changeRecords" element={
                   <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext}/>

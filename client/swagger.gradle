@@ -6,6 +6,7 @@ dependencies {
     implementation 'org.glassfish.jersey.media:jersey-media-multipart'
 
     implementation 'io.swagger.core.v3:swagger-annotations'
+    implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
     swaggerCodegen 'io.swagger.codegen.v3:swagger-codegen-cli'
 }
 
@@ -30,7 +31,8 @@ generateSwaggerCode {
         apiPackage    : "${artifactGroup}.api",
         invokerPackage: "${artifactGroup}.client",
         dateLibrary   : 'java11',
-        java8         : true
+        java8         : true,
+        jakarta       : true
     ]
 
     rawOptions = ['--ignore-file-override', "${projectDir}/.swagger-codegen-ignore"]

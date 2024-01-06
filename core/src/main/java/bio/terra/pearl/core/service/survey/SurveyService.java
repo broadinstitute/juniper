@@ -115,6 +115,10 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         return questionDefinitions;
     }
 
+    public List<Survey> findByPortalId(UUID portalId) {
+        return dao.findByPortalId(portalId);
+    }
+
     /**
      * parses calculatedValues from the surveyContent and adds them as SurveyQuestionDefinitions
      * to the appropriate place in the questionDefinitions array.  they will be attempted to be

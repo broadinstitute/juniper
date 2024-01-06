@@ -26,6 +26,10 @@ public class ConsentFormService extends VersionedEntityService<ConsentForm, Cons
         }
     }
 
+    public List<ConsentForm> findByPortalId(UUID portalId) {
+        return dao.findByPortalId(portalId);
+    }
+
     public List<ConsentForm> findByStableIdNoContent(String stableId) {
         return dao.findByStableIdNoContent(stableId);
     }

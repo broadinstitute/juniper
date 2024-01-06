@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter @Setter @SuperBuilder
 @NoArgsConstructor
@@ -20,9 +19,9 @@ public class Portal extends BaseEntity {
 
     private String shortcode;
     @Builder.Default
-    private Set<PortalParticipantUser> portalParticipantUsers = new HashSet();
+    private List<PortalParticipantUser> portalParticipantUsers = new ArrayList();
     @Builder.Default
-    private Set<PortalStudy> portalStudies = new HashSet<>();
+    private List<PortalStudy> portalStudies = new ArrayList<>();
     @Builder.Default
-    private Set<PortalEnvironment> portalEnvironments = new HashSet<>();
+    private List<PortalEnvironment> portalEnvironments = new ArrayList<>();
 }

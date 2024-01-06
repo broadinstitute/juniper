@@ -1,13 +1,6 @@
 package bio.terra.pearl.api.admin;
 
 import bio.terra.common.logging.LoggingInitializer;
-import bio.terra.pearl.core.config.PgArraySerializer;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import javax.sql.DataSource;
 import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
@@ -35,8 +28,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
       "bio.terra.common.migrate",
       // Transaction management and DB retry configuration
       "bio.terra.common.retry.transaction",
-      // Scan for tracing-related components & configs
-      "bio.terra.common.tracing",
       "bio.terra.pearl.core",
       "bio.terra.pearl.populate",
       // Scan all service-specific packages beneath the current package
@@ -61,17 +52,6 @@ public class ApiAdminApp {
 
   public ApiAdminApp(DataSource dataSource) {
     this.dataSource = dataSource;
-  }
-
-  @Bean("objectMapper")
-  public ObjectMapper objectMapper() {
-    return new ObjectMapper()
-        .registerModule(new ParameterNamesModule())
-        .registerModule(new Jdk8Module())
-        .registerModule(new JavaTimeModule())
-        .registerModule(PgArraySerializer.module())
-        .setDefaultPropertyInclusion(JsonInclude.Include.NON_ABSENT)
-        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
   }
 
   // This bean plus the @EnableTransactionManagement annotation above enables the use of the

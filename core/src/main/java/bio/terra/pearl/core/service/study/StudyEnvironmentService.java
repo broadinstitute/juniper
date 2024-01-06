@@ -80,7 +80,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     }
 
     public StudyEnvironment loadWithAllContent(StudyEnvironment studyEnvironment) {
-        return dao.loadWithAllContent(studyEnvironment);
+        return dao.attachAllContent(studyEnvironment);
     }
 
     @Transactional

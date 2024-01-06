@@ -4,7 +4,7 @@ import bio.terra.common.exception.*;
 import bio.terra.pearl.api.admin.model.ErrorReport;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler({
     NotFoundException.class,
-    javax.ws.rs.NotFoundException.class,
+    jakarta.ws.rs.NotFoundException.class,
     bio.terra.pearl.core.service.exception.NotFoundException.class,
     HttpRequestMethodNotSupportedException.class
   })

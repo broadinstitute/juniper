@@ -9,8 +9,8 @@ import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.survey.SurveyWithResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 

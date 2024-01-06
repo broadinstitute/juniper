@@ -88,7 +88,7 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
     }
 
     /** populates the studyEnv object in-place with all the content -- consents, surveys, etc... */
-    public StudyEnvironment loadWithAllContent(StudyEnvironment studyEnv) {
+    public StudyEnvironment attachAllContent(StudyEnvironment studyEnv) {
         UUID studyEnvId = studyEnv.getId();
         studyEnv.setStudyEnvironmentConfig(studyEnvironmentConfigDao.find(studyEnv.getStudyEnvironmentConfigId()).get());
         studyEnv.setConfiguredSurveys(studyEnvironmentSurveyDao.findAllByStudyEnvIdWithSurvey(studyEnvId));

@@ -8,9 +8,6 @@ env:
     name: ${DATABASE_NAME:pearl}
     password: ${DATABASE_USER_PASSWORD:dbpwd}
     user: ${DATABASE_USER:dbuser}
-  tracing:
-    exportEnabled: ${CLOUD_TRACE_ENABLED:false}
-    samplingRate: ${SAMPLING_PROBABILITY:0}
   sam:
     basePath: ${SAM_ADDRESS:https://sam.dsde-dev.broadinstitute.org}
   swagger:
@@ -36,6 +33,15 @@ env:
 spring.config.import: optional:file:../config/local-properties.yml;classpath:git.properties
 
 logging.pattern.level: '%X{requestId} %5p'
+
+otel:
+  sdk:
+    disabled: true
+  instrumentation:
+    spring-webflux:
+      enabled: false
+    spring-web:
+      enabled: false
 
 server:
   compression:
@@ -102,10 +108,6 @@ javatemplate:
 terra.common:
   kubernetes:
     inKubernetes: false
-
-  tracing:
-    stackdriverExportEnabled: ${env.tracing.exportEnabled}
-    samplingRate: ${env.tracing.samplingRate}
 
 
 populate.populate-from-classpath: false

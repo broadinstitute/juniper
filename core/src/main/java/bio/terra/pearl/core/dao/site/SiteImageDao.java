@@ -64,6 +64,10 @@ public class SiteImageDao extends BaseJdbiDao<SiteImage> {
         ) + 1;
     }
 
+    public List<SiteImage> findByPortal(String portalShortcode) {
+        return findAllByProperty("portal_shortcode", portalShortcode);
+    }
+
     public List<SiteImageMetadata> findMetadataByPortal(String portalShortcode) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("""

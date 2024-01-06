@@ -25,9 +25,16 @@ public class FilePopulateContext {
     private String rootFileName;
     /** maps file names to UUIDs of the entity populated from them */
     protected Map<String, UUID> populatedFileEntities = new HashMap<>();
+    /** whether this context maps to the populate seed directory, or the temp directory */
+    protected boolean isFromTempDir = false;
 
     public FilePopulateContext(String filePathName) {
         setPaths(filePathName);
+    }
+
+    public FilePopulateContext(String filePathName, boolean isFromTempDir) {
+        this(filePathName);
+        this.isFromTempDir = isFromTempDir;
     }
 
     protected void setPaths(String filePathName) {
@@ -39,6 +46,7 @@ public class FilePopulateContext {
     public FilePopulateContext newFrom(String relativeFilePath) {
         var popContext = new FilePopulateContext(applyRelativePath(relativeFilePath));
         popContext.populatedFileEntities = this.populatedFileEntities;
+        popContext.isFromTempDir = this.isFromTempDir;
         return popContext;
     }
 
@@ -54,8 +62,9 @@ public class FilePopulateContext {
         return populatedFileEntities.get(fileName);
     }
 
-    public void markFilenameAsPopulated(String fileName, UUID entity) {
-        populatedFileEntities.put(fileName, entity);
+    public void markFilenameAsPopulated(String filename, UUID entity) {
+        String normalizedName = Paths.get(filename).normalize().toString();
+        populatedFileEntities.put(normalizedName, entity);
     }
 
     /**
@@ -63,14 +72,16 @@ public class FilePopulateContext {
      * copies of a survey in the same populate run
      */
     public boolean isAlreadyPopulated(String filename) {
-        return populatedFileEntities.containsKey(filename);
+        String normalizedName = Paths.get(filename).normalize().toString();
+        return populatedFileEntities.containsKey(normalizedName);
     }
 
     public <T extends BaseEntity> Optional<T> fetchFromPopDto(FilePopulatable popDto, ImmutableEntityService<T, ?> service) {
         if (popDto.getPopulateFileName() != null) {
             String fullName = getBasePath() + "/" + popDto.getPopulateFileName();
-            if (isAlreadyPopulated(fullName)) {
-                return service.find(getUUIDForFileName(fullName));
+            String normalizedName = Paths.get(fullName).normalize().toString();
+            if (isAlreadyPopulated(normalizedName)) {
+                return service.find(getUUIDForFileName(normalizedName));
             }
         }
         return Optional.empty();

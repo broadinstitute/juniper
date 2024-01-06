@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.workflow;
 
+import bio.terra.pearl.core.dao.workflow.EventDao;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.kit.KitRequest;
@@ -9,7 +10,10 @@ import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.workflow.Event;
+import bio.terra.pearl.core.model.workflow.EventClass;
 import bio.terra.pearl.core.model.workflow.HubResponse;
+import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
 import bio.terra.pearl.core.service.kit.KitStatusEvent;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
@@ -20,6 +24,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
 /**
  * All event publishing should be done via method calls in this service to ensure that the
  * events are constructed properly with appropriate supporting data.
@@ -27,19 +35,21 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class EventService {
+public class EventService extends ImmutableEntityService<Event, EventDao> {
     private final ParticipantTaskService participantTaskService;
     private final EnrolleeRuleService enrolleeRuleService;
 
-    public EventService(ParticipantTaskService participantTaskService,
+    public EventService(EventDao dao, ParticipantTaskService participantTaskService,
                         EnrolleeRuleService enrolleeRuleService) {
+        super(dao);
         this.participantTaskService = participantTaskService;
         this.enrolleeRuleService = enrolleeRuleService;
     }
 
-    /** Publish a KitStatusEvent.
+    /**
+     * Publish a KitStatusEvent.
      *
-     * @param kitRequest current kit request already updated with the new status
+     * @param kitRequest  current kit request already updated with the new status
      * @param priorStatus prior kit status
      */
     public KitStatusEvent publishKitStatusEvent(KitRequest kitRequest, Enrollee enrollee,
@@ -51,12 +61,13 @@ public class EventService {
         log.info("Kit status event for enrollee {}, studyEnv {}: status {} => {}",
                 enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
                 priorStatus, kitRequest.getStatus());
+        savePublishedEvent(EventClass.KIT_STATUS_EVENT, portalParticipantUser.getPortalEnvironmentId(), enrollee);
         applicationEventPublisher.publishEvent(event);
         return event;
     }
 
     public EnrolleeConsentEvent publishEnrolleeConsentEvent(Enrollee enrollee, ConsentResponse response,
-                                                         PortalParticipantUser ppUser) {
+                                                            PortalParticipantUser ppUser) {
         EnrolleeConsentEvent event = EnrolleeConsentEvent.builder()
                 .consentResponse(response)
                 .enrollee(enrollee)
@@ -66,12 +77,13 @@ public class EventService {
         log.info("consent event for enrollee {}, studyEnv {} - formId {}, consented {}",
                 enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
                 response.getConsentFormId(), response.isConsented());
+        savePublishedEvent(EventClass.ENROLLEE_CONSENT_EVENT, ppUser.getPortalEnvironmentId(), enrollee);
         applicationEventPublisher.publishEvent(event);
         return event;
     }
 
     public EnrolleeSurveyEvent publishEnrolleeSurveyEvent(Enrollee enrollee, SurveyResponse response,
-                                                            PortalParticipantUser ppUser) {
+                                                          PortalParticipantUser ppUser) {
         EnrolleeSurveyEvent event = EnrolleeSurveyEvent.builder()
                 .surveyResponse(response)
                 .enrollee(enrollee)
@@ -81,6 +93,7 @@ public class EventService {
         log.info("survey event for enrollee {}, studyEnv {} - formId {}, completed {}",
                 enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
                 response.getSurveyId(), response.isComplete());
+        savePublishedEvent(EventClass.ENROLLEE_SURVEY_EVENT, ppUser.getPortalEnvironmentId(), enrollee);
         applicationEventPublisher.publishEvent(event);
         return event;
     }
@@ -93,6 +106,7 @@ public class EventService {
                 .newPortalUser(ppUser)
                 .portalEnvironment(portalEnv)
                 .build();
+        savePublishedEvent(EventClass.PORTAL_REGISTRATION_EVENT, portalEnv.getId(), null);
         applicationEventPublisher.publishEvent(event);
         return event;
     }
@@ -104,11 +118,43 @@ public class EventService {
                 .portalParticipantUser(ppUser)
                 .enrolleeRuleData(enrolleeRuleData)
                 .build();
+        savePublishedEvent(EventClass.ENROLLEE_CREATION_EVENT, ppUser.getPortalEnvironmentId(), enrollee);
         applicationEventPublisher.publishEvent(enrolleeEvent);
         return enrolleeEvent;
     }
 
-    /** adds ruleData to the event, and also ensures the enrollee task list is refreshed */
+    /**
+     * Saves a record of the published event. If the event does not involve a specific enrollee/portalEnv,
+     * they can be set to null.
+     */
+    private void savePublishedEvent(EventClass eventClass,
+                                    UUID portalEnvId,
+                                    Enrollee enrollee) {
+        Event.EventBuilder<?, ?> builder = Event.builder()
+                .eventClass(eventClass);
+
+        if (Objects.nonNull(portalEnvId)) {
+            builder = builder
+                    .portalEnvironmentId(portalEnvId);
+        }
+
+        // if enrollee specific, set related fields
+        if (Objects.nonNull(enrollee)) {
+            builder = builder
+                    .enrolleeId(enrollee.getId())
+                    .studyEnvironmentId(enrollee.getStudyEnvironmentId());
+        }
+
+        dao.create(builder.build());
+    }
+
+    public List<Event> findAllEventsByEnrolleeId(UUID enrolleeId) {
+        return dao.findAllByEnrolleeId(enrolleeId);
+    }
+
+    /**
+     * adds ruleData to the event, and also ensures the enrollee task list is refreshed
+     */
     protected void populateEvent(EnrolleeEvent event) {
         Enrollee enrollee = event.getEnrollee();
         event.setEnrolleeRuleData(enrolleeRuleService.fetchData(enrollee));
@@ -116,7 +162,8 @@ public class EventService {
         enrollee.getParticipantTasks().addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
     }
 
-    /** Assembles a HubResponse using the objects attached to the event.  this makes sure that the
+    /**
+     * Assembles a HubResponse using the objects attached to the event.  this makes sure that the
      * response reflects the latest task list and profile
      */
     public <T extends BaseEntity> HubResponse<T> buildHubResponse(EnrolleeEvent event, T response) {

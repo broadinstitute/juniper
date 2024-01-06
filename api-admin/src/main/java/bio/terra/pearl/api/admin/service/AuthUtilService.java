@@ -19,10 +19,10 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.auth0.jwt.JWT;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
 /** Utility service for common auth-related methods */
