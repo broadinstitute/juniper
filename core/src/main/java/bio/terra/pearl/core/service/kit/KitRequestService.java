@@ -169,17 +169,10 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         return kitRequestDetails;
     }
 
-    protected void applyKitType(List<KitRequest> kitRequests) {
-        Map<UUID, KitType> kitTypeMap = kitTypeDao.findAll().stream()
-                .collect(Collectors.toMap(KitType::getId, Function.identity()));
-        kitRequests.forEach(kit -> kit.setKitType(kitTypeMap.get(kit.getKitTypeId())));
-    }
-
     protected  Map<UUID, KitType> getKitTypeMap() {
         return kitTypeDao.findAll().stream()
             .collect(Collectors.toMap(KitType::getId, Function.identity()));
     }
-
 
     /**
      * Query Pepper for the status of a single kit and update the cached status in Juniper.
@@ -187,18 +180,11 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      * Do _NOT_ call this repeatedly for a collection of kits. Use a bulk operation instead to avoid overwhelming DSM.
      */
     @Transactional
-    public PepperKit syncKitStatusFromPepper(UUID kitId) throws PepperParseException, PepperApiException {
+    public void syncKitStatusFromPepper(UUID kitId) throws PepperParseException, PepperApiException {
         KitRequest kitRequest = dao.find(kitId).orElseThrow(() -> new NotFoundException("Kit request not found"));
         PepperKit pepperKitStatus = pepperDSMClient.fetchKitStatus(kitId);
-        try {
-            kitRequest.setExternalKit(objectMapper.writeValueAsString(pepperKitStatus));
-            kitRequest.setExternalKitFetchedAt(Instant.now());
-        } catch (JsonProcessingException e) {
-            throw new InternalServerException("Could not parse JSON kit status response from DSM", e);
-        }
-        dao.update(kitRequest);
-        return pepperKitStatus;
-    }
+        saveKitStatus(kitRequest, pepperKitStatus, Instant.now());
+     }
 
     /**
      * Query Pepper for all in-progress kits and update the cached status in Juniper. This is intended to be called as a

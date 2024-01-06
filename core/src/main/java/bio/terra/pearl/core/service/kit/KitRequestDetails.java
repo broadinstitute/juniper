@@ -70,6 +70,12 @@ public class KitRequestDetails {
       if (pepperKit.getErrorDate() != null) {
         rootNode.put("errorDate", pepperKit.getErrorDate());
       }
+      if (pepperKit.getDeactivationReason() != null) {
+        rootNode.put("deactivationReason", pepperKit.getDeactivationReason());
+      }
+      if (pepperKit.getDeactivationDate() != null) {
+        rootNode.put("deactivationDate", pepperKit.getDeactivationDate());
+      }
       return objectMapper.writeValueAsString(rootNode);
     } catch (Exception e) {
       // PepperKit was already parsed, so this should never happen, but just in case

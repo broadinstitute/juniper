@@ -23,6 +23,8 @@ public class PepperKit {
     private String trackingScanBy;
     private String trackingNumber;
     private String returnTrackingNumber;
+    private String deactivationReason;
+    private String deactivationDate;
     private String errorMessage;
     private String errorDate;
     private Boolean error;

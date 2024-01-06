@@ -9,12 +9,14 @@ import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.kit.KitTypeFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
+import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.kit.pepper.*;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.EventService;
@@ -35,12 +37,14 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 public class KitRequestServiceTest extends BaseSpringBootTest {
@@ -103,30 +107,38 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testUpdateKitStatus(TestInfo testInfo) throws Exception {
-        // Arrange
-        var adminUser = adminUserFactory.buildPersisted(getTestName(testInfo));
-        var enrollee = enrolleeFactory.buildPersisted(getTestName(testInfo));
-        var kitType = kitTypeFactory.buildPersisted(getTestName(testInfo));
-        var kitRequest = kitRequestFactory.buildPersisted(getTestName(testInfo),
+    void testUpdateKitStatus(TestInfo testInfo) throws Exception {
+        String testName = getTestName(testInfo);
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
+        AdminUser adminUser = adminUserFactory.buildPersisted(testName);
+        Enrollee enrollee = enrolleeBundle.enrollee();
+        KitType kitType = kitTypeFactory.buildPersisted(testName);
+        KitRequest kitRequest = kitRequestFactory.buildPersisted(testName,
                 enrollee, PepperKitStatus.CREATED, kitType.getId(), adminUser.getId());
 
-        var response = PepperKit.builder()
-                .juniperKitId(kitRequest.getId().toString())
-                .currentStatus("SENT")
-                .build();
-        when(mockPepperDSMClient.fetchKitStatus(kitRequest.getId())).thenReturn(response);
+        String sentDate = "2023-11-17T14:57:59.548Z";
+        String errorMessage = "Something went wrong";
+        PepperKit pepperKit = PepperKit.builder()
+            .juniperKitId(kitRequest.getId().toString())
+            .currentStatus(PepperKitStatus.SENT.pepperString)
+            .scanDate(sentDate)
+            .errorMessage(errorMessage)
+            .build();
+        when(mockPepperDSMClient.fetchKitStatus(kitRequest.getId())).thenReturn(pepperKit);
+        when(mockEventService.publishKitStatusEvent(any(KitRequest.class),
+            any(Enrollee.class), any(PortalParticipantUser.class), any(KitRequestStatus.class))).thenReturn(null);
 
-        // Act
-        var sampleKitStatus = kitRequestService.syncKitStatusFromPepper(kitRequest.getId());
+        kitRequestService.syncKitStatusFromPepper(kitRequest.getId());
 
-        // Assert
-        assertThat(sampleKitStatus.getCurrentStatus(), equalTo("SENT"));
+        KitRequest savedKit = kitRequestDao.find(kitRequest.getId()).get();
+        assertThat(savedKit.getStatus(), equalTo(KitRequestStatus.SENT));
+        assertThat(savedKit.getErrorMessage(), equalTo(errorMessage));
+        assertThat(savedKit.getSentAt(), equalTo(Instant.parse(sentDate)));
     }
 
     @Transactional
     @Test
-    public void testGetSampleKitsForStudyEnvironment(TestInfo testInfo) throws Exception {
+    public void testGetKitsByStudyEnvironment(TestInfo testInfo) throws Exception {
         // Arrange:
         //   2 kits, one with bogus status JSON
         String testName = getTestName(testInfo);
@@ -148,6 +160,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         Collection<KitRequestDetails> kits = kitRequestService.getKitsByStudyEnvironment(studyEnvironment);
 
         PepperKit pepperKit = objectMapper.readValue(kitRequest1.getExternalKit(), PepperKit.class);
+        // note: this works because the order of insertion in KitRequestDetails is deterministic
         ObjectNode detailsJson = objectMapper.createObjectNode();
         detailsJson.put("requestId", kitRequest1.getId().toString());
         detailsJson.put("shippingId", pepperKit.getDsmShippingLabel());
@@ -167,6 +180,83 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 Assertions.fail("Unexpected kit ID: " + kit.getId());
             }
         }
+    }
+
+    @Transactional
+    @Test
+    void testFindByEnrollees(TestInfo testInfo) throws Exception {
+        String testName = getTestName(testInfo);
+        AdminUser adminUser = adminUserFactory.buildPersisted(testName);
+        StudyEnvironment studyEnvironment = studyEnvironmentFactory.buildPersisted(testName);
+        KitType kitType = kitTypeFactory.buildPersisted(testName);
+
+        PepperKit pepperKit1 = PepperKit.builder()
+            .dsmShippingLabel(UUID.randomUUID().toString())
+            .currentStatus(PepperKitStatus.CREATED.pepperString)
+            .build();
+
+        Enrollee enrollee1 = enrolleeFactory.buildPersisted(testName, studyEnvironment);
+        KitRequest kitRequest1 = kitRequestFactory.buildPersisted(testName,
+            enrollee1, pepperKit1, kitType.getId(), adminUser.getId());
+
+        String errorMessage = "Something went wrong";
+        String deactivationReason = "Withdrawn from study";
+        String deactivationDate =
+            DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault()).format(Instant.now());
+        PepperKit pepperKit2 = PepperKit.builder()
+            .dsmShippingLabel(UUID.randomUUID().toString())
+            .currentStatus(PepperKitStatus.DEACTIVATED.pepperString)
+            .errorMessage(errorMessage)
+            .deactivationReason(deactivationReason)
+            .deactivationDate(deactivationDate)
+            .build();
+
+        Enrollee enrollee2 = enrolleeFactory.buildPersisted(testName, studyEnvironment);
+        KitRequest kitRequest2 = kitRequestFactory.buildPersisted(testName,
+            enrollee2, pepperKit2, kitType.getId(), adminUser.getId());
+
+        Map<UUID, List<KitRequestDetails>> kits = kitRequestService.findByEnrollees(List.of(enrollee1, enrollee2));
+
+        for (var entry : kits.entrySet()) {
+            if (enrollee1.getId().equals(entry.getKey())) {
+                KitRequestDetails kit = entry.getValue().get(0);
+                assertThat(kit.getId(), equalTo(kitRequest1.getId()));
+                assertThat(kit.getStatus(), equalTo(KitRequestStatus.CREATED));
+                assertThat(kit.getEnrolleeShortcode(), equalTo(enrollee1.getShortcode()));
+                assertThat(kit.getKitType().getName(), equalTo(kitType.getName()));
+
+                // note: this works because the order of insertion in KitRequestDetails is deterministic
+                ObjectNode detailsJson = objectMapper.createObjectNode();
+                detailsJson.put("requestId", kitRequest1.getId().toString());
+                detailsJson.put("shippingId", pepperKit1.getDsmShippingLabel());
+                assertThat(kit.getDetails(), equalTo(objectMapper.writeValueAsString(detailsJson)));
+            } else if (enrollee2.getId().equals(entry.getKey())) {
+                KitRequestDetails kit = entry.getValue().get(0);
+                assertThat(kit.getId(), equalTo(kitRequest2.getId()));
+                assertThat(kit.getStatus(), equalTo(KitRequestStatus.DEACTIVATED));
+                assertThat(kit.getKitType().getName(), equalTo(kitType.getName()));
+                assertThat(kit.getEnrolleeShortcode(), equalTo(enrollee2.getShortcode()));
+                assertThat(kit.getErrorMessage(), equalTo(errorMessage));
+
+                // note: this works because the order of insertion in KitRequestDetails is deterministic
+                ObjectNode detailsJson = objectMapper.createObjectNode();
+                detailsJson.put("requestId", kitRequest2.getId().toString());
+                detailsJson.put("shippingId", pepperKit2.getDsmShippingLabel());
+                detailsJson.put("deactivationReason", deactivationReason);
+                detailsJson.put("deactivationDate", deactivationDate);
+                assertThat(kit.getDetails(), equalTo(objectMapper.writeValueAsString(detailsJson)));
+            } else {
+                Assertions.fail("Unexpected enrollee ID: " + entry.getKey());
+            }
+        }
+
+        List<KitRequestDetails> kits2 = kitRequestService.findByEnrollee(enrollee2);
+        assertThat(kits2.size(), equalTo(1));
+        KitRequestDetails kit = kits2.get(0);
+        assertThat(kit.getId(), equalTo(kitRequest2.getId()));
+        assertThat(kit.getStatus(), equalTo(KitRequestStatus.DEACTIVATED));
+        assertThat(kit.getEnrolleeShortcode(), equalTo(enrollee2.getShortcode()));
+        assertThat(kit.getDetails().contains("deactivationDate"), equalTo(true));
     }
 
     @Transactional
