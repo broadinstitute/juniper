@@ -21,4 +21,11 @@ public class DataAuditInfo {
                 .operationId(UUID.randomUUID())
                 .build();
     }
+
+    public static DataAuditInfo fromUserId(UUID responsibleUserId) {
+        return DataAuditInfo.builder()
+                .responsibleUserId(responsibleUserId)
+                .operationId(UUID.randomUUID())
+                .build();
+    }
 }

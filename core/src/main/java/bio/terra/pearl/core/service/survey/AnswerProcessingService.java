@@ -7,19 +7,25 @@ import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
 import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.DataChangeRecord;
 import bio.terra.pearl.core.model.workflow.ObjectWithChangeLog;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.function.BiFunction;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.function.BiFunction;
 
 /**
  * Handles mapping ParsedSnapshots (typically received from the frontend) into objects.  This is done with stableIdMaps
@@ -80,7 +86,7 @@ public class AnswerProcessingService {
         Profile profile = profileService.loadWithMailingAddress(ppUser.getProfileId()).get();
         ObjectWithChangeLog<Profile> profileChanges = mapValuesToType(answers, profileMappings,
                 profile, AnswerMappingTargetType.PROFILE);
-        profileService.updateWithMailingAddress(profile);
+        profileService.updateWithMailingAddress(profile, DataAuditInfo.fromUserId(ppUser.getParticipantUserId()));
         return profileChanges;
     }
 

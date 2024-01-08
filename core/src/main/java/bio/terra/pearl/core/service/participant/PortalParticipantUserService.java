@@ -6,16 +6,18 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PortalParticipantUserService extends ImmutableEntityService<PortalParticipantUser, PortalParticipantUserDao> {
@@ -39,10 +41,10 @@ public class PortalParticipantUserService extends ImmutableEntityService<PortalP
         if (ppUser.getProfileId() != null) {
             newProfile = profileService.find(ppUser.getProfileId()).get();
         } else if (ppUser.getProfile() != null) {
-            newProfile = profileService.create(ppUser.getProfile());
+            newProfile = profileService.create(ppUser.getProfile(), DataAuditInfo.fromUserId(ppUser.getParticipantUserId()));
         } else {
             // Make sure profile is always non-null
-            newProfile = profileService.create(Profile.builder().build());
+            newProfile = profileService.create(Profile.builder().build(), DataAuditInfo.fromUserId(ppUser.getParticipantUserId()));
         }
         ppUser.setProfileId(newProfile.getId());
         PortalParticipantUser createdUser = dao.create(ppUser);
@@ -88,7 +90,7 @@ public class PortalParticipantUserService extends ImmutableEntityService<PortalP
         dao.delete(portalParticipantUserId);
 
         if (ppUser.getProfileId() != null) {
-            profileService.delete(ppUser.getProfileId(), cascades);
+            profileService.delete(ppUser.getProfileId(), DataAuditInfo.fromUserId(ppUser.getParticipantUserId()));
         }
     }
 

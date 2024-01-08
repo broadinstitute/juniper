@@ -14,7 +14,13 @@ import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
-import bio.terra.pearl.core.service.kit.pepper.*;
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
+import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
+import bio.terra.pearl.core.service.kit.pepper.PepperDSMClient;
+import bio.terra.pearl.core.service.kit.pepper.PepperErrorResponse;
+import bio.terra.pearl.core.service.kit.pepper.PepperKit;
+import bio.terra.pearl.core.service.kit.pepper.PepperKitAddress;
+import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.EventService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,7 +40,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -52,7 +59,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         profile.setFamilyName("Tester");
         profile.setPhoneNumber("111-222-3333");
         profile.getMailingAddress().setStreet1("123 Fake Street");
-        profileService.updateWithMailingAddress(profile);
+        profileService.updateWithMailingAddress(profile, DataAuditInfo.builder().build());
         var expectedSentToAddress = PepperKitAddress.builder()
                 .firstName("Alex")
                 .lastName("Tester")
@@ -81,7 +88,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         profile.setFamilyName("Tester");
         profile.setPhoneNumber("111-222-3333");
         profile.getMailingAddress().setStreet1("123 Fake Street");
-        profileService.updateWithMailingAddress(profile);
+        profileService.updateWithMailingAddress(profile, DataAuditInfo.builder().build());
 
         when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any())).thenAnswer(invocation -> {
             var kitRequest = (KitRequest) invocation.getArguments()[2];

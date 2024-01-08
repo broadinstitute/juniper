@@ -8,12 +8,14 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class EnrolleeFactory {
@@ -67,7 +69,7 @@ public class EnrolleeFactory {
 
     /** saves the given profile and creates an enrollee with that profile attached */
     public Enrollee buildPersisted(String testName, StudyEnvironment studyEnv, Profile profile) {
-        Profile savedProfile = profileService.create(profile);
+        Profile savedProfile = profileService.create(profile, DataAuditInfo.builder().build());
         var builder = builderWithDependencies(testName, studyEnv)
             .profileId(savedProfile.getId());
         return buildPersisted(builder);
