@@ -90,7 +90,9 @@ public class PortalParticipantUserService extends ImmutableEntityService<PortalP
         dao.delete(portalParticipantUserId);
 
         if (ppUser.getProfileId() != null) {
-            profileService.delete(ppUser.getProfileId(), DataAuditInfo.fromUserId(ppUser.getParticipantUserId()));
+            profileService.delete(
+                    ppUser.getProfileId(),
+                    DataAuditInfo.fromPortalParticipantUserId(ppUser.getId(), ppUser.getParticipantUserId()));
         }
     }
 

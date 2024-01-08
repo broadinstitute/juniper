@@ -13,6 +13,9 @@ import java.util.UUID;
 public class DataAuditInfo {
     private UUID responsibleUserId;
     private UUID responsibleAdminUserId;
+    private UUID enrolleeId;
+    private UUID portalParticipantUserId;
+    private UUID surveyId;
     private UUID operationId;
 
     public static DataAuditInfo fromAdminUserId(UUID responsibleAdminUserId) {
@@ -22,9 +25,28 @@ public class DataAuditInfo {
                 .build();
     }
 
-    public static DataAuditInfo fromUserId(UUID responsibleUserId) {
+    public static DataAuditInfo fromUserId(UUID userId) {
+        return DataAuditInfo
+                .builder()
+                .responsibleUserId(userId)
+                .operationId(UUID.randomUUID())
+                .build();
+    }
+
+    public static DataAuditInfo fromPortalParticipantUserId(UUID portalParticipantUserId, UUID responsibleUserId) {
         return DataAuditInfo.builder()
                 .responsibleUserId(responsibleUserId)
+                .portalParticipantUserId(portalParticipantUserId)
+                .operationId(UUID.randomUUID())
+                .build();
+    }
+
+    public static DataAuditInfo fromEnrolleeId(UUID enrolleeId, UUID portalParticipantUserId, UUID responsibleUserId) {
+        return DataAuditInfo
+                .builder()
+                .enrolleeId(enrolleeId)
+                .responsibleUserId(responsibleUserId)
+                .portalParticipantUserId(portalParticipantUserId)
                 .operationId(UUID.randomUUID())
                 .build();
     }

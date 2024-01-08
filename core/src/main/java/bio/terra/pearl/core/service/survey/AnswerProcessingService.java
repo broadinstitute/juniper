@@ -48,27 +48,13 @@ public class AnswerProcessingService {
      * also logs the changes as persisted DataChangeRecords
      * */
     @Transactional
-    public List<DataChangeRecord> processAllAnswerMappings(List<Answer> answers, List<AnswerMapping> mappings,
+    public void processAllAnswerMappings(List<Answer> answers, List<AnswerMapping> mappings,
                                          PortalParticipantUser ppUser, UUID responsibleUserId, UUID enrolleeId,
                                                            UUID surveyId) {
         if (mappings.isEmpty()) {
-            return new ArrayList<>();
+            return;
         }
-        UUID operationId = UUID.randomUUID();
-        ObjectWithChangeLog<Profile> profileChanges = processProfileAnswerMappings(answers, mappings, ppUser);
-        /**
-         * for now, it's assumed these record updates are a small number at a time -- if this gets large, it
-         * might be worth creating as a batch
-         */
-        profileChanges.changeRecords().stream().forEach(changeRecord -> {
-            changeRecord.setResponsibleUserId(responsibleUserId);
-            changeRecord.setPortalParticipantUserId(ppUser.getId());
-            changeRecord.setEnrolleeId(enrolleeId);
-            changeRecord.setSurveyId(surveyId);
-            changeRecord.setOperationId(operationId);
-            dataChangeRecordDao.create(changeRecord);
-        });
-        return profileChanges.changeRecords();
+        processProfileAnswerMappings(answers, mappings, ppUser, responsibleUserId, enrolleeId, surveyId);
     }
 
     /**
@@ -76,18 +62,22 @@ public class AnswerProcessingService {
      * this does not load the participant's profile, and instead returns an object with a null 'obj' and an empty changelist
      */
     @Transactional
-    public ObjectWithChangeLog<Profile> processProfileAnswerMappings(List<Answer> answers, List<AnswerMapping> mappings,
-                                             PortalParticipantUser ppUser) {
+    public void processProfileAnswerMappings(List<Answer> answers, List<AnswerMapping> mappings,
+                                             PortalParticipantUser ppUser, UUID responsibleUserId, UUID enrolleeId,
+                                             UUID surveyId) {
         List<AnswerMapping> profileMappings = mappings.stream().filter(mapping ->
                 mapping.getTargetType().equals(AnswerMappingTargetType.PROFILE)).toList();
         if (profileMappings.isEmpty() || !hasTargetedChanges(profileMappings, answers, AnswerMappingTargetType.PROFILE)) {
-            return new ObjectWithChangeLog<>(null, new ArrayList<>());
+            return;
         }
         Profile profile = profileService.loadWithMailingAddress(ppUser.getProfileId()).get();
-        ObjectWithChangeLog<Profile> profileChanges = mapValuesToType(answers, profileMappings,
+        mapValuesToType(answers, profileMappings,
                 profile, AnswerMappingTargetType.PROFILE);
-        profileService.updateWithMailingAddress(profile, DataAuditInfo.fromUserId(ppUser.getParticipantUserId()));
-        return profileChanges;
+
+        DataAuditInfo auditInfo = DataAuditInfo.fromEnrolleeId(enrolleeId, ppUser.getId(), responsibleUserId);
+        auditInfo.setSurveyId(surveyId);
+
+        profileService.updateWithMailingAddress(profile, auditInfo);
     }
 
     /**
