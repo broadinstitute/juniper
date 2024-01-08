@@ -31,9 +31,6 @@
     "lint": "eslint --max-warnings=0 e2e-tests ui-admin/src ui-core/src ui-participant/src"
   },
   "dependencies": {
-    "@react-querybuilder/bootstrap": "^6.5.4",
-    "bootstrap": "^5.3.0",
-    "bootstrap-icons": "^1.11.3",
     "react-querybuilder": "^6.5.4"
   }
 }

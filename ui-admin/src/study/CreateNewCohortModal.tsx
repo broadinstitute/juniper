@@ -8,8 +8,7 @@ import useReactSingleSelect from '../util/react-select-utils'
 import Api, { ExportData } from '../api/api'
 import { useLoadingEffect } from 'api/api-utils'
 import { Field, QueryBuilder } from 'react-querybuilder'
-import 'react-querybuilder/dist/query-builder.css'
-import { QueryBuilderBootstrap } from '@react-querybuilder/bootstrap'
+import 'react-querybuilder/dist/query-builder.scss'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from '../util/notifications'
 
@@ -100,15 +99,13 @@ export default function CreateNewCohortModal({ onDismiss }: {onDismiss: () => vo
       </span>
       <div className="mt-3">
         { selectedStudy ?
-          <QueryBuilderBootstrap>
-            <QueryBuilder
-              fields={fields}
-              query={query}
-              onQueryChange={q => setQuery(q)}
-              addRuleToNewGroups
-              controlClassnames={{ queryBuilder: 'queryBuilder-branches' }}
-            />
-          </QueryBuilderBootstrap> :
+          <QueryBuilder
+            fields={fields}
+            query={query}
+            onQueryChange={q => setQuery(q)}
+            addRuleToNewGroups
+            controlClassnames={{ queryBuilder: 'queryBuilder-branches' }}
+          /> :
           <span className="text-muted fst-italic">You must select a study before selecting cohort criteria</span> }
       </div>
 
