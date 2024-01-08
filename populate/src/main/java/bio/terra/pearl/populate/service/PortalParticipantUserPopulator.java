@@ -83,7 +83,7 @@ public class PortalParticipantUserPopulator extends BasePopulator<PortalParticip
     }
 
     public List<String> bulkPopulateParticipants(String portalShortcode, EnvironmentName envName, String studyShortcode, Integer numEnrollees) {
-        StudyPopulateContext context = new StudyPopulateContext("portals/" + portalShortcode + "/participants/seed.json", portalShortcode, studyShortcode, envName, new HashMap<>());
+        StudyPopulateContext context = new StudyPopulateContext("portals/" + portalShortcode + "/participants/seed.json", portalShortcode, studyShortcode, envName, new HashMap<>(), false);
 
         List<String> populatedUsernames = IntStream.range(0, numEnrollees).mapToObj(i -> {
             try {

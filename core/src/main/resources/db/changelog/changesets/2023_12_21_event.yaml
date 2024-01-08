@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: event
+      author: connorlbark
+      changes:
+        - createTable:
+            tableName: event
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: event_class, type: text }
+              - column: { name: study_environment_id, type: uuid, constraints:
+                { foreignKeyName: fk_event_study_env, references: study_environment(id), deleteCascade: true }
+              }
+              - column: { name: portal_environment_id, type: uuid, constraints:
+                { foreignKeyName: fk_event_portal_env, references: portal_environment(id), deleteCascade: true }
+              }
+              - column: { name: enrollee_id, type: uuid, constraints:
+                { foreignKeyName: fk_event_enrollee, references: enrollee(id), deleteCascade: true }
+              }

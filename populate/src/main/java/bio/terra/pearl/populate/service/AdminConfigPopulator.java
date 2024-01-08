@@ -19,7 +19,7 @@ public class AdminConfigPopulator {
   public AdminConfigStats populate(boolean overwrite) throws IOException {
     for (String emailFile : EMAILS_TO_POPULATE) {
       // these templates are not specific to a portal, so the shortcode and environment is null
-      PortalPopulateContext context = new PortalPopulateContext(emailFile, null, null, new HashMap<>());
+      PortalPopulateContext context = new PortalPopulateContext(emailFile, null, null, new HashMap<>(), false);
       // always overwrite, we don't care about versioning for admin emails yet
       emailTemplatePopulator.populate(context, overwrite);
     }

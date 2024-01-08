@@ -4,6 +4,7 @@ import PopulatePortalControl from './PopulatePortalControl'
 import PopulateSurveyControl from './PopulateSurveyControl'
 import PopulateSiteContentControl from './PopulateSiteContent'
 import PopulateAdminConfig from './PopulateAdminConfig'
+import ExtractPortal from './ExtractPortal'
 import { navDivStyle, navLinkStyleFunc, navListItemStyle } from 'util/subNavStyles'
 import { renderPageHeader } from 'util/pageUtils'
 
@@ -26,6 +27,9 @@ export default function PopulateRouteSelect({ portalShortcode }: {portalShortcod
           <li style={navListItemStyle} className="ps-3">
             <NavLink to="adminConfig" style={navLinkStyleFunc}>Admin config</NavLink>
           </li>
+          <li style={navListItemStyle} className="ps-3">
+            <NavLink to="extractPortal" style={navLinkStyleFunc}>Extract portal</NavLink>
+          </li>
         </ul>
       </div>
       <div className="flex-grow-1 bg-white p-3">
@@ -37,6 +41,9 @@ export default function PopulateRouteSelect({ portalShortcode }: {portalShortcod
             element={<PopulateSiteContentControl initialPortalShortcode={portalShortcode || ''}/>}/>
           <Route path="adminConfig"
             element={<PopulateAdminConfig/>}/>
+          <Route path="extractPortal"
+            element={<ExtractPortal initialPortalShortcode={portalShortcode || ''}/>}/>
+          <Route path="*" element={<div>Choose a populate option</div>}/>
         </Routes>
         <Outlet/>
       </div>

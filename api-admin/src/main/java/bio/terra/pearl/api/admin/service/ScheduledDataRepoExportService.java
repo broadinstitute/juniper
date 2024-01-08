@@ -31,7 +31,7 @@ public class ScheduledDataRepoExportService {
     if (isTdrConfigured()) {
       log.info("Pinging Terra Data Repo. Up: " + dataRepoExportService.getServiceStatus());
     } else {
-      log.error(
+      log.warn(
           "Error: Skipping TDR status ping, as TDR has not been configured for this environment.");
     }
   }
@@ -46,7 +46,7 @@ public class ScheduledDataRepoExportService {
       log.info("Polling running TDR jobs...");
       dataRepoExportService.pollRunningJobs();
     } else {
-      log.error(
+      log.warn(
           "Error: Skipping TDR job polling, as TDR has not been configured for this environment.");
     }
   }

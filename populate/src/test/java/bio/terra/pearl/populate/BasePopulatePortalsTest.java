@@ -1,13 +1,18 @@
 package bio.terra.pearl.populate;
 
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.export.DictionaryExportService;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
+import bio.terra.pearl.core.service.notification.NotificationConfigService;
+import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantNoteService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
+import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.AnswerService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -56,6 +61,16 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     protected AnswerService answerService;
     @Autowired
     protected AdminTaskService adminTaskService;
+    @Autowired
+    protected PortalService portalService;
+    @Autowired
+    protected StudyService studyService;
+    @Autowired
+    protected NotificationConfigService notificationConfigService;
+    @Autowired
+    protected EmailTemplateService emailTemplateService;
+    @Autowired
+    protected ConsentFormService consentFormService;
 
     protected void setUpEnvironments() {
         for (String fileName : BaseSeedPopulator.ENVIRONMENTS_TO_POPULATE) {

@@ -2,6 +2,7 @@ package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
@@ -13,6 +14,8 @@ import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -56,6 +59,14 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
     protected void preProcessDto(EmailTemplatePopDto popDto, PortalPopulateContext context) throws IOException  {
         String bodyContent = filePopulateService.readFile(popDto.getBodyPopulateFile(), context);
         popDto.setBody(bodyContent);
+        UUID portalId = portalService.findOneByShortcode(context.getPortalShortcode()).orElse(
+                /** if the context doesn't have a portal, it's because we're populating admin config
+                 * so we want the portalId to be null
+                 * eventually we might want to create a "Config" portal for this purpose so that the templates
+                 * are UI editable */
+                new Portal()
+        ).getId();
+        popDto.setPortalId(portalId);
     }
 
     @Override
@@ -78,6 +89,7 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
         existingObj.setBody(popDto.getBody());
         existingObj.setSubject(popDto.getSubject());
         existingObj.setName(popDto.getName());
+        existingObj.setPortalId(popDto.getPortalId());
         return emailTemplatePopulateDao.update(existingObj);
     }
 

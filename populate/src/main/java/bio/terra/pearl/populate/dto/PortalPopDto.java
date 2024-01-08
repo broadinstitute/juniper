@@ -14,17 +14,23 @@ import lombok.Setter;
 
 @Getter @Setter @NoArgsConstructor
 public class PortalPopDto extends Portal {
-    private Set<String> surveyFiles = new HashSet<>(); // surveys that are not specific to a study (e.g. preReg)
-    private Set<String> populateStudyFiles = new HashSet<>();
-    private Set<String> siteContentFiles = new HashSet<>();
-    private List<PortalEnvironmentPopDto> portalEnvironmentDtos;
+    /**
+     * most entities can be populated at the portal level to both make sharing across studies easier
+     *  and to allow for the possibility of a portal-level survey or consent
+     */
+    private List<String> surveyFiles = new ArrayList<>();
+    private List<String> consentFormFiles = new ArrayList<>();
+    private List<String> populateStudyFiles = new ArrayList<>();
+    private List<String> siteContentFiles = new ArrayList<>();
+    private List<PortalEnvironmentPopDto> portalEnvironmentDtos = new ArrayList<>();
     private List<SiteImagePopDto> siteImageDtos = new ArrayList<>();
+    private List<String> emailTemplateFiles = new ArrayList<>();
     /**
      * this allows us to pass a PopulatePortalDto to PortalService.create and have the specified environments
      * in portalEnvironmentDtos used for the creation.
      */
-    public Set<PortalEnvironment> getPortalEnvironments() {
-        return portalEnvironmentDtos.stream().collect(Collectors.toSet());
+    public List<PortalEnvironment> getPortalEnvironments() {
+        return portalEnvironmentDtos.stream().collect(Collectors.toList());
     }
     public List<AdminUserDto> adminUsers = new ArrayList<>();
 }
