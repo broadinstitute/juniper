@@ -24,9 +24,9 @@ import { PortalEnvironment } from '@juniper/ui-core/build/types/portal'
 import { PortalEnvContext } from '../portal/PortalRouter'
 import {
   FacetValue,
-  StableIdStringArrayFacet,
-  StableIdStringArrayFacetValue,
-  StableIdStringValue,
+  EntityOptionsArrayFacet,
+  EntityOptionsArrayFacetValue,
+  EntityOptionsValue,
   StringOptionsFacet,
   StringOptionsFacetValue
 } from '../api/enrolleeSearch'
@@ -325,11 +325,11 @@ export const mockTaskSearchFacet: () => EnrolleeSearchFacet = () => {
 }
 
 /** returns a mock enrollee task search facet value */
-export const mockTaskFacetValue: (facet: StableIdStringArrayFacet, optionValue: string) =>
-  FacetValue = (facet: StableIdStringArrayFacet, optionValue: string) => {
+export const mockTaskFacetValue: (facet: EntityOptionsArrayFacet, optionValue: string) =>
+  FacetValue = (facet: EntityOptionsArrayFacet, optionValue: string) => {
     const optionValues: string[] = [optionValue]
-    const facetValues = facet.entities.map(entity => new StableIdStringValue(entity.value, optionValues))
-    return new StableIdStringArrayFacetValue(facet, { values: facetValues })
+    const facetValues = facet.entities.map(entity => new EntityOptionsValue(entity.value, optionValues))
+    return new EntityOptionsArrayFacetValue(facet, { values: facetValues })
   }
 
 /** returns a mock enrollee options search facet value */

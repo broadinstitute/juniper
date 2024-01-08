@@ -1,17 +1,17 @@
 import React from 'react'
-import { mockTaskSearchFacet, mockTaskFacetValue } from '../../../../test-utils/mocking-utils'
-import { setupRouterTest } from '../../../../test-utils/router-testing-utils'
+import { mockTaskSearchFacet, mockTaskFacetValue } from 'test-utils/mocking-utils'
+import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { getByText, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import AdvancedSearchModal from './AdvancedSearchModal'
-import { EnrolleeSearchFacet } from '../../../../api/api'
-import { ALL_FACETS, Facet, FacetValue, StableIdStringArrayFacet } from '../../../../api/enrolleeSearch'
+import { EnrolleeSearchFacet } from 'api/api'
+import { ALL_FACETS, Facet, FacetValue, EntityOptionsArrayFacet } from 'api/enrolleeSearch'
 
 describe('AdvanceSearchModal', () => {
   test('displays search facets', async () => {
     const facet: EnrolleeSearchFacet = mockTaskSearchFacet()
     const searchFacets: Facet[] = [...ALL_FACETS, facet as Facet]
-    const facetValues: FacetValue[] = [mockTaskFacetValue(facet as StableIdStringArrayFacet, 'COMPLETE')]
+    const facetValues: FacetValue[] = [mockTaskFacetValue(facet as EntityOptionsArrayFacet, 'COMPLETE')]
 
     const mockUpdateFacetValuesFn = jest.fn()
     const { RoutedComponent } = setupRouterTest(

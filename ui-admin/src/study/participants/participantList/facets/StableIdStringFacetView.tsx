@@ -1,8 +1,8 @@
 import {
   FacetOption,
   FacetValue,
-  StableIdStringArrayFacetValue,
-  StableIdStringValue
+  EntityOptionsArrayFacetValue,
+  EntityOptionsValue
 } from 'api/enrolleeSearch'
 import Select, { MultiValue } from 'react-select'
 import _cloneDeep from 'lodash/cloneDeep'
@@ -13,7 +13,7 @@ import React from 'react'
  * for example, a list of surveys and statuses, to enable querying
  * "all participants who have a cardio survey in progress and a basic survey complete"
  */
-const StableIdStringArrayFacetView = ({ facetValue, updateValue }: {facetValue: StableIdStringArrayFacetValue,
+const StableIdStringArrayFacetView = ({ facetValue, updateValue }: {facetValue: EntityOptionsArrayFacetValue,
   updateValue: (facetValue: FacetValue | null) => void}) => {
   /* take a newValue from a react-select update and translate it to an update to the facet value */
   const updateValues = (stableId: string, newValue: MultiValue<FacetOption | undefined>) => {
@@ -29,13 +29,13 @@ const StableIdStringArrayFacetView = ({ facetValue, updateValue }: {facetValue: 
       changedVal.values = stringArrayVals
     } else {
       // create a new filter for a stableId
-      newValues.push(new StableIdStringValue(stableId, stringArrayVals))
+      newValues.push(new EntityOptionsValue(stableId, stringArrayVals))
     }
 
     if (newValues.length === 0) {
       updateValue(null)
     } else {
-      updateValue(new StableIdStringArrayFacetValue(facetValue.facet, { values: newValues }))
+      updateValue(new EntityOptionsArrayFacetValue(facetValue.facet, { values: newValues }))
     }
   }
 

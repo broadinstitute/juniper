@@ -1,10 +1,10 @@
 import React from 'react'
-import { setupRouterTest } from '../../../../test-utils/router-testing-utils'
+import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen } from '@testing-library/react'
 import {
   KEYWORD_FACET,
   StringFacetValue
-} from '../../../../api/enrolleeSearch'
+} from 'api/enrolleeSearch'
 import BasicSearch from './BasicSearch'
 import userEvent from '@testing-library/user-event'
 

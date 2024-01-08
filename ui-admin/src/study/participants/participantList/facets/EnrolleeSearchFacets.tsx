@@ -6,7 +6,7 @@ import {
   checkExhaustiveFacetType,
   Facet,
   FacetValue, IntRangeFacetValue,
-  newFacetValue, StableIdStringArrayFacetValue, StringFacetValue,
+  newFacetValue, EntityOptionsArrayFacetValue, StringFacetValue,
   StringOptionsFacetValue
 } from 'api/enrolleeSearch'
 import IntRangeFacetView from './IntRangeFacetView'
@@ -53,9 +53,13 @@ export default function EnrolleeSearchFacets({ facets, facetValues, updateFacetV
   const clearAll = () => {
     updateFacetValues(facets.map(facet => newFacetValue(facet)))
   }
+
+  const defaultActiveFacets = facetValues.map(facetValue =>
+    facets.findIndex(facet => facetValue.facet.keyName === facet.keyName).toString())
+
   return <div>
     <button className="btn btn-secondary float-end" onClick={clearAll}>Clear all</button>
-    <Accordion defaultActiveKey={['0']} alwaysOpen flush>
+    <Accordion defaultActiveKey={defaultActiveFacets} alwaysOpen flush>
       {facets.map((facet, index) => {
         const matchedValIndex = facetValues.findIndex(facetValue => facetValue.facet.keyName === facet.keyName &&
           facetValue.facet.category === facet.category)
@@ -98,7 +102,7 @@ export const FacetView = ({ facet, facetValue, updateValue }: FacetViewProps) =>
     return <StringOptionsFacetView facetValue={facetValue as StringOptionsFacetValue}
       updateValue={updateValue}/>
   } else if (facetType === 'ENTITY_OPTIONS') {
-    return <StableIdStringFacetView facetValue={facetValue as StableIdStringArrayFacetValue}
+    return <StableIdStringFacetView facetValue={facetValue as EntityOptionsArrayFacetValue}
       updateValue={updateValue}/>
   }
   return checkExhaustiveFacetType(facetType, <></>)

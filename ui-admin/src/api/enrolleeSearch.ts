@@ -59,7 +59,7 @@ export class IntRangeFacetValue implements IFacetValue {
   }
 }
 
-export class StableIdStringValue {
+export class EntityOptionsValue {
   stableId: string | null
 
   values: string[]
@@ -73,13 +73,13 @@ export class StableIdStringValue {
     return this.values.length === 0
   }
 }
-export type StableIdStringArrayFacetValueFields = { values: StableIdStringValue[] }
-export class StableIdStringArrayFacetValue implements IFacetValue {
-  values: StableIdStringValue[]
+export type EntityOptionsArrayFacetValueFields = { values: EntityOptionsValue[] }
+export class EntityOptionsArrayFacetValue implements IFacetValue {
+  values: EntityOptionsValue[]
 
-  facet: StableIdStringArrayFacet
+  facet: EntityOptionsArrayFacet
 
-  constructor(facet: StableIdStringArrayFacet, facetVal: StableIdStringArrayFacetValueFields = { values: [] }) {
+  constructor(facet: EntityOptionsArrayFacet, facetVal: EntityOptionsArrayFacetValueFields = { values: [] }) {
     this.values = facetVal.values
     this.facet = facet
   }
@@ -90,7 +90,7 @@ export class StableIdStringArrayFacetValue implements IFacetValue {
 }
 
 export type FacetValue =  StringOptionsFacetValue | IntRangeFacetValue |
-    StableIdStringArrayFacetValue | StringFacetValue
+    EntityOptionsArrayFacetValue | StringFacetValue
 
 export type FacetType = | 'INT_RANGE' | 'STRING' | 'STRING_OPTIONS' | 'ENTITY_OPTIONS'
 
@@ -122,13 +122,13 @@ export type StringOptionsFacet = BaseFacet & {
   options: FacetOption[]
 }
 
-export type StableIdStringArrayFacet = BaseFacet & {
+export type EntityOptionsArrayFacet = BaseFacet & {
   facetType: 'ENTITY_OPTIONS',
   options: FacetOption[]
   entities: FacetOption[]
 }
 
-export type Facet = StringFacet | StringOptionsFacet | StableIdStringArrayFacet | IntRangeFacet
+export type Facet = StringFacet | StringOptionsFacet | EntityOptionsArrayFacet | IntRangeFacet
 
 export const SEX_FACET: StringOptionsFacet = {
   category: 'profile',
@@ -182,10 +182,10 @@ export const newFacetValue = (facet: Facet, facetValue?: object): FacetValue => 
   if (facetType === 'INT_RANGE') {
     return new IntRangeFacetValue(facet, facetValue as IntRangeFacetValueFields)
   } else if (facetType === 'ENTITY_OPTIONS') {
-    const newValues = facetValue ? (facetValue as StableIdStringArrayFacetValueFields).values.map(stableIdVal =>
-      new StableIdStringValue(stableIdVal.stableId, stableIdVal.values)
+    const newValues = facetValue ? (facetValue as EntityOptionsArrayFacetValueFields).values.map(stableIdVal =>
+      new EntityOptionsValue(stableIdVal.stableId, stableIdVal.values)
     ) : []
-    return new StableIdStringArrayFacetValue(facet, { values: newValues })
+    return new EntityOptionsArrayFacetValue(facet, { values: newValues })
   } else if (facetType === 'STRING_OPTIONS') {
     return new StringOptionsFacetValue(facet, facetValue as StringFacetValueFields)
   } else if (facetType === 'STRING') {
@@ -232,32 +232,4 @@ export const facetValuesFromString = (paramString: string, facets: Facet[]): Fac
     }
   }
   return facetValues
-}
-
-/**
- * Converts a facet value into a string for display in the form: "Facet Label: value"
- */
-export const facetNameAndValueString = (facetValue: FacetValue): string => {
-  const facet = facetValue.facet
-  const facetLabel = facet.label
-
-  const facetType = facet.facetType
-  let value = ''
-  if (facetType === 'INT_RANGE') {
-    const intValue = facetValue as IntRangeFacetValueFields
-    value = `${intValue.min ?? '0'} to ${intValue.max ?? ''}`
-  } else if (facetType === 'ENTITY_OPTIONS') {
-    if (facetValue) {
-      value = (facetValue as StableIdStringArrayFacetValueFields).values.map(entityToValues => {
-        const entityLabel = facet.entities.find(entity => entity.value === entityToValues.stableId)?.label ?? ''
-        const optionVals = entityToValues.values.map(val => facet.options.find(opt => opt.value === val)?.label ?? '')
-        return `${entityLabel}: ${optionVals.join(', ')}`
-      }).join('; ')
-    }
-  } else if (facetType === 'STRING_OPTIONS' || facetType === 'STRING') {
-    const stringValue = facetValue as StringFacetValueFields
-    value = stringValue.values.join(', ')
-  }
-
-  return `${facetLabel}: ${value}`
 }

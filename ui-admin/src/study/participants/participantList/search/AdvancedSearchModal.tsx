@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import EnrolleeSearchFacets from '../facets/EnrolleeSearchFacets'
-import { Facet, FacetValue } from '../../../../api/enrolleeSearch'
+import { Facet, FacetValue } from 'api/enrolleeSearch'
 
 /**
  * Implements a modal dialog for specifying specific search criteria for the participant list.
@@ -25,7 +25,7 @@ const AdvancedSearchModal = ({ onDismiss, updateFacetValues, facetValues, search
 
   return <Modal show={true} onHide={onDismiss}>
     <Modal.Header closeButton>
-      <Modal.Title>Particpant search</Modal.Title>
+      <Modal.Title>Participant search</Modal.Title>
     </Modal.Header>
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>

@@ -2,7 +2,7 @@ import {
   Facet,
   IntRangeFacetValue,
   newFacetValue,
-  facetValuesToString, StableIdStringArrayFacetValue,
+  facetValuesToString, EntityOptionsArrayFacetValue,
   StringOptionsFacetValue, facetValuesFromString
 } from './enrolleeSearch'
 
@@ -74,14 +74,14 @@ describe('enrolleeSearch newFacetValue', () => {
   })
 
   it('gets a default value for combined string array facets', () => {
-    const facetVal: StableIdStringArrayFacetValue = newFacetValue(stableIdFacet) as StableIdStringArrayFacetValue
+    const facetVal: EntityOptionsArrayFacetValue = newFacetValue(stableIdFacet) as EntityOptionsArrayFacetValue
     expect(facetVal.isDefault()).toEqual(true)
     expect(facetVal.values).toEqual([])
   })
 
   it('gets a facet value with specified value for  combined string array facets', () => {
-    const facetVal: StableIdStringArrayFacetValue = newFacetValue(stableIdFacet,
-      { values: [{ stableId: 'oh_oh_consent', values: ['COMPLETE'] }] }) as StableIdStringArrayFacetValue
+    const facetVal: EntityOptionsArrayFacetValue = newFacetValue(stableIdFacet,
+      { values: [{ stableId: 'oh_oh_consent', values: ['COMPLETE'] }] }) as EntityOptionsArrayFacetValue
     expect(facetVal.isDefault()).toEqual(false)
     expect(facetVal.values).toEqual([{ stableId: 'oh_oh_consent', values: ['COMPLETE'] }])
   })

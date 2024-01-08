@@ -23,7 +23,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import AdHocEmailModal from '../AdHocEmailModal'
-import { ALL_FACETS, Facet, facetValuesFromString } from 'api/enrolleeSearch'
+import { ALL_FACETS, Facet, FacetValue, facetValuesFromString, facetValuesToString } from 'api/enrolleeSearch'
 import { currentIsoDate, instantToDefaultString } from 'util/timeUtils'
 import { useLoadingEffect } from 'api/api-utils'
 import TableClientPagination from 'util/TablePagination'
@@ -35,6 +35,7 @@ import _cloneDeep from 'lodash/cloneDeep'
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
+  const [searchParams, setSearchParams] = useSearchParams()
   const [participantList, setParticipantList] = useState<EnrolleeSearchResult[]>([])
   const [facets, setFacets] = useState<Facet[]>([])
   const [showEmailModal, setShowEmailModal] = useState(false)
@@ -47,9 +48,16 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     'familyName': false,
     'contactEmail': false
   })
-  const [searchParams] = useSearchParams()
 
-  const facetValues = facetValuesFromString(searchParams.get('facets') ?? '{}', facets)
+  const getFacetValuesFromParams = (facets: Facet[]) => {
+    return facetValuesFromString(searchParams.get('facets') ?? '{}', facets)
+  }
+
+  const updateFacetValues = (facetValues: FacetValue[]) => {
+    searchParams.set('facets', facetValuesToString(facetValues))
+    setSearchParams(searchParams)
+  }
+
   const { paginationState, preferredNumRowsKey } = useRoutableTablePaging('participantList')
 
   const columns = useMemo<ColumnDef<EnrolleeSearchResult, string>[]>(() => [{
@@ -156,14 +164,15 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     const criteria: Facet[] = _cloneDeep(ALL_FACETS)
     criteria.push(...searchFacets as Facet[])
     setFacets(criteria)
+    return criteria
   }
 
   const { isLoading } = useLoadingEffect(async () => {
     const res = await Api.getSearchFacets(portal.shortcode,
       study.shortcode, currentEnv.environmentName)
-    updateSearchCriteria(res)
+    const criteria = updateSearchCriteria(res)
     const response = await Api.searchEnrollees(portal.shortcode,
-      study.shortcode, currentEnv.environmentName, facetValues)
+      study.shortcode, currentEnv.environmentName, getFacetValuesFromParams(criteria))
     setParticipantList(response)
   }, [portal.shortcode, study.shortcode, currentEnv.environmentName, searchParams.get('facets')])
 
@@ -175,7 +184,8 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
 
   return <div className="ParticipantList container-fluid px-4 py-2">
     { renderPageHeader('Participant List') }
-    <ParticipantSearch facets={facets} facetValues={facetValues}/>
+    <ParticipantSearch facets={facets} facetValues={getFacetValuesFromParams(facets)}
+      updateFacetValues={updateFacetValues}/>
     <LoadingSpinner isLoading={isLoading}>
       <div className="d-flex align-items-center justify-content-between">
         <div className="d-flex">
