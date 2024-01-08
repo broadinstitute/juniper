@@ -769,6 +769,20 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+    delete:
+      summary: deletes the notification config by id
+      tags: [ notificationConfig ]
+      operationId: delete
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: configId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: Successful deletion
+        '500':
+          $ref: '#/components/responses/ServerError'
     patch:
       summary: Since configs are immutable, a new config is made and the current one is deactivated.  The new config is attached to the study and is returned
       tags: [ notificationConfig ]

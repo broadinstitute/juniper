@@ -897,6 +897,15 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async deleteNotificationConfig(portalShortcode: string, studyShortcode: string, envName: string,
+    configId: string): Promise<Response> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/notificationConfigs/${configId}`
+    return await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+  },
+
   async testNotification(portalShortcode: string, envName: string,
     notificationConfigId: string, enrolleeRuleData: object): Promise<NotificationConfig> {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/notificationConfigs/${notificationConfigId}`

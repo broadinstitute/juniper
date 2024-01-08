@@ -79,4 +79,15 @@ public class NotificationConfigController implements NotificationConfigApi {
             portalShortcode, studyShortcode, environmentName, config, adminUser);
     return ResponseEntity.ok(newConfig);
   }
+
+  @Override
+  public ResponseEntity<Void> delete(
+      String portalShortcode, String studyShortcode, String envName, UUID configId) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    notificationConfigExtService.delete(
+        operator, portalShortcode, studyShortcode, environmentName, configId);
+
+    return ResponseEntity.noContent().build();
+  }
 }
