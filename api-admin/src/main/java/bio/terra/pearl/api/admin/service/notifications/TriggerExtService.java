@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.notification.NotificationDispatcher;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
@@ -13,7 +14,6 @@ import bio.terra.pearl.core.service.portal.exception.PortalEnvironmentMissing;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.exception.StudyEnvironmentMissing;
-import jakarta.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,12 +42,12 @@ public class TriggerExtService {
   }
 
   public List<Trigger> findForStudy(
-      AdminUser user,
+      AdminUser operator,
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName) {
-    authUtilService.authUserToPortal(user, portalShortcode);
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    authUtilService.authUserToPortal(operator, portalShortcode);
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     StudyEnvironment studyEnvironment =
         studyEnvironmentService
             .findByStudy(studyShortcode, environmentName)
@@ -59,13 +59,13 @@ public class TriggerExtService {
 
   /** Gets the config specified by id, and confirms it belongs to the given portal and study */
   public Optional<Trigger> find(
-      AdminUser user,
+      AdminUser operator,
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
       UUID configId) {
-    authUtilService.authUserToPortal(user, portalShortcode);
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    authUtilService.authUserToPortal(operator, portalShortcode);
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     PortalEnvironment portalEnvironment =
         portalEnvironmentService
             .findOne(portalShortcode, environmentName)
@@ -96,7 +96,7 @@ public class TriggerExtService {
     /** find takes care of auth */
     Trigger action =
         find(operator, portalShortcode, studyShortcode, environmentName, actionId)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException("Could not find trigger"));
     /** for now, the only type of action this supports is sending email */
     notificationDispatcher.dispatchTestNotification(action, enrolleeRuleData);
   }
@@ -114,11 +114,11 @@ public class TriggerExtService {
       EnvironmentName environmentName,
       UUID configId,
       Trigger update,
-      AdminUser user) {
-    authUtilService.authUserToPortal(user, portalShortcode);
+      AdminUser operator) {
+    authUtilService.authUserToPortal(operator, portalShortcode);
     PortalEnvironment portalEnvironment =
         portalEnvironmentService.findOne(portalShortcode, environmentName).get();
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     StudyEnvironment studyEnvironment =
         studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
     Trigger existing = triggerService.find(configId).get();
@@ -141,19 +141,42 @@ public class TriggerExtService {
       String studyShortcode,
       EnvironmentName environmentName,
       Trigger newConfig,
-      AdminUser user) {
-    authUtilService.authUserToPortal(user, portalShortcode);
+      AdminUser operator) {
+    authUtilService.authUserToPortal(operator, portalShortcode);
     PortalEnvironment portalEnvironment =
         portalEnvironmentService
             .findOne(portalShortcode, environmentName)
             .orElseThrow(PortalEnvironmentMissing::new);
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     StudyEnvironment studyEnvironment =
         studyEnvironmentService
             .findByStudy(studyShortcode, environmentName)
             .orElseThrow(StudyEnvironmentMissing::new);
 
     return create(newConfig, studyEnvironment, portalEnvironment);
+  }
+
+  /**
+   * Deletes the config specified by id, ensuring it belongs the appropriate study and environment.
+   * Delete is "soft" - the entity stays in the database in order to keep records of notifications,
+   * but deactivated by setting `active = false`.
+   */
+  @Transactional
+  public void delete(
+      AdminUser operator,
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName environmentName,
+      UUID configId) {
+    Optional<Trigger> configOpt =
+        this.find(operator, portalShortcode, studyShortcode, environmentName, configId);
+    if (configOpt.isEmpty()) {
+      throw new NotFoundException("Could not find notification config.");
+    }
+    Trigger config = configOpt.get();
+
+    config.setActive(false);
+    triggerService.update(config);
   }
 
   /** confirms the given config is associated with the given study and portal environments */

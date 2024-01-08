@@ -120,6 +120,16 @@ public class TriggerController implements TriggerApi {
     return ResponseEntity.ok(newConfig);
   }
 
+  @Override
+  public ResponseEntity<Void> delete(
+      String portalShortcode, String studyShortcode, String envName, UUID configId) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    triggerExtService.delete(operator, portalShortcode, studyShortcode, environmentName, configId);
+
+    return ResponseEntity.noContent().build();
+  }
+
   /** object for specifying an adhoc notification. */
   public record AdHocNotification(
       List<String> enrolleeShortcodes, UUID triggerId, Map<String, String> customMessages) {}

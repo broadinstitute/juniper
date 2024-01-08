@@ -10,6 +10,7 @@ import { doApiLoad, useLoadingEffect } from 'api/api-utils'
 import { LoadedPortalContextT } from 'portal/PortalProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
 import EmailTemplateEditor from './EmailTemplateEditor'
+import { Modal } from 'react-bootstrap'
 
 const configTypeOptions = [{ label: 'Event', value: 'EVENT' }, { label: 'Task reminder', value: 'TASK_REMINDER' },
   { label: 'Ad hoc', value: 'AD_HOC' }]
@@ -22,10 +23,15 @@ const taskTypeOptions = [{ label: 'Survey', value: 'SURVEY' }, { label: 'Consent
 
 
 /** for viewing and editing a notification config.  saving not yet implemented */
-export default function TriggerView({ studyEnvContext, portalContext }:
-{studyEnvContext: StudyEnvContextT, portalContext: LoadedPortalContextT}) {
+export default function TriggerView({ studyEnvContext, portalContext, onDelete }:
+                                                 {
+                                                   studyEnvContext: StudyEnvContextT,
+                                                   portalContext: LoadedPortalContextT,
+                                                   onDelete: () => void
+                                                 }) {
   const { currentEnv, portal, study, currentEnvPath } = studyEnvContext
   const [showSendModal, setShowSendModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
   const navigate = useNavigate()
 
   const configId = useParams().configId
@@ -50,6 +56,13 @@ export default function TriggerView({ studyEnvContext, portalContext }:
       await portalContext.reloadPortal(portal.shortcode)
       navigate(`${currentEnvPath}/notificationContent/configs/${savedConfig.id}`)
     }, { setIsLoading })
+  }
+
+  const deleteConfig = async () => {
+    if (configId) {
+      await Api.deleteTrigger(portal.shortcode, study.shortcode, currentEnv.environmentName, configId)
+      onDelete()
+    }
   }
 
   return <div>
@@ -114,18 +127,34 @@ export default function TriggerView({ studyEnvContext, portalContext }:
         <button type="button" className="btn btn-primary" onClick={saveConfig}>Save</button>
         <button type="button" className="btn btn-secondary ms-4"
           onClick={() => setShowSendModal(true)}>Send test email</button>
+        <button type="button" className="btn btn-danger ms-4" onClick={() => setShowDeleteModal(true)}>Delete</button>
       </div>
       {showSendModal && <TestEmailSender studyEnvParams={{
         portalShortcode: portal.shortcode,
         envName: currentEnv.environmentName, studyShortcode: study.shortcode
       }}
       onDismiss={() => setShowSendModal(false)} trigger={workingConfig}/> }
+      {showDeleteModal && (
+        <Modal show className="modal" onHide={() => setShowDeleteModal(false)}>
+          <Modal.Header closeButton className="danger"><strong>Delete Notification Config</strong></Modal.Header>
+          <Modal.Body>
+            <p className="fst-italic">
+              Are you sure you want to delete this notification configuration? This cannot be undone.
+            </p>
+          </Modal.Body>
+          <Modal.Footer>
+            <button type="button" className="btn btn-secondary" onClick={() => setShowDeleteModal(false)}>Cancel
+            </button>
+            <button type="button" className="btn btn-danger" onClick={deleteConfig}>Delete</button>
+          </Modal.Footer>
+        </Modal>
+      )}
     </form> }
     <div>
-      Note the preview above does not guarantee how the email will appear in all browsers and clients.  To test this,
-        use the &apos;Send test email&apos; button to send test emails to a given email address.
+      Note the preview above does not guarantee how the email will appear in all browsers and clients. To test this,
+      use the &apos;Send test email&apos; button to send test emails to a given email address.
     </div>
-    { isLoading && <LoadingSpinner/> }
+    {isLoading && <LoadingSpinner/>}
   </div>
 }
 

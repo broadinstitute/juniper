@@ -50,6 +50,11 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
     setShowCreateModal(false)
   }
 
+  const onDelete = () => {
+    reload()
+    navigate('')
+  }
+
   return <div className="container-fluid px-4 py-2">
     { renderPageHeader('Participant email configuration') }
     <div className="d-flex">
@@ -84,7 +89,8 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
       <div className="flex-grow-1 bg-white p-3">
         <Routes>
           <Route path="configs/:configId"
-            element={<TriggerView studyEnvContext={studyEnvContext} portalContext={portalContext}/>}/>
+            element={<TriggerView studyEnvContext={studyEnvContext}
+              portalContext={portalContext} onDelete={onDelete}/>}/>
         </Routes>
         <Outlet/>
       </div>
