@@ -98,9 +98,7 @@ test('allows deletion of notification config', async () => {
 
   await waitFor(() => expect(screen.getByText('Delete Notification Config')).toBeInTheDocument())
 
-  //screen.debug(screen.getByText('Delete Notification Config\n'))
-  // modal has popped up now
-
+  // modal has popped up now, so delete
   const deleteButtons = screen.getAllByText('Delete')
 
   // find the button which is inside a modal

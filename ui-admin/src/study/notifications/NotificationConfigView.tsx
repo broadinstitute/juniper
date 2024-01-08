@@ -132,7 +132,7 @@ export default function NotificationConfigView({ studyEnvContext, portalContext,
       {showSendModal && <TestEmailSender portalShortcode={portal.shortcode} environmentName={currentEnv.environmentName}
         onDismiss={() => setShowSendModal(false)} notificationConfig={workingConfig}/> }
       {showDeleteModal && (
-        <Modal show className="modal-lg" onHide={() => setShowDeleteModal(false)}>
+        <Modal show className="modal" onHide={() => setShowDeleteModal(false)}>
           <Modal.Header closeButton className="danger"><strong>Delete Notification Config</strong></Modal.Header>
           <Modal.Body>
             <p className="fst-italic">
