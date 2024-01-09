@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,6 +40,8 @@ public class ProfileService extends DataAuditedService<Profile, ProfileDao> {
 
     @Transactional
     public Profile updateWithMailingAddress(Profile profile, DataAuditInfo auditInfo) {
+        Profile updatedProfile = this.update(profile, auditInfo);
+
         MailingAddress mailingAddress = profile.getMailingAddress();
         if (mailingAddress != null) {
             if (profile.getMailingAddressId() == null) {
@@ -49,7 +52,7 @@ public class ProfileService extends DataAuditedService<Profile, ProfileDao> {
                 mailingAddressDao.update(mailingAddress);
             }
         }
-        Profile updatedProfile = this.update(profile, auditInfo);
+
         updatedProfile.setMailingAddress(mailingAddress);
         return updatedProfile;
     }
@@ -60,5 +63,14 @@ public class ProfileService extends DataAuditedService<Profile, ProfileDao> {
         if (profile.getMailingAddressId() != null) {
             mailingAddressDao.delete(profile.getMailingAddressId());
         }
+    }
+
+    @Override
+    protected Profile processModelBeforeAuditing(Profile p) {
+        // make sure that the audit is saving the mailing address as part of the profile
+        if (Objects.isNull(p.getMailingAddress()) && Objects.nonNull(p.getMailingAddressId())) {
+            mailingAddressDao.find(p.getMailingAddressId()).ifPresent(p::setMailingAddress);
+        }
+        return p;
     }
 }

@@ -5,6 +5,107 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { instantToDefaultString } from 'util/timeUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { isNil } from 'lodash'
+
+
+const createSubDataChangeRecord = (
+  original: DataChangeRecord, fieldName: string, oldValue: string, newValue: string
+): DataChangeRecord => {
+  return {
+    ...original,
+    fieldName,
+    oldValue,
+    newValue
+  }
+}
+
+const getNonInternalFields = (obj: any): string[] => {
+  return Object.keys(obj)
+    .filter(field => !field.endsWith('Id'))
+    .filter(field => !internalFields.includes(field))
+}
+
+const internalFields = ['id', 'createdAt', 'lastUpdatedAt']
+const getAllFields = (obj1: any, obj2: any): Set<string> => {
+  return new Set(
+    getNonInternalFields(obj1)
+      .concat(...getNonInternalFields(obj2))
+  )
+}
+
+const traverseObjectAndCreateDataChangeRecords = (
+  parent: DataChangeRecord, newObject: any, oldObject: any, nestedFields: string[] = []
+): ReadonlyArray<DataChangeRecord> => {
+  const changes: DataChangeRecord[] = []
+  const fieldPrefix = nestedFields.join('.') + (nestedFields.length > 0 ? '.' : '')
+
+  // case 1: new object is null, create deletion records for each field in the new object.
+  //         technically, this is a shallow traversal, but we are unlikely to make deeply
+  //         nested objects
+  if (isNil(newObject)) {
+    return getNonInternalFields(oldObject).map(field => {
+      return createSubDataChangeRecord(parent, fieldPrefix + field, oldObject[field], '')
+    })
+  }
+
+  // case 2: opposite of case one, old object is null, create creation records for each
+  if (isNil(oldObject)) {
+    return getNonInternalFields(newObject).map(field => {
+      return createSubDataChangeRecord(parent, fieldPrefix + field, '', newObject[field])
+    })
+  }
+
+
+  // now that we know both objects are valid, recurse through all the
+  // fields to get differences between them
+  getAllFields(newObject, oldObject).forEach((field: string) => {
+    const oldValue = oldObject[field]
+    const newValue = newObject[field]
+    console.log(oldValue)
+
+    // case 3: either of the fields is an object - need to recurse
+    //         another level deeper into the object
+    if ((typeof newValue === 'object' && !Array.isArray(newValue))
+      || (typeof oldValue === 'object' && !Array.isArray(oldValue))) {
+      console.log('does this ever actually happen')
+      console.log(oldValue)
+      console.log(newValue)
+      // if either is an object, we should recurse deeper
+      changes.push(...traverseObjectAndCreateDataChangeRecords(parent, newValue, oldValue, nestedFields.concat(field)))
+      return
+    }
+
+    // case 4: neither are an object, so now it's a simple string
+    //         conversion and comparison
+    const oldValueString = (isNil(oldValue) ? '' : oldValue.toString())
+    const newValueString = (isNil(newValue) ? '' : newValue.toString())
+
+    if (oldValueString !== newValueString) {
+      changes.push(createSubDataChangeRecord(parent, fieldPrefix + field, oldValueString, newValueString))
+    }
+  })
+  return changes
+}
+
+// some records contain whole objects, so we want
+// to manually look into the object to see what
+// fields changed, which could more than one field
+const flattenDataChangeRecords = (record: DataChangeRecord): ReadonlyArray<DataChangeRecord> => {
+  // if a fieldName is specified, then only one field changed,
+  // so just return this object
+  if (!isNil(record.fieldName) && record.fieldName.length > 0) {
+    return [record]
+  }
+
+  try {
+    const newObject: object = JSON.parse(record.newValue)
+    const oldObject: object = JSON.parse(record.oldValue)
+
+    return traverseObjectAndCreateDataChangeRecords(record, newObject, oldObject)
+  } catch (e: unknown) {
+    return [record]
+  }
+}
 
 /** loads the list of notifications for a given enrollee and displays them in the UI */
 export default function DataChangeRecords({ enrollee, studyEnvContext }:
@@ -16,7 +117,8 @@ export default function DataChangeRecords({ enrollee, studyEnvContext }:
   useEffect(() => {
     Api.fetchEnrolleeChangeRecords(portal.shortcode, study.shortcode, currentEnv.environmentName, enrollee.shortcode)
       .then(response => {
-        setNotifications(response)
+        console.log(response)
+        setNotifications(response.flatMap(flattenDataChangeRecords))
         setIsLoading(false)
       })
   }, [enrollee.shortcode])
@@ -28,17 +130,21 @@ export default function DataChangeRecords({ enrollee, studyEnvContext }:
           <tr>
             <th>time</th>
             <th>model</th>
+            <th>field</th>
             <th>update</th>
             <th>source</th>
           </tr>
         </thead>
         <tbody>
-          {notifications.map(changeRecord => <tr key={changeRecord.id}>
+          {notifications.map((changeRecord, idx) => <tr key={idx}>
             <td>
               {instantToDefaultString(changeRecord.createdAt)}
             </td>
             <td>
               {changeRecord.modelName}
+            </td>
+            <td>
+              {changeRecord.fieldName}
             </td>
             <td>
               {changeRecord.oldValue} <FontAwesomeIcon icon={faArrowRight}/> {changeRecord.newValue}
