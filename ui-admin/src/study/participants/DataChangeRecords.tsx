@@ -19,14 +19,14 @@ const createSubDataChangeRecord = (
   }
 }
 
-const getNonInternalFields = (obj: any): string[] => {
+const getNonInternalFields = (obj: object): string[] => {
   return Object.keys(obj)
     .filter(field => !field.endsWith('Id'))
     .filter(field => !internalFields.includes(field))
 }
 
 const internalFields = ['id', 'createdAt', 'lastUpdatedAt']
-const getAllFields = (obj1: any, obj2: any): Set<string> => {
+const getAllFields = (obj1: object, obj2: object): Set<string> => {
   return new Set(
     getNonInternalFields(obj1)
       .concat(...getNonInternalFields(obj2))
@@ -34,7 +34,10 @@ const getAllFields = (obj1: any, obj2: any): Set<string> => {
 }
 
 const traverseObjectAndCreateDataChangeRecords = (
-  parent: DataChangeRecord, newObject: any, oldObject: any, nestedFields: string[] = []
+  parent: DataChangeRecord,
+  newObject: { [index: string]: object },
+  oldObject: { [index: string]: object },
+  nestedFields: string[] = []
 ): ReadonlyArray<DataChangeRecord> => {
   const changes: DataChangeRecord[] = []
   const fieldPrefix = nestedFields.join('.') + (nestedFields.length > 0 ? '.' : '')
@@ -43,15 +46,15 @@ const traverseObjectAndCreateDataChangeRecords = (
   //         technically, this is a shallow traversal, but we are unlikely to make deeply
   //         nested objects
   if (isNil(newObject)) {
-    return getNonInternalFields(oldObject).map(field => {
-      return createSubDataChangeRecord(parent, fieldPrefix + field, oldObject[field], '')
+    return getNonInternalFields(oldObject).map((field: string) => {
+      return createSubDataChangeRecord(parent, fieldPrefix + field, oldObject[field].toString(), '')
     })
   }
 
   // case 2: opposite of case one, old object is null, create creation records for each
   if (isNil(oldObject)) {
     return getNonInternalFields(newObject).map(field => {
-      return createSubDataChangeRecord(parent, fieldPrefix + field, '', newObject[field])
+      return createSubDataChangeRecord(parent, fieldPrefix + field, '', newObject[field].toString())
     })
   }
 
@@ -67,11 +70,10 @@ const traverseObjectAndCreateDataChangeRecords = (
     //         another level deeper into the object
     if ((typeof newValue === 'object' && !Array.isArray(newValue))
       || (typeof oldValue === 'object' && !Array.isArray(oldValue))) {
-      console.log('does this ever actually happen')
-      console.log(oldValue)
-      console.log(newValue)
       // if either is an object, we should recurse deeper
-      changes.push(...traverseObjectAndCreateDataChangeRecords(parent, newValue, oldValue, nestedFields.concat(field)))
+      changes.push(...traverseObjectAndCreateDataChangeRecords(parent, newValue as {
+        [index: string]: object
+      }, oldValue as { [index: string]: object }, nestedFields.concat(field)))
       return
     }
 
@@ -98,8 +100,8 @@ const flattenDataChangeRecords = (record: DataChangeRecord): ReadonlyArray<DataC
   }
 
   try {
-    const newObject: object = JSON.parse(record.newValue)
-    const oldObject: object = JSON.parse(record.oldValue)
+    const newObject: { [index: string]: object } = JSON.parse(record.newValue)
+    const oldObject: { [index: string]: object } = JSON.parse(record.oldValue)
 
     return traverseObjectAndCreateDataChangeRecords(record, newObject, oldObject)
   } catch (e: unknown) {
