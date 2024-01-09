@@ -15,7 +15,7 @@ export const eventTypeDisplayMap: Record<string, string> = {
 }
 
 /** shows a summary of the notification config */
-export default function NotificationConfigTypeDisplay({ config }: {config?: Trigger}) {
+export default function TriggerTypeDisplay({ config }: {config?: Trigger}) {
   if (!config) {
     return <></>
   }

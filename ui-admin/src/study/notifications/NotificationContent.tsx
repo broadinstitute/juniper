@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { NavLink, Outlet, Route, Routes, useNavigate } from 'react-router-dom'
-import NotificationConfigTypeDisplay, { deliveryTypeDisplayMap } from './NotifcationConfigTypeDisplay'
+import TriggerTypeDisplay, { deliveryTypeDisplayMap } from './TriggerTypeDisplay'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
 import { paramsFromContext, StudyEnvContextT } from '../StudyEnvironmentRouter'
@@ -69,7 +69,7 @@ export default function NotificationContent({ studyEnvContext, portalContext }:
                   .map(config => <li key={config.id} className="mb-2">
                     <div className="d-flex">
                       <NavLink to={`configs/${config.id}`} style={navLinkStyleFunc}>
-                        <NotificationConfigTypeDisplay config={config}/>
+                        <TriggerTypeDisplay config={config}/>
                         <span
                           className="text-muted fst-italic"> ({deliveryTypeDisplayMap[config.deliveryType]})</span>
                       </NavLink>

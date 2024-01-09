@@ -59,7 +59,7 @@ public class StudyPublishingService {
         applyChangesToPreEnrollSurvey(destEnv, envChange.preEnrollSurveyChanges());
         applyChangesToConsents(destEnv, envChange.consentChanges());
         applyChangesToSurveys(destEnv, envChange.surveyChanges());
-        applyChangesToNotificationConfigs(destEnv, envChange.triggerChanges(), destPortalEnvId);
+        applyChangesToTriggers(destEnv, envChange.triggerChanges(), destPortalEnvId);
         return destEnv;
     }
 
@@ -122,7 +122,7 @@ public class StudyPublishingService {
         return destEnv.getConfiguredSurveys();
     }
 
-    protected void applyChangesToNotificationConfigs(StudyEnvironment destEnv, ListChange<Trigger,
+    protected void applyChangesToTriggers(StudyEnvironment destEnv, ListChange<Trigger,
             VersionedConfigChange<EmailTemplate>> listChange, UUID destPortalEnvId) throws Exception {
         for(Trigger config : listChange.addedItems()) {
             config.setStudyEnvironmentId(destEnv.getId());

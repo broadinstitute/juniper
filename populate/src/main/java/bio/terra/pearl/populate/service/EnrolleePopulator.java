@@ -272,7 +272,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     PortalParticipantUser ppUser) {
         List<Trigger> triggers = triggerService.findByStudyEnvironmentId(studyEnvironmentId);
         for (NotificationPopDto notificationPopDto : enrolleeDto.getNotifications()) {
-            Trigger matchedConfig = matchConfigToNotification(triggers, notificationPopDto);
+            Trigger matchedConfig = matchTriggerToNotification(triggers, notificationPopDto);
             notificationPopDto.setTriggerId(matchedConfig.getId());
             notificationPopDto.setStudyEnvironmentId(enrollee.getStudyEnvironmentId());
             notificationPopDto.setEnrolleeId(enrollee.getId());
@@ -283,8 +283,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     }
 
     /** quick-and-dirty match based on types -- this is not robust but it's sufficient for our current testing needs */
-    private Trigger matchConfigToNotification(List<Trigger> triggers,
-                                                      NotificationPopDto notification) {
+    private Trigger matchTriggerToNotification(List<Trigger> triggers,
+                                               NotificationPopDto notification) {
         return triggers.stream().filter(config ->
                 config.getEventType().equals(notification.getTriggerEventType()) &&
                 config.getTriggerType().equals(notification.getTriggerType()) &&

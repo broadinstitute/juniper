@@ -3,7 +3,7 @@ import Api, { Enrollee, Event, Notification, Trigger } from 'api/api'
 import { StudyEnvContextT, triggerPath } from '../../StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { instantToDefaultString } from 'util/timeUtils'
-import NotificationConfigTypeDisplay from '../../notifications/NotifcationConfigTypeDisplay'
+import TriggerTypeDisplay from '../../notifications/TriggerTypeDisplay'
 import { Link } from 'react-router-dom'
 import _capitalize from 'lodash/capitalize'
 import _startCase from 'lodash/startCase'
@@ -33,7 +33,7 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
       header: 'notification/event',
       cell: ({ row }) => {
         return <div>
-          {isNotification(row.original) && <NotificationConfigTypeDisplay config={row.original.trigger}/>}
+          {isNotification(row.original) && <TriggerTypeDisplay config={row.original.trigger}/>}
           {isEvent(row.original) && _capitalize(_startCase(row.original.eventClass))}
         </div>
       }

@@ -81,7 +81,7 @@ public class PortalPublishingService {
 
         applyChangesToPreRegSurvey(destEnv, envChanges.preRegSurveyChanges());
         applyChangesToSiteContent(destEnv, envChanges.siteContentChange());
-        applyChangesToNotificationConfigs(destEnv, envChanges.triggerChanges());
+        applyChangesToTriggers(destEnv, envChanges.triggerChanges());
         applyChangesToParticipantDashboardAlerts(destEnv, envChanges.participantDashboardAlertChanges());
         for(StudyEnvironmentChange studyEnvChange : envChanges.studyEnvChanges()) {
             StudyEnvironment studyEnv = portalDiffService.loadStudyEnvForProcessing(studyEnvChange.studyShortcode(), destEnv.getEnvironmentName());
@@ -134,7 +134,7 @@ public class PortalPublishingService {
         return portalEnvironmentService.update(destEnv);
     }
 
-    protected void applyChangesToNotificationConfigs(PortalEnvironment destEnv, ListChange<Trigger,
+    protected void applyChangesToTriggers(PortalEnvironment destEnv, ListChange<Trigger,
             VersionedConfigChange<EmailTemplate>> listChange) throws Exception {
         for(Trigger config : listChange.addedItems()) {
             config.setPortalEnvironmentId(destEnv.getId());
