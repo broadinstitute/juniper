@@ -13,7 +13,7 @@ test('renders routable config list', async () => {
   const enrollEmailConfig = {
     ...mockNotificationConfig(),
     id: 'event1',
-    notificationType: 'EVENT',
+    triggerType: 'EVENT',
     eventType: 'STUDY_ENROLLMENT'
   }
   const triggers = [
@@ -21,13 +21,13 @@ test('renders routable config list', async () => {
     {
       ...mockNotificationConfig(),
       id: 'reminder1',
-      notificationType: 'TASK_REMINDER',
+      triggerType: 'TASK_REMINDER',
       taskType: 'CONSENT'
     },
     {
       ...mockNotificationConfig(),
       id: 'reminder2',
-      notificationType: 'TASK_REMINDER',
+      triggerType: 'TASK_REMINDER',
       taskType: 'SURVEY'
     }
   ]
@@ -56,21 +56,21 @@ test('allows deletion of notification config', async () => {
   const consentConfig = {
     ...mockNotificationConfig(),
     id: 'reminder1',
-    notificationType: 'TASK_REMINDER',
+    triggerType: 'TASK_REMINDER',
     taskType: 'CONSENT'
   }
   const notificationConfigs = [
     {
       ...mockNotificationConfig(),
       id: 'event1',
-      notificationType: 'EVENT',
+      triggerType: 'EVENT',
       eventType: 'STUDY_ENROLLMENT'
     },
     consentConfig,
     {
       ...mockNotificationConfig(),
       id: 'reminder2',
-      notificationType: 'TASK_REMINDER',
+      triggerType: 'TASK_REMINDER',
       taskType: 'SURVEY'
     }
   ]

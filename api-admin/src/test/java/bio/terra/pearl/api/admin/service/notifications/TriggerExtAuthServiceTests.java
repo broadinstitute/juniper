@@ -7,6 +7,7 @@ import bio.terra.pearl.core.dao.publishing.PortalEnvironmentChangeRecordDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
+import bio.terra.pearl.core.service.notification.NotificationDispatcher;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
@@ -21,12 +22,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @ContextConfiguration(classes = TriggerExtService.class)
 @WebMvcTest
-public class NotifcationConfigExtAuthServiceTests {
+public class TriggerExtAuthServiceTests {
   @Autowired private MockMvc mockMvc;
   @Autowired private TriggerExtService triggerExtService;
 
   @MockBean private AuthUtilService mockAuthUtilService;
-
+  @MockBean private NotificationDispatcher notificationDispatcher;
   @MockBean private TriggerService triggerService;
   @MockBean private StudyEnvironmentService studyEnvironmentService;
   @MockBean private PortalEnvironmentService portalEnvironmentService;
