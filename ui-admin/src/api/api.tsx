@@ -1207,7 +1207,8 @@ export default {
 
   async extractPortal(portalShortcode: string) {
     const url = `${basePopulateUrl()}/portal/${portalShortcode}/extract`
-    return fetch(url, this.getGetInit())
+    const response = await fetch(url, this.getGetInit())
+    return this.processResponse(response)
   },
 
   async populateSurvey(fileName: string, overwrite: boolean, portalShortcode: string) {

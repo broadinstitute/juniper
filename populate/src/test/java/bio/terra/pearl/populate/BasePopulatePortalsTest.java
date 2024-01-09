@@ -11,6 +11,7 @@ import bio.terra.pearl.core.service.participant.ParticipantNoteService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
+import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.AnswerService;
@@ -71,6 +72,8 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     protected EmailTemplateService emailTemplateService;
     @Autowired
     protected ConsentFormService consentFormService;
+    @Autowired
+    protected SiteContentService siteContentService;
 
     protected void setUpEnvironments() {
         for (String fileName : BaseSeedPopulator.ENVIRONMENTS_TO_POPULATE) {
