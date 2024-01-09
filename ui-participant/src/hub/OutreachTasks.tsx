@@ -30,7 +30,7 @@ const useOutreachParams = () => {
 export default function OutreachTasks({ enrollees, studies }: {enrollees: Enrollee[], studies: Study[]}) {
   const navigate = useNavigate()
   const outreachParams = useOutreachParams()
-  const [outreachDetails, setOutreachDetails] = useState<Survey[]>([])
+  const [outreachActivities, setOutreachActivities] = useState<Survey[]>([])
 
   const outreachTasks = enrollees.flatMap(enrollee => enrollee.participantTasks)
     .filter(task => task.taskType === 'OUTREACH')
@@ -55,21 +55,25 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
     })
   }
 
-  const loadOutreachSurveys = async () => {
-    const surveys = await Api.listOutreachSurveys('ourheart', 'JLPWIF')
-    return surveys
+  console.log(enrollees)
+  console.log(outreachParams)
+
+  const loadOutreachActivities = async () => {
+    if (!enrollees) { return }
+    outreachTasks.forEach(task => {
+      const taskStudy = studyForTask(task, studies)
+      const taskEnrollee = enrolleeForTask(task, enrollees)
+      if (!outreachActivities.find(activity => activity.stableId === task.targetStableId)) {
+        Api.listOutreachActivities(taskStudy.shortcode, taskEnrollee.shortcode).then(activities => {
+          setOutreachActivities(oldActivities => [...oldActivities, ...activities])
+        })
+      }
+    })
   }
 
   useEffect(() => {
-    //loads the outreach surveys and sets the state
-    loadOutreachSurveys()
-      .then(response => {
-        setOutreachDetails(response)
-      })
-      .catch(error => {
-        console.log(error)
-      })
-  }, [])
+    loadOutreachActivities()
+  }, [enrollees])
 
   useEffect(() => {
     const matchedTask = outreachTasks.find(task => task.id === outreachParams.taskId)
@@ -88,11 +92,11 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
         const taskUrl = getTaskPath(task, taskEnrollee.shortcode, taskStudy.shortcode)
         // Gutters seem not to work??  So I had to add margins manually
         return <div className="col-md-6 col-sm-12" key={task.id}>
-          <div className="p-4 d-block rounded-3"
+          <div className="p-4 d-block rounded-3 shadow-sm"
             style={{ background: '#fff', minHeight: '6em' }} key={task.id}>
             <h3 className="h5">{task.targetName}</h3>
             <p className="text-muted">
-              {outreachDetails.find(survey => survey.stableId === task.targetStableId)?.blurb}
+              {outreachActivities.find(activity => activity.stableId === task.targetStableId)?.blurb}
             </p>
             <div className="py-3 text-center" style={{ background: 'var(--brand-color-shift-90)' }}>
               <Link to={taskUrl} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">

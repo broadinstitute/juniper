@@ -197,7 +197,7 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async listOutreachSurveys(
+  async listOutreachActivities(
     studyShortcode: string, enrolleeShortcode: string
   ): Promise<Survey[]> {
     const url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}/outreach`

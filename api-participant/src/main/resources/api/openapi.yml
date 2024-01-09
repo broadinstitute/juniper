@@ -233,16 +233,17 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/enrollee/{enrolleeShortcode}/outreach:
     get:
-      summary: List the outreach opportunities (with details) for the signed-in user
+      summary: List the outreach activities available to the signed-in user
       tags: [ outreach ]
-      operationId: listOutreach
+      operationId: listOutreachActivities
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
       responses:
         '200':
-          description: list of outreach objects
+          description: list of outreach activities
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
