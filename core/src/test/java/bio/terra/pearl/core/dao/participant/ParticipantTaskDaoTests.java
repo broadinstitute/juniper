@@ -23,6 +23,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -105,6 +106,28 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
                 Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(1000), List.of(TaskStatus.NEW));
         assertThat(tasksRecentNotification, hasSize(1));
         assertThat(tasksRecentNotification.get(0).getEnrolleeId(), equalTo(enrolleeBundle2.enrollee().getId())); // only the second enrollee's task should appear
+    }
+
+    @Test
+    @Transactional
+    void testFindTasksByStudy(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(testName);
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, testName);
+        var enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnv);
+        var enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnv);
+
+        participantTaskFactory.buildPersisted(enrolleeBundle, "stable_id_1", "task_name1", TaskStatus.NEW, TaskType.CONSENT);
+        participantTaskFactory.buildPersisted(enrolleeBundle, "stable_id_2", "task_name2", TaskStatus.NEW, TaskType.SURVEY);
+        participantTaskFactory.buildPersisted(enrolleeBundle, "stable_id_3", "task_name3", TaskStatus.COMPLETE, TaskType.CONSENT);
+        participantTaskFactory.buildPersisted(enrolleeBundle2, "stable_id_1", "task_name1", TaskStatus.COMPLETE, TaskType.SURVEY);
+
+        List<ParticipantTaskDao.EnrolleeTasks> enrolleeTasks = participantTaskDao.findTasksByStudy(studyEnv.getId());
+        assertThat(enrolleeTasks, hasSize(3));
+        assertThat(enrolleeTasks.stream().map(ParticipantTaskDao.EnrolleeTasks::getTargetStableId).toList(),
+                containsInAnyOrder("stable_id_1", "stable_id_2", "stable_id_3"));
+        assertThat(enrolleeTasks.stream().map(ParticipantTaskDao.EnrolleeTasks::getTargetName).toList(),
+                containsInAnyOrder("task_name1", "task_name2", "task_name3"));
     }
 
     @Autowired

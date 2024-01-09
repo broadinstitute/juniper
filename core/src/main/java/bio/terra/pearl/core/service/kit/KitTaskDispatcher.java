@@ -68,6 +68,7 @@ public class KitTaskDispatcher {
                 .taskOrder(0) // for now, no particular order among kit tasks
                 .taskType(TaskType.KIT_REQUEST)
                 .targetName("Kit Request")
+                .targetStableId("kit_request")
                 .status(TaskStatus.NEW)
                 .kitRequestId(kitRequest.getId())
                 .build();

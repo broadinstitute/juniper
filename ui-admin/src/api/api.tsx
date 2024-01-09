@@ -18,7 +18,7 @@ import {
   Survey,
   SurveyResponse
 } from '@juniper/ui-core'
-import { FacetValue, facetValuesToString } from './enrolleeSearch'
+import { facetValuesToString, FacetValue, FacetType, FacetOption } from './enrolleeSearch'
 import { StudyEnvParams } from '../study/StudyEnvironmentRouter'
 
 export type {
@@ -77,6 +77,15 @@ export type PortalAdminUser = {
 export type StudyEnvironmentUpdate = {
   id: string,
   preEnrollSurveyId: string
+}
+
+export type EnrolleeSearchFacet = {
+  keyName: string,
+  category: string,
+  label: string,
+  facetType: FacetType,
+  entities: FacetOption[]
+  options: FacetOption[]
 }
 
 export type EnrolleeSearchResult = {
@@ -710,6 +719,13 @@ export default {
   async getSiteContentVersions(portalShortcode: string, stableId: string) {
     const response = await fetch(`${basePortalUrl(portalShortcode)}/siteContents/${stableId}`,
       this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async getSearchFacets(portalShortcode: string, studyShortcode: string, envName: string):
+    Promise<EnrolleeSearchFacet[]> {
+    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/facets`
+    const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
