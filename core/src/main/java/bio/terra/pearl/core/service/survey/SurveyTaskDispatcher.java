@@ -107,9 +107,7 @@ public class SurveyTaskDispatcher {
     public static boolean isDuplicateTask(StudyEnvironmentSurvey studySurvey, ParticipantTask task,
                                    Set<ParticipantTask> allTasks) {
         return !allTasks.stream()
-                .filter(existingTask -> (
-                        existingTask.getTaskType() == TaskType.SURVEY ||
-                                existingTask.getTaskType() == TaskType.OUTREACH) &&
+                .filter(existingTask -> (existingTask.getTaskType() == TaskType.SURVEY) &&
                         existingTask.getTargetStableId().equals(task.getTargetStableId()) &&
                         !isRecurrenceWindowOpen(studySurvey, existingTask))
                 .toList().isEmpty();

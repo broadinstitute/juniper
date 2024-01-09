@@ -180,7 +180,6 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                 task.setStatus(TaskStatus.IN_PROGRESS);
             }
         }
-        System.out.println(task.getStatus());
         return participantTaskService.update(task);
     }
 
