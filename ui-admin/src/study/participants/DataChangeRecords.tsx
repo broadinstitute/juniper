@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import Api, { DataChangeRecord, Enrollee } from 'api/api'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
@@ -6,6 +6,9 @@ import { instantToDefaultString } from 'util/timeUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { isNil } from 'lodash'
+import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
+import { basicTableLayout } from '../../util/tableUtils'
+import { useLoadingEffect } from '../../api/api-utils'
 
 
 const createSubDataChangeRecord = (
@@ -114,50 +117,66 @@ export default function DataChangeRecords({ enrollee, studyEnvContext }:
                                                 {enrollee: Enrollee, studyEnvContext: StudyEnvContextT }) {
   const { currentEnv, study, portal } = studyEnvContext
   const [notifications, setNotifications] = useState<DataChangeRecord[]>([])
-  const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    Api.fetchEnrolleeChangeRecords(portal.shortcode, study.shortcode, currentEnv.environmentName, enrollee.shortcode)
-      .then(response => {
-        console.log(response)
-        setNotifications(response.flatMap(flattenDataChangeRecords))
-        setIsLoading(false)
-      })
+  const [sorting, setSorting] = React.useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
+
+  const columns: ColumnDef<DataChangeRecord>[] = [
+    {
+      header: 'Time',
+      accessorKey: 'createdAt',
+      cell: info => instantToDefaultString(info.getValue() as number)
+    },
+    {
+      header: 'Model',
+      accessorKey: 'modelName'
+    },
+    {
+      header: 'Field',
+      accessorKey: 'fieldName'
+    },
+    {
+      header: 'Update',
+      cell: ({ row }) => (
+        <div>
+          {row.original.oldValue} <FontAwesomeIcon icon={faArrowRight}/> {row.original.newValue}
+        </div>
+      )
+    },
+    {
+      header: 'Source',
+      cell: ({ row }) => (
+        row.original.responsibleUserId ? 'Participant' : 'Admin'
+      )
+    }
+  ]
+
+  const table = useReactTable({
+    data: notifications,
+    columns,
+    state: {
+      sorting
+    },
+    enableRowSelection: true,
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    debugTable: true
+  })
+
+
+  const { isLoading } = useLoadingEffect(async () => {
+    const response = await Api.fetchEnrolleeChangeRecords(
+      portal.shortcode,
+      study.shortcode,
+      currentEnv.environmentName,
+      enrollee.shortcode
+    )
+    setNotifications(response.flatMap(flattenDataChangeRecords))
   }, [enrollee.shortcode])
   return <div>
     <h5>Audit history</h5>
     <LoadingSpinner isLoading={isLoading}>
-      <table className="table table-striped">
-        <thead >
-          <tr>
-            <th>time</th>
-            <th>model</th>
-            <th>field</th>
-            <th>update</th>
-            <th>source</th>
-          </tr>
-        </thead>
-        <tbody>
-          {notifications.map((changeRecord, idx) => <tr key={idx}>
-            <td>
-              {instantToDefaultString(changeRecord.createdAt)}
-            </td>
-            <td>
-              {changeRecord.modelName}
-            </td>
-            <td>
-              {changeRecord.fieldName}
-            </td>
-            <td>
-              {changeRecord.oldValue} <FontAwesomeIcon icon={faArrowRight}/> {changeRecord.newValue}
-            </td>
-            <td>
-              {changeRecord.responsibleUserId ? 'Participant' : 'Admin'}
-            </td>
-          </tr>)}
-        </tbody>
-      </table>
-
+      {basicTableLayout(table)}
     </LoadingSpinner>
   </div>
 }
