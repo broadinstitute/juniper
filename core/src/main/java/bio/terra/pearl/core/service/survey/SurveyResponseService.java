@@ -107,7 +107,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     }
 
     /**
-     * Creates a survey response and fires appropriate downstream events. 
+     * Creates a survey response and fires appropriate downstream events.
      */
     @Transactional
     public HubResponse<SurveyResponse> updateResponse(SurveyResponse responseDto, UUID participantUserId,
@@ -180,6 +180,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                 task.setStatus(TaskStatus.IN_PROGRESS);
             }
         }
+        System.out.println(task.getStatus());
         return participantTaskService.update(task);
     }
 

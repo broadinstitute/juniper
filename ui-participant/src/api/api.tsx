@@ -7,6 +7,7 @@ import {
   PreregistrationResponse,
   StudyEnvironmentConsent,
   StudyEnvironmentSurvey,
+  Survey,
   SurveyResponse
 } from '@juniper/ui-core'
 import { defaultApiErrorHandle } from 'util/error-utils'
@@ -192,6 +193,14 @@ export default {
 
   async getPortalEnvDashboardAlerts(portalShortcode: string, envName: string): Promise<ParticipantDashboardAlert[]> {
     const url = `${API_ROOT}/public/portals/v1/${portalShortcode}/env/${envName}/dashboard/config/alerts`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async listOutreachSurveys(
+    studyShortcode: string, enrolleeShortcode: string
+  ): Promise<Survey[]> {
+    const url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}/outreach`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },

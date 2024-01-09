@@ -231,6 +231,21 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/enrollee/{enrolleeShortcode}/outreach:
+    get:
+      summary: List the outreach opportunities (with details) for the signed-in user
+      tags: [ outreach ]
+      operationId: listOutreach
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: list of outreach objects
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/enrollee/{enrolleeShortcode}/surveys/{stableId}/{version}:
     get:
       summary: Gets a survey and an active response if it exists for the signed-in user
