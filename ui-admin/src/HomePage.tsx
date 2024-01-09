@@ -4,16 +4,19 @@ import { studyParticipantsPath } from './portal/PortalRouter'
 import { useNavContext } from './navbar/NavContextProvider'
 import { getImageUrl } from './api/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { Button } from './components/forms/Button'
+import { faEllipsisH, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { Button, IconButton } from './components/forms/Button'
 import CreateNewStudyModal from './study/CreateNewStudyModal'
 import { useUser } from './user/UserProvider'
+import DeleteStudyModal from './study/adminTasks/DeleteStudyModal'
+
 
 /** Shows a user the list of portals available to them */
 function HomePage() {
-  const { portalList } = useNavContext()
+  const { portalList, reload } = useNavContext()
   const { user } = useUser()
   const [showNewStudyModal, setShowNewStudyModal] = useState(false)
+  const [showDeleteStudyModal, setShowDeleteStudyModal] = useState(false)
 
   return <div className="container">
     <h1 className="h2">Juniper Home</h1>
@@ -31,6 +34,25 @@ function HomePage() {
                   className="me-3" style={{ maxHeight: '1.5em' }}/>
                 {study.name}
               </Link>
+              <span className="dropdown">
+                <span className="nav-item dropdown ms-1">
+                  <IconButton icon={faEllipsisH}  data-bs-toggle="dropdown"
+                              aria-expanded="false" aria-label="configure study"/>
+                  <div className="dropdown-menu">
+                    <ul className="list-unstyled">
+                      <li>
+                        <button className="dropdown-item"
+                                onClick={() => setShowDeleteStudyModal(!showDeleteStudyModal)}>Delete
+                          { showDeleteStudyModal && <DeleteStudyModal study={study}
+                                                                      portal={portal}
+                                                                      onDismiss={() => setShowDeleteStudyModal(false)}
+                                                                      reload={reload}/> }
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </span>
+              </span>
             </li>
           })
         )}

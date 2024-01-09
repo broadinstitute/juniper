@@ -509,6 +509,15 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async deleteStudy(portalShortcode: string, studyShortCode: string): Promise<Response> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortCode}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
+  },
+
   async getPortalImages(portalShortcode: string): Promise<SiteImageMetadata[]> {
     const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/siteImages`, this.getGetInit())
     return await this.processJsonResponse(response)
