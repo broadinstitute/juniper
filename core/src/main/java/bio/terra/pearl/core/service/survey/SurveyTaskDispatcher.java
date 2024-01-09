@@ -100,15 +100,15 @@ public class SurveyTaskDispatcher {
     }
 
     /**
-     * To avoid accidentally assigning the same survey to a participant multiple times, confirm that
-     * if the stableId matches an existing task, the existing task must be complete and the configured
-     * survey must allow recurrence.
+     * To avoid accidentally assigning the same survey or outreach activity to a participant multiple times,
+     * confirm that if the stableId matches an existing task, the existing task must be complete and the
+     * configured survey must allow recurrence.
      */
     public static boolean isDuplicateTask(StudyEnvironmentSurvey studySurvey, ParticipantTask task,
                                    Set<ParticipantTask> allTasks) {
-        boolean isSurveyOrOutreach = task.getTaskType() == TaskType.SURVEY || task.getTaskType() == TaskType.OUTREACH;
         return !allTasks.stream()
-                .filter(existingTask -> isSurveyOrOutreach &&
+                .filter(existingTask ->
+                        (existingTask.getTaskType() == TaskType.SURVEY || existingTask.getTaskType() == TaskType.OUTREACH) &&
                         existingTask.getTargetStableId().equals(task.getTargetStableId()) &&
                         !isRecurrenceWindowOpen(studySurvey, existingTask))
                 .toList().isEmpty();
