@@ -55,9 +55,6 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
     })
   }
 
-  console.log(enrollees)
-  console.log(outreachParams)
-
   const loadOutreachActivities = async () => {
     if (!enrollees) { return }
     outreachTasks.forEach(task => {
