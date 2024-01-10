@@ -9,8 +9,6 @@ import Api, { ExportData } from '../api/api'
 import { useLoadingEffect } from 'api/api-utils'
 import { Field, QueryBuilder } from 'react-querybuilder'
 import 'react-querybuilder/dist/query-builder.scss'
-import { Store } from 'react-notifications-component'
-import { failureNotification } from '../util/notifications'
 
 /**
  * Returns a cohort builder modal
@@ -31,12 +29,8 @@ export default function CreateNewCohortModal({ onDismiss }: {onDismiss: () => vo
       selectedStudy.study.shortcode,
       'live', { fileFormat: 'JSON', limit: 0 })
     const result = await response.json()
-    if (!response.ok) {
-      Store.addNotification(failureNotification('Failed to load cohort criteria options', result.message))
-    } else {
-      setParticipantFields(result)
-    }
-  }, [selectedStudy])
+    setParticipantFields(result)
+  }, [selectedStudy], 'Failed to load cohort criteria options')
 
   const fields: Field[] = participantFields?.columnKeys.map(field => ({
     name: field,
