@@ -11,6 +11,9 @@ import { basicTableLayout } from '../../util/tableUtils'
 import { useLoadingEffect } from '../../api/api-utils'
 
 
+// Given a parent DataChangeRecord that records a whole object's changes,
+// create one sub DataChangeRecord that records a single change between those
+// objects
 const createSubDataChangeRecord = (
   original: DataChangeRecord, fieldName: string, oldValue: string, newValue: string
 ): DataChangeRecord => {
@@ -22,20 +25,34 @@ const createSubDataChangeRecord = (
   }
 }
 
+const internalFields = ['id', 'createdAt', 'lastUpdatedAt']
+// Gets all  the fields of an object that are non-internal
+// (e.g., 'id', 'createdAt', 'mailingAddressId', etc.)
 const getNonInternalFields = (obj: object): string[] => {
+  if (isNil(obj)) {
+    return []
+  }
+
   return Object.keys(obj)
     .filter(field => !field.endsWith('Id'))
     .filter(field => !internalFields.includes(field))
 }
 
-const internalFields = ['id', 'createdAt', 'lastUpdatedAt']
-const getAllFields = (obj1: object, obj2: object): Set<string> => {
-  return new Set(
-    getNonInternalFields(obj1)
-      .concat(...getNonInternalFields(obj2))
-  )
+// Get all non-internal fields across n objects
+const getAllNonInternalFields = (...objs: object[]): Set<string> => {
+  const allFields: string[] = []
+  objs.forEach(obj => {
+    allFields.push(...getNonInternalFields(obj))
+  })
+
+  return new Set(allFields)
 }
 
+/**
+ * Recursive helper function that traverses the provided objects and returns a separate DataChangeRecord
+ * for every field that was changed (added, removed, or updated). This function compares deeply, i.e.,
+ * will check the fields of nested objects.
+ */
 const traverseObjectAndCreateDataChangeRecords = (
   parent: DataChangeRecord,
   newObject: { [index: string]: object },
@@ -45,42 +62,23 @@ const traverseObjectAndCreateDataChangeRecords = (
   const changes: DataChangeRecord[] = []
   const fieldPrefix = nestedFields.join('.') + (nestedFields.length > 0 ? '.' : '')
 
-  // case 1: new object is null, create deletion records for each field in the new object.
-  //         technically, this is a shallow traversal, but we are unlikely to make deeply
-  //         nested objects
-  if (isNil(newObject)) {
-    return getNonInternalFields(oldObject).map((field: string) => {
-      return createSubDataChangeRecord(parent, fieldPrefix + field, oldObject[field].toString(), '')
-    })
-  }
-
-  // case 2: opposite of case one, old object is null, create creation records for each
-  if (isNil(oldObject)) {
-    return getNonInternalFields(newObject).map(field => {
-      return createSubDataChangeRecord(parent, fieldPrefix + field, '', newObject[field].toString())
-    })
-  }
-
-
-  // now that we know both objects are valid, recurse through all the
-  // fields to get differences between them
-  getAllFields(newObject, oldObject).forEach((field: string) => {
-    const oldValue = oldObject[field]
-    const newValue = newObject[field]
-    console.log(oldValue)
-
-    // case 3: either of the fields is an object - need to recurse
+  // go through every possible field to see what fields changed
+  getAllNonInternalFields(newObject, oldObject).forEach((field: string) => {
+    // case 1: either of the fields is an object - need to recurse
     //         another level deeper into the object
-    if ((typeof newValue === 'object' && !Array.isArray(newValue))
-      || (typeof oldValue === 'object' && !Array.isArray(oldValue))) {
+    if ((!isNil(newObject) && typeof newObject[field] === 'object' && !Array.isArray(newObject[field]))
+      || (!isNil(oldObject) && typeof oldObject[field] === 'object' && !Array.isArray(oldObject[field]))) {
       // if either is an object, we should recurse deeper
-      changes.push(...traverseObjectAndCreateDataChangeRecords(parent, newValue as {
+      changes.push(...traverseObjectAndCreateDataChangeRecords(parent, newObject && newObject[field] as {
         [index: string]: object
-      }, oldValue as { [index: string]: object }, nestedFields.concat(field)))
+      }, oldObject && oldObject[field] as { [index: string]: object }, nestedFields.concat(field)))
       return
     }
 
-    // case 4: neither are an object, so now it's a simple string
+    const oldValue = (isNil(oldObject) ? '' : oldObject[field])
+    const newValue = (isNil(newObject) ? '' : newObject[field])
+
+    // case 2: neither are an object, so now it's a simple string
     //         conversion and comparison
     const oldValueString = (isNil(oldValue) ? '' : oldValue.toString())
     const newValueString = (isNil(newValue) ? '' : newValue.toString())
