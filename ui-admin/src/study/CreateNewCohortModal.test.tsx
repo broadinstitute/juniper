@@ -4,12 +4,14 @@ import { render, screen } from '@testing-library/react'
 import CreateNewCohortModal from './CreateNewCohortModal'
 import { makeMockPortal, makeMockPortalStudy } from '../test-utils/mocking-utils'
 import { useNavContext } from '../navbar/NavContextProvider'
+import { Store } from 'react-notifications-component'
 
 jest.mock('../navbar/NavContextProvider')
 
 describe('CreateNewCohortModal', () => {
   test('enables Create button when cohort name, study, and portal are filled out', async () => {
     const user = userEvent.setup()
+    jest.spyOn(Store, 'addNotification').mockImplementation(() => '')
 
     const portalList = [
       makeMockPortal('Test portal', [
@@ -35,11 +37,11 @@ describe('CreateNewCohortModal', () => {
 
     const portalSelect = screen.getByLabelText('Portal')
     await user.click(portalSelect)
-    await user.click(screen.getByText('Test portal'))
+    await user.click(screen.queryAllByText('Test portal')[0])
 
     const studySelect = screen.getByLabelText('Study')
     await user.click(studySelect)
-    await user.click(screen.getByText('Test study'))
+    await user.click(screen.queryAllByText('Test study')[0])
 
     expect(screen.getByText('Create')).toHaveAttribute('aria-disabled', 'false')
   })
