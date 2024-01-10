@@ -85,17 +85,15 @@ const traverseObjectAndCreateDataChangeRecords = (
 // to manually look into the object to see what
 // fields changed, which could more than one field
 const flattenDataChangeRecords = (record: DataChangeRecord): ReadonlyArray<DataChangeRecord> => {
-  // if a fieldName is specified, then only one field changed,
-  // so just return this object
-  if (!isNil(record.fieldName) && record.fieldName.length > 0) {
-    return [record]
-  }
-
   try {
     const newObject: { [index: string]: object } = JSON.parse(record.newValue)
     const oldObject: { [index: string]: object } = JSON.parse(record.oldValue)
 
-    return traverseObjectAndCreateDataChangeRecords(record, newObject, oldObject)
+    if ((newObject && typeof newObject === 'object') || (oldObject && typeof oldObject === 'object')) {
+      return traverseObjectAndCreateDataChangeRecords(record, newObject, oldObject)
+    }
+
+    return [record]
   } catch (e: unknown) {
     return [record]
   }
