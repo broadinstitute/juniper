@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.dao.study;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
-import bio.terra.pearl.core.dao.notification.NotificationConfigDao;
+import bio.terra.pearl.core.dao.notification.TriggerDao;
 import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -19,19 +19,19 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
     private StudyEnvironmentConfigDao studyEnvironmentConfigDao;
     private StudyEnvironmentSurveyDao studyEnvironmentSurveyDao;
     private StudyEnvironmentConsentDao studyEnvironmentConsentDao;
-    private NotificationConfigDao notificationConfigDao;
+    private TriggerDao triggerDao;
     private SurveyService surveyService;
     private SurveyDao surveyDao;
     public StudyEnvironmentDao(Jdbi jdbi, StudyEnvironmentConfigDao studyEnvironmentConfigDao,
                                StudyEnvironmentSurveyDao studyEnvironmentSurveyDao,
                                StudyEnvironmentConsentDao studyEnvironmentConsentDao,
-                               NotificationConfigDao notificationConfigDao, SurveyService surveyService,
+                               TriggerDao triggerDao, SurveyService surveyService,
                                SurveyDao surveyDao) {
         super(jdbi);
         this.studyEnvironmentConfigDao = studyEnvironmentConfigDao;
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
         this.studyEnvironmentConsentDao = studyEnvironmentConsentDao;
-        this.notificationConfigDao = notificationConfigDao;
+        this.triggerDao = triggerDao;
         this.surveyService = surveyService;
         this.surveyDao = surveyDao;
     }
@@ -97,9 +97,9 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
         }
         studyEnv.setConfiguredConsents(studyEnvironmentConsentDao
                 .findAllByStudyEnvIdWithConsent(studyEnvId));
-        var notificationConfigs = notificationConfigDao.findByStudyEnvironmentId(studyEnvId, true);
-        notificationConfigDao.attachTemplates(notificationConfigs);
-        studyEnv.setNotificationConfigs(notificationConfigs);
+        var triggers = triggerDao.findByStudyEnvironmentId(studyEnvId, true);
+        triggerDao.attachTemplates(triggers);
+        studyEnv.setTriggers(triggers);
         return studyEnv;
     }
 

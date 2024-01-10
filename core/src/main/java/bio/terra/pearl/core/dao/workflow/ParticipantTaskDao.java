@@ -12,11 +12,11 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
@@ -90,6 +90,16 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
                         .bind("minTimeSinceCreationInstant", minTimeSinceCreationInstant)
                         .bind("maxTimeSinceCreationInstant", maxTimeSinceCreationInstant)
                         .bind("taskType", taskType)
+                        .map(enrolleeWithTasksMapper)
+                        .list()
+        );
+    }
+
+    public List<EnrolleeTasks> findTasksByStudy(UUID studyEnvironmentId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select distinct target_stable_id, target_name from " + tableName +
+                                " where study_environment_id = :studyEnvironmentId")
+                        .bind("studyEnvironmentId", studyEnvironmentId)
                         .map(enrolleeTasksMapper)
                         .list()
         );
@@ -107,5 +117,15 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
         private List<UUID> taskIds;
     }
 
-    public RowMapper enrolleeTasksMapper = BeanMapper.of(EnrolleeWithTasks.class);
+    public final RowMapper<EnrolleeWithTasks> enrolleeWithTasksMapper = BeanMapper.of(EnrolleeWithTasks.class);
+
+    @Getter
+    @Setter @NoArgsConstructor
+    @SuperBuilder
+    public static class EnrolleeTasks {
+        private String targetName;
+        private String targetStableId;
+    }
+
+    public final RowMapper<EnrolleeTasks> enrolleeTasksMapper = BeanMapper.of(EnrolleeTasks.class);
 }

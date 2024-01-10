@@ -42,4 +42,23 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
                 existingTasks);
         assertFalse(isDuplicate);
     }
+
+    @Test
+    void testOutreachIsDuplicate() {
+        StudyEnvironmentSurvey studyEnvironmentSurvey = StudyEnvironmentSurvey.builder()
+                .recur(false)
+                .build();
+        ParticipantTask outreachTask1 = ParticipantTask.builder()
+                .targetStableId("oh_outsideAdvert")
+                .taskType(TaskType.OUTREACH)
+                .build();
+        Set<ParticipantTask> existingTasks = Set.of(outreachTask1);
+        ParticipantTask outreachTask2 = ParticipantTask.builder()
+                .targetStableId("oh_outsideAdvert")
+                .taskType(TaskType.OUTREACH)
+                .build();
+        boolean isDuplicate = SurveyTaskDispatcher.isDuplicateTask(studyEnvironmentSurvey, outreachTask2,
+                existingTasks);
+        assertTrue(isDuplicate);
+    }
 }

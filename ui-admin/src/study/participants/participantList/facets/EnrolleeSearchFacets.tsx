@@ -6,7 +6,7 @@ import {
   checkExhaustiveFacetType,
   Facet,
   FacetValue, IntRangeFacetValue,
-  newFacetValue, StableIdStringArrayFacetValue, StringFacetValue,
+  newFacetValue, EntityOptionsArrayFacetValue, StringFacetValue,
   StringOptionsFacetValue
 } from 'api/enrolleeSearch'
 import IntRangeFacetView from './IntRangeFacetView'
@@ -53,9 +53,13 @@ export default function EnrolleeSearchFacets({ facets, facetValues, updateFacetV
   const clearAll = () => {
     updateFacetValues(facets.map(facet => newFacetValue(facet)))
   }
+
+  const defaultActiveFacets = facetValues.map(facetValue =>
+    facets.findIndex(facet => facetValue.facet.keyName === facet.keyName).toString())
+
   return <div>
     <button className="btn btn-secondary float-end" onClick={clearAll}>Clear all</button>
-    <Accordion defaultActiveKey={['0']} alwaysOpen flush>
+    <Accordion defaultActiveKey={defaultActiveFacets} alwaysOpen flush>
       {facets.map((facet, index) => {
         const matchedValIndex = facetValues.findIndex(facetValue => facetValue.facet.keyName === facet.keyName &&
           facetValue.facet.category === facet.category)
@@ -84,7 +88,7 @@ type FacetViewProps = {
  * Renders a facet with the appropriate component for the facet type.
  */
 export const FacetView = ({ facet, facetValue, updateValue }: FacetViewProps) => {
-  const facetType = facet.type
+  const facetType = facet.facetType
   if (!facetValue) {
     facetValue = newFacetValue(facet)
   }
@@ -97,8 +101,8 @@ export const FacetView = ({ facet, facetValue, updateValue }: FacetViewProps) =>
   } else if (facetType === 'STRING_OPTIONS') {
     return <StringOptionsFacetView facetValue={facetValue as StringOptionsFacetValue}
       updateValue={updateValue}/>
-  } else if (facetType === 'STABLEID_STRING') {
-    return <StableIdStringFacetView facetValue={facetValue as StableIdStringArrayFacetValue}
+  } else if (facetType === 'ENTITY_OPTIONS') {
+    return <StableIdStringFacetView facetValue={facetValue as EntityOptionsArrayFacetValue}
       updateValue={updateValue}/>
   }
   return checkExhaustiveFacetType(facetType, <></>)

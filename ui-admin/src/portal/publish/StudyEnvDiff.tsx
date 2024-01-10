@@ -67,10 +67,10 @@ const StudyEnvDiff = ({ studyName, studyEnvChange, selectedChanges, setSelectedC
     <div className="my-1">
       <h3 className="h6">Notification Configs</h3>
       <div className="ms-4">
-        <ConfigChangeListView configChangeList={studyEnvChange.notificationConfigChanges}
-          selectedChanges={selectedChanges.notificationConfigChanges}
-          setSelectedChanges={notificationConfigChanges =>
-            setSelectedChanges({ ...selectedChanges, notificationConfigChanges })}
+        <ConfigChangeListView configChangeList={studyEnvChange.triggerChanges}
+          selectedChanges={selectedChanges.triggerChanges}
+          setSelectedChanges={triggerChanges =>
+            setSelectedChanges({ ...selectedChanges, triggerChanges })}
           renderItemSummary={renderNotificationConfig}/>
       </div>
     </div>

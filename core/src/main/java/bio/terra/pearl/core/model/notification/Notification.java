@@ -17,7 +17,7 @@ public class Notification extends BaseEntity {
     private UUID participantUserId;
     private UUID portalEnvironmentId;
     private UUID studyEnvironmentId;
-    private UUID notificationConfigId;
+    private UUID triggerId;
     private NotificationDeliveryStatus deliveryStatus;
     private NotificationDeliveryType deliveryType;
     private String sentTo;

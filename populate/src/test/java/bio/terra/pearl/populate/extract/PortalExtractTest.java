@@ -4,13 +4,11 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.populate.BasePopulatePortalsTest;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.extract.PortalExtractService;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +55,7 @@ public class PortalExtractTest extends BasePopulatePortalsTest {
         // confirm the sandbox got configured
         Study study = studyService.findByPortalId(restoredPortal.getId()).get(0);
         StudyEnvironment sandboxEnv = studyEnvironmentService.findByStudy(study.getShortcode(), EnvironmentName.sandbox).orElseThrow();
-        assertThat(notificationConfigService.findByStudyEnvironmentId(sandboxEnv.getId()), hasSize(5));
+        assertThat(triggerService.findByStudyEnvironmentId(sandboxEnv.getId()), hasSize(5));
     }
 
 
