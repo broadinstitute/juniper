@@ -3,15 +3,15 @@ package bio.terra.pearl.core.dao.participant;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
-import bio.terra.pearl.core.factory.notification.NotificationConfigFactory;
+import bio.terra.pearl.core.factory.notification.TriggerFactory;
 import bio.terra.pearl.core.factory.notification.NotificationFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
-import bio.terra.pearl.core.model.notification.NotificationType;
+import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
@@ -55,12 +55,12 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
 
 
         // Now check that it filters out tasks if there is a recent notification
-        var notificationConfig = notificationConfigFactory.buildPersisted(NotificationConfig.builder()
+        var trigger = triggerFactory.buildPersisted(Trigger.builder()
                 .deliveryType(NotificationDeliveryType.EMAIL)
-                .notificationType(NotificationType.TASK_REMINDER),
+                .triggerType(TriggerType.TASK_REMINDER),
                                 studyEnv.getId(), portalEnv.getId());
         notificationFactory.buildPersisted(
-                notificationFactory.builder(enrolleeBundle, notificationConfig).deliveryStatus(NotificationDeliveryStatus.SENT)
+                notificationFactory.builder(enrolleeBundle, trigger).deliveryStatus(NotificationDeliveryStatus.SENT)
         );
 
         var tasksRecentNotification = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
@@ -94,12 +94,12 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
         assertThat(enrollee1tasks.getTaskTargetNames(), contains(task1_1.getTargetName(), task1_2.getTargetName()));
 
         // Now check that it filters out tasks if there is a recent notification
-        var notificationConfig = notificationConfigFactory.buildPersisted(NotificationConfig.builder()
+        var trigger = triggerFactory.buildPersisted(Trigger.builder()
                         .deliveryType(NotificationDeliveryType.EMAIL)
-                        .notificationType(NotificationType.TASK_REMINDER),
+                        .triggerType(TriggerType.TASK_REMINDER),
                 studyEnv.getId(), portalEnv.getId());
         notificationFactory.buildPersisted(
-                notificationFactory.builder(enrolleeBundle, notificationConfig).deliveryStatus(NotificationDeliveryStatus.SENT)
+                notificationFactory.builder(enrolleeBundle, trigger).deliveryStatus(NotificationDeliveryStatus.SENT)
         );
 
         var tasksRecentNotification = participantTaskDao.findByStatusAndTime(studyEnv.getId(), task1_1.getTaskType(),
@@ -141,7 +141,7 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
     @Autowired
     private ParticipantTaskService participantTaskService;
     @Autowired
-    private NotificationConfigFactory notificationConfigFactory;
+    private TriggerFactory triggerFactory;
     @Autowired
     private NotificationFactory notificationFactory;
     @Autowired

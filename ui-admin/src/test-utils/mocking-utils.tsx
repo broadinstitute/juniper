@@ -8,7 +8,7 @@ import {
   EnrolleeSearchResult,
   KitRequest,
   KitType,
-  NotificationConfig,
+  Trigger,
   ParticipantNote, PepperKit,
   Portal,
   PortalStudy, SiteImageMetadata,
@@ -134,7 +134,7 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
     id: 'studyEnvId',
     configuredConsents: [mockConfiguredConsent()],
     configuredSurveys: [mockConfiguredSurvey()],
-    notificationConfigs: [],
+    triggers: [],
     studyEnvironmentConfig: {
       initialized: true,
       password: 'blah',
@@ -371,10 +371,10 @@ export const mockParticipantNote = (): ParticipantNote => {
 }
 
 /** mock NotificationConfig */
-export const mockNotificationConfig = (): NotificationConfig => {
+export const mockNotificationConfig = (): Trigger => {
   return {
     id: 'noteId1',
-    notificationType: 'EVENT',
+    triggerType: 'EVENT',
     eventType: 'CONSENT',
     deliveryType: 'EMAIL',
     taskType: '',

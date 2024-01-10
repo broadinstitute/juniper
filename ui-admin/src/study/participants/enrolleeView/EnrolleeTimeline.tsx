@@ -1,15 +1,15 @@
 import React, { useState } from 'react'
-import Api, { Enrollee, Event, Notification, NotificationConfig } from 'api/api'
-import { notificationConfigPath, StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import Api, { Enrollee, Event, Notification, Trigger } from 'api/api'
+import { StudyEnvContextT, triggerPath } from '../../StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { instantToDefaultString } from 'util/timeUtils'
-import NotificationConfigTypeDisplay from '../../notifications/NotifcationConfigTypeDisplay'
+import TriggerTypeDisplay from '../../notifications/TriggerTypeDisplay'
 import { Link } from 'react-router-dom'
 import _capitalize from 'lodash/capitalize'
 import _startCase from 'lodash/startCase'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
-import { basicTableLayout } from '../../../util/tableUtils'
-import { useLoadingEffect } from '../../../api/api-utils'
+import { basicTableLayout } from 'util/tableUtils'
+import { useLoadingEffect } from 'api/api-utils'
 
 
 const isEvent = (val: Event | Notification): val is Event => {
@@ -33,7 +33,7 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
       header: 'notification/event',
       cell: ({ row }) => {
         return <div>
-          {isNotification(row.original) && <NotificationConfigTypeDisplay config={row.original.notificationConfig}/>}
+          {isNotification(row.original) && <TriggerTypeDisplay config={row.original.trigger}/>}
           {isEvent(row.original) && _capitalize(_startCase(row.original.eventClass))}
         </div>
       }
@@ -55,15 +55,15 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
       header: 'config',
       accessorKey: 'notificationConfig',
       cell: info => info.getValue() && <Link
-        to={notificationConfigPath(info.getValue() as NotificationConfig, currentEnvPath)}> config </Link>
+        to={triggerPath(info.getValue() as Trigger, currentEnvPath)}> config </Link>
     }
   ]
 
   /** matches each notification to a corresponding config by id */
   function attachConfigsToNotifications(rawNotifications: Notification[]) {
     rawNotifications.forEach(notification => {
-      notification.notificationConfig = currentEnv.notificationConfigs
-        .find(config => config.id === notification.notificationConfigId)
+      notification.trigger = currentEnv.triggers
+        .find(config => config.id === notification.triggerId)
     })
   }
 

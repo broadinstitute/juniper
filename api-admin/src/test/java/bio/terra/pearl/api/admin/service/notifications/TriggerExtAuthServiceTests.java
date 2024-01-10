@@ -7,7 +7,8 @@ import bio.terra.pearl.core.dao.publishing.PortalEnvironmentChangeRecordDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
-import bio.terra.pearl.core.service.notification.NotificationConfigService;
+import bio.terra.pearl.core.service.notification.NotificationDispatcher;
+import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import java.util.UUID;
@@ -19,15 +20,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-@ContextConfiguration(classes = NotificationConfigExtService.class)
+@ContextConfiguration(classes = TriggerExtService.class)
 @WebMvcTest
-public class NotifcationConfigExtAuthServiceTests {
+public class TriggerExtAuthServiceTests {
   @Autowired private MockMvc mockMvc;
-  @Autowired private NotificationConfigExtService notificationConfigExtService;
+  @Autowired private TriggerExtService triggerExtService;
 
   @MockBean private AuthUtilService mockAuthUtilService;
-
-  @MockBean private NotificationConfigService notificationConfigService;
+  @MockBean private NotificationDispatcher notificationDispatcher;
+  @MockBean private TriggerService triggerService;
   @MockBean private StudyEnvironmentService studyEnvironmentService;
   @MockBean private PortalEnvironmentService portalEnvironmentService;
   @MockBean private PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao;
@@ -40,7 +41,7 @@ public class NotifcationConfigExtAuthServiceTests {
     Assertions.assertThrows(
         PermissionDeniedException.class,
         () ->
-            notificationConfigExtService.replace(
+            triggerExtService.replace(
                 "foo", "studyCode", EnvironmentName.live, UUID.randomUUID(), null, user));
   }
 
@@ -51,6 +52,6 @@ public class NotifcationConfigExtAuthServiceTests {
         .thenThrow(new PermissionDeniedException("test1"));
     Assertions.assertThrows(
         PermissionDeniedException.class,
-        () -> notificationConfigExtService.findForStudy(user, "foo", "bar", EnvironmentName.live));
+        () -> triggerExtService.findForStudy(user, "foo", "bar", EnvironmentName.live));
   }
 }
