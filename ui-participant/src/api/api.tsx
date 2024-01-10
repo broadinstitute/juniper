@@ -198,9 +198,8 @@ export default {
   },
 
   async listOutreachActivities(
-    studyShortcode: string, enrolleeShortcode: string
   ): Promise<Survey[]> {
-    const url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}/outreach`
+    const url = `${baseEnvUrl(false)}/outreach`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },

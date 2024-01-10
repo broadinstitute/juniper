@@ -56,16 +56,8 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
   }
 
   const loadOutreachActivities = async () => {
-    if (!enrollees) { return }
-    outreachTasks.forEach(task => {
-      const taskStudy = studyForTask(task, studies)
-      const taskEnrollee = enrolleeForTask(task, enrollees)
-      if (!outreachActivities.find(activity => activity.stableId === task.targetStableId)) {
-        Api.listOutreachActivities(taskStudy.shortcode, taskEnrollee.shortcode).then(activities => {
-          setOutreachActivities(oldActivities => [...oldActivities, ...activities])
-        })
-      }
-    })
+    const outreachActivities = await Api.listOutreachActivities()
+    setOutreachActivities(outreachActivities)
   }
 
   useEffect(() => {

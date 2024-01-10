@@ -33,14 +33,12 @@ public class SurveyController implements OutreachApi {
   }
 
   @Override
-  public ResponseEntity<Object> listOutreachActivities(
-      String portalShortcode, String envName, String studyShortcode, String enrolleeShortcode) {
+  public ResponseEntity<Object> listOutreachActivities(String portalShortcode, String envName) {
     ParticipantUser user = requestUtilService.requireUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
     List<Survey> outreachSurveys =
-        surveyExtService.listOutreachActivities(
-            user, portalShortcode, environmentName, studyShortcode, enrolleeShortcode);
+        surveyExtService.listOutreachActivities(user, portalShortcode, environmentName);
     return ResponseEntity.ok(outreachSurveys);
   }
 }
