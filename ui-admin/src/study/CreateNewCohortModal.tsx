@@ -18,8 +18,10 @@ export default function CreateNewCohortModal({ onDismiss }: {onDismiss: () => vo
   const initialQuery = { combinator: 'and', rules: [] }
   const [query, setQuery] = useState(initialQuery)
   const [cohortName, setCohortName] = useState('')
-  const [selectedPortal, setSelectedPortal] = useState<Portal>()
-  const [selectedStudy, setSelectedStudy] = useState<PortalStudy>()
+  const initialPortal = portalList.length == 1 ? portalList[0] : undefined
+  const [selectedPortal, setSelectedPortal] = useState<Portal | undefined>(initialPortal)
+  const initialStudy = selectedPortal?.portalStudies.length == 1 ? selectedPortal?.portalStudies[0] : undefined
+  const [selectedStudy, setSelectedStudy] = useState<PortalStudy | undefined>(initialStudy)
   const [participantFields, setParticipantFields] = useState<ExportData>()
 
   useLoadingEffect(async () => {
