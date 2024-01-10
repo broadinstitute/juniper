@@ -87,12 +87,12 @@ public class PortalParticipantUserService extends ImmutableEntityService<PortalP
         PortalParticipantUser ppUser = dao.find(portalParticipantUserId).get();
         preregistrationResponseDao.deleteByPortalParticipantUserId(portalParticipantUserId);
         dataChangeRecordService.deleteByPortalParticipantUserId(portalParticipantUserId);
-        dao.delete(portalParticipantUserId);
 
+        dao.delete(portalParticipantUserId);
         if (ppUser.getProfileId() != null) {
             profileService.delete(
                     ppUser.getProfileId(),
-                    DataAuditInfo.fromPortalParticipantUserId(ppUser.getId(), ppUser.getParticipantUserId()));
+                    DataAuditInfo.fromUserId(ppUser.getParticipantUserId()));
         }
     }
 

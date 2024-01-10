@@ -25,24 +25,14 @@ const createSubDataChangeRecord = (
   }
 }
 
-const internalFields = ['id', 'createdAt', 'lastUpdatedAt']
-// Gets all  the fields of an object that are non-internal
-// (e.g., 'id', 'createdAt', 'mailingAddressId', etc.)
-const getNonInternalFields = (obj: object): string[] => {
-  if (isNil(obj)) {
-    return []
-  }
-
-  return Object.keys(obj)
-    .filter(field => !field.endsWith('Id'))
-    .filter(field => !internalFields.includes(field))
-}
 
 // Get all non-internal fields across n objects
-const getAllNonInternalFields = (...objs: object[]): Set<string> => {
+const getAllFields = (...objs: object[]): Set<string> => {
   const allFields: string[] = []
   objs.forEach(obj => {
-    allFields.push(...getNonInternalFields(obj))
+    if (!isNil(obj)) {
+      allFields.push(...Object.keys(obj))
+    }
   })
 
   return new Set(allFields)
@@ -63,15 +53,16 @@ const traverseObjectAndCreateDataChangeRecords = (
   const fieldPrefix = nestedFields.join('.') + (nestedFields.length > 0 ? '.' : '')
 
   // go through every possible field to see what fields changed
-  getAllNonInternalFields(newObject, oldObject).forEach((field: string) => {
+  getAllFields(newObject, oldObject).forEach((field: string) => {
     // case 1: either of the fields is an object - need to recurse
     //         another level deeper into the object
     if ((!isNil(newObject) && typeof newObject[field] === 'object' && !Array.isArray(newObject[field]))
       || (!isNil(oldObject) && typeof oldObject[field] === 'object' && !Array.isArray(oldObject[field]))) {
       // if either is an object, we should recurse deeper
-      changes.push(...traverseObjectAndCreateDataChangeRecords(parent, newObject && newObject[field] as {
-        [index: string]: object
-      }, oldObject && oldObject[field] as { [index: string]: object }, nestedFields.concat(field)))
+      changes.push(...traverseObjectAndCreateDataChangeRecords(parent,
+        newObject && newObject[field] as { [index: string]: object },
+        oldObject && oldObject[field] as { [index: string]: object },
+        nestedFields.concat(field)))
       return
     }
 
