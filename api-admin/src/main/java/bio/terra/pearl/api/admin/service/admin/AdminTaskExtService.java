@@ -63,7 +63,7 @@ public class AdminTaskExtService {
     taskToUpdate.setDescription(updatedTask.getDescription());
     taskToUpdate.setDispositionNote(updatedTask.getDispositionNote());
     taskToUpdate.setStatus(updatedTask.getStatus());
-    DataAuditInfo auditInfo = DataAuditInfo.fromAdminUserId(user.getId());
+    DataAuditInfo auditInfo = DataAuditInfo.builder().responsibleAdminUserId(user.getId()).build();
     return adminTaskService.update(taskToUpdate, auditInfo);
   }
 }

@@ -1,12 +1,25 @@
 package bio.terra.pearl.core.model.workflow;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
 
-/** subset of DataChangeRecord fields useful for passing between methods that handle grouped changes */
+/**
+ * DataAuditInfo is a subset of fields that will end up in the DataChangeRecord
+ * and are useful for tracking who made changes on what objects.
+ * <p>
+ * `responsibleUserId` and `responsibleAdminUserId` represent who requested the
+ * action and are mutually exclusive. If a user performs on action in the
+ * participant ui, then `responsibleUserId` should be filled out; vice versa,
+ * if an admin performs an action in the admin ui, `responsibleAdminUserId` should
+ * be filled out.
+ * <p>
+ * The rest of the fields specify relevant objects that the audit should be
+ * connected to.
+ */
 @Getter
 @Setter
 @SuperBuilder
@@ -16,31 +29,12 @@ public class DataAuditInfo {
     private UUID enrolleeId;
     private UUID portalParticipantUserId;
     private UUID surveyId;
-    private UUID operationId;
-
-    public static DataAuditInfo fromAdminUserId(UUID responsibleAdminUserId) {
-        return DataAuditInfo.builder()
-                .responsibleAdminUserId(responsibleAdminUserId)
-                .operationId(UUID.randomUUID())
-                .build();
-    }
-
-    public static DataAuditInfo fromUserId(UUID userId) {
-        return DataAuditInfo
-                .builder()
-                .responsibleUserId(userId)
-                .operationId(UUID.randomUUID())
-                .build();
-    }
-
-    public static DataAuditInfo fromPortalParticipantUserId(UUID portalParticipantUserId, UUID responsibleUserId) {
-        return DataAuditInfo.builder()
-                .responsibleUserId(responsibleUserId)
-                .portalParticipantUserId(portalParticipantUserId)
-                .operationId(UUID.randomUUID())
-                .build();
-    }
-
+    // If one operation creates multiple DataChangeRecords, then
+    // they should all have the same operation id (in other words,
+    // you should reuse this object for each)
+    @Builder.Default
+    private UUID operationId = UUID.randomUUID();
+    
     public static DataAuditInfo fromEnrolleeId(UUID enrolleeId, UUID portalParticipantUserId, UUID responsibleUserId) {
         return DataAuditInfo
                 .builder()

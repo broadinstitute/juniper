@@ -92,14 +92,20 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
     }
 
     @Test
+    @Transactional
     public void testNoOpWithNoMappings() {
         List<Answer> answers = AnswerFactory.fromMap(Map.of(
                 "testSurvey_q1", "myFirstName",
                 "testSurvey_q2", "addressPart1"
         ));
+
+        List<Profile> before = profileService.findAll();
         answerProcessingService.processAllAnswerMappings(answers,
                 new ArrayList<>(), null, UUID.randomUUID(), null, null);
-        // TODO: assertThat(changeRecords, hasSize(0));
+        List<Profile> after = profileService.findAll();
+
+        // no profiles were added or removed, in other words, no-op
+        Assertions.assertEquals(before.size(), after.size());
     }
 
     @Test

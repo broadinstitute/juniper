@@ -64,10 +64,12 @@ public class ProfileServiceTests extends BaseSpringBootTest {
 
         profile.setGivenName("NEW GIVEN NAME");
         profile.setFamilyName("NEW FAMILY NAME");
-        profileService.update(profile, DataAuditInfo.fromEnrolleeId(
-                bundle.enrollee().getId(),
-                bundle.portalParticipantUser().getId(),
-                bundle.portalParticipantUser().getParticipantUserId()));
+        profileService.update(profile, DataAuditInfo
+                .builder()
+                .portalParticipantUserId(bundle.portalParticipantUser().getId())
+                .responsibleUserId(bundle.portalParticipantUser().getParticipantUserId())
+                .enrolleeId(bundle.enrollee().getId())
+                .build());
 
         List<DataChangeRecord> dataChangeRecords = dataChangeRecordService.findByEnrollee(bundle.enrollee().getId());
 
@@ -95,10 +97,12 @@ public class ProfileServiceTests extends BaseSpringBootTest {
         MailingAddress first = MailingAddress.builder().id(profile.getMailingAddressId()).street1(firstStreet1).city(firstCity).build();
 
         profile.setMailingAddress(first);
-        profile = profileService.updateWithMailingAddress(profile, DataAuditInfo.fromEnrolleeId(
-                bundle.enrollee().getId(),
-                bundle.portalParticipantUser().getId(),
-                bundle.portalParticipantUser().getParticipantUserId()));
+        profile = profileService.updateWithMailingAddress(profile, DataAuditInfo
+                .builder()
+                .portalParticipantUserId(bundle.portalParticipantUser().getId())
+                .responsibleUserId(bundle.portalParticipantUser().getParticipantUserId())
+                .enrolleeId(bundle.enrollee().getId())
+                .build());
 
         List<DataChangeRecord> dataChangeRecords = dataChangeRecordService.findByEnrollee(bundle.enrollee().getId());
 
@@ -115,10 +119,12 @@ public class ProfileServiceTests extends BaseSpringBootTest {
         MailingAddress second = MailingAddress.builder().id(profile.getMailingAddressId()).street1(secondStreet1).city(secondCity).build();
 
         profile.setMailingAddress(second);
-        profileService.updateWithMailingAddress(profile, DataAuditInfo.fromEnrolleeId(
-                bundle.enrollee().getId(),
-                bundle.portalParticipantUser().getId(),
-                bundle.portalParticipantUser().getParticipantUserId()));
+        profileService.updateWithMailingAddress(profile, DataAuditInfo
+                .builder()
+                .portalParticipantUserId(bundle.portalParticipantUser().getId())
+                .responsibleUserId(bundle.portalParticipantUser().getParticipantUserId())
+                .enrolleeId(bundle.enrollee().getId())
+                .build());
 
         dataChangeRecords = dataChangeRecordService.findByEnrollee(bundle.enrollee().getId());
 
@@ -150,10 +156,12 @@ public class ProfileServiceTests extends BaseSpringBootTest {
         MailingAddress newMailingAddress = MailingAddress.builder().id(profile.getMailingAddressId()).street1(newStreet1).city(newCity).build();
 
         profile.setMailingAddress(newMailingAddress);
-        profileService.updateWithMailingAddress(profile, DataAuditInfo.fromEnrolleeId(
-                bundle.enrollee().getId(),
-                bundle.portalParticipantUser().getId(),
-                bundle.portalParticipantUser().getParticipantUserId()));
+        profileService.updateWithMailingAddress(profile, DataAuditInfo
+                .builder()
+                .portalParticipantUserId(bundle.portalParticipantUser().getId())
+                .responsibleUserId(bundle.portalParticipantUser().getParticipantUserId())
+                .enrolleeId(bundle.enrollee().getId())
+                .build());
 
 
         Profile updatedProfile = profileService.loadWithMailingAddress(profile.getId()).orElseThrow();

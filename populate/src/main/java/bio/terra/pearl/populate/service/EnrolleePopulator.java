@@ -353,10 +353,12 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         Profile profile = profileService.find(ppUser.getProfileId()).get();
         boolean isDoNotEmail = profile.isDoNotEmail();
         profile.setDoNotEmail(true);
-        profileService.update(profile, DataAuditInfo.fromPortalParticipantUserId(
-                ppUser.getId(),
-                ppUser.getParticipantUserId()
-        ));
+        profileService.update(profile,
+                DataAuditInfo.builder()
+                        .portalParticipantUserId(ppUser.getId())
+                        .responsibleUserId(ppUser.getParticipantUserId())
+                        .build()
+        );
 
         if (popDto.isSimulateSubmissions()) {
             HubResponse<Enrollee>  hubResponse = enrollmentService.enroll(attachedUser, ppUser,
@@ -398,7 +400,12 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
          */
         profile = profileService.find(ppUser.getProfileId()).get();
         profile.setDoNotEmail(isDoNotEmail);
-        profileService.update(profile, DataAuditInfo.fromEnrolleeId(enrollee.getId(), ppUser.getId(), ppUser.getParticipantUserId()));
+        profileService.update(profile, DataAuditInfo
+                .builder()
+                .portalParticipantUserId(ppUser.getId())
+                .responsibleUserId(ppUser.getParticipantUserId())
+                .enrolleeId(enrollee.getId())
+                .build());
         if (popDto.isTimeShifted()) {
             timeShiftPopulateDao.changeEnrolleeCreationTime(enrollee.getId(), popDto.shiftedInstant());
         }

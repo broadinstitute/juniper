@@ -74,10 +74,14 @@ public class AnswerProcessingService {
         mapValuesToType(answers, profileMappings,
                 profile, AnswerMappingTargetType.PROFILE);
 
-        DataAuditInfo auditInfo = DataAuditInfo.fromEnrolleeId(enrolleeId, ppUser.getId(), responsibleUserId);
-        auditInfo.setSurveyId(surveyId);
-
-        profileService.updateWithMailingAddress(profile, auditInfo);
+        profileService.updateWithMailingAddress(profile,
+                DataAuditInfo
+                        .builder()
+                        .enrolleeId(enrolleeId)
+                        .portalParticipantUserId(ppUser.getId())
+                        .responsibleUserId(responsibleUserId)
+                        .surveyId(surveyId)
+                        .build());
     }
 
     /**

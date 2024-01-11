@@ -41,10 +41,16 @@ public class PortalParticipantUserService extends ImmutableEntityService<PortalP
         if (ppUser.getProfileId() != null) {
             newProfile = profileService.find(ppUser.getProfileId()).get();
         } else if (ppUser.getProfile() != null) {
-            newProfile = profileService.create(ppUser.getProfile(), DataAuditInfo.fromUserId(ppUser.getParticipantUserId()));
+            newProfile = profileService.create(ppUser.getProfile(), DataAuditInfo
+                    .builder()
+                    .responsibleUserId(ppUser.getParticipantUserId())
+                    .build());
         } else {
             // Make sure profile is always non-null
-            newProfile = profileService.create(Profile.builder().build(), DataAuditInfo.fromUserId(ppUser.getParticipantUserId()));
+            newProfile = profileService.create(Profile.builder().build(), DataAuditInfo
+                    .builder()
+                    .responsibleUserId(ppUser.getParticipantUserId())
+                    .build());
         }
         ppUser.setProfileId(newProfile.getId());
         PortalParticipantUser createdUser = dao.create(ppUser);
@@ -92,7 +98,10 @@ public class PortalParticipantUserService extends ImmutableEntityService<PortalP
         if (ppUser.getProfileId() != null) {
             profileService.delete(
                     ppUser.getProfileId(),
-                    DataAuditInfo.fromUserId(ppUser.getParticipantUserId()));
+                    DataAuditInfo
+                            .builder()
+                            .responsibleUserId(ppUser.getParticipantUserId())
+                            .build());
         }
     }
 
