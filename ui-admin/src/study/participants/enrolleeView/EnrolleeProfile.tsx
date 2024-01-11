@@ -23,7 +23,10 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
   }
 
   return <div>
-    <input type={'checkbox'} checked={editMode} onChange={(val: boolean) => setEditMode(val)}/>
+    <input type={'checkbox'}
+      checked={editMode}
+      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditMode(e.target.checked)}
+    />
     <form className="mb-3">
       <div>
         <label className="form-label">
