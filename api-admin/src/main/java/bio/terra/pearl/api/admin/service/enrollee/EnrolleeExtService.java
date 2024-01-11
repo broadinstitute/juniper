@@ -6,9 +6,11 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchFacet;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
+import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
 import bio.terra.pearl.core.model.workflow.DataChangeRecord;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import bio.terra.pearl.core.service.participant.search.EnrolleeSearchService;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
@@ -16,8 +18,9 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.util.List;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class EnrolleeExtService {
@@ -27,8 +30,8 @@ public class EnrolleeExtService {
   private PortalService portalService;
   private PortalStudyService portalStudyService;
   private DataChangeRecordService dataChangeRecordService;
-
   private EnrolleeSearchService enrolleeSearchService;
+  private ProfileService profileService;
 
   public EnrolleeExtService(
       AuthUtilService authUtilService,
@@ -37,7 +40,8 @@ public class EnrolleeExtService {
       PortalService portalService,
       PortalStudyService portalStudyService,
       DataChangeRecordService dataChangeRecordService,
-      EnrolleeSearchService enrolleeSearchService) {
+      EnrolleeSearchService enrolleeSearchService,
+      ProfileService profileService) {
     this.authUtilService = authUtilService;
     this.enrolleeService = enrolleeService;
     this.withdrawnEnrolleeService = withdrawnEnrolleeService;
@@ -45,49 +49,55 @@ public class EnrolleeExtService {
     this.portalStudyService = portalStudyService;
     this.dataChangeRecordService = dataChangeRecordService;
     this.enrolleeSearchService = enrolleeSearchService;
+    this.profileService = profileService;
   }
 
   public List<EnrolleeSearchResult> search(
-      AdminUser user,
+          AdminUser operator,
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
       List<SqlSearchableFacet> facets) {
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     return enrolleeSearchService.search(studyShortcode, environmentName, facets);
   }
 
   public List<EnrolleeSearchFacet> getSearchFacets(
-      AdminUser user,
+          AdminUser operator,
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName) {
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     return enrolleeSearchService.getFacets(studyShortcode, environmentName);
   }
 
   public List<Enrollee> findForKitManagement(
-      AdminUser user,
+          AdminUser operator,
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName) {
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     return enrolleeService.findForKitManagement(studyShortcode, environmentName);
   }
 
-  public Enrollee findWithAdminLoad(AdminUser user, String enrolleeShortcode) {
-    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(user, enrolleeShortcode);
+  public Enrollee findWithAdminLoad(AdminUser operator, String enrolleeShortcode) {
+    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
     return enrolleeService.loadForAdminView(enrollee);
   }
 
-  public List<DataChangeRecord> findDataChangeRecords(AdminUser user, String enrolleeShortcode) {
-    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(user, enrolleeShortcode);
+  public List<DataChangeRecord> findDataChangeRecords(AdminUser operator, String enrolleeShortcode) {
+    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
     return dataChangeRecordService.findByEnrollee(enrollee.getId());
   }
 
-  public WithdrawnEnrollee withdrawEnrollee(AdminUser user, String enroleeShortcode)
+  public WithdrawnEnrollee withdrawEnrollee(AdminUser operator, String enrolleeShortcode)
       throws JsonProcessingException {
-    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(user, enroleeShortcode);
+    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
     return withdrawnEnrolleeService.withdrawEnrollee(enrollee);
+  }
+
+  public Profile updateProfile(AdminUser operator, String enrolleeShortcode, Profile profile) {
+    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
+    return this.profileService.updateWithMailingAddress(profile);
   }
 }

@@ -5,8 +5,7 @@ import ParticipantNotesView from './ParticipantNotesView'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 
 /**
- * shows the enrollee profile.  Designed for read-only.  When we implement admin-profile editing capability,
- * we should do it via a survey so we can reuse that editing and snapshot infrastructure
+ * shows the enrollee profile and allows editing from the admin side
  */
 export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
 {enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void}) {
@@ -24,6 +23,7 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
   }
 
   return <div>
+    <input type={'checkbox'} checked={editMode} onChange={(val: boolean) => setEditMode(val)}/>
     <form className="mb-3">
       <div>
         <label className="form-label">
