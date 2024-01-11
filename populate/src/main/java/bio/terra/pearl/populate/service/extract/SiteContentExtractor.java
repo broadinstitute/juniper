@@ -38,35 +38,36 @@ public class SiteContentExtractor {
     public void writeSiteContent(SiteContent siteContent, ExtractPopulateContext context) {
         SiteContentPopDto siteContentPopDto = new SiteContentPopDto();
         BeanUtils.copyProperties(siteContent, siteContentPopDto, "id", "portalId", "localizedSiteContents");
+        String filePath = filePathForSiteContent(siteContent);
         for (LocalizedSiteContent localSite : siteContent.getLocalizedSiteContents()) {
             try {
-                LocalizedSiteContentPopDto localPopDto = convertLocalizedSiteContent(localSite, context);
+                LocalizedSiteContentPopDto localPopDto = convertLocalizedSiteContent(localSite, filePath, context);
                 siteContentPopDto.getLocalizedSiteContentDtos().add(localPopDto);
             } catch (Exception e) {
-                throw new RuntimeException("Error writing siteContent %s-%s to json".formatted(siteContent.getStableId(), localSite.getLanguage()), e);
+                throw new RuntimeException("Error writing siteContent %s %s to json".formatted(filePath, localSite.getLanguage()), e);
             }
         }
         try {
             String fileString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(siteContentPopDto);
-            context.writeFileForEntity("siteContent.json", fileString, siteContent.getId());
-            context.getPortalPopDto().getSiteContentFiles().add("siteContent.json");
+            context.writeFileForEntity(filePath + "/siteContent.json", fileString, siteContent.getId());
+            context.getPortalPopDto().getSiteContentFiles().add(filePath + "/siteContent.json");
         } catch (Exception e) {
             throw new RuntimeException("Error writing portal to json", e);
         }
     }
 
-    public LocalizedSiteContentPopDto convertLocalizedSiteContent(LocalizedSiteContent lsc, ExtractPopulateContext context) throws JsonProcessingException {
+    public LocalizedSiteContentPopDto convertLocalizedSiteContent(LocalizedSiteContent lsc, String filePath, ExtractPopulateContext context) throws JsonProcessingException {
         LocalizedSiteContentPopDto localPopDto = new LocalizedSiteContentPopDto();
         BeanUtils.copyProperties(lsc, localPopDto, "id", "siteContentId", "navbarItems", "footerSection", "footerSectionId", "landingPage", "landingPageId");
         for (NavbarItem navbarItem : lsc.getNavbarItems()) {
-            localPopDto.getNavbarItemDtos().add(convertNavbarItem(navbarItem, lsc, context));
+            localPopDto.getNavbarItemDtos().add(convertNavbarItem(navbarItem, lsc, filePath, context));
         }
         if (lsc.getFooterSection() != null) {
-            String footerFile = "siteContent/footer-%s.json".formatted(lsc.getLanguage());
+            String footerFile = "footer-%s.json".formatted(lsc.getLanguage());
             localPopDto.setFooterSectionFile(footerFile);
             HtmlSectionPopDto footerSectionPopDto = convertHtmlSection(lsc.getFooterSection());
             String footerAsString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(footerSectionPopDto);
-            context.writeFileForEntity(footerFile, footerAsString, lsc.getFooterSection().getId());
+            context.writeFileForEntity(filePath + "/" + footerFile, footerAsString, lsc.getFooterSection().getId());
         }
         if (lsc.getLandingPage() != null) {
             localPopDto.setLandingPage(convertHtmlPage(lsc.getLandingPage()));
@@ -74,17 +75,17 @@ public class SiteContentExtractor {
         return localPopDto;
     }
 
-    public NavbarItemPopDto convertNavbarItem(NavbarItem navbarItem, LocalizedSiteContent lsc, ExtractPopulateContext context) throws JsonProcessingException {
+    public NavbarItemPopDto convertNavbarItem(NavbarItem navbarItem, LocalizedSiteContent lsc, String filePath, ExtractPopulateContext context) throws JsonProcessingException {
         NavbarItemPopDto navbarItemPopDto = new NavbarItemPopDto();
         if (navbarItem.getItemType().equals(NavbarItemType.INTERNAL)) {
-            String navbarFile = "siteContent/page-%s-%s.json".formatted(navbarItem.getHtmlPage().getPath(), lsc.getLanguage());
+            String navbarFile = "page-%s-%s.json".formatted(navbarItem.getHtmlPage().getPath(), lsc.getLanguage());
             navbarItemPopDto.setPopulateFileName(navbarFile);
 
             NavbarItemPopDto itemFileDto = new NavbarItemPopDto();
             BeanUtils.copyProperties(navbarItem, itemFileDto, "id", "localizedSiteContentId", "htmlPage");
             itemFileDto.setHtmlPageDto(convertHtmlPage(navbarItem.getHtmlPage()));
             String navbarAsString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(itemFileDto);
-            context.writeFileForEntity(navbarFile, navbarAsString, navbarItem.getId());
+            context.writeFileForEntity(filePath + "/" + navbarFile, navbarAsString, navbarItem.getId());
         } else {
             BeanUtils.copyProperties(navbarItem, navbarItemPopDto, "id", "localizedSiteContentId");
         }
@@ -133,5 +134,9 @@ public class SiteContentExtractor {
         public String getDefaultLanguage() { return null; }
         @JsonIgnore @Override
         public int getVersion() { return 0; }
+    }
+
+    public static String filePathForSiteContent(SiteContent siteContent) {
+        return "siteContent/%s-%s".formatted(siteContent.getStableId(), siteContent.getVersion());
     }
 }

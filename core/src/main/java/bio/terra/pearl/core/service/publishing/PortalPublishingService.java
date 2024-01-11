@@ -7,7 +7,7 @@ import bio.terra.pearl.core.model.dashboard.AlertTrigger;
 import bio.terra.pearl.core.model.dashboard.AlertType;
 import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.publishing.*;
@@ -16,7 +16,7 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
-import bio.terra.pearl.core.service.notification.NotificationConfigService;
+import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
@@ -38,7 +38,7 @@ public class PortalPublishingService {
     private PortalEnvironmentConfigService portalEnvironmentConfigService;
     private PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao;
     private PortalDashboardConfigService portalDashboardConfigService;
-    private NotificationConfigService notificationConfigService;
+    private TriggerService triggerService;
     private SurveyService surveyService;
     private EmailTemplateService emailTemplateService;
     private SiteContentService siteContentService;
@@ -51,7 +51,7 @@ public class PortalPublishingService {
                                    PortalEnvironmentConfigService portalEnvironmentConfigService,
                                    PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao,
                                    PortalDashboardConfigService portalDashboardConfigService,
-                                   NotificationConfigService notificationConfigService, SurveyService surveyService,
+                                   TriggerService triggerService, SurveyService surveyService,
                                    EmailTemplateService emailTemplateService, SiteContentService siteContentService,
                                    StudyPublishingService studyPublishingService, ObjectMapper objectMapper) {
         this.portalDiffService = portalDiffService;
@@ -59,7 +59,7 @@ public class PortalPublishingService {
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.portalEnvironmentChangeRecordDao = portalEnvironmentChangeRecordDao;
         this.portalDashboardConfigService = portalDashboardConfigService;
-        this.notificationConfigService = notificationConfigService;
+        this.triggerService = triggerService;
         this.surveyService = surveyService;
         this.emailTemplateService = emailTemplateService;
         this.siteContentService = siteContentService;
@@ -81,7 +81,7 @@ public class PortalPublishingService {
 
         applyChangesToPreRegSurvey(destEnv, envChanges.preRegSurveyChanges());
         applyChangesToSiteContent(destEnv, envChanges.siteContentChange());
-        applyChangesToNotificationConfigs(destEnv, envChanges.notificationConfigChanges());
+        applyChangesToTriggers(destEnv, envChanges.triggerChanges());
         applyChangesToParticipantDashboardAlerts(destEnv, envChanges.participantDashboardAlertChanges());
         for(StudyEnvironmentChange studyEnvChange : envChanges.studyEnvChanges()) {
             StudyEnvironment studyEnv = portalDiffService.loadStudyEnvForProcessing(studyEnvChange.studyShortcode(), destEnv.getEnvironmentName());
@@ -134,20 +134,20 @@ public class PortalPublishingService {
         return portalEnvironmentService.update(destEnv);
     }
 
-    protected void applyChangesToNotificationConfigs(PortalEnvironment destEnv, ListChange<NotificationConfig,
+    protected void applyChangesToTriggers(PortalEnvironment destEnv, ListChange<Trigger,
             VersionedConfigChange<EmailTemplate>> listChange) throws Exception {
-        for(NotificationConfig config : listChange.addedItems()) {
+        for(Trigger config : listChange.addedItems()) {
             config.setPortalEnvironmentId(destEnv.getId());
-            notificationConfigService.create(config.cleanForCopying());
-            destEnv.getNotificationConfigs().add(config);
+            triggerService.create(config.cleanForCopying());
+            destEnv.getTriggers().add(config);
             PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), config, emailTemplateService);
         }
-        for(NotificationConfig config : listChange.removedItems()) {
-            notificationConfigService.delete(config.getId(), CascadeProperty.EMPTY_SET);
-            destEnv.getNotificationConfigs().remove(config);
+        for(Trigger config : listChange.removedItems()) {
+            triggerService.delete(config.getId(), CascadeProperty.EMPTY_SET);
+            destEnv.getTriggers().remove(config);
         }
         for(VersionedConfigChange<EmailTemplate> change : listChange.changedItems()) {
-            PublishingUtils.applyChangesToVersionedConfig(change, notificationConfigService, emailTemplateService, destEnv.getEnvironmentName());
+            PublishingUtils.applyChangesToVersionedConfig(change, triggerService, emailTemplateService, destEnv.getEnvironmentName());
         }
     }
 

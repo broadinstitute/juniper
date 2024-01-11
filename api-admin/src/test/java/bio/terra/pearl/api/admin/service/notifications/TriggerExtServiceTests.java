@@ -5,17 +5,17 @@ import static org.hamcrest.Matchers.equalTo;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
-import bio.terra.pearl.core.factory.notification.NotificationConfigFactory;
 import bio.terra.pearl.core.factory.notification.NotificationFactory;
+import bio.terra.pearl.core.factory.notification.TriggerFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
-import bio.terra.pearl.core.model.notification.NotificationEventType;
-import bio.terra.pearl.core.model.notification.NotificationType;
+import bio.terra.pearl.core.model.notification.Trigger;
+import bio.terra.pearl.core.model.notification.TriggerEventType;
+import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.service.exception.NotFoundException;
-import bio.terra.pearl.core.service.notification.NotificationConfigService;
+import bio.terra.pearl.core.service.notification.TriggerService;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
@@ -24,12 +24,12 @@ import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-public class NotificationConfigExtServiceTests extends BaseSpringBootTest {
+public class TriggerExtServiceTests extends BaseSpringBootTest {
   @Autowired StudyEnvironmentFactory studyEnvironmentFactory;
-  @Autowired NotificationConfigFactory notificationConfigFactory;
+  @Autowired TriggerFactory triggerFactory;
+  @Autowired TriggerExtService triggerExtService;
+  @Autowired TriggerService triggerService;
   @Autowired NotificationFactory notificationFactory;
-  @Autowired NotificationConfigExtService notificationConfigExtService;
-  @Autowired NotificationConfigService notificationConfigService;
   @Autowired EnrolleeFactory enrolleeFactory;
 
   @Test
@@ -37,24 +37,24 @@ public class NotificationConfigExtServiceTests extends BaseSpringBootTest {
   public void testNotificationConfigReplace(TestInfo testInfo) {
     StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
-    NotificationConfig oldConfig =
-        notificationConfigFactory.buildPersisted(
-            NotificationConfig.builder()
-                .notificationType(NotificationType.EVENT)
-                .eventType(NotificationEventType.STUDY_CONSENT)
+    Trigger oldConfig =
+        triggerFactory.buildPersisted(
+            Trigger.builder()
+                .triggerType(TriggerType.EVENT)
+                .eventType(TriggerEventType.STUDY_CONSENT)
                 .deliveryType(NotificationDeliveryType.EMAIL),
             bundle.getStudyEnv().getId(),
             bundle.getPortalEnv().getId());
     AdminUser user = AdminUser.builder().superuser(true).build();
-    NotificationConfig update =
-        NotificationConfig.builder()
-            .notificationType(NotificationType.EVENT)
-            .eventType(NotificationEventType.STUDY_ENROLLMENT)
+    Trigger update =
+        Trigger.builder()
+            .triggerType(TriggerType.EVENT)
+            .eventType(TriggerEventType.STUDY_ENROLLMENT)
             .deliveryType(NotificationDeliveryType.EMAIL)
             .build();
 
-    NotificationConfig savedConfig =
-        notificationConfigExtService.replace(
+    Trigger savedConfig =
+        triggerExtService.replace(
             bundle.getPortal().getShortcode(),
             bundle.getStudy().getShortcode(),
             bundle.getStudyEnv().getEnvironmentName(),
@@ -64,10 +64,9 @@ public class NotificationConfigExtServiceTests extends BaseSpringBootTest {
     assertThat(savedConfig.isActive(), equalTo(true));
     assertThat(savedConfig.getStudyEnvironmentId(), equalTo(bundle.getStudyEnv().getId()));
     assertThat(savedConfig.getPortalEnvironmentId(), equalTo(bundle.getPortalEnv().getId()));
-    assertThat(savedConfig.getEventType(), equalTo(NotificationEventType.STUDY_ENROLLMENT));
+    assertThat(savedConfig.getEventType(), equalTo(TriggerEventType.STUDY_ENROLLMENT));
 
-    NotificationConfig updatedOldConfig =
-        notificationConfigService.find(oldConfig.getId()).orElseThrow();
+    Trigger updatedOldConfig = triggerService.find(oldConfig.getId()).orElseThrow();
     assertThat(updatedOldConfig.isActive(), equalTo(false));
   }
 
@@ -82,7 +81,7 @@ public class NotificationConfigExtServiceTests extends BaseSpringBootTest {
     Assertions.assertThrows(
         NotFoundException.class,
         () ->
-            notificationConfigExtService.delete(
+            triggerExtService.delete(
                 user,
                 bundle.getPortal().getShortcode(),
                 bundle.getStudy().getShortcode(),
@@ -96,11 +95,11 @@ public class NotificationConfigExtServiceTests extends BaseSpringBootTest {
     StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
 
-    NotificationConfig config =
-        notificationConfigFactory.buildPersisted(
-            NotificationConfig.builder()
-                .notificationType(NotificationType.EVENT)
-                .eventType(NotificationEventType.STUDY_CONSENT)
+    Trigger config =
+        triggerFactory.buildPersisted(
+            Trigger.builder()
+                .triggerType(TriggerType.EVENT)
+                .eventType(TriggerEventType.STUDY_CONSENT)
                 .deliveryType(NotificationDeliveryType.EMAIL),
             bundle.getStudyEnv().getId(),
             bundle.getPortalEnv().getId());
@@ -108,13 +107,13 @@ public class NotificationConfigExtServiceTests extends BaseSpringBootTest {
     // not a superuser and not a part of the portals
     AdminUser user = AdminUser.builder().superuser(false).build();
 
-    Assertions.assertTrue(notificationConfigService.find(config.getId()).isPresent());
+    Assertions.assertTrue(triggerService.find(config.getId()).isPresent());
 
     // should throw not found in this case
     Assertions.assertThrows(
         NotFoundException.class,
         () ->
-            notificationConfigExtService.delete(
+            triggerExtService.delete(
                 user,
                 bundle.getPortal().getShortcode(),
                 bundle.getStudy().getShortcode(),
@@ -128,20 +127,20 @@ public class NotificationConfigExtServiceTests extends BaseSpringBootTest {
     StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
 
-    NotificationConfig config =
-        notificationConfigFactory.buildPersisted(
-            NotificationConfig.builder()
-                .notificationType(NotificationType.EVENT)
-                .eventType(NotificationEventType.STUDY_CONSENT)
+    Trigger config =
+        triggerFactory.buildPersisted(
+            Trigger.builder()
+                .triggerType(TriggerType.EVENT)
+                .eventType(TriggerEventType.STUDY_CONSENT)
                 .deliveryType(NotificationDeliveryType.EMAIL),
             bundle.getStudyEnv().getId(),
             bundle.getPortalEnv().getId());
 
     AdminUser user = AdminUser.builder().superuser(true).build();
 
-    Assertions.assertTrue(notificationConfigService.find(config.getId()).isPresent());
+    Assertions.assertTrue(triggerService.find(config.getId()).isPresent());
 
-    notificationConfigExtService.delete(
+    triggerExtService.delete(
         user,
         bundle.getPortal().getShortcode(),
         bundle.getStudy().getShortcode(),
@@ -149,7 +148,7 @@ public class NotificationConfigExtServiceTests extends BaseSpringBootTest {
         config.getId());
 
     // should still exist, but active should be false
-    Optional<NotificationConfig> configOpt = notificationConfigService.find(config.getId());
+    Optional<Trigger> configOpt = triggerService.find(config.getId());
     Assertions.assertTrue(configOpt.isPresent());
     Assertions.assertFalse(configOpt.get().isActive());
   }

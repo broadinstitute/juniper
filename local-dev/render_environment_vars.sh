@@ -26,6 +26,7 @@ ADMIN_API_ENV_VARS=(
 PARTICIPANT_API_ENV_VARS=(
   "REDIRECT_ALL_EMAILS_TO:static:$DEV_EMAIL"
   "B2C_CONFIG_FILE:static:b2c-config.yml"
+  "DSM_JWT_SIGNING_SECRET:vault:vault read -field jwt_signing_secret secret/dsp/ddp/d2p/dev/dsm"
   "SENDGRID_API_KEY:vault:vault read -field=api_key secret/dsp/ddp/d2p/dev/sendgrid"
   "SWAGGER_ENABLED:static:true"
 )

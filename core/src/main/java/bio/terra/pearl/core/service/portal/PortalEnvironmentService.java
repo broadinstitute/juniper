@@ -8,7 +8,7 @@ import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
-import bio.terra.pearl.core.service.notification.NotificationConfigService;
+import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import java.util.List;
@@ -29,7 +29,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
     private PortalParticipantUserService portalParticipantUserService;
     private ParticipantUserService participantUserService;
     private PreregistrationResponseDao preregistrationResponseDao;
-    private NotificationConfigService notificationConfigService;
+    private TriggerService triggerService;
     private MailingListContactService mailingListContactService;
     private DataChangeRecordService dataChangeRecordService;
     private SiteContentService siteContentService;
@@ -41,7 +41,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
                                     PortalParticipantUserService portalParticipantUserService,
                                     ParticipantUserService participantUserService,
                                     PreregistrationResponseDao preregistrationResponseDao,
-                                    NotificationConfigService notificationConfigService,
+                                    TriggerService triggerService,
                                     MailingListContactService mailingListContactService,
                                     SiteContentService siteContentService,
                                     DataChangeRecordService dataChangeRecordService,
@@ -52,7 +52,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         this.portalParticipantUserService = portalParticipantUserService;
         this.participantUserService = participantUserService;
         this.preregistrationResponseDao = preregistrationResponseDao;
-        this.notificationConfigService = notificationConfigService;
+        this.triggerService = triggerService;
         this.mailingListContactService = mailingListContactService;
         this.dataChangeRecordService = dataChangeRecordService;
         this.siteContentService = siteContentService;
@@ -109,9 +109,9 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         if (portalEnv.getPreRegSurveyId() != null) {
             portalEnv.setPreRegSurvey(surveyService.find(portalEnv.getPreRegSurveyId()).get());
         }
-        var notificationConfigs = notificationConfigService.findByPortalEnvironmentId(portalEnv.getId());
-        notificationConfigService.attachTemplates(notificationConfigs);
-        portalEnv.setNotificationConfigs(notificationConfigs);
+        var triggers = triggerService.findByPortalEnvironmentId(portalEnv.getId());
+        triggerService.attachTemplates(triggers);
+        portalEnv.setTriggers(triggers);
 
         return portalEnv;
     }
@@ -130,7 +130,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         if (cascades.contains(PortalService.AllowedCascades.PARTICIPANT_USER)) {
             participantUserService.deleteOrphans(participantUserIds, cascades);
         }
-        notificationConfigService.deleteByPortalEnvironmentId(id);
+        triggerService.deleteByPortalEnvironmentId(id);
         mailingListContactService.deleteByPortalEnvId(id);
         dataChangeRecordService.deleteByPortalEnvironmentId(id);
         portalDashboardConfigService.deleteAlertsByPortalEnvId(id);

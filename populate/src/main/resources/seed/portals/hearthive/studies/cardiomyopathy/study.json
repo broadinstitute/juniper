@@ -29,8 +29,8 @@
           "consentVersion": 1
         }
       ],
-      "notificationConfigDtos": [{
-        "notificationType": "EVENT",
+      "triggerDtos": [{
+        "triggerType": "EVENT",
         "eventType": "STUDY_ENROLLMENT",
         "emailTemplateStableId": "hh_cymop_studyEnroll",
         "emailTemplateVersion": 1

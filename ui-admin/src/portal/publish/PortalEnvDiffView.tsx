@@ -15,7 +15,7 @@ export const emptyChangeSet: PortalEnvironmentChange = {
   siteContentChange: { changed: false },
   configChanges: [],
   preRegSurveyChanges: { changed: false },
-  notificationConfigChanges: { addedItems: [], removedItems: [], changedItems: [] },
+  triggerChanges: { addedItems: [], removedItems: [], changedItems: [] },
   participantDashboardAlertChanges: [],
   studyEnvChanges: []
 }
@@ -26,7 +26,7 @@ export const emptyStudyEnvChange: StudyEnvironmentChange = {
   preEnrollSurveyChanges: { changed: false },
   consentChanges: { addedItems: [], removedItems: [], changedItems: [] },
   surveyChanges: { addedItems: [], removedItems: [], changedItems: [] },
-  notificationConfigChanges: { addedItems: [], removedItems: [], changedItems: [] }
+  triggerChanges: { addedItems: [], removedItems: [], changedItems: [] }
 }
 
 const EXCLUDED_PROPS = ['participantHostname']
@@ -187,10 +187,10 @@ export default function PortalEnvDiffView(
         <h2 className="h6">
           Notification Configs</h2>
         <div className="ms-4">
-          <ConfigChangeListView configChangeList={changeSet.notificationConfigChanges}
-            selectedChanges={selectedChanges.notificationConfigChanges}
-            setSelectedChanges={notificationConfigChanges =>
-              setSelectedChanges({ ...selectedChanges, notificationConfigChanges })}
+          <ConfigChangeListView configChangeList={changeSet.triggerChanges}
+            selectedChanges={selectedChanges.triggerChanges}
+            setSelectedChanges={triggerChanges =>
+              setSelectedChanges({ ...selectedChanges, triggerChanges })}
             renderItemSummary={renderNotificationConfig}/>
         </div>
       </div>
