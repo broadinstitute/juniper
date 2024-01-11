@@ -29,15 +29,15 @@ public class PortalExtractTest extends BasePopulatePortalsTest {
 
     @Test
     @Transactional
-    public void testExtractOurHealth() throws Exception {
+    public void testExtractDemoPortal() throws Exception {
         // populate a portal, then see if we can extract it, delete it, and repopulate it
 
         setUpEnvironments();
-        Portal portal = portalPopulator.populate(new FilePopulateContext("portals/ourhealth/portal.json"), true);
-        String tmpFileName = "/tmp/ourhealth-%s.zip".formatted(RandomStringUtils.randomAlphanumeric(8));
+        Portal portal = portalPopulator.populate(new FilePopulateContext("portals/demo/portal.json"), true);
+        String tmpFileName = "/tmp/demo-%s.zip".formatted(RandomStringUtils.randomAlphanumeric(8));
         File tmpFile = new File(tmpFileName);
         FileOutputStream fos = new FileOutputStream(tmpFile);
-        portalExtractService.extract("ourhealth", fos);
+        portalExtractService.extract("demo", fos);
         fos.close();
 
         // we technically don't need this manual delete since the populate below should include a delete, but just to be sure...
@@ -47,10 +47,12 @@ public class PortalExtractTest extends BasePopulatePortalsTest {
         Portal restoredPortal = portalPopulator.populateFromZipFile(zis, true);
 
         // confirm all templates got repopulated
-        assertThat(surveyService.findByPortalId(restoredPortal.getId()), hasSize(9));
+        assertThat(surveyService.findByPortalId(restoredPortal.getId()), hasSize(10));
         assertThat(studyService.findByPortalId(restoredPortal.getId()), hasSize(1));
         assertThat(consentFormService.findByPortalId(restoredPortal.getId()), hasSize(1));
         assertThat(emailTemplateService.findByPortalId(restoredPortal.getId()), hasSize(5));
+        // confirm both the old and current versions of the site content got populated
+        assertThat(siteContentService.findByPortalId(restoredPortal.getId()), hasSize(2));
 
         // confirm the sandbox got configured
         Study study = studyService.findByPortalId(restoredPortal.getId()).get(0);
