@@ -18,9 +18,8 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeExtService {
@@ -53,7 +52,7 @@ public class EnrolleeExtService {
   }
 
   public List<EnrolleeSearchResult> search(
-          AdminUser operator,
+      AdminUser operator,
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
@@ -63,7 +62,7 @@ public class EnrolleeExtService {
   }
 
   public List<EnrolleeSearchFacet> getSearchFacets(
-          AdminUser operator,
+      AdminUser operator,
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName) {
@@ -72,7 +71,7 @@ public class EnrolleeExtService {
   }
 
   public List<Enrollee> findForKitManagement(
-          AdminUser operator,
+      AdminUser operator,
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName) {
@@ -85,7 +84,8 @@ public class EnrolleeExtService {
     return enrolleeService.loadForAdminView(enrollee);
   }
 
-  public List<DataChangeRecord> findDataChangeRecords(AdminUser operator, String enrolleeShortcode) {
+  public List<DataChangeRecord> findDataChangeRecords(
+      AdminUser operator, String enrolleeShortcode) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
     return dataChangeRecordService.findByEnrollee(enrollee.getId());
   }

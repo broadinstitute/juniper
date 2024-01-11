@@ -10,11 +10,10 @@ import bio.terra.pearl.core.model.participant.Profile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-
-import java.util.UUID;
 
 @Controller
 @Slf4j
@@ -23,7 +22,6 @@ public class EnrolleeController implements EnrolleeApi {
   private EnrolleeExtService enrolleeExtService;
   private HttpServletRequest request;
   private ObjectMapper objectMapper;
-
 
   public EnrolleeController(
       AuthUtilService authUtilService,
@@ -54,14 +52,17 @@ public class EnrolleeController implements EnrolleeApi {
 
   @Override
   public ResponseEntity<Object> updateProfile(
-          String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode, Object body) {
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String enrolleeShortcode,
+      Object body) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     Profile profile = objectMapper.convertValue(body, Profile.class);
 
     enrolleeExtService.updateProfile(operator, enrolleeShortcode, profile);
 
     return ResponseEntity.ok(profile);
-
   }
 
   @Override
