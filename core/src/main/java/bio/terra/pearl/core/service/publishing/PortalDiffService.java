@@ -9,7 +9,7 @@ import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.dashboard.AlertTrigger;
 import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.publishing.*;
 import bio.terra.pearl.core.model.site.SiteContent;
@@ -17,7 +17,7 @@ import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.service.notification.NotificationConfigService;
+import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
@@ -41,7 +41,7 @@ public class PortalDiffService {
     private PortalEnvironmentConfigService portalEnvironmentConfigService;
     private SiteContentService siteContentService;
     private SurveyService surveyService;
-    private NotificationConfigService notificationConfigService;
+    private TriggerService triggerService;
     private PortalDashboardConfigService portalDashboardConfigService;
     private ObjectMapper objectMapper;
     private PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao;
@@ -51,7 +51,7 @@ public class PortalDiffService {
     public PortalDiffService(PortalEnvironmentService portalEnvService,
                              PortalEnvironmentConfigService portalEnvironmentConfigService,
                              SiteContentService siteContentService, SurveyService surveyService,
-                             NotificationConfigService notificationConfigService,
+                             TriggerService triggerService,
                              PortalDashboardConfigService portalDashboardConfigService,
                              ObjectMapper objectMapper,
                              PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao,
@@ -60,7 +60,7 @@ public class PortalDiffService {
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.siteContentService = siteContentService;
         this.surveyService = surveyService;
-        this.notificationConfigService = notificationConfigService;
+        this.triggerService = triggerService;
         this.portalDashboardConfigService = portalDashboardConfigService;
         this.objectMapper = objectMapper;
         this.portalEnvironmentChangeRecordDao = portalEnvironmentChangeRecordDao;
@@ -79,8 +79,8 @@ public class PortalDiffService {
         var siteContentRecord = new VersionedEntityChange<SiteContent>(sourceEnv.getSiteContent(), destEnv.getSiteContent());
         var envConfigChanges = ConfigChange.allChanges(sourceEnv.getPortalEnvironmentConfig(),
                 destEnv.getPortalEnvironmentConfig(), CONFIG_IGNORE_PROPS);
-        ListChange<NotificationConfig, VersionedConfigChange<EmailTemplate>> notificationConfigChanges = diffConfigLists(sourceEnv.getNotificationConfigs(),
-                destEnv.getNotificationConfigs(),
+        ListChange<Trigger, VersionedConfigChange<EmailTemplate>> triggerChanges = diffConfigLists(sourceEnv.getTriggers(),
+                destEnv.getTriggers(),
                 CONFIG_IGNORE_PROPS);
 
         List<StudyEnvironmentChange> studyEnvChanges = new ArrayList<>();
@@ -98,7 +98,7 @@ public class PortalDiffService {
                 siteContentRecord,
                 envConfigChanges,
                 preRegRecord,
-                notificationConfigChanges,
+                triggerChanges,
                 alertChangeLists,
                 studyEnvChanges
         );
@@ -142,9 +142,9 @@ public class PortalDiffService {
         if (portalEnv.getPreRegSurveyId() != null) {
             portalEnv.setPreRegSurvey(surveyService.find(portalEnv.getPreRegSurveyId()).get());
         }
-        var notificationConfigs = notificationConfigService.findByPortalEnvironmentId(portalEnv.getId());
-        notificationConfigService.attachTemplates(notificationConfigs);
-        portalEnv.setNotificationConfigs(notificationConfigs);
+        var triggers = triggerService.findByPortalEnvironmentId(portalEnv.getId());
+        triggerService.attachTemplates(triggers);
+        portalEnv.setTriggers(triggers);
 
         List<ParticipantDashboardAlert> alerts = portalDashboardConfigService.findByPortalEnvId(portalEnv.getId());
         portalEnv.setParticipantDashboardAlerts(alerts);
@@ -215,9 +215,9 @@ public class PortalDiffService {
                 sourceEnv.getConfiguredSurveys(),
                 destEnv.getConfiguredSurveys(),
                 CONFIG_IGNORE_PROPS);
-        ListChange<NotificationConfig, VersionedConfigChange<EmailTemplate>> notificationConfigChanges = diffConfigLists(
-                sourceEnv.getNotificationConfigs(),
-                destEnv.getNotificationConfigs(),
+        ListChange<Trigger, VersionedConfigChange<EmailTemplate>> triggerChanges = diffConfigLists(
+                sourceEnv.getTriggers(),
+                destEnv.getTriggers(),
                 CONFIG_IGNORE_PROPS);
 
         return new StudyEnvironmentChange(
@@ -226,7 +226,7 @@ public class PortalDiffService {
                 preEnrollChange,
                 consentChanges,
                 surveyChanges,
-                notificationConfigChanges
+                triggerChanges
         );
     }
 

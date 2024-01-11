@@ -3,7 +3,7 @@ package bio.terra.pearl.core.model.portal;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.survey.Survey;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class PortalEnvironment extends BaseEntity {
     private UUID preRegSurveyId;
     private Survey preRegSurvey;
     @Builder.Default
-    private List<NotificationConfig> notificationConfigs = new ArrayList<>();
+    private List<Trigger> triggers = new ArrayList<>();
     @Builder.Default
     private List<ParticipantDashboardAlert> participantDashboardAlerts = new ArrayList<>();
 }

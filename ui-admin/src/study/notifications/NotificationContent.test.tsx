@@ -13,27 +13,27 @@ test('renders routable config list', async () => {
   const enrollEmailConfig = {
     ...mockNotificationConfig(),
     id: 'event1',
-    notificationType: 'EVENT',
+    triggerType: 'EVENT',
     eventType: 'STUDY_ENROLLMENT'
   }
-  const notificationConfigs = [
+  const triggers = [
     enrollEmailConfig,
     {
       ...mockNotificationConfig(),
       id: 'reminder1',
-      notificationType: 'TASK_REMINDER',
+      triggerType: 'TASK_REMINDER',
       taskType: 'CONSENT'
     },
     {
       ...mockNotificationConfig(),
       id: 'reminder2',
-      notificationType: 'TASK_REMINDER',
+      triggerType: 'TASK_REMINDER',
       taskType: 'SURVEY'
     }
   ]
-  jest.spyOn(Api, 'findNotificationConfigsForStudyEnv')
-    .mockImplementation(() => Promise.resolve(notificationConfigs))
-  jest.spyOn(Api, 'findNotificationConfig')
+  jest.spyOn(Api, 'findTriggersForStudyEnv')
+    .mockImplementation(() => Promise.resolve(triggers))
+  jest.spyOn(Api, 'findTrigger')
     .mockImplementation(jest.fn())
 
   const { RoutedComponent, router } =
@@ -56,29 +56,29 @@ test('allows deletion of notification config', async () => {
   const consentConfig = {
     ...mockNotificationConfig(),
     id: 'reminder1',
-    notificationType: 'TASK_REMINDER',
+    triggerType: 'TASK_REMINDER',
     taskType: 'CONSENT'
   }
   const notificationConfigs = [
     {
       ...mockNotificationConfig(),
       id: 'event1',
-      notificationType: 'EVENT',
+      triggerType: 'EVENT',
       eventType: 'STUDY_ENROLLMENT'
     },
     consentConfig,
     {
       ...mockNotificationConfig(),
       id: 'reminder2',
-      notificationType: 'TASK_REMINDER',
+      triggerType: 'TASK_REMINDER',
       taskType: 'SURVEY'
     }
   ]
-  jest.spyOn(Api, 'findNotificationConfigsForStudyEnv')
+  jest.spyOn(Api, 'findTriggersForStudyEnv')
     .mockImplementation(() => Promise.resolve(notificationConfigs))
-  jest.spyOn(Api, 'findNotificationConfig')
+  jest.spyOn(Api, 'findTrigger')
     .mockImplementation(() => Promise.resolve(consentConfig))
-  jest.spyOn(Api, 'deleteNotificationConfig').mockImplementation(() => Promise.resolve(new Response()))
+  jest.spyOn(Api, 'deleteTrigger').mockImplementation(() => Promise.resolve(new Response()))
 
   const { RoutedComponent } =
     setupRouterTest(<>
@@ -112,7 +112,7 @@ test('allows deletion of notification config', async () => {
 
   await waitFor(
     () =>
-      expect(Api.deleteNotificationConfig)
+      expect(Api.deleteTrigger)
         .toBeCalledWith(
           studyEnvContext.portal.shortcode,
           studyEnvContext.study.shortcode,

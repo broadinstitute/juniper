@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
-import Api, { NotificationConfig } from 'api/api'
+import Api, { Trigger } from 'api/api'
 import Modal from 'react-bootstrap/Modal'
 import { Store } from 'react-notifications-component'
-import { failureNotification, successNotification } from 'util/notifications'
+import { successNotification } from 'util/notifications'
 import { useUser } from 'user/UserProvider'
 import { doApiLoad } from 'api/api-utils'
 import { Button } from '../../components/forms/Button'
 import LoadingSpinner from '../../util/LoadingSpinner'
+import { StudyEnvParams } from '../StudyEnvironmentRouter'
 
 
 export const EXAMPLE_RULE_DATA = {
@@ -21,10 +22,11 @@ export const EXAMPLE_RULE_DATA = {
 }
 
 /** Sends test emails based on a configurable profile */
-export default function TestEmailSender({ portalShortcode, environmentName, notificationConfig, onDismiss }:
-                                          {portalShortcode: string, environmentName: string, onDismiss: () => void,
-                                            notificationConfig: NotificationConfig}) {
+export default function TestEmailSender({ studyEnvParams, trigger, onDismiss }:
+                                          {studyEnvParams: StudyEnvParams, onDismiss: () => void,
+                                            trigger: Trigger}) {
   const { user } = useUser()
+  const { portalShortcode, envName, studyShortcode } = studyEnvParams
   const [isLoading, setIsLoading] = useState(false)
   const [ruleData, setRuleData] = useState({
     ...EXAMPLE_RULE_DATA,
@@ -36,14 +38,8 @@ export default function TestEmailSender({ portalShortcode, environmentName, noti
   /** sends a test email with the given (saved) notification.  does not currently reflect unsaved changes */
   function sendTestEmail() {
     doApiLoad(async () => {
-      await Api.testNotification(portalShortcode, environmentName, notificationConfig.id, ruleData).then(() =>
-        Store.addNotification(successNotification(
-          'Sent test email'
-        ))).catch(() =>
-        Store.addNotification(failureNotification(
-          'error sending test email '
-        ))
-      )
+      await Api.testTrigger(portalShortcode, studyShortcode, envName, trigger.id, ruleData)
+      Store.addNotification(successNotification('Sent test email'))
     }, { setIsLoading })
   }
 

@@ -1,6 +1,6 @@
 package bio.terra.pearl.populate.service.extract;
 
-import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -113,6 +113,6 @@ public class PortalExtractService {
     }
 
     protected static class PortalEnvironmentMixin {
-        @JsonIgnore public List<NotificationConfig> getNotificationConfigs() { return null; }
+        @JsonIgnore public List<Trigger> getNotificationConfigs() { return null; }
     }
 }

@@ -1,34 +1,34 @@
 package bio.terra.pearl.core.factory.notification;
 
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
-import bio.terra.pearl.core.model.notification.NotificationType;
+import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
-import bio.terra.pearl.core.service.notification.NotificationConfigService;
+import bio.terra.pearl.core.service.notification.TriggerService;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class NotificationConfigFactory {
+public class TriggerFactory {
     @Autowired
-    private NotificationConfigService notificationConfigService;
+    private TriggerService triggerService;
     @Autowired
     private PortalEnvironmentFactory portalEnvironmentFactory;
 
-    public NotificationConfig buildPersisted(NotificationConfig.NotificationConfigBuilder builder, UUID studyEnvId,UUID portalEnvId) {
-        NotificationConfig config = builder.studyEnvironmentId(studyEnvId)
+    public Trigger buildPersisted(Trigger.TriggerBuilder builder, UUID studyEnvId, UUID portalEnvId) {
+        Trigger config = builder.studyEnvironmentId(studyEnvId)
                 .portalEnvironmentId(portalEnvId)
                 .build();
-        return notificationConfigService.create(config);
+        return triggerService.create(config);
     }
 
-    public NotificationConfig buildPersisted(String testName) {
+    public Trigger buildPersisted(String testName) {
         PortalEnvironment portalEnvironment = portalEnvironmentFactory.buildPersisted(testName);
-        var builder = NotificationConfig.builder()
+        var builder = Trigger.builder()
             .portalEnvironmentId(portalEnvironment.getId())
-            .notificationType(NotificationType.EVENT)
+            .triggerType(TriggerType.EVENT)
             .deliveryType(NotificationDeliveryType.EMAIL);
         return buildPersisted(builder, null, portalEnvironment.getId());
     }

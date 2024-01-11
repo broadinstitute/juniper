@@ -8,7 +8,7 @@ import bio.terra.pearl.core.service.workflow.BaseEvent;
 import bio.terra.pearl.core.service.workflow.EnrolleeCreationEvent;
 import bio.terra.pearl.core.service.workflow.PortalRegistrationEvent;
 
-public enum NotificationEventType {
+public enum TriggerEventType {
     PORTAL_REGISTRATION(PortalRegistrationEvent.class),
     SURVEY_RESPONSE(EnrolleeSurveyEvent.class),
     STUDY_ENROLLMENT(EnrolleeCreationEvent.class),
@@ -17,7 +17,7 @@ public enum NotificationEventType {
     KIT_RECEIVED(KitReceivedEvent.class);
 
     public final Class<? extends BaseEvent> eventClass;
-    NotificationEventType(Class<? extends BaseEvent> eventClass) {
+    TriggerEventType(Class<? extends BaseEvent> eventClass) {
         this.eventClass = eventClass;
     }
 }
