@@ -119,6 +119,11 @@ export type HubResponse = {
   profile: Profile
 }
 
+export type TaskWithSurvey = {
+  task: ParticipantTask,
+  survey: Survey
+}
+
 export type PortalParticipantUser = {
   profile: object
 }
@@ -198,8 +203,8 @@ export default {
   },
 
   async listOutreachActivities(
-  ): Promise<Survey[]> {
-    const url = `${baseEnvUrl(false)}/outreach`
+  ): Promise<TaskWithSurvey[]> {
+    const url = `${baseEnvUrl(false)}/tasks?taskType=outreach`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },

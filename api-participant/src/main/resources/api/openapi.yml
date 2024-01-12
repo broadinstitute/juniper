@@ -231,14 +231,15 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/outreach:
+  /api/portals/v1/{portalShortcode}/env/{envName}/tasks:
     get:
-      summary: List the outreach activities available to the signed-in user
-      tags: [ outreach ]
-      operationId: listOutreachActivities
+      summary: List the tasks available to the signed-in user of the given type, includes the survey for each task
+      tags: [ participantTask ]
+      operationId: listTasksWithSurveys
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: taskType, in: query, required: false, schema: { type: string } }
       responses:
         '200':
           description: list of outreach activities

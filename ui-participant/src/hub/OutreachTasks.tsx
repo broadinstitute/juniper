@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import Api, { Enrollee, ParticipantTask, Study, SurveyResponse } from 'api/api'
+import Api, { Enrollee, ParticipantTask, Study, SurveyResponse, TaskWithSurvey } from 'api/api'
 import { getTaskPath } from './TaskLink'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import SurveyModal from './SurveyModal'
 import { useTaskIdParam } from './survey/SurveyView'
-import { Survey } from '@juniper/ui-core/build/types/forms'
 
 type OutreachParams = {
     enrolleeShortcode?: string,
@@ -30,11 +29,11 @@ const useOutreachParams = () => {
 export default function OutreachTasks({ enrollees, studies }: {enrollees: Enrollee[], studies: Study[]}) {
   const navigate = useNavigate()
   const outreachParams = useOutreachParams()
-  const [outreachActivities, setOutreachActivities] = useState<Survey[]>([])
+  const [outreachTasks, setOutreachActivities] = useState<TaskWithSurvey[]>([])
 
-  const outreachTasks = enrollees.flatMap(enrollee => enrollee.participantTasks)
-    .filter(task => task.taskType === 'OUTREACH')
-    .sort((a, b) => a.createdAt - b.createdAt)
+  const sortedOutreachTasks = outreachTasks.sort((a, b) => {
+    return a.task.createdAt - b.task.createdAt
+  })
   const markTaskAsViewed = async (task: ParticipantTask, enrollee: Enrollee, study: Study) => {
     const responseDto = {
       resumeData: '{}',
@@ -65,7 +64,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
   }, [enrollees])
 
   useEffect(() => {
-    const matchedTask = outreachTasks.find(task => task.id === outreachParams.taskId)
+    const matchedTask = outreachTasks.find(({ task }) => task.id === outreachParams.taskId)?.task
     if (outreachParams.stableId && matchedTask && matchedTask.status === 'NEW') {
       const taskStudy = studyForTask(matchedTask, studies)
       const taskEnrollee = enrolleeForTask(matchedTask, enrollees)
@@ -75,7 +74,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
 
   return <div className="">
     <div className="row g-3 pb-3">
-      {outreachTasks.map(task => {
+      {sortedOutreachTasks.map(({ task, survey }) => {
         const taskStudy = studyForTask(task, studies)
         const taskEnrollee = enrolleeForTask(task, enrollees)
         const taskUrl = getTaskPath(task, taskEnrollee.shortcode, taskStudy.shortcode)
@@ -85,7 +84,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
             style={{ background: '#fff', minHeight: '6em' }} key={task.id}>
             <h3 className="h5">{task.targetName}</h3>
             <p className="text-muted">
-              {outreachActivities.find(activity => activity.stableId === task.targetStableId)?.blurb}
+              {survey.blurb}
             </p>
             <div className="py-3 text-center" style={{ background: 'var(--brand-color-shift-90)' }}>
               <Link to={taskUrl} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
